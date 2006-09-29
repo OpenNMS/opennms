@@ -8,8 +8,10 @@ function reloadGrid(){
 	gridRectWidth=parseInt(mapElemDimension*X_FACTOR);	
 	gridRectHeight=parseInt(mapElemDimension*Y_FACTOR);
 	var numCols = parseInt(map.getWidth()/gridRectWidth);
+	if(numCols==0) numCols=1;
 	//alert("numcols="+numCols+" mapWidth/gridRectWidth " +map.getWidth()+"/"+gridRectWidth);
 	var numRows = parseInt(map.getHeight()/gridRectHeight);
+	if(numRows==0) numRows=1;
 	//alert("numrows="+numRows+" mapHeight/gridRectHeight " +map.getHeight()+"/"+gridRectHeight);
 
 	maxNumOfElements = numCols*numRows;

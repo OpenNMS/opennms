@@ -346,7 +346,8 @@ selectionList.prototype.unfoldList = function() {
 
 //this function folds/hides the selectionList again
 selectionList.prototype.foldList = function() {
-	this.selectionBoxGroup.removeChild(this.dynamicTextGroup);
+	if(this.dynamicTextGroup)
+		this.selectionBoxGroup.removeChild(this.dynamicTextGroup);
 	this.dynamicTextGroup = null;
 	this.rectBelowBox.setAttributeNS(null,"visibility","hidden");
 	document.documentElement.removeEventListener("click",this,false);

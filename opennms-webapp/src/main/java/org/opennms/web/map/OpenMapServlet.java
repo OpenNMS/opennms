@@ -73,6 +73,7 @@ public class OpenMapServlet extends HttpServlet {
 				log.debug("Current mapWidth=" + mapWidth
 						+ " and MapHeight=" + mapHeight);
 				Manager m = new Manager();
+				m.startSession();
 				VMap map = null;
 				if (action.equals(NEWMAP_ACTION)) {
 					log.info("New Map: creating new map");
@@ -146,6 +147,7 @@ public class OpenMapServlet extends HttpServlet {
 				}
 				bw.write(strToSend);
 				bw.close();
+				m.endSession();
 				session.setAttribute("sessionMap", map);
 				log.info("Sending response to the client '" + strToSend
 						+ "'");

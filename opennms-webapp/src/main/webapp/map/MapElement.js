@@ -59,6 +59,7 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	this.image.setAttribute("height", this.height);
 	this.image.setAttribute(this.attributeX, 0);
 	this.image.setAttribute(this.attributeY, 0);
+	this.image.setAttribute("style", "cursor:pointer");
 	this.image.setAttributeNS(application.svgnsXLink, "xlink:href", MEIconsSortAss[this.icon]);
 
 	this.image.addEventListener("click", this.onClick, false);

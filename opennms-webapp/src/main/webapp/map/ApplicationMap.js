@@ -203,12 +203,13 @@ function analizeInitResponse(data) {
 		//alert("refreshnodesinterval= "+refreshNodesIntervalInSec+" isUserAdmin="+isUserAdmin+ " mapToOpen="+mapToOpen);
 
 		refreshNodesIntervalInSec=parseInt(str)*60;
-		if(isUserAdmin=="false"){
-			
-			hideAll();
-     		disableMenu();
-		}
+
 		if(mapToOpen!=undefined){
+			if(isUserAdmin=="false"){
+				
+				hideAll();
+	     		disableMenu();
+			}
      		openMap(parseInt(mapToOpen));
 		}
 		loading--;	
@@ -279,6 +280,7 @@ function analizeLoadMapsResponse(data) {
 		//alert('Loading Maps OK!');	
 		loading--;	
 		assertLoading();
+		mapsLoaded=true;
 	} else {
 		alert('Loading Maps has failed');
 		loading--;	
@@ -349,6 +351,7 @@ function analizeLoadNodesResponse(data) {
 		nodeSortAss = assArrayPopulate(nodes,nodeSorts);	
 		loading--;
 		assertLoading();
+		nodesLoaded=true;
 		//alert('Loading Nodes OK!');		
 	} else {
 		alert('Loading Nodes has failed');
@@ -386,11 +389,6 @@ function addRangeOfNodes(){
 		alert('Range not valid!');
 		return;
 		}
-	var point = getFirstFreePoint();
-	if(point==null){
-		alert("no free points in the grid, cambiare grandezza nodi!!");
-		return;
-	}
 	loading++;
 	assertLoading();
 	disableMenu();
@@ -399,11 +397,6 @@ function addRangeOfNodes(){
 }
 
 function addMapElemNeigh(id){
-	var point = getFirstFreePoint();
-	if(point==null){
-		alert("no free points in the grid, cambiare grandezza nodi!!");
-		return;
-	}
 	loading++;
 	assertLoading();
 	disableMenu();
@@ -413,13 +406,7 @@ function addMapElemNeigh(id){
 
 function addMapElementWithNeighbors()
 {
-	if(selectedMapElemInList!=0 )  {
-		return;
-	}
-			
-	var point = getFirstFreePoint();
-	if(point==null){
-		alert("no free points in the grid, cambiare grandezza nodi!!");
+	if(selectedMapElemInList==0 )  {
 		return;
 	}
 	loading++;
@@ -539,13 +526,23 @@ function analizeDeleteNodeResponse(data) {
 			counter++;
 		}
 		map.deleteMapElement(id);
-			// reloadgrid se non esiste lo spazio allora !!!!!!! tratto
 	}
-	reloadGrid();
+
 	loading--;
 	assertLoading();
-//	savedMapString=getMapString();
+	clearTopInfo();
 	enableMenu();
+	
+	var childNode = menuSvgDocument.getElementById("DownInfoText");		
+	if (childNode)
+		menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
+	menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">" +
+		"<tspan x=\"5\" dy=\"0\">Deleted selected element/s.</tspan>" +
+		"</text>",menuSvgDocument));	
+
+	//reloadGrid();	
+//	savedMapString=getMapString();
+	
 }
 
 
@@ -704,8 +701,7 @@ function analizeAddNodeResponse(data) {
 			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
 			//alert("add element " + id);
-			var point = getFirstFreePoint();
-			newElem= new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, point.x, point.y, mapElemDimension, status, avail,severity)
+			newElem= new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, 0, 0, mapElemDimension, status, avail,severity)
 			nodesToAdd.push(newElem);
 
 			//reloadGrid();
@@ -742,7 +738,7 @@ function analizeAddNodeResponse(data) {
 		var freePoints = null;
 		var alerted = false;
 		do{     // try to add the elements
-		   reloadGrid();
+		   //reloadGrid();
 		   freePoints = getFreePoints();
 		   //alert("freePoints.length="+freePoints.length+"  nodesToAdd.length="+nodesToAdd.length);
 		   if(freePoints.length>=nodesToAdd.length){
@@ -774,7 +770,18 @@ function analizeAddNodeResponse(data) {
 			map.addMapElement(me);
 		}				
 	}
-	
+	clearTopInfo();
+	var msg = "Added "+nodesToAdd.length+" nodes to the map.";
+	if(nodesToAdd.length==0){
+		msg="No nodes added to map."
+	}
+	var childNode = menuSvgDocument.getElementById("DownInfoText");		
+	if (childNode)
+		menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
+	menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">" +
+		"<tspan x=\"5\" dy=\"0\">"+msg+"</tspan>" +
+		"</text>",menuSvgDocument));	
+
 	var linkId;
 	for(ln in linksToAdd){	
 		linkId = linksToAdd[ln];
@@ -949,8 +956,53 @@ function openDownloadedMap(data) {
 			clearDownInfo();
 			if(action==CLOSEMAP_ACTION){
 				hideMapInfo();
+				menuSvgDocument.getElementById("history").getStyle().setProperty('display', 'none');
+				mapHistory=new Array();
+				mapHistoryName=new Array();
+				mapHistoryIndex = 0;
+				
 			}else{
+				//save the mapid in the map history
+				var found=false;
+				for(i in mapHistory){
+					if(mapHistory[i]==currentMapId){
+						found=true;
+						mapHistoryIndex=parseInt(i);
+					}
+				}
+				if(currentMapId!=NEW_MAP && !found){
+					if(mapHistory.length==0){
+						mapHistory.push(currentMapId);
+						mapHistoryName.push(currentMapName);
+						mapHistoryIndex = 0;
+					}else{
+						//alert("mapHistoryIndex="+(mapHistoryIndex));
+						++mapHistoryIndex;
+						var firstPart = mapHistory.slice(0,mapHistoryIndex);
+						var secondPart = mapHistory.slice(mapHistoryIndex);
+						var center = new Array();
+						center.push(currentMapId);
+						firstPart=firstPart.concat(center,secondPart);
+						mapHistory=firstPart;
+						/*for(ind in mapHistory){
+							alert(ind+" "+mapHistory[ind]);
+						}*/
+
+
+						firstPart = mapHistoryName.slice(0,mapHistoryIndex);
+						secondPart = mapHistoryName.slice(mapHistoryIndex);
+						center = new Array();
+						center.push(currentMapName);
+						firstPart=firstPart.concat(center,secondPart);
+						mapHistoryName=firstPart;
+						/*for(ind in mapHistoryName){
+							alert(ind+" "+mapHistoryName[ind]);
+						}*/	
+					}
+
+				}
 				viewMapInfo();
+				menuSvgDocument.getElementById("history").getStyle().setProperty('display', 'inline');				
 			}
 		}	
 		if (k>0 && nodeST.length > 2) {
@@ -1022,7 +1074,7 @@ function openDownloadedMap(data) {
 			while(counter< nodeST.length){
 				var tmp = nodeST[counter];
 				
-				//read the information of the map (id, name, ecc.)
+				//load the links
 			
 				if(counter==0) 
 				{
@@ -1185,6 +1237,46 @@ function viewSaveResponse(data) {
 				menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map '" +currentMapName+"' saved."+
 			"</text>",menuSvgDocument));
 			enableMenu();			
+			//save the map in the map history
+			var found=false;
+			for(i in mapHistory){
+				if(mapHistory[i]==currentMapId){
+					found=true;
+					mapHistoryIndex=parseInt(i);
+				}
+			}
+			if(currentMapId!=NEW_MAP && !found){
+				if(mapHistory.length==0){
+					mapHistory.push(currentMapId);
+					mapHistoryName.push(currentMapName);
+					mapHistoryIndex = 0;
+				}else{
+					//alert("mapHistoryIndex="+(mapHistoryIndex));
+					++mapHistoryIndex;
+					var firstPart = mapHistory.slice(0,mapHistoryIndex);
+					var secondPart = mapHistory.slice(mapHistoryIndex);
+					var center = new Array();
+					center.push(currentMapId);
+					firstPart=firstPart.concat(center,secondPart);
+					mapHistory=firstPart;
+					/*for(ind in mapHistory){
+						alert(ind+" "+mapHistory[ind]);
+					}*/
+
+
+					firstPart = mapHistoryName.slice(0,mapHistoryIndex);
+					secondPart = mapHistoryName.slice(mapHistoryIndex);
+					center = new Array();
+					center.push(currentMapName);
+					firstPart=firstPart.concat(center,secondPart);
+					mapHistoryName=firstPart;
+					/*for(ind in mapHistoryName){
+						alert(ind+" "+mapHistoryName[ind]);
+					}*/	
+				}
+
+			}
+			
 		}else{
 			saveMap2(packet, totalPackets); 
 		}
@@ -1292,6 +1384,8 @@ function viewDeleteResponse(data) {
 		menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map deleted."+
 	"</text>",menuSvgDocument));
 	enableMenu();
+	mapHistory.splice(mapHistoryIndex,1);
+	mapHistoryName.splice(mapHistoryIndex,1);
 		
 }
 
@@ -1516,10 +1610,12 @@ function analizeRefreshNodesResponse(data) {
 			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
 			//alert("add element " + id);
+			var mapElem = map.mapElements[id];
 			var deleted = map.deleteMapElement(id);
-			var point = getFirstFreePoint();
+			var x = mapElem.x;
+			var y = mapElem.y;
 			if (deleted){
-				map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, point.x, point.y, mapElemDimension, status, avail,severity));
+				map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
 			}
 			
 		}
@@ -1549,7 +1645,7 @@ function analizeRefreshNodesResponse(data) {
 		
 	}
 	map.render();
-	reloadGrid();
+	//reloadGrid();
 	menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
 //	savedMapString=getMapString();
 	enableMenu();

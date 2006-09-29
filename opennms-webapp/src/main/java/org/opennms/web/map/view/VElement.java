@@ -69,7 +69,7 @@ public class VElement extends Element {
     /**
      * @param e
      */
-    VElement(Element e) {
+    VElement(Element e) throws MapsException {
         super(e);
     }
 
@@ -83,12 +83,12 @@ public class VElement extends Element {
      * @param y
      */
     protected VElement(int mapId, int id, String type, String iconName,String label,
-            int x, int y) {
+            int x, int y) throws MapsException {
         super(mapId, id, type, label, iconName, x, y);
         isChild = true;
     }    
 
-    protected VElement(int mapId, int id, String type, String label, String iconName) {
+    protected VElement(int mapId, int id, String type, String label, String iconName) throws MapsException {
         super(mapId, id, type, label, iconName, 0, 0);
         isChild = true;
     }    

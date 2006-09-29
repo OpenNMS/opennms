@@ -20,7 +20,7 @@ final public class VSubmap extends VElement {
      * create a VSubMap with all the values of the Element e in input
      * @param e
      */
-    public VSubmap(Element e) {
+    public VSubmap(Element e)throws MapsException {
         super(e);
         super.type=MAP_TYPE;
        
@@ -46,7 +46,7 @@ final public class VSubmap extends VElement {
      * @param y
      */
     VSubmap(int mapId, int id, String label, String iconName,
-            int x, int y) {
+            int x, int y) throws MapsException{
         super(mapId, id, MAP_TYPE, label, iconName, x, y);
     }
     

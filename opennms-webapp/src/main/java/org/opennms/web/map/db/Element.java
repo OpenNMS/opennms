@@ -37,19 +37,15 @@ public class Element implements Cloneable {
         // blank
     }
 
-    public Element(Element e) {
+    public Element(Element e) throws MapsException {
         this(e.mapId, e.id, e.type, e.label, e.iconName, e.x, e.y);
     }
 
     public Element(int mapId, int id, String type, String label,
-            String iconName, int x, int y) {
+            String iconName, int x, int y)throws MapsException {
         this.mapId = mapId;
         this.id = id;
-        try {
-            this.setType(type);
-        } catch (MapsException me) {
-//        	throw new MapsException();
-        }
+        this.setType(type);
         this.label = label;
         this.iconName = iconName;
         this.x = x;

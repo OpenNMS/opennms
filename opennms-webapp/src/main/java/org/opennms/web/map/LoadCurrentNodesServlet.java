@@ -18,17 +18,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.element.DataLinkInterface;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.element.Node;
+import org.opennms.web.map.db.Factory;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 
-import java.sql.Connection;
+
 import java.util.*;
 
 /**
@@ -83,6 +83,8 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 				refreshtime = Integer.parseInt(refreshTime)*60;
 			}
 			Manager m = new Manager();
+			m.startSession();
+			//Factory.createDbConnection();
 			VMap map = null;
 			List velems = new ArrayList();
 //			List links = new ArrayList();
@@ -135,11 +137,7 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 					// response for addElement
 					if (actionfound) {
 						log.debug("Before Checking map contains elems");
-						Connection conn = null;
-						if(nodeids.length>0){
-							conn = Vault.getDbConnection();
-						}
-						log.debug("Obtained connection");
+						
 						for (int i = 0; i < nodeids.length; i++) {
 							int elemId = nodeids[i].intValue();
 							if (map.containsElement(elemId, TYPE)) {
@@ -153,26 +151,24 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 								continue;
 							}
 							VElement curVElem = m.newElement(map.getId(),
-									elemId, TYPE, conn);
+									elemId, TYPE);
 							velems.add(curVElem);
 						} // end for
-						if(nodeids.length>0){
-							Vault.releaseDbConnection(conn);
-						}
+						
 						log.debug("After Checking map contains elems");
 						log.debug("Before RefreshElements");
 						velems = m.refreshElements((VElement[]) velems.toArray(new VElement[0]),false);
 						log.debug("After RefreshElements");
 						log.debug("Before getting/adding links");
-						conn = Vault.getDbConnection();
+						//List vElemLinks = m.getLinks(map.getAllElements());
 						if (velems != null) {
 							Iterator ite = velems.iterator();
 							while (ite.hasNext()) {
 								// take the VElement object
 								VElement ve = (VElement) ite.next();
 								// Get the link between ma objects and new Element
-								List vElemLinks = m.getLinksOnElem(map
-										.getAllElements(), ve, conn);
+								//List vElemLinks = new ArrayList();
+								List vElemLinks = m.getLinksOnElem(map.getAllElements(), ve);
 								// add MapElement to Map
 								map.addElement(ve);
 								// Add correpondant Links to Map
@@ -196,7 +192,7 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 								}
 							} // end cicle on element found
 						}
-						Vault.releaseDbConnection(conn); 
+						
 						log.debug("After getting/adding links");
 						//end if velement to add
 					
@@ -238,7 +234,6 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 
 					if (action.equals(REFRESH_ACTION)) {
 						actionfound = true;
-						
 
 						// First refresh Element objects
 						velems = m.refreshElements(map.getAllElements(),true);
@@ -264,13 +259,14 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 						// more work on client
 						
 						// We are waiting to attempt to mapd
-						map.removeAllLinks();
+						//map.removeAllLinks();
 
 						// get all links on map
+						//List links = null;
 						List links = m.getLinks(map.getAllElements());
 
 						// add links to map
-						map.addLinks((VLink[]) links.toArray(new VLink[0]));
+						//map.addLinks((VLink[]) links.toArray(new VLink[0]));
 
 						// write to client
 						if (links != null) {
@@ -304,7 +300,8 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 			} else {
 				throw new Exception("HttpSession not initialized");
 			}
-
+			m.endSession();
+			//Factory.releaseDbConnection();
 		} catch (Exception e) {
 			strToSend = action + "Failed";
 			log.error("Exception catch " + e);

@@ -26,7 +26,7 @@ final public class VNode extends VElement {
     /**
      * @param e
      */
-    VNode(Element e) {
+    VNode(Element e)throws MapsException {
         super(e);
         super.setId(e.getId());
         super.type=NODE_TYPE;
@@ -62,7 +62,7 @@ final public class VNode extends VElement {
      * @param y
      */
     VNode(int mapId, int id, String label, String iconName,
-            int x, int y) {
+            int x, int y)throws MapsException {
         super(mapId, id, NODE_TYPE, label, iconName, x, y);
     }  
     

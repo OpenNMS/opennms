@@ -12,7 +12,7 @@ package org.opennms.web.map.config;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class Status {
+public class Status implements Comparable{
 	private int id;
 	private String uei;
 	private String color;
@@ -32,6 +32,17 @@ public class Status {
 		this.color = color;
 		this.text = text;
 	}
+	
+	/**
+	 * Compares the Status to another in input by id.
+	 */
+	public int compareTo(Object otherStatus){
+		Status othStat = (Status) otherStatus;
+		if(this.id==othStat.getId()) return 0;
+		else if(this.id<othStat.getId()) return -1;
+		else  return 1;
+	}
+	
 	public String getColor() {
 		return color;
 	}
