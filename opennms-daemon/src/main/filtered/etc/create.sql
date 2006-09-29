@@ -1318,12 +1318,11 @@ create table atinterface (
 	sourceNodeid	integer not null,
 	ifindex		integer not null,
 	lastPollTime	timestamp not null,
-    
+    constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr),
 	constraint fk_ia_nodeID1 foreign key (nodeid) references node
 );
 
---# this doesn't wor with installer 
---#alter table atinterface add constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr);
+
 
 create index atinterface_nodeid_idx on atinterface USING HASH(nodeid) ;
 create index atinterface_node_ipaddr_idx on atinterface(nodeid,ipaddr);
@@ -1388,12 +1387,11 @@ create table stpnode (
     lastPollTime             timestamp not null,
     basevlan                 integer not null,
     basevlanname			 varchar(32),
-
+    constraint pk_stpnode primary key (nodeid,basevlan),
 	constraint fk_ia_nodeID2 foreign key (nodeid) references node
 );
 
---# this doesn't wor with installer 
---#alter table stpnode add constraint pk_stpnode primary key (nodeid,basevlan);
+
 
 create index stpnode_nodeIdBaseVlan_idx on stpnode(nodeid,basevlan);
 create index stpnode_baseBridgeAddress_idx on stpnode(baseBridgeAddress);
@@ -1459,11 +1457,11 @@ create table stpinterface (
     lastPollTime         timestamp not null,
     stpvlan                 integer not null,
 
+    constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan),
 	constraint fk_ia_nodeID3 foreign key (nodeid) references node
 );
 
---# this doesn't wor with installer 
---#alter table stpinterface add constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan);
+
 
 create index stpinterface_node_bridgeport_stpvlan on stpinterface(nodeid,bridgeport,stpvlan);
 create index stpinterface_node_ifindex_idx on stpinterface(nodeid,ifindex);
@@ -1549,11 +1547,11 @@ create table iprouteinterface (
     status		    char(1) not null,
     lastPollTime            timestamp not null,
 
+	constraint pk_iprouteinterface primary key (nodeid,routedest),
 	constraint fk_ia_nodeID4 foreign key (nodeid) references node
 );
 
---# this doesn't wor with installer 
---#alter table iprouteinterface add constraint pk_iprouteinterface primary key (nodeid,routedest);
+
 
 create index iprouteinterface_node_routedest_idx on iprouteinterface(nodeid,routedest);
 create index iprouteinterface_node_ifdex_idx on iprouteinterface(nodeid,routeifindex);
@@ -1589,11 +1587,11 @@ create table datalinkinterface (
     status	     char(1) not null,
     lastPollTime timestamp not null,
 
+    constraint pk_datalinkinterface primary key (nodeid,ifindex),
 	constraint fk_ia_nodeID5 foreign key (nodeid) references node,
 	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid)
 );
---# this doesn't work with installer 
---#alter table datalinkinterface add constraint pk_datalinkinterface primary key (nodeid,ifindex);
+
 
 create index dlint_node_idx on datalinkinterface(nodeid);
 create index dlint_node_ifindex_idx on datalinkinterface(nodeid,ifindex);
@@ -1706,13 +1704,14 @@ create table element (
     elementX         integer,
 	elementY         integer,
 	
+	constraint pk_element primary key (mapId,elementId),
 	constraint fk_mapID foreign key (mapId) references map on delete cascade
 );
 
 create index element_mapid_elementid on element(mapId,elementId);
 
 --# These don't work with installer
---#alter table element add	constraint pk_element primary key (mapId,elementId);
+
 --#alter table element add constraint elementid check (elementid <> 0);
 
 --# Sequence for the eventID column in the events table
