@@ -138,6 +138,98 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
             connection.close();
         }
     }
+    
+    /**
+     * Test adding an ipInterface entry with an snmpInterfaceId with nodeId
+     * and ifIndex set
+     */
+    public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceId() {
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex, snmpInterfaceId) VALUES ( 1, '1.2.3.4', 1, 1 )");
+    }
+
+    /**
+     * Test adding an ipInterface entry with an snmpInterfaceId with nodeId
+     * set but null ifIndex
+     * @throws Exception 
+     */
+    public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceIdNullIfIndex() throws Exception {
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, snmpInterfaceId) VALUES ( 1, '1.2.3.4', 1 )");
+
+        Connection connection = getConnection();
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT ifIndex from ipInterface");
+            assertTrue("could not advance to read first row in results",
+                       rs.next());
+
+            assertEquals("ipInterface.ifIndex", 1, rs.getInt(1));
+            assertFalse("ipInterface.ifIndex should not be null",
+                        rs.wasNull());
+            assertFalse("results contains more than one row", rs.next());
+        } finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * Test adding an ipInterface entry with an snmpInterfaceId with ifIndex
+     * set but null nodeId
+     * @throws Exception 
+     */
+    public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceIdNullNodeId() throws Exception {
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (ipAddr, ifIndex, snmpInterfaceId) VALUES ( '1.2.3.4', 1, 1 )");
+
+        Connection connection = getConnection();
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT nodeId from ipInterface");
+            assertTrue("could not advance to read first row in results",
+                       rs.next());
+
+            assertEquals("ipInterface.nodeId", 1, rs.getInt(1));
+            assertFalse("ipInterface.nodeId should not be null",
+                        rs.wasNull());
+            assertFalse("results contains more than one row", rs.next());
+        } finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * Test adding an ipInterface entry with an snmpInterfaceId with null nodeId
+     * and ifIndex
+     * @throws Exception 
+     */
+    public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceIdNullNodeIdAndIpAddr() throws Exception {
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (ipAddr, snmpInterfaceId) VALUES ( '1.2.3.4', 1 )");
+
+        Connection connection = getConnection();
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT nodeId, ifIndex from ipInterface");
+            assertTrue("could not advance to read first row in results",
+                       rs.next());
+
+            assertEquals("ipInterface.nodeId", 1, rs.getInt(1));
+            assertFalse("ipInterface.nodeId should not be null",
+                        rs.wasNull());
+            
+            assertEquals("ipInterface.ifIndex", 1, rs.getInt(2));
+            assertFalse("ipInterface.ifIndex should not be null",
+                        rs.wasNull());
+            assertFalse("results contains more than one row", rs.next());
+        } finally {
+            connection.close();
+        }
+    }
 
     public void testSetIpInterfaceIdInIfService() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
