@@ -280,8 +280,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		Category log = ThreadCategory.getInstance(getClass());
 
 		if (log.isDebugEnabled()) {
-			log.debug("schedule: Adding ready runnable " + runnable
-					+ " at interval " + interval);
+			log.debug("schedule: Adding ready runnable at interval " + interval);
 		}
 
 		Long key = new Long(interval);
@@ -869,7 +868,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 							if (readyRun != null && readyRun.isReady()) {
 								if (log.isDebugEnabled()) {
 									log.debug("run: found ready runnable "
-											+ readyRun);
+											+ readyRun.getTarget().getHostAddress());
 								}
 
 								// Pop the interface/readyRunnable from the
@@ -885,6 +884,8 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 							return; // jump all the way out
 						} catch (FifoQueueException qe) {
 							throw new UndeclaredThrowableException(qe);
+						} catch (UnknownHostException he) {
+							throw new UndeclaredThrowableException(he);							
 						}
 					} while (readyRun != null && readyRun.isReady()
 							&& --maxLoops > 0);
