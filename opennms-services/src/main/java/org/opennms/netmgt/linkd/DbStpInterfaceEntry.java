@@ -304,8 +304,7 @@ public class DbStpInterfaceEntry {
 		}
 
 		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.insert: SQL statement "
-				+ stmt.toString());
+			log.debug("StpInterfaceEntry.insert: SQL insert statment = " + names.toString());
 
 		// Run the insert
 		//
@@ -432,7 +431,7 @@ public class DbStpInterfaceEntry {
 		stmt.setInt(ndx++, m_stpportvlan);
 
 		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.update: SQL statement " + stmt.toString());
+			log.debug("StpInterfaceEntry.update: SQL statement " + sqlText.toString());
 
 		// Run the insert
 		//
@@ -473,10 +472,6 @@ public class DbStpInterfaceEntry {
 		stmt.setInt(1, m_nodeId);
 		stmt.setInt(2, m_bridgeport);
 		stmt.setInt(3, m_stpportvlan);
-
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.load: SQL statement "
-				+ stmt.toString());
 
 		// Run the select
 		//

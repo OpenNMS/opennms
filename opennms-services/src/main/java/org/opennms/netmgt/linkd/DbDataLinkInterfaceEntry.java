@@ -146,8 +146,6 @@ final class DbDataLinkInterfaceEntry
 				throw new IllegalStateException(
 						"The record already exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
-
 			// first extract the next node identifier
 			//
 			String queryString = "INSERT INTO DataLinkInterface (nodeid,ifindex,nodeparentid,parentIfIndex,status,lastpolltime) VALUES (?,?,?,?,?,?)";
@@ -155,6 +153,7 @@ final class DbDataLinkInterfaceEntry
 			// create the Prepared statment and then
 			// start setting the result values
 			//
+
 			PreparedStatement stmt = c.prepareStatement(queryString);
 			queryString = null;
 
@@ -172,15 +171,10 @@ final class DbDataLinkInterfaceEntry
 
 			stmt.setTimestamp(ndx++, m_lastPollTime);
 
-			if (log.isDebugEnabled())
-				log.debug("DataLinkInterfaceEntry.insert: SQL statement "
-					+ stmt.toString());
-
 			// Run the insert
 			//
-			int rc = stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("DataLinkInterfaceEntry.insert: row " + rc);
+			//int rc = 
+			stmt.executeUpdate();
 			stmt.close();
 
 			// clear the mask and mark as backed
@@ -202,8 +196,6 @@ final class DbDataLinkInterfaceEntry
 			if (!m_fromDb)
 				throw new IllegalStateException(
 						"The record does not exists in the database");
-
-			Category log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -257,15 +249,10 @@ final class DbDataLinkInterfaceEntry
 			stmt.setInt(ndx++, m_nodeId);
 			stmt.setInt(ndx++, m_ifindex);
 
-			if (log.isDebugEnabled())
-				log.debug("DataLinkInterfaceEntry.update: SQL statement "
-					+ stmt.toString());
-
 			// Run the insert
 			//
-			int rc = stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("DataLinkInterfaceEntry.update: row " + rc);
+			//int rc = 
+			stmt.executeUpdate();
 			stmt.close();
 
 			// clear the mask and mark as backed
@@ -298,10 +285,6 @@ final class DbDataLinkInterfaceEntry
 			stmt = c.prepareStatement(SQL_LOAD_DATALINKINTERFACE);
 			stmt.setInt(1, m_nodeId);
 			stmt.setInt(2, m_ifindex);
-
-			if (log.isDebugEnabled())
-				log.debug("DataLinkInterfaceEntry.load: SQL statement "
-					+ stmt.toString());
 
 			// Run the select
 			//

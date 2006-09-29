@@ -26,8 +26,10 @@ package org.opennms.netmgt.linkd;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class LinkableNode extends Object {
 
@@ -35,35 +37,46 @@ public class LinkableNode extends Object {
 
 	String m_snmpprimaryaddr;
 
-	List m_cdpinterfaces = new ArrayList();
+	List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
 	
 	boolean m_hascdpinterfaces = false;
 
-	List m_routeinterfaces = new ArrayList();
+	List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
 	
 	boolean m_hasrouteinterfaces = false;
+
+	List<AtInterface> m_atinterfaces = new ArrayList<AtInterface>();
 	
+	boolean m_hasatinterfaces = false;
+
 	boolean isBridgeNode = false;
 	
 	/**
 	 * the list of bridge port that are backbone bridge ports ou that are
 	 * link between switches
 	 */
-	List BackBoneBridgePorts = new java.util.ArrayList();
+	List<Integer> BackBoneBridgePorts = new java.util.ArrayList<Integer>();
 
-	List BridgeIdentifiers = new java.util.ArrayList();
+	/**
+	 * the list of port that are CDP ports ou that are
+	 * link between Cisco Devices
+	 */
+
+	List<Integer> CdpPorts = new java.util.ArrayList<Integer>();
 	
-	HashMap BridgeStpInterfaces = new HashMap();
+	List<String> BridgeIdentifiers = new java.util.ArrayList<String>();
+	
+	HashMap<String,List<BridgeStpInterface>> BridgeStpInterfaces = new HashMap<String,List<BridgeStpInterface>>();
 
-	HashMap vlanBridgeIdentifier = new HashMap();
+	HashMap<String,String> vlanBridgeIdentifier = new HashMap<String,String>();
 
-	HashMap portMacs = new HashMap();
+	HashMap<Integer,Set<String>> portMacs = new HashMap<Integer,Set<String>>();
 
-	HashMap macsVlan = new HashMap();
+	HashMap<String,String> macsVlan = new HashMap<String,String>();
 
-	HashMap vlanStpRoot = new HashMap();
+	HashMap<String,String> vlanStpRoot = new HashMap<String,String>();
 
-	HashMap bridgePortIfindex = new HashMap();
+	HashMap<Integer,Integer> bridgePortIfindex = new HashMap<Integer,Integer>();
 
 
 	private LinkableNode() {
@@ -99,13 +112,13 @@ public class LinkableNode extends Object {
 	/**
 	 * @return Returns the m_cdpinterfaces.
 	 */
-	public List getCdpInterfaces() {
+	public List<CdpInterface> getCdpInterfaces() {
 		return m_cdpinterfaces;
 	}
 	/**
 	 * @param m_cdpinterfaces The m_cdpinterfaces to set.
 	 */
-	public void setCdpInterfaces(List m_cdpinterfaces) {
+	public void setCdpInterfaces(List<CdpInterface> m_cdpinterfaces) {
 		if (m_cdpinterfaces == null || m_cdpinterfaces.isEmpty()) return;
 		this.m_hascdpinterfaces = true;
 		this.m_cdpinterfaces = m_cdpinterfaces;
@@ -121,16 +134,38 @@ public class LinkableNode extends Object {
 	/**
 	 * @return Returns the m_routeinterfaces.
 	 */
-	public List getRouteInterfaces() {
+	public List<RouterInterface> getRouteInterfaces() {
 		return m_routeinterfaces;
 	}
 	/**
 	 * @param m_cdpinterfaces The m_cdpinterfaces to set.
 	 */
-	public void setRouteInterfaces(List m_routeinterfaces) {
+	public void setRouteInterfaces(List<RouterInterface> m_routeinterfaces) {
 		if (m_routeinterfaces == null || m_routeinterfaces.isEmpty()) return;
 		this.m_hasrouteinterfaces = true;
 		this.m_routeinterfaces = m_routeinterfaces;
+	}
+	
+	/**
+	 * @return Returns the m_hasatinterfaces.
+	 */
+	public boolean hasAtInterfaces() {
+		return m_hasatinterfaces;
+	}
+
+	/**
+	 * @return Returns the m_routeinterfaces.
+	 */
+	public List<AtInterface> getAtInterfaces() {
+		return m_atinterfaces;
+	}
+	/**
+	 * @param m_cdpinterfaces The m_cdpinterfaces to set.
+	 */
+	public void setAtInterfaces(List<AtInterface> m_atinterfaces) {
+		if (m_atinterfaces == null || m_atinterfaces.isEmpty()) return;
+		this.m_hasatinterfaces = true;
+		this.m_atinterfaces = m_atinterfaces;
 	}
 	
 	/**
@@ -139,6 +174,7 @@ public class LinkableNode extends Object {
 	public boolean hasRouteInterfaces() {
 		return m_hasrouteinterfaces;
 	}
+
 
 	/**
 	 * @return Returns the isBridgeNode.
@@ -150,7 +186,7 @@ public class LinkableNode extends Object {
 	/**
 	 * @return Returns the backBoneBridgePorts.
 	 */
-	List getBackBoneBridgePorts() {
+	List<Integer> getBackBoneBridgePorts() {
 		return BackBoneBridgePorts;
 	}
 
@@ -158,7 +194,7 @@ public class LinkableNode extends Object {
 	 * @param backBoneBridgePorts
 	 *            The backBoneBridgePorts to set.
 	 */
-	void setBackBoneBridgePorts(List backBoneBridgePorts) {
+	void setBackBoneBridgePorts(List<Integer> backBoneBridgePorts) {
 		BackBoneBridgePorts = backBoneBridgePorts;
 	}
 
@@ -173,6 +209,31 @@ public class LinkableNode extends Object {
 	}
 
 	/**
+	 * @return Returns the backBoneBridgePorts.
+	 */
+	List getCdpPorts() {
+		return CdpPorts;
+	}
+
+	/**
+	 * @param backBoneBridgePorts
+	 *            The backBoneBridgePorts to set.
+	 */
+	void setCdpPorts(List<Integer> cdpPorts) {
+		CdpPorts = cdpPorts;
+	}
+
+	boolean isCdpPort(int ifindex) {
+		return CdpPorts.contains(new Integer(ifindex));
+	}
+
+	void addCdpPorts(int ifindex) {
+		if (CdpPorts.contains(new Integer(ifindex)))
+			return;
+		CdpPorts.add(new Integer(ifindex));
+	}
+
+	/**
 	 * @return Returns the bridgeIdentifiers.
 	 */
 	List getBridgeIdentifiers() {
@@ -183,7 +244,7 @@ public class LinkableNode extends Object {
 	 * @param bridgeIdentifiers
 	 *            The bridgeIdentifiers to set.
 	 */
-	void setBridgeIdentifiers(List bridgeIdentifiers) {
+	void setBridgeIdentifiers(List<String> bridgeIdentifiers) {
 		if (bridgeIdentifiers == null || bridgeIdentifiers.isEmpty() ) return;
 		BridgeIdentifiers = bridgeIdentifiers;
 		isBridgeNode = true;
@@ -213,15 +274,13 @@ public class LinkableNode extends Object {
 	}
 
 	void addMacAddress(int bridgeport, String macAddress, String vlan) {
-		List macs = new ArrayList();
+
+		Set<String> macs = new HashSet<String>();
 		if (portMacs.containsKey(new Integer(bridgeport))) {
-			macs = (List) portMacs.get(new Integer(bridgeport));
-			if (macs.contains(macs))
-				return;
-			macs.add(macAddress);
-		} else {
-			macs.add(macAddress);
+			macs = portMacs.get(new Integer(bridgeport));
 		}
+		macs.add(macAddress);
+
 		portMacs.put(new Integer(bridgeport), macs);
 		macsVlan.put(macAddress, vlan);
 	}
@@ -241,10 +300,8 @@ public class LinkableNode extends Object {
 		return (String) macsVlan.get(macAddress);
 	}
 
-	List getMacAddressesOnBridgePort(int bridgeport) {
-		List macs = new ArrayList();
-		macs = (List) portMacs.get(new Integer(bridgeport));
-		return macs ;
+	Set<String> getMacAddressesOnBridgePort(int bridgeport) {
+		return  portMacs.get(new Integer(bridgeport));
 	}
 
 	boolean hasMacAddressesOnBridgePort(int bridgeport) {
@@ -298,7 +355,7 @@ public class LinkableNode extends Object {
 	 * @param portMacs
 	 *            The portMacs to set.
 	 */
-	void setPortMacs(HashMap portMacs) {
+	void setPortMacs(HashMap<Integer,Set<String>> portMacs) {
 		this.portMacs = portMacs;
 	}
 
@@ -326,17 +383,15 @@ public class LinkableNode extends Object {
 	/**
 	 * @param stpInterfaces The stpInterfaces to set.
 	 */
-	public void setStpInterfaces(HashMap stpInterfaces) {
+	public void setStpInterfaces(HashMap<String,List<BridgeStpInterface>> stpInterfaces) {
 		BridgeStpInterfaces = stpInterfaces;
 	}
 	
 	public void addStpInterface(BridgeStpInterface stpIface) {
 		String vlanindex = stpIface.getVlan();
-		List stpifs = null;
+		List<BridgeStpInterface> stpifs = new ArrayList<BridgeStpInterface>();;
 		if (BridgeStpInterfaces.containsKey(vlanindex)) {
-			stpifs = (List) BridgeStpInterfaces.get(vlanindex);
-		} else {
-			stpifs = new ArrayList();
+			stpifs = BridgeStpInterfaces.get(vlanindex);
 		}
 		stpifs.add(stpIface);
 		BridgeStpInterfaces.put(vlanindex, stpifs);

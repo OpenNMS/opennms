@@ -294,6 +294,9 @@ public class DbStpNodeEntry
 
 			names.append(") VALUES (").append(values).append(')');
 
+			if (log.isDebugEnabled())
+			log.debug("DbStpNodeEntry.insert: SQL insert statment = " + names.toString());
+
 			// create the Prepared statment and then
 			// start setting the result values
 			//
@@ -337,10 +340,6 @@ public class DbStpNodeEntry
 			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
 				stmt.setTimestamp(ndx++, m_lastPollTime);
 			}
-
-			if (log.isDebugEnabled())
-				log.debug("StpNodeEntry.insert: SQL statement "
-					+ stmt.toString());
 
 			// Run the insert
 			//
@@ -435,6 +434,9 @@ public class DbStpNodeEntry
 
 			sqlText.append(" WHERE nodeid = ? AND basevlan = ? ");
 
+			if (log.isDebugEnabled())
+				log.debug("DbStpNodeEntry.update: SQL insert statment = " + sqlText.toString());
+
 			// create the Prepared statment and then
 			// start setting the result values
 			//
@@ -480,9 +482,6 @@ public class DbStpNodeEntry
 			stmt.setInt(ndx++, m_nodeId);
 			stmt.setInt(ndx++, m_basevlan);
 
-			if (log.isDebugEnabled())
-				log.debug("StpNodeEntry.update: SQL statement " + stmt.toString());
-
 			// Run the insert
 			//
 			int rc = stmt.executeUpdate();
@@ -520,10 +519,6 @@ public class DbStpNodeEntry
 			stmt = c.prepareStatement(SQL_LOAD_STPNODE);
 			stmt.setInt(1, m_nodeId);
 			stmt.setInt(2, m_basevlan);
-
-			if (log.isDebugEnabled())
-				log.debug("StpNodeEntry.load: SQL statement "
-					+ stmt.toString());
 
 			// Run the select
 			//

@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -49,7 +48,7 @@ public class Linkd implements PausableFiber {
 	 * HashMap that contains Linkable Snmp Nodes by primary ip address.
 	 */
 
-	private HashMap snmpprimaryip2nodes;
+	private HashMap<String,LinkableNode> snmpprimaryip2nodes;
 	
 	private boolean scheduledDiscoveryLink = false;
 
@@ -85,7 +84,7 @@ public class Linkd implements PausableFiber {
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		Category log = ThreadCategory.getInstance();
 
-		if (log.isEnabledFor(Priority.INFO))
+		if (log.isInfoEnabled())
 			log
 					.info("init: Category Level Set to "
 							+ log.getLevel().toString());
@@ -123,7 +122,7 @@ public class Linkd implements PausableFiber {
 			return;
 		}
 
-		snmpprimaryip2nodes = new HashMap();
+		snmpprimaryip2nodes = new HashMap<String,LinkableNode>();
 
 		
 		// Initialize the SNMP Peer Factory
@@ -200,7 +199,7 @@ public class Linkd implements PausableFiber {
 			dbConn = DataSourceFactory.getInstance().getConnection();
 			if (log.isDebugEnabled()) {
 				log
-						.debug("init: Loading nodes from database using LinkdConfigFactory");
+						.debug("init: Loading Snmp nodes");
 			}
 			snmpprimaryip2nodes = LinkdConfigFactory.getInstance()
 						.getLinkableNodes(dbConn);
@@ -302,7 +301,7 @@ public class Linkd implements PausableFiber {
 			throw new UndeclaredThrowableException(t);
 		}
 
-		if (log.isEnabledFor(Priority.INFO))
+		if (log.isInfoEnabled())
 			log.info("init: LINKD CONFIGURATION INITIALIZED");
 
 	}
@@ -317,7 +316,7 @@ public class Linkd implements PausableFiber {
 		Category log = ThreadCategory.getInstance();
 
 		if (log.isDebugEnabled())
-			log.debug("start: Initializing Linkd");
+			log.debug("start: Starting Linkd");
 
 		// start the scheduler
 		//
@@ -327,7 +326,6 @@ public class Linkd implements PausableFiber {
 
 			m_scheduler.start();
 		} catch (RuntimeException e) {
-			if (log.isEnabledFor(Priority.FATAL))
 				log.fatal("start: Failed to start scheduler", e);
 			throw e;
 		}
@@ -336,7 +334,7 @@ public class Linkd implements PausableFiber {
 		//
 		m_status = RUNNING;
 
-		if (log.isEnabledFor(Priority.INFO))
+		if (log.isInfoEnabled())
 			log.info("start: Linkd running");
 
 	}
@@ -353,7 +351,7 @@ public class Linkd implements PausableFiber {
 		m_scheduler = null;
 		m_status = STOPPED;
 		Category log = ThreadCategory.getInstance();
-		if (log.isEnabledFor(Priority.INFO))
+		if (log.isInfoEnabled())
 			log.info("stop: Linkd stopped");
 
 	}
@@ -371,7 +369,7 @@ public class Linkd implements PausableFiber {
 		m_status = PAUSED;
 
 		Category log = ThreadCategory.getInstance();
-		if (log.isEnabledFor(Priority.INFO))
+		if (log.isInfoEnabled())
 			log.info("pause: Linkd paused");
 	}
 
@@ -384,7 +382,7 @@ public class Linkd implements PausableFiber {
 		m_status = RUNNING;
 
 		Category log = ThreadCategory.getInstance();
-		if (log.isEnabledFor(Priority.INFO))
+		if (log.isInfoEnabled())
 			log.info("resume: Linkd resumed");
 	}
 
@@ -407,6 +405,7 @@ public class Linkd implements PausableFiber {
 
 		Category log = ThreadCategory.getInstance();
 		java.sql.Connection dbConn = null;
+		
 		SnmpCollection coll = null;
 		
 		try {
@@ -419,7 +418,6 @@ public class Linkd implements PausableFiber {
 				coll = LinkdConfigFactory.getInstance().getSnmpCollection(
 						dbConn, nid);
 			} catch (UnknownHostException h) {
-				if (log.isEnabledFor(Priority.WARN))
 					log
 							.warn("scheduleNode: Failed to get Linkable node from LinkdConfigFactory"
 									+ h);
@@ -456,6 +454,7 @@ public class Linkd implements PausableFiber {
 		// work on snmpprimary
 		synchronized (snmpprimaryip2nodes) {
 			if (snmpprimaryip2nodes.containsKey(ip)) {
+				if (log.isDebugEnabled()) log.debug("Node collection exists: skipping schedule, performing DB cleaning");
 				LinkableNode oldNode = (LinkableNode) snmpprimaryip2nodes
 						.get(ip);
 
@@ -466,19 +465,20 @@ public class Linkd implements PausableFiber {
 							DbEventWriter.ACTION_DELETE);
 					dbwriter.run();
 				}
-			}
+			} else {
+				if (log.isDebugEnabled()) log.debug("Node collection does not exists: scheduling");
+				synchronized (coll) {
+					if (coll.getScheduler() == null) {
+						coll.setScheduler(m_scheduler);
+					}
+					coll.setPollInterval(m_snmp_poll_interval);
+					coll.setInitialSleepTime(0);
+					coll.schedule();
+				}
+			}	
 			snmpprimaryip2nodes.put(ip, node);
 		}
 
-		synchronized (coll) {
-			if (coll.getScheduler() == null) {
-				coll.setScheduler(m_scheduler);
-			}
-			coll.setPollInterval(m_snmp_poll_interval);
-			coll.setInitialSleepTime(0);
-			coll.schedule();
-		}
-			
 		if (!scheduledDiscoveryLink) {
 			DiscoveryLink discoveryLink = new DiscoveryLink();
 
@@ -515,7 +515,6 @@ public class Linkd implements PausableFiber {
 				ipAddr = LinkdConfigFactory.getInstance().getSnmpPrimaryIp(
 						dbConn, nid);
 			} catch (UnknownHostException h) {
-				if (log.isEnabledFor(Priority.WARN))
 					log
 							.warn("wakeUpNode: Failed to get Linkable node from LinkdConfigFactory"
 									+ h);
@@ -619,7 +618,6 @@ public class Linkd implements PausableFiber {
 					ipAddr = LinkdConfigFactory.getInstance().getSnmpPrimaryIp(
 							dbConn, nid);
 				} catch (UnknownHostException h) {
-					if (log.isEnabledFor(Priority.WARN))
 						log
 								.warn("unscheduleNode: Failed to get Linkable node from LinkdConfigFactory"
 										+ h);
@@ -657,7 +655,7 @@ public class Linkd implements PausableFiber {
 			if (rr != null) {
 				rr.unschedule();
 			} else {
-				if (log.isEnabledFor(Priority.INFO))
+				if (log.isInfoEnabled())
 					log
 							.info("unscheduleNode: Failed to get Ready Runnable for ipaddress " + ipAddr.getHostAddress() 
 									+ " with nodeid "
@@ -665,7 +663,6 @@ public class Linkd implements PausableFiber {
 				
 			}
 		} else {
-			if (log.isEnabledFor(Priority.WARN))
 				log
 						.warn("unscheduleNode: Failed to get ipaddress for node "
 								+ nid);
@@ -714,7 +711,6 @@ public class Linkd implements PausableFiber {
 					ipAddr = LinkdConfigFactory.getInstance().getSnmpPrimaryIp(
 							dbConn, nid);
 				} catch (UnknownHostException h) {
-					if (log.isEnabledFor(Priority.WARN))
 						log
 								.warn("suspendNode: Failed to get Linkable node from LinkdConfigFactory"
 										+ h);
@@ -752,14 +748,13 @@ public class Linkd implements PausableFiber {
 			if (rr != null) {
 				rr.suspend();
 			} else {
-				if (log.isEnabledFor(Priority.INFO))
+				if (log.isInfoEnabled())
 					log
 							.info("suspendNode: Failed to get Ready Runnable for ipaddress " + ipAddr.getHostAddress() 
 									+ " with nodeid "
 									+ nid);
 			}
 		} else {
-			if (log.isEnabledFor(Priority.WARN))
 				log
 						.warn("suspendNode: Failed to get ipaddress for node "
 								+ nid);
@@ -791,7 +786,6 @@ public class Linkd implements PausableFiber {
 				snmpprimaryip2nodes.put(snmpcoll.getTarget().getHostAddress(),
 						node);
 			} else {
-				if (log.isEnabledFor(Priority.WARN))
 					log
 							.warn("updateNodeSnmpCollection: cannot find Linkable SNMP Node element in hash snmpprimaryip2nodes");
 			}
