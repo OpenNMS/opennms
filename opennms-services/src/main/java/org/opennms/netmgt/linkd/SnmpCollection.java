@@ -37,6 +37,7 @@
 
 package org.opennms.netmgt.linkd;
 
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
@@ -45,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
@@ -110,7 +110,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * The CdpCache table information
 	 */
 	public CdpCacheTable m_CdpCache;
-
+/****/
 	/**
 	 * The Vlan Table information
 	 */
@@ -120,7 +120,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * The list of vlan snmp collection object
 	 */
 
-	public java.util.List m_snmpVlanCollection = new ArrayList();
+	public java.util.List<SnmpVlanCollection> m_snmpVlanCollection = new ArrayList<SnmpVlanCollection>();
 
 	/**
 	 * The scheduler object
@@ -193,7 +193,7 @@ public final class SnmpCollection implements ReadyRunnable {
 			System.out.println("Vlan found: Vlan Index = "
 					+ ent.getInt32(VlanCollectorEntry.VLAN_INDEX)
 					+ " Vlan name = "
-					+ ent.getHexString(VlanCollectorEntry.VLAN_NAME));
+					+ ent.getDisplayString(VlanCollectorEntry.VLAN_NAME));
 		}
 	}
 
@@ -273,7 +273,7 @@ public final class SnmpCollection implements ReadyRunnable {
 				SnmpTableEntry ent = (SnmpTableEntry) itr.next();
 				int vlanIndex= ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 				if (vlanIndex == Integer.parseInt(m_vlan)) {
-					return ent.getHexString(VlanCollectorEntry.VLAN_NAME);
+					return ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
 				}
 			}
 		}
@@ -284,12 +284,12 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * Returns the VLAN vlanindex from name.
 	 */
 
-	private String getVlanIndex(String m_vlanname) {
+	public String getVlanIndex(String m_vlanname) {
 		if (this.hasVlanTable()) {
 			java.util.Iterator itr = this.getVlanTable().iterator();
 			while (itr.hasNext()) {
 				SnmpTableEntry ent = (SnmpTableEntry) itr.next();
-				String vlanName = ent.getHexString(VlanCollectorEntry.VLAN_NAME);
+				String vlanName = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
 				if (vlanName.equals(m_vlanname)) {
 					return ent.getInt32(VlanCollectorEntry.VLAN_INDEX).toString();
 				}
@@ -340,8 +340,9 @@ public final class SnmpCollection implements ReadyRunnable {
 
 			m_CdpCache = new CdpCacheTable(m_address);
 
+	        
 	        if (log.isDebugEnabled())
-	            log.debug("run: collecting for: "+m_address+" with agentConfig: "+m_agentConfig);
+	            log.debug("run: collecting : " + m_agentConfig);
 	        
 	        SnmpWalker walker = null;
 
@@ -466,7 +467,7 @@ public final class SnmpCollection implements ReadyRunnable {
 
 						Integer status = ent.getInt32(VlanCollectorEntry.VLAN_STATUS);
 						if (status == null || status != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL) {
-							if (log.isEnabledFor(Priority.INFO))
+							if (log.isInfoEnabled())
 								log.info("SnmpCollection.run: skipping VLAN "
 									+ vlan + " NOT ACTIVE or null ");
 							continue;
@@ -474,7 +475,7 @@ public final class SnmpCollection implements ReadyRunnable {
 
 						Integer type = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
 						if (type == null || type != VlanCollectorEntry.VLAN_TYPE_ETHERNET) {
-							if (log.isEnabledFor(Priority.INFO))
+							if (log.isInfoEnabled())
 								log
 										.info("SnmpCollection.run: skipping VLAN "
 												+ vlan
