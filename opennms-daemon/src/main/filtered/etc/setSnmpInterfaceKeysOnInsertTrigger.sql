@@ -39,7 +39,7 @@ BEGIN
 
   ELSIF NEW.snmpInterfaceId IS NOT NULL AND (NEW.nodeId IS NULL OR NEW.ifIndex IS NULL)
   THEN
-     SELECT snmpif.nodeid, snmpif.ifIndex INTO NEW.nodeid, NEW.ifIndex
+     SELECT snmpif.nodeid, snmpif.snmpIfIndex INTO NEW.nodeid, NEW.ifIndex
        FROM snmpinterface snmpif
       WHERE (snmpif.id = NEW.snmpInterfaceId);
       
