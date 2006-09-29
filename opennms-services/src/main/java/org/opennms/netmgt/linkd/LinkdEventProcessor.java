@@ -118,7 +118,7 @@ final class LinkdEventProcessor implements EventListener {
     private void createMessageSelectorAndSubscribe() {
         // Create the selector for the ueis this service is interested in
         //
-        List ueiList = new ArrayList();
+        List<String> ueiList = new ArrayList<String>();
 
         // node gained service
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -165,8 +165,7 @@ final class LinkdEventProcessor implements EventListener {
      * @param event
      */
     private void handleNodeDeleted(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
-        Category log = ThreadCategory.getInstance(getClass());
-
+ 
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler if it's an SNMP node
@@ -181,8 +180,7 @@ final class LinkdEventProcessor implements EventListener {
      * @param event
      */
     private void handleNodeGainedService(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
-        Category log = ThreadCategory.getInstance(getClass());
-
+ 
         EventUtils.checkNodeId(event);
 
         getLinkd().scheduleNode((int)event.getNodeid());
@@ -194,8 +192,7 @@ final class LinkdEventProcessor implements EventListener {
      * @param event
      */
     private void handleNodeLostService(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
-        Category log = ThreadCategory.getInstance(getClass());
-
+        
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
@@ -210,8 +207,7 @@ final class LinkdEventProcessor implements EventListener {
      * @param event
      */
     private void handleRegainedService(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
-        Category log = ThreadCategory.getInstance(getClass());
-
+        
         EventUtils.checkNodeId(event);
 
         getLinkd().wakeUpNode((int)event.getNodeid());
@@ -291,27 +287,39 @@ final class LinkdEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
 
         try {
-
+        	int eventid = event.getDbid();
             String eventUei = event.getUei();
             String eventService = event.getService();
-            String eventHost = event.getHost();
             if (eventUei == null) {
                 return;
             }
 
-            if (log.isDebugEnabled()) {
-                log.debug("onEvent: Received event " + eventUei + "; from host: " + eventHost + "; service id " + eventService);
+            if (log.isInfoEnabled()) {
+                log.info("onEvent: Received event " + eventid + " UEI "+ eventUei 
+                		+ "; service " + eventService);
             }
 
             notifyEventReceived(event);
 
             if (eventUei.equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI) && eventService.equals("SNMP")) {
+                if (log.isInfoEnabled()) {
+                    log.info("onEvent: calling handleNodeGainedService for event " + eventid);
+                }
                 handleNodeGainedService(event);
             } else if (event.getUei().equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)&& eventService.equals("SNMP")) {
+                if (log.isInfoEnabled()) {
+                    log.info("onEvent: calling handleNodeLostService for event " + eventid);
+                }
                 handleNodeLostService(event);
             } else if (event.getUei().equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)&& eventService.equals("SNMP")) {
-                handleRegainedService(event);
+            	if (log.isInfoEnabled()) {
+                    log.info("onEvent: calling handleRegainedService for event " + eventid);
+                }
+            	handleRegainedService(event);
             } else if (eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
+            	if (log.isInfoEnabled()) {
+                    log.info("onEvent: calling handleNodeDeleted for event " + eventid);
+                }
                 handleNodeDeleted(event);
             } 
             notifyEventSuccess(event);

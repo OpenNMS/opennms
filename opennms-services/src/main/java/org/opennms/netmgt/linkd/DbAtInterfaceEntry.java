@@ -213,8 +213,7 @@ final class DbAtInterfaceEntry {
 		}
 
 		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.insert: SQL statement "
-				+ stmt.toString());
+			log.debug("AtInterfaceEntry.insert: SQL insert statment = " + names.toString());
 
 		// Run the insert
 		//
@@ -306,9 +305,10 @@ final class DbAtInterfaceEntry {
 
 		stmt.setInt(ndx++, m_nodeId);
 		stmt.setString(ndx++, m_ipaddr);
+
+
 		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.update: SQL statement "
-				+ stmt.toString());
+			log.debug("AtInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
 
 		// Run the insert
 		//
@@ -347,10 +347,6 @@ final class DbAtInterfaceEntry {
 		stmt = c.prepareStatement(SQL_LOAD_ATINTERFACE);
 		stmt.setInt(1, m_nodeId);
 		stmt.setString(2, m_ipaddr);
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.load: SQL statement "
-				+ stmt.toString());
-
 
 		// Run the select
 		//
