@@ -515,7 +515,7 @@ public final class EventUtil {
 			retParmVal = event.getMouseovertext();
         } else if (parm.equals(TAG_TTICKET_ID)) {
             Tticket ticket = event.getTticket();
-            retParmVal = ticket == null ? null : ticket.getContent();
+            retParmVal = ticket == null ? "" : ticket.getContent();
 		} else if (parm.equals(PARMS_VALUES)) {
 			retParmVal = getAllParmValues(event);
 		} else if (parm.equals(PARMS_NAMES)) {
@@ -807,7 +807,7 @@ public final class EventUtil {
 		}
 
 		String retStr = ret.toString();
-		if (ret.length() > 0 && !retStr.equals(inp))
+		if (retStr != null && !retStr.equals(inp))
 			return retStr;
 
 		return null;

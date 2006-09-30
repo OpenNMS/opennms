@@ -39,16 +39,19 @@ import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Tticket;
 
 public class EventUtilTest extends OpenNMSTestCase {
 
     private MockService m_svc;
     private Event m_svcLostEvent;
+    private Event m_nodeDownEvent;
 
     protected void setUp() throws Exception {
         super.setUp();
         m_svc = m_network.getService(1, "192.168.1.1", "SMTP");
         m_svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", m_svc);
+        m_nodeDownEvent = MockEventUtil.createNodeDownEvent("Text", m_network.getNode(1));
     }
 
     protected void tearDown() throws Exception {
@@ -93,6 +96,19 @@ public class EventUtilTest extends OpenNMSTestCase {
         String newString = EventUtil.expandParms(testString, m_svcLostEvent);
         assertEquals("uei.opennms.org/nodes/nodeLostService::1:192.168.1.1:SMTP", newString);
 
+    }
+    
+    public void testExpandTticketId() {
+        String testString = "%tticketid%";
+        String newString = EventUtil.expandParms(testString, m_nodeDownEvent);
+        assertEquals("", newString);
+        
+        Tticket ticket = new Tticket();
+        ticket.setContent("777");
+        ticket.setState("1");
+        m_nodeDownEvent.setTticket(ticket);
+        newString = EventUtil.expandParms(testString, m_nodeDownEvent);
+        assertEquals("777", newString);
     }
 
 }
