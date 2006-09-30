@@ -191,8 +191,15 @@ public abstract class NotificationManager {
             String eventIf = (String) event.getInterface();
             String eventSrv = (String) event.getService();
     
+            //TODO: This needs attention.  NodeDowns don't have a if or svc id
+            //making a terribly long process to generate a notification on 
+            //systems with lots nodes interfaces and services.  On a very fast
+            //system with 45k nodes, takes over 4 minutes to process the notification
+            //from the time the event is received.
             if (eventNode == 0 && eventIf == null && eventSrv == null) {
                 return true;
+            } else {
+                if (event.getUei() == EventConstants.NODE_DOWN_EVENT_UEI) return true;
             }
     
             // ThreadCategory.getInstance(getClass()).debug("Notification Event
