@@ -76,7 +76,6 @@ import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
-import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -299,7 +298,7 @@ public final class BroadcastEventProcessor implements EventListener {
             
             String queueID = getNotificationManager().getQueueForNotification(notifId);
 
-            final Map userNotifitcations = new HashMap();
+            final Map<String, List<String>> userNotifitcations = new HashMap<String, List<String>>();
             RowProcessor ackNotifProcessor = new RowProcessor() {
                 public void processRow(ResultSet rs) throws SQLException {
                     String userID = rs.getString("userID");
@@ -313,9 +312,9 @@ public final class BroadcastEventProcessor implements EventListener {
                         autoNotifyChar = "C";
                     }
                     if(autoNotifyChar.equals("Y") || (autoNotifyChar.equals("C") && !wasAcked)) {
-                        List cmdList = (List) userNotifitcations.get(userID);
+                        List<String> cmdList = (List<String>) userNotifitcations.get(userID);
                         if (cmdList == null) {
-                            cmdList = new ArrayList();
+                            cmdList = new ArrayList<String>();
                             userNotifitcations.put(userID, cmdList);
                         }
                         cmdList.add(cmd);
@@ -326,7 +325,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
             for (Iterator userIt = userNotifitcations.keySet().iterator(); userIt.hasNext();) {
                 String userID = (String) userIt.next();
-                List cmdList = (List) userNotifitcations.get(userID);
+                List<String> cmdList = (List<String>) userNotifitcations.get(userID);
                 String[] cmds = (String[]) cmdList.toArray(new String[cmdList.size()]);
                 log.debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
@@ -549,7 +548,7 @@ public final class BroadcastEventProcessor implements EventListener {
                             }
                         }
 
-                        List targetSiblings = new ArrayList();
+                        List<NotificationTask> targetSiblings = new ArrayList<NotificationTask>();
 
                         try {
                             NoticeQueue noticeQueue = (NoticeQueue) m_noticeQueues.get(queueID);
@@ -715,7 +714,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private void processTargets(Target[] targets, List targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
+    private void processTargets(Target[] targets, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
         Category log = log();
         for (int i = 0; i < targets.length; i++) {
             String interval = (targets[i].getInterval() == null ? "0s" : targets[i].getInterval());
@@ -791,7 +790,7 @@ public final class BroadcastEventProcessor implements EventListener {
     }
 
     private NotificationTask[] constructTasksFromUserList(String[] users, long startTime, long offset, Map params, int noticeId, String[] command, List targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
-        List taskList = new ArrayList(users.length);
+        List<NotificationTask> taskList = new ArrayList<NotificationTask>(users.length);
         long curSendTime = 0;
         for (int j = 0; j < users.length; j++) {
             NotificationTask newTask = makeUserTask(offset + startTime + curSendTime, params, noticeId, users[j], command, targetSiblings, autoNotify);
@@ -825,7 +824,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private void processEscalations(Escalate[] escalations, List targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
+    private void processEscalations(Escalate[] escalations, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
         for (int i = 0; i < escalations.length; i++) {
             Target[] targets = escalations[i].getTarget();
             startTime += TimeConverter.convertToMillis(escalations[i].getDelay());
