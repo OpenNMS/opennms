@@ -190,7 +190,6 @@ final class DbAtInterfaceEntry {
 		// start setting the result values
 		//
 		PreparedStatement stmt = c.prepareStatement(names.toString());
-		names = null;
 
 		int ndx = 1;
 		stmt.setInt(ndx++, m_nodeId);
