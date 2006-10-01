@@ -63,7 +63,6 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
@@ -925,7 +924,7 @@ public abstract class NotificationManager {
      * @return
      */
     public void forEachUserNotification(int notifId, final RowProcessor rp) {
-        Querier querier = new Querier(m_dbConnectionFactory, "select * from usersNotified where notifyId = ?", rp);
+        Querier querier = new Querier(m_dbConnectionFactory, "select * from usersNotified where notifyId = ? order by notifytime", rp);
         querier.execute(new Integer(notifId));
     }
 
