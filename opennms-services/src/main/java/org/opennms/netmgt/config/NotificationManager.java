@@ -138,7 +138,7 @@ public abstract class NotificationManager {
     
     public Notification[] getNotifForEvent(Event event) throws IOException, MarshalException, ValidationException {
         update();
-        ArrayList notifList = new ArrayList();
+        List<Notification> notifList = new ArrayList<Notification>();
         Notification[] notif = null;
         boolean matchAll = getConfigManager().getNotificationMatch();
     
@@ -383,9 +383,8 @@ public abstract class NotificationManager {
      * 
      */
     public Collection acknowledgeNotice(Event event, String uei, String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
-        Category log = log();
         Connection connection = null;
-        Collection notifIDs = new LinkedList();
+        List<Integer> notifIDs = new LinkedList<Integer>();
 
         try {
             // First get most recent eventid from notifications 
@@ -419,7 +418,7 @@ public abstract class NotificationManager {
             ResultSet results = statement.executeQuery();
             if (results != null && results.next()) {
                 eventID = results.getInt(1);
-                log.debug("EventID for notice(s) to be acked: " + eventID);
+                log().debug("EventID for notice(s) to be acked: " + eventID);
 
 
                 sql = new StringBuffer("SELECT notifyid, answeredby, respondtime FROM notifications WHERE eventID=?");
@@ -438,13 +437,13 @@ public abstract class NotificationManager {
                             ansBy = "auto-acknowledged";
                             ts = new Timestamp((new Date()).getTime());
                         } else if(ansBy.indexOf("auto-acknowledged") > -1) {
-                            log.debug("Notice has previously been auto-acknowledged. Skipping...");
+                            log().debug("Notice has previously been auto-acknowledged. Skipping...");
                             continue;
                         } else {
                             wasAcked = true;
                             ansBy = ansBy + "/auto-acknowledged";
                         }
-                        log.debug("Matching DOWN notifyID = " + notifID + ", was acked by user = " + wasAcked + ", ansBy = " +ansBy);
+                        log().debug("Matching DOWN notifyID = " + notifID + ", was acked by user = " + wasAcked + ", ansBy = " +ansBy);
                         PreparedStatement update = connection.prepareStatement(getConfigManager().getConfiguration().getAcknowledgeUpdateSql());
     
                         update.setString(1, ansBy);
@@ -461,7 +460,7 @@ public abstract class NotificationManager {
                     }
                 }
             } else {
-                log.debug("No matching DOWN eventID found");
+                log().debug("No matching DOWN eventID found");
             }
     
             statement.close();
@@ -482,7 +481,7 @@ public abstract class NotificationManager {
         String NODE_QUERY = "SELECT   n.nodeid " + "FROM     node n " + "WHERE    n.nodetype != 'D' " + "ORDER BY n.nodelabel";
     
         java.sql.Connection connection = null;
-        List allNodes = new ArrayList();
+        List<Integer> allNodes = new ArrayList<Integer>();
     
         try {
             connection = getConnection();
@@ -695,7 +694,7 @@ public abstract class NotificationManager {
     public Map getNotifications() throws IOException, MarshalException, ValidationException {
         update();
     
-        Map newMap = new HashMap();
+        Map<String, Notification> newMap = new HashMap<String, Notification>();
     
         Notification notices[] = m_notifications.getNotification();
         for (int i = 0; i < notices.length; i++) {
@@ -709,7 +708,7 @@ public abstract class NotificationManager {
      */
     public List getServiceNames() throws SQLException {
         Connection connection = null;
-        List services = new ArrayList();
+        List<String> services = new ArrayList<String>();
         try {
             connection = getConnection();
     
@@ -744,7 +743,7 @@ public abstract class NotificationManager {
     public List getNotificationNames() throws IOException, MarshalException, ValidationException {
         update();
     
-        List notificationNames = new ArrayList();
+        List<String> notificationNames = new ArrayList<String>();
     
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification curNotif = (Notification) e.nextElement();
