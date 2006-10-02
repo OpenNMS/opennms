@@ -42,7 +42,7 @@ import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 /**
- * @author david
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
 public class PassiveServiceMonitor implements ServiceMonitor {
