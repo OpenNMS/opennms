@@ -47,7 +47,7 @@
                 <value>org.opennms.netmgt.model.OnmsNotification</value>
                 <value>org.opennms.netmgt.model.OnmsUserNotification</value>
 				<value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
-                <value>org.opennms.netmgt.model.OnmsLocationSpecificStatusChange</value>
+                <value>org.opennms.netmgt.model.OnmsLocationSpecificStatus</value>
                 <value>org.opennms.netmgt.model.PollStatus</value>
 			</list>
 		</property>
