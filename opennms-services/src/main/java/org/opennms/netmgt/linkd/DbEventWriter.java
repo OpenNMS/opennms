@@ -515,39 +515,43 @@ public class DbEventWriter implements Runnable {
 						.debug("store: saving ipRouteTable to iprouteinterface table in DB");
 			while (ite.hasNext()) {
 				IpRouteTableEntry ent = (IpRouteTableEntry) ite.next();
+                
+                log.debug("storeSnmpCollection: ent="+ent);
 
 				InetAddress routedest = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_DEST);
-                log.debug("storeSnmpCollection: routedest is: "+ routedest == null ? "null" : routedest+"; IP_ROUTE_DEST: "+IpRouteTableEntry.IP_ROUTE_DEST);
+                log.debug("storeSnmpCollection: routedest is: "+ (routedest == null ? "null" : routedest)+"; IP_ROUTE_DEST: "+IpRouteTableEntry.IP_ROUTE_DEST);
                     
 				InetAddress routemask = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_MASK);
-                log.debug("storeSnmpCollection: routemask is: "+ routemask == null ? "null" : routemask+"; IP_ROUTE_MASK: "+IpRouteTableEntry.IP_ROUTE_MASK);
+                log.debug("storeSnmpCollection: routemask is: "+ (routemask == null ? "null" : routemask)+"; IP_ROUTE_MASK: "+IpRouteTableEntry.IP_ROUTE_MASK);
                 
 				InetAddress nexthop = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_NXTHOP);
-                log.debug("storeSnmpCollection: nexthop is: "+ nexthop == null ? "null" : nexthop+"; IP_ROUTE_NXTHOP: "+IpRouteTableEntry.IP_ROUTE_NXTHOP);
+                log.debug("storeSnmpCollection: nexthop is: "+ (nexthop == null ? "null" : nexthop)+"; IP_ROUTE_NXTHOP: "+IpRouteTableEntry.IP_ROUTE_NXTHOP);
                 
 				int ifindex = ent.getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
-                log.debug("storeSnmpCollection: ifindex is: "+ ifindex == null ? "null" : ifindex+"; IP_ROUTE_IFINDEX: "+IpRouteTableEntry.IP_ROUTE_IFINDEX);
+                log.debug("storeSnmpCollection: ifindex is: "+ (ifindex < 1 ? "less than 1" : ifindex)+"; IP_ROUTE_IFINDEX: "+IpRouteTableEntry.IP_ROUTE_IFINDEX);
                 
 				int routemetric1 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
-                log.debug("storeSnmpCollection: routemetric1 is: "+ routemetric1 == null ? "null" : routemetric1+"; IP_ROUTE_METRIC1: "+IpRouteTableEntry.IP_ROUTE_METRIC1);
+                log.debug("storeSnmpCollection: routemetric1 is: "+ (routemetric1 < 1 ? "less than 1" : routemetric1)+"; IP_ROUTE_METRIC1: "+IpRouteTableEntry.IP_ROUTE_METRIC1);
                 
+                log.debug("storeSnmpCollection: ent="+ent);
+                log.debug("storeSnmpCollection: IP_ROUTE_METRIC2="+IpRouteTableEntry.IP_ROUTE_METRIC2);
 				int routemetric2 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC2);
-                log.debug("storeSnmpCollection: routemetric2 is: "+ routemetric2 == null ? "null" : routemetric2+"; IP_ROUTE_METRIC2: "+IpRouteTableEntry.IP_ROUTE_METRIC2);
+                log.debug("storeSnmpCollection: routemetric2 is: "+ (routemetric2 < 1 ? "less than 1" : routemetric2)+"; IP_ROUTE_METRIC2: "+IpRouteTableEntry.IP_ROUTE_METRIC2);
                 
 				int routemetric3  =ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC3);
-                log.debug("storeSnmpCollection: routemetric3 is: "+ routemetric3 == null ? "null" : routemetric3+"; IP_ROUTE_METRIC3: "+IpRouteTableEntry.IP_ROUTE_METRIC3);
+                log.debug("storeSnmpCollection: routemetric3 is: "+ (routemetric3 < 1 ? "less than 1" : routemetric3)+"; IP_ROUTE_METRIC3: "+IpRouteTableEntry.IP_ROUTE_METRIC3);
                 
 				int routemetric4 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC4);
-                log.debug("storeSnmpCollection: routemetric4 is: "+ routemetric4 == null ? "null" : routemetric4+"; IP_ROUTE_METRIC4: "+IpRouteTableEntry.IP_ROUTE_METRIC4);
+                log.debug("storeSnmpCollection: routemetric4 is: "+ (routemetric4 < 1 ? "less than 1" : routemetric4)+"; IP_ROUTE_METRIC4: "+IpRouteTableEntry.IP_ROUTE_METRIC4);
                 
 				int routemetric5 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC5);
-                log.debug("storeSnmpCollection: routemetric5 is: "+ routemetric5 == null ? "null" : routemetric5+"; IP_ROUTE_METRIC5: "+IpRouteTableEntry.IP_ROUTE_METRIC5);
+                log.debug("storeSnmpCollection: routemetric5 is: "+ (routemetric5 < 1 ? "less than 1" : routemetric5)+"; IP_ROUTE_METRIC5: "+IpRouteTableEntry.IP_ROUTE_METRIC5);
                 
 				int routetype = ent.getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
-                log.debug("storeSnmpCollection: routetype is: "+ routetype == null ? "null" : routetype+"; IP_ROUTE_TYPE: "+IpRouteTableEntry.IP_ROUTE_TYPE);
+                log.debug("storeSnmpCollection: routetype is: "+ (routetype < 1 ? "less than 1" : routetype)+"; IP_ROUTE_TYPE: "+IpRouteTableEntry.IP_ROUTE_TYPE);
                 
 				int routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
-                log.debug("storeSnmpCollection: routeproto is: "+ routeproto == null ? "null" : routeproto+"; IP_ROUTE_PROTO: "+IpRouteTableEntry.IP_ROUTE_PROTO);
+                log.debug("storeSnmpCollection: routeproto is: "+ (routeproto < 1 ? "less than 1" : routeproto)+"; IP_ROUTE_PROTO: "+IpRouteTableEntry.IP_ROUTE_PROTO);
                 
 
 				// info used for Discovery Link
