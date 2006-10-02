@@ -40,7 +40,6 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 
-
 /**
  * Use this class to aggregate status to be presented in a view layer technology.
  * 
@@ -48,49 +47,63 @@ import org.opennms.netmgt.model.OnmsNode;
  *
  */
 public class AggregateStatus {
-    
+
     private String m_label;
+
     private Integer m_totalEntityCount;
+
     private Set<OnmsNode> m_downNodes;
+
     private String m_status;
+
     private String m_link;
-    
+
     public static final String NODES_ARE_DOWN = "Critical";
+
     public static final String ONE_SERVICE_DOWN = "Warning";
+
     public static final String ALL_NODES_UP = "Normal";
-    
+
     public AggregateStatus(Set<OnmsNode> nodes) {
-    	computeStatusValues(nodes);
+        computeStatusValues(nodes);
     }
 
     public String getStatus() {
         return m_status;
     }
+
     private void setStatus(String color) {
         m_status = color;
     }
+
     public Integer getDownEntityCount() {
         return m_downNodes.size();
     }
+
     public Set<OnmsNode> getDownNodes() {
-    	return Collections.unmodifiableSet(m_downNodes);
+        return Collections.unmodifiableSet(m_downNodes);
     }
+
     private void setDownNodes(Set<OnmsNode> downNodes) {
-    	m_downNodes = downNodes;
+        m_downNodes = downNodes;
     }
+
     public String getLabel() {
         return m_label;
     }
+
     public void setLabel(String label) {
         m_label = label;
     }
+
     public Integer getTotalEntityCount() {
         return m_totalEntityCount;
     }
+
     private void setTotalEntityCount(Integer totalEntityCount) {
         m_totalEntityCount = totalEntityCount;
     }
-    
+
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(m_label == null ? "null" : m_label);
@@ -101,34 +114,37 @@ public class AggregateStatus {
         sb.append(" total.");
         return sb.toString();
     }
-        
+
     final class AggregateStatusVisitor extends AbstractEntityVisitor {
 
         Set<OnmsNode> m_downNodes = new LinkedHashSet<OnmsNode>();
+
         String m_status = AggregateStatus.ALL_NODES_UP;
+
         boolean m_isCurrentNodeDown = true;
-        
+
         @Override
         public void visitNode(OnmsNode node) {
             m_isCurrentNodeDown = true;
         }
-        
+
         @Override
         public void visitNodeComplete(OnmsNode node) {
             if (m_isCurrentNodeDown) {
                 m_downNodes.add(node);
                 m_status = AggregateStatus.NODES_ARE_DOWN;
             }
-            
+
         }
-        
+
         @Override
         public void visitMonitoredService(OnmsMonitoredService svc) {
-            if ("A".equals(svc.getStatus()) && !svc.getCurrentOutages().isEmpty()) {
+            if ("A".equals(svc.getStatus())
+                    && !svc.getCurrentOutages().isEmpty()) {
                 if (AggregateStatus.ALL_NODES_UP.equals(m_status)) {
                     m_status = AggregateStatus.ONE_SERVICE_DOWN;
                 }
-            } else if ("A".equals(svc.getStatus())){
+            } else if ("A".equals(svc.getStatus())) {
                 m_isCurrentNodeDown = false;
             }
         }
@@ -137,34 +153,34 @@ public class AggregateStatus {
             return m_status;
         }
 
-		public Set<OnmsNode> getDownNodes() {
-			return m_downNodes;
-		}
+        public Set<OnmsNode> getDownNodes() {
+            return m_downNodes;
+        }
 
-        
     }
-    
-    private void visitNodes(Set<OnmsNode> nodes, AggregateStatusVisitor statusVisitor) {
+
+    private void visitNodes(Set<OnmsNode> nodes,
+            AggregateStatusVisitor statusVisitor) {
 
         if (nodes == null) {
             return;
         }
-        
+
         for (OnmsNode node : nodes) {
             node.visit(statusVisitor);
         }
     }
-    
-	private AggregateStatus computeStatusValues(Set<OnmsNode> nodes) {
+
+    private AggregateStatus computeStatusValues(Set<OnmsNode> nodes) {
         AggregateStatusVisitor statusVisitor = new AggregateStatusVisitor();
         visitNodes(nodes, statusVisitor);
-        
+
         setDownNodes(statusVisitor.getDownNodes());
         setTotalEntityCount(nodes.size());
         setStatus(statusVisitor.getStatus());
-	    return this;
-	}
-    
+        return this;
+    }
+
     public String getLink() {
         return m_link;
     }
