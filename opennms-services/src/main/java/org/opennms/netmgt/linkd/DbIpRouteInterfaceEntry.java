@@ -278,6 +278,9 @@ final class DbIpRouteInterfaceEntry {
 
 		names.append(") VALUES (").append(values).append(')');
 
+		if (log.isDebugEnabled())
+			log.debug("IpRouteInterfaceEntry.insert: SQL insert statment = " + names.toString());
+
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -325,9 +328,6 @@ final class DbIpRouteInterfaceEntry {
 			stmt.setTimestamp(ndx++, m_lastPollTime);
 		}
 		
-		if (log.isDebugEnabled())
-			log.debug("IpRouteInterfaceEntry.insert: SQL insert statment = " + names.toString());
-
 		// Run the insert
 		//
 		int rc = stmt.executeUpdate();
@@ -425,6 +425,9 @@ final class DbIpRouteInterfaceEntry {
 
 		sqlText.append(" WHERE nodeid = ? AND routeDest = ? ");
 
+		if (log.isDebugEnabled())
+			log.debug("IpRouteInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
+		
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -472,9 +475,6 @@ final class DbIpRouteInterfaceEntry {
 		stmt.setInt(ndx++, m_nodeId);
 		stmt.setString(ndx++, m_routedest);
 
-		if (log.isDebugEnabled())
-			log.debug("IpRouteInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
-		
 		// Run the insert
 		//
 		int rc = stmt.executeUpdate();

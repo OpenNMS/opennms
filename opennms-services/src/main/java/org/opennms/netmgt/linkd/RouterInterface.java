@@ -19,24 +19,32 @@ public class RouterInterface {
 	
 	InetAddress nextHop;
 	
+	int nextHopnodeid;
+	
+	int nextHopIfindex;
+	
+	InetAddress nextHopNetmask;
+	
 	int snmpiftype; 
 	
-	/**
-	 * @return Returns the nodeparentid.
-	 */
-	public int getNodeparentid() {
-		return nodeparentid;
+	RouterInterface(int nextHopnodeid, int nextHopIfindex, String nextHopNetmask) {
+		this.nextHopnodeid = nextHopnodeid;
+		this.nextHopIfindex = nextHopIfindex;
+		try {
+			this.nextHopNetmask = InetAddress.getByName(nextHopNetmask);
+		} catch (Exception e) {
+			
+		}
 	}
-	/**
-	 * @param nodeparentid The nodeparentid to set.
-	 */
-	public void setNodeparentid(int nodeparentid) {
-		this.nodeparentid = nodeparentid;
-	}
-	int nodeparentid;
 
-	RouterInterface(int ifindex) {
-		this.ifindex = ifindex;
+	RouterInterface(int nextHopnodeid, int nextHopIfindex) {
+		this.nextHopnodeid = nextHopnodeid;
+		this.nextHopIfindex = nextHopIfindex;
+		try {
+			this.nextHopNetmask = InetAddress.getByName("255.255.255.255");
+		} catch (Exception e) {
+			
+		}
 	}
 
 	/**
@@ -72,13 +80,56 @@ public class RouterInterface {
 	/**
 	 * @return Returns the snmpiftype.
 	 */
+
 	public int getSnmpiftype() {
 		return snmpiftype;
-	}
+	} 
+	
 	/**
 	 * @param snmpiftype The snmpiftype to set.
 	 */
 	public void setSnmpiftype(int snmpiftype) {
 		this.snmpiftype = snmpiftype;
 	}
+	
+	public InetAddress getNetmask() {
+		return nextHopNetmask;
+	}
+	public void setNetmask(InetAddress netmask) {
+		this.nextHopNetmask = netmask;
+	}
+	public int getNextHopNodeid() {
+		return nextHopnodeid;
+	}
+	public void setNextHopNodeid(int nexhopnodeid) {
+		this.nextHopnodeid = nexhopnodeid;
+	}
+	public int getNextHopIfindex() {
+		return nextHopIfindex;
+	}
+	public void setNextHopIfindex(int nextHopIfindex) {
+		this.nextHopIfindex = nextHopIfindex;
+	}
+
+	public void setIfindex(int ifindex) {
+		this.ifindex = ifindex;
+	}
+	
+	public InetAddress getNetwork() {
+		byte[] ipaddrA = nextHop.getAddress();
+		byte[] ipaddrB = nextHopNetmask.getAddress();
+		byte[] network = new byte[ipaddrA.length];
+//		for (int i:ipaddrA) {
+//			network[i] = new Integer(ipaddrA[i] & ipaddrB[i]).byteValue();
+//			
+//		}
+		try {
+//			return InetAddress.getByAddress(network);
+			return InetAddress.getByName("255.255.255.255");
+			
+		} catch (Exception e){
+			return null;
+		}
+	}
 }
+

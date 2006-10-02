@@ -264,6 +264,9 @@ public class DbStpInterfaceEntry {
 
 		names.append(") VALUES (").append(values).append(')');
 
+		if (log.isDebugEnabled())
+			log.debug("StpInterfaceEntry.insert: SQL insert statment = " + names.toString());
+
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -301,9 +304,6 @@ public class DbStpInterfaceEntry {
 		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
 			stmt.setTimestamp(ndx++, m_lastPollTime);
 		}
-
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.insert: SQL insert statment = " + names.toString());
 
 		// Run the insert
 		//
@@ -389,6 +389,9 @@ public class DbStpInterfaceEntry {
 
 		sqlText.append(" WHERE nodeid = ? AND bridgeport = ? AND stpvlan = ? ");
 
+		if (log.isDebugEnabled())
+			log.debug("StpInterfaceEntry.update: SQL statement " + sqlText.toString());
+
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -427,9 +430,6 @@ public class DbStpInterfaceEntry {
 		stmt.setInt(ndx++, m_nodeId);
 		stmt.setInt(ndx++, m_bridgeport);
 		stmt.setInt(ndx++, m_stpportvlan);
-
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.update: SQL statement " + sqlText.toString());
 
 		// Run the insert
 		//
