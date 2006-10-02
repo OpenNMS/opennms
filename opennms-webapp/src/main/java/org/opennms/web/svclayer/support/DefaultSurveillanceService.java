@@ -254,7 +254,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         String link = null;
         
         if (reportCategory != null) {
-            link = "category.jsp?category=" + Util.encode(reportCategory);
+            link = "rtc/category.jsp?category=" + Util.encode(reportCategory);
         }
         return link;
     }
