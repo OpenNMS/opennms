@@ -112,8 +112,13 @@ SiteStatusViewService m_siteStatusViewService = (SiteStatusViewService) m_webApp
     } else if (statusViewName != null && statusViewName.length() != 0
 		   && statusSite != null && statusSite.length() != 0
 		   && statusRowLabel != null && statusRowLabel.length() != 0) {
-        Set<OnmsNode> nodesDown = m_siteStatusViewService.getAggregateStatus(statusViewName, statusSite, statusRowLabel).getDownNodes();
-        nodes = NetworkElementFactory.convertOnmsNodeCollectionToNodeArray(nodesDown);
+        Collection<OnmsNode> onmsNodes;
+        if (onlyNodesWithDownAggregateStatus) {
+	        onmsNodes = m_siteStatusViewService.getAggregateStatus(statusViewName, statusSite, statusRowLabel).getDownNodes();
+        } else {
+            onmsNodes = m_siteStatusViewService.getNodes(statusViewName, statusSite, statusRowLabel);
+        }
+        nodes = NetworkElementFactory.convertOnmsNodeCollectionToNodeArray(onmsNodes);
     } else {
         nodes = NetworkElementFactory.getAllNodes();
     }
