@@ -2249,19 +2249,29 @@ public class NetworkElementFactory extends Object {
     		
     	});
     }
-   public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, boolean onlyNodesWithDownAggregateStatus) {
-        ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
-        for (String category : categories1) {
-                c1.add(categoryDao.findByName(category));
-        }
-        Collection<OnmsNode> ourNodes = nodeDao.findAllByCategoryList(c1);
-        ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
+    
+    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, boolean onlyNodesWithDownAggregateStatus) {
+        Collection<OnmsNode> ourNodes = getNodesInCategories(nodeDao, categoryDao, categories1);
         
         if (onlyNodesWithDownAggregateStatus) {
             AggregateStatus as = new AggregateStatus(new HashSet<OnmsNode>(ourNodes));
             ourNodes = as.getDownNodes();
         }
         return convertOnmsNodeCollectionToNodeArray(ourNodes);
+    }
+
+    private static Collection<OnmsNode> getNodesInCategories(NodeDao nodeDao,
+            CategoryDao categoryDao, String[] categoryStrings) {
+        
+        ArrayList<OnmsCategory> categories =
+            new ArrayList<OnmsCategory>(categoryStrings.length);
+        for (String categoryString : categoryStrings) {
+            categories.add(categoryDao.findByName(categoryString));
+        }
+        
+        Collection<OnmsNode> ourNodes =
+            nodeDao.findAllByCategoryList(categories);
+        return ourNodes;
     }
 
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
@@ -2283,8 +2293,8 @@ public class NetworkElementFactory extends Object {
                 c2.add(categoryDao.findByName(category));
         }
         
-        Collection<OnmsNode> ourNodes1 = nodeDao.findAllByCategoryList(c1);
-        Collection<OnmsNode> ourNodes2 = nodeDao.findAllByCategoryList(c2);
+        Collection<OnmsNode> ourNodes1 = getNodesInCategories(nodeDao, categoryDao, categories1);
+        Collection<OnmsNode> ourNodes2 = getNodesInCategories(nodeDao, categoryDao, categories2);
         
         Set<Integer> n2id = new HashSet<Integer>(ourNodes2.size());
         for (OnmsNode n2 : ourNodes2) {

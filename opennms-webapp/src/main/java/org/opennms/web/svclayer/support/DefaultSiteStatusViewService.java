@@ -39,12 +39,12 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
+import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -90,47 +90,58 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusView(java.lang.String)
      */
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
-        
         AggregateStatusView statusView = new AggregateStatusView();
         statusViewName = (statusViewName == null ? m_siteStatusViewConfigDao.getDefaultView().getName() : statusViewName);
         
         View view = m_siteStatusViewConfigDao.getView(statusViewName);
         
-
         statusView.setName(statusViewName);
         statusView.setColumnName(view.getColumnName());
         statusView.setColumnValue(view.getColumnValue());
         statusView.setTableName(view.getTableName());
         
+        Set<AggregateStatusDefinition> statusDefs =
+            getAggregateStatusDefinitionsForView(view);
+        statusView.setStatusDefinitions(statusDefs);
+        return statusView;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private Set<AggregateStatusDefinition> getAggregateStatusDefinitionsForView(View view) {
         Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<AggregateStatusDefinition>();
-        final ArrayList rowDefs = view.getRows().getRowDefCollection();
+        ArrayList<RowDef> rowDefs = view.getRows().getRowDefCollection();
         
         //Loop over the defined site status rows
-        for (Iterator it = rowDefs.iterator(); it.hasNext();) {
-            RowDef rowDef = (RowDef) it.next();
+        for (RowDef rowDef : rowDefs) {
             AggregateStatusDefinition def = new AggregateStatusDefinition();
             def.setName(rowDef.getLabel());
             def.setReportCategory(rowDef.getReportCategory());
             
-            Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
-            
-            //Loop over the defined categories and create model categories (OnmsCategory)
-            for (Iterator catIter = rowDef.getCategoryCollection().iterator(); catIter.hasNext();) {
-                Category cat = (Category) catIter.next();
-                OnmsCategory category = m_categoryDao.findByName(cat.getName());
-                
-                if (category == null) {
-                    throw new IllegalArgumentException("Site status configured category not found: "+cat.getName());
-                }
-                
-                categories.add(category);
-            }
+            Set<OnmsCategory> categories = getCategoriesForRowDef(rowDef);
             def.setCategories(categories);
             statusDefs.add(def);
         }
+        return statusDefs;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private Set<OnmsCategory> getCategoriesForRowDef(RowDef rowDef) {
+        Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
         
-        statusView.setStatusDefinitions(statusDefs);
-        return statusView;
+        //Loop over the defined categories and create model categories (OnmsCategory)
+        ArrayList<Category> cats = rowDef.getCategoryCollection();
+        for (Category cat : cats) {
+            OnmsCategory category = m_categoryDao.findByName(cat.getName());
+            
+            if (category == null) {
+                throw new IllegalArgumentException("Site status configured category not found: "+cat.getName());
+            }
+            
+            categories.add(category);
+        }
+        return categories;
     }
 
 
@@ -185,6 +196,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(statusView.getColumnName(), statusView.getColumnValue(), statusDef.getCategories());
             AggregateStatus status = new AggregateStatus(new HashSet<OnmsNode>(nodes));
             status.setLabel(statusDef.getName());
+            
             status.setLink(createNodePageUrl(statusView, status));
             stati.add(status);
         }
@@ -194,7 +206,18 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     
     private String createNodePageUrl(AggregateStatusView statusView, AggregateStatus status) {
         
-        if (status.getDownEntityCount() == 1) {
+        if (status.getDownEntityCount() == 0) {
+            StringBuffer buf = new StringBuffer("element/nodelist.jsp?");
+            buf.append("statusViewName=");
+            buf.append(Util.encode(statusView.getName()));
+            buf.append('&');
+            buf.append("statusSite=");
+            buf.append(Util.encode(statusView.getColumnValue()));
+            buf.append('&');
+            buf.append("statusRowLabel=");
+            buf.append(Util.encode(status.getLabel()));
+            return buf.toString();
+        } else if (status.getDownEntityCount() == 1) {
             OnmsNode node = status.getDownNodes().iterator().next();
             StringBuffer buf = new StringBuffer("element/node.jsp?");
             buf.append("node=");
@@ -210,6 +233,8 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             buf.append('&');
             buf.append("statusRowLabel=");
             buf.append(Util.encode(status.getLabel()));
+            buf.append('&');
+            buf.append("nodesWithDownAggregateStatus");
             return buf.toString();
         }
         
@@ -250,6 +275,34 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             }
         }
         throw new DataRetrievalFailureException("Unable to locate row: "+rowLabel+" for status view: "+statusViewName);
+    }
+
+
+    public Collection<OnmsNode> getNodes(String statusViewName, String statusSite, String rowLabel) {
+        if (statusViewName == null) {
+            statusViewName = m_siteStatusViewConfigDao.getDefaultView().getName();
+        }
+        
+        View view = m_siteStatusViewConfigDao.getView(statusViewName);
+        RowDef rowDef = getRowDef(view, rowLabel);
+        
+        Set<OnmsCategory> categories = getCategoriesForRowDef(rowDef);
+        
+        return m_nodeDao.findAllByVarCharAssetColumnCategoryList(view.getColumnName(), view.getColumnValue(), categories);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private RowDef getRowDef(View view, String rowLabel) {
+        Rows rows = view.getRows();
+        Collection<RowDef> rowDefs = rows.getRowDefCollection();
+        for (RowDef rowDef : rowDefs) {
+            if (rowDef.getLabel().equals(rowLabel)) {
+                return rowDef;
+            }
+        }
+        
+        throw new DataRetrievalFailureException("Unable to locate row: "+rowLabel+" for status view: "+view.getName());
     }
 
 }

@@ -35,6 +35,7 @@ package org.opennms.web.svclayer;
 import java.util.Collection;
 
 import org.opennms.netmgt.model.AggregateStatusView;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -68,4 +69,5 @@ public interface SiteStatusViewService {
     
     AggregateStatus getAggregateStatus(String statusViewName, String statusSite, String rowLabel);
 
+    Collection<OnmsNode> getNodes(String statusViewName, String statusSite, String rowLabel);
 }
