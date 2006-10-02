@@ -33,17 +33,12 @@
 package org.opennms.netmgt.collectd.jmx;
 
 import org.opennms.netmgt.collectd.CollectorConfigDaoImpl;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
-import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.access.DefaultLocatorFactory;
 import org.springframework.transaction.support.TransactionTemplate;
 
