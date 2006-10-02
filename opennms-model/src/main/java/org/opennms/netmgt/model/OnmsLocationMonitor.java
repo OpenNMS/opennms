@@ -64,7 +64,7 @@ public class OnmsLocationMonitor {
 
     private OnmsMonitoringLocationDefinition m_locationDefinition;
 
-    private List<OnmsLocationSpecificStatusChange> m_mostRecentStatusChanges;
+    private List<OnmsLocationSpecificStatus> m_mostRecentStatusChanges;
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
