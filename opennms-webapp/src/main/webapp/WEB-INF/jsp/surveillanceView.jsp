@@ -16,7 +16,14 @@
   <tr>
   <c:forEach items="${webTable.columnHeaders}" var="headerCell">
     <th class="<c:out value='${headerCell.styleClass}'/>">
-      <c:out value="${headerCell.content}"/>
+      <c:choose>
+        <c:when test="${! empty headerCell.link}">
+          <a href="<c:out value='${headerCell.link}'/>"><c:out value="${headerCell.content}"/></a>
+        </c:when>
+        <c:otherwise>
+          <c:out value="${headerCell.content}"/>
+        </c:otherwise>
+      </c:choose>
     </th>
   </c:forEach>
   </tr>
