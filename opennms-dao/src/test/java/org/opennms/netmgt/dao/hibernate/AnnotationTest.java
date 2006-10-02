@@ -244,4 +244,9 @@ public class AnnotationTest extends BaseDaoTestCase {
             break;
 		}
 	}
+    
+    public void testBogus() {
+        // FIXME
+        // added this so there is at least one test
+    }
 }
