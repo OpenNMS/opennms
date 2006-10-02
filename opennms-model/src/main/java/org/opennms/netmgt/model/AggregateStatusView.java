@@ -34,28 +34,15 @@ package org.opennms.netmgt.model;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 /**
  * Really a container class for persisting arrangements of status definitions
  * created by the user.
  * 
  * Perhaps a new package called model.config is in order.
  * 
- * @author david
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-@Entity
-@Table(name="aggregate_status_views")
 public class AggregateStatusView {
     
     private Integer m_id;
@@ -65,9 +52,6 @@ public class AggregateStatusView {
     private String m_columnValue;
     private Set<AggregateStatusDefinition> m_statusDefinitions;
     
-    @Id
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
     }
@@ -108,19 +92,12 @@ public class AggregateStatusView {
         m_columnValue = columnValue;
     }
     
-    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinTable(
-    		name ="statusview_statusdef",
-    		joinColumns = {@JoinColumn(name="statusViewId")},
-    		inverseJoinColumns = {@JoinColumn(name="statusDefId")}
-    )
     public Set<AggregateStatusDefinition> getStatusDefinitions() {
         return m_statusDefinitions;
     }
     public void setStatusDefinitions(Set<AggregateStatusDefinition> statusDefinitions) {
         m_statusDefinitions = statusDefinitions;
     }
-    
     
     /**
      * Good for debug logs and viewing in a debugger.
@@ -141,5 +118,4 @@ public class AggregateStatusView {
 		return result.toString();
 	}
     
-
 }

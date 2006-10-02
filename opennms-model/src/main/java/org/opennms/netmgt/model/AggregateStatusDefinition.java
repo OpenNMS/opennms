@@ -34,30 +34,18 @@ package org.opennms.netmgt.model;
 
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 /**
  * This class defines how the AggregateStatus object is to be
  * created and it's properties are to be populated.
  * 
- * @author david
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-@Entity
-@Table(name="aggregate_status_definitions")
 public class AggregateStatusDefinition {
     
     private int m_id;
     private String m_name;
+    private String m_reportCategory;
     private Set<OnmsCategory> m_categories;
     
     public AggregateStatusDefinition() {
@@ -73,9 +61,6 @@ public class AggregateStatusDefinition {
         m_categories = categories;
     }
 
-    @Id
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
     }
@@ -84,7 +69,6 @@ public class AggregateStatusDefinition {
         m_id = id;
     }
 
-    @Column(name="name")
 	public String getName() {
 		return m_name;
 	}
@@ -94,12 +78,6 @@ public class AggregateStatusDefinition {
 	}
     
 
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(
-			name="category_statusdef",
-			joinColumns = { @JoinColumn(name="statusDefId") },
-			inverseJoinColumns = { @JoinColumn(name="categoryId") }
-		)
 	public Set<OnmsCategory> getCategories() {
         return m_categories;
     }
@@ -108,9 +86,16 @@ public class AggregateStatusDefinition {
         m_categories = categories;
     }
     
-    @Override
     public String toString() {
         return getName();
+    }
+
+    public String getReportCategory() {
+        return m_reportCategory;
+    }
+
+    public void setReportCategory(String reportCategory) {
+        m_reportCategory = reportCategory;
     }
 
 }
