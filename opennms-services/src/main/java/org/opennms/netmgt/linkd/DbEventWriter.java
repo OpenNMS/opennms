@@ -49,6 +49,8 @@ import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
 
 public class DbEventWriter implements Runnable {
 
+//  FIXME: change all getInt32 calls to not autobox the result into an int
+    
 	static final char ACTION_UPTODATE = 'N';
 
 	static final char ACTION_DELETE = 'D';
