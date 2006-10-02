@@ -288,7 +288,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         
         Set<OnmsCategory> categories = getCategoriesForRowDef(rowDef);
         
-        return m_nodeDao.findAllByVarCharAssetColumnCategoryList(view.getColumnName(), view.getColumnValue(), categories);
+        return m_nodeDao.findAllByVarCharAssetColumnCategoryList(view.getColumnName(), statusSite, categories);
     }
 
 
