@@ -1,19 +1,9 @@
 package org.opennms.netmgt.dao.hibernate;
 
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.opennms.netmgt.config.C3P0ConnectionFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.BaseDaoTestCase;
-import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -27,7 +17,6 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class AnnotationTest extends BaseDaoTestCase {
@@ -35,15 +24,6 @@ public class AnnotationTest extends BaseDaoTestCase {
 	private SessionFactory m_sessionFactory;
         
             
-           public AnnotationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
-                /*
-                 * Note: I'm using the opennms-database.xml file in target/classes/etc
-                 * so that it has been filtered first.
-                 */
-                DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
-            }
-
-	
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		m_sessionFactory = sessionFactory;
 	}
@@ -71,11 +51,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		}
 	}
 
-	public void testBogus() {
-		// do nothing... we're here so JUnit doesn't complain
-	}
-
-	public void FIXMEtestDistPoller() {
+	public void testDistPoller() {
 		assertLoadAll(OnmsDistPoller.class, new EmptyChecker<OnmsDistPoller>() {
 
 			public void check(OnmsDistPoller entity) {
@@ -85,7 +61,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestAssetRecord() {
+	public void testAssetRecord() {
 		assertLoadAll(OnmsAssetRecord.class, new EmptyChecker<OnmsAssetRecord>() {
 
 			public void check(OnmsAssetRecord entity) {
@@ -96,7 +72,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestNode() {
+	public void testNode() {
 		assertLoadAll(OnmsNode.class, new EmptyChecker<OnmsNode>() {
 
 			public void check(OnmsNode entity) {
@@ -116,7 +92,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		
 	}
 	
-	public void FIXMEtestIpInterfaces() {
+	public void testIpInterfaces() {
 		assertLoadAll(OnmsIpInterface.class, new EmptyChecker<OnmsIpInterface>() {
 
 			public void check(OnmsIpInterface entity) {
@@ -130,7 +106,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestSnmpInterfaces() {
+	public void testSnmpInterfaces() {
 		assertLoadAll(OnmsSnmpInterface.class, new EmptyChecker<OnmsSnmpInterface>() {
 
 			public void check(OnmsSnmpInterface entity) {
@@ -145,7 +121,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestCategories() {
+	public void testCategories() {
 		assertLoadAll(OnmsCategory.class, new EmptyChecker<OnmsCategory>() {
 
 			public void check(OnmsCategory entity) {
@@ -155,7 +131,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestMonitoredServices() {
+	public void testMonitoredServices() {
 		assertLoadAll(OnmsMonitoredService.class, new EmptyChecker<OnmsMonitoredService>() {
 
 			public void check(OnmsMonitoredService entity) {
@@ -171,7 +147,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestServiceTypes() {
+	public void testServiceTypes() {
 		assertLoadAll(OnmsServiceType.class, new EmptyChecker<OnmsServiceType>() {
 
 			public void check(OnmsServiceType entity) {
@@ -182,7 +158,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestOutages() {
+	public void testOutages() {
 		assertLoadAll(OnmsOutage.class, new EmptyChecker<OnmsOutage>() {
 
 			public void check(OnmsOutage entity) {
@@ -201,7 +177,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestEvents() {
+	public void testEvents() {
 		assertLoadAll(OnmsEvent.class, new EmptyChecker<OnmsEvent>() {
 
 			public void check(OnmsEvent entity) {
@@ -221,7 +197,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestAlarms() {
+	public void testAlarms() {
 		assertLoadAll(OnmsAlarm.class, new EmptyChecker<OnmsAlarm>() {
 
 			public void check(OnmsAlarm entity) {
@@ -234,11 +210,11 @@ public class AnnotationTest extends BaseDaoTestCase {
 		});
 	}
 	
-	public void FIXMEtestNotifacations() {
+	public void testNotifacations() {
 		assertLoadAll(OnmsNotification.class, new NullChecker<OnmsNotification>());
 	}
 	
-	public void FIXMEtestUsersNotified() {
+	public void testUsersNotified() {
 		assertLoadAll(OnmsUserNotification.class, new NullChecker<OnmsUserNotification>());
 	}
 	
@@ -251,6 +227,8 @@ public class AnnotationTest extends BaseDaoTestCase {
 		
 		for (T t : results) {
 			checker.check(t);
+            // we only need to check one
+            break;
 		}
 	}
 }
