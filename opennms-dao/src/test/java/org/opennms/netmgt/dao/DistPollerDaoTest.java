@@ -52,21 +52,17 @@ public class DistPollerDaoTest extends BaseDaoTestCase {
         DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
     }
 
-    public void testBogus() {
-        // do nothing... we're here so JUnit doesn't complain
-    }
-	
-	public void FIXMEtestCreate() {
+	public void testCreate() {
         OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller", "192.168.7.7");   
         distPoller.setLastEventPull(new Date(1000000));
         getDistPollerDao().save(distPoller);
         
     }
     
-    public void FIXMEtestGet() {
+    public void testGet() {
         assertNull(getDistPollerDao().get("otherpoller"));
         
-        FIXMEtestCreate();
+        testCreate();
         
         OnmsDistPoller distPoller = getDistPollerDao().get("otherpoller");
         assertNotNull(distPoller);

@@ -10,6 +10,7 @@ public class BaseDaoTestCase extends
 	
 
 	protected String[] getConfigLocations() {
+        System.setProperty("opennms.home", "src/test/opennms-home");
 		return new String[] { "classpath:/META-INF/opennms/applicationContext-dao.xml" };
 	}
 
