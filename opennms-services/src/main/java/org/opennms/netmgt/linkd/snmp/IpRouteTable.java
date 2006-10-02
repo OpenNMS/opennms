@@ -80,6 +80,7 @@ public class IpRouteTable extends SnmpTable
 	{
         super(address, "ipRouteTable", IpRouteTableEntry.ms_elemList);
 	}
+	
     protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IpRouteTableEntry();
     }
