@@ -338,16 +338,15 @@ TOMCAT_USER="tomcat"
       cannot change the configuration files.</para>
 
       <para>One more change that needs to be made is to allow Tomcat to access
-      more memory than the default as well as having its JVM run in "server"
-      mode. The easiest way to do this is via the
+      more memory than the default. The easiest way to do this is via the
       <varname>CATALINA_OPTS</varname> environment variable. If the Tomcat
       software being used has a configuration file as above, it can be added
       to that file. Otherwise it is best just to add it to
       <filename>catalina.sh</filename>.</para>
 
-      <para><programlisting>CATALINA_OPTS="-server -Xmx1024m"</programlisting></para>
+      <para><programlisting>CATALINA_OPTS="-Xmx1024m"</programlisting></para>
 
-      <para>The "-server" option will get passed to java, and the -Xmx option
+      <para>The -Xmx option
       allows Tomcat to access up to 1GB of memory. Of course, the assumes that
       there is 1GB of available memory on the system. It will need to be tuned
       to the particular server in use.</para>
