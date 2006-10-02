@@ -68,6 +68,8 @@ final class DiscoveryLink implements ReadyRunnable {
 
 	private static final int SNMP_IF_TYPE_ETHERNET = 6;
 
+	private static final int SNMP_IF_TYPE_PROP_VIRTUAL = 53;
+
 	private List<LinkableNode> activenode = new ArrayList<LinkableNode>();
 
 	private List<NodeToNodeLink> links = new ArrayList<NodeToNodeLink>();
@@ -769,32 +771,23 @@ final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					int ifindex = routeIface.getIfindex();
-
-					if (ifindex == -1) {
-						if (log.isDebugEnabled())
-							log
-									.debug("run: route interface has invalid ifindex "
-											+ ifindex + " . Skipping");
-						continue;
-					}
-
 					int snmpiftype = routeIface.getSnmpiftype();
-
-					// no processing ethernet type
+					
 					if (snmpiftype == SNMP_IF_TYPE_ETHERNET) {
 						if (log.isDebugEnabled())
 							log
 									.debug("run: Ethernet interface for nodeid. Skipping ");
 						continue;
-					}
-					// no processing unknown type
-					if (snmpiftype == -1) {
+					} else if (snmpiftype == SNMP_IF_TYPE_PROP_VIRTUAL) {
 						if (log.isDebugEnabled())
-							log.debug("run: interface has unknown snmpiftype "
-									+ snmpiftype + " . Skipping ");
+							log
+									.debug("run: PropVirtual interface for nodeid. Skipping ");
 						continue;
-					}
+					} else if (snmpiftype == -1) {
+						if (log.isDebugEnabled())
+							log.debug("store: interface has unknown snmpiftype "
+									+ snmpiftype + " . Skipping ");
+					} 
 
 					InetAddress nexthop = routeIface.getNextHop();
 
@@ -816,9 +809,9 @@ final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					int nodeparentid = routeIface.getNodeparentid();
+					int nextHopNodeid = routeIface.getNextHopNodeid();
 
-					if (nodeparentid == -1) {
+					if (nextHopNodeid == -1) {
 						if (log.isDebugEnabled())
 							log
 									.debug("run: no node id found for ip next hop address "
@@ -827,7 +820,7 @@ final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					if (nodeparentid == curNodeId) {
+					if (nextHopNodeid == curNodeId) {
 						if (log.isDebugEnabled())
 							log
 									.debug("run: node id found for ip next hop address "
@@ -836,15 +829,18 @@ final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					//find ifindex on parent node
-					int parentifindex = -1;
-					LinkableNode nodeparent = getLinkableNodeFromNodeId(nodeparentid);
-					if (nodeparent != null) {
-						parentifindex = getIfIndexFromParentRouter(nodeparent,
-								curNodeId);
+					int ifindex = routeIface.getIfindex();
+					
+					if (ifindex == 0) {
+						if (log.isDebugEnabled())
+							log
+									.debug("run: route interface has ifindex "
+											+ ifindex + " . Processing");
+						ifindex = getIfIndexFromRouter(curNode, routeIface);
 					}
-					NodeToNodeLink lk = new NodeToNodeLink(nodeparentid,
-							parentifindex);
+					
+					NodeToNodeLink lk = new NodeToNodeLink(routeIface.getNextHopNodeid(),
+							routeIface.getNextHopIfindex());
 					lk.setNodeparentid(curNodeId);
 					lk.setParentifindex(ifindex);
 					links.add(lk);
@@ -870,46 +866,26 @@ final class DiscoveryLink implements ReadyRunnable {
 		reschedule();
 	}
 
-	private int getIfIndexFromParentRouter(LinkableNode parentnode, int nodeid) {
-		Category log = ThreadCategory.getInstance(getClass());
+	private int getIfIndexFromRouter(LinkableNode parentnode, RouterInterface routerIface) {
 
 		if (!parentnode.hasRouteInterfaces())
 			return -1;
 		Iterator ite = parentnode.getRouteInterfaces().iterator();
 		while (ite.hasNext()) {
-			RouterInterface routeIface = (RouterInterface) ite.next();
+			RouterInterface curIface = (RouterInterface) ite.next();
 
-			if (routeIface.getMetric() == -1) {
-				if (log.isDebugEnabled())
-					log
-							.debug("getIfIndexFromParentRouter: Data Link interface with nodeid "
-									+ parentnode.getNodeId()
-									+ " has invalid metric.");
+			if (curIface.getMetric() == -1) {
 				continue;
 			}
 
-			int ifindex = routeIface.getIfindex();
+			int ifindex = curIface.getIfindex();
 
 			if (ifindex == 0 || ifindex == -1)
 				continue;
 
-			int snmpiftype = routeIface.getSnmpiftype();
-
-			// no processing ethernet type or unknown
-			if (snmpiftype == SNMP_IF_TYPE_ETHERNET || snmpiftype == -1)
-				continue;
-
-			InetAddress nexthop = routeIface.getNextHop();
-			if (nexthop.toString().equals("0.0.0.0"))
-				continue; // this case must be analized in detail
-			if (nexthop.toString().equals("127.0.0.1"))
-				continue;
-
-			int curnodeid = -1;
-			curnodeid = routeIface.getNodeparentid();
-
-			if (curnodeid == nodeid)
-				return ifindex;
+			InetAddress curNetwork = curIface.getNetwork();
+			InetAddress otherNetwork = routerIface.getNetwork();
+			if (curNetwork.equals(otherNetwork)) return ifindex;
 		}
 		return -1;
 	}

@@ -186,9 +186,13 @@ final class DbAtInterfaceEntry {
 
 		names.append(") VALUES (").append(values).append(')');
 		
+		if (log.isDebugEnabled())
+			log.debug("AtInterfaceEntry.insert: SQL insert statment = " + names.toString());
+
 		// create the Prepared statment and then
 		// start setting the result values
 		//
+
 		PreparedStatement stmt = c.prepareStatement(names.toString());
 
 		int ndx = 1;
@@ -210,9 +214,6 @@ final class DbAtInterfaceEntry {
 		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
 			stmt.setTimestamp(ndx++, m_lastPollTime);
 		}
-
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.insert: SQL insert statment = " + names.toString());
 
 		// Run the insert
 		//
@@ -278,6 +279,9 @@ final class DbAtInterfaceEntry {
 
 		sqlText.append(" WHERE nodeid = ? AND ipaddr = ? ");
 
+		if (log.isDebugEnabled())
+			log.debug("AtInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
+
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -303,10 +307,6 @@ final class DbAtInterfaceEntry {
 
 		stmt.setInt(ndx++, m_nodeId);
 		stmt.setString(ndx++, m_ipaddr);
-
-
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
 
 		// Run the insert
 		//

@@ -446,7 +446,7 @@ public final class SnmpCollection implements ReadyRunnable {
 							log
 									.debug("SnmpCollection.run: adding bridge info to snmpcollection for HP ");
 						m_snmpVlanCollection.add(snmpvlancollection);
-	}
+					}
 				} else {
 					java.util.Iterator itr = m_vlanTable.getEntries()
 							.iterator();
