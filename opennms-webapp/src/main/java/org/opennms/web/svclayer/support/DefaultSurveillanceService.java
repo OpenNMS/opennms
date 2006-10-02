@@ -51,17 +51,21 @@ import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
-import org.opennms.web.svclayer.SimpleWebTable.Cell;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
-import org.springframework.util.StringUtils;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.StringUtils;
 
+/**
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * 
+ */
 public class DefaultSurveillanceService implements SurveillanceService {
 
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SurveillanceViewConfigDao m_surveillanceConfigDao;
-    private OnmsNode m_foundDownNode;
     
     class CellStatusStrategy {
 
