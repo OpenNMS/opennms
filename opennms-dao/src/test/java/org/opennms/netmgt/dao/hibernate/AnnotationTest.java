@@ -242,10 +242,6 @@ public class AnnotationTest extends BaseDaoTestCase {
 		assertLoadAll(OnmsUserNotification.class, new NullChecker<OnmsUserNotification>());
 	}
 	
-	public void FIXMEtestAggregateStatusView() {
-		assertLoadAll(AggregateStatusView.class, new NullChecker<AggregateStatusView>());
-	}
-
 	private <T> void assertLoadAll(Class<T> annotatedClass, Checker<T> checker) {
 		HibernateTemplate template = new HibernateTemplate(m_sessionFactory);
 		Collection<T> results = template.loadAll(annotatedClass);
