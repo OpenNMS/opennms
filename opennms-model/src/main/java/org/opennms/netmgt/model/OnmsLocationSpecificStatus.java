@@ -44,21 +44,21 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="location_specific_status_changes")
-public class OnmsLocationSpecificStatusChange {
+public class OnmsLocationSpecificStatus {
 	
 	private Integer m_id;
 	private OnmsLocationMonitor m_locationMonitor;
 	private OnmsMonitoredService m_monitoredService;
-	private PollStatus m_status;
+	private PollStatus m_pollResult;
     
-    public OnmsLocationSpecificStatusChange() {
+    public OnmsLocationSpecificStatus() {
         // this is used by hibernate to construct an object from the db
     }
     
-    public OnmsLocationSpecificStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monitoredService, PollStatus status) {
+    public OnmsLocationSpecificStatus(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monitoredService, PollStatus pollResult) {
         m_locationMonitor = locationMonitor;
         m_monitoredService = monitoredService;
-        m_status = status;
+        m_pollResult = pollResult;
     }
 	
     @Id
@@ -93,11 +93,11 @@ public class OnmsLocationSpecificStatusChange {
 	}
 
     @Embedded
-	public PollStatus getStatus() {
-		return m_status;
+	public PollStatus getPollResult() {
+		return m_pollResult;
 	}
 	
-	public void setStatus(PollStatus newStatus) {
-		m_status = newStatus;
+	public void setPollResult(PollStatus newStatus) {
+		m_pollResult = newStatus;
 	}
 }

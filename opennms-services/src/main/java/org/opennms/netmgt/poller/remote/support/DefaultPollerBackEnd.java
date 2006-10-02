@@ -15,7 +15,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationSpecificStatusChange;
+import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -132,15 +132,19 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         m_pollerConfig = pollerConfig;
     }
 
-    public void reportResult(int locationMonitorID, int serviceId, PollStatus status) {
+    public void reportResult(int locationMonitorID, int serviceId, PollStatus pollResult) {
         
         OnmsLocationMonitor locationMonitor = m_locMonDao.get(locationMonitorID);
         OnmsMonitoredService monSvc = m_monSvcDao.get(serviceId);
+        OnmsLocationSpecificStatus newStatus = new OnmsLocationSpecificStatus(locationMonitor, monSvc, pollResult);
         
-        OnmsLocationSpecificStatusChange currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
+        if (newStatus.getPollResult().getResponseTime() >= 0) {
+            m_locMonDao.savePerformanceData(newStatus);
+        }
         
-        if (!currentStatus.equals(status)) {
-            OnmsLocationSpecificStatusChange newStatus = new OnmsLocationSpecificStatusChange(locationMonitor, monSvc, status);
+        OnmsLocationSpecificStatus currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
+        
+        if (currentStatus == null || !currentStatus.getPollResult().equals(pollResult)) {
             m_locMonDao.saveStatusChange(newStatus);
         }
     }
