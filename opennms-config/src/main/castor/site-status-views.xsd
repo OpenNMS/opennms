@@ -47,6 +47,7 @@
         <element ref="this:category" minOccurs="1" maxOccurs="unbounded"></element>
       </sequence>
       <attribute name="label" type="string" use="required" />
+      <attribute name="report-category" type="string" use="optional" default="Network Interfaces"/>
     </complexType>
   </element>
   
