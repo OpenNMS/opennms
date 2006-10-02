@@ -520,50 +520,26 @@ public class DbEventWriter implements Runnable {
                 log.debug("storeSnmpCollection: ent="+ent);
 
 				InetAddress routedest = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_DEST);
-                log.debug("storeSnmpCollection: routedest is: "+ (routedest == null ? "null" : routedest)+"; IP_ROUTE_DEST: "+IpRouteTableEntry.IP_ROUTE_DEST);
-                    
 				InetAddress routemask = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_MASK);
-                log.debug("storeSnmpCollection: routemask is: "+ (routemask == null ? "null" : routemask)+"; IP_ROUTE_MASK: "+IpRouteTableEntry.IP_ROUTE_MASK);
-                
 				InetAddress nexthop = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_NXTHOP);
-                log.debug("storeSnmpCollection: nexthop is: "+ (nexthop == null ? "null" : nexthop)+"; IP_ROUTE_NXTHOP: "+IpRouteTableEntry.IP_ROUTE_NXTHOP);
-                
-				int ifindex = ent.getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
+				Integer ifindex = ent.getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
                 log.debug("storeSnmpCollection: ifindex is: "+ (ifindex < 1 ? "less than 1" : ifindex)+"; IP_ROUTE_IFINDEX: "+IpRouteTableEntry.IP_ROUTE_IFINDEX);
 
-                if (ifindex < 0) {
+                if (ifindex == null) {
 					log.warn("store: NNot valid ifindex" + ifindex 
 							+ " Skipping...");
 					continue;
 				}
                 
-				int routemetric1 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
-                log.debug("storeSnmpCollection: routemetric1 is: "+ (routemetric1 < 1 ? "less than 1" : routemetric1)+"; IP_ROUTE_METRIC1: "+IpRouteTableEntry.IP_ROUTE_METRIC1);
-                
-                log.debug("storeSnmpCollection: ent="+ent);
-                log.debug("storeSnmpCollection: IP_ROUTE_METRIC2="+IpRouteTableEntry.IP_ROUTE_METRIC2);
-				int routemetric2 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC2);
-                log.debug("storeSnmpCollection: routemetric2 is: "+ (routemetric2 < 1 ? "less than 1" : routemetric2)+"; IP_ROUTE_METRIC2: "+IpRouteTableEntry.IP_ROUTE_METRIC2);
-                
-				int routemetric3  =ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC3);
-                log.debug("storeSnmpCollection: routemetric3 is: "+ (routemetric3 < 1 ? "less than 1" : routemetric3)+"; IP_ROUTE_METRIC3: "+IpRouteTableEntry.IP_ROUTE_METRIC3);
-                
-				int routemetric4 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC4);
-                log.debug("storeSnmpCollection: routemetric4 is: "+ (routemetric4 < 1 ? "less than 1" : routemetric4)+"; IP_ROUTE_METRIC4: "+IpRouteTableEntry.IP_ROUTE_METRIC4);
-                
-				int routemetric5 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC5);
-                log.debug("storeSnmpCollection: routemetric5 is: "+ (routemetric5 < 1 ? "less than 1" : routemetric5)+"; IP_ROUTE_METRIC5: "+IpRouteTableEntry.IP_ROUTE_METRIC5);
-                
-				int routetype = ent.getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
-                log.debug("storeSnmpCollection: routetype is: "+ (routetype < 1 ? "less than 1" : routetype)+"; IP_ROUTE_TYPE: "+IpRouteTableEntry.IP_ROUTE_TYPE);
-                
-				int routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
-                log.debug("storeSnmpCollection: routeproto is: "+ (routeproto < 1 ? "less than 1" : routeproto)+"; IP_ROUTE_PROTO: "+IpRouteTableEntry.IP_ROUTE_PROTO);
-                
+				Integer routemetric1 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
+				Integer routemetric2 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC2);
+				Integer routemetric3  =ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC3);
+				Integer routemetric4 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC4);
+				Integer routemetric5 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC5);
+				Integer routetype = ent.getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
+				Integer routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
 
 				// info used for Discovery Link
-				
-				
 				RouterInterface routeIface = null;
 				routeIface = getNodeidMaskFromIp(dbConn,nexthop);
 
@@ -579,7 +555,9 @@ public class DbEventWriter implements Runnable {
 					// try to find it in ipinterface
 				} else {
 					int snmpiftype = -2;
-					if (ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
+                    
+                    //Okay to autobox here, we checked for null
+					if (ifindex != null && ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
 
 					// no processing ethernet type
 					if (log.isDebugEnabled())
@@ -607,19 +585,21 @@ public class DbEventWriter implements Runnable {
 				iprouteInterfaceEntry.updateRouteMask(routemask.getHostAddress());
 				iprouteInterfaceEntry.updateRouteNextHop(nexthop.getHostAddress());
 				iprouteInterfaceEntry.updateIfIndex(ifindex);
-				if (routemetric1 != -1)
+                
+                //okay to autobox these since were checking for null
+				if (routemetric1 != null)
 					iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
-				if (routemetric2 != -1)
+				if (routemetric2 != null)
 					iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
-				if (routemetric3 != -1)
+				if (routemetric3 != null)
 					iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
-				if (routemetric4 != -1)
+				if (routemetric4 != null)
 					iprouteInterfaceEntry.updateRouteMetric4(routemetric4);
-				if (routemetric5 != -1)
+				if (routemetric5 != null)
 					iprouteInterfaceEntry.updateRouteMetric5(routemetric5);
-				if (routetype != -1)
+				if (routetype != null)
 					iprouteInterfaceEntry.updateRouteType(routetype);
-				if (routeproto != -1)
+				if (routeproto != null)
 					iprouteInterfaceEntry.updateRouteProto(routeproto);
 				iprouteInterfaceEntry
 						.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
@@ -719,8 +699,8 @@ public class DbEventWriter implements Runnable {
 							while (sub_ite.hasNext()) {
 								Dot1dBasePortTableEntry dot1dbaseptentry = (Dot1dBasePortTableEntry) sub_ite
 									.next();
-								int baseport = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_PORT);
-								int ifindex = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_IFINDEX);
+								Integer baseport = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_PORT);
+								Integer ifindex = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_IFINDEX);
 							
 								m_node.setIfIndexBridgePort(ifindex,baseport);
 							

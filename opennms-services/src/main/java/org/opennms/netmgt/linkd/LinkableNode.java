@@ -339,9 +339,14 @@ public class LinkableNode extends Object {
 		return -1;
 	}
 
-	void setIfIndexBridgePort(int ifindex, int bridgeport) {
-		bridgePortIfindex
-				.put(new Integer(bridgeport), new Integer(ifindex));
+	void setIfIndexBridgePort(Integer ifindex, Integer bridgeport) {
+        
+        if ( ifindex == null ) {
+            throw new NullPointerException("ifindex is null");
+        } else if (bridgeport == null) {
+            throw new NullPointerException("bridgeport is null");
+        }
+		bridgePortIfindex.put(bridgeport, ifindex);
 	}
 
 	/**
