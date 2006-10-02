@@ -1085,12 +1085,12 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
-        <version>3.2.0.cr2</version>
+        <version>3.2.0.cr4</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
-        <version>3.2.0.cr1</version>
+        <version>3.2.0.cr2</version>
         <exclusions>
           <exclusion>
             <groupId>javax.persistence</groupId>
@@ -1252,7 +1252,7 @@ opennms.home = ${opennms.home}
     <site>
       <id>opennms-site</id>
       <name>OpenNMS Build Website</name>
-      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites</url>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites/${project.version}/${project.artifactId}</url>
     </site>
     <repository>
       <id>opennms-repo</id>
