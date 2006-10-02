@@ -107,6 +107,8 @@ public class DbEventWriter implements Runnable {
 
 	private static final String SQL_GET_NODEID = "SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?";
 
+	private static final String SQL_GET_NODEID__IFINDEX_MASK = "SELECT node.nodeid,snmpinterface.snmpifindex,snmpinterface.snmpipadentnetmask FROM node LEFT JOIN snmpinterface ON node.nodeid = snmpinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?";
+
 	private static final String SQL_GET_NODEID_IFINDEX_IPINT = "SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?";
 
 	private static final String SQL_UPDATE_DATAINTERFACE = "UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'";
@@ -136,8 +138,6 @@ public class DbEventWriter implements Runnable {
 	private static final String SQL_GET_IFINDEX_SNMPINTERFACE_NAME = "SELECT snmpifindex FROM snmpinterface WHERE nodeid = ? AND (snmpifname = ? OR snmpifdescr = ?) ";
 	
 	private static final String SQL_GET_SNMPPHYSADDR_SNMPINTERFACE = "SELECT snmpphysaddr FROM snmpinterface WHERE nodeid = ? AND  snmpphysaddr <> ''";
-
-	//private static final String SQL_GET_ATPHYSADDR_SNMPINTERFACE = "SELECT atphysaddr FROM atinterface WHERE nodeid = ? AND  atphysaddr <> ''";
 
 	private char action = ACTION_STORE;
 
@@ -508,6 +508,7 @@ public class DbEventWriter implements Runnable {
 
 		if (m_snmpcoll.hasRouteTable()) {
 			java.util.List<RouterInterface> routeInterfaces = new java.util.ArrayList<RouterInterface>();
+			
 			ite = m_snmpcoll.getIpRouteTable().getEntries()
 					.iterator();
 			if (log.isDebugEnabled())
@@ -529,6 +530,12 @@ public class DbEventWriter implements Runnable {
                 
 				int ifindex = ent.getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
                 log.debug("storeSnmpCollection: ifindex is: "+ (ifindex < 1 ? "less than 1" : ifindex)+"; IP_ROUTE_IFINDEX: "+IpRouteTableEntry.IP_ROUTE_IFINDEX);
+
+                if (ifindex < 0) {
+					log.warn("store: NNot valid ifindex" + ifindex 
+							+ " Skipping...");
+					continue;
+				}
                 
 				int routemetric1 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
                 log.debug("storeSnmpCollection: routemetric1 is: "+ (routemetric1 < 1 ? "less than 1" : routemetric1)+"; IP_ROUTE_METRIC1: "+IpRouteTableEntry.IP_ROUTE_METRIC1);
@@ -555,23 +562,37 @@ public class DbEventWriter implements Runnable {
                 
 
 				// info used for Discovery Link
-				RouterInterface routeIface = new RouterInterface(ifindex);
-				routeIface.setMetric(routemetric1);
-				routeIface.setNextHop(nexthop);
 				
 				
-				int nodeParentId = getNodeidFromIp(dbConn,nexthop);
-				
-				if (nodeParentId == -1) {
+				RouterInterface routeIface = null;
+				routeIface = getNodeidMaskFromIp(dbConn,nexthop);
+
+				// if target node is not snmp node try to save info
+				if (routeIface == null) {
+					routeIface = getNodeFromIp(dbConn, nexthop);
+				}
+					
+				if (routeIface == null) {
 					//TODO here is a good point for autodiscovery
-					log.warn("store: No nodeid found for next hop " + nexthop 
+					log.warn("store: No nodeid found for next hop ip" + nexthop 
 							+ " Skipping ip route interface add to Linkable Snmp Node");
+					// try to find it in ipinterface
 				} else {
-					
-					routeIface.setNodeparentid(nodeParentId);
-					routeIface.setSnmpiftype(getSnmpIfType(dbConn, nodeid, ifindex));
-					
+					int snmpiftype = -2;
+					if (ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
+
+					// no processing ethernet type
+					if (log.isDebugEnabled())
+						log.debug("store: interface has snmpiftype "
+									+ snmpiftype + " . Adding to DiscoverLink ");
+
+					routeIface.setSnmpiftype(snmpiftype);
+					routeIface.setIfindex(ifindex);
+					routeIface.setMetric(routemetric1);
+					routeIface.setNextHop(nexthop);
+						
 					routeInterfaces.add(routeIface);
+
 				}
 
 				// save info to DB
@@ -1040,7 +1061,7 @@ public class DbEventWriter implements Runnable {
 		stmt.setString(1, ipaddr.getHostAddress());
 
 		if (log.isDebugEnabled())
-			log.debug("getNodeidFromIp: executing query " + stmt.toString() + " with ip address=" + ipaddr.getHostAddress());
+			log.debug("getNodeidFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + ipaddr.getHostAddress());
 
 		ResultSet rs = stmt.executeQuery();
 
@@ -1070,6 +1091,113 @@ public class DbEventWriter implements Runnable {
 
 	}
 
+	private RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress ipaddr)
+	throws SQLException {
+		if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
+			
+		Category log = ThreadCategory.getInstance(getClass());
+			
+		int nodeid = -1;
+		int ifindex = -1;
+		String netmask = null;
+		
+		PreparedStatement stmt = null;
+		stmt = dbConn.prepareStatement(SQL_GET_NODEID__IFINDEX_MASK);
+		stmt.setString(1, ipaddr.getHostAddress());
+			
+		if (log.isDebugEnabled())
+			log.debug("getNodeidMaskFromIp: executing query " + SQL_GET_NODEID__IFINDEX_MASK + " with ip address=" + ipaddr.getHostAddress());
+			
+			
+		ResultSet rs = stmt.executeQuery();
+			
+		if (!rs.next()) {
+			rs.close();
+			stmt.close();
+			if (log.isDebugEnabled())
+				log.debug("getNodeidMaskFromIp: no entries found in snmpinterface");
+			return null;
+		}
+		// extract the values.
+		//
+		// get the node id
+		//
+		nodeid = rs.getInt("nodeid");
+		if (rs.wasNull()) {
+			rs.close();
+			stmt.close();
+			if (log.isDebugEnabled())
+				log.debug("getNodeidMaskFromIp: no nodeid found");
+			return null;
+		}
+
+		ifindex = rs.getInt("snmpifindex");
+		if (rs.wasNull()) {
+			if (log.isDebugEnabled())
+				log.debug("getNodeidMaskFromIp: no snmsnmpifindex found");
+			ifindex = -1;
+		}
+
+		netmask = rs.getString("snmpipadentnetmask");
+		if (rs.wasNull()) {
+			if (log.isDebugEnabled())
+				log.debug("getNodeidMaskFromIp: no snmpipadentnetmask found");
+			netmask = "255.255.255.255";
+		}
+
+		rs.close();
+		stmt.close();
+		RouterInterface ri = new RouterInterface(nodeid,ifindex,netmask);
+		return ri;
+		
+	}
+
+	private RouterInterface getNodeFromIp(Connection dbConn, InetAddress ipaddr)
+	throws SQLException {
+		if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
+			
+		Category log = ThreadCategory.getInstance(getClass());
+			
+		int nodeid = -1;
+		int ifindex = -1;
+		
+		PreparedStatement stmt = null;
+		stmt = dbConn.prepareStatement(SQL_GET_NODEID);
+		stmt.setString(1, ipaddr.getHostAddress());
+			
+		if (log.isDebugEnabled())
+			log.debug("getNodeFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + ipaddr.getHostAddress());
+			
+			
+		ResultSet rs = stmt.executeQuery();
+			
+		if (!rs.next()) {
+			rs.close();
+			stmt.close();
+			if (log.isDebugEnabled())
+				log.debug("getNodeFromIp: no entries found in snmpinterface");
+			return null;
+		}
+		// extract the values.
+		//
+		// get the node id
+		//
+		nodeid = rs.getInt("nodeid");
+		if (rs.wasNull()) {
+			rs.close();
+			stmt.close();
+			if (log.isDebugEnabled())
+				log.debug("getNodeFromIp: no nodeid found");
+			return null;
+		}
+
+		rs.close();
+		stmt.close();
+		RouterInterface ri = new RouterInterface(nodeid,ifindex);
+		return ri;
+		
+	}
+
 	private AtInterface getNodeidIfindexFromIp(Connection dbConn, InetAddress ipaddr)
 	throws SQLException {
 
@@ -1082,6 +1210,7 @@ public class DbEventWriter implements Runnable {
 		int atifindex = -1;
 		
 		PreparedStatement stmt = dbConn.prepareStatement(SQL_GET_NODEID_IFINDEX_IPINT);
+	
 		stmt.setString(1, ipaddr.getHostAddress());
 
 		if (log.isDebugEnabled()) 
@@ -1094,8 +1223,7 @@ public class DbEventWriter implements Runnable {
 			return null;
 		}
 		
-		int ndx = 1;
-		atnodeid = rs.getInt(ndx++);
+		atnodeid = rs.getInt("nodeid");
 		if (rs.wasNull()) {
 			return null;
 		}
@@ -1103,17 +1231,15 @@ public class DbEventWriter implements Runnable {
 		AtInterface ati = new AtInterface(atnodeid,ipaddr.getHostAddress());
 
 		// get ifindex if exists
-		atifindex = rs.getInt(ndx++);
+		atifindex = rs.getInt("ifindex");
 		if (rs.wasNull()) {
 			if (log.isInfoEnabled())
-				log.info("store: no ifindex (-1) found for ipaddress "
+				log.info("getNodeidIfindexFromIp: nodeid "+ atnodeid +" no ifindex (-1) found for ipaddress "
 						+ ipaddr + ".");
-			
 		} else {
 			if (log.isInfoEnabled())
-				log.info("store: ifindex " + atifindex + " found for ipaddress "
+				log.info("getNodeidIfindexFromIp: nodeid "+ atnodeid +" ifindex " + atifindex + " found for ipaddress "
 						+ ipaddr + ".");
-			
 			ati.setIfindex(atifindex);
 		}
 		
@@ -1180,7 +1306,7 @@ public class DbEventWriter implements Runnable {
 		stmt.setString(3, ifName);
 		if (log.isDebugEnabled())
 			log.debug("getIfIndexByName: executing query"
-					+ stmt.toString() + "nodeid =" + nodeid + "and ifName=" + ifName);
+					+ SQL_GET_IFINDEX_SNMPINTERFACE_NAME + "nodeid =" + nodeid + "and ifName=" + ifName);
 
 		ResultSet rs = stmt.executeQuery();
 
