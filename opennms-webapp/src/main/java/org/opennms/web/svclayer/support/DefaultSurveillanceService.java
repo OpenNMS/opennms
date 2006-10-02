@@ -51,6 +51,7 @@ import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
+import org.opennms.web.svclayer.SimpleWebTable.Cell;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
 import org.springframework.util.StringUtils;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -178,6 +179,14 @@ public class DefaultSurveillanceService implements SurveillanceService {
         public String getColumnLabel(int colIndex) {
         	return getColumnDef(colIndex).getLabel();
         }
+
+        public String getColumnReportCategory(int colIndex) {
+            return getColumnDef(colIndex).getReportCategory();
+        }
+
+        public String getRowReportCategory(int rowIndex) {
+            return getRowDef(rowIndex).getReportCategory();
+        }
         
     }
 
@@ -204,7 +213,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
         
         // set up the column headings
         for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
-            webTable.addColumn(sView.getColumnLabel(colIndex), "simpleWebTableHeader");
+            webTable.addColumn(sView.getColumnLabel(colIndex), "simpleWebTableHeader")
+              .setLink(computeReportCategoryLink(sView.getColumnReportCategory(colIndex)));
         }
         
 
@@ -220,7 +230,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
             
             webTable.newRow();
             webTable.addCell(sView.getRowLabel(rowIndex),
-                             "simpleWebTableRowLabel");
+                             "simpleWebTableRowLabel").setLink(computeReportCategoryLink(sView.getRowReportCategory(rowIndex)));
 
 
             for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
@@ -238,6 +248,15 @@ public class DefaultSurveillanceService implements SurveillanceService {
         progressMonitor.finished(webTable);
         
         return webTable;
+    }
+
+    private String computeReportCategoryLink(String reportCategory) {
+        String link = null;
+        
+        if (reportCategory != null) {
+            link = "category.jsp?category=" + Util.encode(reportCategory);
+        }
+        return link;
     }
 
     /*

@@ -110,6 +110,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             RowDef rowDef = (RowDef) it.next();
             AggregateStatusDefinition def = new AggregateStatusDefinition();
             def.setName(rowDef.getLabel());
+            def.setReportCategory(rowDef.getReportCategory());
             
             Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
             
@@ -166,9 +167,11 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
     
     public Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(AggregateStatusView statusView) {
+        
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
         }
+        
         /*
          * We'll return this collection populated with all the aggregated statuss for the
          * devices in the building (site) by for each group of categories.
@@ -179,16 +182,10 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
          * Iterate over the status definitions and create aggregated statuss
          */
         for (AggregateStatusDefinition statusDef : statusView.getStatusDefinitions()) {
-            
             Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(statusView.getColumnName(), statusView.getColumnValue(), statusDef.getCategories());
-            
             AggregateStatus status = new AggregateStatus(new HashSet<OnmsNode>(nodes));
             status.setLabel(statusDef.getName());
-            
-            if (AggregateStatus.NODES_ARE_DOWN.equals(status.getStatus())) {
-                status.setLink(createNodePageUrl(statusView, status));
-            }
-            
+            status.setLink(createNodePageUrl(statusView, status));
             stati.add(status);
         }
         
