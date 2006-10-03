@@ -760,7 +760,7 @@ create table vulnerabilities (
 	descr			text,
 	port			integer,
 	protocol		varchar(32),
-	cveEntry		varchar(14),
+	cveEntry		varchar(255),
 
 	constraint pk_vulnerabilityID primary key (vulnerabilityID)
 );
@@ -807,7 +807,7 @@ create table vulnPlugins (
         summary                 varchar(256),
         family                  varchar(32),
         version                 varchar(32),
-        cveEntry                varchar(14),
+        cveEntry                varchar(255),
         md5                     varchar(32)
 );
 
