@@ -69,9 +69,6 @@ import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
 
 public class CategoryList {
-    protected static final long s_disconnect_time = 130000; // 130 seconds
-
-    protected static final String s_web_console_view = "WebConsoleView";
 
     protected CategoryModel m_model;
 
@@ -82,6 +79,8 @@ public class CategoryList {
      * categories under the header "Category". (See the getSections method.)
      */
     protected Section[] m_sections;
+
+    private int m_disconnectTimeout;
 
     public CategoryList(ServletContext context) throws ServletException {
         m_context = context;
@@ -97,10 +96,11 @@ public class CategoryList {
             ViewsDisplayFactory.init();
             ViewsDisplayFactory viewsDisplayFactory = ViewsDisplayFactory.getInstance();
 
-            View view = viewsDisplayFactory.getView(s_web_console_view);
+            View view = viewsDisplayFactory.getDefaultView();
 
             if (view != null) {
                 m_sections = view.getSection();
+                m_disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
                 m_context.log("DEBUG: found display rules from " + "viewsdisplay.xml");
             } else {
                 m_context.log("DEBUG: did not find display rules " + "from viewsdisplay.xml");
@@ -213,7 +213,7 @@ public class CategoryList {
     }
 
     public boolean isDisconnected(long earliestUpdate) {
-        if (earliestUpdate < 1 || (earliestUpdate + s_disconnect_time) < System.currentTimeMillis()) {
+        if (earliestUpdate < 1 || (earliestUpdate + m_disconnectTimeout) < System.currentTimeMillis()) {
             return true;
         } else {
             return false;
