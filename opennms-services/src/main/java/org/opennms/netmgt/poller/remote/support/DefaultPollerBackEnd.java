@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -20,6 +21,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.remote.PollConfiguration;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
@@ -31,6 +33,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;
     private PollerConfig m_pollerConfig;
+    private TimeKeeper m_timeKeeper;
 
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         return m_locMonDao.findAllMonitoringLocationDefinitions();
@@ -89,23 +92,39 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     public boolean pollerCheckingIn(int locationMonitorId,
             Date currentConfigurationVersion) {
-        throw new UnsupportedOperationException("not yet implemented");
+        OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+        if (mon == null) {
+            return false;
+        }
+        mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
+        m_locMonDao.update(mon);
+        return true;
     }
 
     public boolean pollerStarting(int locationMonitorId) {
-        throw new UnsupportedOperationException("not yet implemented");
+        OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+        if (mon == null) {
+            return false;
+        }
+        mon.setStatus(MonitorStatus.STARTED);
+        mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
+        m_locMonDao.update(mon);
+        return true;
     }
 
     public void pollerStopping(int locationMonitorId) {
-        throw new UnsupportedOperationException("not yet implemented");
+        OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+        mon.setStatus(MonitorStatus.STOPPED);
+        mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
+        m_locMonDao.update(mon);
     }
 
     public int registerLocationMonitor(String monitoringLocationId) {
         
         OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
-        
         OnmsLocationMonitor mon = new OnmsLocationMonitor();
         mon.setLocationDefinition(def);
+        mon.setStatus(MonitorStatus.REGISTERED);
         
         m_locMonDao.save(mon);
         
@@ -147,6 +166,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         if (currentStatus == null || !currentStatus.getPollResult().equals(pollResult)) {
             m_locMonDao.saveStatusChange(newStatus);
         }
+    }
+
+    public void setTimeKeeper(TimeKeeper timeKeeper) {
+        m_timeKeeper = timeKeeper;
     }
 
 }

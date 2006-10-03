@@ -16,6 +16,7 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.Package;
@@ -34,6 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 import org.quartz.Scheduler;
 
@@ -66,6 +68,7 @@ public class PollerBackEndTest extends TestCase {
     private MonitoredServiceDao m_monSvcDao;
     private PollerConfig m_pollerConfig;
     private Scheduler m_scheduler;
+    private TimeKeeper m_timeKeeper;
     
     // helper objects used to respond from the mock objects
     private OnmsMonitoringLocationDefinition m_locationDefinition;
@@ -89,11 +92,13 @@ public class PollerBackEndTest extends TestCase {
         m_monSvcDao = createMock(MonitoredServiceDao.class);
         m_pollerConfig = createMock(PollerConfig.class);
         m_scheduler = createMock(Scheduler.class);
+        m_timeKeeper = createMock(TimeKeeper.class);
         
         m_backEnd = new DefaultPollerBackEnd();
         m_backEnd.setLocationMonitorDao(m_locMonDao);
         m_backEnd.setMonitoredServiceDao(m_monSvcDao);
         m_backEnd.setPollerConfig(m_pollerConfig);
+        m_backEnd.setTimeKeeper(m_timeKeeper);
         
         m_backEnd.afterPropertiesSet();
 
@@ -169,6 +174,7 @@ public class PollerBackEndTest extends TestCase {
             public Object answer() throws Throwable {
                 OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
                 mon.setId(1);
+                assertEquals(OnmsLocationMonitor.MonitorStatus.REGISTERED, mon.getStatus());
                 return null;
             }
             
@@ -327,24 +333,66 @@ public class PollerBackEndTest extends TestCase {
         assertTrue(config.getConfigurationForPoller()[1].getMonitorConfiguration().containsKey("hostname"));
     }
     
-    public void FIXMEtestPollerStarting() {
+    public void testPollerStarting() {
+        
+        expectLocationMonitorStatusChanged(MonitorStatus.STARTED);
+        
+        replayMocks();
+
         m_backEnd.pollerStarting(1);
+        
+        verifyMocks();
+    }
+
+    private void expectLocationMonitorStatusChanged(final MonitorStatus expectedStatus) {
+        final Date now = new Date();
+        expect(m_timeKeeper.getCurrentDate()).andReturn(now);
+        expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(m_locationMonitor);
+        m_locMonDao.update(m_locationMonitor);
+        expectLastCall().andAnswer(new IAnswer<Object>() {
+
+            public Object answer() throws Throwable {
+                OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
+                assertEquals(expectedStatus, mon.getStatus());
+                assertEquals(now, mon.getLastCheckInTime());
+                return null;
+            }
+            
+        });
     }
     
-    public void FIXMEtestPollerStopping() {
+    public void testPollerStopping() {
+
+        expectLocationMonitorStatusChanged(MonitorStatus.STOPPED);
+        
+        replayMocks();
+
         m_backEnd.pollerStopping(1);
+        
+        verifyMocks();
     }
     
-    public void FIXMEtestPollerCheckingIn() {
+    public void testPollerCheckingIn() {
+        
+        expectLocationMonitorStatusChanged(m_locationMonitor.getStatus());
+        
+        replayMocks();
+
         m_backEnd.pollerCheckingIn(1, new Date());
+        
+        verifyMocks();
+    }
+    
+    public void testNoCheckin() {
+        
     }
 
     private void verifyMocks() {
-        verify(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler);
+        verify(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler, m_timeKeeper);
     }
 
     private void replayMocks() {
-        replay(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler);
+        replay(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler, m_timeKeeper);
     }
 
     private Package createPackage(String pkgName, String filterRule) {
