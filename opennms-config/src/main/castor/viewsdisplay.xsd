@@ -13,14 +13,17 @@
 
   <element name="viewinfo">
     <annotation>
-      <documentation>Top-level element for the viewsdisplay.xml configuration
-      file.</documentation>
+      <documentation>
+        Top-level element for the viewsdisplay.xml configuration file.
+      </documentation>
     </annotation>
 
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" ref="this:view"/>
       </sequence>
+      <attribute name="disconnect-timeout" type="positiveInteger" use="optional" default="130000" />
+      <attribute name="default-view" type="string" use="optional" default="WebConsoleView" />
     </complexType>
   </element>
 
