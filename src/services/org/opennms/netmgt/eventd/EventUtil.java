@@ -726,7 +726,7 @@ public final class EventUtil {
 							Parm evParm = (Parm) en.nextElement();
 							String parmName = evParm.getParmName();
 							if (parmName != null
-									&& parmName.trim().equals(eparmname)) {
+									&& parmName.trim().startsWith(eparmname)) {
 								// get parm value
 								Value eparmval = evParm.getValue();
 								if (eparmval != null) {
