@@ -17,12 +17,16 @@ public class RouterInterface {
 	
 	int metric;
 	
-	InetAddress nextHop;
-	
 	int nextHopnodeid;
 	
 	int nextHopIfindex;
 	
+	InetAddress routedest;
+
+	InetAddress routemask;
+
+	InetAddress nextHop;
+
 	InetAddress nextHopNetmask;
 	
 	int snmpiftype; 
@@ -115,21 +119,52 @@ public class RouterInterface {
 		this.ifindex = ifindex;
 	}
 	
-	public InetAddress getNetwork() {
-		byte[] ipaddrA = nextHop.getAddress();
-		byte[] ipaddrB = nextHopNetmask.getAddress();
-		byte[] network = new byte[ipaddrA.length];
-//		for (int i:ipaddrA) {
-//			network[i] = new Integer(ipaddrA[i] & ipaddrB[i]).byteValue();
-//			
-//		}
-		try {
-//			return InetAddress.getByAddress(network);
-			return InetAddress.getByName("255.255.255.255");
+	public InetAddress getNextHopNet() {
+		byte[] ipAddress = nextHop.getAddress();
+		byte[] netMask = nextHopNetmask.getAddress();
+		byte[] netWork = new byte[4];
+
+		for (int i=0;i< 4; i++) {
+			netWork[i] = new Integer(ipAddress[i] & netMask[i]).byteValue();
 			
+		}
+		try {
+			return InetAddress.getByAddress(netWork);
 		} catch (Exception e){
 			return null;
 		}
+	}
+
+	public InetAddress getRouteNet() {
+		byte[] ipAddress = routedest.getAddress();
+		byte[] netMask = routemask.getAddress();
+		byte[] netWork = new byte[4];
+
+		for (int i=0;i< 4; i++) {
+			netWork[i] = new Integer(ipAddress[i] & netMask[i]).byteValue();
+			
+		}
+		try {
+			return InetAddress.getByAddress(netWork);
+		} catch (Exception e){
+			return null;
+		}
+	}
+
+	public InetAddress getRouteDest() {
+		return routedest;
+	}
+
+	public void setRouteDest(InetAddress routedest) {
+		this.routedest = routedest;
+	}
+
+	public InetAddress getRoutemask() {
+		return routemask;
+	}
+
+	public void setRoutemask(InetAddress routemask) {
+		this.routemask = routemask;
 	}
 }
 

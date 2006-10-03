@@ -229,7 +229,6 @@ final class DbDataLinkInterfaceEntry
 			// start setting the result values
 			//
 			PreparedStatement stmt = c.prepareStatement(sqlText.toString());
-			sqlText = null;
 
 			int ndx = 1;
 
