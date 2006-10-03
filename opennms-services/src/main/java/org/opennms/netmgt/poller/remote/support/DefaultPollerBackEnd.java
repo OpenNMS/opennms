@@ -34,6 +34,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     private MonitoredServiceDao m_monSvcDao;
     private PollerConfig m_pollerConfig;
     private TimeKeeper m_timeKeeper;
+    private int m_unresponsiveTimeout;
+    private Date m_configurationTimestamp = null;
 
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         return m_locMonDao.findAllMonitoringLocationDefinitions();
@@ -60,21 +62,27 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
             
         }
         
-        return new SimplePollerConfiguration(configs.toArray(new PollConfiguration[configs.size()]));
+        return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PollConfiguration[configs.size()]));
         
         
     }
     
     private static class SimplePollerConfiguration implements PollerConfiguration {
         
+        private Date m_timestamp;
         private PollConfiguration[] m_pollConfigs;
         
-        SimplePollerConfiguration(PollConfiguration[] pollConfigs) {
+        SimplePollerConfiguration(Date timestamp, PollConfiguration[] pollConfigs) {
+            m_timestamp = timestamp;
             m_pollConfigs = pollConfigs;
         }
 
         public PollConfiguration[] getConfigurationForPoller() {
             return m_pollConfigs;
+        }
+
+        public Date getConfigurationTimestamp() {
+            return m_timestamp;
         }
         
     }
@@ -90,15 +98,14 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         return paramMap;
     }
 
-    public boolean pollerCheckingIn(int locationMonitorId,
-            Date currentConfigurationVersion) {
+    public boolean pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
         OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
             return false;
         }
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
-        return true;
+        return m_configurationTimestamp.after(currentConfigurationVersion);
     }
 
     public boolean pollerStarting(int locationMonitorId) {
@@ -137,6 +144,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");
         Assert.notNull(m_pollerConfig, "The PollerConfig must be set");
+        Assert.notNull(m_timeKeeper, "The timeKeeper must be set");
+        Assert.state(m_unresponsiveTimeout > 0, "the unresponsiveTimeout property must be set");
+        
+        m_configurationTimestamp = m_timeKeeper.getCurrentDate();
     }
 
     public void setLocationMonitorDao(LocationMonitorDao locMonDao) {
@@ -170,6 +181,34 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     public void setTimeKeeper(TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
+    }
+
+    public void checkforUnresponsiveMonitors() {
+        
+        Date now = m_timeKeeper.getCurrentDate();
+        Date earliestAcceptable = new Date(now.getTime() - m_unresponsiveTimeout);
+        
+        Collection<OnmsLocationMonitor> monitors = m_locMonDao.findAll();
+        
+        for (OnmsLocationMonitor monitor : monitors) {
+            if (monitor.getStatus() == MonitorStatus.STARTED && monitor.getLastCheckInTime().before(earliestAcceptable)) {
+                monitor.setStatus(MonitorStatus.UNRESPONSIVE);
+                m_locMonDao.update(monitor);
+            }
+        }
+    }
+
+    public void setUnresponsiveTimeout(int unresponsiveTimeout) {
+        m_unresponsiveTimeout = unresponsiveTimeout;
+        
+    }
+    
+    private Date getConfigurationTimestamp() {
+        return m_configurationTimestamp;
+    }
+
+    public void configurationUpdated() {
+        m_configurationTimestamp = m_timeKeeper.getCurrentDate();
     }
 
 }

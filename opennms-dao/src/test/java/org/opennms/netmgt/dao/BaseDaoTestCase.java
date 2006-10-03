@@ -1,5 +1,6 @@
 package org.opennms.netmgt.dao;
 
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class BaseDaoTestCase extends

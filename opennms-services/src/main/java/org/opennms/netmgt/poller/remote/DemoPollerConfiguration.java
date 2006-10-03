@@ -1,6 +1,7 @@
 package org.opennms.netmgt.poller.remote;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsServiceType;
 
 public class DemoPollerConfiguration implements PollerConfiguration {
+    
+    Date m_timestamp = new Date();
 	
 	public PollConfiguration[] getConfigurationForPoller() {
 		
@@ -29,5 +32,9 @@ public class DemoPollerConfiguration implements PollerConfiguration {
 		
 		return (PollConfiguration[]) serviceConfigs.toArray(new PollConfiguration[serviceConfigs.size()]);
 	}
+
+    public Date getConfigurationTimestamp() {
+        return m_timestamp;
+    }
 
 }
