@@ -525,7 +525,7 @@ final class DiscoveryLink implements ReadyRunnable {
 
 			if (log.isDebugEnabled())
 				log
-						.debug("run: try to found remaining links using Mac Address Forwarding Table");
+						.debug("run: try to found links using Mac Address Forwarding Table");
 
 			ite = m_bridge.values().iterator();
 
@@ -703,6 +703,9 @@ final class DiscoveryLink implements ReadyRunnable {
 			}
 
 			// now found remaing links (not yet parsed) present on one side of backbone link
+			if (log.isDebugEnabled())
+				log
+						.debug("run: try to found remaining links (Orfani!) on BackBoneBridgePort");
 
 			ite = m_bridge.values().iterator();
 
@@ -842,9 +845,27 @@ final class DiscoveryLink implements ReadyRunnable {
 							log
 									.debug("run: route interface has ifindex "
 											+ ifindex + " . Processing");
-						// found ifindex on node 
-						ifindex = getIfIndexFromRouter(curNode, routeIface.getNextHopNet());
+							ifindex = getIfIndexFromRouter(curNode, routeIface.getNextHopNet());
+						if (log.isDebugEnabled())
+							log
+									.debug("run: found correct ifindex "
+											+ ifindex + " .");
+						if (curNode.isCdpPort(ifindex)) {
+							LinkableNode destNode = getLinkableNodeFromNodeId(nextHopNodeid);
+							if (destNode != null && destNode.isCdpPort(routeIface.getNextHopIfindex())) {
+								if (log.isDebugEnabled())
+									log
+											.debug("run: ifindex "
+													+ ifindex + " just parsed on node.");
+								continue;
+							}
+						}
 					}
+					if (log.isDebugEnabled())
+						log
+								.debug("run: saving route link: nodeid " + curNodeId + " ifindex "
+										+ ifindex + " nodeparentid " + nextHopNodeid + " parentifindex "
+										+ routeIface.getNextHopIfindex());
 					
 					// Saving link also when ifindex = -1 (not found)
 					NodeToNodeLink lk = new NodeToNodeLink(nextHopNodeid,
@@ -1358,22 +1379,18 @@ final class DiscoveryLink implements ReadyRunnable {
 			if (macs == null || macs.isEmpty()) {
 				if (log.isDebugEnabled())
 					log
-							.debug("run: mac's list on link is empty.");
+							.debug("addLinks: mac's list on link is empty.");
 			} else {
 				Iterator mac_ite = macs.iterator();
-
-				if (log.isDebugEnabled())
-					log
-							.debug("run: finding ethernet link on bridges node link");
 
 				while (mac_ite.hasNext()) {
 					String curMacAddress = (String) mac_ite
 							.next();
 					if (macsParsed.contains(curMacAddress)) {
 						log
-								.warn("run: mac address "
+								.warn("addLinks: mac address "
 										+ curMacAddress
-										+ " just found on other bridge port! Possible Ethernet Loop. ");
+										+ " just found on other bridge port! Skipping...");
 						continue;
 
 					}
@@ -1382,7 +1399,7 @@ final class DiscoveryLink implements ReadyRunnable {
 						log
 								.debug("run: find ethernet mac address "
 										+ curMacAddress
-										+ " on link");
+										+ " on port");
 
 					if (macToAtinterface.containsKey(curMacAddress)) {
 						AtInterface at = macToAtinterface.get(curMacAddress);
