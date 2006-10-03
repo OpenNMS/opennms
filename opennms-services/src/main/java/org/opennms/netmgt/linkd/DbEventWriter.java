@@ -294,7 +294,7 @@ public class DbEventWriter implements Runnable {
 			
 			if (log.isDebugEnabled())
 				log.debug("storelink: finding nodeid,ifindex on DB. Sql Statement "
-					+ stmt.toString());
+					+ SQL_GET_NODEID_IFINDEX + " with mac address " + macaddr);
 
 			if (!rs.next()) {
 				rs.close();
@@ -541,6 +541,11 @@ public class DbEventWriter implements Runnable {
 				Integer routetype = ent.getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
 				Integer routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
 
+				// TODO remeber that now nexthop 0.0.0.0 is not 
+				// parsed, anyway we should analize this case in link discovery
+				// so here is the place where you can have this info saved for
+				// now is discarded. See DiscoveryLink for more details......
+				
 				// info used for Discovery Link
 				// the routeiface constructor set nodeid, ifindex, netmask for nexthop address
 				RouterInterface routeIface = getNodeidMaskFromIp(dbConn,nexthop);
@@ -561,20 +566,26 @@ public class DbEventWriter implements Runnable {
                     //Okay to autobox here, we checked for null
 					if (ifindex != null && ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
 
-					if (log.isDebugEnabled())
-						log.debug("store: interface has snmpiftype "
-									+ snmpiftype + " . Adding to DiscoverLink ");
-
-					routeIface.setRouteDest(routedest);
-					routeIface.setRoutemask(routemask);
-					routeIface.setSnmpiftype(snmpiftype);
-					routeIface.setIfindex(ifindex);
-					routeIface.setMetric(routemetric1);
-
-					routeIface.setNextHop(nexthop);
+					if (snmpiftype == -1) {
+						log.warn("store: interface has wrong or null snmpiftype "
+								+ snmpiftype + " . Skip adding to DiscoverLink ");
 						
-					routeInterfaces.add(routeIface);
+					} else {
+						if (log.isDebugEnabled())
+							log.debug("store: interface has snmpiftype "
+										+ snmpiftype + " . Adding to DiscoverLink ");
 
+						routeIface.setRouteDest(routedest);
+						routeIface.setRoutemask(routemask);
+						routeIface.setSnmpiftype(snmpiftype);
+						routeIface.setIfindex(ifindex);
+						routeIface.setMetric(routemetric1);
+
+						routeIface.setNextHop(nexthop);
+							
+						routeInterfaces.add(routeIface);
+						
+					}
 				}
 
 				// save info to DB
