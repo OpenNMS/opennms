@@ -36,14 +36,19 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 /**
@@ -53,18 +58,29 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "location_monitors")
 public class OnmsLocationMonitor {
+    
+    public static enum MonitorStatus {
+        NEW,
+        REGISTERED,
+        STARTED,
+        STOPPED,
+        UNRESPONSIVE,
+        DELETED
+    }
 
     private Integer m_id;
 
     private String m_name;
+    
+    private MonitorStatus m_status = MonitorStatus.NEW;
+    
+    private Date m_lastCheckInTime;
 
     // needed for locating XML configured location definition and
     // creating m_locationDefintion.
     private String m_definitionName;
 
     private OnmsMonitoringLocationDefinition m_locationDefinition;
-
-    private List<OnmsLocationSpecificStatus> m_mostRecentStatusChanges;
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -105,14 +121,24 @@ public class OnmsLocationMonitor {
         m_definitionName = definitionName;
     }
 
-    // public List<OnmsLocationSpecificStatusChange>
-    // getMostRecentStatusChanges() {
-    // return m_mostRecentStatusChanges;
-    // }
-    //
-    // public void setMostRecentStatusChanges(
-    // List<OnmsLocationSpecificStatusChange> mostRecentStatusChanges) {
-    //        m_mostRecentStatusChanges = mostRecentStatusChanges;
-    //    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length=13, nullable=false)
+    public MonitorStatus getStatus() {
+        return m_status;
+    }
 
+    public void setStatus(MonitorStatus status) {
+        m_status = status;
+    }
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastCheckInTime")
+    public Date getLastCheckInTime() {
+        return m_lastCheckInTime;
+    }
+    
+    public void setLastCheckInTime(Date lastCheckInTime) {
+        m_lastCheckInTime = lastCheckInTime;
+    }
+    
 }
