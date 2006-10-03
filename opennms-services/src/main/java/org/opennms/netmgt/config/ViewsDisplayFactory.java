@@ -72,6 +72,8 @@ public class ViewsDisplayFactory {
     /** Map of view objects by name. */
     protected Map<String,View> m_viewsMap;
 
+    private Viewinfo m_viewInfo;
+
     /**
      * Empty private constructor so this class cannot be instantiated outside
      * itself.
@@ -125,10 +127,10 @@ public class ViewsDisplayFactory {
     }
     
     private void unmarshal(Reader reader) throws MarshalException, ValidationException {
-        Viewinfo viewInfo = (Viewinfo) Unmarshaller.unmarshal(Viewinfo.class, reader);
+        m_viewInfo = (Viewinfo) Unmarshaller.unmarshal(Viewinfo.class, reader);
         Map<String, View> viewsMap = new HashMap<String,View>();
 
-        Collection viewList = viewInfo.getViewCollection();
+        Collection viewList = m_viewInfo.getViewCollection();
         Iterator i = viewList.iterator();
 
         while (i.hasNext()) {
@@ -170,6 +172,10 @@ public class ViewsDisplayFactory {
 
         return view;
     }
+    
+    public View getDefaultView() {
+        return m_viewsMap.get(m_viewInfo.getDefaultView());
+    }
 
     /**
      * Reload the viewsdisplay.xml file if it has been changed since we last
@@ -184,5 +190,9 @@ public class ViewsDisplayFactory {
     public static void setInstance(ViewsDisplayFactory instance) {
         m_instance = instance;
         m_instance.initialized = true;
+    }
+
+    public int getDisconnectTimeout() {
+        return m_viewInfo.getDisconnectTimeout();
     }
 }
