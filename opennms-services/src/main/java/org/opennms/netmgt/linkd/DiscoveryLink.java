@@ -218,6 +218,14 @@ final class DiscoveryLink implements ReadyRunnable {
 				while (sub_ite.hasNext()) {
 					CdpInterface cdpIface = (CdpInterface) sub_ite.next();
 
+					int cdpIfIndex = cdpIface.getCdpIfIndex();
+					
+					if (cdpIfIndex < 0) {
+						log.warn("run: found not valid CDP IfIndex "
+								+ cdpIfIndex + " . Skipping");
+						continue;
+					}
+
 					InetAddress targetIpAddr = cdpIface.getCdpTargetIpAddr();
 
 					int targetCdpNodeId = cdpIface.getCdpTargetNodeId();
@@ -235,14 +243,6 @@ final class DiscoveryLink implements ReadyRunnable {
 							log.debug("run: node id found for ip address "
 									+ targetIpAddr.getHostAddress()
 									+ " is itself. Skipping");
-						continue;
-					}
-
-					int cdpIfIndex = cdpIface.getCdpIfIndex();
-					
-					if (cdpIfIndex < 0) {
-						log.warn("run: found not valid CDP IfIndex "
-								+ cdpIfIndex + " . Skipping");
 						continue;
 					}
 
@@ -797,10 +797,16 @@ final class DiscoveryLink implements ReadyRunnable {
 									.debug("run: nexthop address is broadcast address "
 											+ nexthop.getHostAddress()
 											+ " . Skipping ");
+						//TODO this should be further analized 
+						// working on routeDestNet you can find hosts that
+						// are directly connected with the dest network
+						// This happens when routing is made in such a way:
+						// route 10.3.2.0 255.255.255.0 Serial0
+						// so the router broadcasts on Serial0
 						continue;
 					}
 
-					if (nexthop.getHostAddress().equals("127.0.0.1")) {
+					if (nexthop.isLoopbackAddress()) {
 						if (log.isDebugEnabled())
 							log
 									.debug("run: nexthop address is localhost address "
@@ -836,10 +842,12 @@ final class DiscoveryLink implements ReadyRunnable {
 							log
 									.debug("run: route interface has ifindex "
 											+ ifindex + " . Processing");
-						ifindex = getIfIndexFromRouter(curNode, routeIface);
+						// found ifindex on node 
+						ifindex = getIfIndexFromRouter(curNode, routeIface.getNextHopNet());
 					}
 					
-					NodeToNodeLink lk = new NodeToNodeLink(routeIface.getNextHopNodeid(),
+					// Saving link also when ifindex = -1 (not found)
+					NodeToNodeLink lk = new NodeToNodeLink(nextHopNodeid,
 							routeIface.getNextHopIfindex());
 					lk.setNodeparentid(curNodeId);
 					lk.setParentifindex(ifindex);
@@ -866,7 +874,7 @@ final class DiscoveryLink implements ReadyRunnable {
 		reschedule();
 	}
 
-	private int getIfIndexFromRouter(LinkableNode parentnode, RouterInterface routerIface) {
+	private int getIfIndexFromRouter(LinkableNode parentnode, InetAddress nextHopNet) {
 
 		if (!parentnode.hasRouteInterfaces())
 			return -1;
@@ -883,9 +891,7 @@ final class DiscoveryLink implements ReadyRunnable {
 			if (ifindex == 0 || ifindex == -1)
 				continue;
 
-			InetAddress curNetwork = curIface.getNetwork();
-			InetAddress otherNetwork = routerIface.getNetwork();
-			if (curNetwork.equals(otherNetwork)) return ifindex;
+			if (curIface.getRouteNet().equals(nextHopNet)) return ifindex;
 		}
 		return -1;
 	}

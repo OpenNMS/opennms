@@ -528,7 +528,7 @@ public class DbEventWriter implements Runnable {
                 log.debug("storeSnmpCollection: ifindex is: "+ (ifindex < 1 ? "less than 1" : ifindex)+"; IP_ROUTE_IFINDEX: "+IpRouteTableEntry.IP_ROUTE_IFINDEX);
 
                 if (ifindex == null) {
-					log.warn("store: NNot valid ifindex" + ifindex 
+					log.warn("store: Not valid ifindex" + ifindex 
 							+ " Skipping...");
 					continue;
 				}
@@ -542,10 +542,10 @@ public class DbEventWriter implements Runnable {
 				Integer routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
 
 				// info used for Discovery Link
-				RouterInterface routeIface = null;
-				routeIface = getNodeidMaskFromIp(dbConn,nexthop);
+				// the routeiface constructor set nodeid, ifindex, netmask for nexthop address
+				RouterInterface routeIface = getNodeidMaskFromIp(dbConn,nexthop);
 
-				// if target node is not snmp node try to save info
+				// if target node is not snmp node always try to save info
 				if (routeIface == null) {
 					routeIface = getNodeFromIp(dbConn, nexthop);
 				}
@@ -561,14 +561,16 @@ public class DbEventWriter implements Runnable {
                     //Okay to autobox here, we checked for null
 					if (ifindex != null && ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
 
-					// no processing ethernet type
 					if (log.isDebugEnabled())
 						log.debug("store: interface has snmpiftype "
 									+ snmpiftype + " . Adding to DiscoverLink ");
 
+					routeIface.setRouteDest(routedest);
+					routeIface.setRoutemask(routemask);
 					routeIface.setSnmpiftype(snmpiftype);
 					routeIface.setIfindex(ifindex);
 					routeIface.setMetric(routemetric1);
+
 					routeIface.setNextHop(nexthop);
 						
 					routeInterfaces.add(routeIface);
