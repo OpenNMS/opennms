@@ -42,7 +42,7 @@ public interface PollerBackEnd {
     
  
     /**
-     * Checkin with the backend to let it know that the poller is still alive and to found
+     * Checkin with the backend to let it know that the poller is still alive and to find
      * out if there are any configuration changes.
      * 
      * @param locationMonitorId the id of the location monitor that is checking in

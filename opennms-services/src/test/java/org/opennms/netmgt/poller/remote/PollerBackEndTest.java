@@ -6,6 +6,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
 import java.util.Arrays;
@@ -60,6 +61,8 @@ public class PollerBackEndTest extends TestCase {
         }
     }
 
+    static final int UNRESPONSIVE_TIMEOUT = 300000;
+
     // the class under test
     private DefaultPollerBackEnd m_backEnd = new DefaultPollerBackEnd();
     
@@ -83,8 +86,11 @@ public class PollerBackEndTest extends TestCase {
     private OnmsMonitoredService[] m_monServices;
     private OnmsLocationSpecificStatus m_httpCurrentStatus;
     private OnmsLocationSpecificStatus m_dnsCurrentStatus;
+
+    private Date m_startTime;
     
     protected void setUp() throws Exception {
+        
         
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndTest-home");
         
@@ -99,8 +105,15 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.setMonitoredServiceDao(m_monSvcDao);
         m_backEnd.setPollerConfig(m_pollerConfig);
         m_backEnd.setTimeKeeper(m_timeKeeper);
+        m_backEnd.setUnresponsiveTimeout(UNRESPONSIVE_TIMEOUT);
         
+        m_startTime = new Date(System.currentTimeMillis() - 1000);
+        expect(m_timeKeeper.getCurrentDate()).andReturn(m_startTime);
+        replay(m_timeKeeper);
         m_backEnd.afterPropertiesSet();
+        verify(m_timeKeeper);
+        reset(m_timeKeeper);
+        
 
         // set up some objects that can be used to mock up the tests
         
@@ -326,6 +339,7 @@ public class PollerBackEndTest extends TestCase {
         verifyMocks();
         
         assertNotNull(config);
+        assertEquals(m_startTime, config.getConfigurationTimestamp());
         assertEquals(2, config.getConfigurationForPoller().length);
         assertEquals(m_httpService, config.getConfigurationForPoller()[0].getMonitoredService());
         assertEquals(m_dnsService, config.getConfigurationForPoller()[1].getMonitoredService());
@@ -374,21 +388,62 @@ public class PollerBackEndTest extends TestCase {
     
     public void testPollerCheckingIn() {
         
+        Date configDate = m_startTime;
+
         expectLocationMonitorStatusChanged(m_locationMonitor.getStatus());
         
         replayMocks();
 
-        m_backEnd.pollerCheckingIn(1, new Date());
+        assertFalse("Expect configs to be up to date", m_backEnd.pollerCheckingIn(1, configDate));
+
+        verifyMocks();
+        
+        expect(m_timeKeeper.getCurrentDate()).andReturn(new Date());
+        replayMocks();
+        m_backEnd.configurationUpdated();
+        verifyMocks();
+        
+        expectLocationMonitorStatusChanged(m_locationMonitor.getStatus());
+        
+        replayMocks();
+
+        assertTrue("Expect configs to be out of date", m_backEnd.pollerCheckingIn(1, configDate));
         
         verifyMocks();
     }
     
-    public void testNoCheckin() {
+    public void testTimeOutOnCheckin() {
+        final Date now = new Date();
+
+        m_locationMonitor.setStatus(MonitorStatus.STARTED);
+        m_locationMonitor.setLastCheckInTime(new Date(now.getTime() - UNRESPONSIVE_TIMEOUT - 100));
         
+        expect(m_locMonDao.findAll()).andReturn(Collections.singleton(m_locationMonitor));
+        
+        expect(m_timeKeeper.getCurrentDate()).andReturn(now);
+
+        m_locMonDao.update(m_locationMonitor);
+        expectLastCall().andAnswer(new IAnswer<Object>() {
+        
+            public Object answer() throws Throwable {
+                OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
+                assertEquals(MonitorStatus.UNRESPONSIVE, mon.getStatus());
+                assertTrue(mon.getLastCheckInTime().before(new Date(now.getTime() - UNRESPONSIVE_TIMEOUT)));
+                return null;
+            }
+            
+        });
+        
+        replayMocks();
+
+        m_backEnd.checkforUnresponsiveMonitors();
+        
+        verifyMocks();
     }
 
     private void verifyMocks() {
         verify(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler, m_timeKeeper);
+        reset(m_locMonDao, m_monSvcDao, m_pollerConfig, m_scheduler, m_timeKeeper);
     }
 
     private void replayMocks() {
