@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
@@ -56,7 +58,7 @@ public class PollStatus {
 //    public static final PollStatus STATUS_UNKNOWN = new PollStatus(PollStatus.SERVICE_UNKNOWN, "Unknown");
 	
     
-	long m_timestamp = System.currentTimeMillis();
+	Date m_timestamp = new Date();
     int m_statusCode;
     String m_reason;
     long m_responseTime = -1L;
@@ -131,6 +133,10 @@ public class PollStatus {
     
     public static PollStatus get(int status, String reason, long responseTime) {
     	return new PollStatus(status, reason, responseTime);
+    }
+    
+    private PollStatus() {
+        this(SERVICE_UNKNOWN, null, -1L);
     }
     
     private PollStatus(int statusCode, String reason, long responseTime) {
@@ -224,11 +230,11 @@ public class PollStatus {
     }
 
     @Column(name="statusTime", nullable=false)
-    public long getTimestamp() {
+    public Date getTimestamp() {
         return m_timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Date timestamp) {
         m_timestamp = timestamp;
     }
 
