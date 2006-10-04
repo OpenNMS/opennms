@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -46,6 +47,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.dao.LocationMonitorDao;
@@ -54,6 +57,7 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.springframework.core.io.Resource;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -164,55 +168,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         }
     }
     
-    @Override
-    public Collection<OnmsLocationMonitor> find(String query) {
-        final Collection<OnmsLocationMonitor> monitors = super.find(query);
-        return addLocationDefinitions(monitors);
-    }
-
-    @Override
-    public Collection<OnmsLocationMonitor> findAll() {
-        final Collection<OnmsLocationMonitor> monitors = super.findAll();
-        return addLocationDefinitions(monitors);
-    }
-
-    @Override
-    public OnmsLocationMonitor get(Integer id) {
-        final OnmsLocationMonitor monitor = super.get(id);
-        return addLocationDefinition(monitor);
-    }
-
-    @Override
-    public OnmsLocationMonitor load(Integer id) {
-        final OnmsLocationMonitor monitor = super.load(id);
-        return addLocationDefinition(monitor);
-    }
-    
-    /**
-     * Location definitions are configured via XML, this method sets converts
-     * XML configured defnitions and sets them for each location monitor in passed collection.
-     * @param monitors
-     * @return
-     */
-    private Collection<OnmsLocationMonitor> addLocationDefinitions(Collection<OnmsLocationMonitor> monitors) {
-        if (monitors != null) {
-            for (OnmsLocationMonitor monitor : monitors) {
-                addLocationDefinition(monitor);
-            }
-        }
-        return monitors;
-    }
-    
-    /**
-     * Sets the OnmsLocationMontiorDefinition for the passed in location monitor based on
-     * the matching XML configured definition (by name)
-     * @param monitor
-     */
-    private OnmsLocationMonitor addLocationDefinition(OnmsLocationMonitor monitor) {
-        monitor.setLocationDefinition(createEntityDef(getLocationDef(monitor.getDefinitionName())));
-        return monitor;
-    }
-
     /**
      * 
      * @param definitionName
@@ -303,7 +258,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     private OnmsMonitoringLocationDefinition createEntityDef(LocationDef def) {
         OnmsMonitoringLocationDefinition eDef = new OnmsMonitoringLocationDefinition();
         eDef.setArea(def.getMonitoringArea());
-        eDef.setName(def.getMonitoringArea());
+        eDef.setName(def.getLocationName());
         eDef.setPollingPackageName(def.getPollingPackageName());
         return eDef;
     }
@@ -316,7 +271,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             MonitoringLocationsConfiguration monitoringLocationsConfiguration) {
         m_monitoringLocationsConfiguration = monitoringLocationsConfiguration;
     }
-
+    
     public Resource getMonitoringLocationConfigResource() {
         return m_monitoringLocationConfigResource;
     }
@@ -330,16 +285,24 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         return createEntityDef(getLocationDef(monitoringLocationDefinitionName));
     }
 
-    public OnmsLocationSpecificStatus getMostRecentStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monSvc) {
-        throw new UnsupportedOperationException("not yet implemented");
+    public OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monSvc) {
+        HibernateCallback callback = new HibernateCallback() {
+
+            public Object doInHibernate(Session session)
+                    throws HibernateException, SQLException {
+                return session.createQuery("from OnmsLocationSpecificStatus status where status.locationMonitor = :locationMonitor and status.monitoredService = :monitoredService order by status.pollResult.timestamp")
+                    .setEntity("locationMonitor", locationMonitor)
+                    .setEntity("monitoredService", monSvc)
+                    .setMaxResults(1)
+                    .uniqueResult();
+            }
+
+        };
+        return (OnmsLocationSpecificStatus)getHibernateTemplate().execute(callback);
     }
 
     public void saveStatusChange(OnmsLocationSpecificStatus statusChange) {
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-
-    public void savePerformanceData(OnmsLocationSpecificStatus statusChange) {
-        throw new UnsupportedOperationException("not yet implemented");
+        getHibernateTemplate().save(statusChange);
     }
 
 }
