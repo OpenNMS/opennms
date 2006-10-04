@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
+	</bean>
+
+	<bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-pollerConfig-factory">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
+	</bean>
+
+
+	<bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+	  <property name="locationMonitorDao" ref="locationMonitorDao" />
+	  <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+	  <property name="pollerConfig" ref="pollerConfig" />
+	  <property name="timeKeeper" ref="timeKeeper" />
+	  <property name="unresponsiveTimeout" value="600000"/>
+	</bean>
+
+</beans>
