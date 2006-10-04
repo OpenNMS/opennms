@@ -13,7 +13,6 @@
 		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
 	</bean>
 
-
 	<bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
 	  <property name="locationMonitorDao" ref="locationMonitorDao" />
 	  <property name="monitoredServiceDao" ref="monitoredServiceDao" />
@@ -21,5 +20,22 @@
 	  <property name="timeKeeper" ref="timeKeeper" />
 	  <property name="unresponsiveTimeout" value="600000"/>
 	</bean>
+	
+	<bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	  <property name="targetObject" ref="pollerBackEnd" />
+	  <property name="targetMethod" value="checkforUnresponsiveMonitors" />
+	</bean>
 
+	<bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	  <property name="repeatInterval" value="10000" />
+	  <property name="jobDetail" ref="methodInvokingJobDetail"/>
+	</bean>
+	
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	  <property name="triggers">
+	    <list><ref bean="monitorCheckTrigger"/></list>
+	  </property>
+	</bean>
+	
+    <tx:annotation-driven/>
 </beans>

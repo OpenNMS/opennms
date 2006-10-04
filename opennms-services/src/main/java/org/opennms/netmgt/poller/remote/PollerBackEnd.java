@@ -5,7 +5,9 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public interface PollerBackEnd {
     
     /**
@@ -13,6 +15,7 @@ public interface PollerBackEnd {
      * 
      * @returns the set of monitoring loat
      */
+    @Transactional(readOnly=true)
     public abstract Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
 
     /**
@@ -57,6 +60,7 @@ public interface PollerBackEnd {
      * @param locationMonitorId the id of the requesting location monitor
      * @return the PollerConfiguration for the indicicated location monitor
      */
+    @Transactional(readOnly=true)
     public abstract PollerConfiguration getPollerConfiguration(int locationMonitorId);
     
     /**
@@ -67,4 +71,9 @@ public interface PollerBackEnd {
      * @param pollStatus the result of the poll
      */
     public abstract void reportResult(int locationMonitorID, int serviceId, PollStatus status);
+
+
+    public abstract void configurationUpdated();
+
+    public abstract void checkforUnresponsiveMonitors();
 }
