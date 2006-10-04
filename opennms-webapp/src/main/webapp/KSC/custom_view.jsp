@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Oct 04: Added zoom capability.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -49,6 +50,77 @@
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
 %>
+
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+
+<%
+
+org.opennms.netmgt.rrd.RrdStrategy strategy;
+org.opennms.netmgt.rrd.RrdUtils.graphicsInitialize();
+strategy = org.opennms.netmgt.rrd.RrdUtils.getStrategy();
+String strategy_name = strategy.getClass().getName();
+
+if (strategy instanceof org.opennms.netmgt.rrd.QueuingRrdStrategy) {
+    org.opennms.netmgt.rrd.QueuingRrdStrategy queuingStrategy;
+    queuingStrategy = (org.opennms.netmgt.rrd.QueuingRrdStrategy) strategy;
+
+    org.opennms.netmgt.rrd.RrdStrategy delegateStrategy;
+    delegateStrategy = queuingStrategy.getDelegate();
+
+    strategy_name = delegateStrategy.getClass().getName();
+}
+
+%>
+
+<script type="text/javascript">
+
+<%
+
+if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
+    out.println("var gZoomBoxTopOffsetWOText = 31;");
+    out.println("var gZoomBoxRightOffset = -22;");
+} else if ("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy".equals(strategy_name)) {
+    out.println("var gZoomBoxTopOffsetWOText = 33;");
+    out.println("var gZoomBoxRightOffset = -28;");
+} else {
+    throw new ServletException("Unknown RRD strategy: " + strategy_name);
+}
+
+%>
+
+/*
+ *  * This is used by the relative time form to reload the page with a new time
+ *   * period.
+ *    */
+function goRelativeTime(relativeTime) {
+      setLocation('graph/results'
+        + '?type=<c:out value="${param.type}"/>'
+        + '&relativetime=' + relativeTime
+        + '&resourceType=<c:out value="${requestScope.results.resourceType}"/>'
+        + '&resource=<c:out value="${requestScope.results.resource}"/>'
+        + '&node=<c:out value="${requestScope.results.nodeId}"/>'
+        + '<c:out value="${reportList}" escapeXml="false"/>');
+}
+
+/*
+ *  * This is used by the zoom page to reload the page with a new time period.
+ *   */
+function reloadPage(newGraphStart, newGraphEnd) {
+      setLocation('graph/results'
+        + '?type=<c:out value="${param.type}"/>'
+        + '&resourceType=<c:out value="${requestScope.results.resourceType}"/>'
+        + '&resource=<c:out value="${requestScope.results.resource}"/>'
+        + '&node=<c:out value="${requestScope.results.nodeId}"/>'
+        + '<c:out value="${reportList}" escapeXml="false"/>'
+            + "&zoom=true&start=" + newGraphStart + "&end=" + newGraphEnd);
+}
+
+</script>
+
+<c:if test="${!empty param.zoom}">
+  <script type="text/javascript" src="js/zoom.js"></script>
+</c:if>
+
 
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %> 
 <%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
@@ -255,18 +327,27 @@
                                 <% if(intf != null && !intf.equals("")) { %>
                                     Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%><br>
 				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=interface&resource=<%=intf%>">Detail</a>
-                                <% } else { %>
+			            </td></tr></table>
+                                    <br/>
+                                    <a href="graph/results?zoom=true&type=performance&resourceType=interface&resource=<%=intf%>&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&node=<%=nodeId%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
+                                <% } else {%>
 				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=node">Detail</a>
+			            </td></tr></table>
+                                    <br/>
+                                    <a href="graph/results?zoom=true&type=performance&resourceType=node&resource=&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&node=<%=nodeId%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
                                 <% } %>
                             <%} else {%>
                                 Domain: <%=curr_domain%><br>
                                 Interface: <a href="element/nodelist.jsp?listInterfaces&ifAlias=<%=intf%>"><%=intf%></a><br>
 				<a href="performance/choosereportanddate.jsp?domain=<%=curr_domain%>&resourceType=interface&resource=<%=intf%>">Detail</a>
+			        </td></tr></table>
+                                <br/>
+                                <a href="graph/results?zoom=true&type=performance&resourceType=interface&resource=<%=intf%>&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
                             <%}%>
-			    </td></tr></table>
-                        <br/>
-              
+
                             <img src="graph/graph.png?type=performance&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                            </a>
+
                         </td>
 		    <% if (((i+1)%report_graphsperline == 0) || (i+1) == graph_count){ %>
                     </tr>
