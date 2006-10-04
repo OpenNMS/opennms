@@ -140,5 +140,10 @@ public class OnmsLocationMonitor {
     public void setLastCheckInTime(Date lastCheckInTime) {
         m_lastCheckInTime = lastCheckInTime;
     }
+
+    @Transient
+    public String getName() {
+        return m_definitionName+'-'+getId(); 
+    }
     
 }
