@@ -409,7 +409,7 @@ public class ReportMailer extends Object implements Runnable {
      * @param format
      *            The startDate to set.
      */
-    public void setStartDate(String startMonth) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
