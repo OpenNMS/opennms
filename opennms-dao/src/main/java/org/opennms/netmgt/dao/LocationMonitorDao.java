@@ -57,8 +57,6 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
 
     void saveStatusChange(OnmsLocationSpecificStatus status);
     
-    void savePerformanceData(OnmsLocationSpecificStatus status);
-    
     OnmsLocationSpecificStatus getMostRecentStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monSvc);
     
 }
