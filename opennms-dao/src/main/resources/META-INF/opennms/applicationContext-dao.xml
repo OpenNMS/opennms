@@ -19,9 +19,18 @@
     </property>
   </bean>
 -->      
+   <bean id="propertyPlaceholderConfigure" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+     <property name="properties">
+       <props>
+         <prop key="test.overridden.properties">NOT_FOUND</prop>
+       </props>
+     </property>
+     <!--  set this so properties can be overridden by setting the system property -->
+     <property name="systemPropertiesModeName" value="override" />
+   </bean>
    <bean id="overridePropertiesForTesting" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
      <property name="ignoreResourceNotFound" value="true" />
-     <property name="location" value="${test.overriden.properties}" />
+     <property name="location" value="${test.overridden.properties}" />
    </bean>
   
 	<bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
