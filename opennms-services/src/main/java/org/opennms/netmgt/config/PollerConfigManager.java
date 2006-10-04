@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -60,13 +61,20 @@ import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.dao.UncategorizedDataAccessException;
 
 
 abstract public class PollerConfigManager implements PollerConfig {
@@ -75,6 +83,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
         reloadXML(reader);
+        
     }
 
     public abstract void update() throws IOException, MarshalException, ValidationException;
@@ -794,6 +803,54 @@ abstract public class PollerConfigManager implements PollerConfig {
 	        sm.release();
 	    }
 	}
+
+    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, long responseTime, Package pkg) {
+        
+        String svcName = monSvc.getServiceName();
+        
+        Service svc = getServiceInPackage(svcName, pkg);
+        
+        String dsName = getServiceParameter(svc, "ds-name");
+        if (dsName == null) {
+            return;
+        }
+        
+        String rrdRepository = getServiceParameter(svc, "rrd-repository");
+        if (rrdRepository == null) {
+            return;
+        }
+        
+        String rrdDir = rrdRepository+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
+
+        try {
+            RrdUtils.initialize();
+            File rrdFile = new File(rrdDir, dsName);
+            if (!rrdFile.exists()) {
+                RrdUtils.createRRD(locationMonitor, rrdDir, dsName, getStep(pkg), "GAUGE", 600, "U", "U", getRRAList(pkg));
+            }
+            RrdUtils.updateRRD(locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
+        } catch (RrdException e) {
+            throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
+        }
+        
+        
+        
+        
+    }
+    
+    
+
+    @SuppressWarnings("unchecked")
+    private String getServiceParameter(Service svc, String key) {
+        Enumeration<Parameter> parms = svc.enumerateParameter();
+        while(parms.hasMoreElements()) {
+            Parameter parm = parms.nextElement();
+            if (key.equals(parm.getKey())) {
+                return parm.getValue();
+            }
+        }
+        return null;
+    }
 
 
 }

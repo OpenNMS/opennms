@@ -44,9 +44,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
         
         OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
-        String pollingPackageName = mon.getLocationDefinition().getPollingPackageName();
-        
-        Package pkg = m_pollerConfig.getPackage(pollingPackageName);
+        Package pkg = getPollingPackageForMonitor(mon);
         
         ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
 
@@ -65,6 +63,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PollConfiguration[configs.size()]));
         
         
+    }
+
+    private Package getPollingPackageForMonitor(OnmsLocationMonitor mon) {
+        OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
+        String pollingPackageName = def.getPollingPackageName();
+        
+        return m_pollerConfig.getPackage(pollingPackageName);
     }
     
     private static class SimplePollerConfiguration implements PollerConfiguration {
@@ -130,7 +135,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         
         OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
         OnmsLocationMonitor mon = new OnmsLocationMonitor();
-        mon.setLocationDefinition(def);
+        mon.setDefinitionName(def.getName());
         mon.setStatus(MonitorStatus.REGISTERED);
         
         m_locMonDao.save(mon);
@@ -169,7 +174,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         OnmsLocationSpecificStatus newStatus = new OnmsLocationSpecificStatus(locationMonitor, monSvc, pollResult);
         
         if (newStatus.getPollResult().getResponseTime() >= 0) {
-            m_locMonDao.savePerformanceData(newStatus);
+            Package pkg = getPollingPackageForMonitor(locationMonitor);
+            m_pollerConfig.saveResponseTimeData(locationMonitor.getDefinitionName()+'-'+locationMonitorID, monSvc, newStatus.getPollResult().getResponseTime(), pkg);
         }
         
         OnmsLocationSpecificStatus currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
