@@ -18,7 +18,12 @@
       </list>
     </property>
   </bean>
--->        
+-->      
+   <bean id="overridePropertiesForTesting" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+     <property name="ignoreResourceNotFound" value="true" />
+     <property name="location" value="${test.overriden.properties}" />
+   </bean>
+  
 	<bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
 	</bean>
