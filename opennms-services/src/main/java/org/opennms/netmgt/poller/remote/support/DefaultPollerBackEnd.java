@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -191,17 +193,27 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     public void checkforUnresponsiveMonitors() {
         
+        log().debug("Checking for Unresponsive monitors");
+        
         Date now = m_timeKeeper.getCurrentDate();
         Date earliestAcceptable = new Date(now.getTime() - m_unresponsiveTimeout);
         
         Collection<OnmsLocationMonitor> monitors = m_locMonDao.findAll();
+        log().debug("Found "+monitors.size()+" monitors");
         
         for (OnmsLocationMonitor monitor : monitors) {
             if (monitor.getStatus() == MonitorStatus.STARTED && monitor.getLastCheckInTime().before(earliestAcceptable)) {
+                log().debug("Monitor "+monitor.getName()+" has stopped responding");
                 monitor.setStatus(MonitorStatus.UNRESPONSIVE);
                 m_locMonDao.update(monitor);
+            } else {
+                log().debug("Monitor "+monitor.getName()+" last responded at "+monitor.getLastCheckInTime());
             }
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     public void setUnresponsiveTimeout(int unresponsiveTimeout) {
