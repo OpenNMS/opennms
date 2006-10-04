@@ -47,4 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface SurveillanceService {
 
     SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor);
+    
+    String getHeaderRefreshSeconds(String viewName);
 }

@@ -47,10 +47,17 @@ import javax.servlet.http.HttpSession;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
-import org.opennms.web.svclayer.SurveillanceTable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * Spring MVC controller servlet for surveillance-view page.
+ * 
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ *
+ */
 public class SurveillanceViewController extends AbstractController {
 
     private static SurveillanceService m_service;
@@ -66,7 +73,9 @@ public class SurveillanceViewController extends AbstractController {
         final String progressMonitorKey = "surveillanceViewProgressMonitor";
 
         HttpSession session = req.getSession();
+        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(req.getParameter("viewName")));
         ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(progressMonitorKey);
+        
         if (progressMonitor == null) {
             progressMonitor = createProgressMonitor(req.getParameter("viewName"));
             session.setAttribute(progressMonitorKey, progressMonitor);
