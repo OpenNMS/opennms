@@ -93,24 +93,24 @@ public class OnmsLocationMonitor {
         m_id = id;
     }
 
-    @Column(name = "name", length = 63, nullable = false)
-    public String getName() {
-        return m_name;
-    }
+//    @Column(name = "name", length = 63, nullable = false)
+//    public String getName() {
+//        return m_name;
+//    }
+//
+//    public void setName(String label) {
+//        m_name = label;
+//    }
 
-    public void setName(String label) {
-        m_name = label;
-    }
+//    @Transient
+//    public OnmsMonitoringLocationDefinition getLocationDefinition() {
+//        return m_locationDefinition;
+//    }
 
-    @Transient
-    public OnmsMonitoringLocationDefinition getLocationDefinition() {
-        return m_locationDefinition;
-    }
-
-    public void setLocationDefinition(
-            OnmsMonitoringLocationDefinition locationDefinition) {
-        m_locationDefinition = locationDefinition;
-    }
+//    public void setLocationDefinition(
+//            OnmsMonitoringLocationDefinition locationDefinition) {
+//        m_locationDefinition = locationDefinition;
+//    }
 
     @Column(name = "definitionName", length = 31, nullable = false)
     public String getDefinitionName() {
