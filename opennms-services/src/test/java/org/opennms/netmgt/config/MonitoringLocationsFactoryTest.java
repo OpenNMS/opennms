@@ -42,8 +42,10 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 
 /**
  * 
@@ -108,6 +110,7 @@ public class MonitoringLocationsFactoryTest extends TestCase {
         public String getXml() {
             return m_xml;
         }
+
         
     }
 }

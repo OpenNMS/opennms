@@ -394,7 +394,7 @@ public class DefaultQueryManager implements QueryManager {
             else {
                 Date currentDate = new Date(System.currentTimeMillis());
                 regainedDate = new Timestamp(currentDate.getTime());
-                lostDate = lostDate = new Timestamp(currentDate.getTime());
+                lostDate = new Timestamp(currentDate.getTime());
             }
         } catch (SQLException sqlE) {
             log.error("SQL exception while retrieving last known service status for " + ipAddr + "/" + svcName);

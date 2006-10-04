@@ -131,7 +131,7 @@ public class PollerBackEndTest extends TestCase {
 
         m_locationMonitor = new OnmsLocationMonitor();
         m_locationMonitor.setId(1);
-        m_locationMonitor.setLocationDefinition(m_locationDefinition);
+        m_locationMonitor.setDefinitionName(m_locationDefinition.getName());
         
         NetworkBuilder builder = new NetworkBuilder(new OnmsDistPoller("localhost", "127.0.0.1"));
         OnmsNode node = builder.addNode("testNode");
@@ -148,13 +148,13 @@ public class PollerBackEndTest extends TestCase {
         long now = System.currentTimeMillis();
         
         PollStatus httpResult = PollStatus.available(1000L);
-        httpResult.setTimestamp(now - 300000);
+        httpResult.setTimestamp(new Date(now - 300000));
 
         m_httpCurrentStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_httpService, httpResult);
         m_httpCurrentStatus.setId(1);
 
         PollStatus dnsResult = PollStatus.unavailable("Non responsive");
-        dnsResult.setTimestamp(now - 300000);
+        dnsResult.setTimestamp(new Date(now - 300000));
 
         m_dnsCurrentStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, dnsResult);
         m_dnsCurrentStatus.setId(2);
@@ -241,8 +241,7 @@ public class PollerBackEndTest extends TestCase {
         
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
         
-        m_locMonDao.savePerformanceData(isA(OnmsLocationSpecificStatus.class));
-        expectLastCall().andAnswer(new StatusChecker(expectedStatus));
+        m_pollerConfig.saveResponseTimeData(null, m_dnsService, 1234, m_package);
         
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
@@ -266,8 +265,7 @@ public class PollerBackEndTest extends TestCase {
         
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
         
-        m_locMonDao.savePerformanceData(isA(OnmsLocationSpecificStatus.class));
-        expectLastCall().andAnswer(new StatusChecker(expectedStatus));
+        m_pollerConfig.saveResponseTimeData(null, m_dnsService, 1234, m_package);
         
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
@@ -306,11 +304,8 @@ public class PollerBackEndTest extends TestCase {
         
         final PollStatus newStatus = PollStatus.available(1776);
         
-        OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_httpService, newStatus);
-        
         // expect to save performance data
-        m_locMonDao.savePerformanceData(isA(OnmsLocationSpecificStatus.class));
-        expectLastCall().andAnswer(new StatusChecker(expectedStatus));
+        m_pollerConfig.saveResponseTimeData(null, m_httpService, 1776, m_package);
         
         // expect no status change
         
@@ -324,6 +319,7 @@ public class PollerBackEndTest extends TestCase {
     public void testGetPollerConfiguration() {
         
         expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(m_locationMonitor);
+        expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
         
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_package)).andReturn(m_serviceSelector);
