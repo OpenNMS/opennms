@@ -27,6 +27,7 @@
         <element ref="this:columns" minOccurs="1" maxOccurs="1" />
       </sequence>
       <attribute name="name" type="string" use="required"/>
+      <attribute name="refresh-seconds" type="string" use="optional" default="300" />
     </complexType>
   </element>
   
