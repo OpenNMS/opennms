@@ -24,6 +24,7 @@
         <event-file>@install.etc.dir@/events/Cisco2.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Cisco.5300dchan.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Cisco.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco.airespace.xml</event-file>
 	<!-- CIM.events.xml has been deprecated by CPQHPIM.events.xml -->
         <event-file>@install.etc.dir@/events/Colubris.events.xml</event-file>
         <event-file>@install.etc.dir@/events/CPQHPIM.events.xml</event-file>
