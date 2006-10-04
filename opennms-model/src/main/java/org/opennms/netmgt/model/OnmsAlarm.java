@@ -293,7 +293,7 @@ public class OnmsAlarm implements Serializable {
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="firstEventTime", nullable=false)
+    @Column(name="firstEventTime")
     public Date getFirstEventTime() {
         return this.m_firstEventTime;
     }
@@ -413,7 +413,7 @@ public class OnmsAlarm implements Serializable {
         this.m_clearUei = clearuei;
     }
 
-    @ManyToOne(fetch=FetchType.LAZY, optional=false)
+    @ManyToOne(fetch=FetchType.LAZY, optional=true)
     @JoinColumn(name="lastEventId")
     public OnmsEvent getLastEvent() {
         return this.m_lastEvent;
