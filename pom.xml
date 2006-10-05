@@ -970,6 +970,21 @@ opennms.home = ${opennms.home}
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>6.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-util</artifactId>
+        <version>6.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5-6.0.1</version>
+      </dependency>
+      <dependency>
         <groupId>jfree</groupId>
         <artifactId>jfreechart</artifactId>
         <version>1.0.1</version>
@@ -993,6 +1008,12 @@ opennms.home = ${opennms.home}
         <groupId>jmock</groupId>
         <artifactId>jmock-cglib</artifactId>
         <version>1.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-full</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jrobin</groupId>
