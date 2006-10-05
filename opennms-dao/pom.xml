@@ -72,6 +72,7 @@
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
     </dependency>
+    <!-- this is here as we exclude the version hibernate depends on -->
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib-nodep</artifactId>

@@ -1140,6 +1140,21 @@ opennms.home = ${opennms.home}
             <groupId>javax.persistence</groupId>
             <artifactId>ejb</artifactId>
           </exclusion>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>asm</groupId>
+            <artifactId>asm-attrs</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1166,6 +1181,16 @@ opennms.home = ${opennms.home}
           <exclusion>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>asm</groupId>
+            <artifactId>asm-attrs</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
