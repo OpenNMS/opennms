@@ -16,7 +16,7 @@ public class PollerBackEndIntegrationTest extends
     
     @Override
     protected String[] getConfigLocations() {
-        System.setProperty("test.overriden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overriden.properties");
+        System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
         return new String[] { 
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
