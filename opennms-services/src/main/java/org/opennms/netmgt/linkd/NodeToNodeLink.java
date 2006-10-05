@@ -43,10 +43,10 @@ public class NodeToNodeLink {
 	}
 
 	public String toString() {
-		StringBuffer str = new StringBuffer("Node Id = " + nodeId + "\n");
-		str.append("IfIndex = " + ifindex + "\n");
-		str.append("Node ParentId = " + nodeparentid + "\n");
-		str.append("Parent IfIndex = " + parentifindex + "\n");
+		StringBuffer str = new StringBuffer("Node Id = " + nodeId);
+		str.append(" IfIndex = " + ifindex);
+		str.append(" Node ParentId = " + nodeparentid );
+		str.append(" Parent IfIndex = " + parentifindex );
 		return str.toString();
 	}
 
@@ -86,5 +86,20 @@ public class NodeToNodeLink {
 	public int getNodeId() {
 		return nodeId;
 	}
+	
+	public boolean equals(NodeToNodeLink nodelink) {
+		if (this.nodeId == nodelink.getNodeId() && 
+			this.ifindex == nodelink.getIfindex()	&&
+			this.nodeparentid == nodelink.getNodeparentid() &&
+			this.parentifindex == nodelink.getParentifindex()) return true;
 
+		if (this.nodeId == nodelink.getNodeparentid() && 
+			this.ifindex == nodelink.getParentifindex()	&&
+			this.nodeparentid == nodelink.getNodeId() &&
+			this.parentifindex == nodelink.getIfindex()) return true;
+		
+		return false;
+
+	}
+ 
 }

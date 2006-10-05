@@ -62,7 +62,7 @@ public class LinkableNode extends Object {
 	 * link between Cisco Devices
 	 */
 
-	List<Integer> CdpPorts = new java.util.ArrayList<Integer>();
+//	List<Integer> CdpPorts = new java.util.ArrayList<Integer>();
 	
 	List<String> BridgeIdentifiers = new java.util.ArrayList<String>();
 	
@@ -211,15 +211,17 @@ public class LinkableNode extends Object {
 	/**
 	 * @return Returns the backBoneBridgePorts.
 	 */
+/*
 	List getCdpPorts() {
 		return CdpPorts;
 	}
-
+*/
 	/**
 	 * @param backBoneBridgePorts
 	 *            The backBoneBridgePorts to set.
 	 */
-	void setCdpPorts(List<Integer> cdpPorts) {
+/*
+ 	void setCdpPorts(List<Integer> cdpPorts) {
 		CdpPorts = cdpPorts;
 	}
 
@@ -232,7 +234,7 @@ public class LinkableNode extends Object {
 			return;
 		CdpPorts.add(new Integer(ifindex));
 	}
-
+*/
 	/**
 	 * @return Returns the bridgeIdentifiers.
 	 */

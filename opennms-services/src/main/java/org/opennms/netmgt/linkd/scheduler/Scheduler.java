@@ -63,17 +63,12 @@ import org.opennms.core.utils.ThreadCategory;
  *  
  */
 public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
-	/**
-	 * The configured initial sleep (in milliseconds) prior to scheduling
-	 * rescans
-	 */
-	private long m_initialSleep;
 
 	/**
 	 * The map of queue that contain {@link ReadyRunnable ready runnable}
 	 * instances. The queues are mapped according to the interval of scheduling.
 	 */
-	public Map m_queues;
+	public Map<Long,PeekableFifoQueue> m_queues;
 
 	/**
 	 * The total number of elements currently scheduled. This should be the sum
@@ -229,7 +224,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_status = START_PENDING;
 		m_runner = new RunnableConsumerThreadPool(m_name + " Pool", 0.6f, 1.0f,
 				maxSize);
-		m_queues = Collections.synchronizedMap(new TreeMap());
+		m_queues = Collections.synchronizedMap(new TreeMap<Long,PeekableFifoQueue>());
 		m_scheduled = 0;
 		m_worker = null;
 
@@ -258,7 +253,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_status = START_PENDING;
 		m_runner = new RunnableConsumerThreadPool(m_name + " Pool", lowMark,
 				hiMark, maxSize);
-		m_queues = Collections.synchronizedMap(new TreeMap());
+		m_queues = Collections.synchronizedMap(new TreeMap<Long,PeekableFifoQueue>());
 		m_scheduled = 0;
 		m_worker = null;
 	}
@@ -918,5 +913,5 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		}
 
 	} // end run
-
+	
 }

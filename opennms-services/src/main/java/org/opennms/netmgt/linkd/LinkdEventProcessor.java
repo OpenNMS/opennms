@@ -51,7 +51,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
@@ -109,7 +108,7 @@ final class LinkdEventProcessor implements EventListener {
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
+        getLinkd().getIpcManager().removeEventListener(this);
     }
 
     /**
@@ -132,8 +131,7 @@ final class LinkdEventProcessor implements EventListener {
         // node regained service
         ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
 
-        EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
+        getLinkd().getIpcManager().addEventListener(this, ueiList);
     }
 
     /**
