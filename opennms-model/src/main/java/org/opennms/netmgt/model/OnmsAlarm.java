@@ -144,6 +144,12 @@ public class OnmsAlarm implements Serializable {
 
     private String m_ossPrimaryKey;
 
+    private String m_x733AlarmType;
+
+    private String m_qosAlarmState;
+
+    private int m_x733ProbableCause;
+
     /** full constructor */
     public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, org.opennms.netmgt.model.OnmsEvent event) {
         this.m_id = alarmid;
@@ -475,6 +481,33 @@ public class OnmsAlarm implements Serializable {
     
     public void setOssPrimaryKey(String key) {
         m_ossPrimaryKey = key;
+    }
+    
+    @Column(name="x733AlarmType", length=31)
+    public String getX733AlarmType() {
+        return m_x733AlarmType;
+    }
+    
+    public void setX733AlarmType(String alarmType) {
+        m_x733AlarmType = alarmType;
+    }
+    
+    @Column(name="x733ProbableCause")
+    public int getX733ProbableCause() {
+        return m_x733ProbableCause;
+    }
+    
+    public void setX733ProbableCause(int cause) {
+        m_x733ProbableCause = cause;
+    }
+    
+    @Column(name="qosAlarmState", length=31)
+    public String getQosAlarmState() {
+        return m_qosAlarmState;
+        
+    }
+    public void setQosAlarmState(String alarmState) {
+        m_qosAlarmState = alarmState;
     }
 
 }
