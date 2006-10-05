@@ -256,9 +256,9 @@ final class DiscoveryLink implements ReadyRunnable {
 					}
 
 					if (log.isDebugEnabled())
-						log.debug("run: link found: nodeid=" + curCdpNodeId
-								+ " ifindex=" + cdpIfIndex + " parnodeid="
-								+ targetCdpNodeId + " parifindex="
+						log.debug("run: CDP link found: nodeid=" + curCdpNodeId
+								+ " ifindex=" + cdpIfIndex + " nodeparentid="
+								+ targetCdpNodeId + " parentifindex="
 								+ cdpDestIfindex);
 
 					boolean add = true;
@@ -267,24 +267,24 @@ final class DiscoveryLink implements ReadyRunnable {
 						LinkableNode targetNode = (LinkableNode) m_bridge
 						.get(new Integer(targetCdpNodeId));
 			
-						add = parseLinkOn(curNode, cdpIfIndex,targetNode, cdpDestIfindex,log);
+						add = parseCdpLinkOn(curNode, cdpIfIndex,targetNode, cdpDestIfindex,log);
 					
 					} else if (curNode.isBridgeNode) {
-						add = parseLinkOn(curNode,cdpIfIndex,targetCdpNodeId,log);
+						add = parseCdpLinkOn(curNode,cdpIfIndex,targetCdpNodeId,log);
 					} else if (isBridgeNode(targetCdpNodeId)) {
 						LinkableNode targetNode = (LinkableNode) m_bridge
 						.get(new Integer(targetCdpNodeId));
-						add = parseLinkOn(targetNode,cdpDestIfindex,curCdpNodeId,log);
+						add = parseCdpLinkOn(targetNode,cdpDestIfindex,curCdpNodeId,log);
 					}
 					// now add the cdp link
 					if (add) {
+						if (log.isDebugEnabled())
+							log.debug("run: try add CDP link found ");
 						NodeToNodeLink lk = new NodeToNodeLink(targetCdpNodeId,
 								cdpDestIfindex);
 						lk.setNodeparentid(curCdpNodeId);
 						lk.setParentifindex(cdpIfIndex);
-						links.add(lk);
-						if (log.isDebugEnabled())
-							log.debug("run: link found added.");
+						addNodetoNodeLink(lk, log);
 					}
 				}
 			}
@@ -505,17 +505,21 @@ final class DiscoveryLink implements ReadyRunnable {
 						m_bridge.put(new Integer(designatednodeid),
 								designatedNode);
 
+						if (log.isDebugEnabled())
+							log.debug("run: adding links on bb bridge port " + designatedbridgeport);
+
+						addLinks(getMacsOnBridgeLink(curNode,
+								stpbridgeport, designatedNode,
+								designatedbridgeport),curNodeId,curIfIndex,log);
+
 						// writing to db using class
 						// DbDAtaLinkInterfaceEntry
 						NodeToNodeLink lk = new NodeToNodeLink(curNodeId,
 								curIfIndex);
 						lk.setNodeparentid(designatednodeid);
 						lk.setParentifindex(designatedifindex);
-						links.add(lk);
-						
-						addLinks(getMacsOnBridgeLink(curNode,
-								stpbridgeport, designatedNode,
-								designatedbridgeport),curNodeId,curIfIndex,log);
+						addNodetoNodeLink(lk, log);
+
 					}
 				}
 			}
@@ -684,6 +688,9 @@ final class DiscoveryLink implements ReadyRunnable {
 							endNode.addBackBoneBridgePorts(endBridgePort);
 							m_bridge.put(new Integer(endNodeid), endNode);
 
+							// finding links between two backbone ports
+							addLinks(getMacsOnBridgeLink(curNode,
+									curBridgePort, endNode, endBridgePort),curNodeId,curIfIndex,log);
 
 							// writing to db using class
 							// DbDAtaLinkInterfaceEntry
@@ -691,10 +698,7 @@ final class DiscoveryLink implements ReadyRunnable {
 									curIfIndex);
 							lk.setNodeparentid(endNodeid);
 							lk.setParentifindex(endIfindex);
-							links.add(lk);
-							// finding links between two backbone ports
-							addLinks(getMacsOnBridgeLink(curNode,
-									curBridgePort, endNode, endBridgePort),curNodeId,curIfIndex,log);
+							addNodetoNodeLink(lk, log);
 							break BRIDGE;
 						}
 					}
@@ -850,29 +854,18 @@ final class DiscoveryLink implements ReadyRunnable {
 							log
 									.debug("run: found correct ifindex "
 											+ ifindex + " .");
-						if (curNode.isCdpPort(ifindex)) {
-							LinkableNode destNode = getLinkableNodeFromNodeId(nextHopNodeid);
-							if (destNode != null && destNode.isCdpPort(routeIface.getNextHopIfindex())) {
-								if (log.isDebugEnabled())
-									log
-											.debug("run: ifindex "
-													+ ifindex + " just parsed on node.");
-								continue;
-							}
-						}
+						
 					}
 					if (log.isDebugEnabled())
 						log
-								.debug("run: saving route link: nodeid " + curNodeId + " ifindex "
-										+ ifindex + " nodeparentid " + nextHopNodeid + " parentifindex "
-										+ routeIface.getNextHopIfindex());
+								.debug("run: saving route link");
 					
 					// Saving link also when ifindex = -1 (not found)
 					NodeToNodeLink lk = new NodeToNodeLink(nextHopNodeid,
 							routeIface.getNextHopIfindex());
 					lk.setNodeparentid(curNodeId);
 					lk.setParentifindex(ifindex);
-					links.add(lk);
+					addNodetoNodeLink(lk, log);
 				}
 			}
 
@@ -923,7 +916,7 @@ final class DiscoveryLink implements ReadyRunnable {
 	 * @return LinkableSnmpNode or null if not found
 	 */
 
-	private LinkableNode getLinkableNodeFromNodeId(int nodeid) {
+	LinkableNode getLinkableNodeFromNodeId(int nodeid) {
 
 		Iterator ite = activenode.iterator();
 		while (ite.hasNext()) {
@@ -940,9 +933,43 @@ final class DiscoveryLink implements ReadyRunnable {
 	 * @return LinkableSnmpNode or null if not found
 	 */
 
-	private boolean isBridgeNode(int nodeid) {
+	boolean isBridgeNode(int nodeid) {
 
 		Iterator ite = m_bridge.values().iterator();
+		while (ite.hasNext()) {
+			LinkableNode curNode = (LinkableNode) ite.next();
+			if (nodeid == curNode.getNodeId())
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param nodeid
+	 * @return true if found
+	 */
+
+	boolean isRouterNode(int nodeid) {
+
+		Iterator ite = routerNodes.iterator();
+		while (ite.hasNext()) {
+			LinkableNode curNode = (LinkableNode) ite.next();
+			if (nodeid == curNode.getNodeId())
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param nodeid
+	 * @return true if found
+	 */
+
+	boolean isCdpNode(int nodeid) {
+
+		Iterator ite = cdpNodes.iterator();
 		while (ite.hasNext()) {
 			LinkableNode curNode = (LinkableNode) ite.next();
 			if (nodeid == curNode.getNodeId())
@@ -1268,18 +1295,10 @@ final class DiscoveryLink implements ReadyRunnable {
 		}
 	}
 	
-	private boolean parseLinkOn(LinkableNode node1,int ifindex1,
+	private boolean parseCdpLinkOn(LinkableNode node1,int ifindex1,
 								int nodeid2,
 								Category log) {
 
-		if (node1.isCdpPort(ifindex1)) {
-			if (log.isDebugEnabled())
-				log.debug("run: Cdp port Ifindex "
-						+ ifindex1
-						+ " already parsed. Skipping");
-			return false;
-		}
-		
 		int bridgeport = node1.getBridgePort(ifindex1);
 
 		if (node1.isBackBoneBridgePort(bridgeport)) {
@@ -1292,7 +1311,6 @@ final class DiscoveryLink implements ReadyRunnable {
 
 		if (isEndBridgePort(node1, bridgeport)) {
 
-			node1.addCdpPorts(ifindex1);
 			node1.addBackBoneBridgePorts(bridgeport);
 			m_bridge.put(new Integer(node1.getNodeId()), node1);
 			
@@ -1313,32 +1331,16 @@ final class DiscoveryLink implements ReadyRunnable {
 		return true;
 	}
 
-	private boolean parseLinkOn(LinkableNode node1,int ifindex1,
+	private boolean parseCdpLinkOn(LinkableNode node1,int ifindex1,
 								LinkableNode node2,int ifindex2,
 								Category log) {
-		
-		if (node1.isCdpPort(ifindex1)) {
-			if (log.isDebugEnabled())
-				log.debug("run: Cdp port ifindex "
-						+ ifindex1
-						+ " already parsed. Skipping");
-			return false;
-		}
 		
 		int bridgeport1 = node1.getBridgePort(ifindex1);
 
 		if (node1.isBackBoneBridgePort(bridgeport1)) {
 			if (log.isDebugEnabled())
-				log.debug("run: backbone bridge port "
+				log.debug("parseCdpLinkOn: backbone bridge port "
 						+ bridgeport1
-						+ " already parsed. Skipping");
-			return false;
-		}
-		
-		if (node2.isCdpPort(ifindex2)) {
-			if (log.isDebugEnabled())
-				log.debug("run: Cdp port ifindex "
-						+ ifindex2
 						+ " already parsed. Skipping");
 			return false;
 		}
@@ -1347,7 +1349,7 @@ final class DiscoveryLink implements ReadyRunnable {
 				.getBridgePort(ifindex2);
 		if (node2.isBackBoneBridgePort(bridgeport2)) {
 			if (log.isDebugEnabled())
-				log.debug("run: backbone bridge port "
+				log.debug("parseCdpLinkOn: backbone bridge port "
 						+ bridgeport2
 						+ " already parsed. Skipping");
 			return false;
@@ -1357,65 +1359,90 @@ final class DiscoveryLink implements ReadyRunnable {
 				node2, bridgeport2)) {
 
 			node1.addBackBoneBridgePorts(bridgeport1);
-			node1.addCdpPorts(ifindex1);
 			m_bridge.put(new Integer(node1.getNodeId()), node1);
 			
 			node2.addBackBoneBridgePorts(bridgeport2);
-			node2.addCdpPorts(ifindex2);
 			m_bridge.put(new Integer(node2.getNodeId()),node2);
-
+			if (log.isDebugEnabled())
+				log.debug("parseCdpLinkOn: Adding node on links. Skipping");
 			addLinks(getMacsOnBridgeLink(node1,
 					bridgeport1, node2, bridgeport2),node1.getNodeId(),ifindex1,log);
 		} else {
 			if (log.isDebugEnabled())
 				log
-						.debug("run: link found not on nearest. Skipping");
+						.debug("parseCdpLinkOn: link found not on nearest. Skipping");
 			return false;
 		}
 		return true;
 	} 	
-	
-	private void addLinks(Set macs,int nodeid,int ifindex,Category log) { 
-			if (macs == null || macs.isEmpty()) {
-				if (log.isDebugEnabled())
-					log
-							.debug("addLinks: mac's list on link is empty.");
-			} else {
-				Iterator mac_ite = macs.iterator();
 
-				while (mac_ite.hasNext()) {
-					String curMacAddress = (String) mac_ite
-							.next();
-					if (macsParsed.contains(curMacAddress)) {
-						log
-								.warn("addLinks: mac address "
-										+ curMacAddress
-										+ " just found on other bridge port! Skipping...");
-						continue;
-
-					}
-					macsParsed.add(curMacAddress);
-					if (log.isDebugEnabled())
-						log
-								.debug("run: find ethernet mac address "
-										+ curMacAddress
-										+ " on port");
-
-					if (macToAtinterface.containsKey(curMacAddress)) {
-						AtInterface at = macToAtinterface.get(curMacAddress);
-						NodeToNodeLink lNode = new NodeToNodeLink(at.getNodeId(),at.getIfindex());
-						lNode.setNodeparentid(nodeid);
-						lNode.setParentifindex(ifindex);
-						links.add(lNode);
-					} else {
-						MacToNodeLink lMac = new MacToNodeLink(
-								curMacAddress);
-						lMac.setNodeparentid(nodeid);
-						lMac.setParentifindex(ifindex);
-						maclinks.add(lMac);
-					}
+	private void addNodetoNodeLink(NodeToNodeLink nnlink, Category log) {
+		if (nnlink == null)
+		{
+				log.warn("addNodetoNodeLink: node link is null.");
+				return;
+		}
+		if (!links.isEmpty()) {
+			Iterator<NodeToNodeLink> ite = links.iterator();
+			while (ite.hasNext()) {
+				NodeToNodeLink curNnLink = ite.next();
+				if (curNnLink.equals(nnlink)) {
+					if (log.isInfoEnabled())
+						log.info("addNodetoNodeLink: link " + nnlink.toString() + " exists, not adding");
+					return;
 				}
 			}
+		}
+		
+		if (log.isDebugEnabled())
+			log.debug("addNodetoNodeLink: adding link " + nnlink.toString());
+		links.add(nnlink);
+	}
+
+	private void addLinks(Set macs,int nodeid,int ifindex,Category log) { 
+		if (macs == null || macs.isEmpty()) {
+			if (log.isDebugEnabled())
+				log
+						.debug("addLinks: mac's list on link is empty.");
+		} else {
+			Iterator mac_ite = macs.iterator();
+
+			while (mac_ite.hasNext()) {
+				String curMacAddress = (String) mac_ite
+						.next();
+				if (macsParsed.contains(curMacAddress)) {
+					log
+							.warn("addLinks: mac address "
+									+ curMacAddress
+									+ " just found on other bridge port! Skipping...");
+					continue;
+
+				}
+				macsParsed.add(curMacAddress);
+				if (log.isDebugEnabled())
+					log
+							.debug("run: find ethernet mac address "
+									+ curMacAddress
+									+ " on port");
+
+				if (macToAtinterface.containsKey(curMacAddress)) {
+					AtInterface at = macToAtinterface.get(curMacAddress);
+					NodeToNodeLink lNode = new NodeToNodeLink(at.getNodeId(),at.getIfindex());
+					lNode.setNodeparentid(nodeid);
+					lNode.setParentifindex(ifindex);
+					addNodetoNodeLink(lNode, log);
+				} else {
+					if (log.isDebugEnabled())
+						log
+								.debug("run: no nodeid found, saving as mac link");
+					MacToNodeLink lMac = new MacToNodeLink(
+							curMacAddress);
+					lMac.setNodeparentid(nodeid);
+					lMac.setParentifindex(ifindex);
+					maclinks.add(lMac);
+				}
+			}
+		}
 	}
 
 }

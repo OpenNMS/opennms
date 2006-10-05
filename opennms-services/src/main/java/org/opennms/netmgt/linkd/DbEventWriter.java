@@ -50,7 +50,8 @@ import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
 public class DbEventWriter implements Runnable {
 
 //  FIXME: change all getInt32 calls to not autobox the result into an int
-    
+//  FIXME: send routedest 0.0.0.0 to discoverylink  
+	
 	static final char ACTION_UPTODATE = 'N';
 
 	static final char ACTION_DELETE = 'D';
@@ -421,8 +422,8 @@ public class DbEventWriter implements Runnable {
 				if (at == null) {
 						log.warn("getNodeidIfindexFromIp: no nodeid found for ipaddress "
 								+ ipaddress + ".");
+					sendNewSuspectEvent(ipaddress);
 					continue;
-					//TODO here is a good place for autodiscovery
 				}
 				//set the mac address
 				at.setMacAddress(physAddr);
@@ -497,7 +498,7 @@ public class DbEventWriter implements Runnable {
 
 				if (targetCdpNodeId == -1 || cdpTargetIfindex == -1) {
 					log.warn("No nodeid found: cdp interface not added to Linkable Snmp Node");
-					//TODO Good place for autodiscovery
+					sendNewSuspectEvent(cdpTargetIpAddr);
 				} else  {
 
 					cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
@@ -541,10 +542,13 @@ public class DbEventWriter implements Runnable {
 				Integer routetype = ent.getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
 				Integer routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
 
-				// TODO remeber that now nexthop 0.0.0.0 is not 
-				// parsed, anyway we should analize this case in link discovery
-				// so here is the place where you can have this info saved for
-				// now is discarded. See DiscoveryLink for more details......
+				/**
+				 *  TODO remeber that now nexthop 0.0.0.0 is not 
+				 *  parsed, anyway we should analize this case in link discovery
+				 *  so here is the place where you can have this info saved for
+				 * now is discarded. See DiscoveryLink for more details......
+				 * 
+				**/
 				
 				// info used for Discovery Link
 				// the routeiface constructor set nodeid, ifindex, netmask for nexthop address
@@ -556,10 +560,10 @@ public class DbEventWriter implements Runnable {
 				}
 					
 				if (routeIface == null) {
-					//TODO here is a good point for autodiscovery
 					log.warn("store: No nodeid found for next hop ip" + nexthop 
 							+ " Skipping ip route interface add to Linkable Snmp Node");
 					// try to find it in ipinterface
+					sendNewSuspectEvent(nexthop);
 				} else {
 					int snmpiftype = -2;
                     
@@ -1338,8 +1342,13 @@ public class DbEventWriter implements Runnable {
 		return ifindex;
 	}
 
-
 	public LinkableNode getLinkableNode() {
 		return m_node;
+	}
+	
+	private void sendNewSuspectEvent(InetAddress ipaddress) {
+		if (m_snmpcoll.isAutoDiscoveryEnabled())
+
+			Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), m_snmpcoll.getSnmpIpPrimary().getHostAddress());
 	}
 }

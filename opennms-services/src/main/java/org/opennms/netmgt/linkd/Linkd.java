@@ -13,8 +13,11 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.*;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.core.fiber.*;
 
 public class Linkd implements PausableFiber {
@@ -50,6 +53,11 @@ public class Linkd implements PausableFiber {
 
 	private HashMap<String,LinkableNode> snmpprimaryip2nodes;
 	
+	/**
+	 * Event Manager To Send Events
+	 */
+	private EventIpcManager m_eventMgr;
+
 	private boolean scheduledDiscoveryLink = false;
 
 	/**
@@ -69,6 +77,12 @@ public class Linkd implements PausableFiber {
 	 */
 
 	private static long m_discovery_link_interval = 600000;
+
+	/**
+	 * boolean operator that tells if to do auto discovery
+	 */
+
+	private static boolean m_auto_discovery = true;
 
 	private Linkd() {
 		m_scheduler = null;
@@ -193,6 +207,15 @@ public class Linkd implements PausableFiber {
 							+ t);
 		}
 
+		try {
+			m_auto_discovery = LinkdConfigFactory.getInstance()
+					.autoDiscovery();
+		} catch (Throwable t) {
+			log
+					.error("init: Failed to load Auto Discovery from linkd configuration file "
+							+ t);
+		}
+
 		java.sql.Connection dbConn = null;
 		SnmpCollection[] snmpcolls = null;
 		try {
@@ -223,6 +246,7 @@ public class Linkd implements PausableFiber {
 					dbConn.close();
 				}
 			} catch (Exception e) {
+		
 			}
 		}
 
@@ -255,6 +279,7 @@ public class Linkd implements PausableFiber {
 		if (snmpcolls.length != 0) {
 			for (int i = 0; i < snmpcolls.length; i++) {
 				snmpCollector = snmpcolls[i];
+				snmpCollector.setAutoDiscovery(m_auto_discovery);
 				log.debug("init: scheduling Snmp Collection for ip "
 						+ snmpCollector.getSnmpIpPrimary().getHostAddress());
 				synchronized (snmpCollector) {
@@ -286,6 +311,14 @@ public class Linkd implements PausableFiber {
 			scheduledDiscoveryLink = true;
 		}
 
+		// Create the IPCMANAGER
+		
+		EventIpcManagerFactory.init();
+		m_eventMgr = EventIpcManagerFactory.getIpcManager();
+		if (log.isDebugEnabled()) {
+			log.debug("init: Creating event Manager");
+		}
+
 		// Create an event receiver.
 		//
 		try {
@@ -300,7 +333,7 @@ public class Linkd implements PausableFiber {
 					t);
 			throw new UndeclaredThrowableException(t);
 		}
-
+		
 		if (log.isInfoEnabled())
 			log.info("init: LINKD CONFIGURATION INITIALIZED");
 
@@ -473,6 +506,7 @@ public class Linkd implements PausableFiber {
 					}
 					coll.setPollInterval(m_snmp_poll_interval);
 					coll.setInitialSleepTime(0);
+					coll.setAutoDiscovery(m_auto_discovery);
 					coll.schedule();
 				}
 			}	
@@ -803,6 +837,30 @@ public class Linkd implements PausableFiber {
 
 		DbEventWriter dbwriter = new DbEventWriter(discover);
 		dbwriter.run();
+	}
+	
+	/**
+	 * Send a newSuspect event for the interface
+	 * 
+	 * @param trapInterface
+	 *            The interface for which the newSuspect event is to be
+	 *            generated
+	 */
+	void sendNewSuspectEvent(String ipInterface,String ipowner) {
+		// construct event with 'trapd' as source
+		Event event = new Event();
+		event.setSource("linkd");
+		event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+		event.setHost(ipowner);
+		event.setInterface(ipInterface);
+		event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+
+		// send the event to eventd
+		m_eventMgr.sendNow(event);
+	}
+
+	EventIpcManager getIpcManager() {
+		return m_eventMgr;
 	}
 
 }
