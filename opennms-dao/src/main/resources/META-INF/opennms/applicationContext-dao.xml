@@ -140,17 +140,9 @@
   	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <!-- this requires a property setting -->
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate" >
     <property name="sessionFactory" ref="sessionFactory"/>
     <property name="monitoringLocationConfigResource" value="file:${opennms.home}/etc/monitoring-locations.xml" />
   </bean>
   
-  
-
-<!-- deprecating  
-  <bean id="aggregateStatusViewDao" class="org.opennms.netmgt.dao.hibernate.AggregateStatusViewDaoHibernate" >
-  	<property name="sessionFactory" ref="sessionFactory" />
-  </bean>
---> 
 </beans>
