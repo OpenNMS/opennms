@@ -36,21 +36,14 @@
 
 package org.opennms.web.svclayer.support;
 
-import java.beans.PropertyVetoException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SiteStatusViewsFactory;
 import org.opennms.netmgt.config.SurveillanceViewsFactory;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
@@ -69,16 +62,8 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
      *  This is a total hack and should be moved into a Spring bean file
      *  for integration testing.
      */
-    public DefaultSiteStatusServiceIntegrationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
-        /*
-         * Note: I'm using the opennms-database.xml file in target/classes/etc
-         * so that it has been filtered first.  You'll have to make sure that
-         * you've done an "install" in opennms-daemon or the top-level,
-         * or at least a "compile".
-         * 
-         * E.g.: ( cd opennms-daemon && ../build.sh compile )
-         */
-        DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+    public DefaultSiteStatusServiceIntegrationTest() throws Exception {
+        System.setProperty("opennms.home", "src/test/opennms-home");
 
         SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
         CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));

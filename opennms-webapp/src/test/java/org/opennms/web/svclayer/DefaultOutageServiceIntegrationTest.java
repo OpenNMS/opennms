@@ -32,24 +32,15 @@
 
 package org.opennms.web.svclayer;
 
-import java.beans.PropertyVetoException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SiteStatusViewsFactory;
 import org.opennms.netmgt.config.SurveillanceViewsFactory;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
@@ -59,14 +50,11 @@ public class DefaultOutageServiceIntegrationTest extends
 	private static final int RANGE_LIMIT = 5;
 	private OutageService outageService;
         
-        public DefaultOutageServiceIntegrationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
+        public DefaultOutageServiceIntegrationTest() throws Exception {
+            System.setProperty("opennms.home", "src/test/opennms-home");
+            
             SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
             SiteStatusViewsFactory.setInstance(new SiteStatusViewsFactory("../opennms-daemon/src/main/filtered/etc/site-status-views.xml"));
-            /*
-             * Note: I'm using the opennms-database.xml file in target/classes/etc
-             * so that it has been filtered first.
-             */
-            DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
 
             CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));
             ViewsDisplayFactory.setInstance(new ViewsDisplayFactory("../opennms-daemon/src/main/filtered/etc/viewsdisplay.xml"));
