@@ -269,6 +269,48 @@ public class LinkdConfigFactory {
 		return threads;
 	}
 
+	/**
+	 * 
+	 * @return boolean auto-discovery
+	 * @throws IOException
+	 * @throws MarshalException
+	 * @throws ValidationException
+	 */
+
+	public boolean autoDiscovery() throws IOException, MarshalException,
+			ValidationException {
+
+		updateFromFile();
+
+		boolean autodiscovery = true; 
+		if (m_linkdconfiguration.hasAutoDiscovery()) {
+			autodiscovery = m_linkdconfiguration.getAutoDiscovery();
+		}
+
+		return autodiscovery;
+	}
+
+	/**
+	 * 
+	 * @return boolean enable-vlan-discovery
+	 * @throws IOException
+	 * @throws MarshalException
+	 * @throws ValidationException
+	 */
+
+	private boolean enableVlanDiscovery() throws IOException, MarshalException,
+			ValidationException {
+
+		updateFromFile();
+
+		boolean vlandiscovery = true; 
+		if (m_linkdconfiguration.hasEnableVlanDiscovery()) {
+			vlandiscovery = m_linkdconfiguration.getEnableVlanDiscovery();
+		}
+
+		return vlandiscovery;
+	}
+
 	public HashMap<String,SnmpCollection> getSnmpColls(Connection dbConn) throws SQLException,
 			UnknownHostException {
 		if (!hashLoaded)
@@ -435,14 +477,14 @@ public class LinkdConfigFactory {
 					.getInstance().getAgentConfig(InetAddress.getByName(ipaddr)));
 
 			try {
-				if (hasClassName(sysoid)) {
+				if (enableVlanDiscovery() && hasClassName(sysoid)) {
 					coll.setVlanClass(getClassName(sysoid));
 					if (log.isDebugEnabled())
 						log.debug("getNodesInfo: found class to get Vlans: "
 								+ coll.getVlanClass());
 				} else {
 					if (log.isDebugEnabled())
-						log.debug("getNodesInfo: no class found to get Vlans");
+						log.debug("getNodesInfo: no class found to get Vlans or VlanDiscoveryDisabled ");
 				}
 			} catch (Throwable t) {
 					log
@@ -504,7 +546,7 @@ public class LinkdConfigFactory {
 					InetAddress.getByName(ipaddr)));
 
 			try {
-				if (hasClassName(sysoid)) {
+				if (enableVlanDiscovery() && hasClassName(sysoid)) {
 					coll.setVlanClass(getClassName(sysoid));
 					if (log.isDebugEnabled())
 						log
