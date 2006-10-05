@@ -1,29 +1,80 @@
 <?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/linkd"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:this="http://xmlns.opennms.org/xsd/config/linkd"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/linkd">
+    xmlns:ns2="http://www.w3.org/1999/xhtml"
+    xmlns:ns="http://www.w3.org/2001/XMLSchema"
+    xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the linkd-configuration.xml configuration
+    file. Version: $Id: linkd-configuration.xsd 3400 2006-10-03 22:01:41Z rssntn67 $</documentation>
+  </annotation>
 
 	<element name="linkd-configuration">
+    <annotation>
+      <documentation>Top-level element for the linkd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
 		<complexType>
 			<sequence>
-				<!--- vlan section to get Vlan info from varius vendors -->
-				<element ref="this:vlans" minOccurs="1" maxOccurs="1"/>
-			</sequence>
-			<!--- the initial sleep time in msec before starting collection -->
-			<attribute name="initial_sleep_time" type="long" use="required"/>
-			<!--- Time interval in msec to poll snmp device on a node -->
-			<attribute name="snmp_poll_interval" type="long" use="required"/>
-			<!--- Time interval in msec from snmp collection to start link discovery -->
-			<attribute name="discovery_link_interval" type="long" use="required"/>
-			<!--- the max number of threads used for polling snmp devices-->
-			<attribute name="threads" type="int" use="required"/>
+				<element ref="this:vlans" minOccurs="1" maxOccurs="1">
+    		     <annotation>
+            		<documentation>A section to get specific Vendors Vlan informations.</documentation>
+          		 </annotation>
+          		</element>	
+ 			</sequence>
+			
+			<attribute name="initial_sleep_time" type="long" use="required">
+			  <annotation>
+          		<documentation>The initial sleep time in msec before starting Snmp Collection.</documentation>
+        	  </annotation>
+			</attribute>
+
+			<attribute name="snmp_poll_interval" type="long" use="required">
+        	  <annotation>
+          		<documentation>Snmp Poll Time interval in msec.</documentation>
+        	  </annotation>
+			</attribute>
+
+			<attribute name="discovery_link_interval" type="long" use="required">
+        	  <annotation>
+          		<documentation>Time interval in msec from last snmp collection and link discovery.</documentation>
+        	  </annotation>
+			</attribute>
+
+			<attribute name="threads" type="int" use="required">
+        	  <annotation>
+          		<documentation>The max number of threads used for polling snmp devices.</documentation>
+        	  </annotation>
+			</attribute>
+
+			<attribute name="auto-discovery" type="boolean" use="required">
+        	  <annotation>
+          		<documentation>Whether ip addresses from devices unknown to OpenNMS should
+          		generate newSuspect events.</documentation>
+        	  </annotation>
+	        </attribute>
+
+			<attribute name="enable-vlan-discovery" type="boolean" use="required">
+        	  <annotation>
+          		<documentation>Whether Linkd has to find Vlans on devices to performs
+          		 snmp data (Bridge) collection .</documentation>
+        	  </annotation>
+	        </attribute>
 		</complexType>
 	</element>
+
 	<element name="vlans">
 		<complexType>
 			<sequence>
-				<!--- for every vendor get vlan oid to get vlan on device -->
-				<element ref="this:vendor" minOccurs="1" maxOccurs="unbounded"/>
+				<!---  -->
+				<element ref="this:vendor" minOccurs="1" maxOccurs="unbounded">
+    		     <annotation>
+            		<documentation>Identifies right class to get Vlans from specific vendor devices sysoids.</documentation>
+          		 </annotation>
+          		</element>	
 			</sequence>
 		</complexType>
 	</element>
@@ -31,25 +82,47 @@
 	<element name="vendor">
 		<complexType>
 			<sequence>
-				<!--- specific sysoid submask node to be polled to get vlan -->
-				<element name="specific" type="string" minOccurs="1" maxOccurs="unbounded"/>
+				<element name="specific" type="string" minOccurs="1" maxOccurs="unbounded">
+    		     <annotation>
+            		<documentation>Specific sysoid submask node to be polled to get vlan.</documentation>
+          		 </annotation>
+          		</element>	
 				
-				<!--- the range of sysoid submask nodes to be polled to get vlan-->
-				<element ref="this:include-range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:include-range" minOccurs="0" maxOccurs="unbounded">
+    		     <annotation>
+            		<documentation>Range of sysoids submask nodes to be polled to get vlan</documentation>
+          		 </annotation>
+          		</element>	
 
-				<!--- the range of sysoid submask nodes to be excluded from the polling to get vlan-->
-				<element ref="this:exclude-range" minOccurs="0" maxOccurs="unbounded"/>
+				<!--- -->
+				<element ref="this:exclude-range" minOccurs="0" maxOccurs="unbounded">
+    		     <annotation>
+            		<documentation>Range of sysoid submask nodes to be excluded from the polling to get vlan</documentation>
+          		 </annotation>
+          		</element>	
 				
 			</sequence>
 
-			<!--- the vendor name identifier -->
-			<attribute name="vendor_name" type="string" use="required"/>
+			<!---  -->
+			<attribute name="vendor_name" type="string" use="required">
+    		     <annotation>
+            		<documentation>Vendor identifier.</documentation>
+          		 </annotation>
+          	</attribute>	
 
-			<!--- the vendor sysoid root identifier -->
-			<attribute name="sysoidRootMask" type="string" use="required"/>
+			<!---  -->
+			<attribute name="sysoidRootMask" type="string" use="required">
+    		     <annotation>
+            		<documentation>Vendor sysoid root identifier.</documentation>
+          		 </annotation>
+          	</attribute>
 			
-			<!-- Java class name of the plugin capable of getting Vlans on switches -->
-			<attribute name="class-name" type="string" use="required"/>
+			<!--  -->
+			<attribute name="class-name" type="string" use="required">
+    		     <annotation>
+            		<documentation>Java Class Name to get Vlans Info on matching Sysoids.</documentation>
+          		 </annotation>
+          	</attribute>
 
 		</complexType>
 	</element>
