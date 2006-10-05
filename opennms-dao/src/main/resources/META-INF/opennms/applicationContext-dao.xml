@@ -25,8 +25,7 @@
          <prop key="test.overridden.properties">NOT_FOUND</prop>
        </props>
      </property>
-     <!--  set this so properties can be overridden by setting the system property -->
-     <property name="systemPropertiesModeName" value="override" />
+     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
    </bean>
    <bean id="overridePropertiesForTesting" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
      <property name="ignoreResourceNotFound" value="true" />
