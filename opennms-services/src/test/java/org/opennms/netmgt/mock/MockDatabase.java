@@ -267,7 +267,10 @@ public class MockDatabase implements DataSource, EventWriter {
                 "   managedObjectType       VARCHAR(512),\n" + 
                 "   applicationDN           VARCHAR(512),\n" + 
                 "   ossPrimaryKey           VARCHAR(512),\n" + 
-                "   " + 
+                "   x733AlarmType           VARCHAR(31),\n" + 
+                "   x733ProbableCause       INTEGER,\n" + 
+                "   qosAlarmState           VARCHAR(31),\n" + 
+                "" + 
                 "             CONSTRAINT pk_alarmID primary key (alarmID),\n"+
                 "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE\n"+
                 ")"
