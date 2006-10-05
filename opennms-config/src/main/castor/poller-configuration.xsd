@@ -274,6 +274,14 @@
           <documentation>Name or identifier for this package.</documentation>
         </annotation>
       </attribute>
+      <attribute name="is-remote" type="boolean" use="optional" default="false" >
+        <annotation>
+          <documentation>
+            Boolean represnting whether this is a package for a remote location montior.
+            If true, this package will be ignored by the OpenNMS daemon poller.
+          </documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
 
