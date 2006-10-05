@@ -237,36 +237,42 @@ public class MockDatabase implements DataSource, EventWriter {
                 "           constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE" + 
                 ");");
         
-        update("create table alarms (\n" +
-        "   alarmID             INTEGER NOT NULL,\n" +
-        "   eventUei            VARCHAR(256) NOT NULL,\n" +
-        "   dpName              VARCHAR(12) NOT NULL,\n" +
-        "   nodeID              INTEGER,\n" +
-        "   ipaddr              VARCHAR(16),\n" +
-        "   serviceID           INTEGER NOT NULL,\n" +
-        "   reductionKey        VARCHAR(256),\n" +
-        "   alarmType           INTEGER,\n" +
-        "   counter             INTEGER NOT NULL,\n" +
-        "   severity            INTEGER NOT NULL,\n" +
-        "   lastEventID         INTEGER,\n" +
-        "   firstEventTime      TIMESTAMP NOT NULL,\n" +
-        "   lastEventTime       TIMESTAMP NOT NULL,\n" +
-        "   description         VARCHAR(4000),\n" +
-        "   logMsg              VARCHAR(256),\n" +
-        "   operInstruct        VARCHAR(1024),\n" +
-        "   tticketID           VARCHAR(128),\n" +
-        "   tticketState        INTEGER,\n" +
-        "   mouseOverText       VARCHAR(64),\n" +
-        "   suppressedUntil     TIMESTAMP,\n" +
-        "   suppressedUser      TIMESTAMP,\n" +
-        "   suppressedTime      TIMESTAMP,\n" +
-        "   alarmAckUser        VARCHAR(256),\n" +
-        "   alarmAckTime        TIMESTAMP,\n" +
-        "   clearUei            VARCHAR(256),\n" +
-        "             CONSTRAINT pk_alarmID primary key (alarmID),\n"+
-        "             CONSTRAINT fk_nodeIDak FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,\n"+
-        "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE\n"+
-        ");");
+        update("create table alarms (\n" + 
+                "   alarmID             INTEGER, \n" + 
+                "   eventUei                VARCHAR(256) NOT NULL,\n" + 
+                "   dpName              VARCHAR(12) NOT NULL,\n" + 
+                "   nodeID              INTEGER,\n" + 
+                "   ipaddr              VARCHAR(16),\n" + 
+                "   serviceID           INTEGER,\n" + 
+                "   reductionKey            VARCHAR(256),\n" + 
+                "   alarmType           INTEGER,\n" + 
+                "    counter              INTEGER NOT NULL,\n" + 
+                "   severity                INTEGER NOT NULL,\n" + 
+                "   lastEventID         INTEGER, \n" + 
+                "   firstEventTime      TIMESTAMP,\n" + 
+                "   lastEventTime       TIMESTAMP,\n" + 
+                "   description         VARCHAR(4000),\n" + 
+                "   logMsg              VARCHAR(256),\n" + 
+                "   operInstruct            VARCHAR(1024),\n" + 
+                "   tticketID           VARCHAR(128),\n" + 
+                "   tticketState            INTEGER,\n" + 
+                "   mouseOverText       VARCHAR(64),\n" + 
+                "   suppressedUntil     TIMESTAMP,\n" + 
+                "   suppressedUser      VARCHAR(256),\n" + 
+                "   suppressedTime      TIMESTAMP,\n" + 
+                "   alarmAckUser            VARCHAR(256),\n" + 
+                "   alarmAckTime            TIMESTAMP,\n" + 
+                "   clearUei                VARCHAR(256),\n" + 
+                "   managedObjectInstance   VARCHAR(512),\n" + 
+                "   managedObjectType       VARCHAR(512),\n" + 
+                "   applicationDN           VARCHAR(512),\n" + 
+                "   ossPrimaryKey           VARCHAR(512),\n" + 
+                "   " + 
+                "             CONSTRAINT pk_alarmID primary key (alarmID),\n"+
+                "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE\n"+
+                ")"
+          );
+        
         
         update("create table demandPolls (\n" + 
         		"	id			integer,\n" + 
