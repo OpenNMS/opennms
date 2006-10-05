@@ -1347,6 +1347,7 @@ public class DbEventWriter implements Runnable {
 	}
 	
 	private void sendNewSuspectEvent(InetAddress ipaddress) {
+		if (ipaddress.isLoopbackAddress() || ipaddress.isMulticastAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) return;
 		if (m_snmpcoll.isAutoDiscoveryEnabled())
 
 			Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), m_snmpcoll.getSnmpIpPrimary().getHostAddress());
