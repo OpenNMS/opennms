@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<linkd-configuration threads="30" initial_sleep_time="600000" snmp_poll_interval="1800000" discovery_link_interval="300000">
+<linkd-configuration auto-discovery="true" enable-vlan-discovery="true" threads="30" initial_sleep_time="600000" snmp_poll_interval="1800000" discovery_link_interval="300000">
   <vlans>
 	<vendor vendor_name="3Com" sysoidRootMask=".1.3.6.1.4.1.43.10.27.4.1" class-name="org.opennms.netmgt.linkd.snmp.ThreeComVlanPortTable">
 		   <specific>2.2</specific>
