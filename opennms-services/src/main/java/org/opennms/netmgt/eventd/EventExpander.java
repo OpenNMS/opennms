@@ -693,6 +693,8 @@ public final class EventExpander {
                 alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
                 alarmData.setReductionKey(econf.getAlarmData().getReductionKey());
                 alarmData.setClearUei(econf.getAlarmData().getClearUei());
+                alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
+                alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());
                 e.setAlarmData(alarmData);
             }
 

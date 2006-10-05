@@ -86,8 +86,15 @@ public final class EventdConstants {
             "               lastEventID, firstEventTime, lastEventTime, " +
             "               description, logMsg, operInstruct, tticketID, " +
             "               tticketState, mouseOverText, suppressedUntil, " +
-            "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime, clearUei) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime, clearUei, " +
+            "               x733AlarmType, x733ProbableCause) " +
+            "VALUES (?,?,?,?,?," +
+            "        ?,?,?,?,?," +
+            "        ?,?,?," +
+            "        ?,?,?,?," +
+            "        ?,?,?," +
+            "        ?,?,?,?,?" +
+            "        ?,?)";
 
     /**
      * The SQL string used by eventd to update number of duplicate events in

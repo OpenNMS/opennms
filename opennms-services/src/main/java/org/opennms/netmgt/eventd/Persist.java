@@ -131,6 +131,8 @@ class Persist {
     private static final int EVENT_ACKUSER_FIELD_SIZE = 256;
 
     private static final int EVENT_SOURCE_FIELD_SIZE = 128;
+    
+    private static final int EVENT_X733_ALARMTYPE_SIZE = 31;
 
     /**
      * The character to put in if the log or display is to be set to yes
@@ -574,11 +576,21 @@ class Persist {
         set(m_insStmt, 24, eventTime);
         
         //Column 25, clearUie
-        m_insStmt.setString(25, Constants.format(event.getAlarmData().getClearUei(), EVENT_UEI_FIELD_SIZE));
+        //Column 26, x733AlarmType
+        //Column 27, x733ProbableCause
+        if (event.getAlarmData() == null) {
+            m_insStmt.setString(25, null);
+            m_insStmt.setString(26, null);
+            m_insStmt.setInt(27, -1);
+        } else {
+            m_insStmt.setString(25, Constants.format(event.getAlarmData().getClearUei(), EVENT_UEI_FIELD_SIZE));
+            m_insStmt.setString(26, Constants.format(event.getAlarmData().getX733AlarmType(), EVENT_X733_ALARMTYPE_SIZE));
+            set(m_insStmt, 27, event.getAlarmData().getX733ProbableCause());
+        }
         
         if (log.isDebugEnabled())
             log.debug("m_insStmt is: "+m_insStmt.toString());
-
+        
         m_insStmt.executeUpdate();
         
         m_updateEventStmt.setInt(1, alarmID);
