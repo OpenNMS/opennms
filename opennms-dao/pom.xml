@@ -73,6 +73,10 @@
       <artifactId>c3p0</artifactId>
     </dependency>
     <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
     </dependency>
@@ -88,10 +92,6 @@
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.ibatis</groupId>
-      <artifactId>ibatis2-sqlmap</artifactId>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>

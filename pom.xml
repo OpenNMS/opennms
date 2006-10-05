@@ -717,6 +717,12 @@ opennms.home = ${opennms.home}
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao</artifactId>
         <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -852,6 +858,11 @@ opennms.home = ${opennms.home}
         <version>1.2b7</version>
       </dependency>
       <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib-nodep</artifactId>
+        <version>2.1_3</version>
+      </dependency>
+      <dependency>
         <groupId>c3p0</groupId>
         <artifactId>c3p0</artifactId>
         <version>0.9.0-pre5</version>
@@ -901,6 +912,12 @@ opennms.home = ${opennms.home}
         <groupId>groovy</groupId>
         <artifactId>groovy</artifactId>
         <version>1.0-jsr-06</version>    
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>hsqldb</groupId>
@@ -911,21 +928,6 @@ opennms.home = ${opennms.home}
         <groupId>httpunit</groupId>
         <artifactId>httpunit</artifactId>
         <version>1.6.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibatis</groupId>
-        <artifactId>ibatis2-common</artifactId>
-        <version>2.1.6.589</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibatis</groupId>
-        <artifactId>ibatis2-dao</artifactId>
-        <version>2.1.6.589</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibatis</groupId>
-        <artifactId>ibatis2-sqlmap</artifactId>
-        <version>2.1.6.589</version>
       </dependency>
       <dependency>
         <groupId>jakarta-regexp</groupId>
@@ -1012,6 +1014,10 @@ opennms.home = ${opennms.home}
           <exclusion>
             <groupId>cglib</groupId>
             <artifactId>cglib-full</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1107,6 +1113,23 @@ opennms.home = ${opennms.home}
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
         <version>3.2.0.cr4</version>
+        <exclusions>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- need to use cglib-nodep instead -->
+            <groupId>asm</groupId>
+            <artifactId>asm-attrs</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -1128,55 +1151,67 @@ opennms.home = ${opennms.home}
         <groupId>org.springframework</groupId>
         <artifactId>spring</artifactId>
         <version>2.0-m4</version>
-<!--
         <exclusions>
           <exclusion>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
--->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-hibernate3</artifactId>
         <version>2.0-m4</version>
-<!--
         <exclusions>
           <exclusion>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
--->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-mock</artifactId>
         <version>2.0-m4</version>
-<!--
         <exclusions>
           <exclusion>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
--->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-remoting</artifactId>
         <version>2.0-m4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jdbc</artifactId>
         <version>2.0-m4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-support</artifactId>
         <version>2.0-m4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
