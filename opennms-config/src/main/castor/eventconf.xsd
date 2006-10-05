@@ -514,8 +514,16 @@
       <attribute name="alarm-type" type="positiveInteger" use="required" />
       <attribute name="clear-uei" type="string" use="optional" />
       <attribute name="auto-clean" type="boolean" use="optional" default="false" />
+      <attribute name="x733-alarm-type" type="this:x733-alarm-type" use="optional" />
+      <attribute name="x733-probable-cause" type="integer" use="optional" />
     </complexType>
   </element>
+  
+  <simpleType name="x733-alarm-type">
+    <restriction base="string" >
+      <pattern value="CommunicationsAlarm|ProcessingErrorAlarm|EnvironmentalAlarm|QualityOfServiceAlarm|EquipmentAlarm|IntegrityViolation|SecurityViolation|TimeDomainViolation|OperationalViolation|PhysicalViolation" />
+    </restriction>
+  </simpleType>
 
   <element name="varbind">
     <annotation>
