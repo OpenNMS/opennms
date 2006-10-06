@@ -5,7 +5,6 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.StringReader;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
 import junit.framework.TestCase;
@@ -14,7 +13,6 @@ import junit.framework.TestSuite;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.mock.EventAnticipator;
-import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockTrapdConfig;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
