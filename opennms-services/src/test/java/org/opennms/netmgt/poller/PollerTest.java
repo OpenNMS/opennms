@@ -45,6 +45,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CapsdConfigManager;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.dao.jdbc.DemandPollDaoJdbc;
 import org.opennms.netmgt.eventd.EventUtil;
@@ -188,6 +189,15 @@ public class PollerTest extends TestCase {
 	//
 	// Tests
 	//
+    
+    public void testIsRemotePackage() {
+        Package pkg = new Package();
+        pkg.setName("SFO");
+        pkg.setRemote(true);
+        Poller poller = new Poller();
+        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
+        poller = null;
+    }
 
 	public void testDemandPollService() {
 		DemandPoll demandPoll = new DemandPoll();
@@ -201,8 +211,7 @@ public class PollerTest extends TestCase {
 
 		MockService httpService = m_network
 				.getService(2, "192.168.1.3", "HTTP");
-		Event demandPollEvent = httpService.createDemandPollEvent(demandPoll
-				.getId());
+		Event demandPollEvent = httpService.createDemandPollEvent(demandPoll.getId());
 
 	}
 

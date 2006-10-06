@@ -425,18 +425,26 @@ public class Poller extends AbstractServiceDaemon {
     private Package findPackageForService(String ipAddr, String serviceName) {
         Enumeration en = m_pollerConfig.enumeratePackage();
         Package lastPkg = null;
+        
         while (en.hasMoreElements()) {
             Package pkg = (Package)en.nextElement();
             if (pollableServiceInPackage(ipAddr, serviceName, pkg))
                 lastPkg = pkg;
         }
         return lastPkg;
-        
     }
-    private boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+    
+    protected boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+        
+        if (pkg.getRemote()) {
+            log().debug("pollableServiceInPackage: this package: "+pkg.getName()+", is a remote monitor package.");
+            return false;
+        }
+        
         if (!m_pollerConfig.serviceInPackageAndEnabled(serviceName, pkg)) return false;
         
         boolean inPkg = m_pollerConfig.interfaceInPackage(ipAddr, pkg);
+        
         if (inPkg) return true;
         
         if (m_initialized) {
