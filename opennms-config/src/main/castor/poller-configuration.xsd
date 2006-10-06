@@ -274,7 +274,7 @@
           <documentation>Name or identifier for this package.</documentation>
         </annotation>
       </attribute>
-      <attribute name="is-remote" type="boolean" use="optional" default="false" >
+      <attribute name="remote" type="boolean" use="optional" default="false" >
         <annotation>
           <documentation>
             Boolean represnting whether this is a package for a remote location montior.
