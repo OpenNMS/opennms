@@ -37,7 +37,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,7 @@ import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
- * @author brozow
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * 
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
