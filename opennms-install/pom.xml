@@ -44,10 +44,16 @@
     </plugins>
   </build>
   <dependencies>
+    <!-- OpenNMS dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-api</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -58,6 +64,18 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
       <scope>compile</scope>
+    </dependency>
+
+    <!-- Non-OpenNMS dependencies -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-mock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>

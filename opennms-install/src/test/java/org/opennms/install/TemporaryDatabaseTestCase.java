@@ -62,6 +62,12 @@ public class TemporaryDatabaseTestCase extends TestCase {
         m_url = url;
         m_adminUser = adminUser;
         m_adminPassword = adminPassword;
+        
+        try {
+            Class.forName(m_driver);
+        } catch (ClassNotFoundException e) {
+            fail("Could not load driver class '" + m_driver + "'", e);
+        }
     }
 
     /*
@@ -75,7 +81,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         // Reset any previous test failures
         setTestFailureThrowable(null);
         
-        if (!areTestsEnabled()) {
+        if (!isDisabledInThisEnvironment(getName())) {
             return;
         }
         
@@ -94,7 +100,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     
     @Override
     protected void runTest() throws Throwable {
-        if (!areTestsEnabled()) {
+        if (!isDisabledInThisEnvironment(getName())) {
             return;
         }
 
@@ -108,7 +114,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        if (areTestsEnabled()) {
+        if (isDisabledInThisEnvironment(getName())) {
             try {
                 destroyTestDatabase();
             } catch (Throwable t) {
@@ -143,11 +149,11 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return m_testDatabase;
     }
     
-    public Connection getConnection() throws Exception {
+    public Connection getConnection() throws SQLException {
         return databaseConnect(m_testDatabase);
     }
     
-    public Connection getAdminConnection() throws Exception {
+    public Connection getAdminConnection() throws SQLException {
         return databaseConnect("template1");
     }
     
@@ -179,11 +185,12 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return m_throwable != null;
     }
 
-    final public boolean areTestsEnabled() {
+    final public boolean isDisabledInThisEnvironment(String testMethodName) {
         String property = System.getProperty(RUN_PROPERTY);
         boolean enabled = "true".equals(property);
         if (!enabled && !m_toldDisabled) {
-            System.out.println("Test '" + getName() + "' disabled.  Set '"
+            System.out.println("Test '" + testMethodName
+                               + "' disabled.  Set '"
                                + RUN_PROPERTY
                                + "' property to 'true' to enable.");
             // Keep track on whether or not we told them for this test
@@ -192,8 +199,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return enabled;
     }
     
-    private Connection databaseConnect(String database) throws Exception {
-        Class.forName(m_driver);
+    private Connection databaseConnect(String database) throws SQLException {
         return DriverManager.getConnection(m_url + database,
                                            m_adminUser, m_adminPassword);
     }
