@@ -72,18 +72,27 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
-import org.springframework.dao.UncategorizedDataAccessException;
 
-
+/**
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
 abstract public class PollerConfigManager implements PollerConfig {
 
+    /**
+     * @author <a href="mailto:david@opennms.org">David Hustace</a>
+     * @param reader
+     * @param localServer
+     * @param verifyServer
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     */
     public PollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
         reloadXML(reader);
-        
     }
 
     public abstract void update() throws IOException, MarshalException, ValidationException;
@@ -98,17 +107,17 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
      */
-    private Map m_urlIPMap;
+    private Map<String, List<String>> m_urlIPMap;
     /**
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetetive database access.
      */
-    private Map m_pkgIpMap;
+    private Map<org.opennms.netmgt.config.poller.Package, List<String>> m_pkgIpMap;
     /**
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
      */
-    private Map m_svcMonitors = Collections.synchronizedMap(new TreeMap());
+    private Map<String, ServiceMonitor> m_svcMonitors = Collections.synchronizedMap(new TreeMap<String, ServiceMonitor>());
     /**
      * A boolean flag to indicate If a filter rule agaist the local OpenNMS
      * server has to be used.
@@ -124,8 +133,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * configured URL to a list of IPs configured in that URL - done at init()
      * time so that repeated file reads can be avoided
      */
+    @SuppressWarnings("unchecked")
     private void createUrlIpMap() {
-        m_urlIPMap = new HashMap();
+        m_urlIPMap = new HashMap<String, List<String>>();
     
         Enumeration pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
@@ -135,7 +145,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             while (urlEnum.hasMoreElements()) {
                 String urlname = (String) urlEnum.nextElement();
     
-                java.util.List iplist = IpListFromUrl.parse(urlname);
+                java.util.List<String> iplist = IpListFromUrl.parse(urlname);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(urlname, iplist);
                 }
@@ -341,7 +351,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * from the database.
      */
     private void createPackageIpListMap() {
-        m_pkgIpMap = new HashMap();
+        m_pkgIpMap = new HashMap<org.opennms.netmgt.config.poller.Package, List<String>>();
     
         Enumeration pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
@@ -352,7 +362,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             // database and populate the package, IP list map.
             //
             try {
-                List ipList = getIpList(pkg);
+                List<String> ipList = getIpList(pkg);
                 if (log().isDebugEnabled())
                     log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
     
@@ -369,7 +379,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
-    public List getIpList(Package pkg) {
+    public List<String> getIpList(Package pkg) {
         Filter filter = new Filter();
         StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         if (m_verifyServer) {
@@ -381,7 +391,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
         if (log().isDebugEnabled())
             log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
-        List ipList = filter.getIPList(filterRules.toString());
+        List<String> ipList = filter.getIPList(filterRules.toString());
         return ipList;
     }
 
@@ -601,11 +611,10 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a list of package names that the ip belongs to, null if none
      */
-    public synchronized List getAllPackageMatches(String ipaddr) {
-        Category log = ThreadCategory.getInstance(getClass());
+    public synchronized List<String> getAllPackageMatches(String ipaddr) {
     
         Enumeration pkgEnum = m_config.enumeratePackage();
-        List matchingPkgs = new ArrayList();
+        List<String> matchingPkgs = new ArrayList<String>();
         while (pkgEnum.hasMoreElements()) {
             org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
             String pkgName = pkg.getName();
