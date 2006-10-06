@@ -10,13 +10,27 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class TemporaryDatabaseTestCase extends TestCase {
-    private static final String s_runProperty = "mock.rundbtests";
+    private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
+    
+    private static final String RUN_PROPERTY = "mock.rundbtests";
+    private static final String LEAVE_PROPERTY = "mock.leaveDatabase";
+    private static final String LEAVE_ON_FAILURE_PROPERTY =
+        "mock.leaveDatabaseOnFailure";
+    
+    private static final String DRIVER_PROPERTY = "mock.db.driver";
+    private static final String URL_PROPERTY = "mock.db.url";
+    private static final String ADMIN_USER_PROPERTY = "mock.db.adminUser";
+    private static final String ADMIN_PASSWORD_PROPERTY = "mock.db.adminPassword";
+    
+    private static final String DEFAULT_DRIVER = "org.postgresql.Driver";
+    private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/";
+    private static final String DEFAULT_ADMIN_USER = "postgres";
+    private static final String DEFAULT_ADMIN_PASSWORD = "";
 
     private String m_testDatabase;
 
     private boolean m_leaveDatabase = false;
     private boolean m_leaveDatabaseOnFailure = false;
-    private boolean m_failure = false;
     private Throwable m_throwable = null;
     
     private String m_driver;
@@ -27,8 +41,10 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private boolean m_toldDisabled = false;
     
     public TemporaryDatabaseTestCase() {
-        this("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/",
-             "postgres", "");
+        this(System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
+             System.getProperty(URL_PROPERTY, DEFAULT_URL),
+             System.getProperty(ADMIN_USER_PROPERTY, DEFAULT_ADMIN_USER),
+             System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD));
     }
     
     public TemporaryDatabaseTestCase(String driver, String url,
@@ -39,15 +55,26 @@ public class TemporaryDatabaseTestCase extends TestCase {
         m_adminPassword = adminPassword;
     }
 
+    /*
+     * TODO: Should we make this final, and let extending classes override
+     * something like afterSetUp() (like the Spring transactional tests do)
+     */ 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         
+        // Reset any previous test failures
+        setTestFailureThrowable(null);
+        
         if (!areTestsEnabled()) {
             return;
         }
+        
+        m_leaveDatabase = "true".equals(System.getProperty(LEAVE_PROPERTY));
+        m_leaveDatabaseOnFailure =
+            "true".equals(System.getProperty(LEAVE_ON_FAILURE_PROPERTY));
 
-        m_testDatabase = "opennms_test_" + System.currentTimeMillis();
+        m_testDatabase = getTestDatabaseName();
 
         createTestDatabase();
 
@@ -65,8 +92,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         try {
             super.runTest();
         } catch (Throwable t) {
-            m_failure = true;
-            m_throwable = t;
+            setTestFailureThrowable(t);
             throw t;
         }
     }
@@ -77,8 +103,16 @@ public class TemporaryDatabaseTestCase extends TestCase {
             try {
                 destroyTestDatabase();
             } catch (Throwable t) {
-                if (m_throwable != null) {
-                    throw new TestFailureAndTearDownErrorException(m_throwable, t);
+                /*
+                 * Do some fancy footwork to catch and reasonably report cases
+                 * where both the test method and destroyTestDatabase throw
+                 * exceptions.  Otherwise, a test that fails in a really
+                 * funky way may cause destroyTestDatabase() to throw an
+                 * exception, which would mask the root cause, since JUnit
+                 * will only report the latter exception.
+                 */ 
+                if (hasTestFailed()) {
+                    throw new TestFailureAndTearDownErrorException(getTestFailureThrowable(), t);
                 } else {
                     if (t instanceof Exception) {
                         throw (Exception) t;
@@ -90,6 +124,10 @@ public class TemporaryDatabaseTestCase extends TestCase {
         }
 
         super.tearDown();
+    }
+    
+    protected String getTestDatabaseName() {
+        return TEST_DB_NAME_PREFIX + System.currentTimeMillis();
     }
 
     public String getTestDatabase() {
@@ -119,13 +157,25 @@ public class TemporaryDatabaseTestCase extends TestCase {
     public String getAdminPassword() {
         return m_adminPassword;
     }
+
+    public void setTestFailureThrowable(Throwable t) {
+        m_throwable = t;
+    }
     
-    private boolean areTestsEnabled() {
-        String property = System.getProperty(s_runProperty);
+    public Throwable getTestFailureThrowable() {
+        return m_throwable;
+    }
+
+    public boolean hasTestFailed() {
+        return m_throwable != null;
+    }
+
+    public boolean areTestsEnabled() {
+        String property = System.getProperty(RUN_PROPERTY);
         boolean enabled = "true".equals(property);
         if (!enabled && !m_toldDisabled) {
             System.out.println("Test '" + getName() + "' disabled.  Set '"
-                               + s_runProperty
+                               + RUN_PROPERTY
                                + "' property to 'true' to enable.");
             m_toldDisabled = true;
         }
@@ -147,7 +197,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
     }
     
     private void destroyTestDatabase() throws Exception {
-        if (m_leaveDatabase || (m_leaveDatabaseOnFailure && m_failure)) {
+        if (m_leaveDatabase
+                || (m_leaveDatabaseOnFailure && hasTestFailed())) {
             System.err.println("Not dropping database '" + m_testDatabase
                     + "' for test '" + getName() + "'");
             return;
@@ -167,6 +218,11 @@ public class TemporaryDatabaseTestCase extends TestCase {
             st.execute("DROP DATABASE " + m_testDatabase);
             st.close();
         } finally {
+            /*
+             * Since we are already going to be throwing an exception at this
+             * point, print any further errors to stdout so we don't mask
+             * the first failure.
+             */
             try {
                 adminConnection.close();
             } catch (SQLException e) {
@@ -213,6 +269,11 @@ public class TemporaryDatabaseTestCase extends TestCase {
                 }
             }
         } finally {
+            /*
+             * Since we are already going to be throwing an exception at this
+             * point, print any further errors to stdout so we don't mask
+             * the first failure.
+             */
             if (st != null) {
                 try {
                     st.close();
@@ -239,7 +300,14 @@ public class TemporaryDatabaseTestCase extends TestCase {
         throw e;
     }
     
+    /**
+     * Represents a failure both in a unit test method (e.g.: testFoo) and
+     * in the tearDown method.  
+     * 
+     * @author djgregor
+     */
     public class TestFailureAndTearDownErrorException extends Exception {
+        private static final long serialVersionUID = -5664844942506660064L;
         private Throwable m_tearDownError;
         
         public TestFailureAndTearDownErrorException(Throwable testFailure,
