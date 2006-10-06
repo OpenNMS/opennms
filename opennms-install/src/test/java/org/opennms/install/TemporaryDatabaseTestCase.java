@@ -9,6 +9,15 @@ import java.sql.Statement;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+/**
+ * For each unit test method, creates a temporary database before the unit
+ * test is run and destroys the database after each test (optionally leaving
+ * around the test database, either always or on a test failure).  Tests do
+ * not get run and the database isn't touched unless the system property
+ * "mock.rundbtests" is set to "true".
+ *  
+ * @author djgregor
+ */
 public class TemporaryDatabaseTestCase extends TestCase {
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     
@@ -170,13 +179,14 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return m_throwable != null;
     }
 
-    public boolean areTestsEnabled() {
+    final public boolean areTestsEnabled() {
         String property = System.getProperty(RUN_PROPERTY);
         boolean enabled = "true".equals(property);
         if (!enabled && !m_toldDisabled) {
             System.out.println("Test '" + getName() + "' disabled.  Set '"
                                + RUN_PROPERTY
                                + "' property to 'true' to enable.");
+            // Keep track on whether or not we told them for this test
             m_toldDisabled = true;
         }
         return enabled;
