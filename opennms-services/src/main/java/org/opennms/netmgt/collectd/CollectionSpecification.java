@@ -43,7 +43,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -58,6 +57,8 @@ public class CollectionSpecification {
 	private String m_svcName;
 	private ServiceCollector m_collector;
 	private Map m_parameters;
+  
+    //FIXME: Why is this not used?
 	private Collection m_outageCalendars;
 	
 	public CollectionSpecification(CollectdPackage wpkg, String svcName, Collection outageCalendars, ServiceCollector collector) {
@@ -134,7 +135,7 @@ public class CollectionSpecification {
 	}
 
 	private void initializeParameters() {
-		Map m = new TreeMap();
+		Map<String, String> m = new TreeMap<String, String>();
 		Enumeration ep = getService().enumerateParameter();
 		while (ep.hasMoreElements()) {
 			Parameter p = (Parameter) ep.nextElement();
