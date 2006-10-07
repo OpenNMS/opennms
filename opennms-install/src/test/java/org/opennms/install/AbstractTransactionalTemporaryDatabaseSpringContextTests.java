@@ -12,50 +12,41 @@ import org.springframework.test.AbstractTransactionalDataSourceSpringContextTest
 public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
     extends AbstractTransactionalDataSourceSpringContextTests {
     
-    private PopulatedTemporaryDatabaseTestCaseTest m_populatedTempDb;
-    
-    public AbstractTransactionalTemporaryDatabaseSpringContextTests() {
-        m_populatedTempDb = new PopulatedTemporaryDatabaseTestCaseTest();
-    }
+    private PopulatedTemporaryDatabaseTestCase m_populatedTempDb;
 
     @Override
     protected final ConfigurableApplicationContext
             loadContextLocations(String[] locations) {
+        if (!PopulatedTemporaryDatabaseTestCase.isEnabled()) {
+            setDependencyCheck(false);
+            return super.loadContextLocations(new String[0]);
+        }
+        
         LinkedList<String> newLocations = new LinkedList<String>();
         newLocations.addAll(Arrays.asList(locations));
         newLocations.add("classpath:META-INF/opennms/applicationContext-AbstractTransactionalTemporaryDatabaseSpringContextTests.xml"); 
         return super.loadContextLocations((String[]) newLocations.toArray(new String[0]));
     }
     
-    protected boolean isDisabledInThisEnvironment(String testMethodName) {
-        return m_populatedTempDb.isDisabledInThisEnvironment(testMethodName);
+    public void setPopulatedTemporaryDatabaseTestCase(PopulatedTemporaryDatabaseTestCase testCase) {
+        m_populatedTempDb = testCase;
     }
     
     @Override
     protected void onSetUpBeforeTransaction() throws Exception {
         super.onSetUpBeforeTransaction();
+
+        setDirty();
         
-        try {
-            m_populatedTempDb.setUp();
-        } catch (Exception e) {
-            m_populatedTempDb.fail("setUp failed on " + m_populatedTempDb.getClass().getName(), e);
+        if (!PopulatedTemporaryDatabaseTestCase.isEnabled()) {
+            PopulatedTemporaryDatabaseTestCase.notifyTestDisabled(getName());
         }
-        
-        DataSource dataSource = jdbcTemplate.getDataSource();
-        if (!(dataSource instanceof TemporaryDatabaseDataSource)) {
-            throw new Exception("dataSource is not an instance of "
-                                + "TemporaryDatabaseDataSource");
-        }
-        
-        TemporaryDatabaseDataSource temporaryDatabaseDataSource =
-            (TemporaryDatabaseDataSource) dataSource;
-        
-        temporaryDatabaseDataSource.setTemporaryDatabaseTestCase(m_populatedTempDb);
-        DataSourceFactory.setInstance(dataSource);
     }
     
     @Override
     protected void onTearDownAfterTransaction() throws Exception {
-        m_populatedTempDb.tearDown();
+        if (m_populatedTempDb != null) {
+            m_populatedTempDb.tearDown();
+        }
     }
 }

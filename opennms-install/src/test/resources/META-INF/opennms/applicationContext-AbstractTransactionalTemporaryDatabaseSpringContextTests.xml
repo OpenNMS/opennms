@@ -3,7 +3,20 @@
 
 <beans>
 
-  <bean id="dataSource" class="org.opennms.install.TemporaryDatabaseDataSource">
+  <bean id="populatedTemporaryDatabaseTestCase" class="org.opennms.install.PopulatedTemporaryDatabaseTestCase" init-method="setUp"/>
+
+  <bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+	<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.setInstance</value></property>
+	<property name="arguments">
+      <list>
+	    <bean class="org.opennms.install.TemporaryDatabaseDataSource">
+	      <property name="temporaryDatabaseTestCase" ref="populatedTemporaryDatabaseTestCase"/>
+	    </bean>
+      </list>
+    </property>
   </bean>
-  
+
+  <bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-datasource-factory">
+	<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.getInstance</value></property>
+  </bean>
 </beans>
