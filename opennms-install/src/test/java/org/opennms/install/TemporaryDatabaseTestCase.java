@@ -47,8 +47,6 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private String m_adminUser;
     private String m_adminPassword;
     
-    private boolean m_toldDisabled = false;
-    
     public TemporaryDatabaseTestCase() {
         this(System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
              System.getProperty(URL_PROPERTY, DEFAULT_URL),
@@ -81,7 +79,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         // Reset any previous test failures
         setTestFailureThrowable(null);
         
-        if (!isDisabledInThisEnvironment(getName())) {
+        if (!isEnabled()) {
             return;
         }
         
@@ -104,7 +102,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
     @Override
     protected void runTest() throws Throwable {
-        if (!isDisabledInThisEnvironment(getName())) {
+        if (!isEnabled()) {
+            notifyTestDisabled(getName());
             return;
         }
 
@@ -118,7 +117,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        if (isDisabledInThisEnvironment(getName())) {
+        if (isEnabled()) {
             try {
                 destroyTestDatabase();
             } catch (Throwable t) {
@@ -187,16 +186,6 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
     public boolean hasTestFailed() {
         return m_throwable != null;
-    }
-
-    final public boolean isDisabledInThisEnvironment(String testMethodName) {
-        boolean enabled = isEnabled();
-        if (!enabled && !m_toldDisabled) {
-            notifyTestDisabled(testMethodName);
-            // Keep track on whether or not we told them for this test
-            m_toldDisabled = true;
-        }
-        return enabled;
     }
     
     public static boolean isEnabled() {

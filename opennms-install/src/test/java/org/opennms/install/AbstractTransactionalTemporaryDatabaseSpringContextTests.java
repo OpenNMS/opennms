@@ -33,14 +33,45 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
     }
     
     @Override
-    protected void onSetUpBeforeTransaction() throws Exception {
-        super.onSetUpBeforeTransaction();
-
-        setDirty();
+    final protected void onSetUpInTransaction() throws Exception {
+        if (!PopulatedTemporaryDatabaseTestCase.isEnabled()) {
+            return;
+        }
         
+        super.onSetUpInTransaction();
+        
+        onSetUpInTransactionIfEnabled();
+    }
+    
+    protected void onSetUpInTransactionIfEnabled() {
+        // Empty by default
+    }
+    
+    @Override
+    protected void runTest() throws Throwable {
+        setDirty();
+
         if (!PopulatedTemporaryDatabaseTestCase.isEnabled()) {
             PopulatedTemporaryDatabaseTestCase.notifyTestDisabled(getName());
+            return;
         }
+
+        super.runTest();
+    }
+
+    @Override
+    final protected void onTearDownInTransaction() throws Exception {
+        if (!PopulatedTemporaryDatabaseTestCase.isEnabled()) {
+            return;
+        }
+        
+        super.onTearDownInTransaction();
+        
+        onTearDownInTransactionIfEnabled();
+    }
+    
+    protected void onTearDownInTransactionIfEnabled() {
+        // Empty by default
     }
     
     @Override
