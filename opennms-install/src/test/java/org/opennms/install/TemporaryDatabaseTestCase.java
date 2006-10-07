@@ -89,7 +89,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         m_leaveDatabaseOnFailure =
             "true".equals(System.getProperty(LEAVE_ON_FAILURE_PROPERTY));
 
-        m_testDatabase = getTestDatabaseName();
+        setTestDatabase(getTestDatabaseName());
 
         createTestDatabase();
 
@@ -98,6 +98,10 @@ public class TemporaryDatabaseTestCase extends TestCase {
         connection.close();
     }
     
+    private void setTestDatabase(String testDatabase) {
+        m_testDatabase = testDatabase; 
+    }
+
     @Override
     protected void runTest() throws Throwable {
         if (!isDisabledInThisEnvironment(getName())) {
@@ -150,7 +154,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     }
     
     public Connection getConnection() throws SQLException {
-        return databaseConnect(m_testDatabase);
+        return databaseConnect(getTestDatabase());
     }
     
     public Connection getAdminConnection() throws SQLException {
@@ -186,20 +190,30 @@ public class TemporaryDatabaseTestCase extends TestCase {
     }
 
     final public boolean isDisabledInThisEnvironment(String testMethodName) {
-        String property = System.getProperty(RUN_PROPERTY);
-        boolean enabled = "true".equals(property);
+        boolean enabled = isEnabled();
         if (!enabled && !m_toldDisabled) {
-            System.out.println("Test '" + testMethodName
-                               + "' disabled.  Set '"
-                               + RUN_PROPERTY
-                               + "' property to 'true' to enable.");
+            notifyTestDisabled(testMethodName);
             // Keep track on whether or not we told them for this test
             m_toldDisabled = true;
         }
         return enabled;
     }
     
+    public static boolean isEnabled() {
+        String property = System.getProperty(RUN_PROPERTY);
+        return "true".equals(property);
+    }
+
+    public static void notifyTestDisabled(String testMethodName) {
+        System.out.println("Test '" + testMethodName
+                           + "' disabled.  Set '"
+                           + RUN_PROPERTY
+                           + "' property to 'true' to enable.");
+    }
+
+    
     private Connection databaseConnect(String database) throws SQLException {
+        assertNotNull("Temporary database name is null", database);
         return DriverManager.getConnection(m_url + database,
                                            m_adminUser, m_adminPassword);
     }
@@ -207,7 +221,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private void createTestDatabase() throws Exception {
         Connection adminConnection = getAdminConnection();
         Statement st = adminConnection.createStatement();
-        st.execute("CREATE DATABASE " + m_testDatabase
+        st.execute("CREATE DATABASE " + getTestDatabase()
                 + " WITH ENCODING='UNICODE'");
         adminConnection.close();
     }
@@ -215,7 +229,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private void destroyTestDatabase() throws Exception {
         if (m_leaveDatabase
                 || (m_leaveDatabaseOnFailure && hasTestFailed())) {
-            System.err.println("Not dropping database '" + m_testDatabase
+            System.err.println("Not dropping database '" + getTestDatabase()
                     + "' for test '" + getName() + "'");
             return;
         }
@@ -231,7 +245,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
         try {
             Statement st = adminConnection.createStatement();
-            st.execute("DROP DATABASE " + m_testDatabase);
+            st.execute("DROP DATABASE " + getTestDatabase());
             st.close();
         } finally {
             /*
