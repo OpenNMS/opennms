@@ -13,7 +13,7 @@ public class PopulatedTemporaryDatabaseTestCase extends
     }
 
     protected void initializeDatabase() throws Exception {
-        if (!isDisabledInThisEnvironment(getName())) {
+        if (!isEnabled()) {
             return;
         }
         
