@@ -152,6 +152,12 @@ opennms.home = ${opennms.home}
           <target>1.5</target>
         </configuration>
       </plugin>
+<!--
+     2006-10-08: Disabling this because it reports lots of bogus errors
+                 and makes eclipse do things like XML and JSP validation 
+                 that it doesn't otherwise do.
+ -->
+<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -159,6 +165,7 @@ opennms.home = ${opennms.home}
           <wtpversion>1.0</wtpversion>
         </configuration>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
