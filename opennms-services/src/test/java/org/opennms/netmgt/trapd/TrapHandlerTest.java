@@ -154,6 +154,52 @@ public class TrapHandlerTest extends TestCase {
             "  </logmsg>\n" +
             "  <severity>Normal</severity>\n" +
             " </event>\n" +
+            " <event>\n" +
+            "  <mask>\n" +
+            "   <maskelement>\n" +
+            "    <mename>id</mename>\n" +
+            "    <mevalue>.1.3.6.1.4.1.11.2.14.12.1</mevalue>\n" +
+            "   </maskelement> <maskelement>\n"+
+            "    <mename>generic</mename>\n" +
+            "    <mevalue>6</mevalue>\n" + 
+            "   </maskelement>\n" +
+            "   <maskelement>\n" +
+            "    <mename>specific</mename>\n" +
+            "    <mevalue>5</mevalue> \n" +
+            "   </maskelement>\n" +
+            "   <varbind textual-convention=\"MacAddress\"> \n" +
+            "    <vbnumber>3</vbnumber>\n" +
+            "    <vbvalue>5</vbvalue> \n" +
+            "   </varbind> \n" +
+            "  </mask>\n" +
+            "  <uei>uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap</uei>\n" +
+            "  <event-label>HP-ICF-FAULT-FINDER-MIB defined trap event: hpicfFaultFinderTrap</event-label>\n" +
+            "  <descr>\n" +
+            "    This notification is sent whenever the Fault\n" +
+            "       Finder creates an entry in the\n" +
+            "       hpicfFfLogTable.\n" +
+            "       hpicfFfLogFaultType\n" +
+            "       %parm[#1]%\n" +
+            "          badDriver(1) badXcvr(2)\n" +
+            "            badCable(3) tooLongCable(4) overBandwidth(5) bcastStorm(6) partition(7)\n" +
+            "            misconfiguredSQE(8) polarityReversal(9) networkLoop(10) lossOfLink(11)\n" +
+            "            portSecurityViolation(12) backupLinkTransition(13) meshingFault(14)\n" +
+            "            fanFault(15) rpsFault(16) stuck10MbFault(17) lossOfStackMember(18)\n" +
+            "            hotSwapReboot(19)\n" +
+            "         hpicfFfLogAction\n" +
+            "         %parm[#2]%\n" +
+            "          none(1) warn(2) warnAndDisable(3)\n" +
+            "            warnAndSpeedReduce(4) warnAndSpeedReduceAndDisable(5)\n" +
+            "         hpicfFfLogSeverity\n" +
+            "         %parm[#3]%\n" +
+            "          informational(1) medium(2)\n" +
+            "            critical(3)\n" +
+            "         hpicfFfFaultInfoURL\n" +
+            "         %parm[#4]%\n" +
+            "  </descr> \n" +
+            "  <logmsg dest='logndisplay'>HP Event: ICF Hub Fault Found.</logmsg>\n" +
+            "  <severity>Major</severity> \n" +
+    		" </event>\n" +
             "</events>";
         
         StringReader reader = new StringReader(eventconf);
