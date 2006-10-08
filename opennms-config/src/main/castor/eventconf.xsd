@@ -525,6 +525,12 @@
     </restriction>
   </simpleType>
 
+  <simpleType name="rfc1903-snmp-tc">
+    <restriction base="string" >
+      <pattern value="PhysAddress|MacAddress|TruthValue|TestAndIncr|AutonomousType|InstancePointer|VariablePointer|RowPointer|RowStatus|TimeStamp|TimeInterval|DateAndTime|StorageType|TDomain|TAddress" />
+    </restriction>
+  </simpleType>
+
   <element name="varbind">
     <annotation>
       <documentation>The varbind element</documentation>
@@ -545,6 +551,7 @@
           </annotation>
         </element>
       </sequence>
+      <attribute name="textual-convention" type="this:rfc1903-snmp-tc" use="optional" />
     </complexType>
   </element>
 </schema>
