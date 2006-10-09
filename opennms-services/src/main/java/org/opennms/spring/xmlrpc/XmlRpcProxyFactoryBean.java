@@ -39,7 +39,7 @@ public class XmlRpcProxyFactoryBean extends XmlRpcClientInterceptor implements F
 
     private Object serviceProxy;
 
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (getServiceInterface() == null) {
             throw new IllegalArgumentException("serviceInterface is required");
         }

@@ -70,6 +70,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
       <groupId>net.sf.jradius</groupId>
       <artifactId>jradius-client</artifactId>
       <scope>compile</scope>
