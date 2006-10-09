@@ -897,6 +897,11 @@ opennms.home = ${opennms.home}
         <version>1.2</version>
       </dependency>
       <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.0.1</version>
+      </dependency>
+      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>1.1</version>
@@ -1179,7 +1184,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring</artifactId>
-        <version>2.0-m4</version>
+        <version>2.0</version>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1190,7 +1195,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-hibernate3</artifactId>
-        <version>2.0-m4</version>
+        <version>2.0</version>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1211,7 +1216,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-mock</artifactId>
-        <version>2.0-m4</version>
+        <version>2.0</version>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1222,7 +1227,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-remoting</artifactId>
-        <version>2.0-m4</version>
+        <version>2.0</version>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1233,7 +1238,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jdbc</artifactId>
-        <version>2.0-m4</version>
+        <version>2.0</version>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1244,7 +1249,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-support</artifactId>
-        <version>2.0-m4</version>
+        <version>2.0</version>
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1294,7 +1299,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>xmlrpc</groupId>
         <artifactId>xmlrpc</artifactId>
-        <version>1.2</version>
+        <version>2.0.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
