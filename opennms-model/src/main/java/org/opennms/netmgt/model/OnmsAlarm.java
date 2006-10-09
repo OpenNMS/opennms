@@ -427,7 +427,7 @@ public class OnmsAlarm implements Serializable {
 
     public void setLastEvent(OnmsEvent event) {
         this.m_lastEvent = event;
-        this.m_lastEventTime = event.getEventTime();
+        if (event!=null) this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
     }
 
     public String toString() {
