@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views http://www.opennms.org/xsd/config/surveillance-views.xsd ">
   <views default-view="default" >
-    <view name="default" >
+    <view name="default" refresh-seconds="300" >
       <rows>
         <row-def row="1" label="High Priority" >
           <category name="IMP_high"/>
