@@ -19,7 +19,8 @@
         <category><![CDATA[Overall Service Availability]]></category>
       </section>            
 	</view>
-    <view-name>MyConsole</view-name>
+    <view>
+      <view-name>MyConsole</view-name>
       <section>
         <section-name><![CDATA[MyCategories]]></section-name>
         <category><![CDATA[MyNetwork Interfaces]]></category>
