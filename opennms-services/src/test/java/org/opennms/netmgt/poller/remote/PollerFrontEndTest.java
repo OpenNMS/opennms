@@ -6,6 +6,7 @@ import static org.easymock.EasyMock.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -102,6 +103,26 @@ public class PollerFrontEndTest extends TestCase {
         verifyMocks();
     }
     
+    public void testSetInitialPollTime() throws Exception {
+        
+        Date start = new Date(1200000000000L);
+        
+        expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
+
+        replayMocks();
+        
+        m_frontEnd.afterPropertiesSet();
+        
+        int polledServiceId = m_pollerConfiguration.getFirstId();
+        
+        m_frontEnd.setInitialPollTime(polledServiceId, start);
+        
+        assertEquals(start, m_frontEnd.getServicePollState(polledServiceId).getNextPollTime());
+        
+        verifyMocks();
+    }
+    
     
     public void testPoll() throws Exception {
         
@@ -129,6 +150,7 @@ public class PollerFrontEndTest extends TestCase {
         
         verifyMocks();
 
+        assertEquals(PollStatus.SERVICE_AVAILABLE, pollState.getLastPoll().getStatusCode());
                 
     }
     
