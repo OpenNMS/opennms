@@ -45,7 +45,7 @@
   <element name="http-collection" >
     <complexType>
       <sequence>
-        <element maxOccurs="1" minOccurs="1" ref="http-dc:rrd" />
+        <element ref="http-dc:rrd"  minOccurs="1" maxOccurs="1" />
         <element ref="http-dc:uris" minOccurs="1" maxOccurs="1" />
       </sequence>
       <attribute name="name" type="string" use="optional" default="default" />
@@ -84,17 +84,19 @@
       <sequence>
         <element ref="http-dc:parameters" minOccurs="0" maxOccurs="1" />
       </sequence>
-      <attribute name="scheme" type="string" use="optional" default="http://" />
       <attribute name="method" type="http-dc:allowed-methods" use="optional" default="GET" />
       <attribute name="http-version" type="string" use="optional" default="1.1" />
-      <attribute name="authority" type="string" use="optional" />
-      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
-      <attribute name="path" type="string" use="required" />
-      <attribute name="query-string" type="string" use="optional" />
-      <attribute name="matches" type="string" use="optional" default="(.*)" />
-      <attribute name="response-range" type="string" use="optional" default="100-399" />
       <attribute name="user-agent" type="string" use="optional" />
       <attribute name="virtual-host" type="string" use="optional" />
+      <attribute name="scheme" type="string" use="optional" default="http" />
+      <attribute name="user-info" type="string" use="optional" />
+      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="port" type="positiveInteger" use="optional" default="80" />
+      <attribute name="path" type="string" use="required" />
+      <attribute name="query" type="string" use="optional" />
+      <attribute name="fragment" type="string" use="optional" />
+      <attribute name="matches" type="string" use="optional" default="(.*)" />
+      <attribute name="response-range" type="string" use="optional" default="100-399" />
     </complexType>
   </element>
   
