@@ -27,6 +27,8 @@ import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import sun.security.action.GetLongAction;
+
 public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean {
 	
     private PollerBackEnd m_backEnd;
@@ -39,6 +41,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
 
 	private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
     private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<ServicePollStateChangedListener>();
+    private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<ConfigurationChangedListener>();
+    private boolean m_initialized;
 
     
     public void setPollerBackEnd(PollerBackEnd backEnd) {
@@ -57,6 +61,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
         assertNotNull(m_pollerSettings, "pollerSettings");
+        m_initialized = true;
 
         if (isRegistered()) {
             initializePollState();
@@ -64,13 +69,20 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
         
 	}
 
+    private void assertInitialized() {
+        Assert.isTrue(m_initialized, "afterProperties set has not been called");
+    }
+
     private void initializePollState() {
+        Date oldTime = (m_pollerConfiguration == null ? null : m_pollerConfiguration.getConfigurationTimestamp());
         m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
         
         int i = 0;
         for (PolledService service : m_pollerConfiguration.getPolledServices()) {
             m_pollState.put(service.getServiceId(), new ServicePollState(service, i++));
         }
+        
+        fireConfigurationChange(oldTime, m_pollerConfiguration.getConfigurationTimestamp());
     }
 
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
@@ -83,6 +95,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
 	}
 
     private void assertRegistered() {
+        assertInitialized();
         Assert.state(isRegistered(), "The poller must be registered before we can poll or get its configuration");
     }
 
@@ -91,6 +104,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     }
 
     public void register(String monitoringLocation) {
+        assertInitialized();
         int monitorId = m_backEnd.registerLocationMonitor(monitoringLocation);
         m_pollerSettings.setMonitorId(monitorId);
         initializePollState();
@@ -98,6 +112,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     }
 
     public void setInitialPollTime(Integer polledServiceId, Date initialPollTime) {
+        assertRegistered();
         ServicePollState pollState = getServicePollState(polledServiceId);
         pollState.setInitialPollTime(initialPollTime);
         fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
@@ -123,23 +138,84 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     }
 
     private void updateServicePollState(Integer polledServiceId, PollStatus result) {
+        assertRegistered();
+
         ServicePollState pollState = getServicePollState(polledServiceId);
         pollState.setLastPoll(result);
         fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
     }
 
     private PollStatus doPoll(Integer polledServiceId) {
+        assertRegistered();
+
         PolledService polledService = getPolledService(polledServiceId);
         PollStatus result = m_pollService.poll(polledService);
         return result;
     }
 
     private PolledService getPolledService(Integer polledServiceId) {
+        assertRegistered();
+
         return getServicePollState(polledServiceId).getPolledService();
     }
 
     private int getMonitorId() {
         return m_pollerSettings.getMonitorId();
+    }
+
+    
+    private void fireServicePollStateChanged(PolledService polledService, int index) {
+        ServicePollStateChangedEvent e = new ServicePollStateChangedEvent(polledService, index);
+        
+        for (ServicePollStateChangedListener l : m_servicePollStateChangedListeners) {
+            l.pollStateChange(e);
+        }
+    }
+    
+    public void addServicePollStateChangedListener(ServicePollStateChangedListener l) {
+        m_servicePollStateChangedListeners.addFirst(l);
+    }
+
+    public void removeServicePollStateChangedListener(ServicePollStateChangedListener l) {
+        m_servicePollStateChangedListeners.remove(l);
+    }
+
+    public void checkConfig() {
+        if (!isRegistered()) {
+            // no reason to check if we aren't registerd
+            return;
+        }
+            
+        assertRegistered();
+        if (m_backEnd.pollerCheckingIn(getMonitorId(), m_pollerConfiguration.getConfigurationTimestamp())) {
+            initializePollState();
+        }
+    }
+
+    private void assertConfigured() {
+        assertRegistered();
+        Assert.notNull(m_pollerConfiguration, "The poller has not been configured");
+    }
+
+    public ServicePollState getServicePollState(int polledServiceId) {
+        assertRegistered();
+        return m_pollState.get(polledServiceId);
+        
+    }
+
+    private void fireConfigurationChange(Date oldTime, Date newTime) {
+        PropertyChangeEvent e = new PropertyChangeEvent(this, "configuration", oldTime, newTime);
+        for (ConfigurationChangedListener l : m_configChangeListeners) {
+            l.configurationChanged(e);
+        }
+    }
+
+    public void addConfigurationChangedListener(ConfigurationChangedListener l) {
+        m_configChangeListeners.addFirst(l);
+    }
+
+    public void removeConfigurationChangedListener(ConfigurationChangedListener l) {
+        m_configChangeListeners.remove(l);
     }
 
     private void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
@@ -158,40 +234,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
         m_propertyChangeListeners.remove(l);
     }
     
-    public void addConfigurationChangedListener(ConfigurationChangedListener l) {
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-
-    public void removeConfigurationChangedListener(ConfigurationChangedListener l) {
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-
-    
-    void fireServicePollStateChanged(PolledService polledService, int index) {
-        ServicePollStateChangedEvent e = new ServicePollStateChangedEvent(polledService, index);
-        
-        for (ServicePollStateChangedListener l : m_servicePollStateChangedListeners) {
-            l.pollStateChange(e);
-        }
-    }
-    
-    public void addServicePollStateChangedListener(ServicePollStateChangedListener l) {
-        m_servicePollStateChangedListeners.addFirst(l);
-    }
-
-    public void removeServicePollStateChangedListener(ServicePollStateChangedListener l) {
-        m_servicePollStateChangedListeners.remove(l);
-    }
-
-    public void checkConfig() {
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-
-    public ServicePollState getServicePollState(int polledServiceId) {
-        assertRegistered();
-        return m_pollState.get(polledServiceId);
-        
-    }
     
 
 }
