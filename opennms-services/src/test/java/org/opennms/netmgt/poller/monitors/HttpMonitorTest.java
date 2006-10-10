@@ -87,7 +87,7 @@ public class HttpMonitorTest extends TestCase {
         
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
@@ -118,7 +118,7 @@ public class HttpMonitorTest extends TestCase {
         
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
@@ -172,7 +172,7 @@ public class HttpMonitorTest extends TestCase {
 
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
@@ -206,7 +206,7 @@ public class HttpMonitorTest extends TestCase {
         
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         PollStatus status = null;
         
@@ -273,7 +273,7 @@ public class HttpMonitorTest extends TestCase {
     public void testBase64Encoding() {
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         HttpMonitor monitor = new HttpMonitor();
         p.setKey("basic-authentication");
@@ -292,7 +292,7 @@ public class HttpMonitorTest extends TestCase {
         
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         PollStatus status = null;
         
@@ -339,7 +339,7 @@ public class HttpMonitorTest extends TestCase {
         
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         PollStatus status = null;
         
@@ -385,7 +385,7 @@ public class HttpMonitorTest extends TestCase {
     public void testWithUrl() throws UnknownHostException {
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         PollStatus status = null;
         
@@ -435,7 +435,7 @@ public class HttpMonitorTest extends TestCase {
 
         if (m_runTests == false) return;
         
-        Map m = Collections.synchronizedMap(new TreeMap());
+        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
