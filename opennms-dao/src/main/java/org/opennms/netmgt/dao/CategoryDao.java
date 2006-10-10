@@ -31,10 +31,15 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.Set;
+
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 
 public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
 	
     public abstract OnmsCategory findByName(String name);
+
+    public abstract Set<OnmsCategory> findByNode(OnmsNode node);
 
 }

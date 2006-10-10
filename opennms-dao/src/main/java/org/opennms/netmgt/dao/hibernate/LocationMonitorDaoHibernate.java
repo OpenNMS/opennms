@@ -209,11 +209,11 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             m_monitoringLocationsConfiguration = (MonitoringLocationsConfiguration) 
             Unmarshaller.unmarshal(MonitoringLocationsConfiguration.class, rdr);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CastorDataAccessFailureException("initializeMonitoringLocationDefinition: " +
+                                                       "Could not marshal configuration", e);
         } catch (MarshalException e) {
             throw new CastorDataAccessFailureException("initializeMonitoringLocationDefinition: " +
-                    "Could not marshal configuration", e);
+                                                       "Could not marshal configuration", e);
         } catch (ValidationException e) {
             throw new CastorObjectRetrievalFailureException("initializeMonitoringLocationDefinition: " +
                     "Could not marshal configuration", e);
@@ -303,6 +303,11 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
 
     public void saveStatusChange(OnmsLocationSpecificStatus statusChange) {
         getHibernateTemplate().save(statusChange);
+    }
+
+    public OnmsLocationMonitor findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition) {
+        // XXX brozow/drv4doe: write this part. :-)
+        throw new IllegalArgumentException("This method hasn't yet been implemented");
     }
 
 }
