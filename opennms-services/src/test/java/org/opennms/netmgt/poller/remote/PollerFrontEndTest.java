@@ -28,8 +28,10 @@ public class PollerFrontEndTest extends TestCase {
 
     private PropertyChangeListener m_registrationListener;
     private ServicePollStateChangedListener m_polledServiceListener;
+    private ConfigurationChangedListener m_configChangeListener;
     
     private DemoPollerConfiguration m_pollerConfiguration;
+
 
 
 	@Override
@@ -40,6 +42,7 @@ public class PollerFrontEndTest extends TestCase {
         m_pollService = createMock(PollService.class);
         m_registrationListener = createMock(PropertyChangeListener.class);
         m_polledServiceListener = createMock(ServicePollStateChangedListener.class);
+        m_configChangeListener = createMock(ConfigurationChangedListener.class);
         
         m_pollerConfiguration = new DemoPollerConfiguration();
 		
@@ -47,8 +50,6 @@ public class PollerFrontEndTest extends TestCase {
         m_frontEnd.setPollerBackEnd(m_backEnd);
         m_frontEnd.setPollerSettings(m_settings);
         m_frontEnd.setPollService(m_pollService);
-		
-        
 		
 	}
 	
@@ -154,11 +155,30 @@ public class PollerFrontEndTest extends TestCase {
                 
     }
     
-    // FIXME
-    public void FIXMEtestConfigCheck() {
+    public void testConfigCheck() throws Exception {
+        
+        expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
+        
+        expect(m_backEnd.pollerCheckingIn(1, m_pollerConfiguration.getConfigurationTimestamp())).andReturn(true);
+        
+        DemoPollerConfiguration newPollerConfiguration = new DemoPollerConfiguration();
+        expect(m_backEnd.getPollerConfiguration(1)).andReturn(newPollerConfiguration);
+        
+        PropertyChangeEvent e = new PropertyChangeEvent(m_frontEnd, "configuration", m_pollerConfiguration.getConfigurationTimestamp(), newPollerConfiguration.getConfigurationTimestamp());
+        m_configChangeListener.configurationChanged(eq(e));
+        
+        
+        replayMocks();
+        
+        m_frontEnd.afterPropertiesSet();
+
+        m_frontEnd.addConfigurationChangedListener(m_configChangeListener);
         
         m_frontEnd.checkConfig();
-    }
+
+        verifyMocks();
+}
     
     
 
