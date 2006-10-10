@@ -83,13 +83,17 @@ public class NetworkBuilder {
 			m_iface.setIpStatus(new Integer(ipStatus));
 			return this;
 		}
-                
-                public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
-                        OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
-                        m_iface.setSnmpInterface(snmpIf);
-                        return new SnmpInterfaceBuilder(snmpIf);
 
-                }
+		public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
+		    OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
+		    m_iface.setSnmpInterface(snmpIf);
+		    return new SnmpInterfaceBuilder(snmpIf);
+
+		}
+
+		public void setId(int id) {
+		    m_iface.setId(id);
+		}
 	}
     
     public InterfaceBuilder addInterface(String ipAddr, OnmsSnmpInterface snmpInterface) {

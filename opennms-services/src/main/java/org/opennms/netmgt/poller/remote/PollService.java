@@ -1,12 +1,9 @@
 package org.opennms.netmgt.poller.remote;
 
-import java.util.Map;
-
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 
 public interface PollService {
 	
-	PollStatus poll(OnmsMonitoredService monitoredService, Map monitorConfiguration);
+	PollStatus poll(PolledService polledService);
 
 }

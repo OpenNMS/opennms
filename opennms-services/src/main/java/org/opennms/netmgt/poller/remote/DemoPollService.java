@@ -3,9 +3,6 @@
  */
 package org.opennms.netmgt.poller.remote;
 
-import java.util.Map;
-
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 
 class DemoPollService implements PollService {
@@ -27,16 +24,15 @@ class DemoPollService implements PollService {
 		this(2);
 	}
 
-	public PollStatus poll(OnmsMonitoredService monitoredService, Map monitorConfiguration) {
-		PollStatus status = m_currentStatus;
-		
-		m_pollCount++;
-		if (m_pollCount % m_repetitions == 0) {
-			m_currentStatus = (m_currentStatus.isDown() ? PollStatus.up(100+m_pollCount) : PollStatus.down("pollCount is "+m_pollCount));
-		}
-		
-		return status;
-		
-	}
+	public PollStatus poll(PolledService polledService) {
+        PollStatus status = m_currentStatus;
+        
+        m_pollCount++;
+        if (m_pollCount % m_repetitions == 0) {
+        	m_currentStatus = (m_currentStatus.isDown() ? PollStatus.up(100+m_pollCount) : PollStatus.down("pollCount is "+m_pollCount));
+        }
+        
+        return status;
+    }
 	
 }

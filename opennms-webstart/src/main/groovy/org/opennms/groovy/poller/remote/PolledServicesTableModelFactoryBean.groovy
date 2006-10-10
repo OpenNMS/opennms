@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.table.TableModel;
 import groovy.swing.SwingBuilder;
 import org.opennms.netmgt.poller.remote.PollerView;
-import org.opennms.netmgt.poller.remote.PolledServicesModel;
+import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -14,14 +14,14 @@ class PolledServicesTableModelFactoryBean implements FactoryBean, InitializingBe
 	
 	def m_swing = new SwingBuilder();
 	def m_tableModel;
-	def m_polledServicesModel;
+	def m_frontEnd;
 	
-	public PolledServicesModel getPolledServicesModel() {
-		return m_polledServicesModel;
+	public PollerFrontEnd getPollerFrontEnd() {
+		return m_pollerFrontEnd;
 	}
 	
-	public void setPolledServicesModel(PolledServicesModel polledServicesModel) {
-		m_polledServicesModel = polledServicesModel;
+	public void setPollerFrontEnd(PollerFrontEnd frontEnd) {
+		m_frontEnd = frontEnd;
 	}
 	
 	Class getObjectType() {
@@ -38,19 +38,19 @@ class PolledServicesTableModelFactoryBean implements FactoryBean, InitializingBe
 	
 	void afterPropertiesSet() {
 		
-		def model = m_polledServicesModel.getPolledServices();
+		def model = m_frontEnd.getPolledServices();
 		
 		m_tableModel = m_swing.tableModel(list:model) {
 			closureColumn(header:'Node ID', read:{ polledService -> polledService.nodeId })
 			closureColumn(header:'Node Label', read:{ polledService -> polledService.nodeLabel })
-			closureColumn(header:'Interface', read:{ polledService -> polledService.ipAddress })
-			closureColumn(header:'Service', read:{ polledService -> polledService.serviceName })
+			closureColumn(header:'Interface', read:{ polledService -> polledService.ipAddr })
+			closureColumn(header:'Service', read:{ polledService -> polledService.svcName })
 			closureColumn(header:'Last Status', read: { polledService -> polledService.currentStatus })
 			propertyColumn(header:'Last Changed', propertyName:'lastStatusChange')
 			closureColumn(header:'Last Poll', read: { polledService -> polledService.lastPollTime })
 		}
 		
-		m_polledServicesModel.polledServiceChanged = { m_tableModel.fireTableDataChanged() };
+		m_frontEnd.polledServiceChanged = { m_tableModel.fireTableDataChanged() };
 	}
 	
 }

@@ -6,9 +6,17 @@ public class PollerIntegrationTest extends
 		AbstractDependencyInjectionSpringContextTests {
 	
 	private Poller m_poller;
+    
+    public PollerIntegrationTest() {
+        System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
+    }
 
 	protected String[] getConfigLocations() {
-		return new String[] { "classpath:/META-INF/opennms/applicationContext-ws-svclayer.xml" };
+		return new String[] { 
+                "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-ws-svclayer.xml"
+               };
 	}
 	
 	public void setPoller(Poller poller) {

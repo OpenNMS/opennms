@@ -1,91 +1,73 @@
 package org.opennms.netmgt.poller.remote;
 
-import java.util.Date;
+import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.NetworkInterface;
 
-public class PolledService {
+public class PolledService implements MonitoredService {
+    
+    IPv4NetworkInterface m_netInterface;
+    Map m_monitorConfiguration;
+    OnmsPollModel m_pollModel;
+    private Integer m_serviceId;
+    private Integer m_nodeId;
+    private String m_nodeLabel;
+    private String m_svcName;
 	
-	private String m_id;
-	private OnmsMonitoredService m_monitoredService;
-	private Map m_monitorConfiguration;
-	private Date m_lastPollTime;
-	private Date m_nextPollTime;
-	private Date m_lastStatusChange;
-	private PollStatus m_currentStatus = PollStatus.unknown();
-	private OnmsPollModel m_pollModel;
-	
-	public PolledService(String id, OnmsMonitoredService monitoredService, Map monitorConfiguration, OnmsPollModel pollModel) {
-		m_id = id;
-		m_monitoredService = monitoredService;
+	public PolledService(OnmsMonitoredService monitoredService, Map monitorConfiguration, OnmsPollModel pollModel) {
+        m_serviceId = monitoredService.getId();
+        m_nodeId = monitoredService.getNodeId();
+        m_nodeLabel = monitoredService.getIpInterface().getNode().getLabel();
+        m_svcName = monitoredService.getServiceName();
+        m_netInterface = new IPv4NetworkInterface(monitoredService.getIpInterface().getInetAddress());
 		m_monitorConfiguration = monitorConfiguration;
 		m_pollModel = pollModel;
 	}
 	
-	public String getId() {
-		return m_id;
-	}
-	
-	public String getNodeId() {
-		return ""+m_monitoredService.getNodeId();
-	}
-	
-	public String getNodeLabel() {
-		return m_monitoredService.getIpInterface().getNode().getLabel();
-	}
-	
-	public String getIpAddress() {
-		return m_monitoredService.getIpAddress();
-	}
-	
-	public String getServiceName() {
-		return m_monitoredService.getServiceName();
-	}
-	
-	public PollStatus getCurrentStatus() {
-		return m_currentStatus;
+	public Integer getServiceId() {
+		return m_serviceId;
 	}
 
-	public Date getLastPollTime() {
-		return m_lastPollTime;
-	}
+    public InetAddress getAddress() {
+        return m_netInterface.getInetAddress();
+    }
 
-	public Date getLastStatusChange() {
-		return m_lastStatusChange;
-	}
-	
-	public OnmsPollModel getPollModel() {
-		return m_pollModel;
-	}
+    public String getIpAddr() {
+        return m_netInterface.getInetAddress().getHostAddress();
+    }
 
-	public OnmsMonitoredService getMonitoredService() {
-		return m_monitoredService;
-	}
-	
-	public void setNextPollTime(Date pollTime) {
-		m_nextPollTime = pollTime;
-	}
-	
-	public Date getNextPollTime() {
-		return m_nextPollTime;
-	}
-	
-	public void updateStatus(PollStatus newStatus, Date pollTime) {
-		if (m_currentStatus == null || !m_currentStatus.equals(newStatus)) {
-			m_lastStatusChange = pollTime;
-		}
-		m_currentStatus = newStatus;
-		m_lastPollTime = pollTime;
-		
-	}
+    public NetworkInterface getNetInterface() {
+        return m_netInterface;
+    }
 
+    public int getNodeId() {
+        return m_nodeId;
+    }
+
+    public String getNodeLabel() {
+        return m_nodeLabel;
+    }
+
+    public String getSvcName() {
+        return m_svcName;
+    }
+	
 	public Map getMonitorConfiguration() {
-		return m_monitorConfiguration;
-	}
-	
-	
-	
-	
+        return m_monitorConfiguration;
+    }
+    
+    public OnmsPollModel getPollModel() {
+        return m_pollModel;
+    }
+
+    @Override
+    public String toString() {
+        return getNodeId()+":"+getIpAddr()+":"+getSvcName();
+    }
+    
+    
 }

@@ -70,15 +70,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
 		return m_iface.getNode();
 	}
     
-	InetAddress getInetAddress() {
-	
-		if (getType() != CollectionAgent.TYPE_IPV4)
-			throw new RuntimeException("Unsupported interface type, "
-					+ "only TYPE_IPV4 currently supported");
-	
-		return (InetAddress) getAddress();
-	}
-
     public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
 		if (log().isDebugEnabled()) {

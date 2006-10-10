@@ -348,11 +348,12 @@ public class PollerBackEndTest extends TestCase {
         
         assertNotNull(config);
         assertEquals(m_startTime, config.getConfigurationTimestamp());
-        assertEquals(2, config.getConfigurationForPoller().length);
-        assertEquals(m_httpService, config.getConfigurationForPoller()[0].getMonitoredService());
-        assertEquals(m_dnsService, config.getConfigurationForPoller()[1].getMonitoredService());
-        assertEquals(5678, config.getConfigurationForPoller()[1].getPollModel().getPollInterval());
-        assertTrue(config.getConfigurationForPoller()[1].getMonitorConfiguration().containsKey("hostname"));
+        assertNotNull(config.getPolledServices());
+        assertEquals(2, config.getPolledServices().length);
+        assertEquals(m_httpService.getServiceName(), config.getPolledServices()[0].getSvcName());
+        assertEquals(m_dnsService.getServiceName(), config.getPolledServices()[1].getSvcName());
+        assertEquals(5678, config.getPolledServices()[1].getPollModel().getPollInterval());
+        assertTrue(config.getPolledServices()[1].getMonitorConfiguration().containsKey("hostname"));
     }
     
     public void testPollerStarting() {

@@ -21,15 +21,16 @@
 
     <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.DemoPollerConfiguration" />
 
-    <bean name="polledServicesModel" class="org.opennms.netmgt.poller.remote.DefaultPolledServicesModel">
-      <property name="pollerConfiguration" ref="pollerConfiguration" />
+    <bean name="pollerFrontEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd">
+      <property name="pollerBackEnd" ref="pollerBackEnd" />
+      <property name="pollService" ref="pollService" />
     </bean>
 
 	<bean name="poller" class="org.opennms.netmgt.poller.remote.Poller">
 	  <property name="scheduler" ref="scheduler" />
 	  <property name="pollService" ref="pollService" />
 	  <property name="initialSpreadTime" value="3000" />
-	  <property name="polledServicesModel" ref="polledServicesModel" />
+	  <property name="pollerFrontEnd" ref="pollerFrontEnd" />
 	</bean>
 
 </beans>

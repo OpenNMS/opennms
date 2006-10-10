@@ -6,5 +6,5 @@ public interface PollerConfiguration {
     
     Date getConfigurationTimestamp();
 	
-	PollConfiguration[] getConfigurationForPoller();
+    PolledService[] getPolledServices();
 }
