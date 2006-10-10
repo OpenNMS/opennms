@@ -33,6 +33,7 @@ package org.opennms.netmgt.dao.jdbc;
 
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -40,6 +41,7 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.jdbc.category.CategoryMappingQuery;
 import org.opennms.netmgt.dao.jdbc.category.FindByCategoryId;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.jdbc.core.SqlParameter;
 
 public class CategoryDaoJdbc extends AbstractDaoJdbc implements CategoryDao {
@@ -143,5 +145,10 @@ public class CategoryDaoJdbc extends AbstractDaoJdbc implements CategoryDao {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public Set<OnmsCategory> findByNode(OnmsNode node) {
+        // XXX brozow/david: write this
+        throw new UnsupportedOperationException("method not yet implemented");
+    }
 
 }
