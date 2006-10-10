@@ -8,6 +8,7 @@ import static org.easymock.EasyMock.verify;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.test.ThrowableAnticipator;
+import org.opennms.web.svclayer.SimpleWebTable;
 
 import junit.framework.TestCase;
 
@@ -149,6 +151,23 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_service.createStatusTable(m_locationDefinition.getName(),
                                     m_application.getLabel());
         
+        verifyEverything();
+    }
+    
+    public void testCreateFacilityStatusTable() {
+        Collection<OnmsMonitoringLocationDefinition> locationDefinitions =
+            new LinkedList<OnmsMonitoringLocationDefinition>();
+        Collection<OnmsApplication> applications =
+            new LinkedList<OnmsApplication>();
+        Collection<OnmsLocationSpecificStatus> statuses =
+            new LinkedList<OnmsLocationSpecificStatus>();
+        
+        expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
+        expect(m_applicationDao.findAll()).andReturn(applications);
+        expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(statuses);
+        
+        replayEverything();
+        SimpleWebTable table = m_service.createFacilityStatusTable();
         verifyEverything();
     }
     

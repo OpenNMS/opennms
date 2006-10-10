@@ -40,6 +40,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -310,4 +311,13 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         throw new IllegalArgumentException("This method hasn't yet been implemented");
     }
 
+    public Collection<OnmsLocationSpecificStatus> getAllMostRecentStatusChanges() {
+        // XXX brozow/drv4doe: write this part. :-)
+        throw new IllegalArgumentException("This method hasn't yet been implemented");
+    }
+
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesSince(Date date) {
+        // XXX brozow/drv4doe: write this part. :-)
+        throw new IllegalArgumentException("This method hasn't yet been implemented");
+    }
 }

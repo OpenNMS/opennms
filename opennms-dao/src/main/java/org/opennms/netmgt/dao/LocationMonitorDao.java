@@ -33,6 +33,7 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -60,5 +61,14 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
     void saveStatusChange(OnmsLocationSpecificStatus status);
     
     OnmsLocationSpecificStatus getMostRecentStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monSvc);
+
+    Collection<OnmsLocationSpecificStatus> getAllMostRecentStatusChanges();
+    
+    /**
+     * Returns all status changes since the date, <b>and</b> one previous
+     * status change (so that status at the beginning of the period can be
+     * determined).
+     */
+    Collection<OnmsLocationSpecificStatus> getStatusChangesSince(Date date);
     
 }
