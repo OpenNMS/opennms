@@ -13,7 +13,7 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
 
     @Override
     protected final ConfigurableApplicationContext
-            loadContextLocations(String[] locations) {
+            loadContextLocations(String[] locations) throws Exception {
         if (!PopulatedTemporaryDatabaseTestCase.isEnabled()) {
             setDependencyCheck(false);
             return super.loadContextLocations(new String[0]);
