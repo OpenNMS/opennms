@@ -98,18 +98,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     }
 
     public void setInitialPollTime(Integer polledServiceId, Date initialPollTime) {
-        throw new UnsupportedOperationException("not yet implemented");
+        ServicePollState pollState = getServicePollState(polledServiceId);
+        pollState.setInitialPollTime(initialPollTime);
+        fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
 	}
 	
-    private PolledService findServiceWithId(Integer polledServiceId) {
-        Collection<PolledService> polledServices = getPolledServices();
-        for (PolledService service : polledServices) {
-            if (polledServiceId.equals(service.getServiceId()))
-                return service;
-        }
-        throw new IllegalArgumentException("Unable to find polledService with id "+polledServiceId);
-    }
-
 	private void assertNotNull(Object propertyValue, String propertyName) {
 		Assert.state(propertyValue != null, propertyName+" must be set for instances of "+Poller.class);
 	}
@@ -195,7 +188,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     }
 
     public ServicePollState getServicePollState(int polledServiceId) {
+        assertRegistered();
         return m_pollState.get(polledServiceId);
+        
     }
     
 

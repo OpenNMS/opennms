@@ -26,6 +26,10 @@ public class OnmsPollModel {
     public Date getNextPollTime(Date lastPollTime) {
         return new Date(lastPollTime.getTime()+m_pollInterval);
     }
+
+    public Date getPreviousPollTime(Date initialPollTime) {
+        return new Date(initialPollTime.getTime()-m_pollInterval);
+    }
 	
 	
 	

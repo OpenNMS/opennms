@@ -39,4 +39,9 @@ public class ServicePollState {
         return m_polledService;
     }
 
+    public void setInitialPollTime(Date initialPollTime) {
+        m_lastPoll = PollStatus.unavailable();
+        m_lastPoll.setTimestamp(m_polledService.getPollModel().getPreviousPollTime(initialPollTime));
+    }
+
 }
