@@ -19,8 +19,8 @@ public class PollJobDetail extends JobDetail {
 		getJobDataMap().put("polledService", polledService);
 	}
 	
-	public void setPolledServicesModel(PolledServicesModel polledServicesModel) {
-		getJobDataMap().put("polledServicesModel", polledServicesModel);
+	public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
+		getJobDataMap().put("pollerFrontEnd", pollerFrontEnd);
 	}
 	
 }

@@ -1,6 +1,5 @@
 package org.opennms.netmgt.poller.remote;
 
-import org.opennms.netmgt.model.PollStatus;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
@@ -8,31 +7,23 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 public class PollJob extends QuartzJobBean {
 	
 	private PolledService m_polledService;
-	private PollService m_pollService;
-	private PolledServicesModel m_polledServicesModel;
+	private PollerFrontEnd m_pollerFrontEnd;
 	
 
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-		System.err.println("Polling "+m_polledService.getId());
-		PollStatus pollStatus = m_pollService.poll(m_polledService.getMonitoredService(), m_polledService.getMonitorConfiguration());
-		m_polledServicesModel.updateServiceStatus(m_polledService.getId(), pollStatus, context.getFireTime());
+        m_pollerFrontEnd.pollService(m_polledService.getServiceId());
 
 	}
-	
 
-	public void setPolledService(PolledService polledService) {
+    public void setPolledService(PolledService polledService) {
 		m_polledService = polledService;
 	}
 
 
-	public void setPolledServicesModel(PolledServicesModel polledServicesModel) {
-		m_polledServicesModel = polledServicesModel;
+	public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
+		m_pollerFrontEnd = pollerFrontEnd;
 	}
 
-
-	public void setPollService(PollService pollService) {
-		m_pollService = pollService;
-	}
 
 
 

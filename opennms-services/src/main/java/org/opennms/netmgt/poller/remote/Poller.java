@@ -1,5 +1,6 @@
 package org.opennms.netmgt.poller.remote;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.log4j.Category;
@@ -13,7 +14,7 @@ import org.springframework.util.Assert;
 public class Poller implements InitializingBean, PollObserver {
 	
 	private PollService m_pollService;
-	private PolledServicesModel m_polledServicesModel;
+	private PollerFrontEnd m_pollerFrontEnd;
 	private Scheduler m_scheduler;
 	private long m_initialSpreadTime = 300000L;
 	
@@ -21,8 +22,8 @@ public class Poller implements InitializingBean, PollObserver {
 		m_pollService = pollService;
 	}
 	
-	public void setPolledServicesModel(PolledServicesModel polledServicesModel) {
-		m_polledServicesModel = polledServicesModel;
+	public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
+		m_pollerFrontEnd = pollerFrontEnd;
 	}
 
 	public void setScheduler(Scheduler scheduler) {
@@ -37,7 +38,7 @@ public class Poller implements InitializingBean, PollObserver {
 	public void afterPropertiesSet() throws Exception {
 		assertNotNull(m_scheduler, "scheduler");
 		assertNotNull(m_pollService, "pollService");
-		assertNotNull(m_polledServicesModel, "polledServicesModel");
+		assertNotNull(m_pollerFrontEnd, "pollerFrontEnd");
 		
 		schedulePolls();
 
@@ -45,30 +46,28 @@ public class Poller implements InitializingBean, PollObserver {
 	
 	private void schedulePolls() throws Exception {
 		
-		PolledService[] polledServices = m_polledServicesModel.getPolledServices();
+		Collection<PolledService> polledServices = m_pollerFrontEnd.getPolledServices();
 
-		if (polledServices == null || polledServices.length == 0) {
+		if (polledServices == null || polledServices.size() == 0) {
 			log().warn("No polling scheduled.");
 			return;
 		}
 
 		long startTime = System.currentTimeMillis();
-		long scheduleSpacing = m_initialSpreadTime / polledServices.length;
-		
-		for (int i = 0; i < polledServices.length; i++) {
-			PolledService polledService = polledServices[i];
+		long scheduleSpacing = m_initialSpreadTime / polledServices.size();
+
+        for (PolledService polledService : polledServices) {
 			
 			Date initialPollTime = new Date(startTime);
 			
-			m_polledServicesModel.setInitialPollTime(polledService.getId(), initialPollTime);
+			m_pollerFrontEnd.setInitialPollTime(polledService.getServiceId(), initialPollTime);
 			
-			Trigger pollTrigger = new PolledServiceTrigger(polledService.getId(), polledService);
+			Trigger pollTrigger = new PolledServiceTrigger(polledService);
 			pollTrigger.setStartTime(initialPollTime);
 			
-			PollJobDetail jobDetail = new PollJobDetail(polledService.getId(), PollJob.class);
+			PollJobDetail jobDetail = new PollJobDetail(polledService.toString(), PollJob.class);
 			jobDetail.setPolledService(polledService);
-			jobDetail.setPolledServicesModel(m_polledServicesModel);
-			jobDetail.setPollService(m_pollService);
+			jobDetail.setPollerFrontEnd(m_pollerFrontEnd);
 			
 			m_scheduler.scheduleJob(jobDetail, pollTrigger);
 			

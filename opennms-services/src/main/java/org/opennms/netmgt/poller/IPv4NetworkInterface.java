@@ -100,6 +100,10 @@ public class IPv4NetworkInterface implements NetworkInterface {
     public Object getAddress() {
         return m_address;
     }
+    
+    public InetAddress getInetAddress() {
+        return m_address;
+    }
 
     /**
      * <P>

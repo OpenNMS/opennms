@@ -8,11 +8,11 @@ public class PolledServiceTrigger extends SimpleTriggerBean {
 
 	private PolledService m_polledService;
 	
-	public PolledServiceTrigger(String name, PolledService polledService) throws Exception {
+	public PolledServiceTrigger(PolledService polledService) throws Exception {
 		super();
 		m_polledService = polledService;
 		
-		setName(name);
+		setName(polledService.getNodeId()+':'+polledService.getIpAddr()+':'+polledService.getSvcName());
 		setRepeatInterval(m_polledService.getPollModel().getPollInterval());
 
 		afterPropertiesSet();

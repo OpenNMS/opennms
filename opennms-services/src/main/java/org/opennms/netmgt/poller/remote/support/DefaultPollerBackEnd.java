@@ -60,7 +60,8 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.netmgt.poller.remote.PollConfiguration;
+import org.opennms.netmgt.poller.remote.OnmsPollModel;
+import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.springframework.beans.factory.InitializingBean;
@@ -93,17 +94,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
         Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
         
-        List<PollConfiguration> configs = new ArrayList<PollConfiguration>(services.size());
+        List<PolledService> configs = new ArrayList<PolledService>(services.size());
         
         for (OnmsMonitoredService monSvc : services) {
             Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
             long interval = serviceConfig.getInterval();
             Map parameters = getParameterMap(serviceConfig);
-            configs.add(new PollConfiguration(monSvc, parameters, interval));
-            
+            configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
         }
         
-        return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PollConfiguration[configs.size()]));
+        PolledService[] polledSvcs = (PolledService[]) configs.toArray(new PolledService[configs.size()]);
+        return new SimplePollerConfiguration(getConfigurationTimestamp(), polledSvcs);
         
         
     }
@@ -118,19 +119,19 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     private static class SimplePollerConfiguration implements PollerConfiguration {
         
         private Date m_timestamp;
-        private PollConfiguration[] m_pollConfigs;
+        private PolledService[] m_polledServices;
         
-        SimplePollerConfiguration(Date timestamp, PollConfiguration[] pollConfigs) {
+        SimplePollerConfiguration(Date timestamp, PolledService[] polledSvcs) {
             m_timestamp = timestamp;
-            m_pollConfigs = pollConfigs;
-        }
-
-        public PollConfiguration[] getConfigurationForPoller() {
-            return m_pollConfigs;
+            m_polledServices = polledSvcs;
         }
 
         public Date getConfigurationTimestamp() {
             return m_timestamp;
+        }
+
+        public PolledService[] getPolledServices() {
+            return m_polledServices;
         }
         
     }

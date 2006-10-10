@@ -2,8 +2,10 @@ package org.opennms.netmgt.poller.remote;
 
 import static org.easymock.EasyMock.*;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -19,32 +21,31 @@ public class PollerTest extends TestCase {
 		
 		Scheduler scheduler = createMock(Scheduler.class);
 		PollService pollService = createNiceMock(PollService.class);
-		PolledServicesModel polledServicesModel = createMock(PolledServicesModel.class);
+		PollerFrontEnd pollerFrontEnd = createMock(PollerFrontEnd.class);
 		
 		OnmsMonitoredService svc = getMonitoredService();
+        svc.setId(7);
 		
 		PollConfiguration pollConfig = new PollConfiguration(svc, new HashMap(), 300000);
 		
-		PolledService polledService = new PolledService("id", pollConfig.getMonitoredService(), pollConfig.getMonitorConfiguration(), pollConfig.getPollModel());
+		PolledService polledService = new PolledService(pollConfig.getMonitoredService(), pollConfig.getMonitorConfiguration(), pollConfig.getPollModel());
 		
-		PolledService[] polledServices = new PolledService[] {
-				polledService
-		};
+		Set<PolledService> polledServices = Collections.singleton(polledService);
 
-		expect(polledServicesModel.getPolledServices()).andReturn(polledServices);
-		polledServicesModel.setInitialPollTime(eq("id"), isA(Date.class));
+		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
+		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
 		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
 		
-		replay(scheduler, pollService, polledServicesModel);
+		replay(scheduler, pollService, pollerFrontEnd);
 		
 		Poller poller = new Poller();
 		poller.setScheduler(scheduler);
 		poller.setPollService(pollService);
-		poller.setPolledServicesModel(polledServicesModel);
+		poller.setPollerFrontEnd(pollerFrontEnd);
 		
 		poller.afterPropertiesSet();
 		
-		verify(scheduler, pollService, polledServicesModel);
+		verify(scheduler, pollService, pollerFrontEnd);
 		
 	}
 	
