@@ -1,6 +1,9 @@
 package org.opennms.web.svclayer.support;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -18,9 +21,12 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.SimpleWebTable;
+import org.springframework.util.StringUtils;
 
 public class DefaultDistributedStatusService implements DistributedStatusService {
 
@@ -78,7 +84,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return table;
     }
 
-//  public List<OnmsLocationSpecificStatus> findLocationSpecificStatus(OnmsMonitoringLocationDefinition location, OnmsApplication application) {
     protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(String locationName, String applicationLabel) {
         if (locationName == null) {
             throw new IllegalArgumentException("locationName cannot be null");
@@ -139,4 +144,85 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         m_categoryDao = categoryDao;
         
     }
+
+    public SimpleWebTable createFacilityStatusTable() {
+        SimpleWebTable table = new SimpleWebTable();
+        
+        Collection<OnmsMonitoringLocationDefinition> locationDefinitions =
+            m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        Collection<OnmsApplication> applications =
+            m_applicationDao.findAll();
+        
+        Collection<OnmsLocationSpecificStatus> statuses =
+            m_locationMonitorDao.getAllMostRecentStatusChanges();
+        
+        table.addColumn("Area", "simpleWebTableRowLabel");
+        table.addColumn("Location", "simpleWebTableRowLabel");
+        // XXX should sort by application label, first
+        for (OnmsApplication application : applications) {
+            table.addColumn(application.getLabel(), "simpleWebTableRowLabel");
+        }
+        
+        // XXX should sort by area, then name, first
+        for (OnmsMonitoringLocationDefinition locationDefinition : locationDefinitions) {
+            OnmsLocationMonitor monitor = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
+            
+            table.newRow();
+            table.addCell(locationDefinition.getArea(), "simpleWebTableRowLabel");
+            table.addCell(locationDefinition.getName(), "simpleWebTableRowLabel");
+            
+            for (OnmsApplication application : applications) {
+                Set<PollStatus> pollStatuses = new HashSet<PollStatus>();
+                for (OnmsMonitoredService service : application.getMemberServices()) {
+                    for (OnmsLocationSpecificStatus status : statuses) {
+                        if (status.getMonitoredService().equals(service)
+                                && status.getLocationMonitor().equals(monitor)) {
+                            pollStatuses.add(status.getPollResult());
+                        } else {
+                            pollStatuses.add(PollStatus.unknown());
+                        }
+                    }
+                }
+                
+                /*
+                 * XXX We aren't doing anything for warning, because we don't
+                 * have a warning state available, right now.
+                 */
+                String status = "Normal";
+                if (monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
+                    // XXX spec says "Red", which would be Critical
+                    status = "Indeterminate";
+                } else {
+                    for (PollStatus pollStatus : pollStatuses) {
+                        if (!pollStatus.isAvailable()) {
+                            status = "Critical";
+                            break;
+                        }
+                    }
+                }
+                
+                // XXX I really need to think about how to do the percentages
+                
+                table.addCell("Percentage not calculated", status,
+                              createDetailsPageUrl(locationDefinition, application));
+            }
+        }
+        
+        table.newRow();
+        
+        return table;
+    }
+    
+    private String createDetailsPageUrl(OnmsMonitoringLocationDefinition locationDefinition,
+            OnmsApplication application) {
+
+        List<String> params = new ArrayList<String>(2);
+        params.add("location=" + Util.encode(locationDefinition.getName()));
+        params.add("application=" + Util.encode(application.getLabel()));
+        
+        return "distributedStatusDetails.htm"
+            + "?"
+            + StringUtils.collectionToDelimitedString(params, "&");
+    }
+
 }
