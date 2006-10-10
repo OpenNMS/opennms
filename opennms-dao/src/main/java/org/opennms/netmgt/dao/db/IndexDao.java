@@ -1,4 +1,4 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Map;
 
 public class IndexDao {
-    private Map<String, Index> m_nameMap =
-        new LinkedHashMap<String, Index>();
-    private Map<String, List<Index>> m_tableMap =
-        new HashMap<String, List<Index>>();
+    private Map<String, Index> m_nameMap;
+    private Map<String, List<Index>> m_tableMap;
 
     public IndexDao() {
-        
+        reset();
+    }
+    
+    public void reset() {
+        m_nameMap = new LinkedHashMap<String, Index>();
+        m_tableMap = new HashMap<String, List<Index>>();
     }
     
     public void add(Index i) {

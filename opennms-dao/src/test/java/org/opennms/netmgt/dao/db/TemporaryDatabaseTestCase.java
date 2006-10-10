@@ -1,10 +1,13 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -19,6 +22,9 @@ import junit.framework.TestCase;
  * @author djgregor
  */
 public class TemporaryDatabaseTestCase extends TestCase {
+    
+    protected JdbcTemplate jdbcTemplate;
+
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     
     private static final String RUN_PROPERTY = "mock.rundbtests";
@@ -47,6 +53,9 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private String m_adminUser;
     private String m_adminPassword;
     
+    private DataSource m_dataSource;
+    private DataSource m_adminDataSource;
+    
     public TemporaryDatabaseTestCase() {
         this(System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
              System.getProperty(URL_PROPERTY, DEFAULT_URL),
@@ -60,12 +69,6 @@ public class TemporaryDatabaseTestCase extends TestCase {
         m_url = url;
         m_adminUser = adminUser;
         m_adminPassword = adminPassword;
-        
-        try {
-            Class.forName(m_driver);
-        } catch (ClassNotFoundException e) {
-            fail("Could not load driver class '" + m_driver + "'", e);
-        }
     }
 
     /*
@@ -88,6 +91,11 @@ public class TemporaryDatabaseTestCase extends TestCase {
             "true".equals(System.getProperty(LEAVE_ON_FAILURE_PROPERTY));
 
         setTestDatabase(getTestDatabaseName());
+        
+        setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(),
+                                           m_adminUser, m_adminPassword));
+        setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1",
+                                           m_adminUser, m_adminPassword));
 
         createTestDatabase();
 
@@ -95,7 +103,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         Connection connection = getConnection();
         connection.close();
     }
-    
+
     private void setTestDatabase(String testDatabase) {
         m_testDatabase = testDatabase; 
     }
@@ -152,12 +160,25 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return m_testDatabase;
     }
     
-    public Connection getConnection() throws SQLException {
-        return databaseConnect(getTestDatabase());
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
     
-    public Connection getAdminConnection() throws SQLException {
-        return databaseConnect("template1");
+    public DataSource getDataSource() {
+        return m_dataSource;
+    }
+    
+    private void setAdminDataSource(DataSource dataSource) {
+        m_adminDataSource = dataSource;
+    }
+
+    private DataSource getAdminDataSource() {
+        return m_adminDataSource;
+    }
+    
+    public Connection getConnection() throws SQLException {
+        return getDataSource().getConnection();
     }
     
     public String getDriver() {
@@ -200,15 +221,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
                            + "' property to 'true' to enable.");
     }
 
-    
-    private Connection databaseConnect(String database) throws SQLException {
-        assertNotNull("Temporary database name is null", database);
-        return DriverManager.getConnection(m_url + database,
-                                           m_adminUser, m_adminPassword);
-    }
-
     private void createTestDatabase() throws Exception {
-        Connection adminConnection = getAdminConnection();
+        Connection adminConnection = getAdminDataSource().getConnection();
         Statement st = adminConnection.createStatement();
         st.execute("CREATE DATABASE " + getTestDatabase()
                 + " WITH ENCODING='UNICODE'");
@@ -230,7 +244,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
          */
         Thread.sleep(100);
 
-        Connection adminConnection = getAdminConnection();
+        Connection adminConnection = getAdminDataSource().getConnection();
 
         try {
             Statement st = adminConnection.createStatement();

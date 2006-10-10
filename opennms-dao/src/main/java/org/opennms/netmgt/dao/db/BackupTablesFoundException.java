@@ -1,10 +1,17 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 public class BackupTablesFoundException extends Exception {
-	private List<String> m_oldTables;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3888915116741506735L;
+
+    private List<String> m_oldTables;
 
 	private static final String s_ourMessage =
 		"One or more backup tables from a previous "
@@ -24,7 +31,7 @@ public class BackupTablesFoundException extends Exception {
 	public String toString() {
 		StringBuffer m = new StringBuffer(getMessage());
 		m.append("\nBackup tables: \n\t");
-		m.append(Installer.join("\n\t", (String[]) m_oldTables.toArray(new String[0])));
+                m.append(StringUtils.collectionToDelimitedString(m_oldTables, "\n\t"));
 		return m.toString();
 	}
 }

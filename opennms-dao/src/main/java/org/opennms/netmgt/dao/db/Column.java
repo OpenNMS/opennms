@@ -32,7 +32,7 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.sql.Types;
 import java.util.Iterator;

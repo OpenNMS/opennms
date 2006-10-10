@@ -1,4 +1,4 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.util.List;
 

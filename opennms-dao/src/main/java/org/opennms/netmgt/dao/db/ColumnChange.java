@@ -32,7 +32,7 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 public class ColumnChange {
     private Column m_column = null;
