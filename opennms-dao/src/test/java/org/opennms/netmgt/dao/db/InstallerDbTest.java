@@ -3,7 +3,7 @@
 // djgregor $
 //
 
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -12,90 +12,98 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.netmgt.dao.db.BackupTablesFoundException;
+import org.opennms.netmgt.dao.db.Column;
+import org.opennms.netmgt.dao.db.Constraint;
+import org.opennms.netmgt.dao.db.InstallerDb;
+import org.opennms.netmgt.dao.db.Table;
+import org.opennms.netmgt.dao.db.Trigger;
 import org.opennms.test.ThrowableAnticipator;
 
-import junit.framework.AssertionFailedError;
-
-public class InstallerDBTest extends TemporaryDatabaseTestCase {
+public class InstallerDbTest extends TemporaryDatabaseTestCase {
     private static final String s_constraint = "fk_nodeid6";
 
-    private Installer m_installer;
+    private InstallerDb m_installerDb;
+    private Connection m_connection;
+
+    private ByteArrayOutputStream m_outputStream;
 
     protected void setUp() throws Exception {
         super.setUp();
         
-        m_installer = new Installer();
+        if (!isEnabled()) {
+            return;
+        }
+        
+        m_installerDb = new InstallerDb();
 
-        // Create a ByteArrayOutputSteam to effectively throw away output.
-        m_installer.m_out = new PrintStream(new ByteArrayOutputStream());
-        m_installer.m_database = getTestDatabase();
-        m_installer.m_pg_driver = getDriver();
-        m_installer.m_pg_url = getUrl();
-        m_installer.m_pg_user = getAdminUser();
-        m_installer.m_pg_pass = getAdminPassword();
-        m_installer.m_user = "opennms";
+        resetOutputStream();
+        getInstallerDb().setDatabaseName(getTestDatabase());
+        m_installerDb.setPostgresOpennmsUser("opennms");
 
-        m_installer.m_create_sql =
-            "../opennms-daemon/src/main/filtered/etc/create.sql";
+        getInstallerDb().setCreateSqlLocation("../opennms-daemon/src/main/filtered/etc/create.sql");
 
-        m_installer.m_sql_dir = "../opennms-daemon/src/main/filtered/etc";
+        getInstallerDb().setStoredProcedureDirectory("../opennms-daemon/src/main/filtered/etc");
 
-        m_installer.m_fix_constraint = true;
-        m_installer.m_fix_constraint_name = s_constraint;
-
-        m_installer.m_debug = false;
+        //getInstallerDb().setDebug(true);
 
         // Read in the table definitions
-        m_installer.readTables();
+        getInstallerDb().readTables();
         
-        m_installer.m_dbconnection = getConnection();
+        getInstallerDb().setDataSource(getDataSource());
+        
+        getInstallerDb().addColumnReplacements();
+
+        m_connection = getInstallerDb().getDataSource().getConnection();
     }
 
     public void tearDown() throws Exception {
-        m_installer.m_dbconnection.close();
+        if (isEnabled()) {
+            m_installerDb.closeColumnReplacements();
+            m_connection.close();
+            getInstallerDb().closeConnection();
+        }
         super.tearDown();
     }
 
     // XXX this should be an integration test
     public void testParseSQLTables() throws Exception {
-        Iterator i = m_installer.m_tables.iterator();
-        while (i.hasNext()) {
-            String table = ((String) i.next()).toLowerCase();
-            m_installer.getTableFromSQL(table);
+        for (String table : getInstallerDb().getTableNames()) {
+            getInstallerDb().getTableFromSQL(table);
         }
     }
 
     // XXX this should be an integration test
     public void testCreateSequences() throws Exception {
-        m_installer.createSequences();
+        getInstallerDb().createSequences();
     }
 
     // XXX this should be an integration test
     public void testCreateTables() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     // XXX this should be an integration test
     public void testCreateTablesTwice() throws Exception {
         // First pass.
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
         /*
          * Second pass. We don't care about the output from this, so we clear
@@ -103,19 +111,18 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
          * important to test the sequence part, and do it first, because the
          * tables depend on sequences for their ID column.
          */
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         /*
          * Create a new ByteArrayOutputStream so we can look for UPTODATE for
          * every table
          */
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        m_installer.m_out = new PrintStream(out);
-        m_installer.createTables();
+        resetOutputStream();
+        getInstallerDb().createTables();
 
-        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        ByteArrayInputStream in = new ByteArrayInputStream(m_outputStream.toByteArray());
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
         String line;
@@ -146,42 +153,42 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testUpgradeRevision3952ToCurrent() throws Exception {
-        String newCreate = m_installer.m_create_sql;
+        String newCreate = getInstallerDb().getCreateSqlLocation();
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
         assertNotNull("Could not find create.sql", sql);
-        m_installer.m_create_sql = sql.getFile();
+        getInstallerDb().setCreateSqlLocation(sql.getFile());
 
         // First pass.
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        m_installer.m_create_sql = newCreate;
+        getInstallerDb().setCreateSqlLocation(newCreate);
 
         // Second pass.
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
     }
     
     public void testUpgradeRevision3952ToCurrentWithData() throws Exception {
-        String newCreate = m_installer.m_create_sql;
+        String newCreate = getInstallerDb().getCreateSqlLocation();
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
         assertNotNull("Could not find create.sql", sql);
-        m_installer.m_create_sql = sql.getFile();
-        m_installer.readTables();
+        getInstallerDb().setCreateSqlLocation(sql.getFile());
+        getInstallerDb().readTables();
 
         // First pass.
-        m_installer.createSequences();
-        m_installer.m_triggerDao = new TriggerDao();
-        m_installer.createTables();
+        getInstallerDb().createSequences();
+        getInstallerDb().getTriggerDao().reset();
+        getInstallerDb().createTables();
                 
         // Data
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime) VALUES ( 1, now() )");
@@ -206,15 +213,15 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 //                   + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.6', now(), 2 )");
 
 
-        m_installer.m_create_sql = newCreate;
-        m_installer.readTables();
+        getInstallerDb().setCreateSqlLocation(newCreate);
+        getInstallerDb().readTables();
 
         // Second pass.
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
 
@@ -226,7 +233,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
         try {
-            m_installer.checkOldTables();
+            getInstallerDb().checkOldTables();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -246,7 +253,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
         String table = "testBug1006_old_" + System.currentTimeMillis();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         st.execute("CREATE TABLE " + table + " ( foo integer )");
         st.close();
 
@@ -256,7 +263,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ta.anticipate(new BackupTablesFoundException(l));
 
         try {
-            m_installer.checkOldTables();
+            getInstallerDb().checkOldTables();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -288,37 +295,35 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testBug931ConstraintsOkayTwoTables() throws Exception {
-        doTestBug931(false, 0, false);
+        doTestBug931(false, 0, false, false);
     }
 
     public void testBug931ConstraintsOkayOneTable() throws Exception {
-        doTestBug931(true, 0, false);
+        doTestBug931(true, 0, false, false);
     }
 
     public void testBug931ConstraintsBadTwoTables() throws Exception {
-        doTestBug931(false, 1, false);
+        doTestBug931(false, 1, false, false);
     }
 
     public void testBug931ConstraintsBadOneTable() throws Exception {
-        doTestBug931(true, 2, false);
+        doTestBug931(true, 2, false, false);
     }
 
     public void testConstraintsFixedNullTwoTables() throws Exception {
-        doTestBug931(false, 0, true);
+        doTestBug931(false, 0, true, false);
     }
 
     public void testConstraintsFixedNullOneTable() throws Exception {
-        doTestBug931(true, 0, true);
+        doTestBug931(true, 0, true, false);
     }
 
     public void testConstraintsFixedDelTwoTables() throws Exception {
-        m_installer.m_fix_constraint_remove_rows = true;
-        doTestBug931(false, 0, true);
+        doTestBug931(false, 0, true, true);
     }
 
     public void testConstraintsFixedDelOneTable() throws Exception {
-        m_installer.m_fix_constraint_remove_rows = true;
-        doTestBug931(true, 0, true);
+        doTestBug931(true, 0, true, true);
     }
 
     public void testBogusConstraintName() throws Exception {
@@ -358,8 +363,8 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + "                    dpAdminState         integer,\n"
                 + "                    dpRunState        integer );\n";
 
-        m_installer.readTables(new StringReader(s_create_sql));
-        m_installer.getTableColumnsFromSQL("distpoller");
+        getInstallerDb().readTables(new StringReader(s_create_sql));
+        getInstallerDb().getTableColumnsFromSQL("distpoller");
     }
 
     public void testConstraintAtEndOfTable() throws Exception {
@@ -375,25 +380,25 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + "                    dpRunState        integer,\n"
                 + "                                constraint pk_dpName primary key (dpName) );\n";
 
-        m_installer.readTables(new StringReader(s_create_sql));
-        m_installer.getTableColumnsFromSQL("distpoller");
+        getInstallerDb().readTables(new StringReader(s_create_sql));
+        getInstallerDb().getTableColumnsFromSQL("distpoller");
     }
 
     public void testConstraintIpInterfaceSnmpInterfaceValidData() throws Exception {
-        String newCreate = m_installer.m_create_sql;
+        String newCreate = getInstallerDb().getCreateSqlLocation();
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
         assertNotNull("Could not find create.sql", sql);
-        m_installer.m_create_sql = sql.getFile();
-        m_installer.readTables();
+        getInstallerDb().setCreateSqlLocation(sql.getFile());
+        getInstallerDb().readTables();
 
         // First pass.
-        m_installer.createSequences();
-        m_installer.m_triggerDao = new TriggerDao();
-        //m_installer.updatePlPgsql();
-        //m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().getTriggerDao().reset();
+        //getInstallerDb().updatePlPgsql();
+        //getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
         
         // Data
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime) VALUES ( 1, now() )");
@@ -403,34 +408,34 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.5', null )");
         executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.6', -100 )");
 
-        m_installer.m_create_sql = newCreate;
-        m_installer.readTables();
+        getInstallerDb().setCreateSqlLocation(newCreate);
+        getInstallerDb().readTables();
 
         // Second pass.
-        m_installer.checkConstraints();
+        getInstallerDb().checkConstraints();
         /*
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
         */
     }
     public void testConstraintIpInterfaceSnmpInterfaceInvalidData() throws Exception {
-        String newCreate = m_installer.m_create_sql;
+        String newCreate = getInstallerDb().getCreateSqlLocation();
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
         assertNotNull("Could not find create.sql", sql);
-        m_installer.m_create_sql = sql.getFile();
-        m_installer.readTables();
+        getInstallerDb().setCreateSqlLocation(sql.getFile());
+        getInstallerDb().readTables();
 
         // First pass.
-        m_installer.createSequences();
-        m_installer.m_triggerDao = new TriggerDao();
-        //m_installer.updatePlPgsql();
-        //m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().getTriggerDao().reset();
+        //getInstallerDb().updatePlPgsql();
+        //getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
         
         // Data
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime) VALUES ( 1, now() )");
@@ -439,17 +444,17 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.5', null )");
 //        executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.6', -100 )");
 
-        m_installer.m_create_sql = newCreate;
-        m_installer.readTables();
+        getInstallerDb().setCreateSqlLocation(newCreate);
+        getInstallerDb().readTables();
 
         // Second pass.
-        m_installer.checkConstraints();
+        getInstallerDb().checkConstraints();
         /*
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
         */
     }
     
@@ -470,9 +475,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ta.anticipate(new Exception(
                                     "constraint pk_dpname references column \"dpnamebogus\", which is not a column in the table distpoller"));
 
-        m_installer.readTables(new StringReader(s_create_sql));
+        getInstallerDb().readTables(new StringReader(s_create_sql));
         try {
-            m_installer.getTableColumnsFromSQL("distpoller");
+            getInstallerDb().getTableColumnsFromSQL("distpoller");
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -483,7 +488,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void doTestBogusConstraint(String constraint,
             String exceptionMessage) throws Exception {
-        m_installer.m_fix_constraint_name = constraint;
+        //m_installer.m_fix_constraint_name = constraint;
 
         setupBug931(false, false);
 
@@ -491,7 +496,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ta.anticipate(new Exception(exceptionMessage));
 
         try {
-            m_installer.fixConstraint();
+            getInstallerDb().fixConstraint(constraint, false);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -500,7 +505,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void doTestBug931(boolean dropForeignTable, int badRows,
-            boolean fixConstraint) throws Exception {
+            boolean fixConstraint, boolean removeRows) throws Exception {
         final String errorSubstring;
         if (dropForeignTable) {
             errorSubstring = "Table events contains "
@@ -527,7 +532,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         setupBug931((badRows != 0) || fixConstraint, dropForeignTable);
 
         if (fixConstraint) {
-            m_installer.fixConstraint();
+            getInstallerDb().fixConstraint(s_constraint, removeRows);
         }
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -536,7 +541,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         }
 
         try {
-            m_installer.checkConstraints();
+            getInstallerDb().checkConstraints();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -545,8 +550,10 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testParseConstraintWithOnUpdateCascade() throws Exception {
-        // Make sure that every table, column, and key ID has at least one
-        // upper case character
+        /*
+         * Make sure that every table, column, and key ID listed below has
+         * at least one upper case character so that we can test lower casing
+         */
         final String createSQL =
             "create table a (\n"
                 + "    a1           integer,\n"
@@ -558,34 +565,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                         + "on update cascade\n"
                 + ");\n";
 
-        m_installer.readTables(new StringReader(createSQL));
-        Table a = m_installer.getTableFromSQL("a");
-        Table b = m_installer.getTableFromSQL("b");
-
-        /*
-        List<Column> columns = table.getColumns();
-        assertNotNull("column list is not null", columns);
-        assertEquals("column count", 3, columns.size());
-        assertEquals("column zero toString()", "mapid integer(4) NOT NULL",
-                     columns.get(0).toString());
-        assertEquals("column one toString()",
-                     "elementid integer(4) NOT NULL",
-                     columns.get(1).toString());
-        assertEquals("column two toString()",
-                     "somethingelse character varying(80)",
-                     columns.get(2).toString());
-
-        List<Constraint> foo = table.getConstraints();
-
-        assertNotNull("constraint list is not null", foo);
-        assertEquals("constraint count is one", 1, foo.size());
-        Constraint f = foo.get(0);
-        assertNotNull("constraint zero is not null", f);
-        assertEquals("constraint getTable()", "element", f.getTable());
-        assertEquals("constraint zero toString()",
-                     "constraint pk_element primary key (mapid, elementid)",
-                     f.toString());
-        */
+        getInstallerDb().readTables(new StringReader(createSQL));
+        getInstallerDb().getTableFromSQL("a");
+        getInstallerDb().getTableFromSQL("b");
     }
 
     public void testGetFromDbConstraintWithOnUpdateCascade() throws Exception {
@@ -602,9 +584,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
         executeSQL(createSQL);
 
-        List<Column> columns = m_installer.getColumnsFromDB("b");
+        List<Column> columns = getInstallerDb().getColumnsFromDB("b");
         assertNotNull("column list not null", columns);
-        List<Constraint> constraints = m_installer.getConstraintsFromDB("b");
+        List<Constraint> constraints = getInstallerDb().getConstraintsFromDB("b");
         assertNotNull("constraint list not null", constraints);
         assertEquals("constraint list size", 1, constraints.size());
         assertEquals("constraint zero toString()",
@@ -623,8 +605,8 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + "    constraint pk_Element primary key (mapId, elementId)\n"
                 + ");";
 
-        m_installer.readTables(new StringReader(createSQL));
-        Table table = m_installer.getTableFromSQL("element");
+        getInstallerDb().readTables(new StringReader(createSQL));
+        Table table = getInstallerDb().getTableFromSQL("element");
 
         List<Column> columns = table.getColumns();
         assertNotNull("column list is not null", columns);
@@ -667,7 +649,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + ")";
         executeSQL(command);
 
-        m_installer.getTableColumnsFromDB("qrtz_job_details");
+        getInstallerDb().getTableColumnsFromDB("qrtz_job_details");
     }
 
     public void testInsertMultipleColumnsGetFromDBCompare() throws Exception {
@@ -678,7 +660,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + ")";
         executeSQL(command);
 
-        Table table = m_installer.getTableFromDB("qrtz_job_details");
+        Table table = getInstallerDb().getTableFromDB("qrtz_job_details");
         assertNotNull("table not null", table);
 
         List<Constraint> constraints = table.getConstraints();
@@ -698,7 +680,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + ")";
         executeSQL(command);
 
-        List<Column> columns = m_installer.getColumnsFromDB("qrtz_job_details");
+        List<Column> columns = getInstallerDb().getColumnsFromDB("qrtz_job_details");
         assertNotNull("column list not null", columns);
         assertEquals("column list size", 2, columns.size());
         assertEquals("column zero toString()",
@@ -717,9 +699,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + ")";
         executeSQL(command);
 
-        List<Column> columns = m_installer.getColumnsFromDB("qrtz_job_details");
+        List<Column> columns = getInstallerDb().getColumnsFromDB("qrtz_job_details");
         assertNotNull("column list not null", columns);
-        List<Constraint> constraints = m_installer.getConstraintsFromDB("qrtz_job_details");
+        List<Constraint> constraints = getInstallerDb().getConstraintsFromDB("qrtz_job_details");
         assertNotNull("constraint list not null", constraints);
         assertEquals("constraint list size", 1, constraints.size());
         assertEquals(
@@ -729,9 +711,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testSetEventSourceOnUpgrade() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -743,9 +725,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO events (eventID, eventUei, eventTime, eventDpName, eventCreateTime, eventSeverity, eventLog, eventDisplay) "
                 + "VALUES ( 1, 'uei.opennms.org/eatmyshorts', now(), 'Duh', now(), 1, 'n', 'n' )");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT eventsource from events");
         int count = 0;
         while (rs.next()) {
@@ -758,9 +740,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void XXXtestSetOutageIdOnUpgrade() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -783,12 +765,12 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO outages (nodeId, ipAddr, ifLostService, serviceId, ifServiceId ) "
                 + "VALUES ( 1, '1.2.3.4', now(), 1, 1 )");
 
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT outageid from outages");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -799,10 +781,10 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     }
 
-    public void j() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+    public void testSomethingUnknown() throws Exception {
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -821,9 +803,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO outages ( outageID, nodeId, ipAddr, ifLostService, serviceId, ifServiceId ) "
                 + "VALUES ( 1, 1, '1.2.3.4', now(), 1, 1 )");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT svcregainedeventid from outages");
         int count = 0;
         while (rs.next()) {
@@ -836,9 +818,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testSetUsersNotifiedIdOnUpgrade() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -858,12 +840,11 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                         "constraint pk_userNotificationID primary key \\(id\\),",
                                                         "" } });
 
-        executeSQL("INSERT INTO usersNotified (userID) "
-                + "VALUES ('DJ... it is always his fault')");
+        executeSQL("INSERT INTO usersNotified (userID) VALUES ('DJ... it is always his fault')");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id from usersnotified");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -871,12 +852,13 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
             count++;
         }
         assertEquals("expected column count", 1, count);
+
     }
 
     public void testSetSnmpInterfaceIdOnUpgrade() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -893,9 +875,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES (1, '1.2.3.4', 1)");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -908,9 +890,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testCatchSnmpInterfaceNullNodeIdColumnOnUpgrade()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -923,9 +905,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -934,17 +916,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         assertFalse("first result should not be null, but was null",
                     rs.wasNull());
 
-        // Don't care about the specific ID, it just needs to be non-null
-        // assertEquals("snmpInterface id", 2, rs.getInt(1));
-
         assertFalse("Too many entries", rs.next());
     }
 
     public void testCatchSnmpInterfaceHasNullNodeIdValueOnUpgrade()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -961,7 +940,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ta.anticipate(new Exception(
                                     "Error changing table 'snmpinterface'.  Nested exception: The 'nodeId' column in the 'snmpInterface' table should never be null, but the entry for this row does have a null 'nodeId'column.  It needs to be removed or udpated to reflect a valid 'nodeId' value."));
         try {
-            m_installer.createTables();
+            getInstallerDb().createTables();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -971,9 +950,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testCatchIpInterfaceNullIpAddrColumnOnUpgrade()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -987,14 +966,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testCatchIpInterfaceHasNullIpAddrValueOnUpgrade()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1013,7 +992,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ta.anticipate(new Exception(
                                     "Error changing table 'ipinterface'.  Nested exception: The 'ipAddr' column in the 'ipInterface' table should never be null, but the entry for this row does have a null 'ipAddr'column.  It needs to be removed or udpated to reflect a valid 'ipAddr' value."));
         try {
-            m_installer.createTables();
+            getInstallerDb().createTables();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -1022,9 +1001,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testAssetsIdOnUpgrade() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1042,9 +1021,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
         executeSQL("INSERT INTO assets (nodeId, category, userLastModified, lastModifiedDate) VALUES (1, 'some category', 'dgregor broke it', now())");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id from assets");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -1059,27 +1038,27 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testTriggersAfterUpdate() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
         verifyTriggers(false);
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
         verifyTriggers(false);
     }
 
     public void testTriggersAfterUpdateWithChange() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
 
         /*
-         * m_installer.createTables(); executeSQL("drop table outages");
+         * getInstallerDb().createTables(); executeSQL("drop table outages");
          */
 
         addTableFromSQL("distPoller");
@@ -1098,7 +1077,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
          *  No snmpInterfaceID column, and I need to kill an index that
          *  includes that column, as well.
          */
-        m_installer.m_indexDao.remove("ipinterface_snmpInterfaceId_idx");
+        getInstallerDb().getIndexDao().remove("ipinterface_snmpInterfaceId_idx");
         addTableFromSQLWithReplacements("ipinterface",
                                         new String[][] {
                                                 new String[] {
@@ -1115,16 +1094,16 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
         verifyTriggers(false);
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
         verifyTriggers(false);
     }
 
     public void testIpInterfaceForeignKeySnmpInterfaceIdOnUpgrade()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distPoller");
         addTableFromSQL("node");
@@ -1164,14 +1143,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         //      executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 2, now() )");
   //      executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 2, '1.2.3.9', null )");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
         verifyTriggers(false);
 
         Statement st;
         ResultSet rs;
 
-        st = m_installer.m_dbconnection.createStatement();
+        st = m_connection.createStatement();
         rs = st.executeQuery("SELECT id from snmpInterface ORDER BY nodeId");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -1184,7 +1163,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
         assertFalse("Too many entries", rs.next());
 
-        st = m_installer.m_dbconnection.createStatement();
+        st = m_connection.createStatement();
         rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface ORDER BY nodeId");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -1214,9 +1193,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testIfServicesForeignKeyIpInterfaceIdOnUpgrade()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distPoller");
         addTableFromSQL("node");
@@ -1257,9 +1236,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
         executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id from ipInterface");
 
         assertTrue("could not advance results to first row", rs.next());
@@ -1288,9 +1267,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testOutagesForeignKeyIfServiceIdOnUpgrade() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distPoller");
         addTableFromSQL("node");
@@ -1337,9 +1316,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) "
                 + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.4', now(), 1 )");
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
-        Statement st = m_installer.m_dbconnection.createStatement();
+        Statement st = m_connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id from ifServices");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -1358,33 +1337,33 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testAddStoredProcedures() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
 
         verifyTriggers(true);
     }
 
     public void testAddStoredProceduresTwice() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         
-        //m_installer.createTables();
+        //getInstallerDb().createTables();
         
-        m_installer.addStoredProcedures();
+        getInstallerDb().addStoredProcedures();
 
         verifyTriggers(true);
     }
 
     public void testSnmpInterfaceNodeIdColumnConvertToNotNull()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1394,14 +1373,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)nodeID\\s+integer not null,",
                                                 "nodeId integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testSnmpInterfaceSnmpIfIndexColumnConvertToNotNull()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1411,14 +1390,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)snmpIfIndex\\s+integer not null,",
                                                 "snmpIfIndex integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testIpInterfaceNodeIdColumnConvertToNotNull()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1429,13 +1408,13 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)nodeID\\s+integer not null,",
                                                 "nodeId integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testIfServicesNodeIdColumnConvertToNotNull() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1448,13 +1427,13 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)nodeID\\s+integer not null,",
                                                 "nodeId integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testIfServicesIpAddrColumnConvertToNotNull() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1467,14 +1446,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)ipAddr\\s+varchar\\(16\\) not null,",
                                                 "ipAddr varchar(16)," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testIfServicesServiceIdColumnConvertToNotNull()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1487,13 +1466,13 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)serviceID\\s+integer not null,",
                                                 "serviceId integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testOutagesNodeIdColumnConvertToNotNull() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1508,13 +1487,13 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)nodeID\\s+integer not null,",
                                                 "nodeId integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testOutagesServiceIdColumnConvertToNotNull() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1529,14 +1508,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)serviceID\\s+integer not null,",
                                                 "serviceID integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
 
     public void testOutagesIfServiceIdColumnConvertToNotNull()
             throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1550,13 +1529,13 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 "(?i)ifServiceID\\s+integer not null,",
                                                 "ifServiceId integer," } });
 
-        m_installer.createTables();
+        getInstallerDb().createTables();
     }
     
     public void testSnmpInterfaceNonUniqueKeys() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1595,7 +1574,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                     + "snmpIfIndex ) ORDER BY nodeID, "
                                     + "snmpIfIndex"));
         try {
-            m_installer.checkIndexUniqueness();
+            getInstallerDb().checkIndexUniqueness();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -1603,9 +1582,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testIpInterfaceNonUniqueKeys() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1664,7 +1643,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                     + "nodeID, ipAddr ) ORDER BY nodeID, "
                                     + "ipAddr"));
         try {
-            m_installer.checkIndexUniqueness();
+            getInstallerDb().checkIndexUniqueness();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -1673,9 +1652,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testIfServicesNonUniqueKeys() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1744,7 +1723,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ta.anticipate(new Exception("Unique index 'ifservices_nodeid_ipaddr_svc_unique' cannot be added to table 'ifservices' because 4 rows are not unique.  See the install guide for details on how to correct this problem.  You can use the following SQL to see which rows are not unique:\n"
                                     + "SELECT * FROM ifservices WHERE ( nodeID, ipAddr, serviceId ) IN ( SELECT nodeID, ipAddr, serviceId FROM ifservices GROUP BY nodeID, ipAddr, serviceId HAVING count(nodeID) > 1 ORDER BY nodeID, ipAddr, serviceId ) ORDER BY nodeID, ipAddr, serviceId"));
         try {
-            m_installer.checkIndexUniqueness();
+            getInstallerDb().checkIndexUniqueness();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -1752,9 +1731,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testBug1574() throws Exception {
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
 
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -1762,7 +1741,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         addTableFromSQL("snmpinterface");
         executeSQL("drop index snmpinterface_nodeid_ifindex_unique_idx");
         executeSQL("create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex)");
-        m_installer.addIndexesForTable("snmpinterface");
+        getInstallerDb().addIndexesForTable("snmpinterface");
         
         addTableFromSQL("ipinterface");
     }
@@ -1770,7 +1749,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     public void addTableFromSQL(String tableName) throws SQLException {
         String partialSQL = null;
         try {
-            partialSQL = m_installer.getTableCreateFromSQL(tableName);
+            partialSQL = getInstallerDb().getTableCreateFromSQL(tableName);
         } catch (Exception e) {
             fail("Could not get SQL for table '" + tableName + "'", e);
         }
@@ -1787,7 +1766,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 String[][] replacements, boolean addTriggers) throws SQLException {
         String partialSQL = null;
         try {
-            partialSQL = m_installer.getTableCreateFromSQL(tableName);
+            partialSQL = getInstallerDb().getTableCreateFromSQL(tableName);
         } catch (Exception e) {
             fail("Could not get SQL for table '" + tableName + "'", e);
         }
@@ -1822,8 +1801,8 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
             return;
         }
         
-        m_installer.addIndexesForTable(table);
-        m_installer.addTriggersForTable(table);
+        getInstallerDb().addIndexesForTable(table);
+        getInstallerDb().addTriggersForTable(table);
     }
 
     public boolean containsUnescapedParens(String str) {
@@ -1838,7 +1817,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
         assertTrue("Function '" + trigger.getStoredProcedure()
                    + "' does not exist",
-                   m_installer.functionExists(trigger.getStoredProcedure(),
+                   getInstallerDb().functionExists(trigger.getStoredProcedure(),
                                               "", "trigger"));
     }
     
@@ -1849,7 +1828,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                    + "' does not exist on table '"
                    + trigger.getTable() + "' to execute '"
                    + trigger.getStoredProcedure() + "' function",
-                   trigger.isOnDatabase(m_installer.m_dbconnection));
+                   trigger.isOnDatabase(m_connection));
     }
 
     public void verifyTriggers(boolean onlyStoredProcedures) throws Exception {
@@ -1881,4 +1860,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
             }
         }
     }
+    
+    public InstallerDb getInstallerDb() {
+        return m_installerDb;
+    }
+    
+    public void resetOutputStream() {
+        m_outputStream = new ByteArrayOutputStream();
+        getInstallerDb().setOutputStream(new PrintStream(m_outputStream));
+    }
+
 }

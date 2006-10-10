@@ -1,4 +1,4 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 public class TemporaryDatabaseTestCaseTest extends TemporaryDatabaseTestCase {
     public void testNothing() {
@@ -7,5 +7,9 @@ public class TemporaryDatabaseTestCaseTest extends TemporaryDatabaseTestCase {
     
     public void testExecuteSQL() {
         executeSQL("SELECT now()");
+    }
+    
+    public void testExecuteSQLFromJdbcTemplate() {
+        jdbcTemplate.execute("SELECT now()");
     }
 }

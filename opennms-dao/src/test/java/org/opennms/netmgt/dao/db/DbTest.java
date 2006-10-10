@@ -1,4 +1,5 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
+
 
 public class DbTest extends TemporaryDatabaseTestCase {
 

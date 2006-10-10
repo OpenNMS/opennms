@@ -32,13 +32,15 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.util.StringUtils;
 
 public class Constraint {
     public static final int PRIMARY_KEY = 1;
@@ -200,7 +202,7 @@ public class Constraint {
             if (m_columns.size() == 0) {
             	throw new IllegalStateException("Primary key has zero constrained columns... not allowed!");
             }
-            b.append(Installer.join(", ", m_columns));
+            b.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
             break;
 
         case FOREIGN_KEY:
@@ -208,7 +210,7 @@ public class Constraint {
             if (m_columns.size() == 0) {
             	throw new IllegalStateException("Foreign key has zero constrained columns... not allowed!");
             }
-            b.append(Installer.join(", ", m_columns));
+            b.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
             break;
         }
         
@@ -218,7 +220,7 @@ public class Constraint {
             b.append(" references ");
             b.append(m_ftable);
             b.append(" (");
-            b.append(Installer.join(", ", m_fcolumns));
+            b.append(StringUtils.collectionToDelimitedString(m_fcolumns, ", "));
             b.append(")");
         }
 

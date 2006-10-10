@@ -61,8 +61,7 @@ public class InstallerWebappTest extends TestCase {
         m_anticipator.expecting(tomcat_lib, "opennms_web.jar");
 
         m_installer = new Installer();
-        m_installer.m_out = new PrintStream(new ByteArrayOutputStream());
-        // m_installer.m_out = System.out;
+        m_installer.setOutputStream(new PrintStream(new ByteArrayOutputStream()));
         m_installer.m_install_servletdir = opennms_webapp.getAbsolutePath();
         m_installer.m_webappdir = m_tomcat_webapps.getAbsolutePath();
     }

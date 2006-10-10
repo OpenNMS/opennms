@@ -1,4 +1,4 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -7,15 +7,18 @@ import java.util.List;
 import java.util.Map;
 
 public class TriggerDao {
-    private Map<String, Trigger> m_nameMap =
-        new LinkedHashMap<String, Trigger>();
-    private Map<String, List<Trigger>> m_tableMap =
-        new HashMap<String, List<Trigger>>();
+    private Map<String, Trigger> m_nameMap;
+    private Map<String, List<Trigger>> m_tableMap;
 
     public TriggerDao() {
-        
+        reset();
     }
-    
+
+    public void reset() {
+        m_nameMap = new LinkedHashMap<String, Trigger>();
+        m_tableMap = new HashMap<String, List<Trigger>>();
+    }
+
     public void add(Trigger t) {
         String lowerName = t.getName().toLowerCase();
         if (m_nameMap.containsKey(lowerName)) {

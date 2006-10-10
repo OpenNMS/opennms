@@ -1,14 +1,15 @@
-package org.opennms.install;
+package org.opennms.netmgt.dao.db;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.util.StringUtils;
 
 public class Index {
 
@@ -112,7 +113,7 @@ public class Index {
             sql.append(m_using);
         }
         sql.append(" ( ");
-        sql.append(Installer.join(", ", m_columns));
+        sql.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
         sql.append(" )");
         if (m_where != null) {
             sql.append(" WHERE ");
@@ -141,7 +142,7 @@ public class Index {
 
     public String getIndexUniquenessQuery() throws Exception {
         String firstColumn = getColumns().get(0);
-        String columnList = Installer.join(", ", getColumns());
+        String columnList = StringUtils.collectionToDelimitedString(getColumns(), ", ");
         
         /*
          * E.g. select * from foo where (a, b) in (select a, b from foo
