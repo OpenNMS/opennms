@@ -76,8 +76,10 @@ public class OnmsLocationMonitor {
     
     private Date m_lastCheckInTime;
 
-    // needed for locating XML configured location definition and
-    // creating m_locationDefintion.
+    /*
+     * Needed for locating XML-configured location definition and
+     * creating m_locationDefintion.
+     */
     private String m_definitionName;
 
     private OnmsMonitoringLocationDefinition m_locationDefinition;
