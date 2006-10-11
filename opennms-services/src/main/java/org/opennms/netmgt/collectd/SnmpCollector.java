@@ -374,7 +374,7 @@ public class SnmpCollector implements ServiceCollector {
 	 *            Key/value pairs from the package to which the interface
 	 *            belongs.
 	 */
-	public int collect(CollectionAgent agent, EventProxy eventProxy, Map parameters) {
+	public int collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) {
 	    try {
             
 

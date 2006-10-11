@@ -53,6 +53,10 @@ import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 public class OpenNMSTestCase extends TestCase {
@@ -1388,6 +1392,8 @@ public class OpenNMSTestCase extends TestCase {
     }
 
     int m_version = SnmpAgentConfig.VERSION1;
+
+    private EventProxy m_eventProxy;
     
     public void setVersion(int version) {
         m_version = version;
@@ -1441,6 +1447,18 @@ public class OpenNMSTestCase extends TestCase {
                 
                 
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
+                m_eventProxy = new EventProxy() {
+
+                    public void send(Event event) throws EventProxyException {
+                        m_eventdIpcMgr.sendNow(event);
+                    }
+
+                    public void send(Log eventLog) throws EventProxyException {
+                        m_eventdIpcMgr.sendNow(eventLog);
+                    }
+                    
+                };
+                
                 EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
                 m_eventd.setEventIpcManager(m_eventdIpcMgr);
                 m_eventd.init();
@@ -1481,6 +1499,14 @@ public class OpenNMSTestCase extends TestCase {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
         }
+    }
+
+    protected EventProxy getEventProxy() {
+        return m_eventProxy;
+    }
+
+    protected void setEventProxy(EventProxy eventProxy) {
+        m_eventProxy = eventProxy;
     }
 
 

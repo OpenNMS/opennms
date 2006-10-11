@@ -44,13 +44,13 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 public class ServiceParameters {
     
-    Map m_parameters;
+    Map<String, String> m_parameters;
 
-    public ServiceParameters(Map parameters) {
+    public ServiceParameters(Map<String, String> parameters) {
         m_parameters = parameters;
     }
     
-    public Map getParameters() {
+    public Map<String, String> getParameters() {
         return m_parameters;
     }
 
