@@ -247,6 +247,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     public boolean isStarted() {
         return m_started;
     }
+
+    public void stop() {
+        m_backEnd.pollerStopping(1);
+        m_started = false;
+    }
     
     
 

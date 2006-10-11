@@ -43,6 +43,17 @@ public interface PollerFrontEnd {
     public void pollService(Integer polledServiceId);
     
     /**
+     * Returns whether or not the poller has been started
+     */
+    public boolean isStarted();
+    
+    /**
+     * Stop polling.  This should be called before the system exits.
+     *
+     */
+    public void stop();
+    
+    /**
      * Returns the state of polling in this monitor.  
      * @param polledServiceId
      * @return
