@@ -85,7 +85,7 @@
         <element ref="http-dc:parameters" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="method" type="http-dc:allowed-methods" use="optional" default="GET" />
-      <attribute name="http-version" type="string" use="optional" default="1.1" />
+      <attribute name="http-version" type="http-dc:allowed-versions" use="optional" default="1.1" />
       <attribute name="user-agent" type="string" use="optional" />
       <attribute name="virtual-host" type="string" use="optional" />
       <attribute name="scheme" type="string" use="optional" default="http" />
@@ -99,6 +99,12 @@
       <attribute name="response-range" type="string" use="optional" default="100-399" />
     </complexType>
   </element>
+  
+  <simpleType name="allowed-versions" >
+    <restriction base="string" >
+      <pattern value="1\.0|1\.1" />
+    </restriction>
+  </simpleType>
   
   <simpleType name="allowed-methods" >
     <restriction base="string" >
