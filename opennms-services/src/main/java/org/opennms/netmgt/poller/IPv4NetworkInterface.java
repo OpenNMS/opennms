@@ -70,7 +70,7 @@ public class IPv4NetworkInterface implements NetworkInterface {
     /**
      * The map of attributes for this interface.
      */
-    private Map m_properties;
+    private Map<String, Object> m_properties;
 
     /**
      * Interface address
@@ -161,7 +161,7 @@ public class IPv4NetworkInterface implements NetworkInterface {
      */
     public synchronized Object setAttribute(String property, Object value) {
         if (m_properties == null)
-            m_properties = new HashMap();
+            m_properties = new HashMap<String, Object>();
 
         return m_properties.put(property, value);
     }
