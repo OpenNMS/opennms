@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -33,7 +33,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
 //
 
 package org.opennms.netmgt.config;
@@ -44,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -51,6 +51,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.datacollection.HttpCollection;
 import org.opennms.netmgt.config.datacollection.HttpDatacollectionConfig;
 
 /**
@@ -67,7 +68,7 @@ public class HttpCollectionConfigFactory {
     /** Boolean indicating if the init() method has been called. */
     protected boolean initialized = false;
 
-    /** Timestamp of the viewDisplay file, used to know when to reload from disk. */
+    /** Timestamp of the http collection config, used to know when to reload from disk. */
     protected static long m_lastModified;
 
     private static HttpDatacollectionConfig m_config;
@@ -87,7 +88,7 @@ public class HttpCollectionConfigFactory {
     }
 
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
-        log().debug("initialize: initializing surveillance views factory.");
+        log().debug("initialize: initializing http collection config factory.");
         m_config = (HttpDatacollectionConfig) Unmarshaller.unmarshal(HttpDatacollectionConfig.class, rdr);
     }
 
@@ -151,5 +152,20 @@ public class HttpCollectionConfigFactory {
 
     private Category log() {
         return ThreadCategory.getInstance();
+    }
+
+    @SuppressWarnings("unchecked")
+    public HttpCollection getHttpCollection(String collectionName) {
+        List<HttpCollection> collections = m_config.getHttpCollectionCollection();
+        HttpCollection collection = null;
+        for (HttpCollection coll : collections) {
+            if (coll.getName().equalsIgnoreCase(collectionName)) collection = coll;
+            break;
+        }
+        if (collection == null) {
+            throw new IllegalArgumentException("getHttpCollection: collection name: "
+                    +collectionName+" specified in collectd configuration not found in http collection configuration.");
+        }
+        return collection;
     }
 }

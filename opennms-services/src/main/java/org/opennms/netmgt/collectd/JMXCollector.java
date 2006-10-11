@@ -453,7 +453,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *            belongs.
      */
 
-    public int collect(CollectionAgent agent, EventProxy eproxy, Map map) {
+    public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) agent.getAddress();
         String collectionName = (String) agent.getAttribute("collectionName");

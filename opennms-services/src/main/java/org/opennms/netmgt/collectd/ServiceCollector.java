@@ -70,5 +70,5 @@ public interface ServiceCollector {
     /**
      * Invokes a collection on the object.
      */
-    public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters);
+    public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters);
 }
