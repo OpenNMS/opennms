@@ -40,7 +40,8 @@ public class Poller implements InitializingBean, PollObserver {
 		assertNotNull(m_pollService, "pollService");
 		assertNotNull(m_pollerFrontEnd, "pollerFrontEnd");
 		
-		schedulePolls();
+        if (m_pollerFrontEnd.isRegistered())
+            schedulePolls();
 
 	}
 	

@@ -186,43 +186,9 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
 //        }
         
 
-        List<File> sqlFiles = new LinkedList<File>();
-        sqlFiles.add(new File("../opennms-daemon/src/main/filtered/etc/create.sql"));
-
-        FileFilter sqlFilter = new FileFilter() {
-            public boolean accept(File pathname) {
-                return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
-                     || pathname.getName().endsWith("Trigger.sql");
-            }
-        };
-
-        File[] list = new File("../opennms-daemon/src/main/filtered/etc").listFiles(sqlFilter);
-        sqlFiles.addAll(Arrays.asList(list));
-        
-        /*
-        Resource resource = new ClassPathResource("create.sql");
-        File createSql = resource.getFile();
-             */
-
         if (createDb) {
-           for (File sqlFile : sqlFiles) {
-               String cmd = System.getProperty("psql.command", "psql") ;
-               System.err.println("psql.command = " + cmd);
-               cmd = cmd+" test -U opennms -f " + sqlFile.getAbsolutePath();
-
-               System.err.println("Executing: " + cmd);
-               Process p = Runtime.getRuntime().exec(cmd);
-               ReaderEater inputEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getInputStream())));
-               ReaderEater errorEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getErrorStream())));
-               inputEater.start();
-               errorEater.start();
-               p.waitFor();
-               inputEater.getReader().close();
-               errorEater.getReader().close();
-            
-               System.err.println("Got an exitValue of "+p.exitValue());
-               p.destroy();
-           }
+            File etcDir = new File("../opennms-daemon/src/main/filtered/etc");
+            initDatabase(etcDir);
         }
         
         HibernateTransactionManager m_transMgr = new HibernateTransactionManager();
@@ -231,6 +197,40 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         
         
         return m_transMgr;
+    }
+
+    private void initDatabase(File etcDir) throws IOException, InterruptedException {
+        List<File> sqlFiles = new LinkedList<File>();
+        sqlFiles.add(new File(etcDir, "create.sql"));
+
+        FileFilter sqlFilter = new FileFilter() {
+            public boolean accept(File pathname) {
+                return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
+                || pathname.getName().endsWith("Trigger.sql");
+            }
+        };
+
+        File[] list = etcDir.listFiles(sqlFilter);
+        sqlFiles.addAll(Arrays.asList(list));
+
+         for (File sqlFile : sqlFiles) {
+           String cmd = System.getProperty("psql.command", "psql") ;
+           System.err.println("psql.command = " + cmd);
+           cmd = cmd+" test -U opennms -f " + sqlFile.getAbsolutePath();
+
+           System.err.println("Executing: " + cmd);
+           Process p = Runtime.getRuntime().exec(cmd);
+           ReaderEater inputEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getInputStream())));
+           ReaderEater errorEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getErrorStream())));
+           inputEater.start();
+           errorEater.start();
+           p.waitFor();
+           inputEater.getReader().close();
+           errorEater.getReader().close();
+        
+           System.err.println("Got an exitValue of "+p.exitValue());
+           p.destroy();
+         }
     }
     
     public int dbQueryForInt(final String sql) {

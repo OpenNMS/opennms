@@ -83,7 +83,7 @@ public final class DataSourceFactory implements DataSource {
      */
     private static boolean m_legacy = false;
     
-    private static Map m_dataSources = new HashMap();
+    private static Map<String, DataSource> m_dataSources = new HashMap<String, DataSource>();
 
     /**
      * The database class loaded from the config file
@@ -109,9 +109,6 @@ public final class DataSourceFactory implements DataSource {
     	
     	init("opennms");
 
-    	// FIXME: this is hardcoded here but should be set up in spring only one time somehow
-    	// ALSO we assume here that we are using JDBC not Hibernate.. 
-		Cache.registerFactories(getDataSource());
     	
     }
 
@@ -164,11 +161,11 @@ public final class DataSourceFactory implements DataSource {
     }
     
     public static synchronized DataSource getInstance(String name) {
-            DataSource dataSource = (DataSource)m_dataSources.get(name);
+            DataSource dataSource = m_dataSources.get(name);
             if (dataSource == null) {
             		throw new IllegalArgumentException("Unable to locate data source named " + name + ".  Does this need to be init'd?");
             }
-			return (DataSource)m_dataSources.get(name);
+			return m_dataSources.get(name);
         
     }
 	
@@ -190,7 +187,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public Connection getConnection(String dsName) throws SQLException {
-        return ((DataSource)m_dataSources.get(dsName)).getConnection();
+        return m_dataSources.get(dsName).getConnection();
     }
 
     public static void setInstance(DataSource singleton) {
@@ -221,7 +218,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public static DataSource getDataSource(String dsName) {
-        return (DataSource)m_dataSources.get(dsName);
+        return m_dataSources.get(dsName);
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
@@ -233,7 +230,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public PrintWriter getLogWriter(String dsName) throws SQLException {
-        return ((DataSource)m_dataSources.get(dsName)).getLogWriter();
+        return m_dataSources.get(dsName).getLogWriter();
     }
 
     public void setLogWriter(PrintWriter out) throws SQLException {
@@ -241,7 +238,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public void setLogWriter(String dsName, PrintWriter out) throws SQLException {
-    		((DataSource)m_dataSources.get(dsName)).setLogWriter(out);
+        m_dataSources.get(dsName).setLogWriter(out);
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
@@ -249,7 +246,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public void setLoginTimeout(String dsName, int seconds) throws SQLException {
-    		((DataSource)m_dataSources.get(dsName)).setLoginTimeout(seconds);
+        m_dataSources.get(dsName).setLoginTimeout(seconds);
     }
 
     public int getLoginTimeout() throws SQLException {
@@ -257,12 +254,21 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public int getLoginTimeout(String dsName) throws SQLException {
-        return ((DataSource)m_dataSources.get(dsName)).getLoginTimeout();
+        return m_dataSources.get(dsName).getLoginTimeout();
     }
 
     public void initialize() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
         // TODO Auto-generated method stub
         
+    }
+    
+    public static synchronized void close() throws SQLException {
+        for (DataSource dataSource : m_dataSources.values()) {
+            if (dataSource instanceof ClosableDataSource) {
+                ((ClosableDataSource)dataSource).close();
+            }
+        }
+        m_dataSources.clear();
     }
 
 }

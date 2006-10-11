@@ -85,7 +85,7 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class LegacyDatabaseConnectionFactory implements DataSource {
+public final class LegacyDatabaseConnectionFactory implements ClosableDataSource {
     
     private static final int MAX_AGE = 5 * 60 * 1000;
 
@@ -1137,6 +1137,12 @@ public final class LegacyDatabaseConnectionFactory implements DataSource {
 
     public int getLoginTimeout() throws SQLException {
         return DriverManager.getLoginTimeout();
+    }
+
+
+    public void close() throws SQLException {
+        // TODO Auto-generated method stub
+        
     }
 
 }

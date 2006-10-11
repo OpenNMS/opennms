@@ -53,10 +53,6 @@ drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
 drop table reportLocator cascade;
-drop table category_statusdef cascade;
-drop table statusview_statusdef cascade;
-drop table aggregate_status_definitions cascade;
-drop table aggregate_status_views cascade;
 drop table atinterface cascade;
 drop table stpnode cascade;
 drop table stpinterface cascade;
@@ -65,6 +61,8 @@ drop table datalinkinterface cascade;
 drop table inventory cascade;
 drop table element cascade;
 drop table map cascade;
+drop table location_monitors cascade;
+drop table location_specific_status_changes cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -1231,7 +1229,7 @@ CREATE TABLE location_monitors (
     
     CONSTRAINT location_monitors_pkey PRIMARY KEY (id)
 );
-CREATE INDEX location_monitors_name ON locationMonitors(name);
+
 
 
 --#############################################################################
