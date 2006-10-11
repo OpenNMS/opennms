@@ -184,7 +184,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         SimpleWebTable table = m_service.createFacilityStatusTable();
         verifyEverything();
         
-        System.out.print(table.toString());
+        //System.out.print(table.toString());
     }
     
     public void expectEverything() {
