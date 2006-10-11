@@ -36,8 +36,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.net.InetAddress;
-
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
