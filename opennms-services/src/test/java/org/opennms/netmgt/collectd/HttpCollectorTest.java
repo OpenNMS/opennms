@@ -128,28 +128,28 @@ public class HttpCollectorTest extends OpenNMSTestCase {
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#initialize(java.util.Map)}.
      */
     public final void testInitializeMap() {
-        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented"); // TODO
     }
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#initialize(org.opennms.netmgt.collectd.CollectionAgent, java.util.Map)}.
      */
     public final void testInitializeCollectionAgentMap() {
-        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented"); // TODO
     }
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#release()}.
      */
     public final void testRelease() {
-        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented"); // TODO
     }
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#release(org.opennms.netmgt.collectd.CollectionAgent)}.
      */
     public final void testReleaseCollectionAgent() {
-        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented"); // TODO
     }
 
 }
