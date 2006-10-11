@@ -186,8 +186,29 @@ public class PollerFrontEndTest extends TestCase {
         m_frontEnd.checkConfig();
 
         verifyMocks();
-}
+    }
     
+    public void testStop() throws Exception {
+        
+        expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
+        
+        m_backEnd.pollerStopping(1);
+        
+        replayMocks();
+        
+        m_frontEnd.afterPropertiesSet();
+        
+        assertTrue(m_frontEnd.isStarted());
+        
+        m_frontEnd.stop();
+        
+        assertFalse(m_frontEnd.isStarted());
+
+
+        verifyMocks();
+    }
     
 
     @SuppressWarnings("unchecked")
