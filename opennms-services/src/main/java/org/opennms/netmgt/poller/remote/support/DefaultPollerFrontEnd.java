@@ -27,8 +27,6 @@ import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-import sun.security.action.GetLongAction;
-
 public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean {
 	
     private PollerBackEnd m_backEnd;
@@ -43,6 +41,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<ServicePollStateChangedListener>();
     private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<ConfigurationChangedListener>();
     private boolean m_initialized;
+    private boolean m_started;
 
     
     public void setPollerBackEnd(PollerBackEnd backEnd) {
@@ -75,6 +74,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
 
     private void initializePollState() {
         Date oldTime = (m_pollerConfiguration == null ? null : m_pollerConfiguration.getConfigurationTimestamp());
+        
+        if (!isStarted()) {
+            start();
+        }
+        
         m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
         
         int i = 0;
@@ -83,6 +87,12 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
         }
         
         fireConfigurationChange(oldTime, m_pollerConfiguration.getConfigurationTimestamp());
+    }
+
+    private void start() {
+        assertRegistered();
+        m_backEnd.pollerStarting(getMonitorId());
+        m_started = true;
     }
 
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
@@ -232,6 +242,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
 
     public void removePropertyChangeListener(PropertyChangeListener l) {
         m_propertyChangeListeners.remove(l);
+    }
+
+    public boolean isStarted() {
+        return m_started;
     }
     
     
