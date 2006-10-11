@@ -99,6 +99,8 @@ public class SimpleWebTable {
     public String toString() {
         StringBuffer buf = new StringBuffer();
         
+        buf.append("<h2>" + Util.htmlify(getTitle()) + "</h2>\n");
+
         buf.append("<table>\n");
 
         buf.append("  <tr>\n");
@@ -119,7 +121,7 @@ public class SimpleWebTable {
         for (List<Cell> cells : getRows()) {
             buf.append("  <tr>\n");
             for (Cell cell : cells) {
-                buf.append("    <tr style=\"" + cell.getStyleClass()
+                buf.append("    <td style=\"" + cell.getStyleClass()
                         + "\">\n");
                 if (cell.getLink() != null) {
                     buf.append("      <a href=\""
@@ -128,7 +130,7 @@ public class SimpleWebTable {
                 } else {
                     buf.append("      " + cell.getContent() + "\n");
                 }
-                buf.append("    </tr>\n");
+                buf.append("    </td>\n");
             }
             buf.append("  </tr>\n");
         }
