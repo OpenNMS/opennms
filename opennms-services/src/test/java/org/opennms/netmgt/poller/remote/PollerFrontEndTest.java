@@ -71,6 +71,8 @@ public class PollerFrontEndTest extends TestCase {
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
         expect(m_backEnd.getPollerConfiguration(1)).andReturn(new DemoPollerConfiguration()).atLeastOnce();
         
+        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        
         replayMocks();
         
         m_frontEnd.afterPropertiesSet();
@@ -95,6 +97,9 @@ public class PollerFrontEndTest extends TestCase {
         // since the poller is registered we immediately request the pollerConfig
         expect(m_backEnd.getPollerConfiguration(1)).andReturn(new DemoPollerConfiguration());
         
+        // expect the monitor to start
+        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        
         replayMocks();
         
         m_frontEnd.afterPropertiesSet();
@@ -109,6 +114,7 @@ public class PollerFrontEndTest extends TestCase {
         Date start = new Date(1200000000000L);
         
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        expect(m_backEnd.pollerStarting(1)).andReturn(true);
         expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
 
         replayMocks();
@@ -128,6 +134,7 @@ public class PollerFrontEndTest extends TestCase {
     public void testPoll() throws Exception {
         
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        expect(m_backEnd.pollerStarting(1)).andReturn(true);
         expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
         
         PollStatus up = PollStatus.available(1234);
@@ -158,6 +165,7 @@ public class PollerFrontEndTest extends TestCase {
     public void testConfigCheck() throws Exception {
         
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        expect(m_backEnd.pollerStarting(1)).andReturn(true);
         expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
         
         expect(m_backEnd.pollerCheckingIn(1, m_pollerConfiguration.getConfigurationTimestamp())).andReturn(true);
