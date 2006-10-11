@@ -3,6 +3,8 @@ package org.opennms.web.svclayer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.web.Util;
+
 /**
  * The idea of this class is to represent a simple table that has column headers
  * and rows.  
@@ -93,4 +95,46 @@ public class SimpleWebTable {
         public Cell addCell(Object cellContent, String cellStyle) {
             return addCell(cellContent, cellStyle, null);
         }
+        
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        
+        buf.append("<table>\n");
+
+        buf.append("  <tr>\n");
+        for (Cell cell : getColumnHeaders()) {
+            buf.append("    <th style=\"" + cell.getStyleClass()
+                    + "\">\n");
+            if (cell.getLink() != null) {
+                buf.append("      <a href=\""
+                        + Util.htmlify(cell.getLink()) + "\">"
+                        + cell.getContent() + "</a>\n");
+            } else {
+                buf.append("      " + cell.getContent() + "\n");
+            }
+            buf.append("    </th>\n");
+        }
+        buf.append("  </tr>\n");
+
+        for (List<Cell> cells : getRows()) {
+            buf.append("  <tr>\n");
+            for (Cell cell : cells) {
+                buf.append("    <tr style=\"" + cell.getStyleClass()
+                        + "\">\n");
+                if (cell.getLink() != null) {
+                    buf.append("      <a href=\""
+                            + Util.htmlify(cell.getLink()) + "\">"
+                            + cell.getContent() + "</a>\n");
+                } else {
+                    buf.append("      " + cell.getContent() + "\n");
+                }
+                buf.append("    </tr>\n");
+            }
+            buf.append("  </tr>\n");
+        }
+
+        buf.append("</table>\n");
+        
+        return buf.toString();
+    }
 }
