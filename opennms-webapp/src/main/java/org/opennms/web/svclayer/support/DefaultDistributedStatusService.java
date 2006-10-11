@@ -189,7 +189,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                  * have a warning state available, right now.
                  */
                 String status = "Normal";
-                if (monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
+                if (monitor == null || monitor.getLastCheckInTime() == null
+                        || monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
                     // XXX spec says "Red", which would be Critical
                     status = "Indeterminate";
                 } else {

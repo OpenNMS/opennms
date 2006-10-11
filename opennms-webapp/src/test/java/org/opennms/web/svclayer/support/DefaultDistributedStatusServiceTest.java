@@ -30,7 +30,9 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.test.ThrowableAnticipator;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.SimpleWebTable;
+import org.opennms.web.svclayer.SimpleWebTable.Cell;
 
 import junit.framework.TestCase;
 
@@ -43,20 +45,19 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private ApplicationDao m_applicationDao = createMock(ApplicationDao.class);
     private CategoryDao m_categoryDao = createMock(CategoryDao.class);
 
-    private OnmsMonitoringLocationDefinition m_locationDefinition;
-    private OnmsApplication m_application;
-    private OnmsLocationMonitor m_locationMonitor;
+    private OnmsMonitoringLocationDefinition m_locationDefinition1;
+    private OnmsMonitoringLocationDefinition m_locationDefinition2;
+    private OnmsMonitoringLocationDefinition m_locationDefinition3;
+    private OnmsLocationMonitor m_locationMonitor1;
+    private OnmsLocationMonitor m_locationMonitor2;
+    private OnmsLocationMonitor m_locationMonitor3;
+    private OnmsApplication m_application1;
+    private OnmsApplication m_application2;
     
     private Package m_pkg;
     private ServiceSelector m_selector;
     private Collection<OnmsMonitoredService> m_services;
-    private OnmsMonitoredService m_icmpService;
-    private OnmsMonitoredService m_dnsService;
-    private OnmsMonitoredService m_httpService;
-    private OnmsMonitoredService m_httpsService;
     private OnmsNode m_node;
-
-    private Set<OnmsMonitoredService> m_applicationServices;
         
     protected void setUp() {
         m_service.setPollerConfig(m_pollerConfig);
@@ -65,10 +66,16 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_service.setApplicationDao(m_applicationDao);
         m_service.setCategoryDao(m_categoryDao);
         
-        m_locationDefinition = makeOnmsMonitoringLocationDefinition();
-        m_application = makeOnmsApplication();
+        m_locationDefinition1 = new OnmsMonitoringLocationDefinition("Raleigh", "raleigh", "OpenNMS NC");
+        m_locationDefinition2 = new OnmsMonitoringLocationDefinition("Durham", "durham", "OpenNMS NC");
+        m_locationDefinition3 = new OnmsMonitoringLocationDefinition("Columbus", "columbus", "OpenNMS OH");
 
-        m_locationMonitor = new OnmsLocationMonitor();
+        m_application1 = new OnmsApplication();
+        m_application1.setLabel("Application 1");
+
+        m_locationMonitor1 = new OnmsLocationMonitor();
+        m_locationMonitor2 = new OnmsLocationMonitor();
+        m_locationMonitor3 = null; // Test the case where there is no monitor for this location
 
         m_pkg = new Package();
 
@@ -82,25 +89,22 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_services = new HashSet<OnmsMonitoredService>();
         
         m_node = new OnmsNode();
-        String ip = "1.2.3.4";
-        m_node.setLabel("some node");
+        String ip = "1.1.1.1";
+        m_node.setLabel("Node 1");
         
-        m_icmpService = new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("ICMP"));
-        m_services.add(m_icmpService);
-        
-        m_dnsService = new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("DNS"));
-        m_services.add(m_dnsService);
-        
-        m_httpService = new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("HTTP"));
-        m_services.add(m_httpService);
-        
-        m_httpsService = new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("HTTPS"));
-        m_services.add(m_httpsService);
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("ICMP")));
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("DNS")));
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("HTTP")));
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("HTTPS")));
 
-        m_applicationServices = new HashSet<OnmsMonitoredService>();
-        m_applicationServices.add(m_httpService);
-        m_applicationServices.add(m_httpsService);
-        m_application.setMemberServices(m_applicationServices);
+        Set<OnmsMonitoredService> applicationServices1 = new HashSet<OnmsMonitoredService>();
+        applicationServices1.add(findMonitoredService(m_services, ip, "HTTP"));
+        applicationServices1.add(findMonitoredService(m_services, ip, "HTTPS"));
+        m_application1.setMemberServices(applicationServices1);
+        
+        m_application2 = new OnmsApplication();
+        m_application2.setLabel("Application 2");
+        m_application2.setMemberServices(applicationServices1);
         
     }
     
@@ -108,7 +112,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("locationName cannot be null"));
         try {
-            m_service.findLocationSpecificStatus(null, makeOnmsApplication().getLabel());
+            m_service.findLocationSpecificStatus(null, m_application1.getLabel());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -119,7 +123,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("applicationLabel cannot be null"));
         try {
-            m_service.findLocationSpecificStatus(makeOnmsMonitoringLocationDefinition().getName(), null);
+            m_service.findLocationSpecificStatus(m_locationDefinition1.getName(), null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -132,8 +136,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         replayEverything();
         
         List<OnmsLocationSpecificStatus> status =
-            m_service.findLocationSpecificStatus(m_locationDefinition.getName(),
-                                                 m_application.getLabel());
+            m_service.findLocationSpecificStatus(m_locationDefinition1.getName(),
+                                                 m_application1.getLabel());
 
         verifyEverything();
         
@@ -148,38 +152,50 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_categoryDao.findByNode(m_node)).andReturn(null);
         
         replayEverything();
-        m_service.createStatusTable(m_locationDefinition.getName(),
-                                    m_application.getLabel());
+        m_service.createStatusTable(m_locationDefinition1.getName(),
+                                    m_application1.getLabel());
         
         verifyEverything();
     }
     
     public void testCreateFacilityStatusTable() {
-        Collection<OnmsMonitoringLocationDefinition> locationDefinitions =
+        List<OnmsMonitoringLocationDefinition> locationDefinitions =
             new LinkedList<OnmsMonitoringLocationDefinition>();
-        Collection<OnmsApplication> applications =
+        locationDefinitions.add(m_locationDefinition1);
+        locationDefinitions.add(m_locationDefinition2);
+        locationDefinitions.add(m_locationDefinition3);
+        
+        List<OnmsApplication> applications =
             new LinkedList<OnmsApplication>();
+        applications.add(m_application1);
+        applications.add(m_application2);
+        
         Collection<OnmsLocationSpecificStatus> statuses =
             new LinkedList<OnmsLocationSpecificStatus>();
         
         expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
         expect(m_applicationDao.findAll()).andReturn(applications);
         expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(statuses);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(m_locationMonitor1);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(m_locationMonitor2);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(m_locationMonitor3);
         
         replayEverything();
         SimpleWebTable table = m_service.createFacilityStatusTable();
         verifyEverything();
+        
+        System.out.print(table.toString());
     }
     
     public void expectEverything() {
-        expect(m_applicationDao.findByLabel("some application")).andReturn(m_application);
-        expect(m_locationMonitorDao.findMonitoringLocationDefinition("some location")).andReturn(m_locationDefinition);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition)).andReturn(m_locationMonitor);
-        expect(m_pollerConfig.getPackage("default-remote")).andReturn(m_pkg);
+        expect(m_applicationDao.findByLabel("Application 1")).andReturn(m_application1);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(m_locationMonitor1);
+        expect(m_pollerConfig.getPackage("raleigh")).andReturn(m_pkg);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
         expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
-        for (OnmsMonitoredService service : m_applicationServices) {
-            expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor, service)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor, service, PollStatus.available()));
+        for (OnmsMonitoredService service : m_application1.getMemberServices()) {
+            expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, service)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1, service, PollStatus.available()));
         }
     }
 
@@ -199,18 +215,20 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         verify(m_categoryDao);
     }
 
-
-    private OnmsApplication makeOnmsApplication() {
-        OnmsApplication application = new OnmsApplication();
-        application.setLabel("some application");
-        return application;
-    }
     
-    private OnmsMonitoringLocationDefinition makeOnmsMonitoringLocationDefinition() {
-        OnmsMonitoringLocationDefinition location = new OnmsMonitoringLocationDefinition();
-        location.setName("some location");
-        location.setPollingPackageName("default-remote");
-        return location;
+    public OnmsMonitoredService findMonitoredService(Collection<OnmsMonitoredService> services, String interfaceIp, String serviceName) {
+        for (OnmsMonitoredService service : services) {
+            if (interfaceIp.equals(service.getIpAddress())
+                    && serviceName.equals(service.getServiceName())) {
+                return service;
+            }
+        }
+        
+        fail("Could not find service \"" + serviceName + "\" on interface \""
+             + interfaceIp + "\"");
+        
+        // This will never be reached due to the above fail()
+        return null;
     }
 
 }
