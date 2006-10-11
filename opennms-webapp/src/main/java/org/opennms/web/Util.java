@@ -307,7 +307,7 @@ public abstract class Util extends Object {
 
         StringBuffer buffer = new StringBuffer();
 
-        ArrayList ignoreList = new ArrayList();
+        ArrayList<String> ignoreList = new ArrayList<String>();
         for (int i = 0; i < ignores.length; i++) {
             ignoreList.add(ignores[i]);
         }
@@ -431,7 +431,7 @@ public abstract class Util extends Object {
 
         StringBuffer buffer = new StringBuffer();
 
-        ArrayList ignoreList = new ArrayList();
+        ArrayList<String> ignoreList = new ArrayList<String>();
         for (int i = 0; i < ignores.length; i++) {
             ignoreList.add(ignores[i]);
         }
@@ -502,8 +502,8 @@ public abstract class Util extends Object {
         }
     }
 
-    public static Map getOrderedMap(String names[][]) {
-        TreeMap orderedMap = new TreeMap();
+    public static Map<String, String> getOrderedMap(String names[][]) {
+        TreeMap<String, String> orderedMap = new TreeMap<String, String>();
 
         for (int i = 0; i < names.length; i++) {
             orderedMap.put(names[i][1], names[i][0]);
