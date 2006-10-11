@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
     rrdRepository="@install.share.dir@/rrd/snmp/" >
-  <http-collection name="default">
+  <http-collection name="doc-count">
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:8928</rra>
       <rra>RRA:AVERAGE:0.5:12:8784</rra>
@@ -12,7 +12,7 @@
       <rra>RRA:MAX:0.5:12:8784</rra>
     </rrd>
     <uris>
-      <uri name="test-document-count">
+      <uri name="document-counts">
         <url path="/test/resources/httpcolltest.html"
              user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412" 
              matches=".*([0-9]+).*" response-range="100-399" >
