@@ -53,7 +53,7 @@ import org.xml.sax.InputSource;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class C3P0ConnectionFactory implements DataSource {
+public class C3P0ConnectionFactory implements ClosableDataSource {
     
 /*    private static final int DEFAULT_AQUIRE_INCREMENT = 5;
     private static final int DEFAULT_RETRY_ATTEMPTS = 1;
@@ -206,6 +206,10 @@ public class C3P0ConnectionFactory implements DataSource {
 
     public int getLoginTimeout() throws SQLException {
         return m_pool.getLoginTimeout();
+    }
+    
+    public void close() throws SQLException {
+        m_pool.close();
     }
 
 }

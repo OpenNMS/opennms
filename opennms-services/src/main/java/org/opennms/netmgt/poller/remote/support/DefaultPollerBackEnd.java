@@ -235,7 +235,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     public void checkforUnresponsiveMonitors() {
         
-        log().debug("Checking for Unresponsive monitors");
+        log().debug("Checking for Unresponsive monitors: UnresponsiveTimeout = "+m_unresponsiveTimeout);
         
         Date now = m_timeKeeper.getCurrentDate();
         Date earliestAcceptable = new Date(now.getTime() - m_unresponsiveTimeout);
@@ -249,7 +249,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
                 monitor.setStatus(MonitorStatus.UNRESPONSIVE);
                 m_locMonDao.update(monitor);
             } else {
-                log().debug("Monitor "+monitor.getName()+" last responded at "+monitor.getLastCheckInTime());
+                log().debug("Monitor "+monitor.getName()+"("+monitor.getStatus()+") last responded at "+monitor.getLastCheckInTime());
             }
         }
     }

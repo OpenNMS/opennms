@@ -4,7 +4,7 @@
  -->
 <database name="opennms" engine="postgresql">
   <driver class-name="org.postgresql.Driver"
-      url="jdbc:postgresql://localhost:5432/opennms">
+      url="jdbc:postgresql://localhost:5432/test">
   	<param name="user" value="opennms"/>
 	<param name="password" value="opennms"/>
   </driver>

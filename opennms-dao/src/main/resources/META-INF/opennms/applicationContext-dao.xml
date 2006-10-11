@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd">
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
    <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
      <property name="properties">
@@ -18,15 +18,9 @@
      <property name="location" value="${test.overridden.properties}" />
      <property name="order" value="2" />
    </bean>
-  
-	<bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
-	</bean>
+   
+   <bean id="dataSource" class="org.opennms.netmgt.config.DataSourceFactoryBean" />
 
-	<bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-datasource-factory">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.getInstance</value></property>
-	</bean>
-	
 	<bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
 	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
