@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project>
+  <parent>
+    <artifactId>opennms</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.3.2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-remote-poller</artifactId>
+  <name>OpenNMS Remote Poller</name>
+  <url>http://maven.apache.org</url>
+  <build>
+    <plugins>
+       <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.opennms.poller.remote.Main</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <!-- appendAssemblyId>false</appendAssemblyId -->
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+    </dependency>
+  </dependencies>
+</project>
