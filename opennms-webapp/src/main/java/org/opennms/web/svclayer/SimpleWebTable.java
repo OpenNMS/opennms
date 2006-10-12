@@ -17,28 +17,36 @@ public class SimpleWebTable {
 		private Object m_content;
 		private String m_styleClass;
 		private String m_link;
+                
 		public Cell() {}
+                
                 public Cell(Object content, String styleClass) {
                         m_content = content;
                         m_styleClass = styleClass;
                 }
+                
                 public Cell(Object content, String styleClass, String link) {
                         m_content = content;
                         m_styleClass = styleClass;
                         m_link = link;
                 }
+                
 		public Object getContent() {
 			return m_content;
 		}
+                
 		public void setContent(Object content) {
 			m_content = content;
 		}
+                
 		public String getStyleClass() {
 			return m_styleClass;
 		}
+                
 		public void setStyleClass(String styleClass) {
 			m_styleClass = styleClass;
 		}
+                
 		public String getLink() {
 			return m_link;
 		}
@@ -46,6 +54,41 @@ public class SimpleWebTable {
 		public void setLink(String link) {
 			m_link = link;
 		}
+                
+                @Override
+                public boolean equals(Object o) {
+                    if (o == null || !(o instanceof Cell)) {
+                        return false;
+                    }
+                    
+                    Cell c = (Cell) o;
+                    
+                    if ((m_content != null || c.m_content != null)
+                            && (m_content == null
+                                    || !m_content.equals(c.m_content))) { 
+                        return false;
+                    }
+                    
+                    if ((m_styleClass != null || c.m_styleClass != null)
+                            && (m_styleClass == null
+                                    || !m_styleClass.equals(c.m_styleClass))) { 
+                        return false;
+                    }
+                    
+                    if ((m_link != null || c.m_link != null)
+                            && (m_link == null
+                                    || !m_link.equals(c.m_link))) { 
+                        return false;
+                    }
+                    
+                    return true;
+                }
+                
+                @Override
+                public String toString() {
+                    return "Content: \"" + m_content + "\", styleClass: \""
+                        + m_styleClass + "\", link: \"" + m_link + "\"";
+                    }
 	}
 	
 	
