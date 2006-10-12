@@ -32,6 +32,9 @@ public class PollerTest extends TestCase {
 		
 		Set<PolledService> polledServices = Collections.singleton(polledService);
 
+        Poller poller = new Poller();
+
+        pollerFrontEnd.addConfigurationChangedListener(poller);
 		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
         expect(pollerFrontEnd.isRegistered()).andReturn(true);
 		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
@@ -39,7 +42,6 @@ public class PollerTest extends TestCase {
 		
 		replay(scheduler, pollService, pollerFrontEnd);
 		
-		Poller poller = new Poller();
 		poller.setScheduler(scheduler);
 		poller.setPollService(pollService);
 		poller.setPollerFrontEnd(pollerFrontEnd);
