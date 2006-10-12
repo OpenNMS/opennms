@@ -10,6 +10,7 @@
 	  <property name="service" ref="pollerBackEnd"/>
 	  <property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd"/>
 	  <property name="serviceName" value="pollerBackEnd"/>
+	  <property name="servicePort" value="1199"/>
 	  <property name="registryPort" value="1099"/>
 	</bean>
 	
