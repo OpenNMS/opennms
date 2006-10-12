@@ -84,18 +84,18 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     @SuppressWarnings("unchecked")
-    public Collection<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
+    public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
         
-        Collection<OnmsMonitoringLocationDefinition> onmsDefs = new ArrayList();
-        final Collection<LocationDef> locationDefCollection = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+        List<OnmsMonitoringLocationDefinition> onmsDefs = new ArrayList();
+        final List<LocationDef> locationDefCollection = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
         if (locationDefCollection != null) {
             onmsDefs = convertDefs(locationDefCollection);
         }
         return onmsDefs;
     }
     
-    private Collection<OnmsMonitoringLocationDefinition> convertDefs(Collection<LocationDef> defs) {
-        Collection<OnmsMonitoringLocationDefinition> onmsDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
+    private List<OnmsMonitoringLocationDefinition> convertDefs(List<LocationDef> defs) {
+        List<OnmsMonitoringLocationDefinition> onmsDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
         for (LocationDef def : defs) {
             OnmsMonitoringLocationDefinition onmsDef = new OnmsMonitoringLocationDefinition();
             onmsDef.setArea(def.getMonitoringArea());
