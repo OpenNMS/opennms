@@ -46,7 +46,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             findLocationSpecificStatus(locationName, applicationLabel);
         
         SimpleWebTable table = new SimpleWebTable();
-        table.setTitle(applicationLabel + " view from location " + locationName);
+        
+        table.setTitle("Distributed poller view for " + applicationLabel + " from " + locationName + " location");
+        
         table.addColumn("Category", "simpleWebTableHeader");
         table.addColumn("Node", "simpleWebTableHeader");
         //table.addColumn("Instance", "simpleWebTableHeader");
@@ -78,7 +80,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             } else {
                 table.addCell("", "simpleWebTableRowLabel");
             }
-            table.newRow();
         }
         
         return table;
@@ -156,6 +157,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Collection<OnmsLocationSpecificStatus> statuses =
             m_locationMonitorDao.getAllMostRecentStatusChanges();
         
+        table.setTitle("Distributed Poller Status Summary");
+        
         table.addColumn("Area", "simpleWebTableRowLabel");
         table.addColumn("Location", "simpleWebTableRowLabel");
         // XXX should sort by application label, first
@@ -209,7 +212,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
         }
         
-        table.newRow();
+        //table.newRow();
         
         return table;
     }
