@@ -130,6 +130,16 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    // XXX need to figure out what we should be doing here, if anything
+    public void XXXtestFindLocationSpecificStatusInvalidLocation() {
+        m_service.findLocationSpecificStatus("invalid location", m_application1.getLabel());
+    }
+    
+    // XXX need to figure out what we should be doing here, if anything
+    public void XXXtestFindLocationSpecificStatusInvalidApplication() {
+        m_service.findLocationSpecificStatus(m_locationDefinition1.getName(), "invalid application");
+    }
+    
     public void testFindLocationSpecificStatus() {
         expectEverything();
         
@@ -147,16 +157,17 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     public void testCreateStatus() {
         expectEverything();
         
-        // Once for each service that we display 
-        expect(m_categoryDao.findByNode(m_node)).andReturn(null);
-        expect(m_categoryDao.findByNode(m_node)).andReturn(null);
+        expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application1.getMemberServices().size());
         
         replayEverything();
-        m_service.createStatusTable(m_locationDefinition1.getName(),
-                                    m_application1.getLabel());
+        SimpleWebTable table =
+            m_service.createStatusTable(m_locationDefinition1.getName(),
+                                        m_application1.getLabel());
         
         verifyEverything();
-    }
+        
+        //System.out.print(table.toString());
+   }
     
     public void testCreateFacilityStatusTable() {
         List<OnmsMonitoringLocationDefinition> locationDefinitions =
