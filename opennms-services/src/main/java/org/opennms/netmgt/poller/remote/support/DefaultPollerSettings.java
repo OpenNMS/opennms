@@ -60,8 +60,6 @@ public class DefaultPollerSettings implements InitializingBean, PollerSettings {
 
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_configResource, "The configurationDir property must be set");
-        // ensure that this is a file resource since we need to save to it
-        m_configResource.getFile();
         
         if (m_configResource.exists()) {
             m_settings = PropertiesLoaderUtils.loadProperties(m_configResource);

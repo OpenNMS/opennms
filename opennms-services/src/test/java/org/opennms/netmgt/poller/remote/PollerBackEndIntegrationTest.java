@@ -117,7 +117,7 @@ public class PollerBackEndIntegrationTest extends
         
         m_backEnd.reportResult(locationMonitorId, serviceId, status);
         
-        assertEquals(1, queryForInt("select count(*) from location_specific_status_changes"));
+        assertEquals(1, queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", locationMonitorId));
         
         assertTrue(rrdFile.exists());
     }
