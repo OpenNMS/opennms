@@ -162,7 +162,11 @@ public class PollStatus {
     }
     
     public static PollStatus unknown() {
-    	return new PollStatus(SERVICE_UNKNOWN, null, -1L);
+        return unknown(null);
+    }
+    
+    public static PollStatus unknown(String reason) {
+        return new PollStatus(SERVICE_UNKNOWN, reason, -1L);
     }
     
     public static PollStatus unresponsive() {

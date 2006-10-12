@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -163,7 +164,7 @@ public class PollerBackEndTest extends TestCase {
     
     public void testGetMonitoringLocations() {
         
-        Collection<OnmsMonitoringLocationDefinition> locations = Collections.singleton(m_locationDefinition);
+        List<OnmsMonitoringLocationDefinition> locations = Collections.singletonList(m_locationDefinition);
         
         expect(m_locMonDao.findAllMonitoringLocationDefinitions()).andReturn(locations);
         

@@ -34,6 +34,7 @@ package org.opennms.netmgt.dao;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -50,7 +51,7 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
     
     OnmsLocationMonitor findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition);
     
-    Collection<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
+    List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
     
     OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(String monitoringLocationDefinitionName);
     
