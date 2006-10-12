@@ -36,6 +36,7 @@
 
 package org.opennms.netmgt.poller;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,11 +67,11 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class IPv4NetworkInterface implements NetworkInterface {
+public class IPv4NetworkInterface implements NetworkInterface, Serializable {
     /**
      * The map of attributes for this interface.
      */
-    private Map<String, Object> m_properties;
+    private transient Map<String, Object> m_properties;
 
     /**
      * Interface address

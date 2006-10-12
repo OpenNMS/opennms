@@ -42,13 +42,26 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     private MonitoredServiceDao m_monitoredServiceDao;
     private TransactionTemplate m_transTemplate;
     private String m_databaseName;
-    private JdbcTemplate m_jdbcTemplate;
+    
+    private boolean m_creatingDbOnce = false;
+    private boolean m_dbCreated = false;
+    private boolean m_dbPopulated = false;
+
+    protected JdbcTemplate jdbcTemplate;
+
+    
+    protected void setCreateDbOnce(boolean createDbOnce) {
+        m_creatingDbOnce = createDbOnce;
+    }
     
     protected void beforeSetUp() throws Exception {
-        if (m_databaseName == null) {
-            m_databaseName = "test";
+        if (!m_dbCreated || !m_creatingDbOnce) {
+            if (m_databaseName == null) {
+                m_databaseName = "test";
+            }
+            initDatabase(new File("../opennms-daemon/src/main/filtered/etc"));
+            m_dbCreated = true;
         }
-        initDatabase(new File("../opennms-daemon/src/main/filtered/etc"));
     }
     
     
@@ -56,7 +69,10 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     
     @Override
     protected void onSetUp() throws Exception {
-        populateDatabase();
+        if (!m_dbPopulated || !m_creatingDbOnce) {
+            populateDatabase();
+            m_dbPopulated = true;
+        }
     }
 
 
@@ -74,7 +90,9 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
         try {
             super.runTest();
         } finally {
-            setDirty();
+            if (!m_creatingDbOnce) {
+                setDirty();
+            }
         }
     }
 
@@ -83,11 +101,11 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     }
     
     public void setDataSource(DataSource dataSource) {
-        m_jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
     
     protected int queryForInt(String sql, Object... args) {
-       return m_jdbcTemplate.queryForInt(sql, args); 
+       return jdbcTemplate.queryForInt(sql, args); 
     }
     
     public void setTransactionTemplate(TransactionTemplate transTemplate) {
