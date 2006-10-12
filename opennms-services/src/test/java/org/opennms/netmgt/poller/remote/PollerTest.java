@@ -33,6 +33,7 @@ public class PollerTest extends TestCase {
 		Set<PolledService> polledServices = Collections.singleton(polledService);
 
 		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
+        expect(pollerFrontEnd.isRegistered()).andReturn(true);
 		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
 		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
 		
