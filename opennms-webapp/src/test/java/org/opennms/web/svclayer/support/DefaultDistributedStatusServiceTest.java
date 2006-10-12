@@ -3,13 +3,16 @@ package org.opennms.web.svclayer.support;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.opennms.netmgt.config.PollerConfig;
@@ -19,7 +22,6 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -30,7 +32,6 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.web.Util;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
 
@@ -58,6 +59,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private ServiceSelector m_selector;
     private Collection<OnmsMonitoredService> m_services;
     private OnmsNode m_node;
+
+    private String m_ip;
         
     protected void setUp() {
         m_service.setPollerConfig(m_pollerConfig);
@@ -84,26 +87,30 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         serviceNames.add("DNS");
         serviceNames.add("HTTP");
         serviceNames.add("HTTPS");
+        Collections.shuffle(serviceNames); // shuffle to test sorting
+
         m_selector = new ServiceSelector("IPADDR IPLIKE *.*.*.*", serviceNames);
         
-        m_services = new HashSet<OnmsMonitoredService>();
-        
         m_node = new OnmsNode();
-        String ip = "1.1.1.1";
+        m_ip = "1.1.1.1";
         m_node.setLabel("Node 1");
         
-        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("ICMP")));
-        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("DNS")));
-        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("HTTP")));
-        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(ip, m_node), new OnmsServiceType("HTTPS")));
+        // Can't shuffle since it's a set
+        m_services = new HashSet<OnmsMonitoredService>();
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("ICMP")));
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("DNS")));
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTP")));
+        m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTPS")));
 
+        // Can't shuffle since it's a set
         Set<OnmsMonitoredService> applicationServices1 = new HashSet<OnmsMonitoredService>();
-        applicationServices1.add(findMonitoredService(m_services, ip, "HTTP"));
-        applicationServices1.add(findMonitoredService(m_services, ip, "HTTPS"));
+        applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTP"));
+        applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTPS"));
         m_application1.setMemberServices(applicationServices1);
         
         m_application2 = new OnmsApplication();
         m_application2.setLabel("Application 2");
+        // XXX shuffle to verify sorting? create new list and do: Collections.shuffle(applicationServices2)
         m_application2.setMemberServices(applicationServices1);
         
     }
@@ -155,6 +162,13 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testCreateStatus() {
+        // We run five times to catch sorting differences (if we don't sort)
+        for (int i = 0; i < 5; i++) {
+            runTestCreateStatus();
+        }
+    }
+    
+    public void runTestCreateStatus() {
         expectEverything();
         
         expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application1.getMemberServices().size());
@@ -166,10 +180,116 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         verifyEverything();
         
-        //System.out.print(table.toString());
-   }
+        System.out.print(table.toString());
+        
+        SimpleWebTable expectedTable = new SimpleWebTable();
+        expectedTable.setTitle("Distributed poller view for Application 1 from Raleigh location");
+        
+        expectedTable.addColumn("Category", "simpleWebTableHeader");
+        expectedTable.addColumn("Node", "simpleWebTableHeader");
+        expectedTable.addColumn("Service", "simpleWebTableHeader");
+        expectedTable.addColumn("Status", "simpleWebTableHeader");
+        expectedTable.addColumn("Response Time", "simpleWebTableHeader");
+        
+        expectedTable.newRow();
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
+        expectedTable.addCell("HTTP", "simpleWebTableRowLabel");
+        expectedTable.addCell("Up", "simpleWebTableRowLabel");
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.newRow();
+        
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
+        expectedTable.addCell("HTTPS", "simpleWebTableRowLabel");
+        expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        
+        assertTableEquals(expectedTable, table);
+    }
+
     
+    public void testCreateStatusNoLocationMonitor() {
+        // We run five times to catch sorting differences (if we don't sort)
+        for (int i = 0; i < 5; i++) {
+            runTestCreateStatusNoLocationMonitor();
+        }
+    }
+
+    
+    public void runTestCreateStatusNoLocationMonitor() {
+        //expectEverything();
+        resetEverything();
+        
+        expect(m_applicationDao.findByLabel("Application 2")).andReturn(m_application2);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(m_locationMonitor3);
+        expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
+        expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
+        expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
+
+
+        // getMostRecentStatusChange shouldn't be called since m_locationMonitor3 == null
+        /*
+        OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
+        OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
+
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor3, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor3, httpService, PollStatus.available()));
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor3, httpsService)).andReturn(null);
+        */
+
+        
+        expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application2.getMemberServices().size());
+        
+        replayEverything();
+        SimpleWebTable table =
+            m_service.createStatusTable(m_locationDefinition3.getName(),
+                                        m_application2.getLabel());
+        
+        verifyEverything();
+        
+        System.out.print(table.toString());
+        
+        SimpleWebTable expectedTable = new SimpleWebTable();
+        expectedTable.setTitle("Distributed poller view for Application 2 from Columbus location");
+        
+        expectedTable.addColumn("Category", "simpleWebTableHeader");
+        expectedTable.addColumn("Node", "simpleWebTableHeader");
+        expectedTable.addColumn("Service", "simpleWebTableHeader");
+        expectedTable.addColumn("Status", "simpleWebTableHeader");
+        expectedTable.addColumn("Response Time", "simpleWebTableHeader");
+        
+        expectedTable.newRow();
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
+        expectedTable.addCell("HTTP", "simpleWebTableRowLabel");
+        expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.newRow();
+        
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
+        expectedTable.addCell("HTTPS", "simpleWebTableRowLabel");
+        expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
+        expectedTable.addCell("", "simpleWebTableRowLabel");
+        
+        assertTableEquals(expectedTable, table);
+    }
+
+    
+    /*
+     * XXX need to check sorting
+     */
     public void testCreateFacilityStatusTable() {
+        for (int i = 0; i < 5; i++) {
+            runTestCreateFacilityStatusTable();
+        }
+    }
+    
+    public void runTestCreateFacilityStatusTable() {
+        resetEverything();
+        
+        // No need to shuffle, since this is a list
         List<OnmsMonitoringLocationDefinition> locationDefinitions =
             new LinkedList<OnmsMonitoringLocationDefinition>();
         locationDefinitions.add(m_locationDefinition1);
@@ -180,6 +300,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
             new LinkedList<OnmsApplication>();
         applications.add(m_application1);
         applications.add(m_application2);
+        Collections.shuffle(applications);
         
         Collection<OnmsLocationSpecificStatus> statuses =
             new LinkedList<OnmsLocationSpecificStatus>();
@@ -196,18 +317,104 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         verifyEverything();
         
         //System.out.print(table.toString());
+        
+        SimpleWebTable expectedTable = new SimpleWebTable();
+        expectedTable.setTitle("Distributed Poller Status Summary");
+        expectedTable.addColumn("Area", "simpleWebTableRowLabel");
+        expectedTable.addColumn("Location", "simpleWebTableRowLabel");
+        expectedTable.addColumn("Application 1", "simpleWebTableRowLabel");
+        expectedTable.addColumn("Application 2", "simpleWebTableRowLabel");
+
+        expectedTable.newRow();
+        expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
+        expectedTable.addCell("Raleigh", "simpleWebTableRowLabel");
+        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Raleigh&application=Application+1");
+        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Raleigh&application=Application+2");
+        
+        expectedTable.newRow();
+        expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
+        expectedTable.addCell("Durham", "simpleWebTableRowLabel");
+        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+1");
+        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+2");
+        
+        expectedTable.newRow();
+        expectedTable.addCell("OpenNMS OH", "simpleWebTableRowLabel");
+        expectedTable.addCell("Columbus", "simpleWebTableRowLabel");
+        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+1");
+        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+2");
+
+        assertTableEquals(expectedTable, table);
     }
     
+    public void assertTableEquals(SimpleWebTable expectedTable, SimpleWebTable table) {
+        assertEquals("table title", expectedTable.getTitle(), table.getTitle());
+        
+        assertEquals("number of table columns headers", expectedTable.getColumnHeaders().size(), table.getColumnHeaders().size());
+        ListIterator<Cell> columnHeaderIterator = expectedTable.getColumnHeaders().listIterator();
+        for (Cell tableColumnHeader : table.getColumnHeaders()) {
+            assertEquals("column header " + (columnHeaderIterator.nextIndex() + 1), columnHeaderIterator.next(), tableColumnHeader);
+        }
+        
+        assertEquals("number of rows", expectedTable.getRows().size(), table.getRows().size());
+        
+        ListIterator<List<Cell>> expectedRowIterator = expectedTable.getRows().listIterator();
+        for (List<Cell> row : table.getRows()) {
+            List<Cell> expectedRow = expectedRowIterator.next();
+
+            assertEquals("row " + (expectedRowIterator.previousIndex() + 1) + " column count", expectedRow.size(), row.size());
+
+            ListIterator<Cell> expectedColumnIterator = expectedRow.listIterator();
+            for (Cell column : row) {
+                Cell expectedColumn = expectedColumnIterator.next();
+                
+                String rowColumn = "row "
+                    + (expectedRowIterator.previousIndex() + 1) + " column "
+                    + (expectedColumnIterator.previousIndex() + 1) + " "; 
+                
+                assertEquals(rowColumn + "content",
+                             expectedColumn.getContent(),
+                             column.getContent());
+                assertEquals(rowColumn + "styleClass",
+                             expectedColumn.getStyleClass(),
+                             column.getStyleClass());
+                assertEquals(rowColumn + "link",
+                             expectedColumn.getLink(),
+                             column.getLink());
+
+            }
+        }
+    }
+
+    public void resetEverything() {
+        reset(m_applicationDao);
+        reset(m_locationMonitorDao);
+        reset(m_pollerConfig);
+        reset(m_monitoredServiceDao);
+        reset(m_categoryDao);
+    }
+
     public void expectEverything() {
+        resetEverything();
+        
         expect(m_applicationDao.findByLabel("Application 1")).andReturn(m_application1);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(m_locationMonitor1);
         expect(m_pollerConfig.getPackage("raleigh")).andReturn(m_pkg);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
         expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
+
+
+        OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
+        OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
+
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1, httpService, PollStatus.available()));
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, httpsService)).andReturn(null);
+
+        /*
         for (OnmsMonitoredService service : m_application1.getMemberServices()) {
             expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, service)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1, service, PollStatus.available()));
         }
+        */
     }
 
     public void replayEverything() {

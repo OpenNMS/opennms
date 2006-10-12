@@ -2,6 +2,8 @@ package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -85,6 +87,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return table;
     }
 
+    /*
+     * XXX what do we do if any of the DAO calls return null, or do they
+     * throw DataAccessException?
+     */
     protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(String locationName, String applicationLabel) {
         if (locationName == null) {
             throw new IllegalArgumentException("locationName cannot be null");
@@ -115,9 +121,27 @@ public class DefaultDistributedStatusService implements DistributedStatusService
 
         List<OnmsLocationSpecificStatus> status = new LinkedList<OnmsLocationSpecificStatus>();
         
-        for (OnmsMonitoredService service : services) {
-            status.add(m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service));
+        List<OnmsMonitoredService> sortedServices = new ArrayList<OnmsMonitoredService>(services);
+        Collections.sort(sortedServices, new Comparator<OnmsMonitoredService>() {
+            public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
+                return o1.getServiceName().compareTo(o2.getServiceName());
+            }
+        });
+                                                                     
+        for (OnmsMonitoredService service : sortedServices) {
+            if (locationMonitor == null) {
+                status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("Distributed poller has never reported for this location")));
+            } else {
+                OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
+                if (currentStatus == null) {
+                    status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("No status recorded for this service from this location")));
+                } else {
+                    status.add(currentStatus);
+                }
+            }
         }
+        
+        
 
         return status;
     }
@@ -146,13 +170,26 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
     }
 
+    /*
+     * XXX what do we do if any of the DAO calls return null, or do they
+     * throw DataAccessException?
+     */
     public SimpleWebTable createFacilityStatusTable() {
         SimpleWebTable table = new SimpleWebTable();
         
-        Collection<OnmsMonitoringLocationDefinition> locationDefinitions =
+        List<OnmsMonitoringLocationDefinition> locationDefinitions =
             m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        
         Collection<OnmsApplication> applications =
             m_applicationDao.findAll();
+        
+        List<OnmsApplication> sortedApplications =
+            new ArrayList<OnmsApplication>(applications);
+        Collections.sort(sortedApplications, new Comparator<OnmsApplication>(){
+            public int compare(OnmsApplication o1, OnmsApplication o2) {
+                return o1.getLabel().compareTo(o2.getLabel());
+            }
+        });
         
         Collection<OnmsLocationSpecificStatus> statuses =
             m_locationMonitorDao.getAllMostRecentStatusChanges();
@@ -161,12 +198,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         table.addColumn("Area", "simpleWebTableRowLabel");
         table.addColumn("Location", "simpleWebTableRowLabel");
-        // XXX should sort by application label, first
-        for (OnmsApplication application : applications) {
+        for (OnmsApplication application : sortedApplications) {
             table.addColumn(application.getLabel(), "simpleWebTableRowLabel");
         }
         
-        // XXX should sort by area, then name, first
         for (OnmsMonitoringLocationDefinition locationDefinition : locationDefinitions) {
             OnmsLocationMonitor monitor = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
             
@@ -174,36 +209,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             table.addCell(locationDefinition.getArea(), "simpleWebTableRowLabel");
             table.addCell(locationDefinition.getName(), "simpleWebTableRowLabel");
             
-            for (OnmsApplication application : applications) {
-                Set<PollStatus> pollStatuses = new HashSet<PollStatus>();
-                for (OnmsMonitoredService service : application.getMemberServices()) {
-                    for (OnmsLocationSpecificStatus status : statuses) {
-                        if (status.getMonitoredService().equals(service)
-                                && status.getLocationMonitor().equals(monitor)) {
-                            pollStatuses.add(status.getPollResult());
-                        } else {
-                            pollStatuses.add(PollStatus.unknown());
-                        }
-                    }
-                }
+            for (OnmsApplication application : sortedApplications) {
+                String status = calculateCurrentStatus(monitor, application.getMemberServices(), statuses);
                 
-                /*
-                 * XXX We aren't doing anything for warning, because we don't
-                 * have a warning state available, right now.
-                 */
-                String status = "Normal";
-                if (monitor == null || monitor.getLastCheckInTime() == null
-                        || monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
-                    // XXX spec says "Red", which would be Critical
-                    status = "Indeterminate";
-                } else {
-                    for (PollStatus pollStatus : pollStatuses) {
-                        if (!pollStatus.isAvailable()) {
-                            status = "Critical";
-                            break;
-                        }
-                    }
-                }
                 
                 // XXX I really need to think about how to do the percentages
                 
@@ -217,7 +225,44 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return table;
     }
     
-    private String createDetailsPageUrl(OnmsMonitoringLocationDefinition locationDefinition,
+    public String calculateCurrentStatus(OnmsLocationMonitor monitor,
+            Set<OnmsMonitoredService> applicationServices,
+            Collection<OnmsLocationSpecificStatus> statuses) {
+        Set<PollStatus> pollStatuses = new HashSet<PollStatus>();
+        
+        for (OnmsMonitoredService service : applicationServices) {
+            for (OnmsLocationSpecificStatus status : statuses) {
+                if (status.getMonitoredService().equals(service)
+                        && status.getLocationMonitor().equals(monitor)) {
+                    pollStatuses.add(status.getPollResult());
+                } else {
+                    pollStatuses.add(PollStatus.unknown());
+                }
+            }
+        }
+        
+        /*
+         * XXX We aren't doing anything for warning, because we don't
+         * have a warning state available, right now.
+         */
+        if (monitor == null || monitor.getLastCheckInTime() == null
+                || monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
+            // XXX spec says "Red", which would be Critical
+            return "Indeterminate";
+        }
+        
+        for (PollStatus pollStatus : pollStatuses) {
+            if (!pollStatus.isAvailable()) {
+                return "Critical";
+            }
+        }
+        
+        return "Normal";
+    }
+
+    
+    private String createDetailsPageUrl(
+            OnmsMonitoringLocationDefinition locationDefinition,
             OnmsApplication application) {
 
         List<String> params = new ArrayList<String>(2);
