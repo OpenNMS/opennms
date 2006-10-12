@@ -6,9 +6,13 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +39,7 @@ import org.opennms.test.ThrowableAnticipator;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class DefaultDistributedStatusServiceTest extends TestCase {
@@ -180,7 +185,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         verifyEverything();
         
-        System.out.print(table.toString());
+        //System.out.print(table.toString());
         
         SimpleWebTable expectedTable = new SimpleWebTable();
         expectedTable.setTitle("Distributed poller view for Application 1 from Raleigh location");
@@ -227,17 +232,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
         expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
-
-
-        // getMostRecentStatusChange shouldn't be called since m_locationMonitor3 == null
-        /*
-        OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
-        OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
-
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor3, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor3, httpService, PollStatus.available()));
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor3, httpsService)).andReturn(null);
-        */
-
         
         expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application2.getMemberServices().size());
         
@@ -248,7 +242,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         verifyEverything();
         
-        System.out.print(table.toString());
+        //System.out.print(table.toString());
         
         SimpleWebTable expectedTable = new SimpleWebTable();
         expectedTable.setTitle("Distributed poller view for Application 2 from Columbus location");
@@ -276,16 +270,16 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         assertTableEquals(expectedTable, table);
     }
 
-    
-    /*
-     * XXX need to check sorting
-     */
     public void testCreateFacilityStatusTable() {
         for (int i = 0; i < 5; i++) {
             runTestCreateFacilityStatusTable();
         }
     }
     
+    
+    /*
+     * XXX need to check sorting
+     */
     public void runTestCreateFacilityStatusTable() {
         resetEverything();
         
@@ -305,15 +299,23 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         Collection<OnmsLocationSpecificStatus> statuses =
             new LinkedList<OnmsLocationSpecificStatus>();
         
+
+        Date startDate = new Date(2006 - 1900, 10 - 1, 12, 0, 0, 0);
+        Date endDate = new Date(2006 - 1900, 10 - 1, 13, 0, 0, 0);
+
+        
         expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
         expect(m_applicationDao.findAll()).andReturn(applications);
         expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(statuses);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(m_locationMonitor1);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(m_locationMonitor2);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(m_locationMonitor3);
-        
+        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statuses).times(6);
+
+
         replayEverything();
-        SimpleWebTable table = m_service.createFacilityStatusTable();
+        SimpleWebTable table = m_service.createFacilityStatusTable(startDate,
+                                                                   endDate);
         verifyEverything();
         
         //System.out.print(table.toString());
@@ -328,22 +330,62 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
         expectedTable.addCell("Raleigh", "simpleWebTableRowLabel");
-        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Raleigh&application=Application+1");
-        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Raleigh&application=Application+2");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+1");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+2");
         
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
         expectedTable.addCell("Durham", "simpleWebTableRowLabel");
-        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+1");
-        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+2");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+1");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+2");
         
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS OH", "simpleWebTableRowLabel");
         expectedTable.addCell("Columbus", "simpleWebTableRowLabel");
-        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+1");
-        expectedTable.addCell("Percentage not calculated", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+2");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Columbus&application=Application+1");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Columbus&application=Application+2");
 
         assertTableEquals(expectedTable, table);
+    }
+    
+    public void testPercentageCalculation() {
+        OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
+        OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
+
+        Collection<OnmsLocationSpecificStatus> statuses = new HashSet<OnmsLocationSpecificStatus>();
+        statuses.add(createStatus(m_locationMonitor1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statuses.add(createStatus(m_locationMonitor1, httpService, PollStatus.available(), "20061012-00:00:00"));
+        statuses.add(createStatus(m_locationMonitor1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statuses.add(createStatus(m_locationMonitor1, httpService, PollStatus.available(), "20061013-00:00:00"));
+
+        Date startDate = new Date(2006 - 1900, 10 - 1, 12, 0, 0, 0);
+        Date endDate = new Date(2006 - 1900, 10 - 1, 13, 0, 0, 0);
+
+        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statuses);
+
+
+        replayEverything();
+        String percentage =
+            m_service.calculatePercentageUptime(m_locationMonitor1,
+                                                m_application1.getMemberServices(),
+                                                startDate,
+                                                endDate);
+        verifyEverything();
+        
+        assertEquals("percentage", "75.000%", percentage);
+    }
+    
+    private OnmsLocationSpecificStatus createStatus(OnmsLocationMonitor locationMonitor,
+            OnmsMonitoredService service, PollStatus status, String timestamp) {
+        SimpleDateFormat f = new SimpleDateFormat("yyyyMMdd-HH:mm:ss");
+        try {
+            status.setTimestamp(f.parse(timestamp));
+        } catch (ParseException e) {
+            AssertionFailedError error = new AssertionFailedError("Could not parse timestamp \"" + timestamp + "\"");
+            error.initCause(e);
+            throw error;
+        }
+        return new OnmsLocationSpecificStatus(locationMonitor, service, status);
     }
     
     public void assertTableEquals(SimpleWebTable expectedTable, SimpleWebTable table) {
@@ -409,12 +451,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
         expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1, httpService, PollStatus.available()));
         expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, httpsService)).andReturn(null);
-
-        /*
-        for (OnmsMonitoredService service : m_application1.getMemberServices()) {
-            expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, service)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1, service, PollStatus.available()));
-        }
-        */
     }
 
     public void replayEverything() {

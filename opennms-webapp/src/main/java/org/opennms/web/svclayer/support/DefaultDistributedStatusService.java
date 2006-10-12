@@ -1,10 +1,12 @@
 package org.opennms.web.svclayer.support;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -174,18 +176,17 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      * XXX what do we do if any of the DAO calls return null, or do they
      * throw DataAccessException?
      */
-    public SimpleWebTable createFacilityStatusTable() {
+    public SimpleWebTable createFacilityStatusTable(Date startDate,
+            Date endDate) {
         SimpleWebTable table = new SimpleWebTable();
         
         List<OnmsMonitoringLocationDefinition> locationDefinitions =
             m_locationMonitorDao.findAllMonitoringLocationDefinitions();
         
-        Collection<OnmsApplication> applications =
-            m_applicationDao.findAll();
-        
         List<OnmsApplication> sortedApplications =
-            new ArrayList<OnmsApplication>(applications);
-        Collections.sort(sortedApplications, new Comparator<OnmsApplication>(){
+            new ArrayList<OnmsApplication>(m_applicationDao.findAll());
+        Collections.sort(sortedApplications,
+                         new Comparator<OnmsApplication>(){
             public int compare(OnmsApplication o1, OnmsApplication o2) {
                 return o1.getLabel().compareTo(o2.getLabel());
             }
@@ -211,11 +212,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             
             for (OnmsApplication application : sortedApplications) {
                 String status = calculateCurrentStatus(monitor, application.getMemberServices(), statuses);
-                
-                
-                // XXX I really need to think about how to do the percentages
-                
-                table.addCell("Percentage not calculated", status,
+                String percentage = calculatePercentageUptime(monitor, application.getMemberServices(), startDate, endDate);
+
+                table.addCell(percentage, status,
                               createDetailsPageUrl(locationDefinition, application));
             }
         }
@@ -224,6 +223,20 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         return table;
     }
+    
+    public String calculateCurrentStatusWithMonitor(
+            OnmsLocationMonitor monitor,
+            Set<OnmsMonitoredService> applicationServices,
+            Collection<OnmsLocationSpecificStatus> statuses) {
+        if (monitor == null || monitor.getLastCheckInTime() == null
+                || monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
+            // XXX spec says "Red", which would be Critical
+            return "Indeterminate";
+        }
+        
+        return calculateCurrentStatus(monitor, applicationServices, statuses);
+    }
+
     
     public String calculateCurrentStatus(OnmsLocationMonitor monitor,
             Set<OnmsMonitoredService> applicationServices,
@@ -236,21 +249,21 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                         && status.getLocationMonitor().equals(monitor)) {
                     pollStatuses.add(status.getPollResult());
                 } else {
+                    // XXX this doesn't seem right, but I'm too tired
                     pollStatuses.add(PollStatus.unknown());
                 }
             }
         }
         
+        return calculateStatus(pollStatuses);
+    }       
+    
+    public String calculateStatus(Collection<PollStatus> pollStatuses) {
         /*
          * XXX We aren't doing anything for warning, because we don't
-         * have a warning state available, right now.
+         * have a warning state available, right now.  Should unknown
+         * be a warning state?
          */
-        if (monitor == null || monitor.getLastCheckInTime() == null
-                || monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
-            // XXX spec says "Red", which would be Critical
-            return "Indeterminate";
-        }
-        
         for (PollStatus pollStatus : pollStatuses) {
             if (!pollStatus.isAvailable()) {
                 return "Critical";
@@ -260,7 +273,121 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return "Normal";
     }
 
-    
+    /**
+     * Calculate the percentage of time that all services are up for this
+     * application on this remote monitor.
+     * 
+     * @param monitor remote monitor to report on
+     * @param applicationServices services to report on
+     * @param startDate start date.  The report starts on this date.
+     * @param endDate end date.  The report ends the last millisecond prior
+     * this date.
+     * @return representation of the percentage uptime out to three decimal places
+     */
+    public String calculatePercentageUptime(OnmsLocationMonitor monitor,
+            Set<OnmsMonitoredService> applicationServices,
+            Date startDate, Date endDate) {
+        
+        Collection<OnmsLocationSpecificStatus> statuses =
+            m_locationMonitorDao.getStatusChangesBetween(startDate, endDate);
+
+        /*
+         * The methodology is as such:
+         * 1) Sort the status entries by their timestamp;
+         * 2) Create a Map of each monitored service with a default
+         *    PollStatus of unknown.
+         * 3) Iterate through the sorted list of status entries until
+         *    we hit a timestamp that is not within our time range or
+         *    run out of entries.
+         *    a) Along the way, update the status Map with the current
+         *       entry's status, and calculate the current status.
+         *    b) If the current timestamp is before the start time, store
+         *       the current status so we can use it once we cross over
+         *       into our time range and then continue.
+         *    c) If the previous status is normal, then count up the number
+         *       of milliseconds since the previous state change entry in
+         *       the time range (or the beginning of the range if this is
+         *       the first entry in within the time range), and add that
+         *       a counter of "normal" millseconds.
+         *    d) Finally, save the current date and status for later use.
+         * 4) Perform the same computation in 3c, except count the number
+         *    of milliseconds since the last state change entry (or the
+         *    start time if there were no entries) and the end time, and add
+         *    that to the counter of "normal" milliseconds.
+         * 5) Divide the "normal" milliseconds counter by the total number
+         *    of milliseconds in our time range and compute and return a
+         *    percentage.
+         */
+        
+        List<OnmsLocationSpecificStatus> sortedStatuses =
+            new ArrayList<OnmsLocationSpecificStatus>(statuses);
+        Collections.sort(sortedStatuses, new Comparator<OnmsLocationSpecificStatus>(){
+            public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
+                return o1.getPollResult().getTimestamp().compareTo(o2.getPollResult().getTimestamp());
+            }
+        });
+
+        HashMap<OnmsMonitoredService,PollStatus> serviceStatus =
+            new HashMap<OnmsMonitoredService,PollStatus>();
+        for (OnmsMonitoredService service : applicationServices) {
+            serviceStatus.put(service, PollStatus.unknown("No history for this service from this location"));
+        }
+        
+        float normalMilliseconds = 0f;
+        
+        Date lastDate = startDate;
+        String lastStatus = "Critical";
+        
+        for (OnmsLocationSpecificStatus status : sortedStatuses) {
+            if (!status.getLocationMonitor().equals(monitor)) {
+                continue;
+            }
+
+            Date currentDate = status.getPollResult().getTimestamp();
+
+            if (!currentDate.before(endDate)) {
+                // We're at or past the end date, so we're done processing
+                break;
+            }
+            
+            serviceStatus.put(status.getMonitoredService(), status.getPollResult());
+            String currentStatus = calculateStatus(serviceStatus.values());
+            
+            if (currentDate.before(startDate)) {
+                /*
+                 * We're not yet to a date that is inside our time period, so
+                 * we don't need to check the status and adjust the
+                 * normalMilliseconds variable, but we do need to save the
+                 * status so we have an up-to-date status when we cross the
+                 * start date.
+                 */
+                lastStatus = currentStatus;
+                continue;
+            }
+            
+            /*
+             * Because we *just* had a state change, we want to look at the
+             * value of the *last* status.
+             */
+            if ("Normal".equals(lastStatus)) {
+                long milliseconds = currentDate.getTime() - lastDate.getTime();
+                normalMilliseconds += milliseconds;
+            }
+            
+            lastDate = currentDate;
+            lastStatus = currentStatus;
+        }
+        
+        if ("Normal".equals(lastStatus)) {
+            long milliseconds = endDate.getTime() - lastDate.getTime();
+            normalMilliseconds += milliseconds;
+        }
+
+        float percentage = normalMilliseconds /
+            (endDate.getTime() - startDate.getTime()) * 100;
+        return new DecimalFormat("0.000").format((double) percentage) + "%";
+    }
+
     private String createDetailsPageUrl(
             OnmsMonitoringLocationDefinition locationDefinition,
             OnmsApplication application) {
