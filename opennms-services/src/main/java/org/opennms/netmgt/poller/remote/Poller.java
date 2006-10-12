@@ -1,5 +1,6 @@
 package org.opennms.netmgt.poller.remote;
 
+import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.Date;
 
@@ -11,7 +12,7 @@ import org.quartz.Trigger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class Poller implements InitializingBean, PollObserver {
+public class Poller implements InitializingBean, PollObserver, ConfigurationChangedListener {
 	
 	private PollService m_pollService;
 	private PollerFrontEnd m_pollerFrontEnd;
@@ -39,18 +40,26 @@ public class Poller implements InitializingBean, PollObserver {
 		assertNotNull(m_scheduler, "scheduler");
 		assertNotNull(m_pollService, "pollService");
 		assertNotNull(m_pollerFrontEnd, "pollerFrontEnd");
+        
+        m_pollerFrontEnd.addConfigurationChangedListener(this);
 		
-        if (m_pollerFrontEnd.isRegistered())
+        if (m_pollerFrontEnd.isRegistered()) {
             schedulePolls();
+        } else {
+            log().debug("Poller not yet registered");
+        }
 
 	}
 	
 	private void schedulePolls() throws Exception {
+        
+        log().debug("Enter schedulePolls");
 		
 		Collection<PolledService> polledServices = m_pollerFrontEnd.getPolledServices();
 
 		if (polledServices == null || polledServices.size() == 0) {
 			log().warn("No polling scheduled.");
+            log().debug("Exit schedulePolls");
 			return;
 		}
 
@@ -70,11 +79,14 @@ public class Poller implements InitializingBean, PollObserver {
 			jobDetail.setPolledService(polledService);
 			jobDetail.setPollerFrontEnd(m_pollerFrontEnd);
 			
+            log().debug("Scheduling job for "+polledService);
+            
 			m_scheduler.scheduleJob(jobDetail, pollTrigger);
 			
 			startTime += scheduleSpacing;
 		}
 		
+        log().debug("Exit schedulePolls");
 		
 	}
 
@@ -94,6 +106,15 @@ public class Poller implements InitializingBean, PollObserver {
 		System.err.println(new Date()+": Begin Poll for "+pollId);
 		
 	}
+
+    public void configurationChanged(PropertyChangeEvent e) {
+        try {
+            schedulePolls();
+        } catch (Exception ex) {
+            log().fatal("Unable to schedule polls!", ex);
+            throw new RuntimeException("Unable to schedule polls!");
+        }
+    }
 
 
 }

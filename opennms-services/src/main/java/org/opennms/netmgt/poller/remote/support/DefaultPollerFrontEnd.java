@@ -249,7 +249,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
     }
 
     public void stop() {
-        m_backEnd.pollerStopping(1);
+        m_backEnd.pollerStopping(getMonitorId());
         m_started = false;
     }
     

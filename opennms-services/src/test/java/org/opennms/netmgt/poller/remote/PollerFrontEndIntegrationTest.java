@@ -13,6 +13,8 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
 
     @Override
     protected void onSetUp() throws Exception {
+        super.onSetUp();
+        
         m_frontEndContext = new ClassPathXmlApplicationContext(
                 new String[] { 
                         "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
@@ -48,14 +50,6 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
 
     }
     
-//    public void setPollerFrontEnd(PollerFrontEnd frontEnd) {
-//        m_frontEnd = frontEnd;
-//    }
-//    
-//    public void setPollerSettings(PollerSettings settings) {
-//        m_settings = settings;
-//    }
-    
     public void testRegister() throws Exception {
        
         assertFalse(m_frontEnd.isRegistered());
@@ -63,17 +57,17 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
         m_frontEnd.register("RDU");
         
         assertTrue(m_frontEnd.isRegistered());
-        assertEquals(1, queryForInt("select count(*) from location_monitors where id=?", m_settings.getMonitorId()));
+        Integer monitorId = m_settings.getMonitorId();
+        assertEquals(1, queryForInt("select count(*) from location_monitors where id=?", monitorId));
         
         Thread.sleep(10000);
+        
+        // The monitor should not be marked unresponsive as it should be checking in with the server
+        assertEquals(0, queryForInt("select count(*) from location_monitors where status='UNRESPONSIVE' and id=?", monitorId));
+        
+        m_frontEnd.stop();
+        
+        assertTrue("Could not found any pollResults", 0 < queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
     }
     
-    public void testY() throws Exception {
-        
-        m_frontEnd.register("RDU");
-        
-     
-        
-    }
-
 }

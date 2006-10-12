@@ -5,8 +5,6 @@
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd">
 
 
-    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />
-    
     <bean name="HTTP" class="org.opennms.netmgt.poller.remote.ServiceMonitorFactoryBean">
       <property name="monitorClass" value="org.opennms.netmgt.poller.monitors.HttpMonitor" />
     </bean>
@@ -29,7 +27,23 @@
       <property name="pollService" ref="pollService" />
       <property name="pollerSettings" ref="pollerSettings" />
     </bean>
-
+    
+    <bean name="checkConfigJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+      <property name="targetObject" ref="pollerFrontEnd" />
+      <property name="targetMethod" value="checkConfig"/>
+    </bean>
+    
+    <bean id="configCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	  <property name="repeatInterval" value="1000" />
+	  <property name="jobDetail" ref="checkConfigJobDetail"/>
+	</bean>
+    
+    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	  <property name="triggers">
+	    <list><ref bean="configCheckTrigger"/></list>
+	  </property>
+    </bean>
+    
 	<bean name="poller" class="org.opennms.netmgt.poller.remote.Poller">
 	  <property name="scheduler" ref="scheduler" />
 	  <property name="pollService" ref="pollService" />

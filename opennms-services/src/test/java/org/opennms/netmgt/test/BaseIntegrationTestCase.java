@@ -70,6 +70,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     @Override
     protected void onSetUp() throws Exception {
         if (!m_dbPopulated || !m_creatingDbOnce) {
+            System.err.println("Populating Database");
             populateDatabase();
             m_dbPopulated = true;
         }
@@ -307,7 +308,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
         }
         
         assertTrue(runSql(m_databaseName, 
-                "CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN RETURN 1 = 1; END; ' LANGUAGE 'plpgsql';"));
+                "CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN RETURN true; END; ' LANGUAGE 'plpgsql';"));
     }
 
 
@@ -346,11 +347,13 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     }
     
     protected PrintStream getOut() {
-        return new PrintStream(new SinkStream());
+       return new PrintStream(new SinkStream());
+       //return System.out;
     }
     
     protected PrintStream getErr() {
         return new PrintStream(new SinkStream());
+        //return System.err;
     }
     
     
