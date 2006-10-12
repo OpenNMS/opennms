@@ -1,7 +1,10 @@
 package org.opennms.netmgt.poller.remote;
 
+import java.io.File;
+
 import org.opennms.netmgt.test.BaseIntegrationTestCase;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.FileSystemResource;
 
 public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
 
@@ -40,6 +43,10 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
 
     @Override
     protected String[] getConfigLocations() {
+        String configFile = "/tmp/remote-poller.configuration";
+        File config = new File(configFile);
+        config.delete();
+        System.setProperty("opennms.configuration.resource", configFile);
         System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
         return new String[] {

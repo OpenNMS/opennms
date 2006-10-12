@@ -91,7 +91,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
 
     private void start() {
         assertRegistered();
-        m_backEnd.pollerStarting(getMonitorId());
+        if (!m_backEnd.pollerStarting(getMonitorId())) {
+            m_pollerSettings.setMonitorId(null);
+            throw new IllegalStateException("Monitor no longers exists on server.  You need to reregister");
+        }
         m_started = true;
     }
 
