@@ -32,6 +32,10 @@ public class PollerBackEndIntegrationTest extends
     public void setSessionFactory(SessionFactory sessionFactory) {
         m_sessionFactory = sessionFactory;
     }
+    
+//    public void testWait() throws InterruptedException {
+//        Thread.sleep(6000000);
+//    }
    
     public void testRegister() {
         
