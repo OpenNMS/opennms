@@ -170,7 +170,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     }
 
     public void pollerStopping(int locationMonitorId) {
+        System.err.println("Looking up monitor "+locationMonitorId);
         OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+        System.err.println("Found monitor "+mon);
         mon.setStatus(MonitorStatus.STOPPED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);

@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -43,7 +44,7 @@ import javax.persistence.Transient;
  * @author brozow
  */
 @Embeddable
-public class PollStatus {
+public class PollStatus implements Serializable {
     
     /**
      * Status of the pollable object.
