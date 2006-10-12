@@ -70,6 +70,6 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
      * status change (so that status at the beginning of the period can be
      * determined).
      */
-    Collection<OnmsLocationSpecificStatus> getStatusChangesSince(Date date);
+    Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate);
     
 }

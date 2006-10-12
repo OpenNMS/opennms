@@ -316,7 +316,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         throw new IllegalArgumentException("This method hasn't yet been implemented");
     }
 
-    public Collection<OnmsLocationSpecificStatus> getStatusChangesSince(Date date) {
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate) {
         // XXX brozow/drv4doe: write this part. :-)
         throw new IllegalArgumentException("This method hasn't yet been implemented");
     }
