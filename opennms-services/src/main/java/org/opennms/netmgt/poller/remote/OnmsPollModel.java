@@ -1,9 +1,10 @@
 package org.opennms.netmgt.poller.remote;
 
+import java.io.Serializable;
 import java.util.Date;
 
 
-public class OnmsPollModel {
+public class OnmsPollModel implements Serializable {
 	
 	private long m_pollInterval;
     

@@ -20,7 +20,8 @@ public class PollerBackEndIntegrationTest extends
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
         return new String[] { 
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml"
+                "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
         };
     }
     

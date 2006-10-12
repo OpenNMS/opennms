@@ -1,5 +1,6 @@
 package org.opennms.netmgt.poller.remote;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
 
@@ -8,7 +9,7 @@ import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 
-public class PolledService implements MonitoredService {
+public class PolledService implements MonitoredService, Serializable {
     
     IPv4NetworkInterface m_netInterface;
     Map m_monitorConfiguration;

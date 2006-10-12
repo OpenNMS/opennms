@@ -36,6 +36,7 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -116,7 +117,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         return m_pollerConfig.getPackage(pollingPackageName);
     }
     
-    private static class SimplePollerConfiguration implements PollerConfiguration {
+    private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
         
         private Date m_timestamp;
         private PolledService[] m_polledServices;
