@@ -163,9 +163,18 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         if (mon == null) {
             return false;
         }
+        MonitorStatus oldStatus = mon.getStatus();
         mon.setStatus(MonitorStatus.STARTED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
+        
+        if (MonitorStatus.UNRESPONSIVE.equals(oldStatus)) {
+            // the monitor has reconnected!
+            EventBuilder eventBuilder = createEventBuilder(locationMonitorId, EventConstants.LOCATION_MONITOR_RECONNECTED_UEI);
+            m_eventIpcManager.sendNow(eventBuilder.getEvent());
+
+        }
+        
         return m_configurationTimestamp.after(currentConfigurationVersion);
     }
 
@@ -177,7 +186,18 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         mon.setStatus(MonitorStatus.STARTED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
+        
+        EventBuilder eventBuilder = createEventBuilder(locationMonitorId, EventConstants.LOCATION_MONITOR_STARTED_UEI);
+        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+        
         return true;
+    }
+
+    private EventBuilder createEventBuilder(int locationMonitorId, String uei) {
+        EventBuilder eventBuilder = new EventBuilder(uei)
+            .setSource("PollerBackEnd")
+            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, locationMonitorId);
+        return eventBuilder;
     }
 
     public void pollerStopping(int locationMonitorId) {
@@ -187,6 +207,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         mon.setStatus(MonitorStatus.STOPPED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
+        
+        EventBuilder eventBuilder = createEventBuilder(locationMonitorId, EventConstants.LOCATION_MONITOR_STOPPED_UEI);
+        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+
     }
 
     public int registerLocationMonitor(String monitoringLocationId) {
@@ -253,16 +277,12 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
             
             // if we don't know the current status only send an event if it is not up
             if (logicalStatusChanged(currentStatus, newStatus)) {
-                EventBuilder builder = new EventBuilder(
-                        newStatus.getPollResult().getStatusCode() == PollStatus.SERVICE_AVAILABLE
-                        ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
-                                : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI
-                );
-                builder.setSource("PollerBackEnd")
-                .setNodeid(newStatus.getMonitoredService().getNodeId().intValue())
-                .setInterface(newStatus.getMonitoredService().getIpAddress())
-                .setService(newStatus.getMonitoredService().getServiceName())
-                .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, newStatus.getLocationMonitor().getId().toString());
+                String uei = newStatus.getPollResult().isAvailable()
+                             ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
+                             : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
+                
+                EventBuilder builder = createEventBuilder(newStatus.getLocationMonitor().getId(), uei)
+                    .setMonitoredService(newStatus.getMonitoredService());
 
                 m_eventIpcManager.sendNow(builder.getEvent());
             }
@@ -296,6 +316,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
                 log().debug("Monitor "+monitor.getName()+" has stopped responding");
                 monitor.setStatus(MonitorStatus.UNRESPONSIVE);
                 m_locMonDao.update(monitor);
+                
+                EventBuilder eventBuilder = createEventBuilder(monitor.getId(), EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI);
+                m_eventIpcManager.sendNow(eventBuilder.getEvent());
+                
             } else {
                 log().debug("Monitor "+monitor.getName()+"("+monitor.getStatus()+") last responded at "+monitor.getLastCheckInTime());
             }

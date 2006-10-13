@@ -41,6 +41,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="location_specific_status_changes")
@@ -100,4 +101,9 @@ public class OnmsLocationSpecificStatus {
 	public void setPollResult(PollStatus newStatus) {
 		m_pollResult = newStatus;
 	}
+    
+    @Transient
+    public int getStatusCode() {
+        return m_pollResult.getStatusCode();
+    }
 }
