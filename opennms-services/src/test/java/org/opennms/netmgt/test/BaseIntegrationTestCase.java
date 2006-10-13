@@ -268,6 +268,18 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         
+        builder.addNode("google.com");
+        builder.addInterface("72.14.207.99").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
+        builder.addService(getServiceType("HTTP"));
+        getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
+        
+        builder.addNode("dave.opennms.com");
+        builder.addInterface("172.20.1.171").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
+        builder.addService(getServiceType("HTTP"));
+        getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
+
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
         event.setEventUei("uei.opennms.org/test");
