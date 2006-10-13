@@ -33,7 +33,6 @@
 package org.opennms.poller.remote;
 
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
