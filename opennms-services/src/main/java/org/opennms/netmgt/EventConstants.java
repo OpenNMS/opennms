@@ -476,6 +476,12 @@ public class EventConstants {
         * The scheduled-outages configuration was changed by the user via the web UI (or manually, for that matter)
         */
        public final static String SCHEDOUTAGES_CHANGED_EVENT_UEI = "uei.opennms.org/internal/schedOutagesChanged";
+       
+       
+       public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
+       public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
+
+
 
     //
     // end eventUEIs
@@ -731,6 +737,8 @@ public class EventConstants {
     public final static String PARM_PASSIVE_SERVICE_STATUS = "passiveStatus";
     public final static String PARM_PASSIVE_REASON_CODE = "passiveReasonCode";
 
+    public final static String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
+    
     //
     // End event parms
     //
