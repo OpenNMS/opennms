@@ -1,5 +1,8 @@
 package org.opennms.netmgt.utils;
 
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -43,6 +46,7 @@ public class EventBuilder {
         Value value = new Value();
         value.setContent(val);
         
+        
         Parm parm = new Parm();
         parm.setParmName(parmName);
         parm.setValue(value);
@@ -54,6 +58,28 @@ public class EventBuilder {
         
         m_event.getParms().addParm(parm);
         
+        return this;
+    }
+
+    public EventBuilder addParam(String parmName, int val) {
+        return addParam(parmName, Integer.toString(val));
+    }
+
+    public EventBuilder setNode(OnmsNode node) {
+        m_event.setNodeid(node.getId().longValue());
+        return this;
+    }
+    
+    public EventBuilder setIpInterface(OnmsIpInterface iface) {
+        m_event.setNodeid(iface.getNode().getId().longValue());
+        m_event.setInterface(iface.getIpAddress());
+        return this;
+    }
+    
+    public EventBuilder setMonitoredService(OnmsMonitoredService monitoredService) {
+        m_event.setNodeid(monitoredService.getNodeId().longValue());
+        m_event.setInterface(monitoredService.getIpAddress());
+        m_event.setService(monitoredService.getServiceName());
         return this;
     }
 

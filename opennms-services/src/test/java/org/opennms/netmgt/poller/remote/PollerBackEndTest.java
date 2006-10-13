@@ -9,7 +9,6 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
-import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +31,6 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -45,11 +43,9 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.netmgt.poller.remote.PollerFrontEndTest.PropertyChangeEventEquals;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.mock.MockUtil;
 import org.quartz.Scheduler;
 
 public class PollerBackEndTest extends TestCase {
@@ -427,6 +423,13 @@ public class PollerBackEndTest extends TestCase {
     
     public void testPollerStarting() {
         
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STARTED_UEI)
+            .setSource("PollerBackEnd")
+            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
+        
+        m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
+
+        
         expectLocationMonitorStatusChanged(MonitorStatus.STARTED);
         
         replayMocks();
@@ -455,6 +458,11 @@ public class PollerBackEndTest extends TestCase {
     
     public void testPollerStopping() {
 
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STOPPED_UEI)
+        .setSource("PollerBackEnd")
+        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
+    
+    m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
         expectLocationMonitorStatusChanged(MonitorStatus.STOPPED);
         
         replayMocks();
@@ -499,6 +507,13 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.findAll()).andReturn(Collections.singleton(m_locationMonitor));
         
         expect(m_timeKeeper.getCurrentDate()).andReturn(now);
+        
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI)
+            .setSource("PollerBackEnd")
+            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
+    
+        m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
+
 
         m_locMonDao.update(m_locationMonitor);
         expectLastCall().andAnswer(new IAnswer<Object>() {
@@ -517,6 +532,39 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.checkforUnresponsiveMonitors();
         
         verifyMocks();
+    }
+    
+    public void testMonitorReconnected() {
+        Date configDate = m_startTime;
+
+        m_locationMonitor.setStatus(MonitorStatus.UNRESPONSIVE);
+        expectLocationMonitorStatusChanged(MonitorStatus.STARTED);
+  
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_RECONNECTED_UEI)
+            .setSource("PollerBackEnd")
+            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
+    
+        m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
+
+        replayMocks();
+
+        assertFalse("Expect configs to be up to date", m_backEnd.pollerCheckingIn(1, configDate));
+
+        verifyMocks();
+        
+        expect(m_timeKeeper.getCurrentDate()).andReturn(new Date());
+        replayMocks();
+        m_backEnd.configurationUpdated();
+        verifyMocks();
+        
+        expectLocationMonitorStatusChanged(m_locationMonitor.getStatus());
+        
+        replayMocks();
+
+        assertTrue("Expect configs to be out of date", m_backEnd.pollerCheckingIn(1, configDate));
+        
+        verifyMocks();
+
     }
 
     private void verifyMocks() {
@@ -582,6 +630,7 @@ public class PollerBackEndTest extends TestCase {
             
             return (
                m_expected.getUei().equals(actual.getUei()) &&
+               nullSafeEquals(m_expected.getSource(), actual.getSource()) &&
                m_expected.getNodeid() == actual.getNodeid() &&
                nullSafeEquals(m_expected.getInterface(), actual.getInterface())  &&
                nullSafeEquals(m_expected.getService(), actual.getService()) &&
