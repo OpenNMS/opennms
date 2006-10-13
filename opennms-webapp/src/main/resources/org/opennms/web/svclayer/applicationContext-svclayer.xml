@@ -86,5 +86,24 @@
     <property name="viewDisplayDao" ref ="viewDisplayDao"/>
   </bean>
 
+  <!-- Distributed Status Service Status beans -->
+  
+  <bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+	<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-pollerConfig-factory">
+	<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
+  </bean>
+	
+  <bean id="applicationDao" class="org.opennms.web.svclayer.support.MockApplicationDao"/>
+  
+  <bean id="distributedStatusService" class="org.opennms.web.svclayer.support.DefaultDistributedStatusService">
+    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+    <property name="pollerConfig" ref="pollerConfig"/>
+    <property name="applicationDao" ref="applicationDao"/>
+    <property name="categoryDao" ref="categoryDao"/>
+  </bean>
   
 </beans>
