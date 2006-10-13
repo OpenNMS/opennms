@@ -114,11 +114,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
         String pollingPackageName = def.getPollingPackageName();
         
-        return m_pollerConfig.getPackage(pollingPackageName);
+        Package pkg = m_pollerConfig.getPackage(pollingPackageName);
+        if (pkg == null) {
+            throw new IllegalStateException("Package "+pollingPackageName+" does not exist as defined for monitoring location "+mon.getDefinitionName());
+        }
+        return pkg;
     }
     
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
         
+        private static final long serialVersionUID = 1L;
+
         private Date m_timestamp;
         private PolledService[] m_polledServices;
         
