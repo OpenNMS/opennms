@@ -153,6 +153,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         if (mon == null) {
             return false;
         }
+        mon.setStatus(MonitorStatus.STARTED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
         return m_configurationTimestamp.after(currentConfigurationVersion);

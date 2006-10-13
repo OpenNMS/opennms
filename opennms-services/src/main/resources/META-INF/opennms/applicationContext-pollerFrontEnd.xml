@@ -20,7 +20,7 @@
     <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.DemoPollerConfiguration" />
     
     <bean name="pollerSettings" class="org.opennms.netmgt.poller.remote.support.DefaultPollerSettings">
-      <property name="configurationResource" value="${opennms.configuration.resource}"/>
+      <property name="configurationResource" value="${opennms.poller.configuration.resource}"/>
     </bean>
 
     <bean name="pollerFrontEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd">
