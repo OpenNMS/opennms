@@ -142,7 +142,7 @@
             <rra>RRA:MIN:0.5:12:4464</rra>
             <rra>RRA:MAX:0.5:12:4464</rra>
         </rrd>
-		<service name="HTTP" interval="300000" user-defined="false" status="on">
+		<service name="HTTP" interval="30000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
             <parameter key="timeout" value="3000"/>
             <parameter key="port" value="80"/>
