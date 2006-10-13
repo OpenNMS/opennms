@@ -79,6 +79,19 @@
 			<value>displayResolvedOutages</value>
         </property>
 	</bean>
+
+
+  <bean name="/distributedStatusSummary.htm"
+		class="org.opennms.web.controller.DistributedStatusSummaryController">
+	<property name="distributedStatusService"
+			  ref="distributedStatusService" />
+  </bean>
+
+  <bean name="/distributedStatusDetails.htm"
+		class="org.opennms.web.controller.DistributedStatusDetailsController">
+	<property name="distributedStatusService"
+			  ref="distributedStatusService" />
+  </bean>
  
  
     
