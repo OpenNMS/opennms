@@ -194,8 +194,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     }
 
     private EventBuilder createEventBuilder(int locationMonitorId, String uei) {
-        EventBuilder eventBuilder = new EventBuilder(uei)
-            .setSource("PollerBackEnd")
+        EventBuilder eventBuilder = new EventBuilder(uei, "PollerBackEnd")
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, locationMonitorId);
         return eventBuilder;
     }

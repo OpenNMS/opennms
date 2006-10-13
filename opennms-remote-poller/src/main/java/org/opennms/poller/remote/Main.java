@@ -41,44 +41,79 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  */
 public class Main {
-		
-	public static void main(String[] args) {
+    
+    String[] m_args;
+    ClassPathXmlApplicationContext m_context;
+    PollerFrontEnd m_frontEnd;
+    String m_url;
+    String m_locationName;
+    
+    
+    private Main(String[] args) {
+        m_args = args;
+    }
+    
+    private void run() {
         
-		String[] configs = {
-				"classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
-				"classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml"
-		};
-		
-        final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(configs);
-        final PollerFrontEnd frontEnd = (PollerFrontEnd) ctx.getBean("pollerFrontEnd");
+        parseArguments();
+        
+        createAppContext();
+        
+        registerShutDownHook();
 
+        if (!m_frontEnd.isRegistered()) {
+            m_frontEnd.register(m_locationName);
+        }    
+                
         
+    }
+
+    private void parseArguments() {
+        if (m_args.length < 2) {
+            usage();
+        }
+        
+        m_url = m_args[0];
+        m_locationName = m_args[1];
+        
+    }
+
+    private void registerShutDownHook() {
         Thread shutdownHook = new Thread() {
             public void run() {
-                frontEnd.stop();
-                ctx.close();
+                m_frontEnd.stop();
+                m_context.close();
             }
         };
         Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
 
-        if (!frontEnd.isRegistered()) {
-            System.err.println("FrontEnd is NOT registered");
-            if (args.length < 1) {
-                usage();
-            }
-            
-            frontEnd.register(args[0]);
-        }    
-                
-
-	}
-
-    private static void usage() {
+    private void createAppContext() {
+        
+        System.setProperty("opennms.poller.server.url", m_url);
+        
+        String[] configs = {
+                "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml"
+        };
+        
+        m_context = new ClassPathXmlApplicationContext(configs);
+        m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
+    }
+		
+    private void usage() {
         System.err.println("The remote poller is not registered with the server");
         System.err.println("Register it by running the following:");
-        System.err.println("\tjava -jar opennms-remote-poller.jar <LocationName>");
+        System.err.println("\tjava -jar opennms-remote-poller.jar <serverUrl> <LocationName>");
         System.exit(1);
     }
+
+    public static void main(String[] args) {
+        
+        new Main(args).run();
+        
+	}
+
 
 
 }
