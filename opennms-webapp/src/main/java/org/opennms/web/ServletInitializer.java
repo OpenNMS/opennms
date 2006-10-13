@@ -39,6 +39,7 @@
 package org.opennms.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -116,9 +117,15 @@ public class ServletInitializer extends Object {
 
         if (factory == null) {
             try {
+                String propertiesResource = "/WEB-INF/configuration.properties";
                 // read the OpenNMS properties
                 Properties properties = new Properties(System.getProperties());
-                properties.load(context.getResourceAsStream("/WEB-INF/configuration.properties"));
+                InputStream configurationStream = context.getResourceAsStream(propertiesResource);
+                if (configurationStream == null) {
+                    throw new ServletException("Could not load properties from resource \'" + propertiesResource + "\'");
+                }
+                properties.load(configurationStream);
+                configurationStream.close();
 
                 Enumeration initParamNames = context.getInitParameterNames();
                 while (initParamNames.hasMoreElements()) {
