@@ -26,6 +26,7 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -73,6 +74,7 @@ public class PollerBackEndTest extends TestCase {
     private PollerConfig m_pollerConfig;
     private Scheduler m_scheduler;
     private TimeKeeper m_timeKeeper;
+    private EventIpcManager m_eventIpcManager;
     
     // helper objects used to respond from the mock objects
     private OnmsMonitoringLocationDefinition m_locationDefinition;
@@ -89,6 +91,7 @@ public class PollerBackEndTest extends TestCase {
     private OnmsLocationSpecificStatus m_dnsCurrentStatus;
 
     private Date m_startTime;
+
     
     protected void setUp() throws Exception {
         
@@ -100,12 +103,14 @@ public class PollerBackEndTest extends TestCase {
         m_pollerConfig = createMock(PollerConfig.class);
         m_scheduler = createMock(Scheduler.class);
         m_timeKeeper = createMock(TimeKeeper.class);
+        m_eventIpcManager = createMock(EventIpcManager.class);
         
         m_backEnd = new DefaultPollerBackEnd();
         m_backEnd.setLocationMonitorDao(m_locMonDao);
         m_backEnd.setMonitoredServiceDao(m_monSvcDao);
         m_backEnd.setPollerConfig(m_pollerConfig);
         m_backEnd.setTimeKeeper(m_timeKeeper);
+        m_backEnd.setEventIpcManager(m_eventIpcManager);
         m_backEnd.setUnresponsiveTimeout(UNRESPONSIVE_TIMEOUT);
         
         m_startTime = new Date(System.currentTimeMillis() - 1000);

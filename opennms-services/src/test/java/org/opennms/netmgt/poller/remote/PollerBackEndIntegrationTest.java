@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Collection;
 
 import org.hibernate.SessionFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
@@ -16,6 +19,7 @@ public class PollerBackEndIntegrationTest extends
     
     @Override
     protected String[] getConfigLocations() {
+        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
         System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
         return new String[] { 

@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -77,6 +78,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;
+    private EventIpcManager m_eventIpcManager;
     private PollerConfig m_pollerConfig;
     private TimeKeeper m_timeKeeper;
     private int m_unresponsiveTimeout;
@@ -204,6 +206,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");
         Assert.notNull(m_pollerConfig, "The PollerConfig must be set");
         Assert.notNull(m_timeKeeper, "The timeKeeper must be set");
+        Assert.notNull(m_eventIpcManager, "The eventIpcManager must be set");
         Assert.state(m_unresponsiveTimeout > 0, "the unresponsiveTimeout property must be set");
         
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
@@ -219,6 +222,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     public void setPollerConfig(PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
+    }
+    
+    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+        m_eventIpcManager = eventIpcManager;
     }
 
     public void reportResult(int locationMonitorID, int serviceId, PollStatus pollResult) {
