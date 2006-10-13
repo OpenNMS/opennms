@@ -1,6 +1,5 @@
 package org.opennms.web.performance;
 
-import java.io.File;
 import java.util.List;
 
 public interface GraphResourceType {
