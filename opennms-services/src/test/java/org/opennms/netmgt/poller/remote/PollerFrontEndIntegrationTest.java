@@ -2,6 +2,9 @@ package org.opennms.netmgt.poller.remote;
 
 import java.io.File;
 
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.test.BaseIntegrationTestCase;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -43,6 +46,7 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
 
     @Override
     protected String[] getConfigLocations() {
+        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
         String configFile = "/tmp/remote-poller.configuration";
         File config = new File(configFile);
         config.delete();
