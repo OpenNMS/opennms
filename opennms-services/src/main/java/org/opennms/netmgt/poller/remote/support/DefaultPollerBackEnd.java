@@ -48,6 +48,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeKeeper;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -66,6 +67,7 @@ import org.opennms.netmgt.poller.remote.OnmsPollModel;
 import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.utils.EventBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -241,9 +243,38 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         
         OnmsLocationSpecificStatus currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
         
-        if (currentStatus == null || !currentStatus.getPollResult().equals(pollResult)) {
+        processStatusChange(currentStatus, newStatus);
+    }
+
+    private void processStatusChange(OnmsLocationSpecificStatus currentStatus, OnmsLocationSpecificStatus newStatus) {
+        
+        if (databaseStatusChanged(currentStatus, newStatus)) {
             m_locMonDao.saveStatusChange(newStatus);
+            
+            // if we don't know the current status only send an event if it is not up
+            if (logicalStatusChanged(currentStatus, newStatus)) {
+                EventBuilder builder = new EventBuilder(
+                        newStatus.getPollResult().getStatusCode() == PollStatus.SERVICE_AVAILABLE
+                        ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
+                                : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI
+                );
+                builder.setSource("PollerBackEnd")
+                .setNodeid(newStatus.getMonitoredService().getNodeId().intValue())
+                .setInterface(newStatus.getMonitoredService().getIpAddress())
+                .setService(newStatus.getMonitoredService().getServiceName())
+                .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, newStatus.getLocationMonitor().getId().toString());
+
+                m_eventIpcManager.sendNow(builder.getEvent());
+            }
         }
+    }
+
+    private boolean logicalStatusChanged(OnmsLocationSpecificStatus currentStatus, OnmsLocationSpecificStatus newStatus) {
+        return currentStatus != null || (currentStatus == null && !newStatus.getPollResult().isAvailable());
+    }
+
+    private boolean databaseStatusChanged(OnmsLocationSpecificStatus currentStatus, OnmsLocationSpecificStatus newStatus) {
+        return currentStatus == null || !currentStatus.getPollResult().equals(newStatus.getPollResult());
     }
 
     public void setTimeKeeper(TimeKeeper timeKeeper) {
