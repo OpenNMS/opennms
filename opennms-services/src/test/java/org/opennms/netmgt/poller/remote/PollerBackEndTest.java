@@ -400,7 +400,7 @@ public class PollerBackEndTest extends TestCase {
         
         Date configDate = m_startTime;
 
-        expectLocationMonitorStatusChanged(m_locationMonitor.getStatus());
+        expectLocationMonitorStatusChanged(MonitorStatus.STARTED);
         
         replayMocks();
 
