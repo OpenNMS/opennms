@@ -227,11 +227,8 @@ public class PollerBackEndTest extends TestCase {
         
         expect(m_locMonDao.getMostRecentStatusChange(m_locationMonitor, m_httpService)).andReturn(m_httpCurrentStatus);
         
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI);
-        eventBuilder.setSource("PollerBackEnd")
-            .setNodeid(m_httpService.getNodeId())
-            .setInterface(m_httpService.getIpAddress())
-            .setService(m_httpService.getServiceName())
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "PollerBackEnd")
+            .setMonitoredService(m_httpService)
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, "1");
         
         
@@ -269,14 +266,10 @@ public class PollerBackEndTest extends TestCase {
         
         m_pollerConfig.saveResponseTimeData(m_locationDefinition.getName()+'-'+m_locationMonitor.getId(), m_dnsService, 1234, m_package);
 
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI);
-        eventBuilder.setSource("PollerBackEnd")
-            .setNodeid(m_dnsService.getNodeId())
-            .setInterface(m_dnsService.getIpAddress())
-            .setService(m_dnsService.getServiceName())
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "PollerBackEnd")
+            .setMonitoredService(m_dnsService)
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, "1");
-        
-        
+       
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
         
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
@@ -333,11 +326,8 @@ public class PollerBackEndTest extends TestCase {
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
 
         // expect a status change if the node is now down and we didn't know before
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI);
-        eventBuilder.setSource("PollerBackEnd")
-            .setNodeid(m_dnsService.getNodeId())
-            .setInterface(m_dnsService.getIpAddress())
-            .setService(m_dnsService.getServiceName())
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "PollerBackEnd")
+            .setMonitoredService(m_dnsService)
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, "1");
         
         
@@ -423,8 +413,7 @@ public class PollerBackEndTest extends TestCase {
     
     public void testPollerStarting() {
         
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STARTED_UEI)
-            .setSource("PollerBackEnd")
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STARTED_UEI, "PollerBackEnd")
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
         
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
@@ -458,9 +447,8 @@ public class PollerBackEndTest extends TestCase {
     
     public void testPollerStopping() {
 
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STOPPED_UEI)
-        .setSource("PollerBackEnd")
-        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_STOPPED_UEI, "PollerBackEnd")
+            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
     
     m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
         expectLocationMonitorStatusChanged(MonitorStatus.STOPPED);
@@ -508,8 +496,7 @@ public class PollerBackEndTest extends TestCase {
         
         expect(m_timeKeeper.getCurrentDate()).andReturn(now);
         
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI)
-            .setSource("PollerBackEnd")
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI, "PollerBackEnd")
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
     
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
@@ -540,8 +527,7 @@ public class PollerBackEndTest extends TestCase {
         m_locationMonitor.setStatus(MonitorStatus.UNRESPONSIVE);
         expectLocationMonitorStatusChanged(MonitorStatus.STARTED);
   
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_RECONNECTED_UEI)
-            .setSource("PollerBackEnd")
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_RECONNECTED_UEI, "PollerBackEnd")
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
     
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));

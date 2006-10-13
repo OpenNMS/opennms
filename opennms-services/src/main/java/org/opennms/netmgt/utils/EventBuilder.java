@@ -1,5 +1,8 @@
 package org.opennms.netmgt.utils;
 
+import java.util.Date;
+
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -12,13 +15,27 @@ public class EventBuilder {
     
     private Event m_event;
 
-    public EventBuilder(String uei) {
+    public EventBuilder(String uei, String source) {
         m_event = new Event();
         m_event.setUei(uei);
+        Date date = new Date();
+        setTime(date);
+        setCreationTime(date);
+        setSource(source);
     }
 
     public Event getEvent() {
         return m_event;
+    }
+    
+    public EventBuilder setTime(Date date) {
+       m_event.setTime(EventConstants.formatToString(date));
+       return this;
+    }
+    
+    public EventBuilder setCreationTime(Date date) {
+        m_event.setCreationTime(EventConstants.formatToString(date));
+        return this;
     }
 
     public EventBuilder setSource(String source) {
