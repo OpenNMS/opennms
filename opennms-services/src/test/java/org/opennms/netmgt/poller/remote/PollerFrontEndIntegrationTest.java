@@ -1,11 +1,13 @@
 package org.opennms.netmgt.poller.remote;
 
 import java.io.File;
+import java.util.Properties;
 
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.test.BaseIntegrationTestCase;
+import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 
@@ -25,9 +27,18 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
                 new String[] { 
                         "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
                         "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
-                }
+                },
+                false
         );
         
+        Properties props = new Properties();
+        props.setProperty("configCheckTrigger.repeatInterval", "1000");
+        
+        PropertyOverrideConfigurer testPropertyConfigurer = new PropertyOverrideConfigurer();
+        testPropertyConfigurer.setProperties(props);
+        m_frontEndContext.addBeanFactoryPostProcessor(testPropertyConfigurer);
+        
+        m_frontEndContext.refresh();
         m_frontEnd = (PollerFrontEnd)m_frontEndContext.getBean("pollerFrontEnd");
         m_settings = (PollerSettings)m_frontEndContext.getBean("pollerSettings");
         
@@ -73,7 +84,6 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
         
         Thread.sleep(10000);
         
-        // The monitor should not be marked unresponsive as it should be checking in with the server
         assertEquals(0, queryForInt("select count(*) from location_monitors where status='UNRESPONSIVE' and id=?", monitorId));
         
         m_frontEnd.stop();
