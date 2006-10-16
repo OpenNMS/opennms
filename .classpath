@@ -10,7 +10,7 @@
 	<classpathentry excluding="**/classlist" kind="src" path="src/web/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
-	<classpathentry kind="lib" path="lib/castor-0.9.3.9.jar"/>
+	<classpathentry sourcepath="/Users/brozow/distributions/castor-1.0.1/src/main/java" kind="lib" path="lib/castor-0.9.3.9.jar"/>
 	<classpathentry kind="lib" path="lib/avalon-framework-4.0.jar"/>
 	<classpathentry kind="lib" path="lib/batik.jar"/>
 	<classpathentry kind="lib" path="lib/bsf220.jar"/>
@@ -43,6 +43,7 @@
 	<classpathentry kind="lib" path="lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="lib/imap.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
+	<classpathentry kind="lib" path="lib/c3p0-0.9.0-pre5.jar"/>
 	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.0.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jradius-client.jar"/>

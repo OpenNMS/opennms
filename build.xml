@@ -199,6 +199,7 @@ your distribution.
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
+    <pathelement path="${packaged.lib.dir}/c3p0-0.9.0-pre5.jar"/>
     <pathelement path="/System/Library/Java"/>
   </path>
 
@@ -289,6 +290,8 @@ your distribution.
   	<include name="mailapi.jar" />
   	<include name="pop3.jar" />
   	<include name="smtp.jar" />
+    <include name="c3p0-0.9.0-pre5.jar"/>
+
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
