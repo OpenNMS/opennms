@@ -194,7 +194,7 @@
 	var loading=0;
 	
 	//string containing a string form of the current map saved. this is used to test if the map is changed
-	var savedMapString; 
+	var savedMapString=new String(); 
 	
 	//global selectionLists for NODES and MAPS
 	var selectedMapElemInList=0;
