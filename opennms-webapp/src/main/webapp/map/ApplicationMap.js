@@ -99,7 +99,7 @@ function getMapString()
 			  // because, all changes can't be saved from the user (non admin)
 		return "";
 	}
-	var query="Nodes=";
+	var query=new String("Nodes=");
 	var count=0;
 	
 	//construct the query to post to the servlet. (nodes are formatted as follows: id1,x1,y1-id2,x2,y2 ...) 
@@ -962,45 +962,8 @@ function openDownloadedMap(data) {
 				mapHistoryIndex = 0;
 				
 			}else{
-				//save the mapid in the map history
-				var found=false;
-				for(i in mapHistory){
-					if(mapHistory[i]==currentMapId){
-						found=true;
-						mapHistoryIndex=parseInt(i);
-					}
-				}
-				if(currentMapId!=NEW_MAP && !found){
-					if(mapHistory.length==0){
-						mapHistory.push(currentMapId);
-						mapHistoryName.push(currentMapName);
-						mapHistoryIndex = 0;
-					}else{
-						//alert("mapHistoryIndex="+(mapHistoryIndex));
-						++mapHistoryIndex;
-						var firstPart = mapHistory.slice(0,mapHistoryIndex);
-						var secondPart = mapHistory.slice(mapHistoryIndex);
-						var center = new Array();
-						center.push(currentMapId);
-						firstPart=firstPart.concat(center,secondPart);
-						mapHistory=firstPart;
-						/*for(ind in mapHistory){
-							alert(ind+" "+mapHistory[ind]);
-						}*/
-
-
-						firstPart = mapHistoryName.slice(0,mapHistoryIndex);
-						secondPart = mapHistoryName.slice(mapHistoryIndex);
-						center = new Array();
-						center.push(currentMapName);
-						firstPart=firstPart.concat(center,secondPart);
-						mapHistoryName=firstPart;
-						/*for(ind in mapHistoryName){
-							alert(ind+" "+mapHistoryName[ind]);
-						}*/	
-					}
-
-				}
+				//save the map in the map history
+				saveMapInHistory();
 				viewMapInfo();
 				menuSvgDocument.getElementById("history").getStyle().setProperty('display', 'inline');				
 			}
@@ -1238,45 +1201,7 @@ function viewSaveResponse(data) {
 			"</text>",menuSvgDocument));
 			enableMenu();			
 			//save the map in the map history
-			var found=false;
-			for(i in mapHistory){
-				if(mapHistory[i]==currentMapId){
-					found=true;
-					mapHistoryIndex=parseInt(i);
-				}
-			}
-			if(currentMapId!=NEW_MAP && !found){
-				if(mapHistory.length==0){
-					mapHistory.push(currentMapId);
-					mapHistoryName.push(currentMapName);
-					mapHistoryIndex = 0;
-				}else{
-					//alert("mapHistoryIndex="+(mapHistoryIndex));
-					++mapHistoryIndex;
-					var firstPart = mapHistory.slice(0,mapHistoryIndex);
-					var secondPart = mapHistory.slice(mapHistoryIndex);
-					var center = new Array();
-					center.push(currentMapId);
-					firstPart=firstPart.concat(center,secondPart);
-					mapHistory=firstPart;
-					/*for(ind in mapHistory){
-						alert(ind+" "+mapHistory[ind]);
-					}*/
-
-
-					firstPart = mapHistoryName.slice(0,mapHistoryIndex);
-					secondPart = mapHistoryName.slice(mapHistoryIndex);
-					center = new Array();
-					center.push(currentMapName);
-					firstPart=firstPart.concat(center,secondPart);
-					mapHistoryName=firstPart;
-					/*for(ind in mapHistoryName){
-						alert(ind+" "+mapHistoryName[ind]);
-					}*/	
-				}
-
-			}
-			
+			saveMapInHistory();
 		}else{
 			saveMap2(packet, totalPackets); 
 		}
@@ -1647,7 +1572,7 @@ function analizeRefreshNodesResponse(data) {
 	map.render();
 	//reloadGrid();
 	menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
-//	savedMapString=getMapString();
+	savedMapString=getMapString();
 	enableMenu();
 		
 	startRefreshNodesTime();
@@ -1663,6 +1588,49 @@ function refreshMapElements()
 		}
 		map.render();
 	}
-}		
+}
+
+//save the mapid and mapname in the map history
+function saveMapInHistory(){
+	var found=false;
+	for(i in mapHistory){
+		if(mapHistory[i]==currentMapId){
+			found=true;
+			mapHistoryIndex=parseInt(i);
+			mapHistoryName[mapHistoryIndex]=currentMapName;
+		}
+	}
+	if(currentMapId!=NEW_MAP && !found){
+		if(mapHistory.length==0){
+			mapHistory.push(currentMapId);
+			mapHistoryName.push(currentMapName);
+			mapHistoryIndex = 0;
+		}else{
+			//alert("mapHistoryIndex="+(mapHistoryIndex));
+			++mapHistoryIndex;
+			var firstPart = mapHistory.slice(0,mapHistoryIndex);
+			var secondPart = mapHistory.slice(mapHistoryIndex);
+			var center = new Array();
+			center.push(currentMapId);
+			firstPart=firstPart.concat(center,secondPart);
+			mapHistory=firstPart;
+			/*for(ind in mapHistory){
+				alert(ind+" "+mapHistory[ind]);
+			}*/
+
+
+			firstPart = mapHistoryName.slice(0,mapHistoryIndex);
+			secondPart = mapHistoryName.slice(mapHistoryIndex);
+			center = new Array();
+			center.push(currentMapName);
+			firstPart=firstPart.concat(center,secondPart);
+			mapHistoryName=firstPart;
+			/*for(ind in mapHistoryName){
+				alert(ind+" "+mapHistoryName[ind]);
+			}*/	
+		}
+
+	}
+}
 		
 		

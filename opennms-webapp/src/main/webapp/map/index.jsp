@@ -1,4 +1,4 @@
-<!--
+<%--
  
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,7 +32,7 @@
 //      http://www.opennms.com/
 //
 
---> 
+--%> 
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.map.db.MapMenu,org.opennms.web.map.view.*, org.opennms.web.acegisecurity.Authentication"%>
 
