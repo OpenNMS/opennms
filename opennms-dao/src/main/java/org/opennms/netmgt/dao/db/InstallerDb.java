@@ -1709,6 +1709,8 @@ public class InstallerDb {
                    + " WITH ENCODING='UNICODE'");
         st.execute("GRANT ALL ON DATABASE " + m_databaseName
                    + " TO " + m_user);
+        
+        st.close();
     }
     
     public void addIndexesForTable(String table) throws SQLException {
