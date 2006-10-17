@@ -24,10 +24,11 @@ import org.opennms.netmgt.poller.remote.PollerSettings;
 import org.opennms.netmgt.poller.remote.ServicePollState;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean {
+public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean, DisposableBean {
 	
     private PollerBackEnd m_backEnd;
     private PollService m_pollService;
@@ -67,7 +68,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
         }
         
 	}
-
+    
+    public void destroy() throws Exception {
+        stop();
+    }
+    
     private void assertInitialized() {
         Assert.isTrue(m_initialized, "afterProperties set has not been called");
     }
@@ -255,7 +260,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean 
         m_backEnd.pollerStopping(getMonitorId());
         m_started = false;
     }
-    
+
     
 
 }
