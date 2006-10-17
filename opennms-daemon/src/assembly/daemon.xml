@@ -26,6 +26,10 @@
       <directory>target/classes/contrib</directory>
       <outputDirectory>contrib</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>target/classes/logs</directory>
+      <outputDirectory>logs</outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
