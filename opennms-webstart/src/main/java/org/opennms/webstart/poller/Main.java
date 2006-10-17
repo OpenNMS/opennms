@@ -32,8 +32,7 @@
 
 package org.opennms.webstart.poller;
 
-import org.opennms.netmgt.poller.remote.PollerView;
-import org.springframework.context.ApplicationContext;
+import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -42,19 +41,65 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  */
 public class Main {
-		
-	public static void main(String[] args) {
-		
-		String[] configs = {
-				"classpath:/META-INF/opennms/applicationContext-ws-gui.xml",
-				"classpath:/META-INF/opennms/applicationContext-ws-svclayer.xml"
-		};
-		
-        ApplicationContext ctx = new ClassPathXmlApplicationContext(configs);
-        PollerView gui = (PollerView) ctx.getBean("pollerView");
-        gui.showView();
+    
+    String[] m_args;
+    ClassPathXmlApplicationContext m_context;
+    PollerFrontEnd m_frontEnd;
+    String m_url;
+    String m_locationName;
+    
+    
+    private Main(String[] args) {
+        m_args = args;
+    }
+    
+    private void run() {
+        
+        parseArguments();
+        
+        createAppContext();
+        
+        registerShutDownHook();
 
-	}
+    }
+
+    private void parseArguments() {
+        if (m_args.length < 1) {
+            usage();
+        }
+        
+        m_url = m_args[0];
+        
+    }
+
+    private void registerShutDownHook() {
+        m_context.registerShutdownHook();
+    }
+
+    private void createAppContext() {
+        
+        System.setProperty("opennms.poller.server.url", m_url);
+        
+        String[] configs = {
+                "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-ws-gui.xml"
+        };
+        
+        m_context = new ClassPathXmlApplicationContext(configs);
+        m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
+    }
+        
+    private void usage() {
+        System.err.println("\tjava -jar opennms-webstart.jar <serverUrl>");
+        System.exit(1);
+    }
+
+    public static void main(String[] args) {
+        
+        new Main(args).run();
+        
+    }
 
 
 }
