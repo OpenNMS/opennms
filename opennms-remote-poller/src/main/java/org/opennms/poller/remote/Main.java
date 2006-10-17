@@ -81,7 +81,6 @@ public class Main {
     private void registerShutDownHook() {
         Thread shutdownHook = new Thread() {
             public void run() {
-                m_frontEnd.stop();
                 m_context.close();
             }
         };
