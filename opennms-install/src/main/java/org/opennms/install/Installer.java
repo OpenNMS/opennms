@@ -145,7 +145,11 @@ public class Installer {
                                     m_pg_user, m_pg_pass);
         m_installerDb.setDataSource(opennmsDataSource);
 
-        m_installerDb.addColumnReplacements();
+        /*
+         * Everything needs to use the administrative data source until
+         * we verify that the opennms database is created below (and where
+         * we create it if it doesn't already exist).
+         */
 
         // XXX Check Tomcat version?
 
@@ -178,6 +182,10 @@ public class Installer {
                 m_installerDb.databaseAddDB();
             }
         }
+        
+        // We can now use the opennms database
+        
+        m_installerDb.addColumnReplacements();
 
         if (m_fix_constraint) {
             m_installerDb.fixConstraint(m_fix_constraint_name,
