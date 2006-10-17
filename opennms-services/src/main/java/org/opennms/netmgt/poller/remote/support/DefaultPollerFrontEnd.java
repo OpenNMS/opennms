@@ -70,7 +70,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
 	}
     
     public void destroy() throws Exception {
-        stop();
+        if (isRegistered()) {
+            stop();
+        }
     }
     
     private void assertInitialized() {
