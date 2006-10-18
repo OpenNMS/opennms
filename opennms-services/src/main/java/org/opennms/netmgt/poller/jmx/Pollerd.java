@@ -46,6 +46,8 @@ import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.poller.Poller;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 
 public class Pollerd implements PollerdMBean {
     public final static String LOG4J_CATEGORY = "OpenNMS.Pollers";
@@ -55,23 +57,25 @@ public class Pollerd implements PollerdMBean {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
 
-        Category log = ThreadCategory.getInstance();
         try {
             PollerConfigFactory.init();
             PollOutagesConfigFactory.init();
             DataSourceFactory.init();
+            RrdUtils.initialize();
         } catch (MarshalException e) {
-            log.error("Could not unmarshall configuration", e);
+            log().error("Could not unmarshall configuration", e);
         } catch (ValidationException e) {
-            log.error("validation error ", e);
+            log().error("validation error ", e);
         } catch (IOException e) {
-            log.error("IOException: ", e);
+            log().error("IOException: ", e);
         } catch (ClassNotFoundException e) {
-            log.error("Unable to locate class ", e);
+            log().error("Unable to locate class ", e);
         } catch (SQLException e) {
-            log.error("SQLException: ", e);
+            log().error("SQLException: ", e);
         } catch (PropertyVetoException e) {
-            log.error("PropertyVetoException: ", e);
+            log().error("PropertyVetoException: ", e);
+        } catch (RrdException e) {
+            log().error("RrdException: ", e);
         }
         
         // XXX why don't we throw an exception and stop?
@@ -87,6 +91,10 @@ public class Pollerd implements PollerdMBean {
         poller.init();
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance();
+    }
+    
     public void start() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
