@@ -184,8 +184,6 @@ public class Installer {
         }
         
         // We can now use the opennms database
-        
-        m_installerDb.addColumnReplacements();
 
         if (m_fix_constraint) {
             m_installerDb.fixConstraint(m_fix_constraint_name,
@@ -206,7 +204,10 @@ public class Installer {
             // should we be using createFunctions instead?
             m_installerDb.addStoredProcedures();
 
+            m_installerDb.addColumnReplacements();
             m_installerDb.createTables();
+            m_installerDb.closeColumnReplacements();
+            
             //createIndexes();
             // createFunctions(m_cfunctions); // Unused, not in create.sql
             // createLanguages(); // Unused, not in create.sql
@@ -235,11 +236,8 @@ public class Installer {
             m_installerDb.updateIplike();
         }
 
-        if (m_update_database || m_update_iplike || m_update_unicode
-                || m_do_inserts) {
-            m_installerDb.closeConnection();
-            m_installerDb.closeAdminConnection();
-        }
+        m_installerDb.closeConnection();
+        m_installerDb.closeAdminConnection();
 
         if (m_update_database) {
             createConfiguredFile();
