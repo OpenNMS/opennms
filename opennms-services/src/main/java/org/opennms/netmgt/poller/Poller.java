@@ -691,24 +691,23 @@ public class Poller extends AbstractServiceDaemon {
 
     private boolean testCriticalPath(String[] criticalPath) {
         //TODO: Generalize the service
-        Category log = ThreadCategory.getInstance(getClass());
         InetAddress addr = null;
-	boolean result = true;
+        boolean result = true;
         try {
             addr = InetAddress.getByName(criticalPath[0]);
         } catch (UnknownHostException e ) {
-            log.error("failed to convert string address to InetAddress " + criticalPath[0]);
+            log().error("failed to convert string address to InetAddress " + criticalPath[0]);
             return true;
         }
-	try {
+        try {
             IcmpPlugin p = new IcmpPlugin();
-            Map map = new HashMap();
+            Map<String, Integer> map = new HashMap<String, Integer>();
             map.put("retry", new Integer(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
             map.put("timeout", new Integer(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
 
-	    result = p.isProtocolSupported(addr, map);
+            result = p.isProtocolSupported(addr, map);
         } catch (IOException e) {
-            log.error("IOException when testing critical path " + e);
+            log().error("IOException when testing critical path " + e);
         }
         return result;
     }
