@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -36,7 +38,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
     
     private PollerConfiguration m_pollerConfiguration;
     
-    private Map<Integer, ServicePollState> m_pollState = new HashMap<Integer, ServicePollState>();
+    private Map<Integer, ServicePollState> m_pollState = new LinkedHashMap<Integer, ServicePollState>();
 
 	private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
     private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<ServicePollStateChangedListener>();
@@ -261,6 +263,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
     public void stop() {
         m_backEnd.pollerStopping(getMonitorId());
         m_started = false;
+    }
+
+    public List<ServicePollState> getPollerPollState() {
+        return new LinkedList<ServicePollState>(m_pollState.values());
     }
 
     

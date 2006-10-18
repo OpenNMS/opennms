@@ -3,6 +3,7 @@ package org.opennms.netmgt.poller.remote;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
@@ -11,7 +12,7 @@ public interface PollerFrontEnd {
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
 
 	public Collection<PolledService> getPolledServices();
-
+    
     /**
      * Is the poller currently registered with the server.
      * @return true if and only if the server has been registered
@@ -61,6 +62,7 @@ public interface PollerFrontEnd {
     public ServicePollState getServicePollState(int polledServiceId);
 
 
+    public List<ServicePollState> getPollerPollState();
     /**
      * Register a listener to listen for events indication a change
      * in the poller configuration
