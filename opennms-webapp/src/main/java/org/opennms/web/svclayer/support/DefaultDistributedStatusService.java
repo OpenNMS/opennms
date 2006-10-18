@@ -108,7 +108,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         OnmsApplication application =
             m_applicationDao.findByLabel(applicationLabel);
 
-        OnmsLocationMonitor locationMonitor = m_locationMonitorDao.findByLocationDefinition(location);
+        Collection<OnmsLocationMonitor> locationMonitors =
+            m_locationMonitorDao.findByLocationDefinition(location);
 
         Package pkg = m_pollerConfig.getPackage(location.getPollingPackageName());
 
@@ -131,14 +132,17 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         });
                                                                      
         for (OnmsMonitoredService service : sortedServices) {
-            if (locationMonitor == null) {
-                status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("Distributed poller has never reported for this location")));
-            } else {
-                OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
-                if (currentStatus == null) {
-                    status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("No status recorded for this service from this location")));
+            // XXX this is a hack, we need to compute aggregate values for all monitors
+            for (OnmsLocationMonitor locationMonitor : locationMonitors) {
+                if (locationMonitor == null) {
+                    status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("Distributed poller has never reported for this location")));
                 } else {
-                    status.add(currentStatus);
+                    OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
+                    if (currentStatus == null) {
+                        status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("No status recorded for this service from this location")));
+                    } else {
+                        status.add(currentStatus);
+                    }
                 }
             }
         }
@@ -192,8 +196,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
         });
         
-        Collection<OnmsLocationSpecificStatus> statuses =
+        Collection<OnmsLocationSpecificStatus> mostRecentStatuses =
             m_locationMonitorDao.getAllMostRecentStatusChanges();
+        
+        Collection<OnmsLocationSpecificStatus> statusesWithinPeriod =
+            m_locationMonitorDao.getStatusChangesBetween(startDate, endDate);
+
         
         table.setTitle("Distributed Poller Status Summary");
         
@@ -204,39 +212,82 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
         
         for (OnmsMonitoringLocationDefinition locationDefinition : locationDefinitions) {
-            OnmsLocationMonitor monitor = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
+            Collection<OnmsLocationMonitor> monitors =
+                m_locationMonitorDao.findByLocationDefinition(locationDefinition);
             
             table.newRow();
             table.addCell(locationDefinition.getArea(), "simpleWebTableRowLabel");
             table.addCell(locationDefinition.getName(), "simpleWebTableRowLabel");
             
             for (OnmsApplication application : sortedApplications) {
-                String status = calculateCurrentStatus(monitor, application.getMemberServices(), statuses);
-                String percentage = calculatePercentageUptime(monitor, application.getMemberServices(), startDate, endDate);
+                /*
+                 *  XXX this is totally wrong.... we need to add a single cell
+                 *  for each application composed of the status for all
+                 *  monitors
+                 */
+                //for (OnmsLocationMonitor monitor : monitors) {
+                //}
+                String status =
+                    calculateCurrentStatus(monitors,
+                                           application.getMemberServices(),
+                                           mostRecentStatuses);
 
+                String percentage =
+                    calculatePercentageUptime(monitors,
+                                              application.getMemberServices(),
+                                              statusesWithinPeriod,
+                                              startDate, endDate);
+                
                 table.addCell(percentage, status,
                               createDetailsPageUrl(locationDefinition, application));
             }
         }
         
-        //table.newRow();
-        
         return table;
     }
     
-    public String calculateCurrentStatusWithMonitor(
-            OnmsLocationMonitor monitor,
+    public String calculateCurrentStatus(
+            Collection<OnmsLocationMonitor> monitors,
             Set<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
-        if (monitor == null || monitor.getLastCheckInTime() == null
-                || monitor.getLastCheckInTime().before(new Date(System.currentTimeMillis() - 300000))) {
-            // XXX spec says "Red", which would be Critical
-            return "Indeterminate";
+        int goodMonitors = 0;
+        int badMonitors = 0;
+        Date timeOut = new Date(System.currentTimeMillis() - 300000);
+        
+        for (OnmsLocationMonitor monitor : monitors) {
+            if (monitor == null || monitor.getLastCheckInTime() == null
+                    || monitor.getLastCheckInTime().before(timeOut)) {
+                continue;
+            }
+            
+            String status = calculateCurrentStatus(monitor,
+                                                   applicationServices,
+                                                   statuses);
+            
+            // FIXME: "Normal", etc. should be done with static variables
+            if ("Normal".equals(status)) {
+                goodMonitors++;
+            } else {
+                badMonitors++;
+            }
         }
         
-        return calculateCurrentStatus(monitor, applicationServices, statuses);
+        if (goodMonitors == 0 && badMonitors == 0) {
+            return "Indeterminate"; // No current responses
+        } else if (goodMonitors != 0 && badMonitors == 0) {
+            return "Normal"; // No bad responses
+        } else if (goodMonitors == 0 && badMonitors != 0) {
+            return "Critical"; // All bad responses
+        } else if (goodMonitors != 0 && badMonitors != 0){
+            return "Warning"; // Some bad responses
+        } else {
+            throw new IllegalStateException("Shouldn't have gotten here. "
+                                            + "good monitors = "
+                                            + goodMonitors
+                                            + ", bad monitors = "
+                                            + badMonitors);
+        }
     }
-
     
     public String calculateCurrentStatus(OnmsLocationMonitor monitor,
             Set<OnmsMonitoredService> applicationServices,
@@ -244,14 +295,17 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Set<PollStatus> pollStatuses = new HashSet<PollStatus>();
         
         for (OnmsMonitoredService service : applicationServices) {
+            boolean foundIt = false;
             for (OnmsLocationSpecificStatus status : statuses) {
                 if (status.getMonitoredService().equals(service)
                         && status.getLocationMonitor().equals(monitor)) {
                     pollStatuses.add(status.getPollResult());
-                } else {
-                    // XXX this doesn't seem right, but I'm too tired
-                    pollStatuses.add(PollStatus.unknown());
+                    foundIt = true;
+                    break;
                 }
+            }
+            if (!foundIt) {
+                pollStatuses.add(PollStatus.unknown());
             }
         }
         
@@ -284,13 +338,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      * this date.
      * @return representation of the percentage uptime out to three decimal places
      */
-    public String calculatePercentageUptime(OnmsLocationMonitor monitor,
+    public String calculatePercentageUptime(
+            Collection<OnmsLocationMonitor> monitors,
             Set<OnmsMonitoredService> applicationServices,
+            Collection<OnmsLocationSpecificStatus> statuses,
             Date startDate, Date endDate) {
-        
-        Collection<OnmsLocationSpecificStatus> statuses =
-            m_locationMonitorDao.getStatusChangesBetween(startDate, endDate);
-
         /*
          * The methodology is as such:
          * 1) Sort the status entries by their timestamp;
@@ -339,7 +391,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         String lastStatus = "Critical";
         
         for (OnmsLocationSpecificStatus status : sortedStatuses) {
-            if (!status.getLocationMonitor().equals(monitor)) {
+            if (!monitors.contains(status.getLocationMonitor())) {
                 continue;
             }
 
