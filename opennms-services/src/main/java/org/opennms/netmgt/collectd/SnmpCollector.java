@@ -149,11 +149,6 @@ public class SnmpCollector implements ServiceCollector {
 	 */
 	static int DEFAULT_MAX_VARS_PER_PDU = 30;
 
-	/**
-	 * Path to SNMP RRD file repository.
-	 */
-	private String m_rrdPath;
-
 	/* -------------------------------------------------------------- */
 	/* Attribute key names */
 	/* -------------------------------------------------------------- */
@@ -243,7 +238,6 @@ public class SnmpCollector implements ServiceCollector {
 	}
 
 	private void initializeRrdRepository() {
-        logInitialRrdPath();
 
         initializeRrdDirs();
 
@@ -262,10 +256,6 @@ public class SnmpCollector implements ServiceCollector {
 						+ "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
 			}
 		}
-    }
-
-    private void logInitialRrdPath() {
-    	log().debug("logInitialRrdPath: SNMP RRD file repository path: " + m_rrdPath);
     }
 
 	private void initializeRrdInterface() {
