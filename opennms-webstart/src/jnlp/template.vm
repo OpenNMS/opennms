@@ -9,7 +9,7 @@
     <vendor>The OpenNMS Group</vendor>
     <shortcut online="false">
       <desktop/>
-      <menu submenu="My Corporation Apps"/>
+      <menu submenu="OpenNMS"/>
     </shortcut>
   </information>
   <security>
@@ -19,5 +19,7 @@
     <j2se version="1.5+"/>
     $dependencies
   </resources>
-  <application-desc main-class="$mainClass"/>
+  <application-desc main-class="$mainClass">
+    <argument>$$context</argument>
+  </application-desc>
 </jnlp> 

@@ -32,6 +32,8 @@
 
 package org.opennms.poller.remote;
 
+import java.io.File;
+
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -89,6 +91,15 @@ public class Main {
 
     private void createAppContext() {
         
+        File homeDir = new File(System.getProperty("user.home"));
+        String homeUrl = homeDir.toURI().toString();
+        if (homeUrl.endsWith("/")) {
+            homeUrl = homeUrl.substring(0, homeUrl.length()-1);
+        }
+        System.err.println("homeUrl = "+homeUrl);
+
+        System.setProperty("user.home.url", homeUrl);
+
         System.setProperty("opennms.poller.server.url", m_url);
         
         String[] configs = {
