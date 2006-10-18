@@ -306,7 +306,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         getHibernateTemplate().save(statusChange);
     }
 
-    public OnmsLocationMonitor findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition) {
+    public Collection<OnmsLocationMonitor> findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition) {
         // XXX brozow/drv4doe: write this part. :-)
         throw new IllegalArgumentException("This method hasn't yet been implemented");
     }

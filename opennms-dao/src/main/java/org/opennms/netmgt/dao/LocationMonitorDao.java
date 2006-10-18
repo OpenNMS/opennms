@@ -49,7 +49,7 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
  */
 public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer> {
     
-    OnmsLocationMonitor findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition);
+    Collection<OnmsLocationMonitor> findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition);
     
     List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
     
