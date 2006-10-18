@@ -32,6 +32,10 @@
 
 package org.opennms.webstart.poller;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -68,7 +72,22 @@ public class Main {
             usage();
         }
         
-        m_url = m_args[0];
+        String arg = m_args[0];
+        arg = arg.toLowerCase();
+        
+        if (arg.startsWith("http")) {
+            try {
+                URL url = new URL(arg);
+                m_url = "rmi://"+url.getHost();
+                
+            } catch (MalformedURLException e) {
+                usage();
+            }
+            
+        } else {
+            m_url = arg;
+        }
+        System.err.println("m_url = "+m_url);
         
     }
 
@@ -77,6 +96,14 @@ public class Main {
     }
 
     private void createAppContext() {
+        
+        File homeDir = new File(System.getProperty("user.home"));
+        String homeUrl = homeDir.toURI().toString();
+        if (homeUrl.endsWith("/")) {
+            homeUrl = homeUrl.substring(0, homeUrl.length()-1);
+        }
+        System.err.println("homeUrl = "+homeUrl);
+        System.setProperty("user.home.url", homeUrl);
         
         System.setProperty("opennms.poller.server.url", m_url);
         

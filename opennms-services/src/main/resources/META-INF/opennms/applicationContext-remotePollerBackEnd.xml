@@ -8,7 +8,7 @@
    <bean id="frontEndConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
      <property name="properties">
        <props>
-         <prop key="opennms.poller.configuration.resource">file://${user.home}/.opennms/remote-poller.properties</prop>
+         <prop key="opennms.poller.configuration.resource">${user.home.url}/.opennms/remote-poller.properties</prop>
          <prop key="opennms.poller.server.url">rmi://localhost:1099</prop>
        </props>
      </property>
