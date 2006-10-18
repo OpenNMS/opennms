@@ -54,9 +54,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private OnmsMonitoringLocationDefinition m_locationDefinition1;
     private OnmsMonitoringLocationDefinition m_locationDefinition2;
     private OnmsMonitoringLocationDefinition m_locationDefinition3;
-    private OnmsLocationMonitor m_locationMonitor1;
-    private OnmsLocationMonitor m_locationMonitor2;
-    private OnmsLocationMonitor m_locationMonitor3;
+    private OnmsLocationMonitor m_locationMonitor1_1;
+    private OnmsLocationMonitor m_locationMonitor2_1;
+    private OnmsLocationMonitor m_locationMonitor2_2;
+    private OnmsLocationMonitor m_locationMonitor3_1;
     private OnmsApplication m_application1;
     private OnmsApplication m_application2;
     
@@ -80,10 +81,19 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
         m_application1 = new OnmsApplication();
         m_application1.setLabel("Application 1");
+        
+        m_application2 = new OnmsApplication();
+        m_application2.setLabel("Application 2");
 
-        m_locationMonitor1 = new OnmsLocationMonitor();
-        m_locationMonitor2 = new OnmsLocationMonitor();
-        m_locationMonitor3 = null; // Test the case where there is no monitor for this location
+        m_locationMonitor1_1 = new OnmsLocationMonitor();
+        m_locationMonitor1_1.setLastCheckInTime(new Date());
+        
+        m_locationMonitor2_1 = new OnmsLocationMonitor();
+        m_locationMonitor1_1.setLastCheckInTime(new Date());
+        
+        m_locationMonitor2_2 = new OnmsLocationMonitor();
+        
+        m_locationMonitor3_1 = null; // Test the case where there is no monitor for this location
 
         m_pkg = new Package();
 
@@ -107,16 +117,24 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTP")));
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTPS")));
 
-        // Can't shuffle since it's a set
+        // Can't shuffle since these since they are sets
         Set<OnmsMonitoredService> applicationServices1 = new HashSet<OnmsMonitoredService>();
         applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTP"));
         applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTPS"));
         m_application1.setMemberServices(applicationServices1);
         
+        Set<OnmsMonitoredService> applicationServices2 = new HashSet<OnmsMonitoredService>();
+        applicationServices2.add(findMonitoredService(m_services, m_ip, "HTTPS"));
+        m_application2.setMemberServices(applicationServices2);
+
+
+        /*
         m_application2 = new OnmsApplication();
         m_application2.setLabel("Application 2");
         // XXX shuffle to verify sorting? create new list and do: Collections.shuffle(applicationServices2)
         m_application2.setMemberServices(applicationServices1);
+        */
+
         
     }
     
@@ -228,7 +246,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_applicationDao.findByLabel("Application 2")).andReturn(m_application2);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(m_locationMonitor3);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.singleton(m_locationMonitor3_1));
         expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
         expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
@@ -254,13 +272,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Response Time", "simpleWebTableHeader");
         
         expectedTable.newRow();
-        expectedTable.addCell("", "simpleWebTableRowLabel");
-        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
-        expectedTable.addCell("HTTP", "simpleWebTableRowLabel");
-        expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
-        expectedTable.addCell("", "simpleWebTableRowLabel");
-        expectedTable.newRow();
-        
         expectedTable.addCell("", "simpleWebTableRowLabel");
         expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
         expectedTable.addCell("HTTPS", "simpleWebTableRowLabel");
@@ -296,9 +307,22 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         applications.add(m_application2);
         Collections.shuffle(applications);
         
-        Collection<OnmsLocationSpecificStatus> statuses =
-            new LinkedList<OnmsLocationSpecificStatus>();
+        OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
+        OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
         
+        Collection<OnmsLocationSpecificStatus> mostRecentStatuses =
+            new LinkedList<OnmsLocationSpecificStatus>();
+        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        
+        Collection<OnmsLocationSpecificStatus> statusChanges =
+            new LinkedList<OnmsLocationSpecificStatus>();
+        statusChanges.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
 
         Date startDate = new Date(2006 - 1900, 10 - 1, 12, 0, 0, 0);
         Date endDate = new Date(2006 - 1900, 10 - 1, 13, 0, 0, 0);
@@ -306,11 +330,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
         expect(m_applicationDao.findAll()).andReturn(applications);
-        expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(statuses);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(m_locationMonitor1);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(m_locationMonitor2);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(m_locationMonitor3);
-        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statuses).times(6);
+        expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(Collections.singleton(m_locationMonitor1_1));
+        Collection<OnmsLocationMonitor> monitors2 = new HashSet<OnmsLocationMonitor>();
+        monitors2.add(m_locationMonitor2_1);
+        monitors2.add(m_locationMonitor2_2);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(Collections.singleton(m_locationMonitor3_1));
+        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
 
 
         replayEverything();
@@ -330,20 +357,20 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
         expectedTable.addCell("Raleigh", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+1");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+2");
+        expectedTable.addCell("75.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+1");
+        expectedTable.addCell("75.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+2");
         
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
         expectedTable.addCell("Durham", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+1");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+2");
+        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+1");
+        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+2");
         
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS OH", "simpleWebTableRowLabel");
         expectedTable.addCell("Columbus", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Columbus&application=Application+1");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Columbus&application=Application+2");
+        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+1");
+        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+2");
 
         assertTableEquals(expectedTable, table);
     }
@@ -353,21 +380,21 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
         Collection<OnmsLocationSpecificStatus> statuses = new HashSet<OnmsLocationSpecificStatus>();
-        statuses.add(createStatus(m_locationMonitor1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        statuses.add(createStatus(m_locationMonitor1, httpService, PollStatus.available(), "20061012-00:00:00"));
-        statuses.add(createStatus(m_locationMonitor1, httpsService, PollStatus.available(), "20061012-06:00:00"));
-        statuses.add(createStatus(m_locationMonitor1, httpService, PollStatus.available(), "20061013-00:00:00"));
+        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061012-00:00:00"));
+        statuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061013-00:00:00"));
 
         Date startDate = new Date(2006 - 1900, 10 - 1, 12, 0, 0, 0);
         Date endDate = new Date(2006 - 1900, 10 - 1, 13, 0, 0, 0);
 
-        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statuses);
-
+//        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statuses);
 
         replayEverything();
         String percentage =
-            m_service.calculatePercentageUptime(m_locationMonitor1,
+            m_service.calculatePercentageUptime(Collections.singleton(m_locationMonitor1_1),
                                                 m_application1.getMemberServices(),
+                                                statuses,
                                                 startDate,
                                                 endDate);
         verifyEverything();
@@ -440,7 +467,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_applicationDao.findByLabel("Application 1")).andReturn(m_application1);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(m_locationMonitor1);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
         expect(m_pollerConfig.getPackage("raleigh")).andReturn(m_pkg);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
         expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
@@ -449,8 +476,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1, httpService, PollStatus.available()));
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1, httpsService)).andReturn(null);
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1_1, httpService, PollStatus.available()));
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpsService)).andReturn(null);
     }
 
     public void replayEverything() {
