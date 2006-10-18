@@ -124,9 +124,14 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
              */
              if (!wpkg.serviceInPackageAndEnabled(svcName)) {
                 if (log().isDebugEnabled()) {
-                    log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, service is not "
-                              + "enabled or does not exist in package: "
-                              + wpkg.getName());
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("getSpecificationsForInterface: address/service: ");
+                    sb.append(iface);
+                    sb.append("/");
+                    sb.append(svcName);
+                    sb.append(" not scheduled, service is not enabled or does not exist in package: ");
+                    sb.append(wpkg.getName());
+                    log().debug(sb.toString());
                 }
                 continue;
             }
@@ -134,8 +139,14 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
             // Is the interface in the package?
             if (!wpkg.interfaceInPackage(iface.getIpAddress())) {
                 if (log().isDebugEnabled()) {
-                    log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, interface "
-                              + "does not belong to package: " + wpkg.getName());
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("getSpecificationsForInterface: address/service: ");
+                    sb.append(iface);
+                    sb.append("/");
+                    sb.append(svcName);
+                    sb.append(" not scheduled, interface does not belong to package: ");
+                    sb.append(wpkg.getName());
+                    log().debug(sb.toString());
                 }
                 continue;
             }
