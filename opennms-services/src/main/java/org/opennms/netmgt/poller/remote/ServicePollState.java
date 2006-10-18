@@ -9,6 +9,7 @@ public class ServicePollState {
     private PolledService m_polledService;
     private int m_index;
     private PollStatus m_lastPoll;
+    private Date m_initialPollTime;
 
     public ServicePollState(PolledService polledService, int index) {
         m_polledService = polledService;
@@ -24,11 +25,16 @@ public class ServicePollState {
     }
     
     public Date getLastPollTime() {
-        return m_lastPoll.getTimestamp();
+        return (m_lastPoll == null ? null : m_lastPoll.getTimestamp());
     }
     
     public Date getNextPollTime() {
-        return m_polledService.getPollModel().getNextPollTime(getLastPollTime());
+        if (m_lastPoll == null) {
+            return m_initialPollTime;
+        }
+        else {
+            return m_polledService.getPollModel().getNextPollTime(getLastPollTime());
+        }
     }
 
     public int getIndex() {
@@ -40,8 +46,7 @@ public class ServicePollState {
     }
 
     public void setInitialPollTime(Date initialPollTime) {
-        m_lastPoll = PollStatus.unavailable();
-        m_lastPoll.setTimestamp(m_polledService.getPollModel().getPreviousPollTime(initialPollTime));
+        m_initialPollTime = initialPollTime;
     }
 
 }
