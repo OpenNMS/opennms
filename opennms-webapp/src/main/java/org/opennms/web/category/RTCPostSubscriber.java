@@ -170,12 +170,15 @@ public class RTCPostSubscriber extends Object {
 
     protected void initFromRtcPropertyFile(String categoryName) {
         if (categoryName == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
+            throw new IllegalArgumentException("categoryName can not be null");
         }
 
         m_username = Vault.getProperty("opennms.rtc-client.http-post.username");
         m_password = Vault.getProperty("opennms.rtc-client.http-post.password");
         String baseUrl = Vault.getProperty("opennms.rtc-client.http-post.base-url");
+        if (baseUrl == null) {
+            throw new IllegalArgumentException("Property 'opennms.rtc-client.http-post.base-url' is null");
+        }
 
         if (baseUrl.endsWith("/")) {
             m_url = baseUrl + Util.encode(categoryName);
