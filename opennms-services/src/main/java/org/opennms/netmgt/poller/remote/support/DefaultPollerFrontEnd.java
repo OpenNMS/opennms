@@ -108,7 +108,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
     }
 
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
-        throw new UnsupportedOperationException("not yet implemented");
+        return m_backEnd.getMonitoringLocations();
     }
 
     public Collection<PolledService> getPolledServices() {
