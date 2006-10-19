@@ -55,7 +55,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * to be stored such as numeric data ({@link (NumericAttributeType)}) or string data
  * ({@link (StringAttributeType)}).
  */
-public abstract class AttributeType {
+public abstract class AttributeType implements AttributeDefinition {
     
     private MibObject m_mibObj;
     private String m_collectionName;
@@ -117,6 +117,9 @@ public abstract class AttributeType {
         return m_mibObj.getInstance();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.AttributeDefinition#getType()
+     */
     public String getType() {
         return m_mibObj.getType();
     }
@@ -125,6 +128,9 @@ public abstract class AttributeType {
         return m_mibObj.getSnmpObjId();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.AttributeDefinition#getName()
+     */
     public String getName() {
         return getAlias();
     }

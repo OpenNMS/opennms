@@ -28,7 +28,7 @@ public class GenericIndexResource extends CollectionResource {
 	
 	// XXX should be based on the storageStrategy
 	@Override
-    protected File getResourceDir(RrdRepository repository) {
+    public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         File nodeDir = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
         File typeDir = new File(nodeDir, m_name);

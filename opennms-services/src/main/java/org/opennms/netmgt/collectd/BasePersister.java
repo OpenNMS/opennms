@@ -49,6 +49,7 @@ import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -65,7 +66,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 
     public BasePersister(ServiceParameters params) {
         m_params = params;
-        m_repository = new RrdRepository(params.getCollectionName());
+        m_repository = DataCollectionConfigFactory.getInstance().getRrdRepository(params.getCollectionName());
     }
     
     protected void commitBuilder() {

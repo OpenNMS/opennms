@@ -35,36 +35,44 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.util.List;
 
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
-
 public class RrdRepository {
-    
-    String m_collectionName;
 
-    public RrdRepository(String collectionName) {
-        m_collectionName = collectionName;
+    private List m_rraList;
+    private int m_step;
+    private int m_heartBeat;
+    private File m_rrdBaseDir;
+
+    public File getRrdBaseDir() {
+        return m_rrdBaseDir;
     }
 
-    File getRrdBaseDir() {
-        String rrdPath = DataCollectionConfigFactory.getInstance().getRrdPath();
-        File rrdBaseDir = new File(rrdPath);
-        return rrdBaseDir;
+    public void setRrdBaseDir(File rrdBaseDir) {
+        m_rrdBaseDir = rrdBaseDir;
     }
 
-    public String getCollectionName() {
-        return m_collectionName;
-    }
-
-    List getRraList() {
-        return DataCollectionConfigFactory.getInstance().getRRAList(getCollectionName());
-    }
-
-    int getStep() {
-        return DataCollectionConfigFactory.getInstance().getStep(getCollectionName());
+    public List getRraList() {
+        return m_rraList;
     }
     
-    int getHeartBeat() {
-        return (2 * DataCollectionConfigFactory.getInstance().getStep(getCollectionName()));
+    public void setRraList(List rraList) {
+        m_rraList = rraList;
     }
+
+    public int getStep() {
+        return m_step;
+    }
+    
+    public void setStep(int step) {
+        m_step = step;
+    }
+
+    public int getHeartBeat() {
+        return m_heartBeat;
+    }
+
+    public void setHeartBeat(int heartBeat) {
+        m_heartBeat = heartBeat;
+    }
+
 
 }

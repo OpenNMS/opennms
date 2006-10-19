@@ -57,7 +57,7 @@ final class NodeInfo extends DbCollectionResource {
         return -1;
     }
 
-    protected File getResourceDir(RrdRepository repository) {
+    public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         File nodeRepo = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
         return nodeRepo;

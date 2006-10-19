@@ -1,5 +1,6 @@
 package org.opennms.netmgt.mock;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.collectd.SnmpCollector;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -167,5 +169,14 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
 	public Map<String,ResourceType> getConfiguredResourceTypes() {
 		return Collections.EMPTY_MAP;
 	}
+
+    public RrdRepository getRrdRepository(String collectionName) {
+        RrdRepository repo = new RrdRepository();
+        repo.setRrdBaseDir(new File(getRrdPath()));
+        repo.setRraList(getRRAList(collectionName));
+        repo.setStep(getStep(collectionName));
+        repo.setHeartBeat((2 * getStep(collectionName)));
+        return repo;
+}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 
 public interface DataCollectionConfig {
@@ -18,6 +19,8 @@ public interface DataCollectionConfig {
     public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType);
 
     public Map<String,ResourceType> getConfiguredResourceTypes();
+    
+    public RrdRepository getRrdRepository(String collectionName);
     
     int getStep(String collectionName);
 
