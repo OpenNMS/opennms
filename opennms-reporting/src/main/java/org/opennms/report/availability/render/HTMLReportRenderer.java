@@ -47,6 +47,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.report.availability.store.ReportStore;
 import org.springframework.core.io.Resource;
 
 /**
@@ -56,10 +57,14 @@ import org.springframework.core.io.Resource;
 public class HTMLReportRenderer implements ReportRenderer {
 
 	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-
-	private Resource inputResource;
 	
-	private Resource outputResource;
+	private ReportStore inputReportStore;
+	
+	private ReportStore outputReportStore;
+
+	private String inputFileName;
+	
+	private String outputFileName;
 	
 	private Resource xsltResource;
 
@@ -74,14 +79,18 @@ public class HTMLReportRenderer implements ReportRenderer {
             Reader xsl = new FileReader(xsltResource.getFile());
             
             if (log.isInfoEnabled())
-                log.info("input File " + inputResource.getFilename());
+                log.info("input File " + inputFileName);
             
-			Reader xml = new FileReader(inputResource.getFile());
-
+            inputReportStore.setFileName(inputFileName);
+            
+            Reader xml = new FileReader(inputReportStore.newFile());
+            
 			if (log.isInfoEnabled())
-                log.info("ouput File " + outputResource.getFilename());
+                log.info("ouput File " + outputFileName);
 			
-            FileWriter htmlWriter = new FileWriter(outputResource.getFile());
+			outputReportStore.setFileName(outputFileName);
+			
+            FileWriter htmlWriter = new FileWriter(outputReportStore.newFile());
                            
             TransformerFactory tfact = TransformerFactory.newInstance();
             Transformer processor = tfact.newTransformer(new StreamSource(xsl));
@@ -107,11 +116,19 @@ public class HTMLReportRenderer implements ReportRenderer {
 		this.xsltResource = xsltResource;
 	}
 
-	public void setInputResource(Resource inputResource) {
-		this.inputResource = inputResource;
+	public void setInputFileName(String inputFileName) {
+		this.inputFileName = inputFileName;
 	}
 
-	public void setOutputResource(Resource outputResource) {
-		this.outputResource = outputResource;
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
+	}
+
+	public void setInputReportStore(ReportStore inputReportStore) {
+		this.inputReportStore = inputReportStore;
+	}
+
+	public void setOutputReportStore(ReportStore outputReportStore) {
+		this.outputReportStore = outputReportStore;
 	}
 }

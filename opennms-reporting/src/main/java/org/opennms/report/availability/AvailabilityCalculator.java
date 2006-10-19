@@ -42,7 +42,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.springframework.core.io.Resource;
+import org.opennms.report.availability.store.ReportStore;
 
 public class AvailabilityCalculator {
 
@@ -89,6 +89,8 @@ public class AvailabilityCalculator {
 	private String outputFileName;
 
 	// author
+	
+	private ReportStore reportStore;
 
 	private String author;
 
@@ -96,8 +98,6 @@ public class AvailabilityCalculator {
 
 	private String categoryName;
 	
-	private Resource outputResource;
-
 	/**
 	 * Castor object that holds all the information required for the generating
 	 * xml to be translated to the pdf.
@@ -115,7 +115,7 @@ public class AvailabilityCalculator {
 		
 		m_report = new Report();
 		m_report.setAuthor(author);
-		
+
 	}
 
 	public void calculate() throws AvailabilityCalculationException {
@@ -173,20 +173,20 @@ public class AvailabilityCalculator {
 	
 	public void writeXML() throws AvailabilityCalculationException {
 		try {
-			marshal(outputResource.getFile());
+			reportStore.setFileName(outputFileName);
+			reportStore.newFile();
+			marshal(reportStore.getStoreFile());
 		} catch (AvailabilityCalculationException e) {
 			log.fatal("Unable to marshal report");
 			throw new AvailabilityCalculationException(e);
-		}  catch (IOException ioe) {
-			log.fatal("IO Exception ", ioe);
-			throw new AvailabilityCalculationException(ioe);
 		}
 	}
 	
 	public void writeXML(String fileName) throws AvailabilityCalculationException {
 		try {
-			File outputFile = new File(fileName);
-			marshal(outputFile);
+			reportStore.setFileName(outputFileName);
+			reportStore.newFile();
+			marshal(reportStore.getStoreFile());
 		} catch (AvailabilityCalculationException e) {
 			log.fatal("Unable to marshal report");
 			throw new AvailabilityCalculationException(e);
@@ -295,8 +295,8 @@ public class AvailabilityCalculator {
 		this.calendar = calendar;
 	}
 
-	public void setOutputResource(Resource outputResource) {
-		this.outputResource = outputResource;
+	public void setReportStore(ReportStore reportStore) {
+		this.reportStore = reportStore;
 	}
 
 }
