@@ -19,11 +19,7 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
         private MockDatabase m_db;
         
         public AvailabilityReportSchedulerServiceTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
-            /*
-             * Note: I'm using the opennms-database.xml file in target/classes/etc
-             * so that it has been filtered first.
-             */
-            //DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+            System.setProperty("opennms.home", "src/test/opennms-home");
             m_db = new MockDatabase();
             DataSourceFactory.setInstance(m_db);
         }
