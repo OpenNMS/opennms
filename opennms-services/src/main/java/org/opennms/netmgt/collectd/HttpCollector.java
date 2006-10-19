@@ -37,6 +37,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.LinkedList;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.Attrib;
 import org.opennms.netmgt.config.datacollection.HttpCollection;
 import org.opennms.netmgt.config.datacollection.Uri;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 
@@ -84,8 +86,7 @@ public class HttpCollector implements ServiceCollector {
             try {
                 doCollection((InetAddress)agent.getAddress(), uri, parameters);
             } catch (HttpCollectorException e) {
-                Category log = log();
-                log.error("collect: http collection problem: ", e);
+                log().error("collect: http collection problem: ", e);
 
                 //this doesn't make sense since everything is SNMP collection centric
                 //should probably let the exception pass through
@@ -113,7 +114,7 @@ public class HttpCollector implements ServiceCollector {
      * @throws HttpException
      * @throws IOException
      */
-    private void doCollection(InetAddress address, Uri uriDef, Map<String, String> parameters) throws HttpCollectorException {
+    private void doCollection(final InetAddress address, Uri uriDef, Map<String, String> parameters) throws HttpCollectorException {
 
         HttpClient client = null;
         HttpMethod method = null;
@@ -127,19 +128,46 @@ public class HttpCollector implements ServiceCollector {
             if (butes.isEmpty()) {
                 throw new HttpCollectorException("No attributes specified were found: ",client);
             }
+            
+            // FIXME: get the real collectionName
+            RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository("collectionName");
+            
+            // FIXME: get the real nodeId
+            final int nodeId = 1;
+            ResourceIdentifier resource = new ResourceIdentifier() {
+
+                public String getOwnerName() {
+                    return address.getHostAddress();
+                }
+
+                public File getResourceDir(RrdRepository repository) {
+                    return new File(repository.getRrdBaseDir(), Integer.toString(nodeId));
+                }
+                
+            };
+            
+            for (HttpCollectionAttribute attribute : butes) {
+                PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
+                builder.declareAttribute(attribute);
+                builder.setAttributeValue(attribute, attribute.getValue());
+                builder.commit();
+            }
+            
         } catch (URIException e) {
             throw new HttpCollectorException("Error building HttpClient URI", client);
         } catch (HttpException e) {
             throw new HttpCollectorException("Error building HttpMethod", client);
         } catch (IOException e) {
             throw new HttpCollectorException("IO Error retrieving page", client);
+        } catch (RrdException e) {
+            throw new HttpCollectorException("Error writing RRD", client);
         } finally {
             method.releaseConnection();
         }
         
     }
     
-    class HttpCollectionAttribute {
+    class HttpCollectionAttribute implements AttributeDefinition {
         String m_alias;
         String m_type;
         String m_value;
@@ -149,6 +177,33 @@ public class HttpCollector implements ServiceCollector {
             m_type= type;
             m_value = value;
         }
+
+        public String getName() {
+            return m_alias;
+        }
+
+        public String getType() {
+            return m_type;
+        }
+        
+        public String getValue() {
+            return m_value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof HttpCollectionAttribute) {
+                HttpCollectionAttribute other = (HttpCollectionAttribute)obj;
+                return getName().equals(other.getName());
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return getName().hashCode();
+        }
+        
     }
     
     @SuppressWarnings("unchecked")

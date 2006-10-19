@@ -51,6 +51,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.config.datacollection.HttpCollection;
 import org.opennms.netmgt.config.datacollection.HttpDatacollectionConfig;
 
@@ -167,5 +168,9 @@ public class HttpCollectionConfigFactory {
                     +collectionName+" specified in collectd configuration not found in http collection configuration.");
         }
         return collection;
+    }
+
+    public RrdRepository getRrdRepository(String collectionName) {
+        throw new UnsupportedOperationException("not yet implemented");
     }
 }
