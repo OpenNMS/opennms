@@ -12,6 +12,8 @@ import org.opennms.report.availability.render.ReportRenderException;
 import org.opennms.report.availability.render.ReportRenderer;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 public class AvailabilityReportRunner {
@@ -54,8 +56,8 @@ public class AvailabilityReportRunner {
 
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		Category log = ThreadCategory.getInstance(AvailabilityReport.class);
-		ClassPathResource resource = new ClassPathResource("META-INF/opennms/applicationContext-reporting.xml");
-		BeanFactory bf = new XmlBeanFactory(resource);
+		ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/opennms/standaloneApplicationContext-reporting.xml");
+		BeanFactory bf = (BeanFactory) context;
 	
 		// properties required for calculating the availability data and
 		// marshalling to XML
