@@ -14,56 +14,55 @@
     </property>
   </bean>
 
-   <bean id="httpSessionContextIntegrationFilter" class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
+  <bean id="httpSessionContextIntegrationFilter" class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
 
-   <bean id="securityContextHolderAwareRequestFilter" class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter"/>
+  <bean id="securityContextHolderAwareRequestFilter" class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter"/>
 
-   <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
-      <constructor-arg value="/logoff.jsp"/> <!-- URL redirected to after logout -->
-      <constructor-arg>
-         <list>
-              <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
-         </list>
-      </constructor-arg>
-   </bean>
+  <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
+    <constructor-arg value="/logoff.jsp"/> <!-- URL redirected to after logout -->
+    <constructor-arg>
+      <list>
+        <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
+      </list>
+    </constructor-arg>
+  </bean>
 
   <!-- ========================== AUTHENTICATION ======================== -->
   <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
-      <property name="providers">
-         <list>
-            <ref local="daoAuthenticationProvider"/>
-            <ref local="anonymousAuthenticationProvider"/>
-         </list>
-      </property>
-   </bean>
+    <property name="providers">
+      <list>
+        <ref local="daoAuthenticationProvider"/>
+        <ref local="anonymousAuthenticationProvider"/>
+      </list>
+    </property>
+  </bean>
    
- <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
-  <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml"/>
-  <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties"/>
- </bean>
+  <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
+    <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml"/>
+    <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties"/>
+  </bean>
 
- <bean id="openNMSUserDaoImpl" class="org.opennms.web.acegisecurity.OpenNMSUserDaoImpl">
-  <property name="userDao"><ref bean="userDao"/></property>
- </bean>
+  <bean id="openNMSUserDaoImpl" class="org.opennms.web.acegisecurity.OpenNMSUserDaoImpl">
+    <property name="userDao"><ref bean="userDao"/></property>
+  </bean>
 
- <bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.acegisecurity.UpperCaseMd5PasswordEncoder"/>
+  <bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.acegisecurity.UpperCaseMd5PasswordEncoder"/>
 
   <bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
     <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
     <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
   </bean>        
 
-   <bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter"/>
+  <bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter"/>
 
-   <bean id="httpRequestAccessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
-      <property name="allowIfAllAbstainDecisions"><value>false</value></property>
-      <property name="decisionVoters">
-         <list>
-            <ref bean="roleVoter"/>
-         </list>
-      </property>
-   </bean>
-
+  <bean id="httpRequestAccessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
+    <property name="allowIfAllAbstainDecisions"><value>false</value></property>
+    <property name="decisionVoters">
+      <list>
+        <ref bean="roleVoter"/>
+      </list>
+    </property>
+  </bean>
 
   <bean id="filterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
     <property name="authenticationManager"><ref bean="authenticationManager"/></property>
@@ -92,47 +91,43 @@
     </property>
   </bean>
 
-<bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
-  <property name="authenticationEntryPoint"><ref local="authenticationProcessingFilterEntryPoint"/></property>
-  <property name="accessDeniedHandler">
-    <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
-      <property name="errorPage" value="/accessDenied.jsp"/>
-    </bean>
-  </property>
-</bean>
+  <bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
+    <property name="authenticationEntryPoint"><ref local="authenticationProcessingFilterEntryPoint"/></property>
+    <property name="accessDeniedHandler">
+      <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/accessDenied.jsp"/>
+      </bean>
+    </property>
+  </bean>
 
+  <bean id="authenticationProcessingFilter" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="authenticationFailureUrl"><value>/acegilogin.jsp?login_error=1</value></property>
+    <property name="defaultTargetUrl"><value>/</value></property>
+    <property name="filterProcessesUrl"><value>/j_acegi_security_check</value></property>
+  </bean>
 
+  <bean id="authenticationProcessingFilterEntryPoint" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+    <property name="loginFormUrl"><value>/acegilogin.jsp</value></property>
+    <property name="forceHttps"><value>false</value></property>
+  </bean>
 
-   <bean id="authenticationProcessingFilter" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="authenticationFailureUrl"><value>/acegilogin.jsp?login_error=1</value></property>
-      <property name="defaultTargetUrl"><value>/</value></property>
-      <property name="filterProcessesUrl"><value>/j_acegi_security_check</value></property>
-   </bean>
+  <bean id="basicProcessingFilter" class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
+    <property name="authenticationManager"><ref local="authenticationManager"/></property>
+    <property name="authenticationEntryPoint"><ref local="basicProcessingFilterEntryPoint"/></property>
+  </bean>
 
-<bean id="authenticationProcessingFilterEntryPoint" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint">
-  <property name="loginFormUrl"><value>/acegilogin.jsp</value></property>
-  <property name="forceHttps"><value>false</value></property>
-</bean>
+  <bean id="basicProcessingFilterEntryPoint" class="org.acegisecurity.ui.basicauth.BasicProcessingFilterEntryPoint">
+    <property name="realmName"><value>OpenNMS Realm</value></property>
+  </bean>
 
-   <bean id="basicProcessingFilter" class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
-      <property name="authenticationManager"><ref local="authenticationManager"/></property>
-      <property name="authenticationEntryPoint"><ref local="basicProcessingFilterEntryPoint"/></property>
-   </bean>
+  <bean id="anonymousProcessingFilter" class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
+    <property name="key"><value>foobar</value></property>
+    <property name="userAttribute"><value>anonymousUser,ROLE_ANONYMOUS</value></property>
+  </bean>
 
-
-   <bean id="basicProcessingFilterEntryPoint" class="org.acegisecurity.ui.basicauth.BasicProcessingFilterEntryPoint">
-      <property name="realmName"><value>OpenNMS Realm</value></property>
-   </bean>
-
-
-<bean id="anonymousProcessingFilter" class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
-  <property name="key"><value>foobar</value></property>
-  <property name="userAttribute"><value>anonymousUser,ROLE_ANONYMOUS</value></property>
-</bean>
-
-<bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
-  <property name="key"><value>foobar</value></property>
-</bean>
-
+  <bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
+    <property name="key"><value>foobar</value></property>
+  </bean>
+  
 </beans>
