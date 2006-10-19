@@ -32,26 +32,93 @@
     <property name="providers">
       <list>
         <ref local="daoAuthenticationProvider"/>
+        <!--
+             Uncomment the following reference to ldapAuthenticationProvider
+             and comment-out the above reference to the
+             daoAuthenticationProvider if you want to use LDAP.  You'll also
+             need to uncomment the LDAP AUTHENTICATION section below, as well.
+          -->
+        <!--
+        <ref local="ldapAuthenticationProvider"/>
+        -->
         <ref local="anonymousAuthenticationProvider"/>
       </list>
     </property>
   </bean>
    
+  <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
-    <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml"/>
-    <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties"/>
+    <property name="usersConfigurationFile"
+              value="${opennms.home}/etc/users.xml"/>
+    <property name="magicUsersConfigurationFile"
+              value="${opennms.home}/etc/magic-users.properties"/>
   </bean>
 
-  <bean id="openNMSUserDaoImpl" class="org.opennms.web.acegisecurity.OpenNMSUserDaoImpl">
+  <bean id="openNMSUserDaoImpl"
+        class="org.opennms.web.acegisecurity.OpenNMSUserDaoImpl">
     <property name="userDao"><ref bean="userDao"/></property>
   </bean>
 
-  <bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.acegisecurity.UpperCaseMd5PasswordEncoder"/>
+  <bean id="upperCaseMd5PasswordEncoder"
+        class="org.opennms.web.acegisecurity.UpperCaseMd5PasswordEncoder"/>
 
-  <bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
+  <bean id="daoAuthenticationProvider"
+        class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
     <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
     <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
-  </bean>        
+  </bean>
+  
+  <!-- ======================= LDAP AUTHENTICATION ====================== -->
+  <!-- 
+       If you want to use LDAP, uncomment the following section to enable the
+       ldapAuthenticationProvider, and in the authenticationManager bean above
+       uncomment the reference to the ldapAuthenticationProvider.  Make sure
+       that you set the LDAP server hostname below where it says
+       "%%%put LDAP server address here%%%" and that you set the attribute
+       in the user's entry that you store OpenNMS roles in where it says
+       "%%%put role attribute here%%%". :-)
+   -->
+  <!-- 
+  <bean id="initialDirContextFactory"
+        class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
+    <constructor-arg value="ldap://%%%put LDAP server address here%%%:389/"/>
+  </bean>
+
+  <bean id="userSearch"
+        class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
+    <constructor-arg index="0">
+      <value></value>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <value>(login={0})</value>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <ref local="initialDirContextFactory" />
+    </constructor-arg>
+    <property name="searchSubtree">
+      <value>true</value>
+    </property>
+  </bean>
+  
+  <bean id="userAttributeLdapAuthoritiesPopulator"
+        class="org.opennms.web.acegisecurity.UserAttributeLdapAuthoritiesPopulator">
+    <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
+    <constructor-arg><value>%%%put role attribute here%%%</value></constructor-arg>
+  </bean>
+
+  <bean id="ldapAuthenticationProvider"
+        class="org.acegisecurity.providers.ldap.LdapAuthenticationProvider">
+    <constructor-arg>
+      <bean class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
+        <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
+        <property name="userSearch"><ref bean="userSearch"/></property>
+      </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <ref bean="userAttributeLdapAuthoritiesPopulator"/>
+    </constructor-arg>
+  </bean>
+   -->
 
   <bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter"/>
 
@@ -129,5 +196,4 @@
   <bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
     <property name="key"><value>foobar</value></property>
   </bean>
-  
 </beans>
