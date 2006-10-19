@@ -48,17 +48,18 @@ public class PersistOperationBuilder {
     
     private RrdRepository m_repository;
     private String m_rrdName;
-    private CollectionResource m_resource;
-    private Map<AttributeType, String> m_declarations = new TreeMap<AttributeType, String>(new ByNameComparator());
+    private ResourceIdentifier m_resource;
+    private Map<AttributeDefinition, String> m_declarations = new TreeMap<AttributeDefinition, String>(new ByNameComparator());
     
     /**
      * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
      * currently supported.
      */
     static final String DST_GAUGE = "GAUGE";
+    static final String DST_COUNTER = "COUNTER";
     public static final int MAX_DS_NAME_LENGTH = 19;
 
-    public PersistOperationBuilder(RrdRepository repository, CollectionResource resource, String rrdName) {
+    public PersistOperationBuilder(RrdRepository repository, ResourceIdentifier resource, String rrdName) {
         m_repository = repository;
         m_resource = resource;
         m_rrdName = rrdName;
@@ -68,15 +69,15 @@ public class PersistOperationBuilder {
         return m_repository;
     }
 
-    File getResourceDir(CollectionResource resource) {
+    private File getResourceDir(ResourceIdentifier resource) {
         return resource.getResourceDir(getRepository());
     }
 
-    void declareAttribute(AttributeType attrType) {
+    public void declareAttribute(AttributeDefinition attrType) {
         m_declarations.put(attrType, "U");
     }
 
-    void setAttributeValue(AttributeType attrType, String value) {
+    public void setAttributeValue(AttributeDefinition attrType, String value) {
         m_declarations.put(attrType, value);
     }
 
@@ -94,14 +95,14 @@ public class PersistOperationBuilder {
      */
     public static String mapType(String objectType) {
         if (objectType.toLowerCase().startsWith("counter"))
-            return NumericAttributeType.DST_COUNTER;
+            return PersistOperationBuilder.DST_COUNTER;
         
         return PersistOperationBuilder.DST_GAUGE;
     }
 
     public void commit() throws RrdException {
-        RrdUtils.createRRD(m_resource.getCollectionAgent().getHostAddress(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList());
-        RrdUtils.updateRRD(m_resource.getCollectionAgent().getHostAddress(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, System.currentTimeMillis(), getValues());
+        RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList());
+        RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, System.currentTimeMillis(), getValues());
         
     }
 
@@ -109,8 +110,8 @@ public class PersistOperationBuilder {
         boolean first = true;
         StringBuffer values = new StringBuffer();
         for (Iterator iter = m_declarations.keySet().iterator(); iter.hasNext();) {
-            AttributeType attrType = (AttributeType) iter.next();
-            String value = (String)m_declarations.get(attrType);
+            AttributeDefinition attrDef = (AttributeDefinition) iter.next();
+            String value = m_declarations.get(attrDef);
             if (!first) {
                 values.append(':');
             } else {
@@ -124,9 +125,8 @@ public class PersistOperationBuilder {
 
     private List getDataSources() {
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>(m_declarations.size());
-        for (Iterator it = m_declarations.keySet().iterator(); it.hasNext();) {
-            AttributeType attrType = (AttributeType)it.next();
-            RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrType.getName(), PersistOperationBuilder.MAX_DS_NAME_LENGTH), PersistOperationBuilder.mapType(attrType.getType()), getRepository().getHeartBeat(), "U", "U");
+        for (AttributeDefinition attrDef : m_declarations.keySet()) {
+            RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrDef.getName(), PersistOperationBuilder.MAX_DS_NAME_LENGTH), PersistOperationBuilder.mapType(attrDef.getType()), getRepository().getHeartBeat(), "U", "U");
             dataSources.add(rrdDataSource);
         }
         return dataSources;

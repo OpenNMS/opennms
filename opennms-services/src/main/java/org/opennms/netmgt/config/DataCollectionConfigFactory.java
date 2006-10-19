@@ -62,6 +62,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
@@ -714,18 +715,18 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         else
             return -1;
     }
-
-    /**
-     * Retrieves the configured path to the RRD file repository.
-     * 
-     * @return RRD repository path.
-     */
-    private String getRrdRepository() {
-        return m_config.getRrdRepository();
+    
+    public RrdRepository getRrdRepository(String collectionName) {
+            RrdRepository repo = new RrdRepository();
+            repo.setRrdBaseDir(new File(getRrdPath()));
+            repo.setRraList(getRRAList(collectionName));
+            repo.setStep(getStep(collectionName));
+            repo.setHeartBeat((2 * getStep(collectionName)));
+            return repo;
     }
-
-	public String getRrdPath() {
-        String rrdPath = getRrdRepository();
+    
+    public String getRrdPath() {
+        String rrdPath = m_config.getRrdRepository();
     	if (rrdPath == null) {
     		throw new RuntimeException("Configuration error, failed to "
     				+ "retrieve path to RRD repository.");

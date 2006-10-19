@@ -45,7 +45,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 
-public abstract class CollectionResource {
+public abstract class CollectionResource implements ResourceIdentifier {
     
     private ResourceType m_resourceType;
 
@@ -65,7 +65,11 @@ public abstract class CollectionResource {
     
     public abstract boolean shouldPersist(ServiceParameters params);
 
-    protected abstract File getResourceDir(RrdRepository repository);
+    public String getOwnerName() {
+        return getCollectionAgent().getHostAddress();
+    }
+
+    public abstract File getResourceDir(RrdRepository repository);
     
     protected abstract int getType();
     

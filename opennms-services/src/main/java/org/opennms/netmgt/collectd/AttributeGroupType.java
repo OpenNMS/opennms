@@ -79,7 +79,7 @@ public class AttributeGroupType {
         return m_name;
     }
     
-    public void addAttributeType(AttributeType attrType) {
+    public void addAttributeType(AttributeDefinition attrType) {
         m_attributeTypes.add(attrType);
     }
     

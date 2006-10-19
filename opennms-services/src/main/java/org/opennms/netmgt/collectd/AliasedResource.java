@@ -68,7 +68,7 @@ public class AliasedResource extends CollectionResource {
         return m_domain;
     }
 
-    protected File getResourceDir(RrdRepository repository) {
+    public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         File domainDir = new File(rrdBaseDir, getDomain());
         File aliasDir = new File(domainDir, getAliasDir());
