@@ -56,7 +56,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.TreeMap;
 
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -83,6 +82,8 @@ public class AvailabilityData extends Object {
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    
+    private static final String DEFAULT_FORMAT = "PDF";
 
     /**
      * Database connection handle.
@@ -144,10 +145,30 @@ public class AvailabilityData extends Object {
      */
     private int m_sectionIndex = 0;
 
-    /**
-     * Constructor
-     */
+    
+    
     public AvailabilityData(String categoryName, Report report,
+            String monthFormat, Calendar calendar,
+            String startMonth, String startDate, String startYear)
+            throws IOException, MarshalException, ValidationException,
+            Exception {
+    	generateData(categoryName, report, DEFAULT_FORMAT, monthFormat, calendar, startMonth, startDate, startYear);
+    }
+    
+    public AvailabilityData(String categoryName, Report report,
+            String format, String monthFormat, Calendar calendar,
+            String startMonth, String startDate, String startYear)
+            throws IOException, MarshalException, ValidationException,
+            Exception {
+    	generateData(categoryName, report, format, monthFormat, calendar, startMonth, startDate, startYear);
+    }
+    
+    /**
+     * Original constructor, now called by new version
+     */
+    
+    
+    private void generateData(String categoryName, Report report,
             String format, String monthFormat, Calendar calendar,
             String startMonth, String startDate, String startYear)
             throws IOException, MarshalException, ValidationException,
