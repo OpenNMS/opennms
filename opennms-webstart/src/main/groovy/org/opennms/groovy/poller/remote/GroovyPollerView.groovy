@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
+import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition
+import org.opennms.webstart.poller.helper.MonitoringLocationListCellRenderer;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -26,6 +28,7 @@ class GroovyPollerView implements InitializingBean {
    def m_table;
    def m_frame;
    def m_cardPanel;
+   def m_monLocation;
    SimpleDateFormat m_dateFormat;
    
    public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
@@ -46,7 +49,21 @@ class GroovyPollerView implements InitializingBean {
 		def frame = swing.frame(title:'OpenNMS Remote Poller', location:[100,100], size:[800,500], defaultCloseOperation:JFrame.EXIT_ON_CLOSE) {
 		    m_cardPanel = panel(layout:new CardLayout(), constraints:BorderLayout.CENTER) {
 		        panel(constraints:REGISTRATION) {
-		    	    button(text:'Register', constraints:BorderLayout.SOUTH, actionPerformed:{ m_frontEnd.register("RDU") })
+		            tableLayout(cellpadding:5) {
+		                tr {
+		                    td(colfill:true) {
+		                    	label(text:'Current monitoring location:')
+		                    }
+		                    td {
+		                        m_monLocation = comboBox(items:getCurrentMonitoringLocations(), renderer:new MonitoringLocationListCellRenderer())
+		                    }
+		                }
+		                tr {
+		                    td (colspan:2, align:"CENTER"){
+		    	    		  button(text:'Register', constraints:BorderLayout.SOUTH, actionPerformed:{ doRegistration() })
+		                    }
+		                }
+		            }
 		        }
 		        panel(constraints:STATUS, layout:new BorderLayout()) {
 		    	    scrollPane(constraints:BorderLayout.CENTER, viewportView:m_table)
@@ -68,6 +85,16 @@ class GroovyPollerView implements InitializingBean {
 
    }
    
+   private void doRegistration() {
+       String loc = m_monLocation.selectedItem.name;
+       System.err.println("Registering for location "+loc)
+       m_frontEnd.register(loc);
+   }
+   
+   private List getCurrentMonitoringLocations() {
+       return m_frontEnd.getMonitoringLocations();
+   }
+   
    private void updateCurrentPanel() {
 		SwingUtilities.invokeLater({ setCurrentPanel(m_frontEnd.registered ? STATUS : REGISTRATION) });
    }
@@ -82,10 +109,6 @@ class GroovyPollerView implements InitializingBean {
    
    private void updateTableModel() {
        SwingUtilities.invokeLater({ m_table.model = createTableModel() })
-   }
-   
-   private Closure swingSafe(Runnable r) {
-	    return { SwingUtilities.invokeLater(r) }
    }
    
    private TableModel createTableModel() {

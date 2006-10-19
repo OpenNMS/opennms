@@ -1,6 +1,10 @@
 package org.opennms.netmgt.model;
 
-public class OnmsMonitoringLocationDefinition {
+import java.io.Serializable;
+
+public class OnmsMonitoringLocationDefinition implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String m_area;
 
