@@ -37,14 +37,19 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
+import org.opennms.netmgt.mock.NullRrdStrategy;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
@@ -111,8 +116,13 @@ public class HttpCollectorTest extends OpenNMSTestCase {
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.utils.EventProxy, java.util.Map)}.
+     * @throws RrdException 
      */
-    public final void testCollect() {
+    public final void testCollect() throws RrdException {
+        
+        RrdConfig.setProperties(new Properties());
+        RrdUtils.setStrategy(new NullRrdStrategy());
+        RrdUtils.initialize();
         HttpCollector collector = new HttpCollector();
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
         OnmsNode node = new OnmsNode(distPoller );
@@ -122,34 +132,6 @@ public class HttpCollectorTest extends OpenNMSTestCase {
         parameters.put("http-collection", "default");
         EventProxy eproxy = getEventProxy();
         collector.collect(agent, eproxy, parameters);
-    }
-
-    /**
-     * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#initialize(java.util.Map)}.
-     */
-    public final void testInitializeMap() {
-//        fail("Not yet implemented"); // TODO
-    }
-
-    /**
-     * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#initialize(org.opennms.netmgt.collectd.CollectionAgent, java.util.Map)}.
-     */
-    public final void testInitializeCollectionAgentMap() {
-//        fail("Not yet implemented"); // TODO
-    }
-
-    /**
-     * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#release()}.
-     */
-    public final void testRelease() {
-//        fail("Not yet implemented"); // TODO
-    }
-
-    /**
-     * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#release(org.opennms.netmgt.collectd.CollectionAgent)}.
-     */
-    public final void testReleaseCollectionAgent() {
-//        fail("Not yet implemented"); // TODO
     }
 
 }

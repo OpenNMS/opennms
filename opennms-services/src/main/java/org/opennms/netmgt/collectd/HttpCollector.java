@@ -47,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -80,25 +81,69 @@ public class HttpCollector implements ServiceCollector {
 
     @SuppressWarnings("unchecked")
     public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
-        HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(parameters.get("http-collection"));
-        List<Uri> uris = collection.getUris().getUriCollection();
-        for (Uri uri : uris) {
-            try {
-                doCollection((InetAddress)agent.getAddress(), uri, parameters);
-            } catch (HttpCollectorException e) {
-                log().error("collect: http collection problem: ", e);
-
-                //this doesn't make sense since everything is SNMP collection centric
-                //should probably let the exception pass through
-                return ServiceCollector.COLLECTION_FAILED;
-            }
-        }
-        return ServiceCollector.COLLECTION_SUCCEEDED;
+        HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
+        return collectionSet.collect();
     }
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
+    
+    protected class HttpCollectionSet {
+        private CollectionAgent m_agent;
+        private Map<String, String> m_parameters;
+        private Uri m_uriDef;
+        
+        public Uri getUriDef() {
+            return m_uriDef;
+        }
+
+        public void setUriDef(Uri uriDef) {
+            m_uriDef = uriDef;
+        }
+
+        HttpCollectionSet(CollectionAgent agent, Map<String, String> parameters) {
+            m_agent = agent;
+            m_parameters = parameters;
+        }
+        
+        @SuppressWarnings("unchecked")
+        public int collect() {
+            HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(m_parameters.get("http-collection"));
+            List<Uri> uriDefs = collection.getUris().getUriCollection();
+            for (Uri uriDef : uriDefs) {
+                m_uriDef = uriDef;
+                try {
+                    doCollection(this);
+                } catch (HttpCollectorException e) {
+                    log().error("collect: http collection problem: ", e);
+
+                    //this doesn't make sense since everything is SNMP collection centric
+                    //should probably let the exception pass through
+                    return ServiceCollector.COLLECTION_FAILED;
+                }
+            }
+            return ServiceCollector.COLLECTION_SUCCEEDED;
+
+        }
+
+        public CollectionAgent getAgent() {
+            return m_agent;
+        }
+
+        public void setAgent(CollectionAgent agent) {
+            m_agent = agent;
+        }
+
+        public Map<String, String> getParameters() {
+            return m_parameters;
+        }
+
+        public void setParameters(Map<String, String> parameters) {
+            m_parameters = parameters;
+        }
+    }
+
 
     /**
      * Performs HTTP collection.
@@ -109,39 +154,33 @@ public class HttpCollector implements ServiceCollector {
      *   - HostConfiguration class is not created here because the library
      *     builds it when a URI is defined.
      *     
-     * @param uriDef
-     * @param parameters
-     * @throws HttpException
-     * @throws IOException
+     * @param collectionSet
+     * @throws HttpCollectorException
      */
-    private void doCollection(final InetAddress address, Uri uriDef, Map<String, String> parameters) throws HttpCollectorException {
+    private void doCollection(final HttpCollectionSet collectionSet) throws HttpCollectorException {
 
         HttpClient client = null;
         HttpMethod method = null;
         
         try {
-            client = new HttpClient(buildParams(uriDef, parameters));
-            method = buildHttpMethod(address, uriDef);
+            client = new HttpClient(buildParams(collectionSet));
+            method = buildHttpMethod(collectionSet);
             client.executeMethod(method);
-            List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), uriDef);
+            List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet);
             
             if (butes.isEmpty()) {
                 throw new HttpCollectorException("No attributes specified were found: ",client);
             }
-            
-            // FIXME: get the real collectionName
-            RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository("collectionName");
-            
-            // FIXME: get the real nodeId
-            final int nodeId = 1;
+            String collectionName = collectionSet.getParameters().get("http-collection");
+            RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
             ResourceIdentifier resource = new ResourceIdentifier() {
 
                 public String getOwnerName() {
-                    return address.getHostAddress();
+                    return collectionSet.getAgent().getHostAddress();
                 }
 
                 public File getResourceDir(RrdRepository repository) {
-                    return new File(repository.getRrdBaseDir(), Integer.toString(nodeId));
+                    return new File(repository.getRrdBaseDir(), Integer.toString(collectionSet.getAgent().getNodeId()));
                 }
                 
             };
@@ -149,10 +188,10 @@ public class HttpCollector implements ServiceCollector {
             for (HttpCollectionAttribute attribute : butes) {
                 PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
                 builder.declareAttribute(attribute);
+                log().debug("doCollection: setting attribute: "+attribute);
                 builder.setAttributeValue(attribute, attribute.getValue());
                 builder.commit();
             }
-            
         } catch (URIException e) {
             throw new HttpCollectorException("Error building HttpClient URI", client);
         } catch (HttpException e) {
@@ -164,7 +203,6 @@ public class HttpCollector implements ServiceCollector {
         } finally {
             method.releaseConnection();
         }
-        
     }
     
     class HttpCollectionAttribute implements AttributeDefinition {
@@ -203,19 +241,31 @@ public class HttpCollector implements ServiceCollector {
         public int hashCode() {
             return getName().hashCode();
         }
+
+        @Override
+        public String toString() {
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("HttpAttribute: ");
+            buffer.append(getName());
+            buffer.append(":");
+            buffer.append(getType());
+            buffer.append(":");
+            buffer.append(getValue());
+            return buffer.toString();
+        }
         
     }
     
     @SuppressWarnings("unchecked")
-    private List<HttpCollectionAttribute> processResponse(String responseBodyAsString, Uri uriDef) {
+    private List<HttpCollectionAttribute> processResponse(String responseBodyAsString, HttpCollectionSet collectionSet) {
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
-        Pattern p = Pattern.compile(uriDef.getUrl().getMatches());
+        Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches());
         Matcher m = p.matcher(responseBodyAsString);
         
         if (m.matches()) {
-            List<Attrib> attribs = uriDef.getAttributes().getAttribCollection();
+            List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
             
-            for (Attrib attribDef : attribs) {
+            for (Attrib attribDef : attribDefs) {
                 HttpCollectionAttribute bute = new HttpCollectionAttribute(attribDef.getAlias(),
                         attribDef.getType(), m.group(attribDef.getMatchGroup()));
                 butes.add(bute);
@@ -237,20 +287,21 @@ public class HttpCollector implements ServiceCollector {
             StringBuffer buffer = new StringBuffer();
             buffer.append(super.toString());
             buffer.append(": client URL: ");
-            buffer.append(m_client.getHostConfiguration().getHostURL());
+            final HostConfiguration hostConfiguration = m_client.getHostConfiguration();
+            buffer.append((hostConfiguration == null ? "null" : hostConfiguration.getHostURL()));
             return buffer.toString();
         }
     }
 
-    private HttpClientParams buildParams(Uri uri, Map<String, String> parameters) {
+    private HttpClientParams buildParams(HttpCollectionSet collectionSet) {
         HttpClientParams params = new HttpClientParams(DefaultHttpParams.getDefaultParams());
-        params.setVersion(computeVersion(uri));
-        params.setSoTimeout(Integer.parseInt(ParameterMap.getKeyedString(parameters, "timeout", DEFAULT_SO_TIMEOUT)));
+        params.setVersion(computeVersion(collectionSet.getUriDef()));
+        params.setSoTimeout(Integer.parseInt(ParameterMap.getKeyedString(collectionSet.getParameters(), "timeout", DEFAULT_SO_TIMEOUT)));
         
         //review the httpclient code, looks like virtual host is checked for null
         //and if true, sets Host to the connection's host property
-        params.setVirtualHost(uri.getUrl().getVirtualHost());
-        Integer retryCount = ParameterMap.getKeyedInteger(parameters, "retries", DEFAULT_RETRY_COUNT);
+        params.setVirtualHost(collectionSet.getUriDef().getUrl().getVirtualHost());
+        Integer retryCount = ParameterMap.getKeyedInteger(collectionSet.getParameters(), "retries", DEFAULT_RETRY_COUNT);
         params.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(retryCount, false));
 
         return params;
@@ -261,28 +312,26 @@ public class HttpCollector implements ServiceCollector {
                 Integer.parseInt(uri.getUrl().getHttpVersion().substring(2)));
     }
 
-    private HttpMethod buildHttpMethod(InetAddress address, Uri uriDef) throws URIException {
+    private HttpMethod buildHttpMethod(HttpCollectionSet collectionSet) throws URIException {
         HttpMethod method;
-        
-        if ("GET".equals(uriDef.getUrl().getMethod())) {
+        if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
             method = new GetMethod();
         } else {
             method = new PostMethod();
         }
-        method.setURI(buildUri(address, uriDef));
+        method.setURI(buildUri(collectionSet.getAgent().getInetAddress(), collectionSet.getUriDef(), collectionSet));
 
         return method;
     }
 
-    private URI buildUri(InetAddress address, Uri uri) throws URIException {
-        //FIXME: need to convert to agent address if = "${ipaddr}"
-        return new URI(uri.getUrl().getScheme(),
-                uri.getUrl().getUserInfo(),
-                determineHost(address, uri),
-                uri.getUrl().getPort(),
-                uri.getUrl().getPath(),
-                uri.getUrl().getQuery(),
-                uri.getUrl().getFragment());
+    private URI buildUri(InetAddress xaddress, Uri xuri, HttpCollectionSet collectionSet) throws URIException {
+        return new URI(collectionSet.getUriDef().getUrl().getScheme(),
+                collectionSet.getUriDef().getUrl().getUserInfo(),
+                determineHost(collectionSet.getAgent().getInetAddress(), collectionSet.getUriDef()),
+                collectionSet.getUriDef().getUrl().getPort(),
+                collectionSet.getUriDef().getUrl().getPath(),
+                collectionSet.getUriDef().getUrl().getQuery(),
+                collectionSet.getUriDef().getUrl().getFragment());
     }
     
     //note: trouble deciding here on getHost() vs. getIpAddress() or 
