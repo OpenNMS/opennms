@@ -7,7 +7,7 @@ import org.opennms.netmgt.model.OnmsApplication;
 
 public class MockApplicationDao implements ApplicationDao {
 
-    public OnmsApplication findByLabel(String label) {
+    public OnmsApplication findByName(String label) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -1262,6 +1262,46 @@ CREATE TABLE location_specific_status_changes (
     CONSTRAINT ifservices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
+--########################################################################
+--# applications table - Contains list of applications for services
+--#
+--# This table contains the following fields:
+--#
+--# id           : The application id
+--# name         : Textual name of a application
+--########################################################################
+
+create table applications (
+	id			integer,
+	name			varchar(32) not null,
+
+	constraint applications_pkey primary key (id)
+);
+
+CREATE UNIQUE INDEX applications_name_idx ON applications(name);
+
+--########################################################################
+--# application_service_map table - Many-to-Many mapping table of
+--# applications to ifServices
+--#
+--# This table contains the following fields:
+--#
+--# appId           : The application id from applications table
+--# ifServiceId     : The id from the ifServices table.
+--########################################################################
+
+create table application_service_map (
+	appId		integer,
+	ifServiceId	integer,
+
+	constraint applicationid_fkey1 foreign key (appId) references applications (id) ON DELETE CASCADE,
+	constraint ifservices_fkey3 foreign key (ifServiceId) references ifServices (id) ON DELETE CASCADE
+);
+
+CREATE INDEX appid_idx on application_service_map(appid);
+CREATE INDEX ifserviceid_idx on application_service_map(ifserviceid);
+CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifserviceid);
+
 
 --##################################################################
 --# The following command adds the initial loopback poller entry to

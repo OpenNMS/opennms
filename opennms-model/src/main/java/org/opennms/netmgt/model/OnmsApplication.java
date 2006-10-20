@@ -43,7 +43,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -53,7 +54,7 @@ public class OnmsApplication {
 
     private Integer m_id;
 
-    private String m_label;
+    private String m_name;
 
     private Set<OnmsMonitoredService> m_memberServices;
 
@@ -68,17 +69,21 @@ public class OnmsApplication {
         m_id = id;
     }
 
-    @Column(name = "id")
-    public String getLabel() {
-        return m_label;
+    @Column(name = "name", length=32, nullable=false, unique=true)
+    public String getName() {
+        return m_name;
     }
 
-    public void setLabel(String label) {
-        m_label = label;
+    public void setName(String name) {
+        m_name = name;
     }
 
-    @OneToMany
-    @JoinColumn(name = "ifServiceId")
+    @ManyToMany
+    @JoinTable(
+    		name="application_service_map",
+    		joinColumns={@JoinColumn(name="appId")},
+    		inverseJoinColumns={@JoinColumn(name="ifserviceId")}
+    )
     public Set<OnmsMonitoredService> getMemberServices() {
         return m_memberServices;
     }

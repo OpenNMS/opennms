@@ -65,6 +65,8 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
 
     Collection<OnmsLocationSpecificStatus> getAllMostRecentStatusChanges();
     
+    Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(Date timestamp);
+    
     /**
      * Returns all status changes since the date, <b>and</b> one previous
      * status change (so that status at the beginning of the period can be

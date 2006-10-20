@@ -80,10 +80,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_locationDefinition3 = new OnmsMonitoringLocationDefinition("Columbus", "columbus", "OpenNMS OH");
 
         m_application1 = new OnmsApplication();
-        m_application1.setLabel("Application 1");
+        m_application1.setName("Application 1");
         
         m_application2 = new OnmsApplication();
-        m_application2.setLabel("Application 2");
+        m_application2.setName("Application 2");
 
         m_locationMonitor1_1 = new OnmsLocationMonitor();
         m_locationMonitor1_1.setLastCheckInTime(new Date());
@@ -142,7 +142,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("locationName cannot be null"));
         try {
-            m_service.findLocationSpecificStatus(null, m_application1.getLabel());
+            m_service.findLocationSpecificStatus(null, m_application1.getName());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -162,7 +162,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     
     // XXX need to figure out what we should be doing here, if anything
     public void XXXtestFindLocationSpecificStatusInvalidLocation() {
-        m_service.findLocationSpecificStatus("invalid location", m_application1.getLabel());
+        m_service.findLocationSpecificStatus("invalid location", m_application1.getName());
     }
     
     // XXX need to figure out what we should be doing here, if anything
@@ -177,7 +177,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         List<OnmsLocationSpecificStatus> status =
             m_service.findLocationSpecificStatus(m_locationDefinition1.getName(),
-                                                 m_application1.getLabel());
+                                                 m_application1.getName());
 
         verifyEverything();
         
@@ -199,7 +199,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         replayEverything();
         SimpleWebTable table =
             m_service.createStatusTable(m_locationDefinition1.getName(),
-                                        m_application1.getLabel());
+                                        m_application1.getName());
         
         verifyEverything();
         
@@ -244,7 +244,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         //expectEverything();
         resetEverything();
         
-        expect(m_applicationDao.findByLabel("Application 2")).andReturn(m_application2);
+        expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.singleton(m_locationMonitor3_1));
         expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
@@ -256,7 +256,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         replayEverything();
         SimpleWebTable table =
             m_service.createStatusTable(m_locationDefinition3.getName(),
-                                        m_application2.getLabel());
+                                        m_application2.getName());
         
         verifyEverything();
         
@@ -465,7 +465,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     public void expectEverything() {
         resetEverything();
         
-        expect(m_applicationDao.findByLabel("Application 1")).andReturn(m_application1);
+        expect(m_applicationDao.findByName("Application 1")).andReturn(m_application1);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
         expect(m_pollerConfig.getPackage("raleigh")).andReturn(m_pkg);

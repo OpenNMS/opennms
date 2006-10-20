@@ -106,7 +106,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
         
         OnmsApplication application =
-            m_applicationDao.findByLabel(applicationLabel);
+            m_applicationDao.findByName(applicationLabel);
 
         Collection<OnmsLocationMonitor> locationMonitors =
             m_locationMonitorDao.findByLocationDefinition(location);
@@ -192,7 +192,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Collections.sort(sortedApplications,
                          new Comparator<OnmsApplication>(){
             public int compare(OnmsApplication o1, OnmsApplication o2) {
-                return o1.getLabel().compareTo(o2.getLabel());
+                return o1.getName().compareTo(o2.getName());
             }
         });
         
@@ -208,7 +208,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         table.addColumn("Area", "simpleWebTableRowLabel");
         table.addColumn("Location", "simpleWebTableRowLabel");
         for (OnmsApplication application : sortedApplications) {
-            table.addColumn(application.getLabel(), "simpleWebTableRowLabel");
+            table.addColumn(application.getName(), "simpleWebTableRowLabel");
         }
         
         for (OnmsMonitoringLocationDefinition locationDefinition : locationDefinitions) {
@@ -446,7 +446,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
 
         List<String> params = new ArrayList<String>(2);
         params.add("location=" + Util.encode(locationDefinition.getName()));
-        params.add("application=" + Util.encode(application.getLabel()));
+        params.add("application=" + Util.encode(application.getName()));
         
         return "distributedStatusDetails.htm"
             + "?"
