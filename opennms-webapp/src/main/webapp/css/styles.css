@@ -259,7 +259,7 @@ table {
 aggr.status.table {
 	border-collapse: collapse;
 	width: 33%;
-	margin-top 0;
+	margin-top: 0;
 }
 .noWrap {
 	white-space: nowrap;
