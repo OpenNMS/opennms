@@ -84,6 +84,11 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
     public Collection<T> find(String query, Object... values) {
         return getHibernateTemplate().find(query, values);
     }
+    
+    @SuppressWarnings("unchecked")
+	public <S> Collection<S> findObject(Class<S> clazz, String query, Object... values) {
+    	return getHibernateTemplate().find(query, values);
+    }
 
     protected int queryInt(final String query) {
         HibernateCallback callback = new HibernateCallback() {

@@ -4,6 +4,6 @@ import org.opennms.netmgt.model.OnmsApplication;
 
 public interface ApplicationDao extends OnmsDao<OnmsApplication, Integer> {
 
-    OnmsApplication findByLabel(String label);
+    OnmsApplication findByName(String label);
 
 }

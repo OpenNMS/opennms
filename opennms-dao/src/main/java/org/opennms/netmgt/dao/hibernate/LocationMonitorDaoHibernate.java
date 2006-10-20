@@ -307,17 +307,32 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
 
     public Collection<OnmsLocationMonitor> findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition) {
-        // XXX brozow/drv4doe: write this part. :-)
-        throw new IllegalArgumentException("This method hasn't yet been implemented");
+    	return (Collection<OnmsLocationMonitor>)find("from OnmsLocationMonitor as mon where mon.definitionName = ?", locationDefinition.getName());
     }
 
     public Collection<OnmsLocationSpecificStatus> getAllMostRecentStatusChanges() {
-        // XXX brozow/drv4doe: write this part. :-)
-        throw new IllegalArgumentException("This method hasn't yet been implemented");
+    	return getAllStatusChangesAt(new Date());
     }
-
+    
+    public Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(Date timestamp) {
+    	return findObject(OnmsLocationSpecificStatus.class,
+    			"from OnmsLocationSpecificStatus as status " +
+    			"where status.pollResult.timestamp = ( " +
+    			"    select max(recentStatus.pollResult.timestamp) " +
+    			"    from OnmsLocationSpecificStatus as recentStatus " +
+    			"    where recentStatus.pollResult.timestamp < ? " +
+    			"    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
+    			"    having recentStatus.locationMonitor = status.locationMonitor " +
+    			"    and recentStatus.monitoredService = status.monitoredService " +
+    			")",
+    			timestamp); 
+    }
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate) {
-        // XXX brozow/drv4doe: write this part. :-)
-        throw new IllegalArgumentException("This method hasn't yet been implemented");
+
+    	return findObject(OnmsLocationSpecificStatus.class,
+    			"fron OnmsLocationSpecificStatus as status " +
+    			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ?",
+    			startDate, endDate
+    			);
     }
 }
