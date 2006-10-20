@@ -45,6 +45,7 @@
 				<value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
                 <value>org.opennms.netmgt.model.OnmsLocationSpecificStatus</value>
                 <value>org.opennms.netmgt.model.PollStatus</value>
+                <value>org.opennms.netmgt.model.OnmsApplication</value>
 			</list>
 		</property>
 		<!--  property name="schemaUpdate" value="true">
@@ -127,6 +128,10 @@
   </bean>
 
   <bean id="userNotificationDao" class="org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="applicationDao" class="org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate">
   	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
