@@ -51,28 +51,34 @@
 	
 	<bean id="pdfReportRenderer"
 		class="org.opennms.report.availability.render.PDFReportRenderer">
-		<property name="inputResource">
-			<value>file:${opennms.home}/share/reports/AvailReport.xml</value>
+		<property name="inputReportStore">
+			<ref local="simpleReportStore" />
 		</property>
-		<property name="outputResource">
-			<value>file:${opennms.home}/share/reports/PDFAvailReport.pdf</value>
+		<property name="outputReportStore">
+			<ref local="simpleReportStore" />
 		</property>
-		<property name="fopResource">
-			<value>file:${opennms.home}/share/reports/PDFAvailReport.fo</value>
+		<property name="inputFileName">
+			<value>AvailReport.xml</value>
+		</property>
+		<property name="outputFileName">
+			<value>PDFAvailReport.pdf</value>
 		</property>
 		<property name="xsltResource" value="file:${opennms.home}/etc/PDFAvailReport.xsl" />
 	</bean>
 	
 	<bean id="svgReportRenderer"
 		class="org.opennms.report.availability.render.PDFReportRenderer">
-		<property name="inputResource">
-			<value>file:${opennms.home}/share/reports/AvailReport.xml</value>
+		<property name="inputReportStore">
+			<ref local="simpleReportStore" />
 		</property>
-		<property name="outputResource">
-			<value>file:${opennms.home}/share/reports/SVGAvailReport.pdf</value>
+		<property name="outputReportStore">
+			<ref local="simpleReportStore" />
 		</property>
-		<property name="fopResource">
-			<value>file:${opennms.home}/share/reports/SVGAvailReport.fo</value>
+		<property name="inputFileName">
+			<value>AvailReport.xml</value>
+		</property>
+		<property name="outputFileName">
+			<value>SVGAvailReport.pdf</value>
 		</property>
 		<property name="xsltResource" value="file:${opennms.home}/etc/SVGAvailReport.xsl" />
 	</bean>

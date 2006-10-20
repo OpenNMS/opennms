@@ -33,7 +33,6 @@ package org.opennms.report.availability.render;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -41,18 +40,18 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.avalon.framework.logger.Log4JLogger;
 import org.apache.avalon.framework.logger.Logger;
 import org.apache.avalon.framework.logger.NullLogger;
-import org.apache.fop.apps.FOPException;
+import org.apache.fop.apps.Driver;
 import org.apache.fop.messaging.MessageHandler;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.report.availability.store.ReportStore;
 import org.springframework.core.io.Resource;
-import org.xml.sax.InputSource;
 
 /**
  * @author jsartin
@@ -62,13 +61,15 @@ public class PDFReportRenderer implements ReportRenderer {
 
 	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
-	private Resource inputResource;
+	private ReportStore inputReportStore;
 	
-	private Resource outputResource;
+	private ReportStore outputReportStore;
+
+	private String inputFileName;
+	
+	private String outputFileName;
 	
 	private Resource xsltResource;
-
-	private Resource fopResource;
 
 	public void render() throws ReportRenderException {
 		
@@ -83,55 +84,41 @@ public class PDFReportRenderer implements ReportRenderer {
             Reader xsl = new FileReader(xsltResource.getFile());
             
             if (log.isInfoEnabled())
-                log.info("input File : " + inputResource.getDescription());
+                log.info("input File " + inputFileName);
             
-			Reader xml = new FileReader(inputResource.getFile());
-
-			if (log.isInfoEnabled())
-	                log.info("fot File : " + fopResource.getDescription());
+            inputReportStore.setFileName(inputFileName);
+            
+            Reader xml = new FileReader(inputReportStore.newFile());
+            
+ 			if (log.isInfoEnabled())
+                log.info("ouput File " + outputFileName);
 			
-			FileWriter fotWriter = new FileWriter(fopResource.getFile());
-			           
-            if (log.isInfoEnabled())
-                log.info("output File : " + outputResource.getDescription());
-                           
-            FileOutputStream pdfOutputStream = new FileOutputStream(outputResource.getFile());
-                      
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer processor = tfact.newTransformer(new StreamSource(xsl));
-            processor.transform(new StreamSource(xml), new StreamResult(fotWriter));
-
-            xml = null;
+			outputReportStore.setFileName(outputFileName);
+			                                  
+            FileOutputStream pdfOutputStream = new FileOutputStream(outputReportStore.newFile());
             
-			Logger nullLogger = new NullLogger();
+            Logger nullLogger = new NullLogger();
 			MessageHandler.setScreenLogger(nullLogger);
             MessageHandler.setOutputMethod(MessageHandler.NONE);
-
-            fotWriter.close();
             
-            Reader fotReader = new FileReader(fopResource.getFile());
-            InputSource fotDS = new InputSource(fotReader);
+            Driver driver = new Driver();
+            driver.setLogger(avalonLogger);
+            driver.setOutputStream(pdfOutputStream);
+            driver.setRenderer(Driver.RENDER_PDF);
+            TransformerFactory tfact = TransformerFactory.newInstance();
+            Transformer transformer = tfact.newTransformer(new StreamSource(xsl));
+            transformer.transform(new StreamSource(xml), new SAXResult(driver.getContentHandler()));
+            pdfOutputStream.close();
 
-            org.apache.fop.apps.Driver fopDriver = new org.apache.fop.apps.Driver(fotDS, pdfOutputStream);
-			fopDriver.setLogger(avalonLogger);
-			fopDriver.setRenderer(org.apache.fop.apps.Driver.RENDER_PDF);
-            fopDriver.run();
-                                  
-            fopResource.getFile().delete();
-                                    
         }  catch (IOException ioe) {
 			log.fatal("IOException ", ioe);
 			throw new ReportRenderException(ioe);
 		} catch (TransformerConfigurationException tce) {
-			log.fatal("ransformerConfigurationException ", tce);
+			log.fatal("transformerConfigurationException ", tce);
 			throw new ReportRenderException(tce);
 		} catch (TransformerException te) {
 			log.fatal("TransformerException ", te);
 			throw new ReportRenderException(te);
-		} catch (FOPException fope) {
-			log.fatal("FOP Exception ", fope);
-			throw new ReportRenderException(fope);
-			
 		}
  	}
 
@@ -142,18 +129,27 @@ public class PDFReportRenderer implements ReportRenderer {
 	}
 
 
-	public void setFopResource(Resource fopResource) {
-		this.fopResource = fopResource;
+
+	public void setInputFileName(String inputFileName) {
+		this.inputFileName = inputFileName;
 	}
 
 
-	public void setInputResource(Resource inputResource) {
-		this.inputResource = inputResource;
+
+	public void setInputReportStore(ReportStore inputReportStore) {
+		this.inputReportStore = inputReportStore;
 	}
 
 
-	public void setOutputResource(Resource outputResource) {
-		this.outputResource = outputResource;
+
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
+	}
+
+
+
+	public void setOutputReportStore(ReportStore outputReportStore) {
+		this.outputReportStore = outputReportStore;
 	}
 
 }
