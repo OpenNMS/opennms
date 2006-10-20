@@ -642,8 +642,7 @@ create table events (
 	eventAckTime		timestamp without time zone,
 	alarmID			integer,
 
-	constraint pk_eventID primary key (eventID),
-	constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE
+	constraint pk_eventID primary key (eventID)
 );
 
 create index events_uei_idx on events(eventUei);
