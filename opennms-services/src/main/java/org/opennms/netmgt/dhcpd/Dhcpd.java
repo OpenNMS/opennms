@@ -116,7 +116,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * List of clients currently connected to the DHCP daemon
      */
-    private static List m_clients;
+    private static List<Client> m_clients;
 
     /**
      * Socket over which the daemon actively listens for new client connection
@@ -153,24 +153,21 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     }
 
     protected void onStart() {
-		boolean relayMode = false;
-        if (log().isDebugEnabled())
-            log().debug("start: DHCP client daemon starting...");
+        boolean relayMode = false;
+        log().debug("start: DHCP client daemon starting...");
 
         // Only allow start to be called once.
-        //
-        if (m_worker != null && m_worker.isAlive())
+        if (m_worker != null && m_worker.isAlive()) {
             throw new IllegalStateException("The server is already running");
+        }
 
-        // Unless the worker has died, then stop
-        // and continue.
-        //
-        if (m_worker != null)
+        // Unless the worker has died, then stop and continue
+        if (m_worker != null) {
             stop();
+        }
 
         // the client list
-        //
-        m_clients = Collections.synchronizedList(new LinkedList());
+        m_clients = Collections.synchronizedList(new LinkedList<Client>());
 
         // load the dhcpd configuration
         DhcpdConfigFactory dFactory = null;
@@ -191,8 +188,9 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         // open the server
         //
         try {
-            if (log().isDebugEnabled())
+            if (log().isDebugEnabled()) {
                 log().debug("start: listening on TCP port " + dFactory.getPort() + " for incoming client requests.");
+            }
             m_server = new ServerSocket(dFactory.getPort());
         } catch (IOException ex) {
             throw new UndeclaredThrowableException(ex);
@@ -200,21 +198,22 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
 
         // see if we have a valid relay address
         String myIpStr = DhcpdConfigFactory.getInstance().getMyIpAddress();
-        if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("Checking string \"" + myIpStr + "\" to see if we have an IP address");
+        }
         if (myIpStr != null &&  !myIpStr.equals("") && !myIpStr.equalsIgnoreCase("broadcast")) {
             if(IpValidator.isIpValid(myIpStr)) {
                 relayMode = true;
             }
         }
-        if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("Setting relay mode " + relayMode);
+        }
+        
         // open the receiver socket(s)
-        //
         if(!relayMode || (dFactory.getExtendedMode() != null && dFactory.getExtendedMode().equalsIgnoreCase("true"))) {
             try {
-                if (log().isDebugEnabled())
-                    log().debug("start: starting receiver thread for port 68");
+                log().debug("start: starting receiver thread for port 68");
                 m_listener = new Receiver(m_clients);
                 m_listener.start();
             } catch (IOException ex) {
@@ -228,8 +227,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
 
         if(relayMode) {
             try {
-                if (log().isDebugEnabled())
-                    log().debug("start: starting receiver thread for port 67");
+                log().debug("start: starting receiver thread for port 67");
                 m_listener2 = new Receiver2(m_clients);
                 m_listener2.start();
             } catch (IOException ex) {
@@ -246,21 +244,22 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
 	}
 
     protected void onStop() {
-		if (m_worker == null)
+	if (m_worker == null) {
             return;
+        }
+        
         // stop the receiver
-        //
-        m_listener.stop();
+        if (m_listener != null) {
+            m_listener.stop();
+        }
 
         // close the server socket
-        //
         try {
             m_server.close();
         } catch (IOException ex) {
         }
 
         // close all the clients
-        //
         Object[] list = null;
         synchronized (m_clients) {
             list = m_clients.toArray();
@@ -274,7 +273,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         m_clients = null;
         m_worker = null;
         m_listener = null;
-	}
+    }
 
     /**
      * The main routine of the DHCP server. This method accepts incomming client
@@ -285,23 +284,22 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         Category log = ThreadCategory.getInstance(getClass());
 
         // update the status
-        //
         synchronized (this) {
-            if (!isStarting())
+            if (!isStarting()) {
                 return;
+            }
 
-            if (log.isDebugEnabled())
-                log.debug("run: setting status to running...");
+            log.debug("run: setting status to running...");
             setStatus(RUNNING);
         }
 
-        if (log.isDebugEnabled())
-            log.debug("run: DHCPD client daemon running...");
+        log.debug("run: DHCPD client daemon running...");
 
-        // Begin accepting connections from clients
-        // For each new client create new DHCP Client Handler
-        // thread to handle the client's requests.
-        //
+        /*
+         * Begin accepting connections from clients
+         * For each new client create new DHCP Client Handler
+         * thread to handle the client's requests.
+         */
         try {
             m_server.setSoTimeout(1000); // Wake up every second to check the
                                             // status
@@ -314,8 +312,9 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
                         } catch (InterruptedException e) {
                             // ignore
                         }
-                    } else if (!isRunning())
+                    } else if (!isRunning()) {
                         break;
+                    }
                 }
 
                 Socket sock;
@@ -326,9 +325,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
                 }
 
                 // Add the client's new socket connection to the client list
-                //
-                if (log.isDebugEnabled())
-                    log.debug("run: got connection request...creating client handler...");
+                log.debug("run: got connection request...creating client handler...");
 
                 try {
                     Client clnt = new Client(sock);
@@ -362,8 +359,9 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
      */
     public void update(Observable inst, Object ignored) {
         synchronized (this) {
-            if (m_clients != null)
+            if (m_clients != null) {
                 m_clients.remove(inst);
+            }
         }
     }
 
