@@ -330,7 +330,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate) {
 
     	return findObject(OnmsLocationSpecificStatus.class,
-    			"fron OnmsLocationSpecificStatus as status " +
+    			"from OnmsLocationSpecificStatus as status " +
     			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ?",
     			startDate, endDate
     			);
