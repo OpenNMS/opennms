@@ -54,6 +54,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.config.datacollection.HttpCollection;
 import org.opennms.netmgt.config.datacollection.HttpDatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 /**
  * 
@@ -171,6 +172,47 @@ public class HttpCollectionConfigFactory {
     }
 
     public RrdRepository getRrdRepository(String collectionName) {
-        throw new UnsupportedOperationException("not yet implemented");
+        RrdRepository repo = new RrdRepository();
+        repo.setRrdBaseDir(new File(getRrdPath()));
+        repo.setRraList(getRRAList(collectionName));
+        repo.setStep(getStep(collectionName));
+        repo.setHeartBeat((2 * getStep(collectionName)));
+        return repo;
     }
+    
+    public int getStep(String cName) {
+        HttpCollection collection = getHttpCollection(cName);
+        if (collection != null)
+            return collection.getRrd().getStep();
+        else
+            return -1;
+    }
+    
+    public List getRRAList(String cName) {
+       HttpCollection collection = (HttpCollection) getHttpCollection(cName);
+        if (collection != null)
+            return (List) collection.getRrd().getRraCollection();
+        else
+            return null;
+
+    }
+    
+    public String getRrdPath() {
+        String rrdPath = m_config.getRrdRepository();
+        if (rrdPath == null) {
+            throw new RuntimeException("Configuration error, failed to "
+                    + "retrieve path to RRD repository.");
+        }
+    
+        /*
+         * TODO: make a path utils class that has the below in it strip the
+         * File.separator char off of the end of the path.
+         */
+        if (rrdPath.endsWith(File.separator)) {
+            rrdPath = rrdPath.substring(0, (rrdPath.length() - File.separator.length()));
+        }
+        
+        return rrdPath;
+    }
+
 }
