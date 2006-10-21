@@ -49,7 +49,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private MonitoredServiceDao m_monitoredServiceDao = createMock(MonitoredServiceDao.class);
     private LocationMonitorDao m_locationMonitorDao = createMock(LocationMonitorDao.class); 
     private ApplicationDao m_applicationDao = createMock(ApplicationDao.class);
-    private CategoryDao m_categoryDao = createMock(CategoryDao.class);
 
     private OnmsMonitoringLocationDefinition m_locationDefinition1;
     private OnmsMonitoringLocationDefinition m_locationDefinition2;
@@ -73,7 +72,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_service.setMonitoredServiceDao(m_monitoredServiceDao);
         m_service.setLocationMonitorDao(m_locationMonitorDao);
         m_service.setApplicationDao(m_applicationDao);
-        m_service.setCategoryDao(m_categoryDao);
         
         m_locationDefinition1 = new OnmsMonitoringLocationDefinition("Raleigh", "raleigh", "OpenNMS NC");
         m_locationDefinition2 = new OnmsMonitoringLocationDefinition("Durham", "durham", "OpenNMS NC");
@@ -87,11 +85,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
         m_locationMonitor1_1 = new OnmsLocationMonitor();
         m_locationMonitor1_1.setLastCheckInTime(new Date());
+        m_locationMonitor1_1.setDefinitionName("Raleigh");
         
         m_locationMonitor2_1 = new OnmsLocationMonitor();
-        m_locationMonitor1_1.setLastCheckInTime(new Date());
+        m_locationMonitor2_1.setLastCheckInTime(new Date());
+        m_locationMonitor2_1.setDefinitionName("Durham");
         
         m_locationMonitor2_2 = new OnmsLocationMonitor();
+        m_locationMonitor2_2.setDefinitionName("Durham");
         
         m_locationMonitor3_1 = null; // Test the case where there is no monitor for this location
 
@@ -194,8 +195,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     public void runTestCreateStatus() {
         expectEverything();
         
-        expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application1.getMemberServices().size());
-        
         replayEverything();
         SimpleWebTable table =
             m_service.createStatusTable(m_locationDefinition1.getName(),
@@ -210,6 +209,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.addColumn("Category", "simpleWebTableHeader");
         expectedTable.addColumn("Node", "simpleWebTableHeader");
+        expectedTable.addColumn("Monitor", "simpleWebTableHeader");
         expectedTable.addColumn("Service", "simpleWebTableHeader");
         expectedTable.addColumn("Status", "simpleWebTableHeader");
         expectedTable.addColumn("Response Time", "simpleWebTableHeader");
@@ -217,6 +217,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.newRow();
         expectedTable.addCell("", "simpleWebTableRowLabel");
         expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
+        expectedTable.addCell("Raleigh-null", "simpleWebTableRowLabel");
         expectedTable.addCell("HTTP", "simpleWebTableRowLabel");
         expectedTable.addCell("Up", "simpleWebTableRowLabel");
         expectedTable.addCell("", "simpleWebTableRowLabel");
@@ -224,6 +225,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.addCell("", "simpleWebTableRowLabel");
         expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
+        expectedTable.addCell("Raleigh-null", "simpleWebTableRowLabel");
         expectedTable.addCell("HTTPS", "simpleWebTableRowLabel");
         expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
         expectedTable.addCell("", "simpleWebTableRowLabel");
@@ -246,12 +248,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.singleton(m_locationMonitor3_1));
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.EMPTY_SET);
         expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
         expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
         
-        expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application2.getMemberServices().size());
+        //expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application2.getMemberServices().size());
         
         replayEverything();
         SimpleWebTable table =
@@ -267,12 +269,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.addColumn("Category", "simpleWebTableHeader");
         expectedTable.addColumn("Node", "simpleWebTableHeader");
+        expectedTable.addColumn("Monitor", "simpleWebTableHeader");
         expectedTable.addColumn("Service", "simpleWebTableHeader");
         expectedTable.addColumn("Status", "simpleWebTableHeader");
         expectedTable.addColumn("Response Time", "simpleWebTableHeader");
         
         expectedTable.newRow();
         expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
         expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
         expectedTable.addCell("HTTPS", "simpleWebTableRowLabel");
         expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
@@ -336,7 +340,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         monitors2.add(m_locationMonitor2_1);
         monitors2.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(Collections.singleton(m_locationMonitor3_1));
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(Collections.EMPTY_SET);
         expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
 
 
@@ -459,7 +463,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         reset(m_locationMonitorDao);
         reset(m_pollerConfig);
         reset(m_monitoredServiceDao);
-        reset(m_categoryDao);
     }
 
     public void expectEverything() {
@@ -485,7 +488,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         replay(m_monitoredServiceDao);
         replay(m_locationMonitorDao);
         replay(m_applicationDao);
-        replay(m_categoryDao);
     }
 
     public void verifyEverything() {
@@ -493,7 +495,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         verify(m_monitoredServiceDao);
         verify(m_locationMonitorDao);
         verify(m_applicationDao);
-        verify(m_categoryDao);
     }
 
     
