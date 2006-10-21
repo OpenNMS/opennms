@@ -60,23 +60,34 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             OnmsNode node = s.getMonitoredService().getIpInterface().getNode();
             
             table.newRow();
-            table.addCell(node.getLabel(), "simpleWebTableRowLabel");
+            table.addCell(node.getLabel(), 
+                          getStyleForPollResult(s.getPollResult()));
+
             table.addCell(s.getLocationMonitor().getDefinitionName() + "-"
                           + s.getLocationMonitor().getId(),
-                          "simpleWebTableRowLabel");
-            table.addCell(s.getMonitoredService().getServiceName(),
-            "simpleWebTableRowLabel");
+                          "");
+            table.addCell(s.getMonitoredService().getServiceName(), "");
             table.addCell(s.getPollResult().getStatusName(),
-                          "simpleWebTableRowLabel");
+                          "bright");
             long responseTime = s.getPollResult().getResponseTime(); 
             if (responseTime >= 0) {
-                table.addCell(responseTime + "ms", "simpleWebTableRowLabel");
+                table.addCell(responseTime + "ms", "");
             } else {
-                table.addCell("", "simpleWebTableRowLabel");
+                table.addCell("", "");
             }
         }
         
         return table;
+    }
+    
+    private String getStyleForPollResult(PollStatus status) {
+        if (status.isAvailable()) {
+            return "Normal";
+        } else if (status.isUnresponsive()) {
+            return "Warning";
+        } else {
+            return "Critical";
+        }
     }
 
     protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(String locationName, String applicationName) {
@@ -106,6 +117,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
 
         Collection<OnmsLocationMonitor> locationMonitors =
             m_locationMonitorDao.findByLocationDefinition(location);
+        
+        if (locationMonitors.size() == 0) {
+            throw new IllegalArgumentException("No location monitors have "
+                                               + "registered for location \""
+                                               + location.getName() + "\"");
+        }
 
         Package pkg = m_pollerConfig.getPackage(location.getPollingPackageName());
 
@@ -128,7 +145,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         });
                                                                      
         for (OnmsMonitoredService service : sortedServices) {
-            // XXX this is a hack, we need to compute aggregate values for all monitors
             for (OnmsLocationMonitor locationMonitor : locationMonitors) {
                 if (locationMonitor == null) {
                     status.add(new OnmsLocationSpecificStatus(locationMonitor, service, PollStatus.unknown("Distributed poller has never reported for this location")));
@@ -142,8 +158,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 }
             }
         }
-        
-        
 
         return status;
     }
@@ -197,7 +211,14 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         Collection<OnmsLocationSpecificStatus> statusesWithinPeriod =
             m_locationMonitorDao.getStatusChangesBetween(startDate, endDate);
-
+        
+        Collection<OnmsLocationSpecificStatus> statusesBeforePeriod =
+            m_locationMonitorDao.getAllStatusChangesAt(startDate);
+        
+        Collection<OnmsLocationSpecificStatus> statusesPeriod =
+            new HashSet<OnmsLocationSpecificStatus>();
+        statusesPeriod.addAll(statusesBeforePeriod);
+        statusesPeriod.addAll(statusesWithinPeriod);
         
         table.setTitle("Distributed Poller Status Summary");
         
@@ -231,7 +252,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 String percentage =
                     calculatePercentageUptime(monitors,
                                               application.getMemberServices(),
-                                              statusesWithinPeriod,
+                                              statusesPeriod,
                                               startDate, endDate);
                 
                 table.addCell(percentage, status,
@@ -388,12 +409,22 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         for (OnmsLocationSpecificStatus status : sortedStatuses) {
             if (!monitors.contains(status.getLocationMonitor())) {
+                System.out.println("monitor " + status.getLocationMonitor()
+                                   + " not in monitors list");
+                continue;
+            }
+            
+            if (!applicationServices.contains(status.getMonitoredService())) {
+                System.out.println("service " + status.getMonitoredService()
+                                   + " not in monitored service list");
                 continue;
             }
 
             Date currentDate = status.getPollResult().getTimestamp();
 
             if (!currentDate.before(endDate)) {
+                System.out.println("at or past end date " + endDate + " at "
+                                   + currentDate);
                 // We're at or past the end date, so we're done processing
                 break;
             }
@@ -402,6 +433,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             String currentStatus = calculateStatus(serviceStatus.values());
             
             if (currentDate.before(startDate)) {
+                System.out.println("before start date " + startDate + " at "
+                                   + currentDate + " with status "
+                                   + currentStatus + " after status of "
+                                   + status.getPollResult());
                 /*
                  * We're not yet to a date that is inside our time period, so
                  * we don't need to check the status and adjust the

@@ -207,7 +207,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         SimpleWebTable expectedTable = new SimpleWebTable();
         expectedTable.setTitle("Distributed poller view for Application 1 from Raleigh location");
         
-        expectedTable.addColumn("Category", "simpleWebTableHeader");
         expectedTable.addColumn("Node", "simpleWebTableHeader");
         expectedTable.addColumn("Monitor", "simpleWebTableHeader");
         expectedTable.addColumn("Service", "simpleWebTableHeader");
@@ -215,20 +214,18 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Response Time", "simpleWebTableHeader");
         
         expectedTable.newRow();
-        expectedTable.addCell("", "simpleWebTableRowLabel");
-        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
-        expectedTable.addCell("Raleigh-null", "simpleWebTableRowLabel");
-        expectedTable.addCell("HTTP", "simpleWebTableRowLabel");
-        expectedTable.addCell("Up", "simpleWebTableRowLabel");
-        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "Normal");
+        expectedTable.addCell("Raleigh-null", "");
+        expectedTable.addCell("HTTP", "");
+        expectedTable.addCell("Up", "bright");
+        expectedTable.addCell("", "");
         expectedTable.newRow();
         
-        expectedTable.addCell("", "simpleWebTableRowLabel");
-        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
-        expectedTable.addCell("Raleigh-null", "simpleWebTableRowLabel");
-        expectedTable.addCell("HTTPS", "simpleWebTableRowLabel");
-        expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
-        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "Critical");
+        expectedTable.addCell("Raleigh-null", "");
+        expectedTable.addCell("HTTPS", "");
+        expectedTable.addCell("Unknown", "bright");
+        expectedTable.addCell("", "");
         
         assertTableEquals(expectedTable, table);
     }
@@ -249,25 +246,33 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.EMPTY_SET);
-        expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
-        expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
-        expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
+        //expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
+        //expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
+        //expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
         
-        //expect(m_categoryDao.findByNode(m_node)).andReturn(null).times(m_application2.getMemberServices().size());
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("No location monitors have registered for location \"Columbus\""));
         
         replayEverything();
-        SimpleWebTable table =
-            m_service.createStatusTable(m_locationDefinition3.getName(),
-                                        m_application2.getName());
-        
+        try {
+            SimpleWebTable table =
+                m_service.createStatusTable(m_locationDefinition3.getName(),
+                                            m_application2.getName());
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+
         verifyEverything();
+
+        /*
+        
         
         //System.out.print(table.toString());
         
         SimpleWebTable expectedTable = new SimpleWebTable();
         expectedTable.setTitle("Distributed poller view for Application 2 from Columbus location");
         
-        expectedTable.addColumn("Category", "simpleWebTableHeader");
         expectedTable.addColumn("Node", "simpleWebTableHeader");
         expectedTable.addColumn("Monitor", "simpleWebTableHeader");
         expectedTable.addColumn("Service", "simpleWebTableHeader");
@@ -275,14 +280,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Response Time", "simpleWebTableHeader");
         
         expectedTable.newRow();
-        expectedTable.addCell("", "simpleWebTableRowLabel");
-        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
-        expectedTable.addCell("Node 1", "simpleWebTableRowLabel");
-        expectedTable.addCell("HTTPS", "simpleWebTableRowLabel");
-        expectedTable.addCell("Unknown", "simpleWebTableRowLabel");
-        expectedTable.addCell("", "simpleWebTableRowLabel");
+        expectedTable.addCell("Node 1", "Critical");
+        expectedTable.addCell("Node 1", "");
+        expectedTable.addCell("HTTPS", "");
+        expectedTable.addCell("Unknown", "bright");
+        expectedTable.addCell("", "");
         
         assertTableEquals(expectedTable, table);
+        */
     }
 
     public void testCreateFacilityStatusTable() {
@@ -342,6 +347,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
         expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(Collections.EMPTY_SET);
         expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
+        expect(m_locationMonitorDao.getAllStatusChangesAt(startDate)).andReturn(Collections.EMPTY_SET);
 
 
         replayEverything();
@@ -367,8 +373,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
         expectedTable.addCell("Durham", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+1");
-        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Durham&application=Application+2");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+1");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+2");
         
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS OH", "simpleWebTableRowLabel");
