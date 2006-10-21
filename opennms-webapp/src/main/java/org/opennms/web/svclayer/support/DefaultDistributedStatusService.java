@@ -15,11 +15,9 @@ import java.util.Set;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -38,7 +36,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     private MonitoredServiceDao m_monitoredServiceDao;
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
-    private CategoryDao m_categoryDao;
     
     /*
      * XXX No unit tests
@@ -53,34 +50,27 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         table.setTitle("Distributed poller view for " + applicationLabel + " from " + locationName + " location");
         
-        table.addColumn("Category", "simpleWebTableHeader");
         table.addColumn("Node", "simpleWebTableHeader");
-        //table.addColumn("Instance", "simpleWebTableHeader");
+        table.addColumn("Monitor", "simpleWebTableHeader");
         table.addColumn("Service", "simpleWebTableHeader");
         table.addColumn("Status", "simpleWebTableHeader");
         table.addColumn("Response Time", "simpleWebTableHeader");
         
         for (OnmsLocationSpecificStatus s : status) {
             OnmsNode node = s.getMonitoredService().getIpInterface().getNode();
-            // XXX we should iterate over every category
-            Collection<OnmsCategory> categories = m_categoryDao.findByNode(node);
-            String category;
-            if (categories == null || categories.size() == 0) {
-                category = "";
-            } else {
-                category = categories.iterator().next().getName();
-            }
             
             table.newRow();
-            table.addCell(category, "simpleWebTableRowLabel");
             table.addCell(node.getLabel(), "simpleWebTableRowLabel");
-            table.addCell(s.getMonitoredService().getServiceName(),
+            table.addCell(s.getLocationMonitor().getDefinitionName() + "-"
+                          + s.getLocationMonitor().getId(),
                           "simpleWebTableRowLabel");
+            table.addCell(s.getMonitoredService().getServiceName(),
+            "simpleWebTableRowLabel");
             table.addCell(s.getPollResult().getStatusName(),
                           "simpleWebTableRowLabel");
             long responseTime = s.getPollResult().getResponseTime(); 
-            if (responseTime >=0 ) {
-                table.addCell(responseTime, "simpleWebTableRowLabel");
+            if (responseTime >= 0) {
+                table.addCell(responseTime + "ms", "simpleWebTableRowLabel");
             } else {
                 table.addCell("", "simpleWebTableRowLabel");
             }
@@ -89,24 +79,30 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return table;
     }
 
-    /*
-     * XXX what do we do if any of the DAO calls return null, or do they
-     * throw DataAccessException?
-     */
-    protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(String locationName, String applicationLabel) {
+    protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(String locationName, String applicationName) {
         if (locationName == null) {
             throw new IllegalArgumentException("locationName cannot be null");
         }
         
-        if (applicationLabel == null) {
+        if (applicationName == null) {
             throw new IllegalArgumentException("applicationLabel cannot be null");
         }
         
         OnmsMonitoringLocationDefinition location =
             m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
+        if (location == null) {
+            throw new IllegalArgumentException("Could not find location for "
+                                               + "location name \""
+                                               + locationName + "\"");
+        }
         
         OnmsApplication application =
-            m_applicationDao.findByName(applicationLabel);
+            m_applicationDao.findByName(applicationName);
+        if (application == null) {
+            throw new IllegalArgumentException("Could not find application "
+                                               + "for application name \""
+                                               + applicationName + "\"");
+        }
 
         Collection<OnmsLocationMonitor> locationMonitors =
             m_locationMonitorDao.findByLocationDefinition(location);
@@ -135,11 +131,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             // XXX this is a hack, we need to compute aggregate values for all monitors
             for (OnmsLocationMonitor locationMonitor : locationMonitors) {
                 if (locationMonitor == null) {
-                    status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("Distributed poller has never reported for this location")));
+                    status.add(new OnmsLocationSpecificStatus(locationMonitor, service, PollStatus.unknown("Distributed poller has never reported for this location")));
                 } else {
                     OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
                     if (currentStatus == null) {
-                        status.add(new OnmsLocationSpecificStatus(null, service, PollStatus.unknown("No status recorded for this service from this location")));
+                        status.add(new OnmsLocationSpecificStatus(locationMonitor, service, PollStatus.unknown("No status recorded for this service from this location")));
                     } else {
                         status.add(currentStatus);
                     }
@@ -171,11 +167,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
     }
 
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-        
-    }
-
     /*
      * XXX what do we do if any of the DAO calls return null, or do they
      * throw DataAccessException?
@@ -186,9 +177,14 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         List<OnmsMonitoringLocationDefinition> locationDefinitions =
             m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+
+        Collection<OnmsApplication> applications = m_applicationDao.findAll();
+        if (applications.size() == 0) {
+            throw new IllegalArgumentException("there are no applications");
+        }
         
         List<OnmsApplication> sortedApplications =
-            new ArrayList<OnmsApplication>(m_applicationDao.findAll());
+            new ArrayList<OnmsApplication>(applications);
         Collections.sort(sortedApplications,
                          new Comparator<OnmsApplication>(){
             public int compare(OnmsApplication o1, OnmsApplication o2) {
