@@ -155,8 +155,8 @@ public class ElementUtil extends Object {
     
     public static Service getServiceByParams(HttpServletRequest request)
             throws ServletException, SQLException {
-        return getServiceByParams(request, "ifserviceid", "nodeid", "ipaddr",
-                                  "serviceid");
+        return getServiceByParams(request, "ifserviceid", "node", "intf",
+                                  "service");
     }
     
     public static Service getServiceByParams(HttpServletRequest request,
