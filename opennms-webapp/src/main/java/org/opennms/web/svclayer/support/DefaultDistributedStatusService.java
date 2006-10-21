@@ -409,22 +409,16 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         for (OnmsLocationSpecificStatus status : sortedStatuses) {
             if (!monitors.contains(status.getLocationMonitor())) {
-                System.out.println("monitor " + status.getLocationMonitor()
-                                   + " not in monitors list");
                 continue;
             }
             
             if (!applicationServices.contains(status.getMonitoredService())) {
-                System.out.println("service " + status.getMonitoredService()
-                                   + " not in monitored service list");
                 continue;
             }
 
             Date currentDate = status.getPollResult().getTimestamp();
 
             if (!currentDate.before(endDate)) {
-                System.out.println("at or past end date " + endDate + " at "
-                                   + currentDate);
                 // We're at or past the end date, so we're done processing
                 break;
             }
@@ -433,10 +427,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             String currentStatus = calculateStatus(serviceStatus.values());
             
             if (currentDate.before(startDate)) {
-                System.out.println("before start date " + startDate + " at "
-                                   + currentDate + " with status "
-                                   + currentStatus + " after status of "
-                                   + status.getPollResult());
                 /*
                  * We're not yet to a date that is inside our time period, so
                  * we don't need to check the status and adjust the
