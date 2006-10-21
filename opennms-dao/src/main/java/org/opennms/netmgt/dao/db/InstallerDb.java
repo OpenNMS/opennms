@@ -1278,7 +1278,6 @@ public class InstallerDb {
         rs.close();
         select.close();
         insert.close();
-        st.close();
 
         getConnection().commit();
         getConnection().setAutoCommit(true);
@@ -1290,6 +1289,8 @@ public class InstallerDb {
                     + "(0, 'http://uei.opennms.org/dummyevent', now(), "
                     + "'OpenNMS.Eventd', 'localhost', now(), 1, 'Y', 'Y')");
         }
+        
+        st.close();
 
         m_out.println("    - transforming data into the new table... "
                 + "DONE           ");
