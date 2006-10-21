@@ -214,16 +214,16 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Response Time", "simpleWebTableHeader");
         
         expectedTable.newRow();
-        expectedTable.addCell("Node 1", "Normal");
+        expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=null");
         expectedTable.addCell("Raleigh-null", "");
-        expectedTable.addCell("HTTP", "");
+        expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
         expectedTable.newRow();
         
-        expectedTable.addCell("Node 1", "Critical");
+        expectedTable.addCell("Node 1", "Critical", "element/node.jsp?node=null");
         expectedTable.addCell("Raleigh-null", "");
-        expectedTable.addCell("HTTPS", "");
+        expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("", "");
         
