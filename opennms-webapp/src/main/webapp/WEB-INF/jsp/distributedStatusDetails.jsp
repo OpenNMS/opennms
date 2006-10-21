@@ -29,7 +29,7 @@
   </tr>
   
   <c:forEach items="${webTable.rows}" var="row">
-    <tr class="CellStatus">
+    <tr class="<c:out value='${row[0].styleClass}'/>">
       <c:forEach items="${row}" var="cell">
         <td class="<c:out value='${cell.styleClass}'/> divider">
           <c:choose>
