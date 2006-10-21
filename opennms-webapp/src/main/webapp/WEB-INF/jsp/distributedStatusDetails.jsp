@@ -45,3 +45,5 @@
     </tr>
   </c:forEach>
 </table>
+
+<jsp:include page="/includes/footer.jsp" flush="false"/>
