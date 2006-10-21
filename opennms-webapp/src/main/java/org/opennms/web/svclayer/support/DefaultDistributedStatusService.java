@@ -61,12 +61,15 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             
             table.newRow();
             table.addCell(node.getLabel(), 
-                          getStyleForPollResult(s.getPollResult()));
+                          getStyleForPollResult(s.getPollResult()),
+                          "element/node.jsp?node=" + node.getId());
 
             table.addCell(s.getLocationMonitor().getDefinitionName() + "-"
                           + s.getLocationMonitor().getId(),
                           "");
-            table.addCell(s.getMonitoredService().getServiceName(), "");
+            table.addCell(s.getMonitoredService().getServiceName(), "",
+                          "element/service.jsp?ifserviceid="
+                          + s.getMonitoredService().getId());
             table.addCell(s.getPollResult().getStatusName(),
                           "bright");
             long responseTime = s.getPollResult().getResponseTime(); 
