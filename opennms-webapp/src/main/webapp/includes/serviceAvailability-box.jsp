@@ -46,73 +46,64 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+	    java.io.IOException,
+		org.exolab.castor.xml.MarshalException,
+		org.exolab.castor.xml.ValidationException,
 		org.opennms.web.category.*,
 		org.opennms.web.element.*
 	"
 %>
 
 <%!
-    protected CategoryModel model;
+    private CategoryModel m_model;
     
-    protected double normalThreshold;
-    protected double warningThreshold;
+    private double m_normalThreshold;
+    private double m_warningThreshold;
     
 
     public void init() throws ServletException {
         try {
-            this.model = CategoryModel.getInstance();
+            m_model = CategoryModel.getInstance();
             
-            this.normalThreshold  = this.model.getCategoryNormalThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
-            this.warningThreshold = this.model.getCategoryWarningThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);            
-        }
-        catch( java.io.IOException e ) {
+            m_normalThreshold  = m_model.getCategoryNormalThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
+            m_warningThreshold = m_model.getCategoryWarningThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);            
+        } catch (IOException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.MarshalException e ) {
+        } catch (MarshalException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.ValidationException e ) {
+        } catch (ValidationException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }
     }
 %>
 
 <%
-    //required parameter node
-    String nodeIdString = request.getParameter("node");
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("node", new String[] {"node", "intf", "service"});
-    }
+    Service service = ElementUtil.getServiceByParams(request);
     
-    //required parameter intf
-    String ipAddr = request.getParameter("intf");
-    if( ipAddr == null ) {
-        throw new org.opennms.web.MissingParameterException("intf", new String[] {"node", "intf", "service"});
-    }
-    
-    //required parameter service
-    String serviceIdString = request.getParameter("service");
-    if( serviceIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("service", new String[] {"node", "intf", "service"});
-    }
-    
-    int nodeId = Integer.parseInt(nodeIdString);
-    int serviceId = Integer.parseInt(serviceIdString);
+    String styleClass;
+    String statusContent;
 
-    //get the service's database info
-    Service service = NetworkElementFactory.getService(nodeId, ipAddr, serviceId);
+    if (service.isManaged()) {
+        //find the availability value for this node
+        double rtcValue =
+            m_model.getServiceAvailability(service.getNodeId(),
+	                                       service.getIpAddress(),
+                                           service.getServiceId());
+        
+        styleClass = CategoryUtil.getCategoryClass(m_normalThreshold,
+                                                   m_warningThreshold,
+                                                   rtcValue);
+    	statusContent = CategoryUtil.formatValue(rtcValue) + "%";
+    } else {
+        styleClass = "Indeterminate";
+		statusContent = ElementUtil.getServiceStatusString(service);
+    }
     
-    //find the availability value for this node
-    double rtcValue = this.model.getServiceAvailability(nodeId, ipAddr, serviceId);
 %>
 
 <h3>Overall Availability</h3>
 <table>
-  <tr class="<%= service.isManaged() ? CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, rtcValue) : "Indeterminate" %>"
-    <% if( service.isManaged() ) { %>
-      <td class="divider bright"><%=CategoryUtil.formatValue(rtcValue)%>%</td>
-    <% } else { %>
-      <td class="divider bright"><%=ElementUtil.getServiceStatusString(service)%></td>
-    <% } %>
+  <tr class="<%= styleClass %>"/>
+    <td class="divider bright"><%= statusContent %></td>
   </tr>
 </table>

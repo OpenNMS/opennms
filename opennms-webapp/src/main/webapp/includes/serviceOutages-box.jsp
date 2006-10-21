@@ -46,6 +46,8 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.outage.*,
+	    org.opennms.web.element.ElementUtil,
+	    org.opennms.web.element.Service,
 		java.util.*
 	"
 %>
@@ -55,29 +57,7 @@
 %>
 
 <%
-    //required parameter node
-    String nodeIdString = request.getParameter("node");
-    
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("node", new String[] {"node", "intf", "service"}); 
-    }
-
-    //required parameter intf
-    String ipAddr = request.getParameter("intf");
-
-    if( ipAddr == null ) {
-        throw new org.opennms.web.MissingParameterException("intf", new String[] {"node", "intf", "service"}); 
-    }
-
-    //required parameter node
-    String serviceIdString = request.getParameter("service");
-    
-    if( serviceIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("service", new String[] {"node", "intf", "service"}); 
-    }
-    
-    int nodeId = Integer.parseInt(nodeIdString);
-    int serviceId = Integer.parseInt(serviceIdString);    
+    Service service = ElementUtil.getServiceByParams(request);
         
     //determine yesterday's respresentationr
     Calendar cal = new GregorianCalendar();
@@ -86,7 +66,10 @@
 
     //gets all current outages and outages that have been resolved within the
     //the last 24 hours
-    Outage[] outages = this.model.getOutagesForService(nodeId, ipAddr, serviceId, yesterday);
+    Outage[] outages = this.model.getOutagesForService(service.getNodeId(),
+                                                       service.getIpAddress(),
+                                                       service.getServiceId(),
+                                                       yesterday);
 %>
 
 <h3>Recent Outages</h3>

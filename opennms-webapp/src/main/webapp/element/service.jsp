@@ -45,50 +45,24 @@
 		org.opennms.web.category.*,
 		java.util.*,
 		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.event.*
+		org.opennms.web.event.*,
+		org.opennms.web.MissingParameterException
 	"
 %>
 
 <%
-    String nodeIdString = request.getParameter( "node" );
-    String ipAddr = request.getParameter( "intf" );
-    String serviceIdString = request.getParameter( "service" );
+    Service service = ElementUtil.getServiceByParams(request);
+	
+	int nodeId = service.getNodeId();
+	String ipAddr = service.getIpAddress();
+ 	int serviceId = service.getServiceId();
 
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node", new String[] { "node", "intf", "service" } );
-    }
-
-    if( ipAddr == null ) {
-        throw new org.opennms.web.MissingParameterException( "intf", new String[] { "node", "intf", "service" } );
-    }
-
-    if( serviceIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "service", new String[] { "node", "intf", "service" } );
-    }
-
-    int nodeId = -1;
-    int serviceId = -1;
-
-    try {
-        nodeId = Integer.parseInt( nodeIdString );
-        serviceId = Integer.parseInt( serviceIdString );
-    }
-    catch( NumberFormatException e ) {
-        //throw new WrongParameterDataTypeException
-        throw new ServletException( "Wrong data type, should be integer", e );
-    }
-
-    Service service_db = NetworkElementFactory.getService( nodeId, ipAddr, serviceId );
-
-    if( service_db == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such service in database" );
-    }
-
-    String eventUrl = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr + "&filter=service%3D" + serviceId;
+    String eventUrl = "event/list?filter=node%3D" + nodeId
+                      + "&filter=interface%3D" + ipAddr + "&filter=service%3D"
+                      + serviceId;
 %>
 
-<% String headTitle = service_db.getServiceName() + " Service on " + ipAddr; %>
+<% String headTitle = service.getServiceName() + " Service on " + ipAddr; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
 <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
 
@@ -115,9 +89,9 @@ function doDelete() {
 
 <% } %>
 
-      <h2><%=service_db.getServiceName()%> service on <%=service_db.getIpAddress()%></h2>
+      <h2><%=service.getServiceName()%> service on <%=service.getIpAddress()%></h2>
 
-         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+         <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
          <form method="POST" name="delete" action="admin/deleteService">
          <input type="hidden" name="node" value="<%=nodeId%>">
          <input type="hidden" name="intf" value="<%=ipAddr%>">
@@ -126,12 +100,12 @@ function doDelete() {
       <p>
          <a href="<%=eventUrl%>">View Events</a>
          
-         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+         <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
          &nbsp;&nbsp;&nbsp;<a href="admin/deleteService" onClick="return doDelete()">Delete</a>
          <% } %>
       </p>
  
-         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+         <% if (request.isUserInRole( Authentication.ADMIN_ROLE)) { %>
          </form>
          <% } %>
 
@@ -142,15 +116,15 @@ function doDelete() {
             <table>
               <tr>
                 <td>Node</td> 
-                <td><a href="element/node.jsp?node=<%=service_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service_db.getNodeId())%></a></td>
+                <td><a href="element/node.jsp?node=<%=service.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service.getNodeId())%></a></td>
               </tr>
               <tr>
                 <td>Interface</td> 
-                <td><a href="element/interface.jsp?node=<%=service_db.getNodeId()%>&intf=<%=service_db.getIpAddress()%>"><%=service_db.getIpAddress()%></a></td>
+                <td><a href="element/interface.jsp?node=<%=service.getNodeId()%>&intf=<%=service.getIpAddress()%>"><%=service.getIpAddress()%></a></td>
               </tr>              
               <tr>
                 <td>Polling Status</td>
-                <td><%=ElementUtil.getServiceStatusString(service_db)%></td>
+                <td><%=ElementUtil.getServiceStatusString(service)%></td>
               </tr>
             </table>
           
