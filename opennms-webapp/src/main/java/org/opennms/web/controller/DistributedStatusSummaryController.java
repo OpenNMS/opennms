@@ -27,13 +27,13 @@ public class DistributedStatusSummaryController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         GregorianCalendar calendar = new GregorianCalendar();
-        Date startDate = new Date(calendar.getTimeInMillis());
+        Date endDate = new Date(calendar.getTimeInMillis());
         
         calendar.set(Calendar.HOUR_OF_DAY, 0); 
         calendar.set(Calendar.MINUTE, 0); 
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0); 
-        Date endDate = new Date(calendar.getTimeInMillis());
+        Date startDate = new Date(calendar.getTimeInMillis());
         
         SimpleWebTable table = m_distributedStatusService.createFacilityStatusTable(startDate, endDate);
         return new ModelAndView("distributedStatusSummary", "webTable", table);
