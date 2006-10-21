@@ -115,52 +115,52 @@
     double overallRtcValue = this.model.getInterfaceAvailability(nodeId, ipAddr);
 %>
 
+<%
+String overallStatus;
+String overallStatusString;
+
+if (overallRtcValue < 0) {
+    overallStatus = "Indeterminate";
+    overallStatusString = ElementUtil.getInterfaceStatusString(intf);
+} else {
+    if (services.length < 1) {
+        overallStatus = "Indeterminate";
+        overallStatusString = "Not Monitored";
+    } else {
+        overallStatus = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
+        overallStatusString = "" + CategoryUtil.formatValue(overallRtcValue);
+    }
+}
+%>
+
 <h3>Availability</h3>
-<table class="standard">
-  <tr class="CellStatus">
-    <td>Overall Availability</td>
-
-<% if( overallRtcValue < 0 ) { %>
-      <td class="Indeterminate"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
-
-<% } else { %>
-     <% if(services.length < 1) { %>
-              <td colspan=2 class="Indeterminate">  Not Monitored </td>
-     <% } else { %>
-      <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
-     <% } %>
-
+<table>
+  <tr class="<%= overallStatus %>">
+    <td class="divider">Overall Availability</td>
+    <td class="divider bright" colspan="2"><%= overallStatusString %></td>
   </tr>
 
+  <% for( int i=0; i < services.length; i++ ) { %>
+    <% Service service = services[i]; %>
+    <% double svcValue = 0; %>
+    <% if( service.isManaged() ) { %>
+      <% svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>     
+      <tr class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>">
+    <% } else { %>
+      <tr class="Indeterminate">
+    <% } %>
+    <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+    <% if( service.isManaged() ) { %>
+      <td class="divider bright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
+    <% } else { %>
+      <td class="divider bright"><%=ElementUtil.getServiceStatusString(service)%></td>
+    <% } %>
+    </tr>
+  <% } %>
   <tr>
-    <td colspan="2">
-<!--      <table class="inner"> -->
-      <table>
-        <% for( int i=0; i < services.length; i++ ) { %>
-          <% Service service = services[i]; %>
-          
-          <% if( service.isManaged() ) { %>
-            <% double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>     
+    <td></td>
+    <td colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
 
-            <tr class="CellStatus">
-              <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-              <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>"><%=CategoryUtil.formatValue(svcValue)%>%</td>
-            </tr>
-          <% } else { %>
-            <tr>
-              <td <a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-              <td class="Indeterminate"><%=ElementUtil.getServiceStatusString(service)%></td>
-
-            </tr>          
-          <% } %>
-        <% } %>
-      </table>
-    </td>
-  </tr>
-  <tr>
-    <td class="standardheaderplain" colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
-
-<% } %>
   </tr>   
 </table>   
 
