@@ -81,32 +81,35 @@
     Outage[] outages = this.model.getOutagesForInterface(nodeId, ipAddr, yesterday);    
 %>
 
-<table class="standard">
+<h3>Recent Outages</h3>
+
+<table>
 
 <% if(outages.length == 0) { %>
   <tr>
-    <td class="standardheaderplain" colspan="4">There have been no outages on this interface in the last 24 hours.</td>
+    <td>There have been no outages on this interface in the last 24 hours.</td>
   </tr>
 <% } else { %>
-  <tr> 
-    <td class="standardheader" colspan="4"><b>Recent Outages</b></td>
-  </tr>
   <tr>
-    <td class="standardheader">Service</td>
-    <td class="standardheader">Lost</td>
-    <td class="standardheader">Regained</td>
-    <td class="standardheader">Outage ID</td>
+    <th>Service</td>
+    <th>Lost</td>
+    <th>Regained</td>
+    <th>Outage ID</td>
   </tr>
   <% for( int i=0; i < outages.length; i++ ) { %>
-     <tr>
-      <td class="standard"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
-      <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
+     <% if( outages[i].getRegainedServiceTime() == null ) { %>
+       <tr class="Critical">
+     <% } else { %>
+       <tr class="Cleared">
+     <% } %>
+      <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
+      <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
-        <td class="standard" bgcolor="red"><b>DOWN</b></td>
+        <td class="divider"><b>DOWN</b></td>
       <% } else { %>        
-        <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
+        <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
       <% } %>
-      <td class="standard"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>  
+      <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>  
      </tr>
   <% } %>
 <% } %>

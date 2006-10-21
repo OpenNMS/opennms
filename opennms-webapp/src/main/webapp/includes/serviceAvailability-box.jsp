@@ -106,13 +106,13 @@
     double rtcValue = this.model.getServiceAvailability(nodeId, ipAddr, serviceId);
 %>
 
+<h3>Overall Availability</h3>
 <table>
-  <tr class="CellStatus">
-    <td width="30%"><b>Overall&nbsp;Availability</b></td>
+  <tr class="<%= service.isManaged() ? CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, rtcValue) : "Indeterminate" %>"
     <% if( service.isManaged() ) { %>
-      <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, rtcValue)%>" align="right"><%=CategoryUtil.formatValue(rtcValue)%>%</td>    
+      <td class="divider bright"><%=CategoryUtil.formatValue(rtcValue)%>%</td>
     <% } else { %>
-      <td class="Indeterminate"><%=ElementUtil.getServiceStatusString(service)%></td>
+      <td class="divider bright"><%=ElementUtil.getServiceStatusString(service)%></td>
     <% } %>
   </tr>
 </table>

@@ -73,14 +73,13 @@
     Outage[] outages = this.model.getOutagesForNode(nodeId, yesterday);
 %>
 
-<% if(outages.length == 0) { %>
-    <!-- XXX should this be header, instead? -->
-    <p>There have been no outages on this node in the last 24 hours.</p>
-<% } else { %>
-  <tr> 
-    <!-- XXX should this be header, instead? -->
-    <h3>Recent Outages</h3>
+<h3>Recent Outages</h3>
 <table>
+<% if(outages.length == 0) { %>
+  <tr>
+    <td>There have been no outages on this node in the last 24 hours.</td>
+  </tr>
+<% } else { %>
   <tr>
     <th>Interface</th>
     <th>Service</th>
