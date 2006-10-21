@@ -48,12 +48,13 @@
 	import="org.opennms.web.outage.*,
 	    org.opennms.web.element.ElementUtil,
 	    org.opennms.web.element.Service,
+	    org.opennms.netmgt.EventConstants,
 		java.util.*
 	"
 %>
 
 <%! 
-    OutageModel model = new OutageModel();
+    OutageModel m_model = new OutageModel();
 %>
 
 <%
@@ -66,18 +67,18 @@
 
     //gets all current outages and outages that have been resolved within the
     //the last 24 hours
-    Outage[] outages = this.model.getOutagesForService(service.getNodeId(),
-                                                       service.getIpAddress(),
-                                                       service.getServiceId(),
-                                                       yesterday);
+    Outage[] outages = m_model.getOutagesForService(service.getNodeId(),
+                                                    service.getIpAddress(),
+                                                    service.getServiceId(),
+                                                    yesterday);
 %>
 
 <h3>Recent Outages</h3>
 
 <table>
 
-<% if(outages.length == 0) { %>
-  <td class="standardheader" colspan="3">There have been no outages on this service in the last 24 hours.</td>
+<% if (outages.length == 0) { %>
+  <td colspan="3">There have been no outages on this service in the last 24 hours.</td>
 <% } else { %>
   <tr>
     <th>Lost</td>
@@ -86,8 +87,8 @@
   </tr>
   <%  for(int i=0; i < outages.length; i++) { %>
      <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "Critical" : "Normal"%>">
-      <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
-      <td  class="divider bright"><%=(outages[i].getRegainedServiceTime() == null) ? "DOWN" : org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
+      <td class="divider"><%=EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
+      <td  class="divider bright"><%=(outages[i].getRegainedServiceTime() == null) ? "DOWN" : EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
       <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>
     </tr>
   <% } %>
