@@ -136,15 +136,10 @@ function doDelete() {
          <% } %>
 
 
-      <div id="contentleft">
+      <div class="TwoColLeft">
             <!-- general info box -->
             <h3>General</h3>
             <table>
-            <!--
-              <tr>
-                <th colspan="2">General</th> 
-              </tr>
-              -->
               <tr>
                 <td>Node</td> 
                 <td><a href="element/node.jsp?node=<%=service_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service_db.getNodeId())%></a></td>
@@ -162,9 +157,9 @@ function doDelete() {
             <!-- Availability box -->
             <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
             
-      </div> <!-- id="contentleft" -->
+      </div> <!-- class="TwoColLeft" -->
 
-      <div id="contentright">
+      <div class="TwoColRight">
             <!-- events list box -->
             <% String eventHeader = "<a href='" + eventUrl + "'>Recent Events</a>"; %>
             <% String moreEventsUrl = eventUrl; %>
@@ -179,6 +174,6 @@ function doDelete() {
       
             <!-- Recent outages box -->
             <jsp:include page="/includes/serviceOutages-box.jsp" flush="false" />
-      </div> <!-- id="contentright" -->
+      </div> <!-- class="TwoColRight" -->
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
