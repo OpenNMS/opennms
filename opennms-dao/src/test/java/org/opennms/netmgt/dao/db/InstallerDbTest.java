@@ -158,6 +158,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         URL sql = getClass().getResource("/create.sql-revision-3952");
         assertNotNull("Could not find create.sql", sql);
         getInstallerDb().setCreateSqlLocation(sql.getFile());
+        getInstallerDb().readTables();
 
         // First pass.
         getInstallerDb().createSequences();
@@ -167,6 +168,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         getInstallerDb().createTables();
 
         getInstallerDb().setCreateSqlLocation(newCreate);
+        getInstallerDb().readTables();
 
         // Second pass.
         getInstallerDb().createSequences();
@@ -270,15 +272,22 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
         ta.verifyAnticipated();
     }
-
+    
     public void setupBug931(boolean breakConstraint, boolean dropForeignTable)
-            throws SQLException {
+        throws Exception {
+        setupBug931(breakConstraint, dropForeignTable, true);
+    }
+
+    public void setupBug931(boolean breakConstraint, boolean dropForeignTable, boolean useOwnCreateSql)
+    throws Exception {
         final String[] commands = { "CREATE TABLE events ( nodeID integer )",
                 "CREATE TABLE node ( nodeID integer )",
                 "INSERT INTO events ( nodeID ) VALUES ( 1 )",
                 "INSERT INTO node ( nodeID ) VALUES ( 1 )",
                 "INSERT INTO events ( nodeID ) VALUES ( 2 )",
                 "INSERT INTO node ( nodeID ) VALUES ( 2 )" };
+        final String newSql = "CREATE TABLE events ( nodeID integer, "
+            + "constraint fk_nodeID6 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE );\n";
 
         executeSQL(commands);
 
@@ -291,6 +300,10 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
             if (!breakConstraint) {
                 executeSQL("UPDATE events SET nodeID = NULL WHERE nodeID IS NOT NULL");
             }
+        }
+        
+        if (useOwnCreateSql) {
+            getInstallerDb().readTables(new StringReader(newSql));
         }
     }
 
@@ -490,7 +503,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
             String exceptionMessage) throws Exception {
         //m_installer.m_fix_constraint_name = constraint;
 
-        setupBug931(false, false);
+        setupBug931(false, false, false);
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception(exceptionMessage));
