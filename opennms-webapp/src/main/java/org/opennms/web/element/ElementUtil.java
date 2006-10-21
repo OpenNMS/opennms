@@ -48,30 +48,28 @@ public class ElementUtil extends Object {
      * Do not use directly. Call {@link #getInterfaceStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    protected static HashMap interfaceStatusMap;
+    private static HashMap<Character, String> m_interfaceStatusMap;
 
     /**
      * Do not use directly. Call {@link #getServiceStatusMap 
      * getServiceStatusMap} instead.
      */
-    protected static HashMap serviceStatusMap;
+    private static HashMap<Character, String> m_serviceStatusMap;
 
     /** Returns the interface status map, initializing a new one if necessary. */
-    protected static Map getInterfaceStatusMap() {
-        if (interfaceStatusMap == null) {
+    protected static Map<Character, String> getInterfaceStatusMap() {
+        if (m_interfaceStatusMap == null) {
             synchronized (ElementUtil.class) {
-                interfaceStatusMap = new HashMap();
-
-                interfaceStatusMap = new HashMap();
-                interfaceStatusMap.put(new Character('M'), "Managed");
-                interfaceStatusMap.put(new Character('U'), "Unmanaged");
-                interfaceStatusMap.put(new Character('D'), "Deleted");
-                interfaceStatusMap.put(new Character('F'), "Forced Unmanaged");
-                interfaceStatusMap.put(new Character('N'), "Not Monitored");
+                m_interfaceStatusMap = new HashMap<Character, String>();
+                m_interfaceStatusMap.put(new Character('M'), "Managed");
+                m_interfaceStatusMap.put(new Character('U'), "Unmanaged");
+                m_interfaceStatusMap.put(new Character('D'), "Deleted");
+                m_interfaceStatusMap.put(new Character('F'), "Forced Unmanaged");
+                m_interfaceStatusMap.put(new Character('N'), "Not Monitored");
             }
         }
 
-        return (interfaceStatusMap);
+        return (m_interfaceStatusMap);
     }
 
     /** Return the human-readable name for a interface's status, may be null. */
@@ -88,27 +86,27 @@ public class ElementUtil extends Object {
      * null.
      */
     public static String getInterfaceStatusString(char c) {
-        Map statusMap = getInterfaceStatusMap();
-        return (String) statusMap.get(new Character(c));
+        Map<Character, String> statusMap = getInterfaceStatusMap();
+        return statusMap.get(new Character(c));
     }
 
     /** Returns the service status map, initializing a new one if necessary. */
-    protected static Map getServiceStatusMap() {
-        if (serviceStatusMap == null) {
+    protected static Map<Character, String> getServiceStatusMap() {
+        if (m_serviceStatusMap == null) {
             synchronized (ElementUtil.class) {
-                serviceStatusMap = new HashMap();
+                m_serviceStatusMap = new HashMap<Character, String>();
 
-                serviceStatusMap.put(new Character('A'), "Managed");
-                serviceStatusMap.put(new Character('U'), "Unmanaged");
-                serviceStatusMap.put(new Character('D'), "Deleted");
-                serviceStatusMap.put(new Character('F'), "Forced Unmanaged");
-                serviceStatusMap.put(new Character('N'), "Not Monitored");
-                serviceStatusMap.put(new Character('R'), "Rescan to Resume");
-                serviceStatusMap.put(new Character('S'), "Rescan to Suspend");
+                m_serviceStatusMap.put(new Character('A'), "Managed");
+                m_serviceStatusMap.put(new Character('U'), "Unmanaged");
+                m_serviceStatusMap.put(new Character('D'), "Deleted");
+                m_serviceStatusMap.put(new Character('F'), "Forced Unmanaged");
+                m_serviceStatusMap.put(new Character('N'), "Not Monitored");
+                m_serviceStatusMap.put(new Character('R'), "Rescan to Resume");
+                m_serviceStatusMap.put(new Character('S'), "Rescan to Suspend");
             }
         }
 
-        return (serviceStatusMap);
+        return (m_serviceStatusMap);
     }
 
     /** Return the human-readable name for a service's status, may be null. */
@@ -125,8 +123,8 @@ public class ElementUtil extends Object {
      * null.
      */
     public static String getServiceStatusString(char c) {
-        Map statusMap = getServiceStatusMap();
-        return (String) statusMap.get(new Character(c));
+        Map<Character, String> statusMap = getServiceStatusMap();
+        return statusMap.get(new Character(c));
     }
 
     public static final int DEFAULT_TRUNCATE_THRESHOLD = 28;
