@@ -697,6 +697,50 @@ public class NetworkElementFactory extends Object {
 
         return service;
     }
+    /**
+     * Return the service specified by the node identifier, IP address, and
+     * service identifier.
+     * 
+     * <p>
+     * Note that if there are both an active service and historically deleted
+     * services with this (nodeid, ipAddress, serviceId) key, then the active
+     * service will be returned. If there are only deleted services, then the
+     * first deleted service will be returned.
+     * </p>
+     */
+    public static Service getService(int ifServiceId) throws SQLException {
+        Service service = null;
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            // big hack here, I'm relying on the fact that the ifservices.status
+            // field uses 'A' as active, and thus should always turn up before
+            // any
+            // historically deleted services
+            PreparedStatement stmt = conn.prepareStatement("SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID=SERVICE.SERVICEID AND IFSERVICES.ID=? ORDER BY IFSERVICES.STATUS");
+            stmt.setInt(1, ifServiceId);
+            ResultSet rs = stmt.executeQuery();
+
+            Service[] services = rs2Services(rs);
+
+            // only take the first service, which should be the active service,
+            // cause we're sorting by status in the SQL statement above; if
+            // there
+            // are no active services, then the first deleted service will be
+            // returned,
+            // which is what we want
+            if (services.length > 0) {
+                service = services[0];
+            }
+
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return service;
+    }
 
     public static Service[] getAllServices() throws SQLException {
         Service[] services = null;
