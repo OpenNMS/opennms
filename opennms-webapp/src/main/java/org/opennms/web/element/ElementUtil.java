@@ -34,8 +34,14 @@
 
 package org.opennms.web.element;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.opennms.web.MissingParameterException;
 
 public class ElementUtil extends Object {
     /**
@@ -146,6 +152,95 @@ public class ElementUtil extends Object {
 
         return shortLabel;
     }
+    
+    public static Service getServiceByParams(HttpServletRequest request)
+            throws ServletException, SQLException {
+        return getServiceByParams(request, "ifserviceid", "nodeid", "ipaddr",
+                                  "serviceid");
+    }
+    
+    public static Service getServiceByParams(HttpServletRequest request,
+                                             String ifServiceIdParam,
+                                             String nodeIdParam,
+                                             String ipAddrParam,
+                                             String serviceIdParam)
+            throws ServletException, SQLException {
+        Service service;
+        
+        if (request.getParameter(ifServiceIdParam) != null) {
+            String ifServiceIdString = request.getParameter(ifServiceIdParam);
+            
+            int ifServiceId;
+            
+            try {
+                ifServiceId = Integer.parseInt(ifServiceIdString);
+            } catch (NumberFormatException e) {
+                throw new ServletException("Wrong data type for \""
+                                           + ifServiceIdParam + "\" "
+                                           + "(value: \"" + ifServiceIdString
+                                           + "\"), should be integer", e);
+                }
+
+                service = NetworkElementFactory.getService(ifServiceId);
+        } else {
+            String nodeIdString = request.getParameter(nodeIdParam);
+            String ipAddr = request.getParameter(ipAddrParam);
+            String serviceIdString = request.getParameter(serviceIdParam);
+            
+            int nodeId;
+            int serviceId;
+
+            final String[] requiredParameters = new String[] {
+                nodeIdParam,
+                ipAddrParam,
+                serviceIdParam
+            };
+
+            if (nodeIdString == null) {
+                throw new MissingParameterException(nodeIdParam,
+                                                    requiredParameters);
+            }
+
+            if (ipAddr == null) {
+                throw new MissingParameterException(ipAddrParam,
+                                                    requiredParameters);
+            }
+
+            if (serviceIdString == null) {
+                throw new MissingParameterException(serviceIdParam,
+                                                    requiredParameters);
+            }
+
+            try {
+                nodeId = Integer.parseInt(nodeIdString);
+            } catch (NumberFormatException e) {
+                throw new ServletException("Wrong data type for \""
+                                           + nodeIdParam + "\" "
+                                           + "(value: \"" + nodeIdString
+                                           + "\"), should be integer", e);
+            }
+        
+            try {
+                serviceId = Integer.parseInt(serviceIdString);
+            } catch (NumberFormatException e) {
+                throw new ServletException("Wrong data type for \""
+                                           + serviceIdParam + "\" "
+                                           + "(value: \"" + serviceIdString
+                                           + "\"), should be integer", e);
+                }
+
+                service = NetworkElementFactory.getService(nodeId, ipAddr,
+                                                           serviceId);
+        }
+
+        if (service == null) {
+            //handle this WAY better, very awful
+            throw new ServletException("No such service in database");
+        }
+        
+        return service;
+    }
+    
 
     /** Private constructor so this class cannot be instantiated. */
     private ElementUtil() {
