@@ -21,6 +21,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -276,6 +278,26 @@ public class TrapHandlerTest extends TestCase {
                           "v2c", ".1.3.6.1.2.1.15.7", 6, 1);
     }
 
+    public void testV1EnterpriseIdAndGenericAndSpecificAndMatchwithVarbinds()
+	throws Exception {
+    SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+
+	SnmpValue [] varbinds = { valueFactory.getInt32(1), valueFactory.getInt32(2), valueFactory.getInt32(5), valueFactory.getInt32(4) };
+	anticipateAndSend(false, true,
+                  "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
+                  "v1", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
+    }
+
+    public void testV2EnterpriseIdAndGenericAndSpecificAndMatchwithVarbinds()
+    	throws Exception {
+        SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+
+    	SnmpValue [] varbinds = { valueFactory.getInt32(5), valueFactory.getInt32(2), valueFactory.getInt32(3), valueFactory.getInt32(4) };
+    	anticipateAndSend(false, true,
+                      "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
+                      "v2c", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
+    }
+
     public void testV2EnterpriseIdAndGenericAndSpecificMatchWithZero()
         throws Exception {
         anticipateAndSend(false, true,
@@ -413,11 +435,40 @@ public class TrapHandlerTest extends TestCase {
         return event;
     }
 
+    public void anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
+            String event,
+            String version, String enterprise,
+            int generic, int specific) throws Exception {
+    	setUpTrapHandler(newSuspectOnTrap);
+
+    	if (newSuspectOnTrap) {
+    		// Note: the nodeId will be zero because the node is not known
+    		anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
+    				m_ip, 0);
+    	}
+
+    	if (event != null) {
+    		if (nodeKnown) {
+    			anticipateEvent(event);
+    		} else {
+    			/*
+    			 * If the node is unknown, the nodeId on the trap event
+    			 * will be zero.
+    			 */
+    			anticipateEvent(event, m_ip, 0);
+    		}
+    	}
+
+    	sendTrap(version, enterprise, generic, specific);
+
+    	finishUp();
+    }
+
     
     public void anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
                                   String event,
                                   String version, String enterprise,
-                                  int generic, int specific) throws Exception {
+                                  int generic, int specific, SnmpValue[] varbinds) throws Exception {
         setUpTrapHandler(newSuspectOnTrap);
         
         if (newSuspectOnTrap) {
@@ -438,12 +489,12 @@ public class TrapHandlerTest extends TestCase {
             }
         }
         
-        sendTrap(version, enterprise, generic, specific);
+        sendTrap(version, enterprise, generic, specific, varbinds);
         
         finishUp();
     }
 
-    public void sendTrap(String version, String enterprise, int generic,
+	public void sendTrap(String version, String enterprise, int generic,
                          int specific) throws Exception {
         if (enterprise == null) {
             enterprise = ".0.0";
@@ -459,6 +510,22 @@ public class TrapHandlerTest extends TestCase {
         }
     }
 
+    private void sendTrap(String version, String enterprise, int generic, 
+    		int specific, SnmpValue[] varbinds) throws Exception {
+        if (enterprise == null) {
+            enterprise = ".0.0";
+        }
+        
+        if (version.equals("v1")) {
+            sendV1Trap(enterprise, generic, specific, varbinds);
+        } else if (version.equals("v2c")) {
+            sendV2Trap(enterprise, specific, varbinds);
+        } else {
+            throw new Exception("unsupported SNMP version for test: "
+                                + version);
+        }
+	}
+
     public void sendV1Trap(String enterprise, int generic, int specific)
         throws Exception {
         SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
@@ -470,7 +537,24 @@ public class TrapHandlerTest extends TestCase {
         
         pdu.send(m_localhost.getHostAddress(), m_port, "public");
     }
-        
+
+    public void sendV1Trap(String enterprise, int generic, int specific, SnmpValue[] varbinds)
+    throws Exception {
+        SnmpObjId enterpriseId = SnmpObjId.get(enterprise);
+    	SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
+    	pdu.setEnterprise(SnmpObjId.get(enterprise));
+    	pdu.setGeneric(generic);
+    	pdu.setSpecific(specific);
+    	pdu.setTimeStamp(0);
+    	pdu.setAgentAddress(m_localhost);
+    	for (int i = 0; i < varbinds.length; i++) {
+			pdu.addVarBind(enterpriseId, varbinds[i]);
+		}
+
+    	pdu.send(m_localhost.getHostAddress(), m_port, "public");
+    }
+    
+
     public void sendV2Trap(String enterprise, int specific) throws Exception {
         SnmpObjId enterpriseId = SnmpObjId.get(enterprise);
         boolean isGeneric = false;
@@ -496,4 +580,35 @@ public class TrapHandlerTest extends TestCase {
 
         pdu.send(m_localhost.getHostAddress(), m_port, "public");
     }
+    
+    public void sendV2Trap(String enterprise, int specific, SnmpValue[] varbinds) throws Exception {
+        SnmpObjId enterpriseId = SnmpObjId.get(enterprise);
+        boolean isGeneric = false;
+        SnmpObjId trapOID;
+        if (SnmpObjId.get(".1.3.6.1.6.3.1.1.5").isPrefixOf(enterpriseId)) {
+            isGeneric = true;
+            trapOID = enterpriseId;
+        } else {
+            trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(specific));
+            // XXX or should it be this
+            // trap OID = enterprise + ".0." + specific;
+        }
+        
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"),
+                       SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"),
+                       SnmpUtils.getValueFactory().getObjectId(trapOID));
+        if (isGeneric) {
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"),
+                           SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        }
+        for (int i = 0; i < varbinds.length; i++) {
+			SnmpValue value = varbinds[i];
+			pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), value);
+		}
+
+        pdu.send(m_localhost.getHostAddress(), m_port, "public");
+    }
+
 }
