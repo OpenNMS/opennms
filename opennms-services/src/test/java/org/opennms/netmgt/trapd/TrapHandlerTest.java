@@ -6,6 +6,9 @@ package org.opennms.netmgt.trapd;
 
 import java.io.StringReader;
 import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -278,21 +281,29 @@ public class TrapHandlerTest extends TestCase {
                           "v2c", ".1.3.6.1.2.1.15.7", 6, 1);
     }
 
-    public void testV1EnterpriseIdAndGenericAndSpecificAndMatchwithVarbinds()
-	throws Exception {
-    SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
-
-	SnmpValue [] varbinds = { valueFactory.getInt32(1), valueFactory.getInt32(2), valueFactory.getInt32(5), valueFactory.getInt32(4) };
-	anticipateAndSend(false, true,
+    public void testV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbinds()
+		throws Exception {
+    	SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+    	
+    	Map<String, SnmpValue> varbinds = new LinkedHashMap <String, SnmpValue>();
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.2.1.4.2404", valueFactory.getInt32(3));
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.2.1.5.2404", valueFactory.getInt32(2));
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.2.1.6.2404", valueFactory.getInt32(5));
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.3.0.2404", valueFactory.getOctetString("http://a.b.c.d/cgi/fDetail?index=2404".getBytes()));
+    	anticipateAndSend(false, true,
                   "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
                   "v1", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
     }
 
-    public void testV2EnterpriseIdAndGenericAndSpecificAndMatchwithVarbinds()
+    public void testV2EnterpriseIdAndGenericAndSpecificAndMatchWithVarbinds()
     	throws Exception {
         SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
 
-    	SnmpValue [] varbinds = { valueFactory.getInt32(5), valueFactory.getInt32(2), valueFactory.getInt32(3), valueFactory.getInt32(4) };
+    	Map<String, SnmpValue> varbinds = new LinkedHashMap <String, SnmpValue>();
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.2.1.4.2404", valueFactory.getInt32(5));
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.2.1.5.2404", valueFactory.getInt32(2));
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.2.1.6.2404", valueFactory.getInt32(3));
+    	varbinds.put(".1.3.6.1.4.1.11.2.14.11.1.7.3.0.2404", valueFactory.getOctetString("http://a.b.c.d/cgi/fDetail?index=2404".getBytes()));
     	anticipateAndSend(false, true,
                       "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
                       "v2c", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
@@ -468,7 +479,7 @@ public class TrapHandlerTest extends TestCase {
     public void anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
                                   String event,
                                   String version, String enterprise,
-                                  int generic, int specific, SnmpValue[] varbinds) throws Exception {
+                                  int generic, int specific, Map<String, SnmpValue> varbinds) throws Exception {
         setUpTrapHandler(newSuspectOnTrap);
         
         if (newSuspectOnTrap) {
@@ -511,7 +522,7 @@ public class TrapHandlerTest extends TestCase {
     }
 
     private void sendTrap(String version, String enterprise, int generic, 
-    		int specific, SnmpValue[] varbinds) throws Exception {
+    		int specific, Map<String, SnmpValue> varbinds) throws Exception {
         if (enterprise == null) {
             enterprise = ".0.0";
         }
@@ -538,7 +549,7 @@ public class TrapHandlerTest extends TestCase {
         pdu.send(m_localhost.getHostAddress(), m_port, "public");
     }
 
-    public void sendV1Trap(String enterprise, int generic, int specific, SnmpValue[] varbinds)
+    public void sendV1Trap(String enterprise, int generic, int specific, Map<String, SnmpValue> varbinds)
     throws Exception {
         SnmpObjId enterpriseId = SnmpObjId.get(enterprise);
     	SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
@@ -547,11 +558,12 @@ public class TrapHandlerTest extends TestCase {
     	pdu.setSpecific(specific);
     	pdu.setTimeStamp(0);
     	pdu.setAgentAddress(m_localhost);
-    	for (int i = 0; i < varbinds.length; i++) {
-			pdu.addVarBind(enterpriseId, varbinds[i]);
-		}
-
-    	pdu.send(m_localhost.getHostAddress(), m_port, "public");
+        Iterator it = varbinds.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+			pdu.addVarBind(SnmpObjId.get((String) pairs.getKey()), (SnmpValue) pairs.getValue());
+        }
+        pdu.send(m_localhost.getHostAddress(), m_port, "public");
     }
     
 
@@ -581,7 +593,7 @@ public class TrapHandlerTest extends TestCase {
         pdu.send(m_localhost.getHostAddress(), m_port, "public");
     }
     
-    public void sendV2Trap(String enterprise, int specific, SnmpValue[] varbinds) throws Exception {
+    public void sendV2Trap(String enterprise, int specific, Map<String, SnmpValue> varbinds) throws Exception {
         SnmpObjId enterpriseId = SnmpObjId.get(enterprise);
         boolean isGeneric = false;
         SnmpObjId trapOID;
@@ -603,10 +615,11 @@ public class TrapHandlerTest extends TestCase {
             pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"),
                            SnmpUtils.getValueFactory().getObjectId(enterpriseId));
         }
-        for (int i = 0; i < varbinds.length; i++) {
-			SnmpValue value = varbinds[i];
-			pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), value);
-		}
+        Iterator it = varbinds.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+			pdu.addVarBind(SnmpObjId.get((String) pairs.getKey()), (SnmpValue) pairs.getValue());
+        }
 
         pdu.send(m_localhost.getHostAddress(), m_port, "public");
     }
