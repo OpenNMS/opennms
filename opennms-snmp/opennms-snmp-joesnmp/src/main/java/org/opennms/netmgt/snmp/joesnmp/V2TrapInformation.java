@@ -186,8 +186,16 @@ public class V2TrapInformation extends TrapInformation {
     }
 
     protected void processVarBindAt(int i) {
-        SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
-        SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());
-        processVarBind(name, value);
+    	if (i<2) {
+            if (i == 0) {
+            	log().debug("Skipping processing of varbind it is the sysuptime and the first varbind, it is not processed as a parm per RFC2089");
+            } else {
+            	log().debug("Skipping processing of varbind it is the trap OID and the second varbind, it is not processed as a parm per RFC2089");				
+			}
+    	} else {
+    		SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
+    		SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());
+    		processVarBind(name, value);
+    	}
     }
 }
