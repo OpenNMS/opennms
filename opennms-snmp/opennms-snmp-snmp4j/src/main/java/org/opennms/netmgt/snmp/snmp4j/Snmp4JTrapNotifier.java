@@ -233,9 +233,17 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         protected void processVarBindAt(int i) {
-            SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
-            SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
-            processVarBind(name, value);
+        	if (i<2) {
+                if (i == 0) {
+                	log().debug("Skipping processing of varbind it is the sysuptime and the first varbind, it is not processed as a parm per RFC2089");
+                } else {
+                	log().debug("Skipping processing of varbind it is the trap OID and the second varbind, it is not processed as a parm per RFC2089");				
+    			}
+        	} else {
+        		SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
+        		SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
+        		processVarBind(name, value);
+        	}
         }
     }
         
