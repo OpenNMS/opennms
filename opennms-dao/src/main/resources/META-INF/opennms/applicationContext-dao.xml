@@ -45,6 +45,7 @@
 				<value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
                 <value>org.opennms.netmgt.model.OnmsLocationSpecificStatus</value>
                 <value>org.opennms.netmgt.model.PollStatus</value>
+                <value>org.opennms.netmgt.model.AvailabilityReportLocator</value>
                 <value>org.opennms.netmgt.model.OnmsApplication</value>
 			</list>
 		</property>
