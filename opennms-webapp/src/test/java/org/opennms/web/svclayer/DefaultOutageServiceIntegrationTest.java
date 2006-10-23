@@ -72,7 +72,9 @@ public class DefaultOutageServiceIntegrationTest extends
 	protected String[] getConfigLocations() {
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",
-				"org/opennms/web/svclayer/applicationContext-svclayer.xml" };
+                                "org/opennms/web/svclayer/applicationContext-svclayer.xml",
+                                "org/opennms/web/svclayer/applicationContext-svclayer-test.xml"
+		};
 	}
 
 	public void FIXMEtestGetRangeOutages() {

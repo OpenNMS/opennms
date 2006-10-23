@@ -33,7 +33,9 @@ public class DefaultPollServiceIntegrationTest extends AbstractTransactionalData
 	protected String[] getConfigLocations() {
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",
-				"org/opennms/web/svclayer/applicationContext-svclayer.xml" };
+				"org/opennms/web/svclayer/applicationContext-svclayer.xml",
+                                "org/opennms/web/svclayer/applicationContext-svclayer-test.xml"
+		};
 	}
 
 	public DemandPollService getDemandPollService() {
