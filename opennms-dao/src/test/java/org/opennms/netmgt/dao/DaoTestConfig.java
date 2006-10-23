@@ -61,6 +61,8 @@ public abstract class DaoTestConfig {
     protected abstract NotificationDao createNotificationDao();
 
     protected abstract UserNotificationDao createUserNotificationDao();
+    
+    protected abstract AvailabilityReportLocatorDao createAvailabilityReportLocatorDao();
 
     protected abstract void tearDown();
 
@@ -81,6 +83,7 @@ public abstract class DaoTestConfig {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
+	private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
 
     public DistPollerDao getDistPollerDao() {
         if (m_dpDao == null) {
@@ -180,5 +183,13 @@ public abstract class DaoTestConfig {
         }
         return m_userNotificationDao;
     }
+    
+    public AvailabilityReportLocatorDao getAvailabilityReportLocatorDao() {
+        if (m_availabilityReportLocatorDao == null) {
+            m_availabilityReportLocatorDao = createAvailabilityReportLocatorDao();
+        }
+        return m_availabilityReportLocatorDao;
+    }
+    
 
 }
