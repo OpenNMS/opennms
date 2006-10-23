@@ -63,8 +63,8 @@ public class ConfigurationTestUtils extends Assert {
         return newConfig;
     }
 
-    public static Reader getReaderForConfigFile(String configFile) {
-        return new InputStreamReader(getInputStreamForResource(configFile, configFile));
+    public static Reader getReaderForConfigFile(String configFile) throws FileNotFoundException {
+        return new InputStreamReader(getInputStreamForConfigFile(configFile));
     }
 
     public static InputStream getInputStreamForConfigFile(String configFile) throws FileNotFoundException {
