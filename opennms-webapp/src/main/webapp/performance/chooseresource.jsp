@@ -49,7 +49,9 @@
 		org.opennms.web.*,
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.DataCollectionConfigFactory,
-		org.opennms.web.element.NetworkElementFactory
+		org.opennms.web.element.NetworkElementFactory,
+		org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
@@ -63,11 +65,9 @@
         } catch (Throwable t) {
             throw new ServletException("Could not initialize the DataCollectionConfigFactory", t);
         }
-        try {
-            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the PerformanceModel", t);
-        }
+        
+        WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        this.model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     } 
 %>
 

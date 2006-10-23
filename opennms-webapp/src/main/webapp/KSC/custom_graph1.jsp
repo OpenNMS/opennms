@@ -45,7 +45,9 @@
 		org.opennms.web.Util,
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
@@ -54,11 +56,8 @@
     public PerformanceModel model = null;
    
     public void init() throws ServletException {
-        try {
-            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the PerformanceModel", t);
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
 %>
 

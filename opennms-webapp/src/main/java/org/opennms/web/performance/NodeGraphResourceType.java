@@ -2,12 +2,15 @@ package org.opennms.web.performance;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.utils.RrdFileConstants;
+import org.opennms.web.graph.GraphModel;
+import org.opennms.web.graph.PrefabGraph;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -85,5 +88,23 @@ public class NodeGraphResourceType implements GraphResourceType {
 
     public List<GraphResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
+    }
+
+    public List<PrefabGraph> getAvailablePrefabGraphs(Set<GraphAttribute> attributes) {
+        PrefabGraph[] graphs =
+            m_performanceModel.getQueriesByResourceTypeAttributes(getName(), attributes);
+        return Arrays.asList(graphs);
+    }
+    
+    public GraphModel getModel() {
+        return m_performanceModel;
+    }
+    
+    public PrefabGraph getPrefabGraph(String name) {
+        return m_performanceModel.getQuery(name);
+    }
+    
+    public File getRrdDirectory() {
+        return m_performanceModel.getRrdDirectory();
     }
 }

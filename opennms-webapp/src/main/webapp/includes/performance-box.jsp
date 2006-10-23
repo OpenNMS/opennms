@@ -47,24 +47,23 @@
         session="true"
         import="java.util.*,
 		org.opennms.web.performance.*,
-		org.opennms.web.Util"
+		org.opennms.web.Util,
+		org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 
 <%!
-    public PerformanceModel model = null;
+    public PerformanceModel m_model = null;
 
-    public void init() throws ServletException {
-        try {
-            this.model = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel.  Nested exception: " + e.getClass().getName() + ": " + e.getMessage(), e );
-        }
+
+	public void init() throws ServletException {
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		m_model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
 %>
 
 <%
-    PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
+    PerformanceModel.QueryableNode[] nodes = m_model.getQueryableNodes();
 %>
 
 <h3><a href="performance/index.jsp">Performance</a></h3>

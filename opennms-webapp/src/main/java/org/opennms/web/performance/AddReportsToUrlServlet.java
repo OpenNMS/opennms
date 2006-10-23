@@ -33,7 +33,9 @@
 package org.opennms.web.performance;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,17 +48,15 @@ import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.graph.PrefabGraph;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class AddReportsToUrlServlet extends HttpServlet {
     protected PerformanceModel m_model;
 
     public void init() throws ServletException {
-        try {
-            PerformanceModelFactory.init();
-            m_model = PerformanceModelFactory.getInstance().getConfig();
-        } catch (Exception e) {
-            throw new ServletException("Could not initialize the PerformanceModel.  Nested exception: " + e.getClass().getName() + ": " + e.getMessage(), e);
-        }
+        WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        m_model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -71,11 +71,13 @@ public class AddReportsToUrlServlet extends HttpServlet {
             throw new MissingParameterException("node", requiredParameters);
         }
         
-        String resourceType = request.getParameter("resourceType");
-        if (resourceType == null) {
+        String resourceTypeName = request.getParameter("resourceType");
+        if (resourceTypeName == null) {
             throw new MissingParameterException("resourceType",
                                                 requiredParameters);
         }
+        
+        GraphResourceType resourceType = m_model.getResourceTypeByName(resourceTypeName);
 
         // optional parameter resource
         String resourceName = request.getParameter("resource");
@@ -85,7 +87,7 @@ public class AddReportsToUrlServlet extends HttpServlet {
         
         int nodeId = Integer.parseInt(nodeIdString);
         
-        GraphResource resource = m_model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceType);
+        GraphResource resource = m_model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceTypeName);
         Set<GraphAttribute> attributes = resource.getAttributes();
 
         // In this block of code, it is possible to end up with an empty
@@ -93,20 +95,29 @@ public class AddReportsToUrlServlet extends HttpServlet {
         // "Missing parameter" message on the results.jsp page and will
         // probably be changed soon to a nicer error message.
 
+
+        /*
         PrefabGraph[] queries = null;
-
-        queries = m_model.getQueriesByResourceTypeAttributes(resourceType, attributes);
-
+        queries = m_model.getQueriesByResourceTypeAttributes(resourceTypeName, attributes);
         String[] queryNames = new String[queries.length];
 
         for (int i = 0; i < queries.length; i++) {
             queryNames[i] = queries[i].getName();
         }
+        */
+        
+        List<PrefabGraph> queries =
+            resourceType.getAvailablePrefabGraphs(attributes);
+        List<String> queryNames = new ArrayList<String>(queries.size());
+        for (PrefabGraph query : queries) {
+            queryNames.add(query.getName());
+        }
+
 
         Map additions = new HashMap();
-        additions.put("reports", queryNames);
+        additions.put("reports", queryNames.toArray(new String[queryNames.size()]));
         additions.put("type", "performance");
-        additions.put("resourceType", resourceType);
+        additions.put("resourceType", resourceTypeName);
         String queryString = Util.makeQueryString(request, additions);
 
         response.sendRedirect(Util.calculateUrlBase(request) + "graph/results?"

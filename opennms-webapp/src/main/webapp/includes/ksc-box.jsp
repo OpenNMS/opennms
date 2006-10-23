@@ -54,7 +54,10 @@
 		org.opennms.web.Util,
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory"
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
+		org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils"
+		
 %>
 
 

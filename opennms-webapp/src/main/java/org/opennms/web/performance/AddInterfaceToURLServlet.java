@@ -46,6 +46,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class AddInterfaceToURLServlet extends HttpServlet {
     protected PerformanceModel model;
@@ -60,11 +62,8 @@ public class AddInterfaceToURLServlet extends HttpServlet {
             throw new ServletException("chooseInterfaceUrl is a required init parameter");
         }
 
-        try {
-            this.model = new PerformanceModel(Vault.getHomeDir());
-        } catch (Exception e) {
-            throw new ServletException("Could not initialize the PerformanceModel", e);
-        }
+        WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

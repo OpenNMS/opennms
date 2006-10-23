@@ -47,7 +47,9 @@
 		java.io.File,
 		org.opennms.netmgt.config.kscReports.*,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
-		org.opennms.web.element.NetworkElementFactory
+		org.opennms.web.element.NetworkElementFactory,
+		org.springframework.web.context.WebApplicationContext,
+		org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 

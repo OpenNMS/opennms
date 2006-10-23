@@ -41,10 +41,7 @@
 package org.opennms.web.performance;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 import java.lang.Integer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
@@ -52,35 +49,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.IntSet;
-import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.StorageStrategy;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.Util;
-import org.opennms.web.graph.PrefabGraph;
-import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.GraphModelAbstract;
-import org.opennms.web.graph.GraphModelAbstract.QueryableNode;
+import org.opennms.web.graph.PrefabGraph;
+import org.opennms.web.response.ResponseTimeModel;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -103,24 +90,15 @@ public class PerformanceModel extends GraphModelAbstract {
 
     private Map<String, GraphResourceType> m_resourceTypes;
 
-    /**
-     * Create a new instance.
-     * 
-     * @param homeDir
-     *            the OpenNMS home directory, see {@link Vault#getHomeDir
-     *            Vault.getHomeDir}.
-     */
-    public PerformanceModel(String homeDir) throws IOException {
-	loadProperties(homeDir, RRDTOOL_GRAPH_PROPERTIES_FILENAME);
+    private ResponseTimeModel m_responseTimeModel;
+
+    public PerformanceModel(ResponseTimeModel responseTimeModel)
+        throws IOException {
+        m_responseTimeModel = responseTimeModel;
         initResourceTypes();
     }
 
-    public PerformanceModel(InputStream in) throws IOException {
-        loadProperties(in);
-        initResourceTypes();
-    }
-
-    private void initResourceTypes() {
+    private void initResourceTypes() throws IOException {
         Map<String, GraphResourceType> resourceTypes;
         resourceTypes = new LinkedHashMap<String, GraphResourceType>();
         GraphResourceType resourceType;
@@ -129,6 +107,12 @@ public class PerformanceModel extends GraphModelAbstract {
         resourceTypes.put(resourceType.getName(), resourceType);
         
         resourceType = new InterfaceGraphResourceType(this);
+        resourceTypes.put(resourceType.getName(), resourceType);
+        
+        resourceType = new ResponseTimeGraphResourceType(m_responseTimeModel);
+        resourceTypes.put(resourceType.getName(), resourceType);
+        
+        resourceType = new DistributedStatusGraphResourceType(this);
         resourceTypes.put(resourceType.getName(), resourceType);
         
         resourceTypes.putAll(getGenericIndexGraphResourceTypes());
@@ -336,6 +320,7 @@ public class PerformanceModel extends GraphModelAbstract {
         
         return nodeDirectory;
     }
+    
     public ArrayList<String> getQueryableInterfacesForNode(int nodeId) {
         return getQueryableInterfacesForNode(String.valueOf(nodeId));
     }
@@ -438,7 +423,12 @@ public class PerformanceModel extends GraphModelAbstract {
         Collection<GraphResourceType> in = m_resourceTypes.values();
         Collection<GraphResourceType> out = new LinkedList<GraphResourceType>();
         for (GraphResourceType a : in) {
-            if (a.isResourceTypeOnNode(nodeId)) {
+            boolean onNode = a.isResourceTypeOnNode(nodeId);
+            if (log().isDebugEnabled()) {
+                log().debug("Resource " + a.getName() + " is on node "
+                            + nodeId + ": " + onNode);
+            }
+            if (onNode) {
                 out.add(a);
             }
         }
@@ -466,31 +456,6 @@ public class PerformanceModel extends GraphModelAbstract {
         return resourceType;
     }
     
-    public List<GraphResource> getResourcesForNodeResourceType(int nodeId, String resourceTypeName) {
-        GraphResourceType resourceType = getResourceTypeByName(resourceTypeName);
-
-        return resourceType.getResourcesForNode(nodeId);
-    }
-    
-    public GraphResource getResourceForNodeResourceResourceType(int nodeId, String resourceName, String resourceTypeName) {
-        List<GraphResource> resources = getResourcesForNodeResourceType(nodeId, resourceTypeName);
-        
-        GraphResource resource = null;
-        for (GraphResource a : resources) {
-            if (resourceName.equals(a.getName())) {
-                resource = a;
-            }
-        }
-        
-        if (resource == null) {
-            throw new ObjectRetrievalFailureException(GraphResourceType.class, resourceName, "Resource of resource type '" + resourceTypeName + "' is not on node " + nodeId, null);
-        }
-        
-        return resource;
-    }
-    
-    
-    
     public Map<GraphResourceType,List<GraphResource>> getResourceForNode(int nodeId) {
         Collection<GraphResourceType> in = getResourceTypesForNode(nodeId);
         Map<GraphResourceType,List<GraphResource>> out =
@@ -511,38 +476,18 @@ public class PerformanceModel extends GraphModelAbstract {
         return out;
     }
 
-    public PrefabGraph[] getQueriesByResourceTypeAttributes(String resourceType,
-            Set<GraphAttribute> attributes) {
-
-        List<PrefabGraph> returnList = new LinkedList<PrefabGraph>();
-
-        PrefabGraph[] queries = getQueries();
-
-        Set<String> availDataSourceList = new HashSet<String>(attributes.size());
-        for (GraphAttribute attribute : attributes) {
-            availDataSourceList.add(attribute.getName());
-        }
-
-        for (PrefabGraph query : queries) {
-            if (!resourceType.equals(query.getType())) {
-                continue;
-            }
-            
-            List requiredList = Arrays.asList(query.getColumns());
-
-            if (availDataSourceList.containsAll(requiredList)) {
-                returnList.add(query);
-            }
-        }
-
-        PrefabGraph[] availQueries = (PrefabGraph[])
-        returnList.toArray(new PrefabGraph[returnList.size()]);
-
-        return availQueries;
-    }
-
     public String getRelativePathForAttribute(String resourceType, String resourceParent, String resource, String attribute) {
         GraphResourceType rt = getResourceTypeByName(resourceType);
         return rt.getRelativePathForAttribute(resourceParent, resource, attribute);
     }
+
+    public ResponseTimeModel getResponseTimeModel() {
+        return m_responseTimeModel;
+    }
+    
+    public PrefabGraph getQuery(String resourceType, String name) {
+        GraphResourceType rt = getResourceTypeByName(resourceType);
+        return rt.getPrefabGraph(name);
+    }
+
 }

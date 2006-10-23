@@ -45,6 +45,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * A servlet that creates a plain text file with the list of RRD files.
@@ -60,11 +62,8 @@ public class RRDListServlet extends HttpServlet {
      * Initializes this servlet by reading the rrdtool-graph properties file.
      */
     public void init() throws ServletException {
-        try {
-            this.model = new ResponseTimeModel(Vault.getHomeDir());
-        } catch (Exception e) {
-            throw new ServletException("Could not initialize the performance model", e);
-        }
+        WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        this.model = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -3,12 +3,15 @@ package org.opennms.web.performance;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.jdbc.LazySet;
 import org.opennms.netmgt.utils.RrdFileConstants;
+import org.opennms.web.graph.GraphModel;
+import org.opennms.web.graph.PrefabGraph;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 
@@ -131,6 +134,12 @@ public class InterfaceGraphResourceType implements GraphResourceType {
         return new DefaultGraphResource(intf, intf, set);
     }
 
+    public List<PrefabGraph> getAvailablePrefabGraphs(Set<GraphAttribute> attributes) {
+        PrefabGraph[] graphs =
+            m_performanceModel.getQueriesByResourceTypeAttributes(getName(), attributes);
+        return Arrays.asList(graphs);
+    }
+
     public class DomainAttributeLoader implements LazySet.Loader {
         
         private String m_domain;
@@ -157,4 +166,15 @@ public class InterfaceGraphResourceType implements GraphResourceType {
         
     }
 
+    public GraphModel getModel() {
+        return m_performanceModel;
+    }
+    
+    public PrefabGraph getPrefabGraph(String name) {
+        return m_performanceModel.getQuery(name);
+    }
+    
+    public File getRrdDirectory() {
+        return m_performanceModel.getRrdDirectory();
+    }
 }

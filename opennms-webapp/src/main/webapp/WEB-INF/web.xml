@@ -168,10 +168,6 @@
     <!-- This servlet creates the graph images using RRDTool. -->
     <servlet-name>rrdgraph</servlet-name>
     <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
-    <init-param>
-      <param-name>rrd-properties</param-name>
-      <param-value>performance=etc/snmp-graph.properties;response=etc/response-graph.properties;performance-adhoc=etc/snmp-adhoc-graph.properties;response-adhoc=etc/response-adhoc-graph.properties</param-value>
-    </init-param>
   </servlet>
   
   <servlet>

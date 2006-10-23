@@ -52,7 +52,8 @@
 <%!
     public final static String[] REQUIRED_PARAMS =
 	new String[] {
-		"rrddir",
+		"resourceType",
+		"resource",
 		"title",
 		"style",
 		"ds",
@@ -68,7 +69,8 @@
 %>
 
 <%
-    String rrdDir = request.getParameter( "rrddir" );
+	String resourceTypeName = request.getParameter( "resourceType" );
+	String resourceName = request.getParameter( "resource" );
     String title = request.getParameter( "title" );
     String style = request.getParameter( "style" );
     String ds = request.getParameter( "ds" );
@@ -83,8 +85,11 @@
     String endYear  = request.getParameter( "endYear" );
     String endHour  = request.getParameter( "endHour" );
 
-    if( rrdDir == null ) {
-        throw new MissingParameterException( "rrdDir", REQUIRED_PARAMS );
+    if( resourceTypeName == null ) {
+        throw new MissingParameterException( "resourceType", REQUIRED_PARAMS );
+    }
+    if( resourceName == null ) {
+        throw new MissingParameterException( "resource", REQUIRED_PARAMS );
     }
     if( title == null ) {
         throw new MissingParameterException( "title", REQUIRED_PARAMS );
@@ -148,7 +153,9 @@
     String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour" };
     Map additions = new HashMap();
     additions.put( "start", start );
-    additions.put( "end", end );    
+    additions.put( "end", end );
+    additions.put( "type", "performance" );
+    additions.put( "adhoc", "true" );
      
     String queryString = Util.makeQueryString( request, additions, ignores ); 
 %>
@@ -164,7 +171,7 @@
 </jsp:include>
 
 <div align="center">
-  <img src="graph/graph.png?type=performance-adhoc&amp;<%=queryString%>" />
+  <img src="graph/graph.png?<%=queryString%>" />
 
   <br/>
 

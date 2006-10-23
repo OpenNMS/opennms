@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.opennms.web.element.NetworkElementFactory;
-
 public class GraphResults {
     private GraphModel m_model = null;
     private int m_nodeId = -1;
@@ -126,7 +124,8 @@ public class GraphResults {
 	m_graphs = new Graph[m_reports.length];
 
 	for (int i=0; i < m_reports.length; i++) {
-	    PrefabGraph prefabGraph = m_model.getQuery(m_reports[i]);
+	    PrefabGraph prefabGraph = m_model.getQuery(m_resourceType,
+                                                       m_reports[i]);
 
 	    if (prefabGraph == null) {
 		throw new IllegalArgumentException("Unknown report name: " +
@@ -152,7 +151,8 @@ public class GraphResults {
 	m_graphs = new Graph[m_reports.length];
 
 	for (int i=0; i < m_reports.length; i++) {
-	    PrefabGraph prefabGraph = m_model.getQuery(m_reports[i]);
+	    PrefabGraph prefabGraph = m_model.getQuery(m_resourceType,
+                                                       m_reports[i]);
 
 	    if (prefabGraph == null) {
 		throw new IllegalArgumentException("Unknown report name: " +

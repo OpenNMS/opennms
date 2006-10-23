@@ -43,17 +43,19 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="org.opennms.netmgt.config.PollerConfigFactory,
-		org.opennms.netmgt.config.PollerConfig,
-		org.opennms.web.element.*,
-		java.util.*,
+		contentType="text/html"
+		session="true"
+		import="org.opennms.netmgt.config.PollerConfigFactory,
+				org.opennms.netmgt.config.PollerConfig,
+				org.opennms.web.element.*,
+				java.util.*,
                 org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.event.*,
-		org.opennms.web.performance.*,
-		org.opennms.netmgt.utils.IfLabel,
-		org.opennms.web.response.*
+				org.opennms.web.event.*,
+				org.opennms.web.performance.*,
+				org.opennms.netmgt.utils.IfLabel,
+				org.opennms.web.response.*,
+				org.springframework.web.context.WebApplicationContext,
+	        	org.springframework.web.context.support.WebApplicationContextUtils
 		"
 %>
 
@@ -70,13 +72,6 @@
         catch( Exception e ) {
             throw new ServletException( "Could not determine the Telnet service ID", e );
         }
-        
-        try {
-            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
-        }        
 
         try {
             this.httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
@@ -85,20 +80,9 @@
             throw new ServletException( "Could not determine the HTTP service ID", e );
         }
 
-        try {
-            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
-        }
-
-        try {
-            this.rtModel = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
-        }
-
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.perfModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 %>
 

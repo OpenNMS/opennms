@@ -1,15 +1,17 @@
 package org.opennms.web.graph;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.web.graph.PrefabGraph;
 
-public class PrefabGraphTest extends TestCase {
+public class PropertiesGraphDaoTest extends TestCase {
 
     final static String s_propertiesString = "reports=mib2.bits, mib2.discards\n"
             + "\n"
@@ -52,39 +54,38 @@ public class PrefabGraphTest extends TestCase {
 
     Properties m_properties;
 
-    Map m_graphs;
+    Map<String, PrefabGraph> m_graphs;
 
     public void setUp() throws IOException {
         m_properties = new Properties();
-        m_properties.load(new ByteArrayInputStream(
-                                                   s_propertiesString.getBytes()));
-        m_graphs = PrefabGraph.getPrefabGraphDefinitions(m_properties);
+        m_properties.load(new ByteArrayInputStream(s_propertiesString.getBytes()));
+        m_graphs = PropertiesGraphDao.getPrefabGraphDefinitions(m_properties);
     }
 
     public void testCompareTo() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
-        PrefabGraph discards = (PrefabGraph) m_graphs.get("mib2.discards");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
+        PrefabGraph discards = m_graphs.get("mib2.discards");
 
         assertEquals("compareTo", -1, bits.compareTo(discards));
     }
 
     public void testGetName() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         assertEquals("getName", "mib2.bits", bits.getName());
     }
 
     public void testGetTitle() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         assertEquals("getTitle", "Bits In/Out", bits.getTitle());
     }
 
     public void testGetOrder() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         assertEquals("getOrder", 0, bits.getOrder());
     }
 
     public void testGetColumns() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         String[] columns = bits.getColumns();
         assertEquals("getColumns().length", 2, columns.length);
         assertEquals("getColumns()[0]", "ifInOctets", columns[0]);
@@ -108,38 +109,38 @@ public class PrefabGraphTest extends TestCase {
                 + "GPRINT:bitsOut:MIN:\"Min  \\: %8.2lf %s\" "
                 + "GPRINT:bitsOut:MAX:\"Max  \\: %8.2lf %s\\n\"";
 
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         assertEquals("getCommand", expectedCommand, bits.getCommand());
     }
 
     public void testGetExternalValues() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         String[] values = bits.getExternalValues();
         assertEquals("getExternalValues().length", 1, values.length);
         assertEquals("getExternalValues()[0]", "ifSpeed", values[0]);
     }
 
     public void testGetExternalValuesEmpty() {
-        PrefabGraph discards = (PrefabGraph) m_graphs.get("mib2.discards");
+        PrefabGraph discards = m_graphs.get("mib2.discards");
         assertEquals("getExternalValues().length", 0,
                      discards.getExternalValues().length);
     }
 
     public void testGetPropertiesValues() {
-        PrefabGraph discards = (PrefabGraph) m_graphs.get("mib2.discards");
+        PrefabGraph discards = m_graphs.get("mib2.discards");
         String[] values = discards.getPropertiesValues();
         assertEquals("getPropertiesValues().length", 1, values.length);
         assertEquals("getPropertiesValues()[0]", "ifSpeed", values[0]);
     }
 
     public void testGetPropertiesValuesEmpty() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         assertEquals("getPropertiesValues().length", 0,
                      bits.getPropertiesValues().length);
     }
 
     public void testGetType() {
-        PrefabGraph bits = (PrefabGraph) m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.bits");
         assertEquals("getGetType", "interface", bits.getType());
     }
 
@@ -148,4 +149,23 @@ public class PrefabGraphTest extends TestCase {
         assertEquals("getDescription", null, bits.getDescription());
     }
 
+    public void testLoadSnmpGraphProperties() throws FileNotFoundException, IOException {
+        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        dao.loadProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("snmp-graph.properties"));
+    }
+
+    public void testLoadSnmpAdhocGraphProperties() throws FileNotFoundException, IOException {
+        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("snmp-adhoc-graph.properties"));
+    }
+
+    public void testLoadResponseTimeGraphProperties() throws FileNotFoundException, IOException {
+        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        dao.loadProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-graph.properties"));
+    }
+
+    public void testLoadResponseTimeAdhocGraphProperties() throws FileNotFoundException, IOException {
+        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-adhoc-graph.properties"));
+    }
 }

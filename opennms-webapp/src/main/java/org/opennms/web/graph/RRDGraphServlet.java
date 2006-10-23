@@ -39,9 +39,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletException;
@@ -49,14 +51,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.StreamUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.performance.GraphAttribute;
+import org.opennms.web.performance.GraphResource;
+import org.opennms.web.performance.GraphResourceType;
+import org.opennms.web.performance.PerformanceModel;
+import org.opennms.web.response.ResponseTimeModel;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * A servlet that creates a graph of network performance data using the <a
@@ -90,106 +102,31 @@ public class RRDGraphServlet extends HttpServlet {
     */
     private static final long serialVersionUID = 8890231247851529359L;
 
-    private String s_initParam = "rrd-properties";
     private String s_missingParamsPath = "/images/rrd/missingparams.png";
     private String s_rrdError = "/images/rrd/error.png";
+    
+    private GraphDao m_prefabGraphDao;
 
-    /** 
-     * Holds the GraphTypeConfig for all supported graph types.  It maps
-     * graph types to {@link GraphTypeConfig GraphTypeconfig} instances.
-     */
-    private Map m_graphTypeMap = new HashMap();
+    private PerformanceModel m_performanceModel;
+
+    private ResponseTimeModel m_responseTimeModel;
 
     /**
      * Initializes this servlet by reading the rrdtool-graph properties file.
      */
     public void init() throws ServletException {
-        String homeDir = Vault.getHomeDir();
-        String configs = getServletConfig().getInitParameter(s_initParam);
-        
+        WebApplicationContext m_webAppContext =
+            WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        setPrefabGraphDao((GraphDao) m_webAppContext.getBean("prefabGraphDao", GraphDao.class));
+        m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+        m_responseTimeModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
+
         try {
-            String[] configEntries = configs.split(";");
-            for (int i = 0; i < configEntries.length; i++) {
-                String[] entry = configEntries[i].split("=");
-                if (entry.length != 2) {
-                    throw new ServletException("Incorrect number of equals "
-                            + "signs in servlet init "
-                            + "parameter \""
-                            + s_initParam
-                            + "\": " + configs);
-                }
-                String type = entry[0];
-                String configFile = entry[1];
-                
-                GraphTypeConfig config =
-                    loadGraphTypeConfig(type, homeDir + configFile);
-                m_graphTypeMap.put(type, config);
-            }
-        } catch (PatternSyntaxException e) {
-            String message = "Could not parse servlet init parameter \""
-                + s_initParam + "\"";
-            log(message, e);
-            throw new ServletException(message, e);
-        }
-    }
-
-    public GraphTypeConfig loadGraphTypeConfig(String type,
-					       String propertiesFilename)
-		throws ServletException {
-        Properties properties = new Properties();
-
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(propertiesFilename);
-            properties.load(fileInputStream);
-
             RrdUtils.graphicsInitialize();
-        } catch (FileNotFoundException e) {
-            log("Could not find configuration file", e);
-            throw new ServletException("Could not find configuration file", e);
-        } catch (IOException e) {
-            log("Could not load configuration file", e);
-            throw new ServletException("Could not load configuration file: ", e);
         } catch (RrdException e) {
-            log("Could not inititalize the graphing system", e);
+            log().warn("Could not inititalize the graphing system", e);
             throw new ServletException("Could not initialize graphing system: " + e.getMessage(), e);
-        } catch (Throwable e) {
-            log("Unexpected exception or error occurred", e);
-            throw new ServletException("Unexpected exception or error occured: " + e.getMessage(), e);
-        } finally {
-            try {
-                if (fileInputStream != null) fileInputStream.close();
-            } catch (Exception e) {
-                this.log("init: Error closing properties file.",e);
-            }
         }
-
-        GraphTypeConfig config = new GraphTypeConfig();
-
-        config.setWorkDir(new File(properties.getProperty("command.input.dir")));
-        config.setCommandPrefix(properties.getProperty("command.prefix"));
-        config.setMimeType(properties.getProperty("output.mime"));
-
-	Map map;
-	if (isTypeAdHoc(type)) {
-	    map = new HashMap();
-	    map.put("adhoc", properties);
-	} else {
-	    map = PrefabGraph.getPrefabGraphDefinitions(properties);
-	}
-        config.setReportMap(map);
-
-        return config;
-    }
-
-    public GraphTypeConfig getGraphConfig(String type) throws ServletException {
-	GraphTypeConfig config = (GraphTypeConfig) m_graphTypeMap.get(type);
-
-        if (config == null) {
-	    throw new ServletException("Invalid graph type \"" + type + "\"");
-	}
-
-	return config;
     }
 
     /**
@@ -200,20 +137,77 @@ public class RRDGraphServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-        String type = request.getParameter("type");
+        String typeName = request.getParameter("type");
+        String resourceTypeName = request.getParameter("resourceType");
+        String adhoc = request.getParameter("adhoc");
+        
+        String[] requiredParameters = {
+                "type",
+                "resourceType"
+        };
 
-        if (type == null) {
-	    returnErrorImage(response, s_missingParamsPath);
-            return;
+        if (typeName == null) {
+            throw new MissingParameterException("type", requiredParameters);
+//          returnErrorImage(response, s_missingParamsPath);
+//            return;
+        }
+        if (resourceTypeName == null) {
+            throw new MissingParameterException("resourceType", requiredParameters);
+//          returnErrorImage(response, s_missingParamsPath);
+//            return;
         }
 
-	GraphTypeConfig config = getGraphConfig(type);
+        PrefabGraphType type = m_prefabGraphDao.findByName(typeName);
+        if (type == null) {
+            throw new IllegalArgumentException("graph type \"" + typeName + "\" is not valid");
+        }
+        
+        GraphModel model = findGraphModelByName(type.getName());
+
+        GraphResourceType resourceType =
+            model.getResourceTypeByName(resourceTypeName);
 
 	String command;
-	if (isTypeAdHoc(type)) {
-	    command = getCommandAdhoc(config, request, response);
+	if ("true".equals(adhoc)) {
+            String[] adhocRequiredParameters = {
+                    "node or domain",
+                    "resource"
+            };
+            String nodeIdString = request.getParameter("node");
+            String domain = request.getParameter("domain");
+            if (nodeIdString == null && domain == null) {
+                throw new MissingParameterException("node or domain",
+                                                    adhocRequiredParameters);
+            }
+            
+            int nodeId = -1;
+            if (nodeIdString != null) {
+                nodeId = Integer.parseInt(nodeIdString);
+            }
+
+            String resourceName = request.getParameter("resource");
+            if (resourceName == null) {
+                throw new MissingParameterException("resource",
+                                                    adhocRequiredParameters);
+            }
+            
+            AdhocGraphType adhocType = m_prefabGraphDao.findAdhocByName(typeName);
+            
+            GraphResource resource;
+            String resourceParent;
+            if (nodeId != -1) {
+                resource = model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceTypeName);
+                resourceParent = Integer.toString(nodeId);
+            } else {
+                resource = model.getResourceForDomainResourceResourceType(domain, resourceName, resourceTypeName);
+                resourceParent = domain;
+            }
+	    command = getCommandAdhoc(adhocType, resourceParent,
+                                      resourceType, resource,
+                                      request, response);
 	} else {
-	    command = getCommandNonAdhoc(config, request, response);
+	    command = getCommandNonAdhoc(type, resourceType,
+                                         request, response);
 	}
 
 	if (command == null) {
@@ -221,7 +215,8 @@ public class RRDGraphServlet extends HttpServlet {
             return;
         }
 
-        File workDir = config.getWorkDir();
+        File workDir = resourceType.getRrdDirectory();
+
         InputStream tempIn = null;
         try {
             log("Executing RRD command in this directory: " + workDir);
@@ -235,7 +230,7 @@ public class RRDGraphServlet extends HttpServlet {
 	}
 
         if (tempIn != null) {
-            response.setContentType(config.getMimeType());
+            response.setContentType(type.getOutputMimeType());
 
             StreamUtils.streamToStream(tempIn, response.getOutputStream());
 
@@ -243,18 +238,45 @@ public class RRDGraphServlet extends HttpServlet {
         }
     }
 
-    public String getCommandNonAdhoc(GraphTypeConfig config,
-            HttpServletRequest request,
-            HttpServletResponse response)
+    public String getCommandNonAdhoc(PrefabGraphType type,
+                                     GraphResourceType resourceType,
+                                     HttpServletRequest request,
+                                     HttpServletResponse response)
     throws ServletException {
         String report = request.getParameter("report");
         String[] rrds = request.getParameterValues("rrd");
         String propertiesFile = request.getParameter("props");
         String start = request.getParameter("start");
         String end = request.getParameter("end");
+
+//        if (report == null || rrds == null || start == null || end == null
+//                || resourceTypeName == null) {
+//            return null;
+//        }
         
-        if (report == null || rrds == null || start == null || end == null) {
-            return null;
+        String[] requiredParameters = {
+                "report",
+                "rrd",
+                "props",
+                "start",
+                "end",
+        };
+        
+        if (report == null) {
+            throw new MissingParameterException("report",
+                                                requiredParameters);
+        }
+        if (rrds == null) {
+            throw new MissingParameterException("rrd",
+                                                requiredParameters);
+        }
+        if (start == null) {
+            throw new MissingParameterException("start",
+                                                requiredParameters);
+        }
+        if (end == null) {
+            throw new MissingParameterException("end",
+                                                requiredParameters);
         }
         
         for (int i = 0; i < rrds.length; i++) {
@@ -266,21 +288,35 @@ public class RRDGraphServlet extends HttpServlet {
         }
         
         return createPrefabCommand(request,
-                config.getReportMap(),
-                config.getCommandPrefix(),
-                config.getWorkDir(), report, rrds,
-                propertiesFile,
-                start, end);
+                                   resourceType,
+                                   type.getReportMap(),
+                                   type.getCommandPrefix(),
+                                   type.getRrdDirectory(), report, rrds,
+                                   propertiesFile,
+                                   start, end);
+    }
+    
+    private GraphModel findGraphModelByName(String name) {
+        if (name.equals("performance")) {
+            return m_performanceModel;
+        } else if (name.equals("response")) {
+            return m_responseTimeModel;
+        } else {
+            throw new IllegalArgumentException("graph model \"" + name
+                                               + "\" is not supported");
+        }
     }
     
     protected String createPrefabCommand(HttpServletRequest request,
-            Map reportMap, String commandPrefix,
+            GraphResourceType resourceType,
+            Map<String, PrefabGraph> reportMap,
+            String commandPrefix,
             File workDir, String reportName,
             String[] rrds, String propertiesFile,
             String start, String end)
     throws ServletException {
-        PrefabGraph graph = (PrefabGraph) reportMap.get(reportName);
-        
+        PrefabGraph graph = resourceType.getPrefabGraph(reportName);
+
         if (graph == null) {
             throw new IllegalArgumentException("Unknown report name: "
                     + reportName);
@@ -307,7 +343,7 @@ public class RRDGraphServlet extends HttpServlet {
            String endtime = Long.toString(Long.parseLong(end) / 1000);
            */
         
-        HashMap translationMap = new HashMap();
+        HashMap<String, String> translationMap = new HashMap<String, String>();
         
         for (int i = 0; i < rrds.length; i++) {
             String key = "{rrd" + (i + 1) + "}";
@@ -354,11 +390,11 @@ public class RRDGraphServlet extends HttpServlet {
         
         
         try {
-            Iterator iter = translationMap.keySet().iterator();
+            Iterator<String> iter = translationMap.keySet().iterator();
             
             while (iter.hasNext()) {
-                String s1 = (String) iter.next();
-                String s2 = (String) translationMap.get(s1);
+                String s1 = iter.next();
+                String s2 = translationMap.get(s1);
                 
                 // replace s1 with s2
                 RE re = new RE(s1);
@@ -411,40 +447,42 @@ public class RRDGraphServlet extends HttpServlet {
     
 
 
-    public String getCommandAdhoc(GraphTypeConfig config,
-			          HttpServletRequest request,
+    public String getCommandAdhoc(AdhocGraphType adhocType,
+                                  String resourceParent,
+                                  GraphResourceType resourceType,
+			          GraphResource resource,
+                                  HttpServletRequest request,
 			          HttpServletResponse response)
 		throws ServletException {
-	String rrdDir = request.getParameter("rrddir");
         String start = request.getParameter("start");
         String end = request.getParameter("end");
 
-        if (rrdDir == null || start == null || end == null) {
+        if (start == null || end == null) {
             return null;
         }
-
-        if (!RrdFileConstants.isValidRRDName(rrdDir)) {
-            log("Illegal RRD directory: " + rrdDir);
-            throw new IllegalArgumentException("Illegal RRD directory: " + rrdDir);
-        }
-
-        return createAdHocCommand(request, config, rrdDir, start, end);
+        
+        return createAdHocCommand(request, adhocType,
+                                  resourceParent,
+                                  resourceType,
+                                  resource,
+                                  start, end);
     }
 
     protected String createAdHocCommand(HttpServletRequest request,
-					GraphTypeConfig config,
-					String rrdDir,
-					String start, String end) {
-	Properties properties =
-	    (Properties) config.getReportMap().get("adhoc");
-	String commandPrefix = config.getCommandPrefix();
+					AdhocGraphType adhocType,
+                                        String resourceParent,
+                                        GraphResourceType resourceType,
+					GraphResource resource,
+                                        String start, String end) {
+        String commandPrefix = adhocType.getCommandPrefix();
+        String title = adhocType.getTitleTemplate();
+        String ds = adhocType.getDataSourceTemplate();
+        String graphline = adhocType.getGraphLineTemplate();
 
-        String title = properties.getProperty("adhoc.command.title");
-        String ds = properties.getProperty("adhoc.command.ds");
-        String graphline = properties.getProperty("adhoc.command.graphline");
-
-        // remember rrdtool wants the time in seconds, not milliseconds;
-        // java.util.Date.getTime() returns milliseconds, so divide by 1000
+        /*
+         * Remember that rrdtool wants the time in seconds, not milliseconds;
+         * java.util.Date.getTime() returns milliseconds, so divide by 1000
+         */
         String starttime = Long.toString(Long.parseLong(start) / 1000);
         String endtime = Long.toString(Long.parseLong(end) / 1000);
 
@@ -469,61 +507,61 @@ public class RRDGraphServlet extends HttpServlet {
 	    dsTitles == null || dsStyles == null) {
             return null;
         }
-
-        for (int i = 0; i < dsNames.length; i++) {
-            String dsAbbrev = "ds" + Integer.toString(i);
-
-            String dsName = dsNames[i];
-            String rrd = rrdDir + File.separator + dsNames[i]
-			 + RrdFileConstants.RRD_SUFFIX;
-            String dsAggregFxn = dsAggregFxns[i];
-            String color = colors[i];
-            String dsTitle = dsTitles[i];
-            String dsStyle = dsStyles[i];
-
-            buf.append(" ");
-            buf.append(MessageFormat.format(ds, new String[] { rrd,
-							       starttime,
-							       endtime,
-							       graphtitle,
-							       dsAbbrev,
-							       dsName,
-							       dsAggregFxn,
-							       dsStyle,
-							       color,
-							       dsTitle }));
+        
+        Set<String> attributeNames = new HashSet<String>();
+        for (GraphAttribute attribute : resource.getAttributes()) {
+            attributeNames.add(attribute.getName());
+        }
+        
+        for (String dsName : dsNames) {
+            if (!attributeNames.contains(dsName)) {
+                throw new IllegalArgumentException("dsName \"" + dsName
+                                                   + "\" is not available "
+                                                   + "on this resource.  "
+                                                   + "Available: "
+                                                   + StringUtils.collectionToDelimitedString(attributeNames, ", "));
+            }
         }
 
         for (int i = 0; i < dsNames.length; i++) {
             String dsAbbrev = "ds" + Integer.toString(i);
 
             String dsName = dsNames[i];
-            String rrd = rrdDir + File.separator + dsNames[i]
-			 + RrdFileConstants.RRD_SUFFIX;
+            String rrd = resourceType.getRelativePathForAttribute(resourceParent, resource.getName(), dsName);
             String dsAggregFxn = dsAggregFxns[i];
             String color = colors[i];
             String dsTitle = dsTitles[i];
             String dsStyle = dsStyles[i];
 
             buf.append(" ");
-            buf.append(MessageFormat.format(graphline,
-					    new String[] { rrd,
-							   starttime,
-							   endtime,
-							   graphtitle,
-							   dsAbbrev,
-							   dsName,
-							   dsAggregFxn,
-							   dsStyle,
-							   color,
-							   dsTitle }));
+            buf.append(MessageFormat.format(ds, rrd, starttime,
+                                            endtime, graphtitle,
+                                            dsAbbrev, dsName,
+                                            dsAggregFxn, dsStyle,
+                                            color, dsTitle));
         }
 
-        return MessageFormat.format(buf.toString(),
-				    new String[] { "bogus-rrd",
-						   starttime,
-						   endtime,
-						   graphtitle });
+        for (int i = 0; i < dsNames.length; i++) {
+            String dsAbbrev = "ds" + Integer.toString(i);
+
+            String dsName = dsNames[i];
+            String rrd = resourceType.getRelativePathForAttribute(resourceParent, resource.getName(), dsName);
+            String dsAggregFxn = dsAggregFxns[i];
+            String color = colors[i];
+            String dsTitle = dsTitles[i];
+            String dsStyle = dsStyles[i];
+
+            buf.append(" ");
+            buf.append(MessageFormat.format(graphline, rrd,
+                                            starttime, endtime, graphtitle,
+                                            dsAbbrev, dsName, dsAggregFxn,
+                                            dsStyle, color, dsTitle));
+        }
+
+        log().debug("formatting: " + buf + ", bogus-rrd, " + starttime + ", "
+                    + endtime + ", " + graphtitle);
+        return MessageFormat.format(buf.toString(), "bogus-rrd",
+                                    starttime, endtime, graphtitle);
     }
 
     public boolean isTypeAdHoc(String type) {
@@ -538,62 +576,16 @@ public class RRDGraphServlet extends HttpServlet {
 	StreamUtils.streamToStream(is, response.getOutputStream());
     }
 
-    public class GraphTypeConfig {
-        /**
-         * The working directory as specifed in the rrdtool-graph properties
-	 * file.
-         */
-        private File m_workDir;
-    
-        /**
-         * The prefix for the RRDtool command (including the executable's
-         * pathname) as specified in the rrdtool-graph properties file.
-         */
-        private String m_commandPrefix;
-    
-        /**
-         * The mime type of the image we will return.
-         */
-        private String m_mimeType;
-    
-        /**
-         * Holds the graph definitions specified in the rrdtool-graph
-         * properties file. It maps report names to {@link PrefabGraph
-         * PrefabGraph} instances.
-         */
-        private Map m_reportMap;
-
-
-        public void setWorkDir(File workDir) {
-            m_workDir = workDir;
-        }
-
-        public File getWorkDir() {
-            return m_workDir;
-        }
-
-        public void setCommandPrefix(String commandPrefix) {
-            m_commandPrefix = commandPrefix;
-        }
-
-        public String getCommandPrefix() {
-            return m_commandPrefix;
-        }
-
-        public void setMimeType(String mimeType) {
-            m_mimeType = mimeType;
-        }
-
-        public String getMimeType() {
-            return m_mimeType;
-        }
-
-        public void setReportMap(Map reportMap) {
-            m_reportMap = reportMap;
-        }
-
-        public Map getReportMap() {
-            return m_reportMap;
-        }
+    public GraphDao getPrefabGraphDao() {
+        return m_prefabGraphDao;
     }
+
+    public void setPrefabGraphDao(GraphDao prefabGraphDao) {
+        m_prefabGraphDao = prefabGraphDao;
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance();
+    }
+
 }

@@ -46,7 +46,9 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.*,
-		org.opennms.web.response.*
+		org.opennms.web.response.*,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
@@ -54,12 +56,8 @@
     public ResponseTimeModel model = null;
   
     public void init() throws ServletException {
-        try {
-            this.model = new ResponseTimeModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.model = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 %>
 <%
@@ -94,7 +92,7 @@
   
   <h3>Step 1: Choose the Interface to Query</h3>
 
-  <select name="intf" size="10">
+  <select name="resource" size="10">
     <% Iterator iterator = intfMap.keySet().iterator(); %>
     <% while(iterator.hasNext()) { %>
       <% String key = (String)iterator.next(); %>
