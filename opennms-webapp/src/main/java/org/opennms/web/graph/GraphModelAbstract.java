@@ -11,93 +11,106 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
+import org.opennms.web.performance.GraphAttribute;
+import org.opennms.web.performance.GraphResource;
+import org.opennms.web.performance.GraphResourceType;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 public abstract class GraphModelAbstract implements GraphModel {
-    private PrefabGraph[] m_queries;
-
-    private Map m_reportMap;
-
-    private File m_rrdDirectory;
-
-    private String m_defaultReport;
-
-    protected void loadProperties(String homeDir, String fileName)
-		throws IOException {
-        if (homeDir == null) {
-            throw new IllegalArgumentException("Cannot take null "
-					       + "parameters.");
-        }
-	loadProperties(homeDir + fileName);
-    }
-
-    protected void loadProperties(String file) throws IOException {
-	FileInputStream in = new FileInputStream(file);
-        loadProperties(in);
-        in.close();
+    private GraphDao m_dao;
+    
+    public void setPrefabGraphDao(GraphDao dao) {
+        m_dao = dao;
     }
     
-    protected void loadProperties(InputStream in) throws IOException {
-        Properties properties = new java.util.Properties();
-        properties.load(in);
+    public GraphDao getPrefabGraphDao() {
+        return m_dao;
+    }
+    
+    private void assertDaoSet() {
+        if (m_dao == null) {
+            throw new IllegalStateException("prefabGraphDao has not been set");
+        }
+    }
+    
+    public PrefabGraphType getPrefabGraphType() {
+        assertDaoSet();
+        PrefabGraphType type = m_dao.findByName(getType());
+        if (type == null) {
+            throw new IllegalArgumentException("Cannot find PrefabGraphType for "
+                    + getType());
+        }
+        return type;
+    }
 
-        m_rrdDirectory =
-	    new File(properties.getProperty("command.input.dir"));
-
-        if (properties.getProperty("default.report") != null) {	
-            m_defaultReport =
-	        new String(properties.getProperty("default.report"));
-        } else {
-            m_defaultReport = new String("none");
-        }	    
-
-        m_reportMap = PrefabGraph.getPrefabGraphDefinitions(properties);
+    public PrefabGraph[] getQueries() {
+        return getPrefabGraphType().getQueries();
+    }
+    
+    public PrefabGraph getQuery(String name) {
+        return getPrefabGraphType().getQuery(name);
     }
 
     public File getRrdDirectory() {
-        return m_rrdDirectory;
+        return getPrefabGraphType().getRrdDirectory();
     }
 
     public String getDefaultReport() {
-        return m_defaultReport;
+        return getPrefabGraphType().getDefaultReport();
+    }
+    
+
+    public PrefabGraph[] getQueriesByResourceTypeAttributes(String resourceType,
+            Set<GraphAttribute> attributes) {
+        return getQueriesByResourceTypeAttributes(resourceType, attributes,
+                                                  getQueries());
+        
     }
 
-    public PrefabGraph getQuery(String queryName) {
-        return (PrefabGraph) m_reportMap.get(queryName);
-    }
+    public PrefabGraph[] getQueriesByResourceTypeAttributes(String resourceType,
+            Set<GraphAttribute> attributes, PrefabGraph[] availableQueries) {
 
-    /**
-     * Return a list of all known prefabricated graph definitions.
-     */
-    public PrefabGraph[] getQueries() {
-        if (m_queries == null) {
-	    initQueries();
+        List<PrefabGraph> returnList = new LinkedList<PrefabGraph>();
+
+        Set<String> availDataSourceList = new HashSet<String>(attributes.size());
+        for (GraphAttribute attribute : attributes) {
+            availDataSourceList.add(attribute.getName());
         }
 
-	return m_queries;
-    }
+        for (PrefabGraph query : availableQueries) {
+            if (resourceType != null &&
+                    !resourceType.equals(query.getType())) {
+                if (log().isDebugEnabled()) {
+                    log().debug("skipping " + query.getName() + " because its type \"" + query.getType() + "\" does not equal resourceType \"" + resourceType + "\"");
+                }
+                continue;
+            }
+            
+            List requiredList = Arrays.asList(query.getColumns());
 
-    private void initQueries() {
-        Collection values = m_reportMap.values();
-        Iterator iter = values.iterator();
-
-        PrefabGraph[] graphs = new PrefabGraph[values.size()];
-
-        for (int i = 0; i < graphs.length; i++) {
-            graphs[i] = (PrefabGraph) iter.next();
+            if (availDataSourceList.containsAll(requiredList)) {
+                returnList.add(query);
+            }
         }
 
-        m_queries = graphs;
+        PrefabGraph[] availQueries = (PrefabGraph[])
+        returnList.toArray(new PrefabGraph[returnList.size()]);
+
+        return availQueries;
     }
+
 
     public PrefabGraph[] getQueries(int nodeId) {
         return getQueries(String.valueOf(nodeId));
@@ -482,6 +495,60 @@ public abstract class GraphModelAbstract implements GraphModel {
         }
 
 	return dataSources;
+    }
+    
+    
+    public List<GraphResource> getResourcesForNodeResourceType(int nodeId, String resourceTypeName) {
+        GraphResourceType resourceType = getResourceTypeByName(resourceTypeName);
+
+        return resourceType.getResourcesForNode(nodeId);
+    }
+    
+    public List<GraphResource> getResourcesForDomainResourceType(String domain, String resourceTypeName) {
+        GraphResourceType resourceType = getResourceTypeByName(resourceTypeName);
+
+        return resourceType.getResourcesForDomain(domain);
+    }
+    
+    public GraphResource getResourceForNodeResourceResourceType(int nodeId, String resourceName, String resourceTypeName) {
+        List<GraphResource> resources = getResourcesForNodeResourceType(nodeId, resourceTypeName);
+        
+        GraphResource resource = null;
+        for (GraphResource a : resources) {
+            if (resourceName.equals(a.getName())) {
+                resource = a;
+            }
+        }
+        
+        if (resource == null) {
+            log().info("Resource of resource type '" + resourceTypeName + "' is not on node " + nodeId);
+            throw new ObjectRetrievalFailureException(GraphResourceType.class, resourceName, "Resource of resource type '" + resourceTypeName + "' is not on node " + nodeId, null);
+        }
+        
+        return resource;
+    }
+    
+    public GraphResource getResourceForDomainResourceResourceType(String domain, String resourceName, String resourceTypeName) {
+        List<GraphResource> resources = getResourcesForDomainResourceType(domain, resourceTypeName);
+        
+        GraphResource resource = null;
+        for (GraphResource a : resources) {
+            if (resourceName.equals(a.getName())) {
+                resource = a;
+            }
+        }
+        
+        if (resource == null) {
+            log().info("Resource of resource type '" + resourceTypeName + "' is not on domain " + domain);
+            throw new ObjectRetrievalFailureException(GraphResourceType.class, resourceName, "Resource of resource type '" + resourceTypeName + "' is not on domain " + domain, null);
+        }
+        
+        return resource;
+    }
+    
+
+    public Category log() {
+        return ThreadCategory.getInstance();
     }
 
     /** Convenient data structure for storing nodes with RRDs available. */

@@ -103,4 +103,24 @@
     <property name="applicationDao" ref="applicationDao"/>
   </bean>
   
+  <!--  Graphing beans -->
+  <bean id="prefabGraphDao" class="org.opennms.web.graph.PropertiesGraphDao">
+  	<constructor-arg>
+  	  <value>performance=${opennms.home}/etc/snmp-graph.properties;response=${opennms.home}/etc/response-graph.properties</value>
+    </constructor-arg>  	  
+  	<constructor-arg>
+  	  <value>performance=${opennms.home}/etc/snmp-adhoc-graph.properties;response=${opennms.home}/etc/response-adhoc-graph.properties</value>
+    </constructor-arg>  	  
+  </bean>
+  
+  <bean id="responseTimeModel" class="org.opennms.web.response.ResponseTimeModel">
+  	<property name="prefabGraphDao" ref="prefabGraphDao"/>
+  </bean>
+  
+  <bean id="performanceModel" class="org.opennms.web.performance.PerformanceModel">
+  	<constructor-arg>
+	  <ref bean="responseTimeModel"/>
+  	</constructor-arg>
+  	<property name="prefabGraphDao" ref="prefabGraphDao"/>
+  </bean>
 </beans>

@@ -1,6 +1,5 @@
 package org.opennms.web.graph;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.Integer;
 import java.net.URLEncoder;
@@ -8,10 +7,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
-import org.opennms.core.utils.BundleLists;
 import org.opennms.netmgt.utils.IfLabel;
-import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.performance.PerformanceModel;
 
 public class Graph implements Comparable {
     private GraphModel m_model = null;
@@ -80,13 +76,20 @@ public class Graph implements Comparable {
 	String externalValuesParm = encodeExternalValuesAsParmString();
 
 	String url = "graph/graph.png"
-	       + "?report="
-	       + getName()
-	       + "&type=" + m_model.getType()
-	       + "&start=" + m_start.getTime()
-	       + "&end=" + m_end.getTime()
-	       + "&" + rrdParm
-	       + "&" + externalValuesParm;
+	       + "?"
+               + "report=" + getName()
+               + "&"
+               + "resourceType=" + getResourceType()
+               + "&"
+               + "type=" + m_model.getType()
+	       + "&"
+               + "start=" + m_start.getTime()
+	       + "&"
+               + "end=" + m_end.getTime()
+	       + "&"
+               + rrdParm
+	       + "&"
+               + externalValuesParm;
 
 	// XXX This is such a hack.  This logic should *not* be in here.
 	if (m_model.getType() == "performance") {
@@ -99,58 +102,6 @@ public class Graph implements Comparable {
 
 	return url;
     }
-
-    /** intf can be null */
-    /*
-    private String[] getRRDNames(boolean encodeNodeIdInRRDParm) {
-        String[] columns = m_graph.getColumns();
-        String[] rrds = new String[columns.length];
-
-        for (int i=0; i < columns.length; i++) {
-            StringBuffer buffer = new StringBuffer();
-
-            if (encodeNodeIdInRRDParm) {
-		// We don't include node IDs on response graphs
-                // Make sure we have a valid nodeId, else append domain
-                if (m_nodeId > -1) {
-                    buffer.append(m_nodeId);
-                } else {
-                    buffer.append(m_domain);
-                }
-                buffer.append(File.separator);
-            }
-            
-            if (!"node".equals(getResourceType()) && !"interface".equals(getResourceType())) {
-                buffer.append(getResourceType());
-                buffer.append(File.separator);
-            }
-
-            if (m_resource != null) {
-                boolean addInterface = false;
-                if (!encodeNodeIdInRRDParm) {
-                    // Response time graph, it's always interface specific
-                    addInterface = true;
-//                  } else if (PerformanceModel.INTERFACE_GRAPH_TYPE.equals(m_graph.getType())) {
-                  } else if (!PerformanceModel.NODE_GRAPH_TYPE.equals(m_graph.getType())) {
-                    // Performance graph where type == interface
-                    addInterface = true;
-                }
-
-                if (addInterface) {
-                    buffer.append(m_resource);
-                    buffer.append(File.separator);
-                }
-            }
-            
-            buffer.append(columns[i]);
-            buffer.append(RrdFileConstants.RRD_SUFFIX);
-
-            rrds[i] = buffer.toString();
-        }
-
-        return rrds;
-    }
-    */
     
     private String[] getRRDNames() {
         String[] columns = m_graph.getColumns();
@@ -168,10 +119,6 @@ public class Graph implements Comparable {
     }
 
     private String getRRDParmString() throws UnsupportedEncodingException {
-        /*
-        String[] rrds = getRRDNames(m_model.encodeNodeIdInRRDParm());
-        */
-        
         String[] rrds = getRRDNames();
 	return encodeRRDNamesAsParmString(rrds);
     }

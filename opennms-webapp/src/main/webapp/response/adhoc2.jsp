@@ -48,8 +48,10 @@
 		org.opennms.web.*,
 		org.opennms.web.graph.*,
 		java.io.File,
-    		org.opennms.netmgt.utils.RrdFileConstants,
-    		org.opennms.web.element.NetworkElementFactory
+   		org.opennms.netmgt.utils.RrdFileConstants,
+   		org.opennms.web.element.NetworkElementFactory,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
@@ -57,18 +59,14 @@
     public ResponseTimeModel model = null;
 
     public void init() throws ServletException {
-        try {
-            this.model = new ResponseTimeModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.model = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 %>
 
 <%
 
-    String[] requiredParameters = new String[] { "node", "intf" };
+    String[] requiredParameters = new String[] { "node", "resource" };
 
     // required parameter node
     String nodeIdString = request.getParameter("node");
@@ -76,16 +74,16 @@
         throw new MissingParameterException("node", requiredParameters);
     }
 
-    // required parameter intf, a value of "" means to discard the intf
-    String intf = request.getParameter("intf");
-    if (intf == null || "".equals(intf)) {
-        throw new MissingParameterException( "intf", requiredParameters);
+    // required parameter resource
+    String resource = request.getParameter("resource");
+    if (resource == null || "".equals(resource)) {
+        throw new MissingParameterException( "resource", requiredParameters);
     }
     
     int nodeId = Integer.parseInt(nodeIdString);
 
-    File rrdPath = new File(this.model.getRrdDirectory(), intf);
-    String rrdDir = intf;
+    File rrdPath = new File(this.model.getRrdDirectory(), resource);
+    String rrdDir = resource;
 
     File[] rrds = rrdPath.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
 
@@ -108,17 +106,12 @@
 </jsp:include>
 
 <form method="get" action="response/adhoc3.jsp" >
-  <%=Util.makeHiddenTags(request, new String[] {"node", "intf"})%>
+  <%=Util.makeHiddenTags(request)%>
   <input type="hidden" name="rrddir" value="<%=rrdDir%>" />
 
   <h3>Step 2: Choose the Data Sources</h3> 
-  <% if("".equals(intf)) { %>
-    <%-- XXX this code is never reached because of the earlier intf check --%>
-    Node: <%=nodeLabel%>
-  <% } else { %>
-    Node: <%=nodeLabel%> &nbsp;&nbsp;
-    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-  <% } %>
+  Node: <%=nodeLabel%> &nbsp;&nbsp;
+  Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, resource)%>
 
   <br/>
   <br/>

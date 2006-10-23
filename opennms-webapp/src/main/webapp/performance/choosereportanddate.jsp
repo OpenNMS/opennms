@@ -49,7 +49,10 @@
 		org.opennms.web.*,
 		org.opennms.web.graph.*,
 		org.opennms.web.performance.*,
-		java.util.Calendar
+		java.util.Calendar,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
+		
 	"
 %>
 
@@ -57,45 +60,54 @@
     public PerformanceModel model = null;
 
     public void init() throws ServletException {
-        try {
-            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the PerformanceModel", t);
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
 %>
 
 <%
+    String[] requiredParameters = {
+      	"node or domain",
+      	"resourceType",
+      	"resource"
+    };
+    
     // optional parameter node
     String nodeIdString = request.getParameter("node");
 
     //optional parameter domain
     String domain = request.getParameter("domain");
     if(( nodeIdString == null ) && ( domain == null )) {
-        throw new MissingParameterException("node or domain");
+        throw new MissingParameterException("node or domain",
+                                            requiredParameters);
     }
-
-    // optional parameter resource
-    String resource = request.getParameter("resource");    
     
-    PrefabGraph[] graphs = null;
-
-    // FIXME: getQueries throws an exception if nodeId doesn't have snmp data!
-    // This doesn't seem to be an issue any more, at least from performance reports
-    if((resource == null || resource.length() == 0) && (nodeIdString != null )) {
-        graphs = this.model.getQueries(Integer.parseInt(nodeIdString));
-    } else if (nodeIdString != null ) {
-        boolean includeNodeQueries = false;
-		graphs = this.model.getQueries(Integer.parseInt(nodeIdString), resource, includeNodeQueries);
-    } else {
-        graphs = this.model.getQueriesForDomain(domain, resource);
+    int nodeId = -1;
+    if (nodeIdString != null) {
+        nodeId = Integer.parseInt(nodeIdString);
     }
 
-    /*
-     * Order the graphs by their order in the properties file.
-     * Note: PrefabGraph implements the Comparable interface.
-     */
-    Arrays.sort(graphs);
+    String resourceTypeName = request.getParameter("resourceType");
+    if (resourceTypeName == null) {
+        throw new MissingParameterException("resourceType",
+                                            requiredParameters);
+    }
+    String resourceName = request.getParameter("resource");
+    if (resourceName == null) {
+        throw new MissingParameterException("resource",
+                                            requiredParameters);
+    }
+    
+    GraphResourceType resourceType = model.getResourceTypeByName(resourceTypeName);
+    
+	GraphResource resource;
+	if (nodeId != -1) {
+	    resource = model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceTypeName);
+	} else {
+	    resource = model.getResourceForDomainResourceResourceType(domain, resourceName, resourceTypeName);
+	}
+	
+	List<PrefabGraph> graphs = resourceType.getAvailablePrefabGraphs(resource.getAttributes());
     
     Calendar now = Calendar.getInstance();
     Calendar yesterday = Calendar.getInstance();
@@ -144,7 +156,7 @@
 <h3>Network Performance Data</h3>
 
 
-<% if (graphs.length == 0) { %>
+<% if (graphs.size() == 0) { %>
   <div>
     <p>
       No standard reports being collected for this node or interface.
@@ -158,9 +170,6 @@
   <% } %>
     <input type="hidden" name="type" value="performance"/>
     <%=Util.makeHiddenTags(request)%>
-    <% if(resource == null) { %>
-      <input type="hidden" name="resource" value="" />
-    <% } %>
 
     <div style="width: 40%; float: left;">
       <p>
@@ -170,8 +179,8 @@
 
       <p>
         <select name="reports" multiple="multiple" size="10">
-          <% for( int i = 0; i < graphs.length; i++ ) { %>
-            <option VALUE=<%=graphs[i].getName()%>><%=graphs[i].getTitle()%></option>
+          <% for (PrefabGraph graph : graphs) { %>
+            <option value=<%=graph.getName()%>><%=graph.getTitle()%></option>
           <% } %>
         </select>
       </p>

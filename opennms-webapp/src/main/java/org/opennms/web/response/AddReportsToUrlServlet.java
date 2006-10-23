@@ -49,16 +49,15 @@ import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.graph.PrefabGraph;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class AddReportsToUrlServlet extends HttpServlet {
     protected ResponseTimeModel model;
 
     public void init() throws ServletException {
-        try {
-            this.model = new ResponseTimeModel(Vault.getHomeDir());
-        } catch (Exception e) {
-            throw new ServletException("Could not initialize the ResponseTimeModel", e);
-        }
+        WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        model = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

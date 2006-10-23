@@ -47,6 +47,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -63,6 +64,10 @@ import org.opennms.web.Util;
 import org.opennms.web.graph.PrefabGraph;
 import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.GraphModelAbstract;
+import org.opennms.web.performance.GraphAttribute;
+import org.opennms.web.performance.GraphResource;
+import org.opennms.web.performance.GraphResourceType;
+import org.opennms.web.performance.ResponseTimeGraphResourceType;
 
 /**
  * Encapsulates all SNMP performance reporting for the web user interface.
@@ -75,6 +80,8 @@ import org.opennms.web.graph.GraphModelAbstract;
 public class ResponseTimeModel extends GraphModelAbstract {
     public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME =
 		File.separator + "etc" + File.separator + "response-graph.properties";
+    private GraphResourceType m_resourceType =
+        new ResponseTimeGraphResourceType(this);
 
 
     /**
@@ -85,7 +92,10 @@ public class ResponseTimeModel extends GraphModelAbstract {
      *            Vault.getHomeDir}.
      */
     public ResponseTimeModel(String homeDir) throws IOException {
-	loadProperties(homeDir, RRDTOOL_GRAPH_PROPERTIES_FILENAME);
+        //loadProperties(homeDir, RRDTOOL_GRAPH_PROPERTIES_FILENAME);
+    }
+    
+    public ResponseTimeModel() throws IOException {
     }
 
     // XXX parameters nodeId and includeNodeQueries are not used
@@ -172,7 +182,7 @@ public class ResponseTimeModel extends GraphModelAbstract {
         return getQueryableInterfacesForNode(String.valueOf(nodeId));
     }
 
-    public ArrayList getQueryableInterfacesForNode(String nodeId)
+    public ArrayList<String> getQueryableInterfacesForNode(String nodeId)
 	throws SQLException {
         if (nodeId == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -187,7 +197,7 @@ public class ResponseTimeModel extends GraphModelAbstract {
         select.append(" ORDER BY ipaddr");
 
         Connection conn = Vault.getDbConnection();
-        ArrayList intfs = new ArrayList();
+        ArrayList<String> intfs = new ArrayList<String>();
 
         try {
             Statement stmt = conn.createStatement();
@@ -260,5 +270,13 @@ public class ResponseTimeModel extends GraphModelAbstract {
         buffer.append(RrdFileConstants.RRD_SUFFIX);
         return buffer.toString();
 
+    }
+    
+    public PrefabGraph getQuery(String resourceType, String name) {
+        return getQuery(name);
+    }
+    
+    public GraphResourceType getResourceTypeByName(String name) {
+        return m_resourceType;
     }
 }

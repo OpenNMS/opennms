@@ -45,19 +45,18 @@
 	import="java.util.*,
 		org.opennms.web.Util,
 		org.opennms.web.performance.*,
-		org.opennms.web.ServletInitializer
+		org.opennms.web.ServletInitializer,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
 <%!
     public PerformanceModel model = null;
 
-    public void init() throws ServletException {
-        try {
-            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the PerformanceModel", t);
-        }
+    public void init() throws ServletException { 
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
 %>
 
@@ -214,7 +213,11 @@
     Choose a node for a custom performance report.
   </p>
 
+<!--
   <form method="get" name="choose_node_adhoc" action="performance/adhoc.jsp">
+  -->
+  <form method="get" name="choose_node_adhoc" action="performance/chooseresource.jsp">
+    <input type="hidden" name="endUrl" value="performance/adhoc2.jsp"/>
     <select name="node" size="10">
       <% for( int i=0; i < nodes.length; i++ ) { %>
         <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>

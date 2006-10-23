@@ -45,26 +45,30 @@
 	import="org.opennms.web.performance.*,
 		org.opennms.web.*,
 		org.opennms.web.graph.*,
-    		org.opennms.web.element.NetworkElementFactory,
+    	org.opennms.web.element.NetworkElementFactory,
 		java.io.File,
-		org.opennms.netmgt.utils.RrdFileConstants
+		java.util.List,
+		org.opennms.netmgt.utils.RrdFileConstants,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
-<%!
+<%! 
     public PerformanceModel model = null;
 
     public void init() throws ServletException {
-        try {
-            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the PerformanceModel", t);
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
 %>
-
+ 
 <%
-    String[] requiredParameters = new String[] {"node or domain", "intf"};
+    String[] requiredParameters = new String[] {
+        "node or domain", 
+        "resourceType",
+        "resource"
+    };
 
     // optional parameter node
     String nodeIdString = request.getParameter("node");
@@ -72,23 +76,44 @@
     //optional parameter domain
     String domain = request.getParameter("domain");
 
-    //required parameter intf, a value of "" means to discard the intf
-    String intf = request.getParameter("intf");
-    if(intf == null) {
-        throw new MissingParameterException( "intf", requiredParameters);
+    //required parameter resourceType
+    String resourceTypeName = request.getParameter("resourceType");
+    if (resourceTypeName == null) {
+        throw new MissingParameterException("resourceType", requiredParameters);
     }
+    
+    //required parameter resource
+    String resourceName = request.getParameter("resource");
+    if (resourceName == null) {
+        throw new MissingParameterException("resource", requiredParameters);
+    }
+    
+	GraphResourceType resourceType =
+	    model.getResourceTypeByName(resourceTypeName);
+
+	GraphResource resource;
     
     String label = null;
     int nodeId = -1;
-    if(nodeIdString != null) {
+    if (nodeIdString != null) {
         nodeId = Integer.parseInt(nodeIdString);
-	label = NetworkElementFactory.getNodeLabel(nodeId);
+        label = NetworkElementFactory.getNodeLabel(nodeId);
+        resource =
+	        model.getResourceForNodeResourceResourceType(nodeId,
+        	                                             resourceName,
+                                                         resourceTypeName);
     } else if (domain != null) {
         label = domain;
+        resource =
+		    model.getResourceForDomainResourceResourceType(domain,
+    	    	                                           resourceName,
+        	                                               resourceTypeName);
     } else {
-        throw new MissingParameterException( "node or domain", requiredParameters);
+        throw new MissingParameterException("node or domain",
+                                            requiredParameters);
     }
 
+    /*
     File rrdPath = null;
     File nodeDir = null;
     String rrdDir = null;
@@ -105,13 +130,16 @@
         }
         rrdPath = new File(nodeDir, intf);
     }
-
+    
     File[] rrds = rrdPath.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
 
     if (rrds == null) {
         this.log("Invalid rrd directory: " + rrdPath);
         throw new IllegalArgumentException("Invalid rrd directory: " + rrdPath);
     }
+    */
+    
+
 
 %>
 
@@ -128,32 +156,31 @@
 <h3>Step 2: Choose the Data Sources</h3> 
 
 <% if(nodeIdString != null) { %>
-  <% if("".equals(intf)) { %>             
+  <% if("".equals(resourceName)) { %>
     Node: <%=label%>
   <% } else { %>
-    Node: <%=label%> &nbsp;&nbsp; Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+    Node: <%=label%> &nbsp;&nbsp; Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, resourceName)%>
    <% } %>
 <% } else { %>
-  Domain: <%=label%> &nbsp;&nbsp; Interface: <%=intf%>
+  Domain: <%=label%> &nbsp;&nbsp; Interface: <%=resourceName%>
 <% } %>
 
 <form method="get" action="performance/adhoc3.jsp" >
-  <%=Util.makeHiddenTags(request, new String[] {"node", "intf"})%>
-  <input type="hidden" name="rrddir" value="<%=rrdDir%>" />
+  <%=Util.makeHiddenTags(request)%>
 
   <table width="100%" cellspacing="2" cellpadding="2" border="0">
+    <% boolean anythingSelected = false; %>
     <% for(int dsindex=0; dsindex < 4; dsindex++ ) { %>
       <!-- Data Source <%=dsindex+1%> -->     
       <tr>
         <td valign="top">
           Data Source <%=dsindex+1%> <%=(dsindex==0) ? "(required)" : "(optional)"%>:<br>
           <select name="ds" size="6">
-            <% for(int i=0; i < rrds.length; i++ ) { %>
-              <% String rrdName = rrds[i].getName(); %>
-              <% String dsName  = rrdName.substring(0, rrdName.length() - org.opennms.netmgt.utils.RrdFileConstants.RRD_SUFFIX.length()); %>
-              <option <%=(dsindex==0 && i==0) ? "selected" : ""%>>
-                <%=dsName%>
+            <% for (GraphAttribute attribute : resource.getAttributes()) { %>
+              <option <%= !anythingSelected ? "selected=\"\"" : "" %>>
+                <%= Util.htmlify(attribute.getName()) %>
               </option>
+	          <% anythingSelected = true; %>    
             <% } %>    
           </select>
         </td>
@@ -206,7 +233,7 @@
 
       <tr><td colspan="2"><hr></td></tr>
     <% } %>
-  </table>
+  </table> 
 
   <input type="submit" value="Next"/>
   <input type="reset" />

@@ -274,7 +274,7 @@
                                 <a href="graph/results?zoom=true&type=performance&resourceType=interface&resource=<%=intf%>&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
                             <%}%>
 
-                            <img src="graph/graph.png?type=performance&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                            <img src="graph/graph.png?type=performance&resourceType=interface&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
                             </a>
 
                         </td>

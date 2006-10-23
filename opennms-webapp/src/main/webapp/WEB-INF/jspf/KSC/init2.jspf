@@ -36,6 +36,9 @@
 
 --%>
 
+<%@page import="org.springframework.web.context.WebApplicationContext" %>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
+
 <%!
     public PerformanceModel model = null;
     protected KSC_PerformanceReportFactory reportFactory = null;
@@ -52,12 +55,8 @@
     
     public void initPerfModel() throws ServletException
     {
-        try {
-            this.model = new PerformanceModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
     
     public void initReportFactory() throws ServletException

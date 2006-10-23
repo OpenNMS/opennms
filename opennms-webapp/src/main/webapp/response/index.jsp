@@ -47,7 +47,9 @@
 	import="java.util.*,
 		org.opennms.web.ServletInitializer,
 		org.opennms.web.Util,
-		org.opennms.web.response.*
+		org.opennms.web.response.*,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
@@ -55,11 +57,8 @@
     public ResponseTimeModel model = null;
 
     public void init() throws ServletException {
-        try {
-            this.model = new ResponseTimeModel(ServletInitializer.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the ResponseTimeModel", t);
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.model = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 %>
 

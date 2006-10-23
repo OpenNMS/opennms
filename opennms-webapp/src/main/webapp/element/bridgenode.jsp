@@ -40,7 +40,20 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*" %>
+<%@page language="java"
+		contentType="text/html"
+		session="true"
+		import="
+				org.opennms.web.element.*,
+				java.util.*,
+				java.net.*,
+				org.opennms.netmgt.utils.IPSorter,
+				org.opennms.web.performance.*,
+				org.opennms.web.response.*,
+				org.springframework.web.context.WebApplicationContext,
+	        	org.springframework.web.context.support.WebApplicationContextUtils
+		"
+%>
 
 <%!
     protected int telnetServiceId;
@@ -48,8 +61,11 @@
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
     
+	public static HashMap<Character, String> statusMap;
+
+    
     public void init() throws ServletException {
-        statusMap = new HashMap();
+        statusMap = new HashMap<Character, String>();
         statusMap.put( new Character('A'), "Active" );
         statusMap.put( new Character(' '), "Unknown" );
         statusMap.put( new Character('D'), "Deleted" );
@@ -59,15 +75,8 @@
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the Telnet service ID", e );
-        }        
-        
-        try {
-            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
         }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
-        }        
-
+        
         try {
             this.httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
         }
@@ -75,13 +84,13 @@
             throw new ServletException( "Could not determine the HTTP service ID", e );
         }
 
-        try {
-            this.rtModel = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
-        }
-
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.perfModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
+    }
+        
+	public String getStatusString( char c ) {
+    	return statusMap.get(new Character(c));
     }
 %>
 
@@ -248,13 +257,3 @@
 
 </body>
 </html>
-
-<%!
-    public static HashMap statusMap;
-
-    
-    public String getStatusString( char c ) {
-        return( (String)statusMap.get( new Character(c) ));
-    }
-
-%>

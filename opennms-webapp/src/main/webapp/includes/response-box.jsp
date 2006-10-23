@@ -47,28 +47,26 @@
 --%>
 
 <%@page language="java"
-   	contentType="text/html"
-	session="true"
-	import="java.util.*,
-		org.opennms.web.response.*,
-		org.opennms.web.Util"
+   		contentType="text/html"
+		session="true"
+		import="org.opennms.web.response.ResponseTimeModel,
+				org.springframework.web.context.WebApplicationContext,
+       		 	org.springframework.web.context.support.WebApplicationContextUtils
+  		"
+		
 %>
 
 <%!
-    public ResponseTimeModel model = null;
+    public ResponseTimeModel m_model = null;
 
     public void init() throws ServletException {
-        try {
-            this.model = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
-        }
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		m_model = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 %>
 
 <%
-    ResponseTimeModel.QueryableNode[] nodes = this.model.getQueryableNodes();
+    ResponseTimeModel.QueryableNode[] nodes = m_model.getQueryableNodes();
 %>
 
 <h3><a href="response/index.jsp">Response Time</a></h3>

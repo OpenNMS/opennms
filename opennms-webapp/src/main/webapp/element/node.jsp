@@ -52,8 +52,10 @@
 		org.opennms.netmgt.utils.IPSorter,
 		org.opennms.web.performance.*,
 		org.opennms.web.response.*,
-	        org.opennms.web.asset.Asset,
-	        org.opennms.web.asset.AssetModel
+	    org.opennms.web.asset.Asset,
+	    org.opennms.web.asset.AssetModel,
+		org.springframework.web.context.WebApplicationContext,
+      	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
@@ -64,27 +66,21 @@
     protected int snmpServiceId;
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
-    AssetModel model = new AssetModel();
+	protected AssetModel model = new AssetModel();
+
+	public static HashMap<Character, String> statusMap;
     
     public void init() throws ServletException {
-        this.statusMap = new HashMap();
+        this.statusMap = new HashMap<Character, String>();
         this.statusMap.put( new Character('A'), "Active" );
         this.statusMap.put( new Character(' '), "Unknown" );
         this.statusMap.put( new Character('D'), "Deleted" );
-
         
         try {
             this.telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the Telnet service ID", e );
-        }        
-        
-        try {
-            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
         }        
 
         try {
@@ -108,14 +104,15 @@
             throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
         }
 
-        try {
-            this.rtModel = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
-        }
-
+	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		this.perfModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
+    
+    public String getStatusString( char c ) {
+        return this.statusMap.get(new Character(c));
+    }
+
 %>
 
 <%
@@ -372,12 +369,3 @@
        </div>
 <hr />
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-<%!
-    public static HashMap statusMap;
-
-    
-    public String getStatusString( char c ) {
-        return( (String)this.statusMap.get( new Character(c) ));
-    }
-%>

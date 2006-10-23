@@ -136,6 +136,9 @@
     Map additions = new HashMap();
     additions.put( "start", start );
     additions.put( "end", end );    
+    additions.put( "type", "response" );
+    additions.put( "resourceType", "responseTime" );
+    additions.put( "adhoc", "true" );
      
     String queryString = Util.makeQueryString( request, additions, ignores ); 
 %>
@@ -151,7 +154,7 @@
 </jsp:include>
 
 <div style="text-align: center;">
-  <img src="graph/graph.png?type=response-adhoc&amp;<%=queryString%>" />
+  <img src="graph/graph.png?<%=queryString%>" />
 
   <br/>
 

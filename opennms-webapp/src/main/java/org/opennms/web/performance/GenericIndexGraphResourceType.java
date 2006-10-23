@@ -2,6 +2,7 @@ package org.opennms.web.performance;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,6 +12,8 @@ import java.util.Set;
 import org.opennms.netmgt.collectd.StorageStrategy;
 import org.opennms.netmgt.dao.jdbc.LazySet;
 import org.opennms.netmgt.utils.RrdFileConstants;
+import org.opennms.web.graph.GraphModel;
+import org.opennms.web.graph.PrefabGraph;
 
 public class GenericIndexGraphResourceType implements GraphResourceType {
 
@@ -111,44 +114,39 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
         Set<GraphAttribute> set =
             new LazySet(new AttributeLoader(nodeId, index));
         return new DefaultGraphResource(index, label, set);
- 
-        
-//        return new DefaultGraphResource(index, label, attributes);
     }
 
 
-public class AttributeLoader implements LazySet.Loader {
+    public class AttributeLoader implements LazySet.Loader {
     
-    private int m_nodeId;
-    private String m_index;
+        private int m_nodeId;
+        private String m_index;
 
-    public AttributeLoader(int nodeId, String index) {
-        m_nodeId = nodeId;
-        m_index = index;
-    }
-
-    public Set<GraphAttribute> load() {
-
-        File resourceDirectory = getResourceDirectory(m_nodeId, m_index); 
-        List<String> dataSources =
-            m_performanceModel.getDataSourcesInDirectory(resourceDirectory);
-
-        Set<GraphAttribute> attributes =
-            new HashSet<GraphAttribute>(dataSources.size());
-        
-        for (String dataSource : dataSources) {
-            attributes.add(new RrdGraphAttribute(dataSource));
+        public AttributeLoader(int nodeId, String index) {
+            m_nodeId = nodeId;
+            m_index = index;
         }
 
-        return attributes;
+        public Set<GraphAttribute> load() {
+            File resourceDirectory = getResourceDirectory(m_nodeId, m_index); 
+            List<String> dataSources =
+                m_performanceModel.getDataSourcesInDirectory(resourceDirectory);
+
+            Set<GraphAttribute> attributes =
+                new HashSet<GraphAttribute>(dataSources.size());
+        
+            for (String dataSource : dataSources) {
+                attributes.add(new RrdGraphAttribute(dataSource));
+            }
+
+            return attributes;
+        }
+
     }
 
-}
-
-
-public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
-    return m_storageStrategy.getRelativePathForAttribute(resourceParent, resource, attribute);
-}
+    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
+        return m_storageStrategy.getRelativePathForAttribute(resourceParent, resource, attribute);
+    }
     
     /**
      * This resource type is never available for domains.
@@ -163,4 +161,21 @@ public String getRelativePathForAttribute(String resourceParent, String resource
         return Collections.EMPTY_LIST;
     }
 
+    public List<PrefabGraph> getAvailablePrefabGraphs(Set<GraphAttribute> attributes) {
+        PrefabGraph[] graphs =
+            m_performanceModel.getQueriesByResourceTypeAttributes(getName(), attributes);
+        return Arrays.asList(graphs);
+    }
+    
+    public GraphModel getModel() {
+        return m_performanceModel;
+    }
+    
+    public PrefabGraph getPrefabGraph(String name) {
+        return m_performanceModel.getQuery(name);
+    }
+
+    public File getRrdDirectory() {
+        return m_performanceModel.getRrdDirectory();
+    }
 }

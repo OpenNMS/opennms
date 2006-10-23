@@ -52,6 +52,8 @@ import org.opennms.web.performance.PerformanceModel;
 import org.opennms.web.response.ResponseTimeModel;
 import org.opennms.web.MissingParameterException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Changes the label of a node, throws an event signalling that change, and then
@@ -65,17 +67,9 @@ public class GraphResultsServlet extends HttpServlet {
     private RelativeTimePeriod[] m_periods;
 
     public void init() throws ServletException {
-        try {
-            m_performanceModel = new PerformanceModel(Vault.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the PerformanceModel", t);
-        }
-
-        try {
-            m_responseTimeModel = new ResponseTimeModel(Vault.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the ResponseTimeModel", t);
-        }
+        WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+        m_responseTimeModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
 
 	m_periods = RelativeTimePeriod.getDefaultPeriods();
     }
@@ -106,7 +100,7 @@ public class GraphResultsServlet extends HttpServlet {
         String view;
 
         if ("performance".equals(graphType) && nodeIdString != null) {
-	    model = m_performanceModel;
+	    //model = m_performanceModel;
 	    view = "/performance/results.jsp";
 
 	    String[] requiredParameters = new String[] { "reports",
@@ -150,6 +144,8 @@ public class GraphResultsServlet extends HttpServlet {
                                                                           resource,
                                                                           resourceType);
             graphResults.setResourceLabel(r.getLabel());
+            
+            model = rt.getModel();
 	} else if ("performance".equals(graphType) && domain != null) {
 	    model = m_performanceModel;
 	    view = "/performance/domainResults.jsp";
