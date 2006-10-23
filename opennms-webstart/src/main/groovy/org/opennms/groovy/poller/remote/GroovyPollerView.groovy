@@ -104,11 +104,13 @@ class GroovyPollerView implements InitializingBean {
    }
    
    private void updateTable() {
+       //System.err.println("Updating Table (status Change)")
        SwingUtilities.invokeLater({ m_table.model.fireTableDataChanged() })
    }
    
    private void updateTableModel() {
-       SwingUtilities.invokeLater({ m_table.model = createTableModel() })
+       //System.err.println("Updating Table Model (config Change)")
+       SwingUtilities.invokeLater({ m_table.model = createTableModel(); m_table.model.fireTableDataChanged() })
    }
    
    private TableModel createTableModel() {

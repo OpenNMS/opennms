@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,10 +88,14 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
         }
         
         m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
-        
-        int i = 0;
-        for (PolledService service : m_pollerConfiguration.getPolledServices()) {
-            m_pollState.put(service.getServiceId(), new ServicePollState(service, i++));
+
+        synchronized (m_pollState) {
+
+            int i = 0;
+            m_pollState.clear();
+            for (PolledService service : m_pollerConfiguration.getPolledServices()) {
+                m_pollState.put(service.getServiceId(), new ServicePollState(service, i++));
+            }
         }
         
         fireConfigurationChange(oldTime, m_pollerConfiguration.getConfigurationTimestamp());
@@ -152,6 +155,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
         assertRegistered();
         
         PollStatus result = doPoll(polledServiceId);
+        if (result == null) return;
         
         updateServicePollState(polledServiceId, result);
         
@@ -171,14 +175,17 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
         assertRegistered();
 
         PolledService polledService = getPolledService(polledServiceId);
+        if (polledService == null) {
+            return null;
+        }
         PollStatus result = m_pollService.poll(polledService);
         return result;
     }
 
     private PolledService getPolledService(Integer polledServiceId) {
         assertRegistered();
-
-        return getServicePollState(polledServiceId).getPolledService();
+        ServicePollState servicePollState = getServicePollState(polledServiceId);
+        return (servicePollState == null ? null : servicePollState.getPolledService());
     }
 
     private int getMonitorId() {
@@ -221,8 +228,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
 
     public ServicePollState getServicePollState(int polledServiceId) {
         assertRegistered();
-        return m_pollState.get(polledServiceId);
-        
+        synchronized (m_pollState) {
+            return m_pollState.get(polledServiceId);
+        }
     }
 
     private void fireConfigurationChange(Date oldTime, Date newTime) {
@@ -266,7 +274,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
     }
 
     public List<ServicePollState> getPollerPollState() {
-        return new LinkedList<ServicePollState>(m_pollState.values());
+        synchronized (m_pollState) {
+            return new LinkedList<ServicePollState>(m_pollState.values());
+        }
     }
 
     
