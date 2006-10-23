@@ -33,6 +33,7 @@ package org.opennms.netmgt.translator.jmx;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
 import org.apache.log4j.Category;
@@ -59,19 +60,23 @@ public class EventTranslator implements EventTranslatorMBean {
             EventTranslatorConfigFactory.init();
         } catch (MarshalException e) {
             log.error("Could not unmarshall configuration", e);
+            throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
             log.error("validation error ", e);
+            throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
             log.error("IOException: ", e);
+            throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
             log.error("Unable to initialize database: "+e.getMessage(), e);
+            throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
             log.error("SQLException: ", e);
+            throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
             log.error("PropertyVetoException: ", e);
+            throw new UndeclaredThrowableException(e);
         }
-        
-        // XXX we don't throw an exception and stop processing???
         
         EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
