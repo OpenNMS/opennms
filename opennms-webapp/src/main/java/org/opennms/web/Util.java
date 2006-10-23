@@ -460,7 +460,15 @@ public abstract class Util extends Object {
 
             // handle both a String value or a String[] value
             Object tmp = additions.get(name);
-            String[] values = (tmp instanceof String[]) ? ((String[]) tmp) : (new String[] { (String) tmp });
+            String[] values;
+            if (tmp instanceof String[]) {
+                values = (String[]) tmp;
+            } else if (tmp instanceof String) {
+                values = new String[] { (String) tmp };
+            } else {
+                throw new IllegalArgumentException("addition \"" + name + "\" is not of type String or String[], but is of type: "
+                                                   + tmp.getClass().getName());
+            }
 
             if ((ignoreType == IgnoreType.REQUEST_ONLY || !ignoreList.contains(name)) && values != null) {
                 for (int i = 0; i < values.length; i++) {
