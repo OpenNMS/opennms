@@ -1,9 +1,12 @@
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import javax.sql.DataSource;
+
+import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
@@ -11,6 +14,15 @@ import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
 public class AvailabilityReportLocatorJdbc extends SimpleJdbcDaoSupport implements
 		AvailabilityReportLocatorDao {
 
+	public AvailabilityReportLocatorJdbc() {
+        super();
+    }
+    
+    public AvailabilityReportLocatorJdbc(DataSource ds) {
+    	super();
+    	super.setDataSource(ds);
+    }
+    
 	public void delete(int id) {
 		
 		getJdbcTemplate().update("DELETE from reportlocator WHERE reportId = ?", new Object[] { new Integer(id) });
