@@ -829,7 +829,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             return;
         }
         
-        String rrdDir = rrdRepository+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
+        String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
 
         try {
             RrdUtils.initialize();

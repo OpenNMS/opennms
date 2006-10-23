@@ -261,7 +261,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         
         if (newStatus.getPollResult().getResponseTime() >= 0) {
             Package pkg = getPollingPackageForMonitor(locationMonitor);
-            m_pollerConfig.saveResponseTimeData(locationMonitor.getDefinitionName()+'-'+locationMonitorID, monSvc, newStatus.getPollResult().getResponseTime(), pkg);
+            m_pollerConfig.saveResponseTimeData(Integer.toString(locationMonitorID), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
         }
         
         OnmsLocationSpecificStatus currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
