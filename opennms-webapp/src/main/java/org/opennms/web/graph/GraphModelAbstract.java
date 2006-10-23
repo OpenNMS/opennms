@@ -521,8 +521,9 @@ public abstract class GraphModelAbstract implements GraphModel {
         }
         
         if (resource == null) {
-            log().info("Resource of resource type '" + resourceTypeName + "' is not on node " + nodeId);
-            throw new ObjectRetrievalFailureException(GraphResourceType.class, resourceName, "Resource of resource type '" + resourceTypeName + "' is not on node " + nodeId, null);
+            String message = "Resource '" + resourceName + "' is not on node " + nodeId + " for resource type " + resourceTypeName;
+            log().info(message); 
+            throw new ObjectRetrievalFailureException(GraphResource.class, resourceName, message, null);
         }
         
         return resource;
