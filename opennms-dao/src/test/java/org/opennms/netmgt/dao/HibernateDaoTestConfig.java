@@ -51,6 +51,7 @@ import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.AssetRecordDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.AvailabilityReportLocatorDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.CategoryDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate;
+import org.opennms.netmgt.model.AvailabilityReportLocator;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -141,6 +143,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         	OnmsAlarm.class,
         	OnmsNotification.class,
         	OnmsUserNotification.class,
+        	AvailabilityReportLocator.class,
 
         };
         
@@ -374,6 +377,13 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         userNotifDao.setHibernateTemplate(getHibernateTemplate());
         //userNotifDao.setSessionFactory(getFactory());
     	return userNotifDao;
+    }
+    
+    protected AvailabilityReportLocatorDao createAvailabilityReportLocatorDao() {
+    	AvailabilityReportLocatorDaoHibernate availabilityReportLocatorDao = new AvailabilityReportLocatorDaoHibernate();
+    	availabilityReportLocatorDao.setHibernateTemplate(getHibernateTemplate());
+        //userNotifDao.setSessionFactory(getFactory());
+    	return availabilityReportLocatorDao;
     }
 
 	@Override

@@ -397,6 +397,9 @@ public class AbstractDaoTestCase extends TestCase {
     protected UserNotificationDao getUserNotificationDao() {
         return m_testConfig.getUserNotificationDao();
     }
+    protected AvailabilityReportLocatorDao getAvailabilityReportLocatorDao() {
+        return m_testConfig.getAvailabilityReportLocatorDao();
+    }
     private void populateDB(DistPollerDao dao) {
         //OnmsDistPoller distPoller = dao.load("localhost");
 

@@ -41,6 +41,7 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
 import org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.AvailabilityReportLocatorJdbc;
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
@@ -163,6 +164,12 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
     protected EventDao createEventDao() {
         return new EventDaoJdbc(m_dataSource);
     }
+    
+    protected AvailabilityReportLocatorDao createAvailabilityReportLocatorDao() {
+        return new AvailabilityReportLocatorJdbc(m_dataSource);
+    }
+    
+    
 
     public void prePopulate() {
         if (!m_createDb) return;
