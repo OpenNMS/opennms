@@ -1,14 +1,15 @@
 package org.opennms.netmgt.poller.remote;
 
 import org.quartz.JobDetail;
-import org.quartz.Scheduler;
 
 public class PollJobDetail extends JobDetail {
+    
+    public static final String GROUP = "pollJobGroup";
 
 	private static final long serialVersionUID = -6499411861193543030L;
 	
 	public PollJobDetail(String name, Class jobClass) {
-		super(name, Scheduler.DEFAULT_GROUP, jobClass);
+		super(name, GROUP, jobClass);
 	}
 	
 	public void setPollService(PollService pollService) {
