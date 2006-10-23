@@ -26,7 +26,7 @@ import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class DistributedStatusGraphResourceType implements GraphResourceType {
-    public static final String DISTRIBUTED_DIRECTORY = "raleigh";
+    public static final String DISTRIBUTED_DIRECTORY = "distributed";
     
     private PerformanceModel m_performanceModel;
 
@@ -82,8 +82,7 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
                     int id = rs.getInt("id");
                     String ipAddr = rs.getString("ipaddr");
                     
-                    File iface = getInterfaceDirectory(definitionName, id,
-                                                       ipAddr);
+                    File iface = getInterfaceDirectory(id, ipAddr);
                     
                     if (iface.isDirectory()) {
                         resources.add(createResource(definitionName, id,
@@ -146,7 +145,7 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
         String monitor = definitionName + "-" + locationMonitorId;
         
         String label = intf + " from " + monitor;
-        String resource = monitor + "/" + intf;
+        String resource = locationMonitorId + "/" + intf;
 
         Set<GraphAttribute> set =
             new LazySet(new AttributeLoader(definitionName, locationMonitorId,
@@ -220,9 +219,8 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
         return rrdDirectory;
     }
     
-    public File getInterfaceDirectory(String definitionName, int id,
-            String ipAddr) {
-        File monitor = new File(getRrdDirectory(), definitionName + "-" + id);
+    public File getInterfaceDirectory(int id, String ipAddr) {
+        File monitor = new File(getRrdDirectory(), Integer.toString(id));
         return new File(monitor, ipAddr);
     }
 
@@ -272,8 +270,7 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
             String resource = m_definitionName + "-" + m_locationMonitorId
                 + "/" + m_intf;
             
-            File directory = getInterfaceDirectory(m_definitionName,
-                                                   m_locationMonitorId,
+            File directory = getInterfaceDirectory(m_locationMonitorId,
                                                    m_intf);
             log().debug("lazy-loading attributes for resource \"" + resource
                         + "\" from directory " + directory);
