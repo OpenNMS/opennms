@@ -115,7 +115,7 @@ public class PollerBackEndIntegrationTest extends
         String ipAddr = queryForString("select ipaddr from ifservices where id = ?", serviceId);
         
         // make sure there is no rrd data
-        File rrdFile = new File("target/test-data/RDU-"+locationMonitorId+"/"+ipAddr+"/http.rrd");
+        File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ipAddr+"/http.rrd");
         if (rrdFile.exists())
             rrdFile.delete();
         
