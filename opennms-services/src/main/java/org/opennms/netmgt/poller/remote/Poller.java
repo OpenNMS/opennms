@@ -8,6 +8,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -50,6 +51,12 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
         }
 
 	}
+    
+    private void unschedulePolls() throws Exception {
+        for (String jobName : m_scheduler.getJobNames(PollJobDetail.GROUP)) {
+            m_scheduler.deleteJob(jobName, PollJobDetail.GROUP);
+        }
+    }
 	
 	private void schedulePolls() throws Exception {
         
@@ -109,6 +116,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
     public void configurationChanged(PropertyChangeEvent e) {
         try {
+            unschedulePolls();
             schedulePolls();
         } catch (Exception ex) {
             log().fatal("Unable to schedule polls!", ex);
