@@ -48,6 +48,11 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public class CollectionAgent extends IPv4NetworkInterface {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6694654071513990997L;
+
     // the interface of the Agent
 	private OnmsIpInterface m_iface;
     

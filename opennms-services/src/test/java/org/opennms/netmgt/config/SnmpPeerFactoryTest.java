@@ -117,6 +117,7 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
         assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "10.0.0.1"));
         assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.168.*.2"));
         assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "10.168.0.1"));
+        assertTrue(SnmpPeerFactory.verifyIpMatch("10.1.1.1", "10.1.1.1"));
     }
 
     public void testGetTargetFromPatterns() throws UnknownHostException {

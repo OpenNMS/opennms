@@ -40,6 +40,8 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +67,7 @@ import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.Attrib;
 import org.opennms.netmgt.config.datacollection.HttpCollection;
 import org.opennms.netmgt.config.datacollection.Uri;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -78,6 +81,10 @@ public class HttpCollector implements ServiceCollector {
 
     private static final int DEFAULT_RETRY_COUNT = 2;
     private static final String DEFAULT_SO_TIMEOUT = "3000";
+    
+    //Don't make this static because each service will have its own
+    //copy and the key won't require the service name as  part of the key.
+    private final HashMap<Integer, String> m_scheduledNodes = new HashMap<Integer, String>();
 
     @SuppressWarnings("unchecked")
     public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
@@ -345,11 +352,35 @@ public class HttpCollector implements ServiceCollector {
     }
 
     public void initialize(Map parameters) {
-        // TODO Auto-generated method stub
+        throw new IllegalStateException("initialize: Collection Agent parameter is required");
     }
 
     public void initialize(CollectionAgent agent, Map parameters) {
-        // TODO Auto-generated method stub
+        final Integer scheduledNodeKey = new Integer(agent.getNode().getId());
+        final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
+        
+        if (scheduledAddress != null) {
+            log().info("initialize: Not scheduling interface for collection: "+scheduledAddress);
+            final StringBuffer sb = new StringBuffer();
+            sb.append("initialize service: ");
+            
+            //If they include this parameter, use it for debug logging.
+            sb.append(determineServiceName(parameters));
+            
+            sb.append(" for address: ");
+            sb.append(scheduledAddress);
+            sb.append(" already scheduled for collection on node: ");
+            sb.append(agent.getNode().toString());
+            log().debug(sb.toString());
+            throw new IllegalStateException(sb.toString());
+        } else {
+            log().info("initialize: Scheduling interface for collection: "+scheduledAddress);
+            m_scheduledNodes.put(scheduledNodeKey, scheduledAddress);
+        }
+    }
+
+    private String determineServiceName(Map parameters) {
+        return ParameterMap.getKeyedString(parameters, "service-name", "HTTP");
     }
 
     public void release() {
