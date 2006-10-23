@@ -264,7 +264,7 @@ public class PollerBackEndTest extends TestCase {
         
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
         
-        m_pollerConfig.saveResponseTimeData(m_locationDefinition.getName()+'-'+m_locationMonitor.getId(), m_dnsService, 1234, m_package);
+        m_pollerConfig.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
 
         EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "PollerBackEnd")
             .setMonitoredService(m_dnsService)
@@ -298,7 +298,7 @@ public class PollerBackEndTest extends TestCase {
         
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
         
-        m_pollerConfig.saveResponseTimeData(m_locationDefinition.getName()+'-'+m_locationMonitor.getId(), m_dnsService, 1234, m_package);
+        m_pollerConfig.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_dnsService, 1234, m_package);
         
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
@@ -372,7 +372,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
 
         // expect to save performance data
-        m_pollerConfig.saveResponseTimeData(m_locationDefinition.getName()+'-'+m_locationMonitor.getId(), m_httpService, 1776, m_package);
+        m_pollerConfig.saveResponseTimeData(Integer.toString(m_locationMonitor.getId()), m_httpService, 1776, m_package);
         
         // expect no status change
         
