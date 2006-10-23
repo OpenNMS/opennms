@@ -2,6 +2,9 @@ package org.opennms.test;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,6 +61,18 @@ public class ConfigurationTestUtils extends Assert {
         }
     
         return newConfig;
+    }
+
+    public static Reader getReaderForConfigFile(String configFile) {
+        return new InputStreamReader(getInputStreamForResource(configFile, configFile));
+    }
+
+    public static InputStream getInputStreamForConfigFile(String configFile) throws FileNotFoundException {
+        String path = "../opennms-daemon/src/main/filtered/etc/" + configFile;
+        File file = new File(path);
+        assertTrue("configuration file '" + configFile + "' does not exist at " + path, file.exists());
+        InputStream is = new FileInputStream(file);
+        return is;
     }
 
 }
