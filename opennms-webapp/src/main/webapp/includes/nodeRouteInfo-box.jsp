@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
@@ -24,7 +24,7 @@
 //      http://www.sortova.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -53,48 +53,48 @@
 
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+<table width="50%">
   
-    <tr bgcolor="#999999">
-       <td colspan="7"><b>Node Ip Routes</b></td>
-     </tr>
+
 
 <% if(iproutes.length == 0) { %>
   <tr>
-    <td BGCOLOR="#cccccc" colspan="7"><b>There have been no ip routes on this node.</b></td>
+    <td colspan="7">There have been no ip routes on this node.</td>
   </tr>
 <% } else { %>
-  <tr bgcolor="#999999">
-    <td><b>Destination</b></td>
-    <td><b>Mask</b></td>
-    <td><b>Next Hop</b></td>
-    <td><b>Ifindex</b></td>
-    <td><b>Metric1</b></td>
-    <td><b>Protocol</b></td>
-    <td><b>Type</b></td>
+ <thead>
+  <tr>
+    <th>Destination</th>
+    <th>Mask</th>
+    <th>Next Hop</th>
+    <th>Ifindex</th>
+    <th>Metric1</th>
+    <th>Protocol</th>
+    <th>Type</th>
   </tr>
+ </thead>
 
   <% for( int t=0; t < iproutes.length; t++ ) {
  		{
       	
 		%>
-		<tr> 
-		     <td width='5%' align="left" ><%=iproutes[t].get_routedest()%></td>
-		     <td width='5%' align="left" ><%=iproutes[t].get_routemask()%></td>
+		<tr width="40%"> 
+		     <td align="left" ><%=iproutes[t].get_routedest()%></td>
+		     <td align="left" ><%=iproutes[t].get_routemask()%></td>
 			 <% 
 				Node[] nodes = null;
 			 	if (!iproutes[t].get_routenexthop().equals("0.0.0.0"))
 					nodes = NetworkElementFactory.getNodesWithIpLike(iproutes[t].get_routenexthop()); 	
 			 	if (nodes != null && nodes.length>0) {
 			 %>			 
-		    <td width='5%' align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iproutes[t].get_routenexthop()%></a></td>
+		    <td align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iproutes[t].get_routenexthop()%></a></td>
 		  	       <% } else { %>
-		    <td width='5%' align="left" ><%=iproutes[t].get_routenexthop()%></td>
+		    <td align="left" ><%=iproutes[t].get_routenexthop()%></td>
 			       <% } %>
-			 <td width='5%' align="left" ><%=iproutes[t].get_ifindex()%></td>
-		     <td width='5%' align="left" ><%=iproutes[t].get_routemetric1()%></td>
-		     <td width='5%' align="left" ><%=IP_ROUTE_PROTO[iproutes[t].get_routeproto()]%></td>
-		     <td width='5%' align="left" ><%=IP_ROUTE_TYPE[iproutes[t].get_routetype()]%></td>
+			 <td align="left" ><%=iproutes[t].get_ifindex()%></td>
+		     <td align="left" ><%=iproutes[t].get_routemetric1()%></td>
+		     <td align="left" ><%=IP_ROUTE_PROTO[iproutes[t].get_routeproto()]%></td>
+		     <td align="left" ><%=IP_ROUTE_TYPE[iproutes[t].get_routetype()]%></td>
 		</tr>
 		<%
 		}

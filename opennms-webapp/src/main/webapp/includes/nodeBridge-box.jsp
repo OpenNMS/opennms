@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
@@ -24,7 +24,7 @@
 //      http://www.sortova.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -59,31 +59,36 @@
 
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-  
-    <tr bgcolor="#999999">
-       <td colspan="12"><b>Node Bridge Info</b></td>
-     </tr>
 
+  
+
+<h3>Node Bridge Info</h3>
 <% if(stpnodes.length == 0) { %>
-  <tr>
-    <td BGCOLOR="#cccccc" colspan="11"><b>There have been no bridge info on this node.</b></td>
-  </tr>
+		
+	<table>
+		<tr>
+		<td>There have been no bridge info on this node.</td>
+		</tr>
+	</table>
+        
 <% } else { %>
-              <tr bgcolor="#cccccc">
-                <td><b>Vlan Identifier</b></td>			  
-                <td><b>Vlan Name</b></td>			  
-                <td><b>Base Address</b></td>
-                <td><b>Type</b></td>
-                <td><b>Stp Proto Spec</b></td>
-                <td><b>Port Num.</b></td>
-                <td><b>Status</b></td>
-                <td><b>Stp Root</b></td>
-                <td><b>Stp Priority</b></td>
-                <td><b>Stp Root Cost</b></td>
-                <td><b>Stp Root Port</b></td>
-                <td><b>Last Poll Time</b></td>
+		<table>
+			<thead>
+              <tr>
+                <th>Vlan Id</th>			  
+                <th>Vlan Name</th>			  
+                <th>Base Address</th>
+                <th>Type</th>
+                <th>Stp Proto Spec</th>
+                <th>Port Num.</th>
+                <th>Status</th>
+                <th>Stp Root</th>
+                <th>Stp Priority</th>
+                <th>Stp Root Cost</th>
+                <th>Stp Root Port</th>
+                <th>Last Poll Time</th>
               </tr>
+             </thead>
               <% for (int i=0; i < stpnodes.length;i++) { %>
 			  <tr bgcolor="<%=getVlanColorIdentifier(stpnodes[i].get_basevlan())%>">
                 <td><%=stpnodes[i].get_basevlan()%></td>			  

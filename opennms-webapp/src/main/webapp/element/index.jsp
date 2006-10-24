@@ -104,6 +104,14 @@
 						</select>
 						<input type="submit" value="Search"/></p>                
             </form>
+            
+            <form action="element/nodelist.jsp" method="GET">
+					<p align="right">Mac Address like:          
+						<input type="hidden" name="listInterfaces" value=""/>
+						<input type="text" name="maclike" />
+						<input type="submit" value="Search"/></p>                
+            </form>
+                        
 			<ul class="plain">
 				<li><a href="element/nodelist.jsp">All nodes</a></li>
 				<li><a href="element/nodelist.jsp?listInterfaces">All nodes and their interfaces</a></li>

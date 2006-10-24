@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,7 +38,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
 <%@page
 	language="java"
@@ -236,257 +236,249 @@
 
 </script>
 
-<html>
-<head>
-  <title><%=node_db.getLabel()%> | Node | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
-</head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+
 
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
 <% String breadcrumb3 = "Node Links"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
+ <jsp:param name="headTitle" value="<%= node_db.getLabel() %>" />
+  <jsp:param name="headTitle" value="Node" />
   <jsp:param name="title" value="Linked Node Info" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
 </jsp:include>
 
-<br>
+
 
 <!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-  <td>&nbsp;</td>
 
-  <td width="100%" valign="top" >
         <h2>Node: <%=node_db.getLabel()%></h2>
 
-        <p>
-        <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-        &nbsp;&nbsp;&nbsp;<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
-        &nbsp;&nbsp;&nbsp;<a href="asset/detail.jsp?node=<%=nodeId%>">Asset Info</a>
-         
-        <% if( telnetIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
+      <div id="linkbar">
+      <ul>
+        <li>
+		<a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
+	</li>
+        <!-- li>
+		<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
+	</li -->	
+        <li>
+		<a href="asset/detail.jsp?node=<%=nodeId%>">Asset Info</a>
+	</li>
+<% if( telnetIp != null ) { %>
+          <li>
+          <a href="telnet://<%=telnetIp%>">Telnet</a>
+          </li>
         <% } %>
 
         <% if( httpIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+           <li>
+           <a href="http://<%=httpIp%>">HTTP</a>
+           </li>
         <% } %>
 
         <% if( dellIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="https://<%=dellIp%>:1311">OpenManage</a>
+          <li>
+          <a href="https://<%=dellIp%>:1311">OpenManage</a>
+          </li>
         <% } %>
 
         <% if(this.rtModel.isQueryableNode(nodeId)) { %>
-          &nbsp;&nbsp;&nbsp;<a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
+          <li>
+          <a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
+          </li>
         <% } %>
         
         <% if(this.perfModel.isQueryableNode(nodeId)) { %>
-          &nbsp;&nbsp;&nbsp;<a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
+           <li>
+           <a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
+           </li>
         <% } %>
         
-        &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
+         <li>
+         <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
+         </li>
         <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
-          &nbsp;&nbsp;&nbsp;<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
+           <li>
+           <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
+           </li>
         <% } %>
 
            <% if ( isSnmp && request.isUserInRole( Authentication.ADMIN_ROLE ))  { %>
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
-                      &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+                       <li>
+                       <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+                       </li>
                 <% } %>
               <% } %>
-           <% } %>
+           <% } %>	    		        
+	  </ul>
+	  </div>
+	  
+	<div class="TwoColLeft">
+            <!-- general info box -->
+						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
+			<% if( isRouteIP || isBridge ) { %>
+			<div class="boxWrapper">
+			     <ul class="plain">
+		            <% if( isRouteIP ) { %>
+		            <li>
+		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node Ip Route Info</a>
+		            </li>
+		            <% }%>
+		         
+		            <% if( isBridge ) { %>
+		            <li>
+						<a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
+					</li>
+		            <% }%>		
+		         </ul>	     
+			</div>
+			<% }%>
+	</div>
+<hr />        
 
-
-        </p>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-<tr>
-<td valign="top" width="48%">
-
-          <!-- general info box -->
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-            
-            <tr bgcolor="#999999">
-            <td colspan="2" ><b>General</b></td> 
-            </tr>
-            
-            <tr> 
-            <td>Status</td>
-            <td><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
-            </tr>
-            
-            <% if( isRouteIP ) { %>
-            <tr>
-            <td colspan="2" ><b><a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node Ip Route Info</a></b></td>
-		    </tr>
-            <% }%>
-         
-            <% if( isBridge ) { %>
-            <tr>
-            <td colspan="2" ><b><a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a></b></td>
-		    </tr>
-            <% }%>
-
-            </table>
-            <br>
-</td>
-<td>&nbsp;</td>
- <td valign="top" width="48%">&nbsp;</td>
-
-</tr>
-      
-<tr>
-<td valign="top" colspan="3">
-
-<!-- Interface box -->
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-
-<tr bgcolor="#999999">
-<td><b>Interface </b></td> 
-<td width="10%"><b>If Status (Adm/Op)</b></td> 
-<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
-<td width="10%"><b>Set Admin Status</b></td> 
-<% } %>
-<td>
-	<table width="100%" border="0" cellspacing="0" cellpadding="2" bordercolor="white">
-	<tr>
-	<td width="35%"><b> Linked Nodes </b></td>
-	<td width="35%"><b> Interface  </b></td> 
-	<td width="15%"><b> If Status (Adm/Op) </b></td>
-
-	<td>
-	<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
-		<b> Set Admin Status </b>
-	<% } else { %>
-		<b> &nbsp; </b>
-	<% } %>
-	</td> 
-	</tr>
-	</table>
-</td>
-</tr>
-
-<% for( int i=0; i < intfs.length; i++ ) { 
-
-	Vector ifl =null;
-	if (intfs[i].getIfIndex() == 0 ) {
- 		ifl =(Vector)linkMap.get(new Integer(-1));
-	} else {
- 		ifl =(Vector)linkMap.get(new Integer(intfs[i].getIfIndex()));
-	}
-%>
-
-<tr>
-
-<td>
-<% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-<%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-<% } else { %>  
-<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-<% } %>
-</td>
-
-<td>
-	<% if( intfs[i].getSnmpIfAdminStatus() < 1 && intfs[i].getSnmpIfOperStatus() < 1 ) { %>
-	&nbsp; 
-	<% } else { %>
-	&nbsp;
-	<%=OPER_ADMIN_STATUS[intfs[i].getSnmpIfAdminStatus()]%>/<%=OPER_ADMIN_STATUS[intfs[i].getSnmpIfOperStatus()]%>
-	<% } %>
-</td>
-			
-<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
-	<% if(OPER_ADMIN_STATUS[intfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
-<td align="center"><b> <input type="button" value="Down" onClick="setDown(<%=intfs[i].getNodeId()%>,<%=intfs[i].getIfIndex()%>);"> </b></td>
-	<% } else if (OPER_ADMIN_STATUS[intfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
-<td align="center"><b> <input type="button" value="Up" onClick="setUp(<%=intfs[i].getNodeId()%>,<%=intfs[i].getIfIndex()%>);"> </b></td> 
-	<% } else { %>
-<td><b>&nbsp;</b></td> 
-	<% } %>
-<% } %>
+<h3>Interfaces</h3>
 		
-<td>
-<% if (ifl == null || ifl.size() == 0) {%>
-&nbsp;
-<% } else { %>
-<table width="100%" border="0" cellspacing="0" cellpadding="2" bordercolor="white" BGCOLOR="#cccccc">
-	<% for (int j=0; j<ifl.size();j++) { 
-		Interface curlkif =(Interface)ifl.elementAt(j); 
-	%>
-        
-	<tr>
-	<td width="35%">
-       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(curlkif.getNodeId())%></a>
-	</td>
-	<td width="35%">
-       	<% if( "0.0.0.0".equals( curlkif.getIpAddress() )) { %>
-        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>&ifindex=<%=curlkif.getIfIndex()%>">Non-IP</a>
-        <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
-        <% } else { %>  
-        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>"><%=curlkif.getIpAddress()%></a>
-        <% } %>
-	</td>
-	<td width="15%">
-	<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
-		<% if( curlkif.getSnmpIfAdminStatus() < 1 && curlkif.getSnmpIfOperStatus() < 1 ) { %>
-		&nbsp; 
-		<% } else { %>
-		&nbsp; (
-		<%=OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()]%>/<%=OPER_ADMIN_STATUS[curlkif.getSnmpIfOperStatus()]%>
-		)
+		<!-- Interface box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Interface</th> 
+			<th width="10%">If Status (Adm/Op)</th> 
+			<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
+			<th width="10%">Set Admin Status</th> 
+			<% } %>
+
+			<th>&nbsp;</th>
+			</tr>
+		</thead>
+		
+		<% for( int i=0; i < intfs.length; i++ ) { 
+		
+			Vector ifl =null;
+			if (intfs[i].getIfIndex() == 0 ) {
+		 		ifl =(Vector)linkMap.get(new Integer(-1));
+			} else {
+		 		ifl =(Vector)linkMap.get(new Integer(intfs[i].getIfIndex()));
+			}
+		%>
+		
+		<tr>
+		
+		<td class="standard">
+		<% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
+		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+		<%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
+		<% } else { %>  
+		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
+		<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
 		<% } %>
-	<% } else { %>
-		&nbsp;
-	<% } %>
-	</td>
-	<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
-		<% if(OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
-		<td align="center"><b> <input type="button" value="Down" onClick="setDown(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"> </b></td>
-		<% } else if (OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
-		<td align="center"><b> <input type="button" value="Up" onClick="setUp(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"> </b></td> 
-		<% } else { %>
+		</td>
+		
+		<td class="standard">
+			<% if( intfs[i].getSnmpIfAdminStatus() < 1 && intfs[i].getSnmpIfOperStatus() < 1 ) { %>
+			&nbsp; 
+			<% } else { %>
+			&nbsp;
+			<%=OPER_ADMIN_STATUS[intfs[i].getSnmpIfAdminStatus()]%>/<%=OPER_ADMIN_STATUS[intfs[i].getSnmpIfOperStatus()]%>
+			<% } %>
+		</td>
+					
+		<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+			<% if(OPER_ADMIN_STATUS[intfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
+		<td align="center"> <input type="button" value="Down" onClick="setDown(<%=intfs[i].getNodeId()%>,<%=intfs[i].getIfIndex()%>);"> </td>
+			<% } else if (OPER_ADMIN_STATUS[intfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
+		<td align="center"> <input type="button" value="Up" onClick="setUp(<%=intfs[i].getNodeId()%>,<%=intfs[i].getIfIndex()%>);"> </td> 
+			<% } else { %>
 		<td><b>&nbsp;</b></td> 
+			<% } %>
 		<% } %>
-	<% } else {%>              
-	<td><b>&nbsp;</b></td> 
-	<% } %>
-	<% } %>
-    </tr>
-</table>
-<%}%>
-</td>
+				
+		<td class="standard">
+		<% if (ifl == null || ifl.size() == 0) {%>
+		&nbsp;
+		<% } else { %>
+		
+		<table>
+		
+		<thead>
+			<tr>
+				<th style="font-size:70%" width="35%">Linked Node</th>
+				<th width="35%">Interface</th> 
+				<th width="15%">If Status (Adm/Op)</th>
+			
+				<th>
+				<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
+					Set Admin Status
+				<% } else { %>
+					&nbsp;
+				<% } %>
+				</th> 	
+				</tr>
+		</thead>					
+			<% for (int j=0; j<ifl.size();j++) { 
+				Interface curlkif =(Interface)ifl.elementAt(j); 
+			%>
+		        
+			<tr>
+			<td class="standard" style="font-size:70%" width="35%">
+		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(curlkif.getNodeId())%></a>
+			</td>
+			<td class="standard" style="font-size:70%" width="35%">
+		       	<% if( "0.0.0.0".equals( curlkif.getIpAddress() )) { %>
+		        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>&ifindex=<%=curlkif.getIfIndex()%>">Non-IP</a>
+		        <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+		        <% } else { %>  
+		        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>"><%=curlkif.getIpAddress()%></a>
+		        <% } %>
+			</td>
+			<td class="standard" style="font-size:70%" width="15%">
+			<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
+				<% if( curlkif.getSnmpIfAdminStatus() < 1 && curlkif.getSnmpIfOperStatus() < 1 ) { %>
+				&nbsp; 
+				<% } else { %>
+				(<%=OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()]%>/<%=OPER_ADMIN_STATUS[curlkif.getSnmpIfOperStatus()]%>)
+				<% } %>
+			<% } else { %>
+				&nbsp;
+			<% } %>
+			</td>
+			<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
+				<% if(OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
+				<td class="standard" style="font-size:70%" align="center"><input type="button" value="Down" onClick="setDown(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"></td>
+				<% } else if (OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
+				<td class="standard" align="center"><input type="button" value="Up" onClick="setUp(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"> </td> 
+				<% } else { %>
+				<td><b>&nbsp;</b></td> 
+				<% } %>
+			<% } else {%>              
+			<td>&nbsp;</td> 
+			<% } %>
+			<% } %>
+		    </tr>
+		    
+		</table>
+		
+		<%}%>
+		</td>
+		
+		
+		</tr>
+		<% } %>
+		</table>
 
 
-</tr>
-<% } %>
-</table>
-
-<br>
-</td>
-</tr>
-</table>
-
-
-  </td>
-  <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
 <form method="POST" name="setStatus" />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
-</body>
-</html>
+
 
 <%!
     public static HashMap statusMap;

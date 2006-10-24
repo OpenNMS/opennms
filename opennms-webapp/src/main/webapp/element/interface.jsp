@@ -12,7 +12,6 @@
 //
 // Modifications:
 //
-// 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2003 Oct 07: Corrected issue with selecting non-IP interface SNMP data.
 // 2003 Sep 25: Fixed SNMP Performance link issue.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -41,6 +40,8 @@
 //      http://www.opennms.com///
 
 --%>
+
+
 
 <%@page language="java"
 		contentType="text/html"
@@ -113,10 +114,12 @@
     }
 
     Interface intf_db = null;
+    AtInterface atif_db = null;
     
     //see if we know the ifindex
     if (ifindexString == null) {
         intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr );
+        atif_db = NetworkElementFactory.getAtInterface(nodeId, ipAddr);
     }
     else {
         intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr, ifindex );
@@ -293,8 +296,10 @@ function doDelete() {
                 <td>Physical Address</td>        
                 <td>
                   <% String macAddr = intf_db.getPhysicalAddress(); %>
-                  <% if( macAddr != null && macAddr.trim().length() > 0 ) { %>
+                  <% if( macAddr != null && macAddr.trim().length() > 0 && !macAddr.equals("000000000000")) { %>
                     <%=macAddr%>
+                  <% } else if ( atif_db != null && atif_db.get_physaddr().trim().length() > 0 ) { %>
+                  <%=atif_db.get_physaddr()%>
                   <% } else { %>
                     &nbsp;
                   <% } %>
@@ -302,6 +307,9 @@ function doDelete() {
               </tr>
             </table>
             
+            <!-- Node Link box -->
+            <jsp:include page="/includes/interfaceLink-box.jsp" flush="false" />
+                        
 
             <!-- SNMP box, if info available -->
             <% if( hasSNMPData(intf_db) ) { %>
@@ -379,6 +387,9 @@ function doDelete() {
             <!-- Recent outages box -->
             <jsp:include page="/includes/interfaceOutages-box.jsp" flush="false" />
             
+            <!-- STP Info box -->
+            <jsp:include page="/includes/interfaceSTP-box.jsp" flush="false" />
+         
 
 
 </div> <!-- id="contentright" -->
