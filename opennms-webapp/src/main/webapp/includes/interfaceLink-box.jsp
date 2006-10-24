@@ -74,29 +74,26 @@
     DataLinkInterface[] dl_if = NetworkElementFactory.getDataLinksOnInterface(nodeId,ifindex);
 	
 %>
-
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-  
-
+<h3>Link Node/Interface</h3>
+<table class="standard">
+ 
 <% if(dl_if == null  || dl_if.length == 0) { %>
   <tr>
-    <td BGCOLOR="#999999" colspan="4"><b>There have been no Link Info on this Interface</b></td>
+    <td class="standardheaderplain" colspan="4">There have been no Link Info on this Interface.</td>
   </tr>
 <% } else { %>
-  <tr> 
-    <td BGCOLOR="#999999" colspan="4"><b>Link Node/Interface</b></td>
+  <tr>
+    <td class="standardheader">Node</td>
+    <td class="standardheader">Interface</td>
+    <td class="standardheader">Status</td>
+    <td class="standardheader">Last Poll Time</td>
   </tr>
-  <tr bgcolor="#999999">
-    <td><b>Node</b></td>
-    <td><b>Interface</b></td>
-    <td><b>Status</b></td>
-    <td><b>Last Poll Time</b></td>
-  </tr>
+
   <% for( int i=0; i < dl_if.length; i++ ) { %>
     <% Interface iface = null; %>
     <tr>
-    <td><a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
-	<td>
+    <td class="standard"><a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
+	<td class="standard">
     <% if( "0.0.0.0".equals( dl_if[i].get_parentipaddr() )) { %>
 		<% if ( dl_if[i].get_parentifindex() == 0) {
 			iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentipaddr());
@@ -115,8 +112,8 @@
    <% } %>
    </td>
 
-      <td><%=getStatusString(dl_if[i].get_status())%></td>
-      <td><%=dl_if[i].get_lastPollTime()%></td>
+      <td class="standard"><%=getStatusString(dl_if[i].get_status())%></td>
+      <td class="standard"><%=dl_if[i].get_lastPollTime()%></td>
      </tr>
   <% } %>
 <% } %>

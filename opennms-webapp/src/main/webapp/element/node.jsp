@@ -195,6 +195,10 @@
     if( snmpServices != null && snmpServices.length > 0 ) 
 	isSnmp = true;
 
+    boolean isParent = NetworkElementFactory.isParentNode(nodeId);
+    boolean isBridge = NetworkElementFactory.isBridgeNode(nodeId);
+    boolean isRouteIP = NetworkElementFactory.isRouteInfoNode(nodeId);
+
     //Get Asset Info for this node
     Asset asset = this.model.getAsset( nodeId );
 %>
@@ -219,7 +223,10 @@
         <li>
          <a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
         </li>
- 
+		<!-- li>
+         <a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
+        </li -->
+
         <% if(this.model.getAsset(nodeId).getBuilding() != null) { %>
           <li>
             <a href="siteStatusView.htm?statusSite=<%=this.model.getAsset(nodeId).getBuilding()%>">Site Status</a>
@@ -286,8 +293,28 @@
 	<div class="TwoColLeft">
             <!-- general info box -->
 						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
+			<div class="boxWrapper">
+			     <ul class="plain">
+		            <% if( isRouteIP ) { %>
+		            <li>
+		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node Ip Route Info</a>
+		            </li>
+		            <% }%>
+		         
+		            <% if( isBridge ) { %>
+		            <li>
+						<a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
+					</li>
+		            <% }%>	
+		            <li>
+						<a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a>
+					</li>
+		         </ul>	     
+
+		</div>
+
             <!-- Availability box -->
-            	<jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+            <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
 							<hr />
             <!-- Asset box, if info available --> 
             <% if( asset != null ) { %>
@@ -298,6 +325,9 @@
 							</div>
 							<hr />
             <% } %>
+
+            <!-- node desktop information box -->
+            
 
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
@@ -368,4 +398,10 @@
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
        </div>
 <hr />
+            <%-- jsp:include page="/includes/nodeInventory-box.jsp" flush="false">
+              <jsp:param name="node" value="<%=nodeId%>" />
+              <jsp:param name="nodelabel" value="<%=node_db.getLabel()%>" />
+            </jsp:include>
+			<hr / --%>
+
 <jsp:include page="/includes/footer.jsp" flush="false" />

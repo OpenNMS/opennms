@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,7 +38,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
 <%@page
 	language="java"
@@ -166,72 +166,74 @@
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
 </jsp:include>
-
-<br>
-
 <!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
+     <h2>Node: <%=node_db.getLabel()%></h2>
 
-    <td width="100%" valign="top" >
-      <h2>Node: <%=node_db.getLabel()%></h2>
-
-      <p>
-        <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-        &nbsp;&nbsp;&nbsp;<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
-        &nbsp;&nbsp;&nbsp;<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
-         
+      <div id="linkbar">
+      <ul>
+        <li>
+        	<a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
+        </li>
+        <li>
+        	<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
+        </li>
+        <!-- li>
+	        <a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
+        </li -->
         <% if( telnetIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
-        <% } %>
-
+       	<li>
+       		<a href="telnet://<%=telnetIp%>">Telnet</a>
+        </li>
+        <% } %>        
         <% if( httpIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+        <li>
+          <a href="http://<%=httpIp%>">HTTP</a>
+        </li>
         <% } %>
-
         <% if(this.rtModel.isQueryableNode(nodeId)) { %>
-          &nbsp;&nbsp;&nbsp;<a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
-        <% } %>
-        
+		<li>
+			<a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
+		</li>
+        <% } %>        
         <% if(this.perfModel.isQueryableNode(nodeId)) { %>
-          &nbsp;&nbsp;&nbsp;<a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
-        <% } %>
-        
-        &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
-      </p>
-       <br>
+        <li>
+          	<a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
+        </li>  	
+        <% } %>        
+        <li>
+	        <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>    
+        </li>
+      </ul>
+      </div>
+
+	<div class="TwoColLeft">
             <!-- general info box -->
-            <table width="48%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td colspan="2" ><b>General</b></td> 
-              </tr>
-              <tr> 
-                <td>Status</td>
-                <td><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
-              </tr>
-              <% if( isBridgeIP ) { %>
-              <tr>
-                <td colspan="2" ><b><a href="element/bridgenode.jsp?node=<%=nodeId%>"> View Node Bridge Info</a></b></td>
-		      </tr>
-              <% } %>
-              <tr>
-              <td colspan="2" ><b><a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a></b></td>
-                </tr>
+						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
 
-
-            </table>
-			<br>         
+			<div class="boxWrapper">
+			     <ul class="plain">
+		         
+		            <% if( isBridgeIP ) { %>
+		            <li>
+						<a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
+					</li>
+		            <% }%>				     
+		            <li>
+		            	<a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a>
+		            </li>
+		         </ul>	     
+			</div>
+	</div>
+	<hr />
+<div>
+		<h3>Node Ip Routes</h3>
+			
          <!-- general Route info box -->
             <jsp:include page="/includes/nodeRouteInfo-box.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
 			</jsp:include>
-    </td> 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
+			
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

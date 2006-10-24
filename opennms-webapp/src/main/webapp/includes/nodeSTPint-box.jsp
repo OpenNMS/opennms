@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
@@ -24,7 +24,7 @@
 //      http://www.sortova.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -58,30 +58,27 @@
    	StpInterface[] stpifs = NetworkElementFactory.getStpInterface(nodeId);
 
 %>
-
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-  
-    <tr bgcolor="#999999">
-       <td colspan="11"><b>Node STP Interface Info</b></td>
-     </tr>
-
+<h3>Node STP Interface Info</h3>
+<table>
 <% if(stpifs.length == 0) { %>
   <tr>
-    <td BGCOLOR="#cccccc" colspan="7"><b>There have been no STP Interfaces info on this node.</b></td>
+    <td >There have been no STP Interfaces info on this node.</td>
   </tr>
 <% } else { %>
-              <tr bgcolor="#cccccc">
-                <td><b>Vlan Identifier</b></td>			  
-                <td><b>Port/Ifindex</b></td>
-                <td><b>Port Status</b></td>
-                <td><b>Status</b></td>
-                <td><b>Path Cost</b></td>
-                <td><b>Stp Root</b></td>
-                <td><b>Designated Bridge</b></td>
-                <td><b>Designated Port</b></td>
-                <td><b>Designated Cost</b></td>
-                <td><b>Last Poll Time</b></td>
+			<thead>
+              <tr>
+                <th>Vlan Identifier</th>			  
+                <th>Port/Ifindex</th>
+                <th>Port Status</th>
+                <th>Status</th>
+                <th>Path Cost</th>
+                <th>Stp Root</th>
+                <th>Designated Bridge</th>
+                <th>Designated Port</th>
+                <th>Designated Cost</th>
+                <th>Last Poll Time</th>
               </tr>
+             </thead>
               <% for (int i=0; i < stpifs.length;i++) { %>
 			  <tr bgcolor="<%=getVlanColorIdentifier(stpifs[i].get_stpvlan())%>">
                 <td><%=stpifs[i].get_stpvlan()%></td>		  

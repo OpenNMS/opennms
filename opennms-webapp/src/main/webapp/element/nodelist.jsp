@@ -42,14 +42,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.ArrayList,
-			java.util.Collection,
-			java.util.LinkedList,
-			java.util.Set,
-			org.opennms.netmgt.model.OnmsCategory,
+	import="java.util.Collection,
 			org.opennms.netmgt.model.OnmsNode,
 			org.opennms.web.element.*,
-			org.opennms.web.outage.Outage,
 			org.opennms.web.outage.OutageModel,
 			org.opennms.web.svclayer.SiteStatusViewService,
 	        org.opennms.netmgt.dao.CategoryDao,
@@ -82,6 +77,7 @@ SiteStatusViewService m_siteStatusViewService = (SiteStatusViewService) m_webApp
     Node[] nodes = null;
     String nameParm = request.getParameter("nodename");
     String ipLikeParm = request.getParameter("iplike");
+    String macLikeParm = request.getParameter( "maclike" );
     String serviceParm = request.getParameter("service");
     String ifAliasParm = request.getParameter("ifAlias");
     String[] categories1 = request.getParameterValues("category1");
@@ -101,6 +97,8 @@ SiteStatusViewService m_siteStatusViewService = (SiteStatusViewService) m_webApp
     } else if (serviceParm != null) {
         int serviceId = Integer.parseInt(serviceParm);
         nodes = NetworkElementFactory.getNodesWithService(serviceId);
+    } else if( macLikeParm != null ) {
+	    nodes = NetworkElementFactory.getNodesWithPhysAddr(macLikeParm);
     } else if (ifAliasParm != null) {
         nodes = NetworkElementFactory.getNodesWithIfAlias(ifAliasParm);
         isIfAliasSearch = true;
