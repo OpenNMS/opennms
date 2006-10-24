@@ -67,7 +67,6 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.Attrib;
@@ -377,11 +376,11 @@ public class HttpCollector implements ServiceCollector {
          * If the RRD file repository directory does NOT already exist, create
          * it.
          */
-        File f = new File(DataCollectionConfigFactory.getInstance().getRrdPath());
+        File f = new File(HttpCollectionConfigFactory.getInstance().getRrdPath());
         if (!f.isDirectory()) {
             if (!f.mkdirs()) {
                 throw new RuntimeException("Unable to create RRD file "
-                        + "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
+                        + "repository.  Path doesn't already exist and could not make directory: " + HttpCollectionConfigFactory.getInstance().getRrdPath());
             }
         }
     }
