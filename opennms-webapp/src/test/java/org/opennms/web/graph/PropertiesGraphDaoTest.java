@@ -1,19 +1,31 @@
 package org.opennms.web.graph;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.FileAnticipator;
+import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.mock.MockUtil;
 import org.opennms.web.graph.PrefabGraph;
 
 public class PropertiesGraphDaoTest extends TestCase {
 
-    final static String s_propertiesString = "reports=mib2.bits, mib2.discards\n"
+    final static String s_propertiesString =
+            "command.input.dir=foo\n"
+            + "command.prefix=foo\n"
+            + "output.mime=foo\n"
+            + "\n"
+            + "reports=mib2.bits, mib2.discards\n"
             + "\n"
             + "report.mib2.bits.name=Bits In/Out\n"
             + "report.mib2.bits.columns=ifInOctets,ifOutOctets\n"
@@ -56,12 +68,25 @@ public class PropertiesGraphDaoTest extends TestCase {
 
     Map<String, PrefabGraph> m_graphs;
 
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
+        super.setUp();
+        /*
         m_properties = new Properties();
         m_properties.load(new ByteArrayInputStream(s_propertiesString.getBytes()));
         m_graphs = PropertiesGraphDao.getPrefabGraphDefinitions(m_properties);
-    }
+        */
+        
+        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        ByteArrayInputStream in = new ByteArrayInputStream(s_propertiesString.getBytes());
+        dao.loadProperties("performance", in);
+        
+        PrefabGraphType type = dao.findByName("performance");
+        assertNotNull("could not get performance prefab graph type", type);
 
+        m_graphs = type.getReportMap();
+        assertNotNull("report map shouldn't be null", m_graphs);
+    }
+    
     public void testCompareTo() {
         PrefabGraph bits = m_graphs.get("mib2.bits");
         PrefabGraph discards = m_graphs.get("mib2.discards");
@@ -168,4 +193,100 @@ public class PropertiesGraphDaoTest extends TestCase {
         PropertiesGraphDao dao = new PropertiesGraphDao("", "");
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-adhoc-graph.properties"));
     }
+    
+    public void testPrefabPropertiesReload() throws IOException, InterruptedException {
+        /*
+         * We're not going to use the anticipator functionality, but it's
+         * handy for handling temporary directories.
+         */
+        FileAnticipator fa = new FileAnticipator();
+        
+        try {
+            File f = fa.tempFile("snmp-graph.properties");
+            
+            FileWriter writer = new FileWriter(f);
+            // Don't include mib2.discards in the reports line
+            String noDiscards = s_propertiesString.replace(", mib2.discards", "");
+            writer.write(noDiscards);
+            writer.close();
+            
+            PropertiesGraphDao dao = new PropertiesGraphDao("performance=" + f.getAbsolutePath(), "");
+            PrefabGraphType type = dao.findByName("performance");
+            assertNotNull("could not get performance prefab graph type", type);
+            
+            assertNotNull("could not get mib2.bits report", type.getQuery("mib2.bits"));
+            assertNull("could get mib2.discards report, but shouldn't have been able to", type.getQuery("mib2.discards"));
+
+            /*
+             *  On UNIX, the resolution of the last modified time is 1 second,
+             *  so we need to wait at least that long before rewriting the
+             *  file to ensure that we have crossed over into the next second.
+             *  At least we're not crossing over with John Edward.
+             */
+            Thread.sleep(1100);
+
+            writer = new FileWriter(f);
+            writer.write(s_propertiesString);
+            writer.close();
+            
+            type = dao.findByName("performance");
+            assertNotNull("could not get performance prefab graph type after rewriting config file", type);
+            assertNotNull("could not get mib2.bits report after rewriting config file", type.getQuery("mib2.bits"));
+            assertNotNull("could not get mib2.discards report after rewriting config file", type.getQuery("mib2.discards"));
+        } finally {
+            fa.deleteExpected();
+        }
+    }
+    
+    public void testPrefabPropertiesReloadBad() throws IOException, InterruptedException {
+        /*
+         * We're not going to use the anticipator functionality, but it's
+         * handy for handling temporary directories.
+         */
+        FileAnticipator fa = new FileAnticipator();
+        
+        MockLogAppender.setupLogging(false);
+        
+        try {
+            File f = fa.tempFile("snmp-graph.properties");
+
+            FileWriter writer = new FileWriter(f);
+            writer.write(s_propertiesString);
+            writer.close();
+
+            PropertiesGraphDao dao = new PropertiesGraphDao("performance=" + f.getAbsolutePath(), "");
+            PrefabGraphType type = dao.findByName("performance");
+            assertNotNull("could not get performance prefab graph type", type);
+            
+            assertNotNull("could not get mib2.bits report", type.getQuery("mib2.bits"));
+            assertNotNull("could not get mib2.discards report", type.getQuery("mib2.discards"));
+
+            /*
+             *  On UNIX, the resolution of the last modified time is 1 second,
+             *  so we need to wait at least that long before rewriting the
+             *  file to ensure that we have crossed over into the next second.
+             *  At least we're not crossing over with John Edward.
+             */
+            Thread.sleep(1100);
+
+            writer = new FileWriter(f);
+            // Don't include the reports line at all so we get an error
+            String noReports = s_propertiesString.replace("reports=mib2.bits, mib2.discards", "");
+            writer.write(noReports);
+            writer.close();
+            
+            type = dao.findByName("performance");
+            assertNotNull("could not get performance prefab graph type after rewriting config file", type);
+            assertNotNull("could not get mib2.bits report after rewriting config file", type.getQuery("mib2.bits"));
+            assertNotNull("could not get mib2.discards report after rewriting config file", type.getQuery("mib2.discards"));
+        } finally {
+            fa.deleteExpected();
+        }
+        
+        LoggingEvent[] events = MockLogAppender.getEvents();
+        assertNotNull("logged event list was null", events);
+        assertEquals("should only have received one logged event", 1, events.length);
+        assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
+    }
+
 }
