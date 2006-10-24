@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -13,11 +12,11 @@ import java.util.regex.PatternSyntaxException;
 
 import org.opennms.core.utils.BundleLists;
 
-public class PropertiesGraphDao implements GraphDao {
+public class PropertiesGraphDao implements GraphDao, FileReloadCallback<String, PrefabGraphType> {
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
     
-    private Map<String, PrefabGraphType> m_types =
-        new HashMap<String, PrefabGraphType>();
+    private Map<String, FileReloadContainer<String, PrefabGraphType>> m_types =
+        new HashMap<String, FileReloadContainer<String, PrefabGraphType>>();
 
     private HashMap<String, AdhocGraphType> m_adhocTypes =
         new HashMap<String, AdhocGraphType>();
@@ -70,61 +69,45 @@ public class PropertiesGraphDao implements GraphDao {
 
 
     public PrefabGraphType findByName(String name) {
-        return m_types.get(name);
+        return m_types.get(name).get();
     }
-
-    /*
-    protected void loadProperties(String type, String homeDir, String fileName)
-                throws IOException {
-        if (homeDir == null) {
-            throw new IllegalArgumentException("Cannot take null "
-                                               + "parameters.");
-        }
-        loadProperties(type, homeDir + fileName);
+    
+    public AdhocGraphType findAdhocByName(String name) {
+        return m_adhocTypes.get(name);
     }
-    */
 
     public void loadProperties(String type, File file) throws IOException {
         FileInputStream in = new FileInputStream(file);
-        loadProperties(type, in);
+        PrefabGraphType t = createPrefabGraphType(type, in);
         in.close();
+        
+        m_types.put(t.getName(),
+                    new FileReloadContainer<String, PrefabGraphType>(t, file, this,
+                            t.getName()));
     }
     
     public void loadProperties(String type, InputStream in) throws IOException {
+        PrefabGraphType t = createPrefabGraphType(type, in);
+        m_types.put(t.getName(), new FileReloadContainer<String, PrefabGraphType>(t));
+    }
+    
+    private PrefabGraphType createPrefabGraphType(String type, InputStream in) throws IOException {
         Properties properties = new Properties();
         properties.load(in);
 
         PrefabGraphType t = new PrefabGraphType();
         t.setName(type);
         
-        t.setRrdDirectory(new File(properties.getProperty("command.input.dir")));
-        t.setCommandPrefix(properties.getProperty("command.prefix"));
-        t.setOutputMimeType(properties.getProperty("output.mime"));
+        t.setRrdDirectory(new File(getProperty(properties,
+                                               "command.input.dir")));
+        t.setCommandPrefix(getProperty(properties, "command.prefix"));
+        t.setOutputMimeType(getProperty(properties, "output.mime"));
 
-        if (properties.getProperty("default.report") != null) { 
-            t.setDefaultReport(new String(properties.getProperty("default.report")));
-        } else {
-            t.setDefaultReport("none");
-        }           
+        t.setDefaultReport(properties.getProperty("default.report", "none"));
 
         t.setReportMap(getPrefabGraphDefinitions(properties));
-        
-        m_types.put(t.getName(), t);
-    }
 
-    
-    private static String getReportProperty(Properties props, String key,
-                String suffix, boolean required) {
-        String propertyName = "report." + key + "." + suffix;
-        
-        String property = props.getProperty(propertyName);
-        if (property == null && required == true) {
-            throw new IllegalArgumentException("Properties parameter must "
-                                               + "contain \"" + propertyName
-                                               + "\" property");
-        }
-        
-        return property;
+        return t;
     }
     
     public void loadAdhocProperties(String type, File file) throws IOException {
@@ -140,17 +123,37 @@ public class PropertiesGraphDao implements GraphDao {
         AdhocGraphType t = new AdhocGraphType();
         t.setName(type);
         
-        t.setRrdDirectory(new File(properties.getProperty("command.input.dir")));
-        t.setCommandPrefix(properties.getProperty("command.prefix"));
-        t.setOutputMimeType(properties.getProperty("output.mime"));
+        t.setRrdDirectory(new File(getProperty(properties, "command.input.dir")));
+        t.setCommandPrefix(getProperty(properties, "command.prefix"));
+        t.setOutputMimeType(getProperty(properties, "output.mime"));
         
-        t.setTitleTemplate(properties.getProperty("adhoc.command.title"));
-        t.setDataSourceTemplate(properties.getProperty("adhoc.command.ds"));
-        t.setGraphLineTemplate(properties.getProperty("adhoc.command.graphline"));
+        t.setTitleTemplate(getProperty(properties, "adhoc.command.title"));
+        t.setDataSourceTemplate(getProperty(properties, "adhoc.command.ds"));
+        t.setGraphLineTemplate(getProperty(properties, "adhoc.command.graphline"));
         
         m_adhocTypes.put(t.getName(), t);
     }
 
+    private Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties properties) {
+        if (properties == null) {
+            throw new IllegalArgumentException("properties cannot be null");
+        }
+
+        String listString = getProperty(properties, DEFAULT_GRAPH_LIST_KEY);
+
+        String[] list = BundleLists.parseBundleList(listString);
+
+        Map<String, PrefabGraph> map = new LinkedHashMap<String, PrefabGraph>();
+
+        for (int i = 0; i < list.length; i++) {
+            String key = list[i];
+            PrefabGraph graph = makePrefabGraph(key, properties, i);
+
+            map.put(key, graph);
+        }
+
+        return map;
+    }
     
     private static PrefabGraph makePrefabGraph(String key, Properties props, int order) {
         if (key == null) {
@@ -200,44 +203,39 @@ public class PropertiesGraphDao implements GraphDao {
                 description);
 
     }
+
+    private static String getProperty(Properties props, String name) {
+        String property = props.getProperty(name);
+        if (property == null) {
+            throw new IllegalArgumentException("Properties must "
+                                               + "contain \'" + name
+                                               + "\' property");
+        }
     
-
-    public static Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties props) {
-        return getPrefabGraphDefinitions(props, DEFAULT_GRAPH_LIST_KEY);
-    }
-
-    private static Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties props, String listKey) {
-        if (props == null) {
-            throw new IllegalArgumentException("props cannot be null");
-        }
-        if (listKey == null) {
-            throw new IllegalArgumentException("listKey cannot be null");
-        }
-
-        String listString = props.getProperty(listKey);
-        if (listString == null) {
-            throw new IllegalArgumentException("Properties parameter must contain \"" + listKey + "\" property");
-        }
-
-        String[] list = BundleLists.parseBundleList(listString);
-        
-        return getPrefabGraphDefinitions(props, list);
+        return property;
     }
     
-    private static Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties props, String[] list) {
-        Map<String, PrefabGraph> map = new LinkedHashMap<String, PrefabGraph>();
-        
-        for (int i = 0; i < list.length; i++) {
-            String key = list[i];
-            PrefabGraph graph = makePrefabGraph(key, props, i);
-
-            map.put(key, graph);
+    private static String getReportProperty(Properties props, String key,
+            String suffix, boolean required) {
+        String propertyName = "report." + key + "." + suffix;
+    
+        String property = props.getProperty(propertyName);
+        if (property == null && required == true) {
+            throw new IllegalArgumentException("Properties for report '"
+                                               + key + "' must contain \"'"
+                                               + propertyName + "\" property");
         }
-
-        return map;
+    
+        return property;
     }
 
-    public AdhocGraphType findAdhocByName(String name) {
-        return m_adhocTypes.get(name);
+    public PrefabGraphType reload(FileReloadContainer<String, PrefabGraphType> container) throws IOException {
+        FileInputStream in = new FileInputStream(container.getFile());
+        PrefabGraphType t = createPrefabGraphType(container.getKey(), in);
+        in.close();
+        
+        return t;
     }
+    
+
 }
