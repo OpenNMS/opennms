@@ -73,15 +73,14 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
     
     
     public List<GraphResource> getResourcesForNode(int nodeId) {
-        ArrayList<GraphResource> graphResources =
-            new ArrayList<GraphResource>();
+        ArrayList<DefaultGraphResource> graphResources =
+            new ArrayList<DefaultGraphResource>();
 
         List<String> indexes = getQueryableIndexesForNode(nodeId);
         for (String index : indexes) {
             graphResources.add(getResourceByNodeAndIndex(nodeId, index));
         }
-
-        return graphResources;
+        return DefaultGraphResource.sortIntoGraphResourceList(graphResources);
     }
     
     public List<String> getQueryableIndexesForNode(int nodeId) {
@@ -104,7 +103,7 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
     }
 
     
-    public GraphResource getResourceByNodeAndIndex(int nodeId,
+    public DefaultGraphResource getResourceByNodeAndIndex(int nodeId,
             String index) {
         
         String label = index;

@@ -67,7 +67,8 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
             + "AND ifservices.ipinterfaceid = ipinterface.id "
             + "AND ipinterface.nodeid = ?";
         
-        LinkedList<GraphResource> resources = new LinkedList<GraphResource>();
+        LinkedList<DefaultGraphResource> resources =
+            new LinkedList<DefaultGraphResource>();
 
         try {
             Connection conn = Vault.getDbConnection();
@@ -102,7 +103,7 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
 
         }
         
-        return resources;
+        return DefaultGraphResource.sortIntoGraphResourceList(resources);
     }
     
     public List<GraphResource> getResourcesForLocationMonitor(int locationMonitorId) {
@@ -140,7 +141,7 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
         return graphResources;
     }
 
-    private GraphResource createResource(String definitionName,
+    private DefaultGraphResource createResource(String definitionName,
             int locationMonitorId, String intf) {
         String monitor = definitionName + "-" + locationMonitorId;
         
