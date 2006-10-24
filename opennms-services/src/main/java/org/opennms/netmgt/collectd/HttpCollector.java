@@ -39,6 +39,7 @@ package org.opennms.netmgt.collectd;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -357,11 +358,32 @@ public class HttpCollector implements ServiceCollector {
     }
 
     public void initialize(Map parameters) {
+        initHttpCollecionConfig();
+        
         // Make sure we can connect to the database
         initDatabaseConnectionFactory();
 
         // Get path to RRD repository
         initializeRrdRepository();
+    }
+
+    private void initHttpCollecionConfig() {
+        try {
+            log().debug("initialize: Initializing collector: "+getClass());
+            HttpCollectionConfigFactory.init();
+        } catch (MarshalException e) {
+            log().fatal("initialize: Error marshalling configuration.", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (ValidationException e) {
+            log().fatal("initialize: Error validating configuration.", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (FileNotFoundException e) {
+            log().fatal("initialize: Error locating configuration.", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (IOException e) {
+            log().fatal("initialize: Error reading configuration", e);
+            throw new UndeclaredThrowableException(e);
+        }
     }
 
     private void initializeRrdRepository() {
