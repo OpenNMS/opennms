@@ -206,7 +206,7 @@ function doDelete() {
         
         <% if(this.rtModel.isQueryableInterface(ipAddr)) { %>
 	  <li>
-          <a href="response/addReportsToUrl?node=<%=nodeId%>&intf=<%=ipAddr%>&relativetime=lastday">Response Time</a>
+          <a href="response/addReportsToUrl?node=<%=nodeId%>&resourceType=node&resource=<%=ipAddr%>&relativetime=lastday">Response Time</a>
 	  </li>
         <% } %>
 
