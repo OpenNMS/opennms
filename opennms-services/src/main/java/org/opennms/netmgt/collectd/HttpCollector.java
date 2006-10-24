@@ -37,11 +37,13 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,13 +64,17 @@ import org.apache.commons.httpclient.params.DefaultHttpParams;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.Attrib;
 import org.opennms.netmgt.config.datacollection.HttpCollection;
 import org.opennms.netmgt.config.datacollection.Uri;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 
@@ -352,9 +358,67 @@ public class HttpCollector implements ServiceCollector {
     }
 
     public void initialize(Map parameters) {
-        throw new IllegalStateException("initialize: Collection Agent parameter is required");
+        // Make sure we can connect to the database
+        initDatabaseConnectionFactory();
+
+        // Get path to RRD repository
+        initializeRrdRepository();
     }
 
+    private void initializeRrdRepository() {
+
+        initializeRrdDirs();
+
+        initializeRrdInterface();
+    }
+
+    private void initializeRrdDirs() {
+        /*
+         * If the RRD file repository directory does NOT already exist, create
+         * it.
+         */
+        File f = new File(DataCollectionConfigFactory.getInstance().getRrdPath());
+        if (!f.isDirectory()) {
+            if (!f.mkdirs()) {
+                throw new RuntimeException("Unable to create RRD file "
+                        + "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
+            }
+        }
+    }
+
+    private void initializeRrdInterface() {
+        try {
+            RrdUtils.initialize();
+        } catch (RrdException e) {
+            log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
+            throw new RuntimeException("Unable to initialize RrdUtils", e);
+        }
+    }
+
+    private void initDatabaseConnectionFactory() {
+        try {
+            DataSourceFactory.init();
+        } catch (IOException e) {
+            log().fatal("initDatabaseConnectionFactory: IOException getting database connection", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (MarshalException e) {
+            log().fatal("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (ValidationException e) {
+            log().fatal("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (SQLException e) {
+            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (PropertyVetoException e) {
+            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (ClassNotFoundException e) {
+            log().fatal("initDatabaseConnectionFactory: Failed loading database driver.", e);
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+    
     public void initialize(CollectionAgent agent, Map parameters) {
         final Integer scheduledNodeKey = new Integer(agent.getNode().getId());
         final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
