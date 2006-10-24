@@ -441,6 +441,7 @@ public class HttpCollector implements ServiceCollector {
     }
     
     public void initialize(CollectionAgent agent, Map parameters) {
+        log().debug("initialize: Initializing HTTP collection for agent: "+agent);
         final Integer scheduledNodeKey = new Integer(agent.getNode().getId());
         final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
         

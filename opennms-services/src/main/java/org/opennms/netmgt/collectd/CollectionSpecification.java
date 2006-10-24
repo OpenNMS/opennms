@@ -33,7 +33,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -134,13 +133,22 @@ public class CollectionSpecification {
 		return (stg.equalsIgnoreCase("no") || stg.equalsIgnoreCase("off") || stg.equalsIgnoreCase("false"));
 	}
 
-	private void initializeParameters() {
+	@SuppressWarnings("unchecked")
+    private void initializeParameters() {
 		Map<String, String> m = new TreeMap<String, String>();
-		Enumeration ep = getService().enumerateParameter();
-		while (ep.hasMoreElements()) {
-			Parameter p = (Parameter) ep.nextElement();
-			m.put(p.getKey(), p.getValue());
-		}
+        StringBuffer sb;
+        Collection<Parameter> params = getService().getParameterCollection();
+        for (Parameter p : params) {
+            sb = new StringBuffer();
+            sb.append("initializeParameters: adding service: ");
+            sb.append(getServiceName());
+            sb.append(" parameter: ");
+            sb.append(p.getKey());
+            sb.append(" of value");
+            sb.append(p.getValue());
+            log().debug(sb.toString());
+            m.put(p.getKey(), p.getValue());
+        }
 
 		if(storeByIfAlias() != null && isTrue(storeByIfAlias())) {
 			m.put("storeByIfAlias", "true");
@@ -162,12 +170,22 @@ public class CollectionSpecification {
 				m.put("storFlagOverride", "true");
 			}
 			m.put("ifAliasComment", ifAliasComment());
-			if (log().isDebugEnabled())
-				log().debug("ifAliasDomain = " + ifAliasDomain() + ", storeByIfAlias = " + storeByIfAlias() + ", storeByNodeID = " + storeByNodeId() + ", storFlagOverride = " + storeFlagOverride() + ", ifAliasComment = " + ifAliasComment());
+			if (log().isDebugEnabled()) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("ifAliasDomain = ");
+                sb.append(ifAliasDomain());
+                sb.append(", storeByIfAlias = ");
+                sb.append(storeByIfAlias());
+                sb.append(", storeByNodeID = ");
+                sb.append(storeByNodeId());
+                sb.append(", storFlagOverride = ");
+                sb.append(storeFlagOverride());
+                sb.append(", ifAliasComment = ");
+                sb.append(ifAliasComment());
+				log().debug(sb.toString());
+            }
 		}
-		
 		m_parameters = m;
-	
 	}
 
 	public void initialize(CollectionAgent agent) {

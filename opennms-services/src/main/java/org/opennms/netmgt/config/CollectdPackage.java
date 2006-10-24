@@ -261,14 +261,14 @@ public class CollectdPackage {
 		}
 	}
 
-	public Service getService(String svcName) {
-		while (getPackage().enumerateService().hasMoreElements()) {
-			Service svc = (Service) getPackage().enumerateService().nextElement();
-			if (svc.getName().equalsIgnoreCase(svcName))
-				return svc;
-		}
-		
-		
+	@SuppressWarnings("unchecked")
+    public Service getService(final String svcName) {
+        final List<Service> pkgSvcs = m_pkg.getServiceCollection();
+        
+        for (Service svc : pkgSvcs) {
+            if (svc.getName().equalsIgnoreCase(svcName))
+                return svc;
+        }
 		throw new RuntimeException("Service name not part of package!");
 	}
 
