@@ -40,19 +40,21 @@ public class InterfaceGraphResourceType implements GraphResourceType {
     }
     
     public List<GraphResource> getResourcesForNode(int nodeId) {
-        ArrayList<GraphResource> graphResources =
-            new ArrayList<GraphResource>();
+        ArrayList<DefaultGraphResource> resources =
+            new ArrayList<DefaultGraphResource>();
 
         List<String> ifaces = 
             m_performanceModel.getQueryableInterfacesForNode(nodeId);
         for (String iface : ifaces) {
-            graphResources.add(getResourceByNodeAndInterface(nodeId, iface));
+            DefaultGraphResource resource =
+                getResourceByNodeAndInterface(nodeId, iface);
+            resources.add(resource);
         }
-
-        return graphResources;
+        
+        return DefaultGraphResource.sortIntoGraphResourceList(resources);
     }
     
-    public GraphResource getResourceByNodeAndInterface(int nodeId,
+    public DefaultGraphResource getResourceByNodeAndInterface(int nodeId,
             String intf) throws DataAccessException {
         String label;
         try {

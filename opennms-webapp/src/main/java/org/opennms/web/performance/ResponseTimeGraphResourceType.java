@@ -74,7 +74,7 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
             + "FROM ipinterface "
             + "WHERE ipinterface.nodeid = ?";
         
-        LinkedList<GraphResource> resources = new LinkedList<GraphResource>();
+        LinkedList<DefaultGraphResource> resources = new LinkedList<DefaultGraphResource>();
 
         try {
             Connection conn = Vault.getDbConnection();
@@ -106,14 +106,14 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
 
         }
         
-        return resources;
+        return DefaultGraphResource.sortIntoGraphResourceList(resources);
     }
 
     private File getInterfaceDirectory(String ipAddr) {
         return new File(getRrdDirectory(), ipAddr);
     }
     
-    private GraphResource createResource(String intf) {
+    private DefaultGraphResource createResource(String intf) {
         String label = intf;
         String resource = intf;
 
