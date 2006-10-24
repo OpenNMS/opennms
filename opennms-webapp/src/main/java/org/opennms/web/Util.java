@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -204,16 +205,45 @@ public abstract class Util extends Object {
      *         example)
      */
     public static String getHumanReadableIfSpeed(long ifSpeed) {
-        if (ifSpeed == 10000000L)
-            return "10 Mbps";
-        else if (ifSpeed == 100000000L)
-            return "100 Mbps";
-        else if (ifSpeed == 1000000000L)
-            return "1.0 Gbps";
-        else if (ifSpeed == 10000000000L)
-            return "10.0 Gbps";
-        else
-            return (String.valueOf(ifSpeed) + " bps");
+        /*
+         * Always print at least one digit after the decimal point,
+         * and at most three digits after the decimal point.
+         */
+        DecimalFormat oneDigitAfterDecimal = new DecimalFormat("0.0##");
+        // Print no digits after the decimal point (heh, nor a decimal point)
+        DecimalFormat noDigitsAfterDecimal = new DecimalFormat("0");
+        
+        DecimalFormat formatter;
+        double displaySpeed;
+        String units;
+        
+        if (ifSpeed >= 1000000000L) {
+            formatter = oneDigitAfterDecimal;
+            displaySpeed = ((double) ifSpeed) / 1000000000;
+            units = "Gbps";
+        } else if (ifSpeed >= 1000000L) {
+            if ((ifSpeed % 1000000L) == 0) {
+                formatter = noDigitsAfterDecimal;
+            } else {
+                formatter = oneDigitAfterDecimal;
+            }
+            displaySpeed = ((double) ifSpeed) / 1000000;
+            units = "Mbps";
+        } else if (ifSpeed >= 1000L) {
+            if ((ifSpeed % 1000L) == 0) {
+                formatter = noDigitsAfterDecimal;
+            } else {
+                formatter = oneDigitAfterDecimal;
+            }
+            displaySpeed = ((double) ifSpeed) / 1000;
+            units = "kbps";
+        } else {
+            formatter = noDigitsAfterDecimal;
+            displaySpeed = (double) ifSpeed;
+            units = "bps";
+        }
+        
+        return formatter.format(displaySpeed) + " " + units;
     }
 
     /**
