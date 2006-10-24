@@ -358,12 +358,9 @@ public class HttpCollector implements ServiceCollector {
     }
 
     public void initialize(Map parameters) {
+        log().debug("initialize: Initializing HttpCollector.");
         initHttpCollecionConfig();
-        
-        // Make sure we can connect to the database
         initDatabaseConnectionFactory();
-
-        // Get path to RRD repository
         initializeRrdRepository();
     }
 
@@ -387,9 +384,8 @@ public class HttpCollector implements ServiceCollector {
     }
 
     private void initializeRrdRepository() {
-
+        log().debug("initializeRrdRepository: Initializing RRD repo from HttpCollector...");
         initializeRrdDirs();
-
         initializeRrdInterface();
     }
 
@@ -398,11 +394,15 @@ public class HttpCollector implements ServiceCollector {
          * If the RRD file repository directory does NOT already exist, create
          * it.
          */
+        StringBuffer sb;
         File f = new File(HttpCollectionConfigFactory.getInstance().getRrdPath());
         if (!f.isDirectory()) {
             if (!f.mkdirs()) {
-                throw new RuntimeException("Unable to create RRD file "
-                        + "repository.  Path doesn't already exist and could not make directory: " + HttpCollectionConfigFactory.getInstance().getRrdPath());
+                sb = new StringBuffer();
+                sb.append("initializeRrdDirs: Unable to create RRD file repository.  Path doesn't already exist and could not make directory: ");
+                sb.append(HttpCollectionConfigFactory.getInstance().getRrdPath());
+                log().error(sb.toString());
+                throw new RuntimeException(sb.toString());
             }
         }
     }

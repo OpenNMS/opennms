@@ -290,12 +290,10 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
     private void scheduleInterfacesWithService(String svcName) {
-        log().debug("scheduleInterfacesWithService: svcName = " + svcName);
+        log().info("scheduleInterfacesWithService: svcName = " + svcName);
 
-        Collection ifsWithServices = getIpInterfaceDao().findHierarchyByServiceType(
-                                                                                    svcName);
-        for (Iterator it = ifsWithServices.iterator(); it.hasNext();) {
-            OnmsIpInterface iface = (OnmsIpInterface) it.next();
+        Collection<OnmsIpInterface> ifsWithServices = getIpInterfaceDao().findHierarchyByServiceType(svcName);
+        for (OnmsIpInterface iface : ifsWithServices) {
             scheduleInterface(iface, svcName, true);
         }
     }
@@ -334,11 +332,18 @@ public final class Collectd extends AbstractServiceDaemon implements
                           existing);
     }
 
-    private void scheduleInterface(OnmsIpInterface iface, String svcName,
-            boolean existing) {
-        Collection matchingSpecs = getCollectorConfigDao().getSpecificationsForInterface(
-                                                                                         iface,
-                                                                                         svcName);
+    private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
+        Collection matchingSpecs = getCollectorConfigDao().getSpecificationsForInterface(iface, svcName);
+        StringBuffer sb;
+        
+        if (log().isDebugEnabled()) {
+            sb = new StringBuffer();
+            sb.append("scheduleInterface: found ");
+            sb.append(Integer.toString(matchingSpecs.size()));
+            sb.append(" matching specs for interface: ");
+            sb.append(iface);
+            log().debug(sb.toString());
+        }
 
         for (Iterator it = matchingSpecs.iterator(); it.hasNext();) {
             CollectionSpecification spec = (CollectionSpecification) it.next();
@@ -353,13 +358,13 @@ public final class Collectd extends AbstractServiceDaemon implements
                  */
                 if (alreadyScheduled(iface, spec)) {
                     if (log().isDebugEnabled()) {
-                        log().debug(
-                                    "scheduleInterface: svc/pkgName "
-                                            + iface
-                                            + '/'
-                                            + spec
-                                            + " already in collectable service list, "
-                                            + "skipping.");
+                        sb = new StringBuffer();
+                        sb.append("scheduleInterface: svc/pkgName ");
+                        sb.append(iface);
+                        sb.append('/');
+                        sb.append(spec);
+                        sb.append(" already in collectable service list, skipping.");
+                        log().debug(sb.toString());
                     }
                     continue;
                 }
@@ -370,6 +375,13 @@ public final class Collectd extends AbstractServiceDaemon implements
                  * Criteria checks have all passed. The interface/service pair
                  * can be scheduled.
                  */
+                if (log().isDebugEnabled()) {
+                    sb = new StringBuffer();
+                    sb.append("scheduleInterface: now scheduling interface: ");
+                    sb.append(iface);
+                    sb.append('/');
+                    sb.append(svcName);
+                }
                 CollectableService cSvc = null;
 
                 /*
@@ -388,20 +400,32 @@ public final class Collectd extends AbstractServiceDaemon implements
                 getScheduler().schedule(0, cSvc.getReadyRunnable());
 
                 if (log().isDebugEnabled()) {
-                    log().debug(
-                                "scheduleInterface: " + iface + '/' + svcName
-                                        + " collection");
+                    sb = new StringBuffer();
+                    sb.append("scheduleInterface: ");
+                    sb.append(iface);
+                    sb.append('/');
+                    sb.append(svcName);
+                    sb.append(" collection, scheduled");
+                    log().debug(sb.toString());
                 }
             } catch (RuntimeException rE) {
-                log().warn(
-                           "scheduleInterface: Unable to schedule " + iface
-                                   + '/' + svcName + ", reason: "
-                                   + rE.getMessage());
+                sb = new StringBuffer();
+                sb.append("scheduleInterface: Unable to schedule ");
+                sb.append(iface);
+                sb.append('/');
+                sb.append(svcName);
+                sb.append(", reason: ");
+                sb.append(rE.getMessage());
+                log().warn(sb.toString());
             } catch (Throwable t) {
-                log().error(
-                            "scheduleInterface: Uncaught exception, failed to "
-                                    + "schedule interface " + iface + '/'
-                                    + svcName + ".", t);
+                sb = new StringBuffer();
+                sb.append("scheduleInterface: Uncaught exception, failed to schedule interface ");
+                sb.append(iface);
+                sb.append('/');
+                sb.append(svcName);
+                sb.append(". ");
+                sb.append(t);
+                log().error(sb.toString());
             }
         } // end while more packages exist
     }
@@ -410,8 +434,7 @@ public final class Collectd extends AbstractServiceDaemon implements
         m_nodeDao.getHierarchy(iface.getNode().getId());
         getIpInterfaceDao().initialize(iface.getNode());
         getIpInterfaceDao().initialize(iface.getSnmpInterface());
-        getIpInterfaceDao().initialize(
-                                       iface.getSnmpInterface().getIpInterfaces());
+        getIpInterfaceDao().initialize(iface.getSnmpInterface().getIpInterfaces());
         getIpInterfaceDao().initialize(iface.getMonitoredServices());
         getIpInterfaceDao().initialize(iface.getNode().getSnmpInterfaces());
         getIpInterfaceDao().initialize(iface.getNode().getIpInterfaces());
@@ -433,6 +456,16 @@ public final class Collectd extends AbstractServiceDaemon implements
         String ipAddress = iface.getIpAddress();
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
+        StringBuffer sb;
+        boolean isScheduled = false;
+        
+        if (log().isDebugEnabled()) {
+            sb = new StringBuffer();
+            sb.append("alreadyScheduled: determining if interface: ");
+            sb.append(iface);
+            sb.append(" is already scheduled.");
+        }
+        
         synchronized (m_collectableServices) {
             CollectableService cSvc = null;
             Iterator iter = m_collectableServices.iterator();
@@ -443,12 +476,20 @@ public final class Collectd extends AbstractServiceDaemon implements
                 if (addr.getHostAddress().equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
                         && cSvc.getServiceName().equals(svcName)) {
-                    return true;
+                    isScheduled = true;
+                    break;
                 }
             }
         }
 
-        return false;
+        if (log().isDebugEnabled()) {
+            sb = new StringBuffer();
+            sb.append("alreadyScheduled: interface ");
+            sb.append(iface);
+            sb.append("already scheduled check: ");
+            sb.append(isScheduled);
+        }
+        return isScheduled;
     }
 
     /**
