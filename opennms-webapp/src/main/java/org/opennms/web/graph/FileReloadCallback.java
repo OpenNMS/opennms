@@ -1,5 +1,7 @@
 package org.opennms.web.graph;
 
-public interface FileReloadCallback<K, T> {
-    public T reload(FileReloadContainer<K, T> container) throws Throwable;
+import java.io.File;
+
+public interface FileReloadCallback<T> {
+    public T reload(T object, File file);
 }

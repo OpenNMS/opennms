@@ -15,7 +15,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
 import org.opennms.web.graph.PrefabGraph;
 
 public class PropertiesGraphDaoTest extends TestCase {
@@ -285,8 +284,9 @@ public class PropertiesGraphDaoTest extends TestCase {
         
         LoggingEvent[] events = MockLogAppender.getEvents();
         assertNotNull("logged event list was null", events);
-        assertEquals("should only have received one logged event", 1, events.length);
+        assertEquals("should only have received two logged events", 2, events.length);
         assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
+        assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
     }
 
 }

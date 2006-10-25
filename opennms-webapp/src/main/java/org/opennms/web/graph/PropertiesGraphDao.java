@@ -2,6 +2,7 @@ package org.opennms.web.graph;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -10,13 +11,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
+import org.opennms.core.utils.ThreadCategory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
 
-public class PropertiesGraphDao implements GraphDao, FileReloadCallback<String, PrefabGraphType> {
+public class PropertiesGraphDao implements GraphDao, FileReloadCallback<PrefabGraphType> {
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
     
-    private Map<String, FileReloadContainer<String, PrefabGraphType>> m_types =
-        new HashMap<String, FileReloadContainer<String, PrefabGraphType>>();
+    private Map<String, FileReloadContainer<PrefabGraphType>> m_types =
+        new HashMap<String, FileReloadContainer<PrefabGraphType>>();
 
     private HashMap<String, AdhocGraphType> m_adhocTypes =
         new HashMap<String, AdhocGraphType>();
@@ -69,7 +74,7 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<String, 
 
 
     public PrefabGraphType findByName(String name) {
-        return m_types.get(name).get();
+        return m_types.get(name).getObject();
     }
     
     public AdhocGraphType findAdhocByName(String name) {
@@ -82,13 +87,12 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<String, 
         in.close();
         
         m_types.put(t.getName(),
-                    new FileReloadContainer<String, PrefabGraphType>(t, file, this,
-                            t.getName()));
+                    new FileReloadContainer<PrefabGraphType>(t, file, this));
     }
     
     public void loadProperties(String type, InputStream in) throws IOException {
         PrefabGraphType t = createPrefabGraphType(type, in);
-        m_types.put(t.getName(), new FileReloadContainer<String, PrefabGraphType>(t));
+        m_types.put(t.getName(), new FileReloadContainer<PrefabGraphType>(t));
     }
     
     private PrefabGraphType createPrefabGraphType(String type, InputStream in) throws IOException {
@@ -207,9 +211,9 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<String, 
     private static String getProperty(Properties props, String name) {
         String property = props.getProperty(name);
         if (property == null) {
-            throw new IllegalArgumentException("Properties must "
-                                               + "contain \'" + name
-                                               + "\' property");
+            throw new DataAccessResourceFailureException("Properties must "
+                                                         + "contain \'" + name
+                                                         + "\' property");
         }
     
         return property;
@@ -221,21 +225,60 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<String, 
     
         String property = props.getProperty(propertyName);
         if (property == null && required == true) {
-            throw new IllegalArgumentException("Properties for report '"
-                                               + key + "' must contain \"'"
-                                               + propertyName + "\" property");
+            throw new DataAccessResourceFailureException("Properties for "
+                                                         + "report '" + key
+                                                         + "' must contain \'"
+                                                         + propertyName
+                                                         + "\' property");
         }
     
         return property;
     }
 
-    public PrefabGraphType reload(FileReloadContainer<String, PrefabGraphType> container) throws IOException {
-        FileInputStream in = new FileInputStream(container.getFile());
-        PrefabGraphType t = createPrefabGraphType(container.getKey(), in);
-        in.close();
+    public PrefabGraphType reload(PrefabGraphType object, File file) {
+        FileInputStream in;
+        try {
+            in = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            log().error("Could not reload configuration file '"
+                        + file.getAbsolutePath()
+                        + "' due to FileNotFoundException: " + e,
+                        e);
+            return null;
+        }
+        
+        PrefabGraphType t;
+        try {
+            t = createPrefabGraphType(object.getName(), in);
+        } catch (IOException e) {
+            log().error("Could not reload configuration file '"
+                        + file.getAbsolutePath()
+                        + "' due to IOException when reading from file: " + e,
+                        e);
+            return null;
+        } catch (DataAccessException e) {
+            log().error("Could not reload configuration file '"
+                        + file.getAbsolutePath()
+                        + "' due to DataAccessException when reading from "
+                        + "file: " + e,
+                        e);
+            return null;
+        }
+        
+        try {
+            in.close();
+        } catch (IOException e) {
+            log().error("Could not reload configuration file '"
+                        + file.getAbsolutePath()
+                        + "' due to IOException when closing file: " + e,
+                        e);
+            return null;
+        }
         
         return t;
     }
-    
 
+    private Category log() {
+        return ThreadCategory.getInstance();
+    }
 }
