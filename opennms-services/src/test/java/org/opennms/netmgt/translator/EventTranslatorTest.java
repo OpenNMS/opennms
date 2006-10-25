@@ -171,6 +171,23 @@ public class EventTranslatorTest extends MockObjectTestCase {
         }
     }
     
+    
+    public void testSubElementString() throws Exception {
+    	m_passiveStatusConfiguration = getSqlSubValueString();
+    	tearDown();
+    	setUp();
+    	testTranslateEvent();
+        
+    }
+    
+    public void testSubElementLong() throws Exception {
+    	m_passiveStatusConfiguration = getSqlSubValueLong();
+    	tearDown();
+    	setUp();
+    	testTranslateEvent();
+    }
+    
+    
     public void testIsTranslationEvent() throws Exception {
         // test non matching uei match fails
         Event pse = createTestEvent("someOtherUei", "Router", "192.168.1.1", "ICMP", "Down");
@@ -309,6 +326,92 @@ public class EventTranslatorTest extends MockObjectTestCase {
         p.setValue(v);
         return p;
     }
+    
+    
+    private String getSqlSubValueLong() {
+    	return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+        "<event-translator-configuration \n" + 
+        "xmlns=\"http://xmlns.opennms.org/xsd/translator-configuration\" \n" + 
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" +
+        "  <translation>\n" +
+        "   <event-translation-spec uei=\"uei.opennms.org/services/translationTest\">\n" + 
+        "      <mappings>\n" + 
+        "        <mapping>\n" +
+        "          <assignment type=\"field\" name=\"nodeid\">\n" +  
+        "            <value type=\"sql\" result=\"select node.nodeid from node, ipInterface where node.nodeLabel=? and ipinterface.ipaddr=? and node.nodeId=ipinterface.nodeid and ipInterface.isManaged != 'D' and node.nodeType != 'D' and ? = 9999 \" >\n" +
+        "				<value type=\"parameter\" name=\"passiveNodeLabel\" matches=\"Router\" result=\"Firewall\" />\n" +
+        "				<value type=\"constant\" result=\"192.168.1.4\" />\n" +
+        "				<value type=\"field\" name=\"nodeid\" result=\"9999\" />\n" +
+        "			</value>\n" +
+        "          </assignment>\n" + 
+        "          <assignment type=\"parameter\" name=\"nodeLabel\">\n" +  
+        "            <value type=\"field\" name=\"host\" result=\"Switch\" />\n" +
+        "          </assignment>\n" + 
+        "          <assignment type=\"field\" name=\"interface\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveIpAddr\" matches=\".*(192\\.168\\.1\\.1).*\" result=\"192.168.1.1\" />\n" +
+        "          </assignment>\n" +
+        "		  <assignment type=\"field\" name=\"host\">\n" +
+        "			<value type=\"field\" name=\"host\" result=\"www.opennms.org\" />\n" +
+        "		  </assignment>\n" + 
+        "		  <assignment type=\"field\" name=\"descr\">\n" +
+        "			<value type=\"constant\" result=\"a generated event\" />\n" +
+        "		  </assignment>\n" + 
+        "          <assignment type=\"field\" name=\"service\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveServiceName\" result=\"PSV\" />\n" + 
+        "          </assignment>\n" + 
+        "          <assignment type=\"parameter\" name=\"passiveStatus\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveStatus\" matches=\".*(Up|Down).*\" result=\"${1}\" />\n" + 
+        "          </assignment>\n" + 
+        "        </mapping>\n" + 
+        "      </mappings>\n" + 
+        "    </event-translation-spec>\n" + 
+        "  </translation>\n" +
+        "</event-translator-configuration>\n" + 
+        "";
+    }
+    private String getSqlSubValueString() {
+    	return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+        "<event-translator-configuration \n" + 
+        "xmlns=\"http://xmlns.opennms.org/xsd/translator-configuration\" \n" + 
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" +
+        "  <translation>\n" +
+        "   <event-translation-spec uei=\"uei.opennms.org/services/translationTest\">\n" + 
+        "      <mappings>\n" + 
+        "        <mapping>\n" +
+        "          <assignment type=\"field\" name=\"nodeid\">\n" +  
+        "            <value type=\"sql\" result=\"select node.nodeid from node, ipInterface where node.nodeLabel=? and ipinterface.ipaddr=? and node.nodeId=ipinterface.nodeid and ipInterface.isManaged != 'D' and node.nodeType != 'D' and ? = 'test' \" >\n" +
+        "				<value type=\"parameter\" name=\"passiveNodeLabel\" matches=\"Router\" result=\"Firewall\" />\n" +
+        "				<value type=\"constant\" result=\"192.168.1.4\" />\n" +
+        "				<value type=\"field\" name=\"host\" result=\"test\" />\n" +
+        "			</value>\n" +
+        "          </assignment>\n" + 
+        "          <assignment type=\"parameter\" name=\"nodeLabel\">\n" +  
+        "            <value type=\"field\" name=\"host\" result=\"Switch\" />\n" +
+        "          </assignment>\n" + 
+        "          <assignment type=\"field\" name=\"interface\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveIpAddr\" matches=\".*(192\\.168\\.1\\.1).*\" result=\"192.168.1.1\" />\n" +
+        "          </assignment>\n" +
+        "		  <assignment type=\"field\" name=\"host\">\n" +
+        "			<value type=\"field\" name=\"host\" result=\"www.opennms.org\" />\n" +
+        "		  </assignment>\n" + 
+        "		  <assignment type=\"field\" name=\"descr\">\n" +
+        "			<value type=\"constant\" result=\"a generated event\" />\n" +
+        "		  </assignment>\n" + 
+        "          <assignment type=\"field\" name=\"service\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveServiceName\" result=\"PSV\" />\n" + 
+        "          </assignment>\n" + 
+        "          <assignment type=\"parameter\" name=\"passiveStatus\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveStatus\" matches=\".*(Up|Down).*\" result=\"${1}\" />\n" + 
+        "          </assignment>\n" + 
+        "        </mapping>\n" + 
+        "      </mappings>\n" + 
+        "    </event-translation-spec>\n" + 
+        "  </translation>\n" +
+        "</event-translator-configuration>\n" + 
+        "";
+    }
+    
+    
     
     private String getStandardConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
