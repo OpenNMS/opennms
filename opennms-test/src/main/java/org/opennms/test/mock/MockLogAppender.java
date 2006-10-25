@@ -112,35 +112,41 @@ public class MockLogAppender extends AppenderSkeleton {
     }
 
     public static void setupLogging(boolean toConsole) {
+        String level = System.getProperty("mock.logLevel", "DEBUG");
+        setupLogging(toConsole, level);
+    }
+    
+    public static void setupLogging(boolean toConsole, String level) {
         resetLogLevel();
-        if (!s_loggingSetup) {
-            String level = System.getProperty("mock.logLevel", "DEBUG");
-            Properties logConfig = new Properties();
-
-            String consoleAppender = (toConsole ? ", CONSOLE" : "");
-
-            logConfig.put("log4j.appender.CONSOLE",
-                          "org.apache.log4j.ConsoleAppender");
-            logConfig.put("log4j.appender.CONSOLE.layout",
-                          "org.apache.log4j.PatternLayout");
-            logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern",
-                          "%d %-5p [%t] %c: %m%n");
-            logConfig.put("log4j.appender.MOCK",
-                          MockLogAppender.class.getName());
-            logConfig.put("log4j.appender.MOCK.layout",
-                          "org.apache.log4j.PatternLayout");
-            logConfig.put("log4j.appender.MOCK.layout.ConversionPattern",
-                          "%-5p [%t] %c: %m%n");
-
-            logConfig.put("log4j.rootCategory", level + consoleAppender
-                    + ", MOCK");
-            logConfig.put("log4j.logger.org.snmp4j", "ERROR"
-                    + consoleAppender + ", MOCK");
-            logConfig.put("log4j.logger.org.hibernate.cfg.AnnotationBinder",
-                          "ERROR" + consoleAppender + ", MOCK");
-
-            PropertyConfigurator.configure(logConfig);
+        
+        if (s_loggingSetup) {
+            return;
         }
+        
+        Properties logConfig = new Properties();
+
+        String consoleAppender = (toConsole ? ", CONSOLE" : "");
+
+        logConfig.put("log4j.appender.CONSOLE",
+                      "org.apache.log4j.ConsoleAppender");
+        logConfig.put("log4j.appender.CONSOLE.layout",
+                      "org.apache.log4j.PatternLayout");
+        logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern",
+                      "%d %-5p [%t] %c: %m%n");
+        logConfig.put("log4j.appender.MOCK", MockLogAppender.class.getName());
+        logConfig.put("log4j.appender.MOCK.layout",
+                      "org.apache.log4j.PatternLayout");
+        logConfig.put("log4j.appender.MOCK.layout.ConversionPattern",
+                      "%-5p [%t] %c: %m%n");
+
+        logConfig.put("log4j.rootCategory", level + consoleAppender
+                + ", MOCK");
+        logConfig.put("log4j.logger.org.snmp4j", "ERROR" + consoleAppender
+                + ", MOCK");
+        logConfig.put("log4j.logger.org.hibernate.cfg.AnnotationBinder",
+                      "ERROR" + consoleAppender + ", MOCK");
+
+        PropertyConfigurator.configure(logConfig);
     }
 
     public static void receivedLogLevel(Level level) {
