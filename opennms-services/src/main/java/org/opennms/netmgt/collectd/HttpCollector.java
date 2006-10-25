@@ -275,18 +275,24 @@ public class HttpCollector implements ServiceCollector {
     
     @SuppressWarnings("unchecked")
     private List<HttpCollectionAttribute> processResponse(String responseBodyAsString, HttpCollectionSet collectionSet) {
+        log().debug("processResponse: ");
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
         Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches());
         Matcher m = p.matcher(responseBodyAsString);
         
-        if (m.matches()) {
+        final boolean matches = m.matches();
+        if (matches) {
+            log().debug("processResponse: found matching attributes: "+matches);
             List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
             
             for (Attrib attribDef : attribDefs) {
                 HttpCollectionAttribute bute = new HttpCollectionAttribute(attribDef.getAlias(),
                         attribDef.getType(), m.group(attribDef.getMatchGroup()));
+                log().debug("processResponse: adding found attribute: "+bute);
                 butes.add(bute);
             }
+        } else {
+            log().debug("processResponse: found matching attributes: "+matches);
         }
         return butes;
     }
