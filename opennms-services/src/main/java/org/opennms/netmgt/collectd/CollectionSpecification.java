@@ -171,7 +171,7 @@ public class CollectionSpecification {
 			}
 			m.put("ifAliasComment", ifAliasComment());
 			if (log().isDebugEnabled()) {
-                StringBuffer sb = new StringBuffer();
+                sb = new StringBuffer();
                 sb.append("ifAliasDomain = ");
                 sb.append(ifAliasDomain());
                 sb.append(", storeByIfAlias = ");
