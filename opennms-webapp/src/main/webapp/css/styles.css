@@ -250,6 +250,15 @@ span.filter {
 	background-color: #DDD;
 	padding: 3px 4px;
 }
+
+table.normal {
+	width: auto;
+}
+td.normal {
+	border: none;
+	background-color: transparent;
+}
+
 table {
 	border-collapse: collapse;
 	width: 100%;
