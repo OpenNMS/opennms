@@ -17,14 +17,19 @@ import org.opennms.core.utils.ThreadCategory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 
-public class PropertiesGraphDao implements GraphDao, FileReloadCallback<PrefabGraphType> {
+public class PropertiesGraphDao implements GraphDao {
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
     
     private Map<String, FileReloadContainer<PrefabGraphType>> m_types =
         new HashMap<String, FileReloadContainer<PrefabGraphType>>();
 
-    private HashMap<String, AdhocGraphType> m_adhocTypes =
-        new HashMap<String, AdhocGraphType>();
+    private HashMap<String, FileReloadContainer<AdhocGraphType>> m_adhocTypes =
+        new HashMap<String, FileReloadContainer<AdhocGraphType>>();
+    
+    private PrefabGraphTypeCallback m_prefabCallback =
+        new PrefabGraphTypeCallback();
+    private AdhocGraphTypeCallback m_adhocCallback =
+        new AdhocGraphTypeCallback();
     
     public PropertiesGraphDao(String prefabConfigs, String adhocConfigs)
             throws IOException {
@@ -78,7 +83,7 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<PrefabGr
     }
     
     public AdhocGraphType findAdhocByName(String name) {
-        return m_adhocTypes.get(name);
+        return m_adhocTypes.get(name).getObject();
     }
 
     public void loadProperties(String type, File file) throws IOException {
@@ -87,7 +92,7 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<PrefabGr
         in.close();
         
         m_types.put(t.getName(),
-                    new FileReloadContainer<PrefabGraphType>(t, file, this));
+                    new FileReloadContainer<PrefabGraphType>(t, file, m_prefabCallback));
     }
     
     public void loadProperties(String type, InputStream in) throws IOException {
@@ -116,11 +121,18 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<PrefabGr
     
     public void loadAdhocProperties(String type, File file) throws IOException {
         FileInputStream in = new FileInputStream(file);
-        loadAdhocProperties(type, in);
+        AdhocGraphType t = createAdhocGraphType(type, in);
         in.close();
+        
+        m_adhocTypes.put(t.getName(), new FileReloadContainer<AdhocGraphType>(t, file, m_adhocCallback));
     }
     
     public void loadAdhocProperties(String type, InputStream in) throws IOException {
+        AdhocGraphType t = createAdhocGraphType(type, in);
+        m_adhocTypes.put(t.getName(), new FileReloadContainer<AdhocGraphType>(t));
+    }
+    
+    public AdhocGraphType createAdhocGraphType(String type, InputStream in) throws IOException {
         Properties properties = new Properties();
         properties.load(in);
         
@@ -135,7 +147,7 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<PrefabGr
         t.setDataSourceTemplate(getProperty(properties, "adhoc.command.ds"));
         t.setGraphLineTemplate(getProperty(properties, "adhoc.command.graphline"));
         
-        m_adhocTypes.put(t.getName(), t);
+        return t;
     }
 
     private Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties properties) {
@@ -234,51 +246,101 @@ public class PropertiesGraphDao implements GraphDao, FileReloadCallback<PrefabGr
     
         return property;
     }
-
-    public PrefabGraphType reload(PrefabGraphType object, File file) {
-        FileInputStream in;
-        try {
-            in = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            log().error("Could not reload configuration file '"
-                        + file.getAbsolutePath()
-                        + "' due to FileNotFoundException: " + e,
-                        e);
-            return null;
-        }
-        
-        PrefabGraphType t;
-        try {
-            t = createPrefabGraphType(object.getName(), in);
-        } catch (IOException e) {
-            log().error("Could not reload configuration file '"
-                        + file.getAbsolutePath()
-                        + "' due to IOException when reading from file: " + e,
-                        e);
-            return null;
-        } catch (DataAccessException e) {
-            log().error("Could not reload configuration file '"
-                        + file.getAbsolutePath()
-                        + "' due to DataAccessException when reading from "
-                        + "file: " + e,
-                        e);
-            return null;
-        }
-        
-        try {
-            in.close();
-        } catch (IOException e) {
-            log().error("Could not reload configuration file '"
-                        + file.getAbsolutePath()
-                        + "' due to IOException when closing file: " + e,
-                        e);
-            return null;
-        }
-        
-        return t;
-    }
-
+    
     private Category log() {
         return ThreadCategory.getInstance();
     }
+    
+    private class PrefabGraphTypeCallback implements FileReloadCallback<PrefabGraphType> {
+        public PrefabGraphType reload(PrefabGraphType object, File file) {
+            FileInputStream in;
+            try {
+                in = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to FileNotFoundException: " + e,
+                            e);
+                return null;
+            }
+            
+            PrefabGraphType t;
+            try {
+                t = createPrefabGraphType(object.getName(), in);
+            } catch (IOException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to IOException when reading from file: " + e,
+                            e);
+                return null;
+            } catch (DataAccessException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to DataAccessException when reading from "
+                            + "file: " + e,
+                            e);
+                return null;
+            }
+            
+            try {
+                in.close();
+            } catch (IOException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to IOException when closing file: " + e,
+                            e);
+                return null;
+            }
+            
+            return t;
+        }
+    }
+    
+    
+    private class AdhocGraphTypeCallback implements FileReloadCallback<AdhocGraphType> {
+        public AdhocGraphType reload(AdhocGraphType object, File file) {
+            FileInputStream in;
+            try {
+                in = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to FileNotFoundException: " + e,
+                            e);
+                return null;
+            }
+            
+            AdhocGraphType t;
+            try {
+                t = createAdhocGraphType(object.getName(), in);
+            } catch (IOException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to IOException when reading from file: " + e,
+                            e);
+                return null;
+            } catch (DataAccessException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to DataAccessException when reading from "
+                            + "file: " + e,
+                            e);
+                return null;
+            }
+            
+            try {
+                in.close();
+            } catch (IOException e) {
+                log().error("Could not reload configuration file '"
+                            + file.getAbsolutePath()
+                            + "' due to IOException when closing file: " + e,
+                            e);
+                return null;
+            }
+            
+            return t;
+        }
+
+    }
+
 }
