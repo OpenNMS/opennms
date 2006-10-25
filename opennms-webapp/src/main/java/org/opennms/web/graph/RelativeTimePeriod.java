@@ -1,12 +1,27 @@
 package org.opennms.web.graph;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class RelativeTimePeriod {
+    private static final RelativeTimePeriod[] s_defaultPeriods;
+    
     private String m_id = null;
     private String m_name = null;
     private int m_offsetField = Calendar.DATE;
     private int m_offsetAmount = -1;
+    
+    static {
+        s_defaultPeriods = new RelativeTimePeriod[] {
+                new RelativeTimePeriod("lastday", "Last Day", Calendar.DATE,
+                                       -1),
+                new RelativeTimePeriod("lastweek", "Last Week",
+                                       Calendar.DATE, -7),
+                new RelativeTimePeriod("lastmonth", "Last Month",
+                                       Calendar.DATE, -31),
+                new RelativeTimePeriod("lastyear", "Last Year",
+                                       Calendar.DATE, -366) };
+    }
 
     public RelativeTimePeriod() {
     }
@@ -52,12 +67,35 @@ public class RelativeTimePeriod {
     }
 
     public static RelativeTimePeriod[] getDefaultPeriods() {
-        return new RelativeTimePeriod[] {
-            new RelativeTimePeriod("lastday", "Last Day", Calendar.DATE, -1),
-            new RelativeTimePeriod("lastweek", "Last Week", Calendar.DATE, -7),
-            new RelativeTimePeriod("lastmonth", "Last Month", Calendar.DATE,
-                                   -31),
-            new RelativeTimePeriod("lastyear", "Last Year", Calendar.DATE, -366)
-        };
+        return s_defaultPeriods;
+    }
+    
+    public static RelativeTimePeriod getPeriodByIdOrDefault(String id) {
+        return getPeriodByIdOrDefault(s_defaultPeriods, id,
+                                      s_defaultPeriods[0]);
+    }
+    public static RelativeTimePeriod
+        getPeriodByIdOrDefault(RelativeTimePeriod[] periods, String id,
+                RelativeTimePeriod defaultPeriod) {
+        // default to the first time period
+        RelativeTimePeriod chosenPeriod = defaultPeriod;
+        
+        for (RelativeTimePeriod period : periods) {
+            if (period.getId().equals(id)) {
+                chosenPeriod = period;
+                break;
+            }
+        }
+        
+        return chosenPeriod;
+    }
+    
+    public long[] getStartAndEndTimes() {
+        Calendar cal = new GregorianCalendar();
+        long end = cal.getTime().getTime();
+        cal.add(getOffsetField(), getOffsetAmount());
+        long start = cal.getTime().getTime();        
+
+        return new long[] { start, end };
     }
 }
