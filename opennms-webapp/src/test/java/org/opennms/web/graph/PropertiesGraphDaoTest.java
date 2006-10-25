@@ -254,7 +254,7 @@ public class PropertiesGraphDaoTest extends TestCase {
          */
         FileAnticipator fa = new FileAnticipator();
         
-        MockLogAppender.setupLogging(false);
+        MockLogAppender.setupLogging(false, "DEBUG");
         
         try {
             File f = fa.tempFile("snmp-graph.properties");
