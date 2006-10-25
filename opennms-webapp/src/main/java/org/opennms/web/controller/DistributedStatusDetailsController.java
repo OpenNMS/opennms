@@ -22,9 +22,9 @@ public class DistributedStatusDetailsController extends AbstractController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String applicationLabel = request.getParameter("application");
+        String applicationName = request.getParameter("application");
         String locationName = request.getParameter("location");
-        SimpleWebTable table = m_distributedStatusService.createStatusTable(locationName, applicationLabel);
+        SimpleWebTable table = m_distributedStatusService.createStatusTable(locationName, applicationName);
         return new ModelAndView("distributedStatusDetails", "webTable", table);
     }
 
