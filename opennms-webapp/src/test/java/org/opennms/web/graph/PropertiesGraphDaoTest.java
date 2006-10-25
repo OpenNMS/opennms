@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
@@ -19,7 +20,7 @@ import org.opennms.web.graph.PrefabGraph;
 
 public class PropertiesGraphDaoTest extends TestCase {
 
-    final static String s_propertiesString =
+    final static String s_prefab =
             "command.input.dir=foo\n"
             + "command.prefix=foo\n"
             + "output.mime=foo\n"
@@ -62,6 +63,14 @@ public class PropertiesGraphDaoTest extends TestCase {
             + " GPRINT:octOut:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n"
             + " GPRINT:octOut:MIN:\"Min  \\\\: %8.2lf %s\" \\\n"
             + " GPRINT:octOut:MAX:\"Max  \\\\: %8.2lf %s\\\\n\"\n";
+    
+    private static final String s_adhoc =
+        "command.input.dir=@install.share.dir@/rrd/snmp/\n"
+        + "command.prefix=@install.rrdtool.bin@ graph - --imgformat PNG --start {1} --end {2}\n"
+        + "output.mime=image/png\n"
+        + "adhoc.command.title=--title=\"{3}\"\n"
+        + "adhoc.command.ds=DEF:{4}={0}:{5}:{6}\n"
+        + "adhoc.command.graphline={7}:{4}#{8}:\"{9}\"\n";
 
     Properties m_properties;
 
@@ -76,7 +85,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         */
         
         PropertiesGraphDao dao = new PropertiesGraphDao("", "");
-        ByteArrayInputStream in = new ByteArrayInputStream(s_propertiesString.getBytes());
+        ByteArrayInputStream in = new ByteArrayInputStream(s_prefab.getBytes());
         dao.loadProperties("performance", in);
         
         PrefabGraphType type = dao.findByName("performance");
@@ -205,7 +214,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             
             FileWriter writer = new FileWriter(f);
             // Don't include mib2.discards in the reports line
-            String noDiscards = s_propertiesString.replace(", mib2.discards", "");
+            String noDiscards = s_prefab.replace(", mib2.discards", "");
             writer.write(noDiscards);
             writer.close();
             
@@ -225,7 +234,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             Thread.sleep(1100);
 
             writer = new FileWriter(f);
-            writer.write(s_propertiesString);
+            writer.write(s_prefab);
             writer.close();
             
             type = dao.findByName("performance");
@@ -234,6 +243,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             assertNotNull("could not get mib2.discards report after rewriting config file", type.getQuery("mib2.discards"));
         } finally {
             fa.deleteExpected();
+            fa.tearDown();
         }
     }
     
@@ -250,7 +260,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             File f = fa.tempFile("snmp-graph.properties");
 
             FileWriter writer = new FileWriter(f);
-            writer.write(s_propertiesString);
+            writer.write(s_prefab);
             writer.close();
 
             PropertiesGraphDao dao = new PropertiesGraphDao("performance=" + f.getAbsolutePath(), "");
@@ -270,7 +280,7 @@ public class PropertiesGraphDaoTest extends TestCase {
 
             writer = new FileWriter(f);
             // Don't include the reports line at all so we get an error
-            String noReports = s_propertiesString.replace("reports=mib2.bits, mib2.discards", "");
+            String noReports = s_prefab.replace("reports=mib2.bits, mib2.discards", "");
             writer.write(noReports);
             writer.close();
             
@@ -280,6 +290,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             assertNotNull("could not get mib2.discards report after rewriting config file", type.getQuery("mib2.discards"));
         } finally {
             fa.deleteExpected();
+            fa.tearDown();
         }
         
         LoggingEvent[] events = MockLogAppender.getEvents();
@@ -287,6 +298,49 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("should only have received two logged events", 2, events.length);
         assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
         assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
+    }
+
+    
+    public void testAdhocPropertiesReload() throws IOException, InterruptedException {
+        /*
+         * We're not going to use the anticipator functionality, but it's
+         * handy for handling temporary directories.
+         */
+        FileAnticipator fa = new FileAnticipator();
+        
+        try {
+            File f = fa.tempFile("snmp-adhoc-graph.properties");
+            
+            FileWriter writer = new FileWriter(f);
+            // Set the image type to image/cheeesy
+            String cheesy = s_adhoc.replace("image/png", "image/cheesy");
+            writer.write(cheesy);
+            writer.close();
+            
+            PropertiesGraphDao dao = new PropertiesGraphDao("", "performance=" + f.getAbsolutePath());
+            AdhocGraphType type = dao.findAdhocByName("performance");
+            assertNotNull("could not get performance adhoc graph type", type);
+            assertEquals("image type isn't correct", "image/cheesy", type.getOutputMimeType());
+
+            /*
+             *  On UNIX, the resolution of the last modified time is 1 second,
+             *  so we need to wait at least that long before rewriting the
+             *  file to ensure that we have crossed over into the next second.
+             *  At least we're not crossing over with John Edward.
+             */
+            Thread.sleep(1100);
+
+            writer = new FileWriter(f);
+            writer.write(s_adhoc);
+            writer.close();
+            
+            type = dao.findAdhocByName("performance");
+            assertNotNull("could not get performance adhoc graph type", type);
+            assertEquals("image type isn't correct", "image/png", type.getOutputMimeType());
+        } finally {
+            fa.deleteExpected();
+            fa.tearDown();
+        }
     }
 
 }
