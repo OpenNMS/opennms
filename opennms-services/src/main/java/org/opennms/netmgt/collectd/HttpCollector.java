@@ -178,10 +178,12 @@ public class HttpCollector implements ServiceCollector {
         try {
             client = new HttpClient(buildParams(collectionSet));
             method = buildHttpMethod(collectionSet);
+            log().info("doCollection: collecting for client: "+client+" using method: "+method);
             client.executeMethod(method);
             List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet);
             
             if (butes.isEmpty()) {
+                log().warn("doCollection: no attributes defined for collection where found in response text.");
                 throw new HttpCollectorException("No attributes specified were found: ",client);
             }
             String collectionName = collectionSet.getParameters().get("http-collection");
@@ -197,6 +199,8 @@ public class HttpCollector implements ServiceCollector {
                 }
                 
             };
+            
+            log().info("doCollection: persisting "+butes.size()+" attributes");
             
             for (HttpCollectionAttribute attribute : butes) {
                 PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
@@ -301,7 +305,7 @@ public class HttpCollector implements ServiceCollector {
             buffer.append(super.toString());
             buffer.append(": client URL: ");
             final HostConfiguration hostConfiguration = m_client.getHostConfiguration();
-            buffer.append((hostConfiguration == null ? "null" : hostConfiguration.getHostURL()));
+            buffer.append((hostConfiguration == null ? "null" : hostConfiguration.toString()));
             return buffer.toString();
         }
     }
@@ -332,12 +336,12 @@ public class HttpCollector implements ServiceCollector {
         } else {
             method = new PostMethod();
         }
-        method.setURI(buildUri(collectionSet.getAgent().getInetAddress(), collectionSet.getUriDef(), collectionSet));
+        method.setURI(buildUri(collectionSet));
 
         return method;
     }
 
-    private URI buildUri(InetAddress xaddress, Uri xuri, HttpCollectionSet collectionSet) throws URIException {
+    private URI buildUri(HttpCollectionSet collectionSet) throws URIException {
         return new URI(collectionSet.getUriDef().getUrl().getScheme(),
                 collectionSet.getUriDef().getUrl().getUserInfo(),
                 determineHost(collectionSet.getAgent().getInetAddress(), collectionSet.getUriDef()),
@@ -349,12 +353,15 @@ public class HttpCollector implements ServiceCollector {
     
     //note: trouble deciding here on getHost() vs. getIpAddress() or 
     //getCanonicalHost() even.
-    private String determineHost(InetAddress address, Uri uri) {
-        if ("${ipaddr}".equals(uri.getUrl().getHost())) {
-            return address.getHostName();
+    private String determineHost(InetAddress address, Uri uriDef) {
+        String host;
+        if ("${ipaddr}".equals(uriDef.getUrl().getHost())) {
+            host = address.getHostName();
         } else {
-            return uri.getUrl().getHost();
+            host = uriDef.getUrl().getHost();
         }
+        log().debug("determineHost: host for URI is set to: "+host);
+        return host;
     }
 
     public void initialize(Map parameters) {
