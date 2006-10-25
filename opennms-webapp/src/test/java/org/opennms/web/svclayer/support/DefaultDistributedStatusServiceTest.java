@@ -56,7 +56,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private OnmsLocationMonitor m_locationMonitor1_1;
     private OnmsLocationMonitor m_locationMonitor2_1;
     private OnmsLocationMonitor m_locationMonitor2_2;
-    private OnmsLocationMonitor m_locationMonitor3_1;
     private OnmsApplication m_application1;
     private OnmsApplication m_application2;
     
@@ -84,18 +83,19 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_application2.setName("Application 2");
 
         m_locationMonitor1_1 = new OnmsLocationMonitor();
+        m_locationMonitor1_1.setId(1);
         m_locationMonitor1_1.setLastCheckInTime(new Date());
         m_locationMonitor1_1.setDefinitionName("Raleigh");
         
         m_locationMonitor2_1 = new OnmsLocationMonitor();
+        m_locationMonitor2_1.setId(2);
         m_locationMonitor2_1.setLastCheckInTime(new Date());
         m_locationMonitor2_1.setDefinitionName("Durham");
         
         m_locationMonitor2_2 = new OnmsLocationMonitor();
+        m_locationMonitor2_2.setId(3);
         m_locationMonitor2_2.setDefinitionName("Durham");
         
-        m_locationMonitor3_1 = null; // Test the case where there is no monitor for this location
-
         m_pkg = new Package();
 
         List<String> serviceNames = new ArrayList<String>();
@@ -215,14 +215,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=null");
-        expectedTable.addCell("Raleigh-null", "");
+        expectedTable.addCell("Raleigh-1", "");
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
         expectedTable.newRow();
         
         expectedTable.addCell("Node 1", "Critical", "element/node.jsp?node=null");
-        expectedTable.addCell("Raleigh-null", "");
+        expectedTable.addCell("Raleigh-1", "");
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("", "");
@@ -367,20 +367,20 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
         expectedTable.addCell("Raleigh", "simpleWebTableRowLabel");
-        expectedTable.addCell("75.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+1");
-        expectedTable.addCell("75.000%", "Normal", "distributedStatusDetails.htm?location=Raleigh&application=Application+2");
+        expectedTable.addCell("75.000%", "Normal", "distributedStatusHistory.htm?location=Raleigh&application=Application+1");
+        expectedTable.addCell("75.000%", "Normal", "distributedStatusHistory.htm?location=Raleigh&application=Application+2");
         
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
         expectedTable.addCell("Durham", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+1");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusDetails.htm?location=Durham&application=Application+2");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusHistory.htm?location=Durham&application=Application+1");
+        expectedTable.addCell("0.000%", "Normal", "distributedStatusHistory.htm?location=Durham&application=Application+2");
         
         expectedTable.newRow();
         expectedTable.addCell("OpenNMS OH", "simpleWebTableRowLabel");
         expectedTable.addCell("Columbus", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+1");
-        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusDetails.htm?location=Columbus&application=Application+2");
+        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusHistory.htm?location=Columbus&application=Application+1");
+        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusHistory.htm?location=Columbus&application=Application+2");
 
         assertTableEquals(expectedTable, table);
     }
@@ -410,6 +410,186 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         verifyEverything();
         
         assertEquals("percentage", "75.000%", percentage);
+    }
+    
+    public void testDetails() {
+        List<OnmsMonitoringLocationDefinition> locationDefinitions =
+            new LinkedList<OnmsMonitoringLocationDefinition>();
+        locationDefinitions.add(m_locationDefinition1);
+        locationDefinitions.add(m_locationDefinition2);
+        locationDefinitions.add(m_locationDefinition3);
+        expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
+        
+        Set<OnmsApplication> applications = new HashSet<OnmsApplication>();
+        applications.add(m_application1);
+        applications.add(m_application2);
+        expect(m_applicationDao.findAll()).andReturn(applications);
+        
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition("Durham")).andReturn(m_locationDefinition2);
+        expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
+        
+        Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        monitors.add(m_locationMonitor2_1);
+        monitors.add(m_locationMonitor2_2);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
+        
+        String locationName = m_locationDefinition2.getName();
+        String applicationName = m_application2.getName();
+        String monitorId = "";
+        String timeSpan = "Last Day";
+        String previousLocation = "";
+        
+        replayEverything();
+        
+        DistributedStatusHistoryModel summary =
+            m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
+        
+        verifyEverything();
+        
+        assertNotNull("summary should not be null", summary);
+        assertNotNull("summary locations list should not be null", summary.getLocations());
+        assertNotNull("summary applications list should not be null", summary.getApplications());
+        assertNotNull("summary chosen location should not be null", summary.getChosenLocation());
+        assertNotNull("summary chosen application should not be null", summary.getChosenApplication());
+        assertNotNull("summary error list should not be null", summary.getErrors());
+        
+        assertEquals("summary locations list size", locationDefinitions.size(), summary.getLocations().size());
+        assertEquals("summary applications list size", applications.size(), summary.getApplications().size());
+        assertEquals("summary error list size: " + summary.getErrors(), 0, summary.getErrors().size());
+        
+        // Verify sorting of applications
+        assertEquals("summary applications 1", m_application1, summary.getApplications().get(0));
+        assertEquals("summary applications 2", m_application2, summary.getApplications().get(1));
+        
+        // Verify chosen ones
+        assertEquals("summary chosen location", m_locationDefinition2, summary.getChosenLocation());
+        assertEquals("summary chosen application", m_application2, summary.getChosenApplication());
+        
+        // And verify that they are in the lists in the right place
+        assertEquals("summary chosen location matches list", summary.getLocations().get(1), summary.getChosenLocation());
+        assertEquals("summary chosen application matches list", summary.getApplications().get(1), summary.getChosenApplication());
+    }
+    
+    public void testWrongLocationDetails() {
+        List<OnmsMonitoringLocationDefinition> locationDefinitions =
+            new LinkedList<OnmsMonitoringLocationDefinition>();
+        locationDefinitions.add(m_locationDefinition1);
+        locationDefinitions.add(m_locationDefinition2);
+        locationDefinitions.add(m_locationDefinition3);
+        expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
+        
+        Set<OnmsApplication> applications = new HashSet<OnmsApplication>();
+        applications.add(m_application1);
+        applications.add(m_application2);
+        expect(m_applicationDao.findAll()).andReturn(applications);
+        
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition("Raleigh-bad")).andReturn(null);
+        expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
+        
+        Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        monitors.add(m_locationMonitor1_1);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(monitors);
+
+        String locationName = "Raleigh-bad";
+        String applicationName = m_application2.getName();
+        String monitorId = "";
+        String previousLocation = "";
+        String timeSpan = "";
+        
+        replayEverything();
+        
+        DistributedStatusHistoryModel summary =
+            m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
+        
+        verifyEverything();
+        
+        assertNotNull("summary should not be null", summary);
+        assertNotNull("summary locations list should not be null", summary.getLocations());
+        assertNotNull("summary applications list should not be null", summary.getApplications());
+        assertNotNull("summary chosen location should not be null", summary.getChosenLocation());
+        assertNotNull("summary chosen application should not be null", summary.getChosenApplication());
+        assertNotNull("summary error list should not be null", summary.getErrors());
+        
+        assertEquals("summary locations list size", locationDefinitions.size(), summary.getLocations().size());
+        assertEquals("summary applications list size", applications.size(), summary.getApplications().size());
+        assertEquals("summary error list size", 1, summary.getErrors().size());
+        
+        // Verify sorting of applications
+        assertEquals("summary applications 1", m_application1, summary.getApplications().get(0));
+        assertEquals("summary applications 2", m_application2, summary.getApplications().get(1));
+        
+        // Verify errors
+        assertEquals("summary error 1", "Could not find location definition 'Raleigh-bad'", summary.getErrors().get(0));
+        
+        // Verify chosen ones
+        assertEquals("summary chosen location", m_locationDefinition1, summary.getChosenLocation());
+        assertEquals("summary chosen application", m_application2, summary.getChosenApplication());
+        
+        // And verify that they are in the lists in the right place
+        assertEquals("summary chosen location matches list", summary.getLocations().get(0), summary.getChosenLocation());
+        assertEquals("summary chosen application matches list", summary.getApplications().get(1), summary.getChosenApplication());
+
+    }
+    
+    public void testWrongApplicationDetails() {
+        List<OnmsMonitoringLocationDefinition> locationDefinitions =
+            new LinkedList<OnmsMonitoringLocationDefinition>();
+        locationDefinitions.add(m_locationDefinition1);
+        locationDefinitions.add(m_locationDefinition2);
+        locationDefinitions.add(m_locationDefinition3);
+        expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
+        
+        Set<OnmsApplication> applications = new HashSet<OnmsApplication>();
+        applications.add(m_application1);
+        applications.add(m_application2);
+        expect(m_applicationDao.findAll()).andReturn(applications);
+        
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition2.getName())).andReturn(m_locationDefinition2);
+        expect(m_applicationDao.findByName("Big Bad Voodoo Daddy Application")).andReturn(null);
+        
+        Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        monitors.add(m_locationMonitor2_1);
+        monitors.add(m_locationMonitor2_2);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
+        
+        String locationName = m_locationDefinition2.getName();
+        String applicationName = "Big Bad Voodoo Daddy Application";
+        String monitorId = "";
+        String previousLocation = "";
+        String timeSpan = "";
+        
+        replayEverything();
+        
+        DistributedStatusHistoryModel summary =
+            m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
+        
+        verifyEverything();
+        
+        assertNotNull("summary should not be null", summary);
+        assertNotNull("summary locations list should not be null", summary.getLocations());
+        assertNotNull("summary applications list should not be null", summary.getApplications());
+        assertNotNull("summary chosen location should not be null", summary.getChosenLocation());
+        assertNotNull("summary chosen application should not be null", summary.getChosenApplication());
+        assertNotNull("summary error list should not be null", summary.getErrors());
+        
+        assertEquals("summary locations list size", locationDefinitions.size(), summary.getLocations().size());
+        assertEquals("summary applications list size", applications.size(), summary.getApplications().size());
+        assertEquals("summary error list size", 1, summary.getErrors().size());
+        
+        // Verify sorting of applications
+        assertEquals("summary applications 1", m_application1, summary.getApplications().get(0));
+        assertEquals("summary applications 2", m_application2, summary.getApplications().get(1));
+        
+        // Verify errors
+        assertEquals("summary error 1", "Could not find application 'Big Bad Voodoo Daddy Application'", summary.getErrors().get(0));
+        
+        // Verify chosen ones
+        assertEquals("summary chosen location", m_locationDefinition2, summary.getChosenLocation());
+        assertEquals("summary chosen application", m_application1, summary.getChosenApplication());
+        
+        // And verify that they are in the lists in the right place
+        assertEquals("summary chosen location matches list", summary.getLocations().get(1), summary.getChosenLocation());
+        assertEquals("summary chosen application matches list", summary.getApplications().get(0), summary.getChosenApplication());
     }
     
     private OnmsLocationSpecificStatus createStatus(OnmsLocationMonitor locationMonitor,

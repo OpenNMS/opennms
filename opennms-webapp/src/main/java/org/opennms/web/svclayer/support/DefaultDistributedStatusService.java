@@ -2,6 +2,7 @@ package org.opennms.web.svclayer.support;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +27,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.web.Util;
+import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.springframework.util.StringUtils;
@@ -126,6 +128,19 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                                                + "registered for location \""
                                                + location.getName() + "\"");
         }
+        
+        List<OnmsLocationMonitor> sortedLocationMonitors =
+            new ArrayList<OnmsLocationMonitor>(locationMonitors);
+        Collections.sort(sortedLocationMonitors, new Comparator<OnmsLocationMonitor>(){
+            public int compare(OnmsLocationMonitor o1, OnmsLocationMonitor o2) {
+                int diff = o1.getDefinitionName().compareTo(o2.getDefinitionName());
+                if (diff != 0) {
+                    return diff;
+                }
+                return o1.getId().compareTo(o2.getId());
+            }
+            
+        });
 
         Package pkg = m_pollerConfig.getPackage(location.getPollingPackageName());
 
@@ -143,12 +158,21 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         List<OnmsMonitoredService> sortedServices = new ArrayList<OnmsMonitoredService>(services);
         Collections.sort(sortedServices, new Comparator<OnmsMonitoredService>() {
             public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
+                int diff;
+                diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
+                if (diff != 0) {
+                    return diff;
+                }
+                diff = o1.getIpAddress().compareTo(o2.getIpAddress());
+                if (diff != 0) {
+                    return diff;
+                }
                 return o1.getServiceName().compareTo(o2.getServiceName());
             }
         });
                                                                      
         for (OnmsMonitoredService service : sortedServices) {
-            for (OnmsLocationMonitor locationMonitor : locationMonitors) {
+            for (OnmsLocationMonitor locationMonitor : sortedLocationMonitors) {
                 if (locationMonitor == null) {
                     status.add(new OnmsLocationSpecificStatus(locationMonitor, service, PollStatus.unknown("Distributed poller has never reported for this location")));
                 } else {
@@ -259,7 +283,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                                               startDate, endDate);
                 
                 table.addCell(percentage, status,
-                              createDetailsPageUrl(locationDefinition, application));
+                              createHistoryPageUrl(locationDefinition, application));
             }
         }
         
@@ -464,7 +488,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return new DecimalFormat("0.000").format((double) percentage) + "%";
     }
 
-    private String createDetailsPageUrl(
+    private String createHistoryPageUrl(
             OnmsMonitoringLocationDefinition locationDefinition,
             OnmsApplication application) {
 
@@ -472,9 +496,104 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         params.add("location=" + Util.encode(locationDefinition.getName()));
         params.add("application=" + Util.encode(application.getName()));
         
-        return "distributedStatusDetails.htm"
+        return "distributedStatusHistory.htm"
             + "?"
             + StringUtils.collectionToDelimitedString(params, "&");
     }
 
+    public DistributedStatusHistoryModel createHistoryModel(
+            String locationName, String monitorId, String applicationName,
+            String timeSpan, String previousLocationName) {
+        List<String> errors = new LinkedList<String>();
+        
+        List<OnmsMonitoringLocationDefinition> locationDefinitions =
+            m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+
+        List<RelativeTimePeriod> periods =
+            Arrays.asList(RelativeTimePeriod.getDefaultPeriods());
+
+        Collection<OnmsApplication> applications = m_applicationDao.findAll();
+        List<OnmsApplication> sortedApplications =
+            new ArrayList<OnmsApplication>(applications);
+        Collections.sort(sortedApplications,
+                         new Comparator<OnmsApplication>(){
+            public int compare(OnmsApplication o1, OnmsApplication o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        OnmsMonitoringLocationDefinition location;
+        if (locationName == null) {
+            location = locationDefinitions.get(0);
+        } else {
+            location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
+            if (location == null) {
+                errors.add("Could not find location definition '" + locationName + "'");
+                location = locationDefinitions.get(0);
+            }
+        }
+        
+        int monitorIdInt = -1;
+        
+        if (monitorId != null && monitorId.length() > 0) {
+            try {
+                monitorIdInt = Integer.parseInt(monitorId);
+            } catch (NumberFormatException e) {
+                errors.add("Monitor ID '" + monitorId + "' is not an integer");
+            }
+        }
+
+        OnmsApplication application;
+        if (applicationName == null) {
+            application = sortedApplications.get(0);
+        } else {
+            application = m_applicationDao.findByName(applicationName);
+            if (application == null) {
+                errors.add("Could not find application '" + applicationName + "'");
+                application = sortedApplications.get(0);
+            }
+        }
+        
+        Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(location);
+        List<OnmsLocationMonitor> sortedMonitors = new LinkedList<OnmsLocationMonitor>(monitors);
+        Collections.sort(sortedMonitors, new Comparator<OnmsLocationMonitor>() {
+            public int compare(OnmsLocationMonitor o1, OnmsLocationMonitor o2) {
+                int diff = o1.getDefinitionName().compareTo(o2.getDefinitionName());
+                if (diff != 0) {
+                    return diff;
+                }
+
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
+        
+        OnmsLocationMonitor monitor = null;
+        if (monitorIdInt != -1
+                && location.getName().equals(previousLocationName)) {
+            for (OnmsLocationMonitor m : sortedMonitors) {
+                if (m.getId().equals(monitorIdInt)) {
+                    monitor = m;
+                    break;
+                }
+            }
+            
+            if (monitor == null) {
+                // XXX should I do anything?
+            }
+        }
+        
+        if (monitor == null) {
+            monitor = sortedMonitors.get(0);
+        }
+        
+        RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(timeSpan);
+
+        return new DistributedStatusHistoryModel(locationDefinitions,
+                                                 sortedApplications,
+                                                 sortedMonitors,
+                                                 periods,
+                                                 location, application,
+                                                 monitor, period,
+                                                 errors);
+    }
 }
