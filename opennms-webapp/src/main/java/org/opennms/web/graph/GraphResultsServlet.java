@@ -213,18 +213,14 @@ public class GraphResultsServlet extends HttpServlet {
 	String relativeTime = request.getParameter("relativetime");
         
 	if ((start == null || end == null) && relativeTime != null) {
-	    // default to the first time period
-	    RelativeTimePeriod period = m_periods[0];
-	    for (int i = 0; i < m_periods.length; i++) {
-		if (relativeTime.equals(m_periods[i].getId())) {
-		    period = m_periods[i];
-		    break;
-		}
-	    }
-	    Calendar cal = new GregorianCalendar();
-	    end = Long.toString(cal.getTime().getTime());
-	    cal.add(period.getOffsetField(), period.getOffsetAmount());
-	    start = Long.toString(cal.getTime().getTime());        
+	    RelativeTimePeriod period =
+                RelativeTimePeriod.getPeriodByIdOrDefault(m_periods,
+                                                          relativeTime,
+                                                          m_periods[0]);
+            
+            long[] times = period.getStartAndEndTimes();
+            start = Long.toString(times[0]);
+            end = Long.toString(times[1]);
 	}
 
 	if (start == null || end == null) {
