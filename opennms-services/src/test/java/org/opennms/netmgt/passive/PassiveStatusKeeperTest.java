@@ -35,6 +35,7 @@ import java.io.StringReader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -258,9 +259,9 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         MockMonitoredService svc = new MockMonitoredService(1, "Router", "192.168.1.1", "ICMP" );
         
         ServiceMonitor m = new PassiveServiceMonitor();
-        m.initialize(null, null);
+        m.initialize((Map)null);
         m.initialize(svc);
-        PollStatus ps2 = m.poll(svc, null, null);
+        PollStatus ps2 = m.poll(svc, null);
         m.release(svc);
         m.release();
         

@@ -115,14 +115,13 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
      *            for this poll.
      * @param iface
      *            The network interface to test the service on.
-     * 
      * @return The availibility of the interface and if a transition event
      *         should be supressed.
      * 
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package unused) {
+    public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         //

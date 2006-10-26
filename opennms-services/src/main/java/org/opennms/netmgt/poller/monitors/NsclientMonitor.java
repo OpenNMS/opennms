@@ -47,19 +47,18 @@ public class NsclientMonitor extends IPv4Monitor {
      * <code>NsclientPacket.RES_STATE_OK</code> then we have determined that
      * we are talking to a valid service and we set the service status to
      * SERVICE_AVAILABLE and return.
-     * 
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used
      *            for this poll.
      * @param iface
      *            The network interface to test the service on.
+     * 
      * @return The availibility of the interface and if a transition event
      *         should be supressed.
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters,
-            org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters) {
         // Holds the response reason.
         String reason = null;
         // Used to exit the retry loop early, if possible.

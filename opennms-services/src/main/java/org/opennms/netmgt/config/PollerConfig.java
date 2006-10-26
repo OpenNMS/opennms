@@ -37,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,9 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -287,5 +290,7 @@ public interface PollerConfig {
     public abstract PollerConfiguration getConfiguration();
 
     public abstract void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, long responseTime, Package pkg);
+
+    public abstract Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
 
 }

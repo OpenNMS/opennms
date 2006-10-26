@@ -59,11 +59,11 @@ public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
         ServiceMonitor sm = new PassiveServiceMonitor();
         
         MonitoredService ms = createMonitoredService(1, "localhost", "127.0.0.1", "my-passive-service");
-        PollStatus ps = sm.poll(ms, new HashMap(), new org.opennms.netmgt.config.poller.Package());
+        PollStatus ps = sm.poll(ms, new HashMap());
         assertEquals(PollStatus.down(), ps);
 
         psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.get(PollStatus.SERVICE_AVAILABLE, "testing failure"));
-        ps = sm.poll(ms, new HashMap(), new org.opennms.netmgt.config.poller.Package());
+        ps = sm.poll(ms, new HashMap());
         assertEquals(PollStatus.up(), ps);
     }
 

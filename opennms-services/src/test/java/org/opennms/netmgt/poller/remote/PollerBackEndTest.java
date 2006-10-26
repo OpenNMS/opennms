@@ -9,6 +9,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +44,8 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -381,6 +384,23 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.reportResult(1, 1, newStatus);
         
         verifyMocks();
+    }
+    
+    public void testGetServiceMonitorLocators() {
+        
+        Collection<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+        
+        expect(m_pollerConfig.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR)).andReturn(locators);
+        
+        replayMocks();
+        
+        Collection<ServiceMonitorLocator> results = m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR);
+        
+        verifyMocks();
+        
+        assertSame(locators, results);
+        
+        
     }
 
     public void testGetPollerConfiguration() {

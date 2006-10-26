@@ -38,7 +38,6 @@ package org.opennms.netmgt.poller;
 
 import java.util.Map;
 
-import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.model.PollStatus;
 
 /**
@@ -86,8 +85,7 @@ public interface ServiceMonitor {
      * montior may throw a ServiceMonitorException. If the plug-in throws an
      * exception then the plug-in will be disabled in the framework.
      * </P>
-     * 
-     * @param parameters
+	 * @param parameters
      *            Not currently used
      * 
      * @exception java.lang.RuntimeException
@@ -95,7 +93,7 @@ public interface ServiceMonitor {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(PollerConfig config, Map parameters);
+    public void initialize(Map parameters);
 
     /**
      * <P>
@@ -183,7 +181,6 @@ public interface ServiceMonitor {
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
-     * 
      * @return The availibility of the interface and if a transition event
      *         should be surpressed.
      * 
@@ -194,5 +191,5 @@ public interface ServiceMonitor {
      * @see PollStatus#SERVICE_AVAILABLE
      * @see PollStatus#SERVICE_UNAVAILABLE
      */
-    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
+    public PollStatus poll(MonitoredService svc, Map parameters);
 }

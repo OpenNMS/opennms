@@ -48,7 +48,6 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -111,7 +110,6 @@ final public class PercMonitor extends SnmpMonitorStrategy {
      * <P>
      * Initialize the service monitor.
      * </P>
-     * 
      * @param parameters
      *            Not currently used.
      * 
@@ -120,7 +118,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(PollerConfig pollerConfig, Map parameters) {
+    public void initialize(Map parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
@@ -187,14 +185,13 @@ final public class PercMonitor extends SnmpMonitorStrategy {
      *            this poll.
      * @param iface
      *            The network interface to test the service on.
-     * 
      * @return The availability of the interface and if a transition event
      *         should be supressed.
      * 
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         PollStatus status = PollStatus.unavailable();

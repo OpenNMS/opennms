@@ -18,7 +18,7 @@ public class DefaultPollService implements PollService {
         ServiceMonitor monitor = (ServiceMonitor)m_monitors.get(polledService.getSvcName());
         Assert.notNull(monitor, "Unable to find monitor for service "+polledService.getSvcName());
         
-        return monitor.poll(polledService, polledService.getMonitorConfiguration(), null);
+        return monitor.poll(polledService, polledService.getMonitorConfiguration());
     }
 
 }

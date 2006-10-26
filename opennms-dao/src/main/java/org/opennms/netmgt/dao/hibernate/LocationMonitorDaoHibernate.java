@@ -52,6 +52,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
+import org.opennms.netmgt.dao.CastorDataAccessFailureException;
+import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -228,24 +230,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         }
     }
     
-    protected class CastorObjectRetrievalFailureException 
-    extends org.springframework.orm.ObjectRetrievalFailureException {
-        private static final long serialVersionUID = -5906087948002738350L;
-
-        public CastorObjectRetrievalFailureException(String message, Throwable throwable) {
-            super(message, throwable);
-        }
-    }
-    
-    protected class CastorDataAccessFailureException 
-    extends org.springframework.dao.DataAccessResourceFailureException {
-        private static final long serialVersionUID = -5546624359373413751L;
-        
-        public CastorDataAccessFailureException(String message, Throwable throwable) {
-            super(message, throwable);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public Collection<OnmsMonitoringLocationDefinition> findAllLocationDefinitions() {
         List<OnmsMonitoringLocationDefinition> eDefs = new LinkedList<OnmsMonitoringLocationDefinition>();

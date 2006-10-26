@@ -51,7 +51,6 @@ import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.opennms.netmgt.DBTools;
-import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -94,14 +93,14 @@ public class JDBCMonitor extends IPv4Monitor {
 
 	/**
 	 * This method is called after the framework loads the plugin.
-	 * 
 	 * @param parameters
 	 *            Configuration parameters passed to the plugin
+	 * 
 	 * @throws RuntimeException
 	 *             If there is any error that prevents the plugin from running
 	 */
-	public void initialize(PollerConfig pollerConfig, Map parameters) {
-		super.initialize(pollerConfig, parameters);
+	public void initialize(Map parameters) {
+		super.initialize(parameters);
 		log().debug("Calling init");
 	}
 
@@ -164,7 +163,6 @@ public class JDBCMonitor extends IPv4Monitor {
 	 *            </ul>
 	 * @param iface
 	 *            The interface to poll
-	 * 
 	 * @return int An status code that shows the status of the service
 	 * @throws java.lang.RuntimeException
 	 *             Thrown if an unrecoverable error occurs that prevents the
@@ -176,7 +174,7 @@ public class JDBCMonitor extends IPv4Monitor {
 	 *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
 	 *      codes for JConnect </a>
 	 */
-	public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+	public PollStatus poll(MonitoredService svc, Map parameters) {
 		NetworkInterface iface = svc.getNetInterface();
 
 		// Assume that the service is down

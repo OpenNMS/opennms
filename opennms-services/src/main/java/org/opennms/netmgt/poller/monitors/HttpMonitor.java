@@ -64,6 +64,7 @@ import java.util.TreeMap;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -79,6 +80,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  *  
  */
+@Distributable
 public class HttpMonitor extends IPv4Monitor {
 
     /**
@@ -112,11 +114,10 @@ public class HttpMonitor extends IPv4Monitor {
      * SERVICE_AVAILABLE and return.
      * @param parameters
      *            The package parameters (timeout, retry, and others) to be used for this poll.
-     * 
      * @return The availibility of the interface and if a transition event should be supressed.
      *  
      */
-    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         //

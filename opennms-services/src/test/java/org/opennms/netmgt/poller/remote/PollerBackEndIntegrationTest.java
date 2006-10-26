@@ -4,11 +4,12 @@ import java.io.File;
 import java.util.Collection;
 
 import org.hibernate.SessionFactory;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class PollerBackEndIntegrationTest extends
@@ -104,6 +105,15 @@ public class PollerBackEndIntegrationTest extends
         
         assertEquals("UNRESPONSIVE", queryForString("select status from location_monitors where id = ?", locationMonitorId));
         
+    }
+    
+    public void testGetServiceMonitorLocators() {
+        
+        Collection<ServiceMonitorLocator> results = m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR);
+        
+        assertNotNull(results);
+        
+        assertTrue(results.size() > 0);
     }
 
     

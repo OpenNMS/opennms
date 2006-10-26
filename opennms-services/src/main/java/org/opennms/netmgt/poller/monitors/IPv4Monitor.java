@@ -44,8 +44,6 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -81,7 +79,6 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * montior may throw a ServiceMonitorException. If the plug-in throws an
      * exception then the plug-in will be disabled in the framework.
      * </P>
-     * 
      * @param parameters
      *            Not currently used
      * 
@@ -90,7 +87,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(PollerConfig pollerConfig, Map parameters) {
+    public void initialize(Map parameters) {
     }
 
     /**
@@ -167,7 +164,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     public void release(MonitoredService svc) {
     }
     
-    abstract public PollStatus poll(MonitoredService svc, Map parameters, Package pkg);
+    abstract public PollStatus poll(MonitoredService svc, Map parameters);
 
 	protected Category log() {
 		return ThreadCategory.getInstance(getClass());

@@ -34,6 +34,7 @@ package org.opennms.netmgt.mock;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -59,7 +60,9 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
 
@@ -447,8 +450,12 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, long responseTime, Package pkg) {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("not yet implelmented");
         
+    }
+
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
+        throw new UnsupportedOperationException("not yet implelmented");
     }
 
 

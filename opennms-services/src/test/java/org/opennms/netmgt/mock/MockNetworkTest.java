@@ -157,7 +157,7 @@ public class MockNetworkTest extends TestCase {
         public void visitService(MockService service) {
             m_serviceCount++;
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
-            PollStatus pollResult = monitor.poll(service, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+            PollStatus pollResult = monitor.poll(service, new HashMap());
             assertEquals(m_expectedStatus, pollResult);
         }
     }
@@ -375,7 +375,7 @@ public class MockNetworkTest extends TestCase {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(99, "InvalidNode", "1.1.1.1", "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
-        monitor.poll(svc, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+        monitor.poll(svc, new HashMap());
         assertEquals(1, m_network.getInvalidPollCount());
 
     }

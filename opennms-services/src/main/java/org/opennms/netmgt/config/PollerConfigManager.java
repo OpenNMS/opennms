@@ -39,7 +39,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -48,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.zip.DataFormatException;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
@@ -56,6 +60,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.hibernate.cfg.ExtendsQueueEntry;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
@@ -64,14 +69,20 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.CastorDataAccessFailureException;
+import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 
 /**
@@ -768,29 +779,20 @@ abstract public class PollerConfigManager implements PollerConfig {
         // new incomming events to create pollable service objects.
         //
         log.debug("start: Loading monitors");
-    
-        Enumeration eiter = enumerateMonitor();
-        while (eiter.hasMoreElements()) {
-            Monitor monitor = (Monitor) eiter.nextElement();
+
+        
+        Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators(DistributionContext.DAEMON);
+        
+        for (ServiceMonitorLocator locator : locators) {
             try {
-                if (log.isDebugEnabled()) {
-                    log.debug("start: Loading monitor " + monitor.getService() + ", classname " + monitor.getClassName());
-                }
-                Class mc = Class.forName(monitor.getClassName());
-                ServiceMonitor sm = (ServiceMonitor) mc.newInstance();
-    
-                // Attempt to initialize the service monitor
-                //
-                Map properties = null; // properties not currently used
-                sm.initialize(this, properties);
-    
-                m_svcMonitors.put(monitor.getService(), sm);
+                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
             } catch (Throwable t) {
                 if (log.isEnabledFor(Level.WARN)) {
-                    log.warn("start: Failed to load monitor " + monitor.getClassName() + " for service " + monitor.getService(), t);
+                    log.warn("start: Failed to create monitor " + locator.getServiceLocatorKey() + " for service " + locator.getServiceName(), t);
                 }
             }
         }
+    
     }
 
     public synchronized Map getServiceMonitors() {
@@ -800,6 +802,91 @@ abstract public class PollerConfigManager implements PollerConfig {
     public synchronized ServiceMonitor getServiceMonitor(String svcName) {
         return (ServiceMonitor) getServiceMonitors().get(svcName);
     }
+    
+    private static class DefaultServiceMonitorLocator implements ServiceMonitorLocator {
+        
+        String m_serviceName;
+        Class<? extends ServiceMonitor> m_serviceClass;
+        
+        public DefaultServiceMonitorLocator(String serviceName, Class<? extends ServiceMonitor> serviceClass) {
+            m_serviceName = serviceName;
+            m_serviceClass = serviceClass;
+        }
+
+        public ServiceMonitor getServiceMonitor() {
+            try {
+                ServiceMonitor mon = m_serviceClass.newInstance();
+                mon.initialize((Map)null);
+                return mon;
+            } catch (InstantiationException e) {
+                throw new CastorObjectRetrievalFailureException("Unable to instantiate monitor for service "
+                        +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
+            } catch (IllegalAccessException e) {
+                throw new CastorObjectRetrievalFailureException("Illegal access trying to instantiate monitor for service "
+                        +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
+            }
+        }
+
+        public String getServiceName() {
+            return m_serviceName;
+        }
+
+        public String getServiceLocatorKey() {
+            return m_serviceClass.getName();
+        }
+        
+    }
+    
+    public synchronized Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
+        List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+        Enumeration monitors = enumerateMonitor();
+        while (monitors.hasMoreElements()) {
+            Monitor monitor = (Monitor) monitors.nextElement();
+            try {
+                Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
+                if (isDistributableToContext(mc, context)) {
+                    ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
+                    locators.add(locator);
+                }
+            } catch (ClassNotFoundException e) {
+                log().warn("Unable to location monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName(), e);
+            } catch (CastorObjectRetrievalFailureException e) {
+                log().warn(e.getMessage(), e.getRootCause());
+            }
+            
+        }
+        
+        return locators;
+        
+    }
+
+    private boolean isDistributableToContext(Class<? extends ServiceMonitor> mc, DistributionContext context) {
+        List<DistributionContext> supportedContexts = getSupportedDistributionContexts(mc);
+        if (supportedContexts.contains(context) || supportedContexts.contains(DistributionContext.ALL)) {
+            return true;
+        }
+        return false;
+    }
+
+    private List<DistributionContext> getSupportedDistributionContexts(Class<? extends ServiceMonitor> mc) {
+        Distributable distributable = mc.getAnnotation(Distributable.class);
+        List<DistributionContext> declaredContexts = 
+            distributable == null 
+                ? Collections.singletonList(DistributionContext.DAEMON) 
+                : Arrays.asList(distributable.value());
+       return declaredContexts;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends ServiceMonitor> findServiceMonitorClass(Monitor monitor) throws ClassNotFoundException {
+        Class mc = Class.forName(monitor.getClassName());
+        if (!ServiceMonitor.class.isAssignableFrom(mc)) {
+            throw new CastorDataAccessFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
+        }
+        return mc;
+    }
+
+
 
     public String getNextOutageIdSql() {
         return m_config.getNextOutageId();
@@ -841,9 +928,6 @@ abstract public class PollerConfigManager implements PollerConfig {
         } catch (RrdException e) {
             throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
         }
-        
-        
-        
         
     }
     

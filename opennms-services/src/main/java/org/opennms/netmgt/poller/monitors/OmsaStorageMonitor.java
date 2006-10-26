@@ -16,7 +16,6 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -44,7 +43,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return m_serviceName;
     }
 
-    public void initialize(PollerConfig pollerConfig, Map parameters) {
+    public void initialize(Map parameters) {
         try {
             SnmpPeerFactory.init();
         } catch (MarshalException ex) {
@@ -84,7 +83,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return;
     }
 
-    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
         
         PollStatus status = PollStatus.available();
