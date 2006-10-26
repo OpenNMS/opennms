@@ -60,6 +60,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -81,6 +82,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @version CVS 1.1.1.1
  * 
  */
+@Distributable
 final public class ImapMonitor extends IPv4Monitor {
 
     /**

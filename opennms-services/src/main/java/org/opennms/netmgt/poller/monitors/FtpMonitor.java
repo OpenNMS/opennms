@@ -63,6 +63,7 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -79,6 +80,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * 
  * 
  */
+@Distributable
 final public class FtpMonitor extends IPv4Monitor {
 
     /**

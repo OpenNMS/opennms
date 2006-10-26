@@ -51,6 +51,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -68,6 +69,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *
  */
 
+@Distributable
 final public class RadiusAuthMonitor extends IPv4Monitor {
     /**
      * Number of miliseconds to wait before timing out a radius AUTH request

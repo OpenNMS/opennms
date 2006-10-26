@@ -37,12 +37,17 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
+
+// this retrieves data from the deamon so it is not Distribuable
+@Distributable(DistributionContext.DAEMON)
 public class PassiveServiceMonitor implements ServiceMonitor {
 
     /* (non-Javadoc)

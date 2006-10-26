@@ -47,6 +47,8 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -67,6 +69,9 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
  * 
  */
+
+// this is marked not distributable because it relieds on the dhcpd deamon of opennms
+@Distributable(DistributionContext.DAEMON)
 final public class GpMonitor extends IPv4Monitor {
     /**
      * Default retries.

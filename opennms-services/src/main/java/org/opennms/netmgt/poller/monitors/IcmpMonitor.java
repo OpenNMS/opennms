@@ -57,6 +57,8 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -75,6 +77,9 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
+
+// this is marked not distributable because it relies on a shared library
+@Distributable(DistributionContext.DAEMON)
 final public class IcmpMonitor extends IPv4Monitor {
     /**
      * Default retries.

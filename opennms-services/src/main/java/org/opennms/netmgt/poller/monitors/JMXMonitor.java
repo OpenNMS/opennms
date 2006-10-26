@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -48,6 +49,8 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+
+@Distributable
 public abstract class JMXMonitor extends IPv4Monitor {
 
     public abstract ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address);

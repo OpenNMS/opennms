@@ -52,6 +52,8 @@ import java.util.Properties;
 import org.apache.log4j.Level;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -71,6 +73,9 @@ import org.opennms.netmgt.utils.ParameterMap;
  *         Added retry logic, input validations to poller.
  * @since 0.1
  */
+
+// NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
+@Distributable
 public class JDBCMonitor extends IPv4Monitor {
 	/**
 	 * Number of miliseconds to wait before timing out a database login using

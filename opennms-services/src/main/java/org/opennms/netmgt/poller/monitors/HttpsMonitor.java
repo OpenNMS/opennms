@@ -56,6 +56,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
@@ -71,6 +72,7 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * 
  */
+@Distributable
 final public class HttpsMonitor extends HttpMonitor {
 
     /**
