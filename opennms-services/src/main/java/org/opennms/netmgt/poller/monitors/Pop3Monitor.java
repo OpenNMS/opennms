@@ -61,6 +61,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -79,6 +80,8 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
+
+@Distributable
 final public class Pop3Monitor extends IPv4Monitor {
 
     /**

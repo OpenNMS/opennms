@@ -51,6 +51,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -72,6 +74,9 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
+
+//this does snmp and there relies on the snmp configuration so it is not distributable
+@Distributable(DistributionContext.DAEMON)
 final public class SnmpMonitor extends SnmpMonitorStrategy {
     /**
      * Name of monitored service.

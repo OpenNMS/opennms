@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.capsd.plugins.LoopPlugin;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -44,6 +45,8 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author david
  *
  */
+
+@Distributable
 public class LoopMonitor implements ServiceMonitor {
 
     /* (non-Javadoc)

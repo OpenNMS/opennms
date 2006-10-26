@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -25,6 +26,8 @@ import org.opennms.netmgt.poller.nsclient.NsclientManager;
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+
+@Distributable
 public class NsclientMonitor extends IPv4Monitor {
     /**
      * Default retries.
