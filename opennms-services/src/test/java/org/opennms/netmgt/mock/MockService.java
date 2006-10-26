@@ -34,13 +34,9 @@ package org.opennms.netmgt.mock;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -55,8 +51,6 @@ public class MockService extends MockElement implements MonitoredService {
 
     private int m_pollCount;
     
-    private Set m_pollingPkgNames = new HashSet();
-
     private PollStatus m_pollStatus;
 
     private int m_serviceId;
@@ -131,19 +125,14 @@ public class MockService extends MockElement implements MonitoredService {
         return m_pollCount;
     }
     
-    public Set getPollingPackages() {
-        return Collections.unmodifiableSet(m_pollingPkgNames);
-    }
-
     // test
     public PollStatus getPollStatus() {
         return m_pollStatus;
     }
 
     // test
-    public PollStatus poll(Package pkg) {
+    public PollStatus poll() {
         m_pollCount++;
-        m_pollingPkgNames.add(pkg.getName());
         
         Iterator it = m_triggers.iterator();
         while (it.hasNext()) {

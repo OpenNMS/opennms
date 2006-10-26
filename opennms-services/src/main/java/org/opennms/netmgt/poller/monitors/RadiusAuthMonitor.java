@@ -143,7 +143,6 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
      *            </ul>
      * @param iface
      *            The interface to poll
-     *
      * @return int An status code that shows the status of the service
      *
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
@@ -151,7 +150,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      *
      */
-    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         Category log = ThreadCategory.getInstance(getClass());

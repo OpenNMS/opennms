@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -17,7 +19,7 @@ public interface PollerBackEnd {
      */
     @Transactional(readOnly=true)
     public abstract Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
-
+    
     /**
      * Register a new location monitor
      * 
@@ -27,6 +29,11 @@ public interface PollerBackEnd {
      */
     public abstract int registerLocationMonitor(String monitoringLocationId);
     
+    /**
+     * Get service monitor locators for creating serviceMonitors for the poller.
+     */
+    public abstract Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
+
     /**
      * Notifies the backend that a registered poller is starting
      * 

@@ -32,16 +32,16 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 		m_pkg = pkg;
 	}
 
-	public void initialize(PollerConfig config, Map parameters) {
-		m_serviceMonitor.initialize(config, parameters);
+	public void initialize(Map parameters) {
+		m_serviceMonitor.initialize(parameters);
 	}
 
 	public void initialize(MonitoredService svc) {
 		m_serviceMonitor.initialize(svc);
 	}
 
-	public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
-		PollStatus status = m_serviceMonitor.poll(svc, parameters, pkg);
+	public PollStatus poll(MonitoredService svc, Map parameters) {
+		PollStatus status = m_serviceMonitor.poll(svc, parameters);
 		if (status.getResponseTime() >= 0) {
 			storeResponseTime(svc, status.getResponseTime(), parameters);
 		}

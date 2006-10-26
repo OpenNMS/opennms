@@ -63,6 +63,8 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.OnmsPollModel;
 import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
@@ -340,6 +342,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     public void configurationUpdated() {
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
+    }
+
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
+        return m_pollerConfig.getServiceMonitorLocators(context);
     }
 
 }

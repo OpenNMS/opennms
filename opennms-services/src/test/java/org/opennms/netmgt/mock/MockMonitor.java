@@ -35,8 +35,6 @@ package org.opennms.netmgt.mock;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -61,10 +59,10 @@ public class MockMonitor implements ServiceMonitor {
     public void initialize(MonitoredService svc) {
     }
 
-    public void initialize(PollerConfig config, Map parameters) {
+    public void initialize(Map parameters) {
     }
 
-    public PollStatus poll(MonitoredService monSvc, Map parameters, Package pkg) {
+    public PollStatus poll(MonitoredService monSvc, Map parameters) {
         synchronized(m_network) {
             NetworkInterface iface = monSvc.getNetInterface();
             String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
@@ -76,7 +74,7 @@ public class MockMonitor implements ServiceMonitor {
                 return PollStatus.unknown();
             } else {
                 MockUtil.println("Poll: [" + svc.getInterface().getNode().getLabel() + "/" + ipAddr + "/" + m_svcName + "]");
-                PollStatus pollStatus = svc.poll(pkg);
+                PollStatus pollStatus = svc.poll();
 				return PollStatus.get(pollStatus.getStatusCode(), "Test status for "+svc+" reason: "+pollStatus.getReason());
             }
         }

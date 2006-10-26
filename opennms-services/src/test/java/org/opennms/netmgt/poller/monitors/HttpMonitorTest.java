@@ -107,7 +107,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("2000");
         m.put(p.getKey(), p.getValue());
         
-        PollStatus status = monitor.poll(svc, m, pkg);        
+        PollStatus status = monitor.poll(svc, m);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
@@ -142,7 +142,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("100-299");
         m.put(p.getKey(), p.getValue());
         
-        PollStatus status = monitor.poll(svc, m, pkg);        
+        PollStatus status = monitor.poll(svc, m);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
@@ -152,7 +152,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         monitor = new HttpMonitor();
-        status = monitor.poll(svc, m, pkg);        
+        status = monitor.poll(svc, m);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -162,7 +162,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         monitor = new HttpMonitor();
-        status = monitor.poll(svc, m, pkg);        
+        status = monitor.poll(svc, m);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -198,7 +198,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
-        monitor.poll(svc, m, pkg);
+        monitor.poll(svc, m);
         
     }
     
@@ -241,7 +241,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("www.opennms.com");
         m.put(p.getKey(), p.getValue());
 
-        status = monitor.poll(svc, m, pkg);        
+        status = monitor.poll(svc, m);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
@@ -252,7 +252,7 @@ public class HttpMonitorTest extends TestCase {
 
         MockUtil.println("\nliteral text check: \"consulting\"");
         monitor = new HttpMonitor();
-        status = monitor.poll(svc, m, pkg);
+        status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -263,7 +263,7 @@ public class HttpMonitorTest extends TestCase {
 
         MockUtil.println("\nregex check: \".*[Cc]consulting.*\"");
         monitor = new HttpMonitor();
-        status = monitor.poll(svc, m, pkg);
+        status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -328,7 +328,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("admin:admin");
         m.put(p.getKey(), p.getValue());
         
-        status = monitor.poll(svc, m, pkg);
+        status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -375,7 +375,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("admin:admin");
         m.put(p.getKey(), p.getValue());
         
-        status = monitor.poll(svc, m, pkg);
+        status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -423,7 +423,7 @@ public class HttpMonitorTest extends TestCase {
 //        p.setValue("true");
 //        m.put(p.getKey(), p.getValue());
         
-        status = monitor.poll(svc, m, pkg);
+        status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -467,7 +467,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
 
         //Try on opennms.org
-        monitor.poll(svc, m, pkg);        
+        monitor.poll(svc, m);        
         
     }
 

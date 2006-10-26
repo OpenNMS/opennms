@@ -43,7 +43,7 @@ public class ServiceMonitorFactoryBean implements FactoryBean, InitializingBean 
 			m_monitorParameters = new HashMap();
 		
 		m_serviceMonitor = (ServiceMonitor)m_monitorClass.newInstance();
-		m_serviceMonitor.initialize(null, m_monitorParameters);
+		m_serviceMonitor.initialize(m_monitorParameters);
 		
 	}
 	

@@ -691,15 +691,6 @@ public class PollerTest extends TestCase {
 		// overhead
 		assertEquals(0, anticipator.waitForAnticipated(4000L).size());
 
-		// ensure that the 192.168.1.3/HTTP service is only polled by TestPkg2
-		MockService svc = m_network.getService(2, "192.168.1.3", "HTTP");
-		assertEquals(1, svc.getPollingPackages().size());
-		assertEquals("TestPkg2", svc.getPollingPackages().iterator().next());
-
-		// ensure that another service has the TestPackage package
-		MockService svc2 = m_network.getService(1, "192.168.1.2", "SMTP");
-		assertEquals(1, svc2.getPollingPackages().size());
-		assertEquals("TestPackage", svc2.getPollingPackages().iterator().next());
 
 	}
 

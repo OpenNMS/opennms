@@ -11,9 +11,11 @@ import org.opennms.netmgt.poller.NetworkInterface;
 
 public class PolledService implements MonitoredService, Serializable {
     
-    IPv4NetworkInterface m_netInterface;
-    Map m_monitorConfiguration;
-    OnmsPollModel m_pollModel;
+    private static final long serialVersionUID = 1L;
+
+    private IPv4NetworkInterface m_netInterface;
+    private Map m_monitorConfiguration;
+    private OnmsPollModel m_pollModel;
     private Integer m_serviceId;
     private Integer m_nodeId;
     private String m_nodeLabel;

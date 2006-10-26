@@ -34,7 +34,6 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Level;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -56,7 +55,7 @@ public abstract class JMXMonitor extends IPv4Monitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
-    public PollStatus poll(MonitoredService svc, Map map, Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map map) {
         NetworkInterface iface = svc.getNetInterface();
 
 

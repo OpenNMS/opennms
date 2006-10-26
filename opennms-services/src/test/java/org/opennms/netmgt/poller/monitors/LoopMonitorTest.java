@@ -39,7 +39,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -66,7 +65,7 @@ public class LoopMonitorTest extends TestCase {
         parms.put("ip-match", "127.0.0.1-2");
         parms.put("is-supported", "true");
         
-        PollStatus ps = sm.poll(svc, parms, new Package());
+        PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUp());
         assertFalse(ps.isDown());
 

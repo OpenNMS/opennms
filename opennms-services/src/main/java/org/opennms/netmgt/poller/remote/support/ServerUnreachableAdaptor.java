@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
@@ -81,6 +83,11 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     public void reportResult(int locationMonitorID, int serviceId, PollStatus status) {
         if (!m_serverUnresponsive)
             m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
+    }
+
+
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
+        return m_remoteBackEnd.getServiceMonitorLocators(context);
     }
 
 
