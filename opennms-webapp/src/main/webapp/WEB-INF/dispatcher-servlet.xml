@@ -94,6 +94,11 @@
 	<property name="distributedStatusService"
 			  ref="distributedStatusService" />
   </bean>
+  
+  <bean name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
+    <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
+    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+  </bean>
  
   	<!--
 		<property name="formView" value="displayCurrentOutages" />
