@@ -218,7 +218,7 @@ public class HttpCollector implements ServiceCollector {
         } catch (RrdException e) {
             throw new HttpCollectorException("Error writing RRD", client);
         } finally {
-            method.releaseConnection();
+            if (method != null) method.releaseConnection();
         }
     }
     
