@@ -43,7 +43,6 @@ public class PollerTest extends TestCase {
 		replay(scheduler, pollService, pollerFrontEnd);
 		
 		poller.setScheduler(scheduler);
-		poller.setPollService(pollService);
 		poller.setPollerFrontEnd(pollerFrontEnd);
 		
 		poller.afterPropertiesSet();

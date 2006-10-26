@@ -5,17 +5,7 @@
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
 
 
-    <bean name="HTTP" class="org.opennms.netmgt.poller.remote.ServiceMonitorFactoryBean">
-      <property name="monitorClass" value="org.opennms.netmgt.poller.monitors.HttpMonitor" />
-    </bean>
-
-    <bean name="pollService" class="org.opennms.netmgt.poller.remote.DefaultPollService">
-      <property name="monitors">
-        <map>
-	      <entry key="HTTP"><ref bean="HTTP"/></entry>
-        </map>
-      </property>
-    </bean>
+    <bean name="pollService" class="org.opennms.netmgt.poller.remote.DefaultPollService" />
 
     <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.DemoPollerConfiguration" />
     
@@ -47,7 +37,6 @@
     
 	<bean name="poller" class="org.opennms.netmgt.poller.remote.Poller">
 	  <property name="scheduler" ref="scheduler" />
-	  <property name="pollService" ref="pollService" />
 	  <property name="initialSpreadTime" value="300000" />
 	  <property name="pollerFrontEnd" ref="pollerFrontEnd" />
 	</bean>

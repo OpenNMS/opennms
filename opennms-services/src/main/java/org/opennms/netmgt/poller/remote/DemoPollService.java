@@ -3,7 +3,10 @@
  */
 package org.opennms.netmgt.poller.remote;
 
+import java.util.Collection;
+
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 class DemoPollService implements PollService {
 	
@@ -33,6 +36,21 @@ class DemoPollService implements PollService {
         }
         
         return status;
+    }
+
+    public void initialize(PolledService polledService) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void release(PolledService polledService) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setServiceMonitorLocators(Collection<ServiceMonitorLocator> locators) {
+        // TODO Auto-generated method stub
+        
     }
 	
 }

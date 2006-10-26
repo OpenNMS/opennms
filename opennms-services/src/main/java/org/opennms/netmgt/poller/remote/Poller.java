@@ -15,14 +15,9 @@ import org.springframework.util.Assert;
 
 public class Poller implements InitializingBean, PollObserver, ConfigurationChangedListener {
 	
-	private PollService m_pollService;
 	private PollerFrontEnd m_pollerFrontEnd;
 	private Scheduler m_scheduler;
 	private long m_initialSpreadTime = 300000L;
-	
-	public void setPollService(PollService pollService) {
-		m_pollService = pollService;
-	}
 	
 	public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
 		m_pollerFrontEnd = pollerFrontEnd;
@@ -39,7 +34,6 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
 	public void afterPropertiesSet() throws Exception {
 		assertNotNull(m_scheduler, "scheduler");
-		assertNotNull(m_pollService, "pollService");
 		assertNotNull(m_pollerFrontEnd, "pollerFrontEnd");
         
         m_pollerFrontEnd.addConfigurationChangedListener(this);
