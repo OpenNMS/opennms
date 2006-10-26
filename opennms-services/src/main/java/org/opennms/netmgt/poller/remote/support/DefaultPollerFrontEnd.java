@@ -14,6 +14,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
 import org.opennms.netmgt.poller.remote.PollService;
 import org.opennms.netmgt.poller.remote.PolledService;
@@ -86,6 +87,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
         if (!isStarted()) {
             start();
         }
+
+        m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
         
         m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
 
@@ -94,6 +97,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
             int i = 0;
             m_pollState.clear();
             for (PolledService service : m_pollerConfiguration.getPolledServices()) {
+                m_pollService.initialize(service);
                 m_pollState.put(service.getServiceId(), new ServicePollState(service, i++));
             }
         }

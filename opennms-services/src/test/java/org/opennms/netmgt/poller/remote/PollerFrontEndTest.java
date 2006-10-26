@@ -6,15 +6,22 @@ import static org.easymock.EasyMock.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 
+import org.opennms.netmgt.config.DefaultServiceMonitorLocator;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.monitors.HttpMonitor;
+import org.opennms.netmgt.poller.monitors.HttpMonitorTest;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
 
 public class PollerFrontEndTest extends TestCase {
@@ -69,7 +76,8 @@ public class PollerFrontEndTest extends TestCase {
         
         // another call to isRegistered;
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(new DemoPollerConfiguration()).atLeastOnce();
+        
+        anticipateNewConfig(pollConfig());
         
         expect(m_backEnd.pollerStarting(1)).andReturn(true);
         
@@ -88,6 +96,22 @@ public class PollerFrontEndTest extends TestCase {
         verifyMocks();
         
 	}
+
+    private void anticipateNewConfig(DemoPollerConfiguration pollConfig) {
+        ServiceMonitorLocator locator = new DefaultServiceMonitorLocator("HTTP", HttpMonitor.class);
+        Set<ServiceMonitorLocator> locators = Collections.singleton(locator);
+        expect(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR)).andReturn(locators);
+        m_pollService.setServiceMonitorLocators(locators);
+        
+        m_pollService.initialize(isA(PolledService.class));
+        expectLastCall().times(pollConfig.getPolledServices().length);
+        
+        expect(m_backEnd.getPollerConfiguration(1)).andReturn(pollConfig);
+    }
+
+    private DemoPollerConfiguration pollConfig() {
+        return m_pollerConfiguration;
+    }
     
     public void testAlreadyRegistered() throws Exception {
         
@@ -95,7 +119,7 @@ public class PollerFrontEndTest extends TestCase {
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
         
         // since the poller is registered we immediately request the pollerConfig
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(new DemoPollerConfiguration());
+        anticipateNewConfig(pollConfig());
         
         // expect the monitor to start
         expect(m_backEnd.pollerStarting(1)).andReturn(true);
@@ -114,8 +138,11 @@ public class PollerFrontEndTest extends TestCase {
         Date start = new Date(1200000000000L);
         
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        
+        anticipateNewConfig(pollConfig());
+        
         expect(m_backEnd.pollerStarting(1)).andReturn(true);
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
+        
 
         replayMocks();
         
@@ -134,8 +161,11 @@ public class PollerFrontEndTest extends TestCase {
     public void testPoll() throws Exception {
         
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        
+        anticipateNewConfig(pollConfig());
+        
         expect(m_backEnd.pollerStarting(1)).andReturn(true);
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
+        
         
         PollStatus up = PollStatus.available(1234);
         expect(m_pollService.poll(m_pollerConfiguration.getFirstService())).andReturn(up);
@@ -165,13 +195,17 @@ public class PollerFrontEndTest extends TestCase {
     public void testConfigCheck() throws Exception {
         
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+        
+        anticipateNewConfig(pollConfig());
+        
+        
         expect(m_backEnd.pollerStarting(1)).andReturn(true);
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
+
         
         expect(m_backEnd.pollerCheckingIn(1, m_pollerConfiguration.getConfigurationTimestamp())).andReturn(true);
         
         DemoPollerConfiguration newPollerConfiguration = new DemoPollerConfiguration();
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(newPollerConfiguration);
+        anticipateNewConfig(newPollerConfiguration);
         
         PropertyChangeEvent e = new PropertyChangeEvent(m_frontEnd, "configuration", m_pollerConfiguration.getConfigurationTimestamp(), newPollerConfiguration.getConfigurationTimestamp());
         m_configChangeListener.configurationChanged(eq(e));
@@ -191,8 +225,11 @@ public class PollerFrontEndTest extends TestCase {
     public void testStop() throws Exception {
         
         expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+
+        anticipateNewConfig(pollConfig());
+        
         expect(m_backEnd.pollerStarting(1)).andReturn(true);
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(m_pollerConfiguration);
+
         
         m_backEnd.pollerStopping(1);
         

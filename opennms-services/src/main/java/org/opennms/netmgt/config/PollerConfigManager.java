@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.zip.DataFormatException;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
@@ -60,7 +58,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.hibernate.cfg.ExtendsQueueEntry;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
@@ -82,7 +79,6 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 
 /**
@@ -801,40 +797,6 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     public synchronized ServiceMonitor getServiceMonitor(String svcName) {
         return (ServiceMonitor) getServiceMonitors().get(svcName);
-    }
-    
-    private static class DefaultServiceMonitorLocator implements ServiceMonitorLocator {
-        
-        String m_serviceName;
-        Class<? extends ServiceMonitor> m_serviceClass;
-        
-        public DefaultServiceMonitorLocator(String serviceName, Class<? extends ServiceMonitor> serviceClass) {
-            m_serviceName = serviceName;
-            m_serviceClass = serviceClass;
-        }
-
-        public ServiceMonitor getServiceMonitor() {
-            try {
-                ServiceMonitor mon = m_serviceClass.newInstance();
-                mon.initialize((Map)null);
-                return mon;
-            } catch (InstantiationException e) {
-                throw new CastorObjectRetrievalFailureException("Unable to instantiate monitor for service "
-                        +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
-            } catch (IllegalAccessException e) {
-                throw new CastorObjectRetrievalFailureException("Illegal access trying to instantiate monitor for service "
-                        +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
-            }
-        }
-
-        public String getServiceName() {
-            return m_serviceName;
-        }
-
-        public String getServiceLocatorKey() {
-            return m_serviceClass.getName();
-        }
-        
     }
     
     public synchronized Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
