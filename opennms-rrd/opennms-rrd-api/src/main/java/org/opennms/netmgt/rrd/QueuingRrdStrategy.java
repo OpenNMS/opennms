@@ -255,7 +255,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         Object process(Object rrd) throws Exception {
             // if the rrd is already open we are confused
             if (rrd != null) {
-                System.err.println("WHAT! rrd open but not created?");
+                log("WHAT! rrd open but not created?");
                 m_delegate.closeFile(rrd);
                 rrd = null;
             }
@@ -861,7 +861,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         } catch (Exception e) {
             errors++;
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
-            e.printStackTrace();
+            log("Error upading file " + fileName + ": " + e.getMessage(), e);
         } finally {
             processClose(rrd);
         }
