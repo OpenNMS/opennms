@@ -34,6 +34,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.beans.PropertyEditorSupport;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -667,6 +668,34 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
 		abstract public String getAttributeValue(Event e);
 	}
+    
+    // XXX: This is here because Spring converting to a String appears
+    // to be broken.  It if probably a Hack and we probably need to have
+    // a better way to access the Spring property editors and convert
+    // to a string more correctly.
+    class StringPropertyEditor extends PropertyEditorSupport {
+
+        @Override
+        public void setValue(Object value) {
+            if (value == null || value instanceof String)
+                super.setValue(value);
+            else
+                super.setValue(value.toString());
+        }
+
+        @Override
+        public String getAsText() {
+            return (String)super.getValue();
+        }
+
+        @Override
+        public void setAsText(String text) throws IllegalArgumentException {
+            super.setValue(text);
+        }
+        
+        
+        
+    }
 	
     class FieldValueSpec extends AttributeValueSpec {
 		public FieldValueSpec(Value val) {
@@ -675,13 +704,20 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
 		public String getAttributeValue(Event e) {
 			try {
-				BeanWrapperImpl bean = new BeanWrapperImpl(e);
-				return (String)bean.doTypeConversionIfNecessary(bean.getPropertyValue(getAttributeName()), String.class);
+				BeanWrapperImpl bean = getBeanWrapper(e);
+                
+				return (String)bean.convertIfNecessary(bean.getPropertyValue(getAttributeName()), String.class);
 			} catch (FatalBeanException ex) {
 				log().error("Property "+getAttributeName()+" does not exist on Event", ex);
 				throw new TranslationFailedException("Property "+getAttributeName()+" does not exist on Event");
 			}
 		}
+
+        private BeanWrapperImpl getBeanWrapper(Event e) {
+            BeanWrapperImpl bean = new BeanWrapperImpl(e);
+            bean.registerCustomEditor(String.class, new StringPropertyEditor());
+            return bean;
+        }
 	}
 	
 	class ParameterValueSpec extends AttributeValueSpec {
