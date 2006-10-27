@@ -3,8 +3,9 @@
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Distributed Status History" />
-	<jsp:param name="headTitle" value="History" />
-	<jsp:param name="breadcrumb" value="Distributed Status" />
+	<jsp:param name="headTitle" value="Distributed Status History" />
+	<jsp:param name="breadcrumb" value="<a href=\"distributedStatusSummary.htm\">Distributed Status</a>" />
+	<jsp:param name="breadcrumb" value="History" />
 </jsp:include>
 
 <h3>Distributed Status History for <c:out value="${historyModel.chosenApplication.name}"/> from <c:out value="${historyModel.chosenMonitor.definitionName}-${historyModel.chosenMonitor.id}"/> over <c:out value="${historyModel.chosenPeriod.name}"/></h3>
@@ -17,11 +18,8 @@
   </p>
 </c:if>
 
-
-
-
 <table class="normal">
-  <form>
+  <form action="distributedStatusHistory.htm">
   <input type="hidden" name="previousLocation" value="<c:out value="${historyModel.chosenLocation.name}"/>"/>
   
   <tr>
@@ -124,7 +122,7 @@
 <c:forEach items="${historyModel.httpGraphUrls}" var="url">
   <p style="text-align: center">
     Node: <a href="<c:url value="element/node.jsp?node=${url.key.ipInterface.node.id}"/>"><c:out value="${url.key.ipInterface.node.label}"/></a><br/>
-    Interface: <a href="<c:url value="element/interface.jsp?node=${url.key.ipInterface.node.id}&intf=${url.key.ipAddress}"/>"><c:out value="${url.key.ipAddress}"/></a><br/>
+    Interface: <a href="<c:url value="element/interface.jsp?ipinterfaceid=${url.key.ipInterface.id}"/>"><c:out value="${url.key.ipAddress}"/></a><br/>
     Service: <a href="<c:url value="element/service.jsp?ifserviceid=${url.key.id}"/>"><c:out value="${url.key.serviceName}"/></a><br/>
     <img src="<c:out value="${url.value}"/>"/>
   </p>
