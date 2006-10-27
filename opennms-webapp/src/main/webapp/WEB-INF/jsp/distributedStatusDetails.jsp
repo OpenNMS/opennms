@@ -3,8 +3,9 @@
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Distributed Status Details" />
-	<jsp:param name="headTitle" value="Details" />
-	<jsp:param name="breadcrumb" value="Distributed Status" />
+	<jsp:param name="headTitle" value="Distributed Status Details" />
+	<jsp:param name="breadcrumb" value="<a href='distributedStatusSummary.htm'>Distributed Status</a>" />
+	<jsp:param name="breadcrumb" value="Details" />
 </jsp:include>
 
 <h3><c:out value="${webTable.title}" /></h3>
