@@ -6,15 +6,11 @@
  */
 package org.opennms.web.map.view;
 
-import org.opennms.core.resource.Vault;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.element.Node;
 import org.opennms.web.map.MapsException;
 import org.opennms.web.map.db.Element;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 /**
  * @author micmas
