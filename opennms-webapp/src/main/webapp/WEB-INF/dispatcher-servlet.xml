@@ -11,6 +11,9 @@
 	<property name="prefix" value="/WEB-INF/jsp/" />
 	<property name="suffix" value=".jsp" />
   </bean>
+  
+  <bean name="/admin/applications.htm" class="org.opennms.web.controller.ApplicationController">
+  </bean>
 
   <bean name="/aggregateStatus.htm"
 		class="org.opennms.web.controller.SiteStatusViewController">
