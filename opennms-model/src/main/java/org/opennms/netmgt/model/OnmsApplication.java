@@ -57,7 +57,7 @@ public class OnmsApplication {
     private String m_name;
 
     private Set<OnmsMonitoredService> m_memberServices;
-
+    
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
