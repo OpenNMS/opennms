@@ -105,10 +105,7 @@
 		<c:choose>
 			<c:when test="${param.nonavbar != 'true'}">
 				<div id="headernavbarright">
-				<%--
-					<jsp:include page="/includes/navbar.jsp" flush="false"/>
-					--%>
-					<jsp:include page="/navBar.htm" flush="false"/>
+                  <jsp:include page="/navBar.htm" flush="false"/>
 				</div>
 			</c:when>
 			<c:otherwise>
