@@ -29,7 +29,11 @@ import org.opennms.web.map.view.VMap;
  */
 public class InitMapsApplicationServlet extends HttpServlet
 {	
+	
+	static final long serialVersionUID = 2006102700;
+
 	private static final String LOG4J_CATEGORY = "OpenNMS.Map";
+	
 	Category log;
  
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 

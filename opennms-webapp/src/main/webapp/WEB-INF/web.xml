@@ -904,13 +904,6 @@
     <servlet-class>org.opennms.web.map.OpenMapServlet</servlet-class>
   </servlet>  
   
-  
-  <servlet>
-     <servlet-name>AddMapAsNode</servlet-name>
-    <servlet-class>org.opennms.web.map.AddMapAsNodeServlet</servlet-class>
-  </servlet>  
-
-
   <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
@@ -993,11 +986,6 @@
   <servlet-mapping>
     <servlet-name>OpenMap</servlet-name>
     <url-pattern>/map/OpenMap</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>AddMapAsNode</servlet-name>
-    <url-pattern>/map/AddMapAsNode</url-pattern>
   </servlet-mapping>
 
   <!-- desktop graph servlet mapping -->

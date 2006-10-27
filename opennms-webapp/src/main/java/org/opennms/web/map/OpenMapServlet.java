@@ -3,8 +3,6 @@ package org.opennms.web.map;
 /*
  * Created on 8-giu-2005
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,10 +23,14 @@ import java.text.SimpleDateFormat;
 /**
  * @author mmigliore
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * this class provides to create, manage and delete 
+ * proper session objects to use when working with maps
+ * 
  */
 public class OpenMapServlet extends HttpServlet {
+	
+	static final long serialVersionUID = 2006102300; 
+	
 	private static final String LOG4J_CATEGORY = "OpenNMS.Map";
 	
 	private final int MAP_NOT_OPENED = -1;
@@ -74,7 +76,9 @@ public class OpenMapServlet extends HttpServlet {
 						+ " and MapHeight=" + mapHeight);
 				Manager m = new Manager();
 				m.startSession();
+				
 				VMap map = null;
+				
 				if (action.equals(NEWMAP_ACTION)) {
 					log.info("New Map: creating new map");
 					map = m.newMap(VMap.DEFAULT_NAME, "", request
@@ -93,6 +97,7 @@ public class OpenMapServlet extends HttpServlet {
 					+ "" + "+" + ""
 					+ "+" + "";
 				}				
+				
 				if (action.equals(OPENMAP_ACTION)) {
 					SimpleDateFormat formatter = new SimpleDateFormat(
 					"HH.mm.ss dd/MM/yy");
@@ -148,6 +153,7 @@ public class OpenMapServlet extends HttpServlet {
 				bw.write(strToSend);
 				bw.close();
 				m.endSession();
+				
 				session.setAttribute("sessionMap", map);
 				log.info("Sending response to the client '" + strToSend
 						+ "'");
