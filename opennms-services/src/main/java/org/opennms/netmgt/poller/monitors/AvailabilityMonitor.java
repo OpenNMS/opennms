@@ -66,9 +66,9 @@ public class AvailabilityMonitor extends IPv4Monitor {
         boolean reachable = false;
         try {
             for (int i = 0; i < retries; i++) {
-                long begin = System.nanoTime();
+                long begin = System.currentTimeMillis();
                 reachable = svc.getAddress().isReachable(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
-                long end = System.nanoTime();
+                long end = System.currentTimeMillis();
                 responseTime =  end - begin;
                 if (reachable) break;
             }
