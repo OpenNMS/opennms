@@ -4,11 +4,11 @@
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Distributed Status History" />
 	<jsp:param name="headTitle" value="Distributed Status History" />
-	<jsp:param name="breadcrumb" value="<a href=\"distributedStatusSummary.htm\">Distributed Status</a>" />
+	<jsp:param name="breadcrumb" value="<a href='distributedStatusSummary.htm'>Distributed Status</a>" />
 	<jsp:param name="breadcrumb" value="History" />
 </jsp:include>
 
-<h3>Distributed Status History for <c:out value="${historyModel.chosenApplication.name}"/> from <c:out value="${historyModel.chosenMonitor.definitionName}-${historyModel.chosenMonitor.id}"/> over <c:out value="${historyModel.chosenPeriod.name}"/></h3>
+<h3>Distributed Status History for <c:out value="${historyModel.chosenApplication.name}"/> from <c:out value="${historyModel.chosenMonitor.name}"/> over <c:out value="${historyModel.chosenPeriod.name}"/></h3>
 
 <c:if test="${!empty historyModel.errors}">
   <p style="color: red;">
@@ -50,7 +50,7 @@
               <option value="<c:out value="${monitor.id}"/>" selected="selected"><c:out value="${monitor.definitionName}-${monitor.id}"/></option>
             </c:when>
             <c:otherwise>
-              <option value="<c:out value="${monitor.id}"/>"><c:out value="${monitor.definitionName}-${monitor.id}"/></option>
+              <option value="<c:out value="${monitor.id}"/>"><c:out value="${monitor.name}"/></option>
             </c:otherwise>
           </c:choose>
         </c:forEach>
