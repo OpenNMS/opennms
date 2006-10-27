@@ -587,6 +587,16 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
         
         RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(timeSpan);
+        
+        /*
+         * Initialize the heirarchy under the service so that we don't get
+         * a LazyInitializationException later when the JSP page is pulling
+         * data out of the model object.
+         */
+        for (OnmsMonitoredService service : application.getMemberServices()) {
+            m_locationMonitorDao.initialize(service.getIpInterface());
+            m_locationMonitorDao.initialize(service.getIpInterface().getNode());
+        }
 
         return new DistributedStatusHistoryModel(locationDefinitions,
                                                  sortedApplications,
