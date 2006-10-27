@@ -372,6 +372,7 @@ public class HttpCollector implements ServiceCollector {
 
     public void initialize(Map parameters) {
         log().debug("initialize: Initializing HttpCollector.");
+        m_scheduledNodes.clear();
         initHttpCollecionConfig();
         initDatabaseConnectionFactory();
         initializeRrdRepository();
