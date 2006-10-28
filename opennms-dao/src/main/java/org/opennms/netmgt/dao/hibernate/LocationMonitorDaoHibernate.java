@@ -69,8 +69,8 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocationMonitor, Integer> implements
         LocationMonitorDao {
     
-    MonitoringLocationsConfiguration m_monitoringLocationsConfiguration;
-    Resource m_monitoringLocationConfigResource;
+    private MonitoringLocationsConfiguration m_monitoringLocationsConfiguration;
+    private Resource m_monitoringLocationConfigResource;
 
     /**
      * Constructor that also initializes the required XML configurations
@@ -87,6 +87,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     
     @SuppressWarnings("unchecked")
     public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
+        assertPropertiesSet();
         
         List<OnmsMonitoringLocationDefinition> onmsDefs = new ArrayList();
         final List<LocationDef> locationDefCollection = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
@@ -232,12 +233,24 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     
     @SuppressWarnings("unchecked")
     public Collection<OnmsMonitoringLocationDefinition> findAllLocationDefinitions() {
+        assertPropertiesSet();
         List<OnmsMonitoringLocationDefinition> eDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
         Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
         for (LocationDef def : defs) {
             eDefs.add(createEntityDef(def));
         }
         return eDefs;
+    }
+
+    private void assertPropertiesSet() {
+        if (m_monitoringLocationConfigResource == null
+                && m_monitoringLocationsConfiguration == null) {
+            throw new IllegalStateException("either "
+                                            + "monitoringLocationConfigResource "
+                                            + "or monitorLocationsConfiguration "
+                                            + "must be set but is not");
+        }
+        
     }
 
     private OnmsMonitoringLocationDefinition createEntityDef(LocationDef def) {
@@ -267,7 +280,15 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
 
     public OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(String monitoringLocationDefinitionName) {
-        return createEntityDef(getLocationDef(monitoringLocationDefinitionName));
+        if (monitoringLocationDefinitionName == null) {
+            throw new IllegalArgumentException("monitoringLocationDefinitionName must not be null");
+        }
+        assertPropertiesSet();
+        LocationDef locationDef = getLocationDef(monitoringLocationDefinitionName);
+        if (locationDef == null) {
+            return null;
+        }
+        return createEntityDef(locationDef);
     }
 
     public OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monSvc) {
