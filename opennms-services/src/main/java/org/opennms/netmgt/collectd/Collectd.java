@@ -98,7 +98,7 @@ public final class Collectd extends AbstractServiceDaemon implements
     /**
      * List of all CollectableService objects.
      */
-    private List m_collectableServices;
+    private List<CollectableService> m_collectableServices;
 
     /**
      * Reference to the collection scheduler
@@ -142,7 +142,7 @@ public final class Collectd extends AbstractServiceDaemon implements
     public Collectd() {
         super(LOG4J_CATEGORY);
 
-        m_collectableServices = Collections.synchronizedList(new LinkedList());
+        m_collectableServices = Collections.synchronizedList(new LinkedList<CollectableService>());
     }
 
     protected void onInit() {
@@ -157,7 +157,7 @@ public final class Collectd extends AbstractServiceDaemon implements
     private void installMessageSelectors() {
         // Add the EventListeners for the UEIs in which this service is
         // interested
-        List ueiList = new ArrayList();
+        List<String> ueiList = new ArrayList<String>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -457,11 +457,7 @@ public final class Collectd extends AbstractServiceDaemon implements
         }
         
         synchronized (m_collectableServices) {
-            CollectableService cSvc = null;
-            Iterator iter = m_collectableServices.iterator();
-            while (iter.hasNext()) {
-                cSvc = (CollectableService) iter.next();
-
+        	for (CollectableService cSvc : m_collectableServices) {
                 InetAddress addr = (InetAddress) cSvc.getAddress();
                 if (addr.getHostAddress().equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
@@ -491,14 +487,12 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
     private void refreshServicePackages() {
-        Iterator serviceIterator = m_collectableServices.iterator();
-        while (serviceIterator.hasNext()) {
-            CollectableService thisService = (CollectableService) serviceIterator.next();
+    	for (CollectableService thisService : m_collectableServices) {
             thisService.refreshPackage();
         }
     }
 
-    private List getCollectableServices() {
+    private List<CollectableService> getCollectableServices() {
         return m_collectableServices;
     }
 
@@ -1191,8 +1185,9 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
     private Scheduler getScheduler() {
-        if (m_scheduler == null)
+        if (m_scheduler == null) {
             createScheduler();
+        }
         return m_scheduler;
     }
 
