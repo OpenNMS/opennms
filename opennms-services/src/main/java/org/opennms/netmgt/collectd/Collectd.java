@@ -430,16 +430,6 @@ public final class Collectd extends AbstractServiceDaemon implements
         } // end while more packages exist
     }
 
-    private void fullyLoadInterface(OnmsIpInterface iface) {
-        m_nodeDao.getHierarchy(iface.getNode().getId());
-        getIpInterfaceDao().initialize(iface.getNode());
-        getIpInterfaceDao().initialize(iface.getSnmpInterface());
-        getIpInterfaceDao().initialize(iface.getSnmpInterface().getIpInterfaces());
-        getIpInterfaceDao().initialize(iface.getMonitoredServices());
-        getIpInterfaceDao().initialize(iface.getNode().getSnmpInterfaces());
-        getIpInterfaceDao().initialize(iface.getNode().getIpInterfaces());
-    }
-
     /**
      * Returns true if specified address/pkg pair is already represented in
      * the collectable services list. False otherwise.
