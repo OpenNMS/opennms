@@ -19,12 +19,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.core.resource.Vault"
 %>
 
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- End of Content -->
 </div>

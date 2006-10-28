@@ -2,7 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.util.Enumeration" %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%!
 public void outputNamesInScope(JspWriter out, PageContext context, String title, int scope) throws IOException {
     out.println("<h3>"+title+"</h3>");

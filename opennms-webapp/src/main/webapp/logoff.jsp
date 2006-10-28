@@ -1,4 +1,4 @@
-<%@ taglib prefix='c' uri='http://java.sun.com/jstl/core' %>
+<%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core' %>
 <%@ page import="org.acegisecurity.ui.AbstractProcessingFilter" %>
 <%@ page import="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter" %>
 <%@ page import="org.acegisecurity.AuthenticationException" %>

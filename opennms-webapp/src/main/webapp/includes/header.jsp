@@ -26,7 +26,7 @@
 		org.opennms.netmgt.config.NotifdConfigFactory
 		"
 %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
     static DateFormat dateFormatter = DateFormat.getDateInstance( DateFormat.MEDIUM );
