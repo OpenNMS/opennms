@@ -24,7 +24,7 @@
           </annotation>
           <complexType>
             <sequence>
-              <element ref="this:location-def" minOccurs="1" maxOccurs="unbounded" >
+              <element ref="this:location-def" minOccurs="0" maxOccurs="unbounded" >
               </element>
             </sequence>
           </complexType>
