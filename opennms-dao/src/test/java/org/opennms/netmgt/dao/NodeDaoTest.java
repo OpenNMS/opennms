@@ -114,7 +114,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         validateNode(n);
     }
     
-    public void XXXtestQueryWithHierarchyCloseTransaction() throws Exception {
+    /** Test for bug 1594 */
+    public void testQueryWithHierarchyCloseTransaction() throws Exception {
         /*
          * Close the current transaction and start a new one so that we get
          * fresh data from the DB.
