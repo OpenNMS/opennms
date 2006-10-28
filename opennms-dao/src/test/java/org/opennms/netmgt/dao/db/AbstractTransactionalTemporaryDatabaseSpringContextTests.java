@@ -19,6 +19,8 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
             return super.loadContextLocations(new String[0]);
         }
         
+        assertNotNull("config locations list cannot be null", locations);
+        
         LinkedList<String> newLocations = new LinkedList<String>();
         newLocations.addAll(Arrays.asList(locations));
         newLocations.add("classpath:META-INF/opennms/applicationContext-AbstractTransactionalTemporaryDatabaseSpringContextTests.xml"); 
