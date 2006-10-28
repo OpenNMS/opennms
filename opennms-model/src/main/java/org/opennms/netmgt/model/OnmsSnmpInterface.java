@@ -266,7 +266,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .toString();
     }
 
-	public void visit(EntityVisitor visitor) {
+    public void visit(EntityVisitor visitor) {
         visitor.visitSnmpInterface(this);
         visitor.visitSnmpInterfaceComplete(this);
     }
