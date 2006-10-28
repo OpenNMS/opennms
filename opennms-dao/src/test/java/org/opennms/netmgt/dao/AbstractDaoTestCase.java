@@ -550,4 +550,8 @@ public class AbstractDaoTestCase extends TestCase {
         
     }
     
+    public OnmsNode getNode1() {
+        return m_node1;
+    }
+    
 }
