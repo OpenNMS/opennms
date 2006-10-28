@@ -11,7 +11,7 @@
         <element name="views">
           <complexType>
             <sequence>
-              <element ref="this:view" minOccurs="1" maxOccurs="unbounded"></element>
+              <element ref="this:view" minOccurs="0" maxOccurs="unbounded"></element>
             </sequence>
           </complexType>
         </element>
