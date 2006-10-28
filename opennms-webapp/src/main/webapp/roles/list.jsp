@@ -44,7 +44,7 @@
 	session="true"
 %>
 
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Role Configuration" />

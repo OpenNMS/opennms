@@ -40,8 +40,8 @@
 -->
 
 <%@page language="java" contentType="text/html" session="true"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <fmt:parseDate var="morning" value="01-08-2005 03:00:00" pattern="dd-MM-yyyy HH:mm:ss"/>
 <fmt:parseDate var="evening" value="01-08-2005 16:00:00" pattern="dd-MM-yyyy HH:mm:ss"/>
