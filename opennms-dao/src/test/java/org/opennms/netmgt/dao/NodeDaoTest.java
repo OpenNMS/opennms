@@ -43,8 +43,10 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 
-public class NodeDaoTest extends AbstractDaoTestCase {
+//public class NodeDaoTest extends AbstractDaoTestCase {
+public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
     
     public void testSave() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
@@ -112,8 +114,34 @@ public class NodeDaoTest extends AbstractDaoTestCase {
         validateNode(n);
     }
     
+    public void XXXtestQueryWithHierarchyCloseTransaction() throws Exception {
+        /*
+         * Close the current transaction and start a new one so that we get
+         * fresh data from the DB.
+         */
+        setComplete();
+        endTransaction();
+        
+        startNewTransaction();
+        
+        OnmsNode n = getNodeDao().getHierarchy(1);
+        
+        /*
+         * Close the current transaction and session -- the data should have
+         * all been fetched from the DB already
+         */
+        endTransaction();
+        
+        validateNode(n);
+        for (OnmsSnmpInterface snmp : n.getSnmpInterfaces()) {
+            for (OnmsIpInterface ip : snmp.getIpInterfaces()) {
+                ip.getIpAddress();
+            }
+        }
+    }
+    
     private void validateNode(OnmsNode n) throws Exception {
-        assertNotNull("Expected node to non-null", n);
+        assertNotNull("Expected node to be non-null", n);
         assertNotNull("Expected node "+n.getId()+" to have interfaces", n.getIpInterfaces());
         assertEquals("Unexpected number of interfaces for node "+n.getId(), 3, n.getIpInterfaces().size());
         for (Object o : n.getIpInterfaces()) {
@@ -121,7 +149,7 @@ public class NodeDaoTest extends AbstractDaoTestCase {
 			assertNotNull(iface);
 			assertNotNull(iface.getIpAddress());
 		}
-        assertNodeEquals(m_node1, n);
+        assertNodeEquals(getNode1(), n);
     }
     
     private class PropertyComparator implements Comparator {
