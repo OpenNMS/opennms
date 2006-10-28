@@ -1,14 +1,18 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +21,7 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -25,9 +29,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 package org.opennms.netmgt.model;
 
@@ -54,16 +58,15 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.core.style.ToStringCreator;
 
-
 @Entity
-@Table(name="snmpInterface")
+@Table(name = "snmpInterface")
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     /**
      * 
      */
     private static final long serialVersionUID = -5396189389666285305L;
-    
+
     private Integer m_id;
 
     /** identifier field */
@@ -101,12 +104,12 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-	private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
 
     public OnmsSnmpInterface(String ipAddr, int ifIndex, OnmsNode node) {
-    	this(ipAddr, new Integer(ifIndex), node);
+        this(ipAddr, new Integer(ifIndex), node);
     }
-    
+
     public OnmsSnmpInterface(String ipaddr, Integer ifIndex, OnmsNode node) {
         m_ipAddr = ipaddr;
         m_ifIndex = ifIndex;
@@ -117,27 +120,25 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     /** default constructor */
     public OnmsSnmpInterface() {
     }
-    
+
     /**
      * Unique identifier for snmpInterface.
      */
     @Id
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(generator = "opennmsSequence")
     public Integer getId() {
         return m_id;
     }
-    
+
     public void setId(Integer id) {
         m_id = id;
     }
 
-
     /*
      * TODO this doesn't belong on SnmpInterface
-     * 
      */
-    @Column(name="ipAddr", length=16)
+    @Column(name = "ipAddr", length = 16)
     public String getIpAddress() {
         return m_ipAddr;
     }
@@ -149,7 +150,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     /*
      * TODO this doesn't belong on SnmpInterface
      */
-    @Column(name="snmpIpAdEntNetMask", length=16)
+    @Column(name = "snmpIpAdEntNetMask", length = 16)
     public String getNetMask() {
         return m_netMask;
     }
@@ -158,7 +159,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_netMask = snmpipadentnetmask;
     }
 
-    @Column(name="snmpPhysAddr", length=12)
+    @Column(name = "snmpPhysAddr", length = 12)
     public String getPhysAddr() {
         return m_physAddr;
     }
@@ -167,7 +168,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_physAddr = snmpphysaddr;
     }
 
-    @Column(name="snmpIfIndex")
+    @Column(name = "snmpIfIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }
@@ -176,7 +177,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifIndex = snmpifindex;
     }
 
-    @Column(name="snmpIfDescr", length=256)
+    @Column(name = "snmpIfDescr", length = 256)
     public String getIfDescr() {
         return m_ifDescr;
     }
@@ -185,7 +186,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifDescr = snmpifdescr;
     }
 
-    @Column(name="snmpIfType")
+    @Column(name = "snmpIfType")
     public Integer getIfType() {
         return m_ifType;
     }
@@ -194,7 +195,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifType = snmpiftype;
     }
 
-    @Column(name="snmpIfName", length=32)
+    @Column(name = "snmpIfName", length = 32)
     public String getIfName() {
         return m_ifName;
     }
@@ -203,7 +204,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifName = snmpifname;
     }
 
-    @Column(name="snmpIfSpeed")
+    @Column(name = "snmpIfSpeed")
     public Long getIfSpeed() {
         return m_ifSpeed;
     }
@@ -212,7 +213,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifSpeed = snmpifspeed;
     }
 
-    @Column(name="snmpIfAdminStatus")
+    @Column(name = "snmpIfAdminStatus")
     public Integer getIfAdminStatus() {
         return m_ifAdminStatus;
     }
@@ -221,7 +222,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifAdminStatus = snmpifadminstatus;
     }
 
-    @Column(name="snmpIfOperStatus")
+    @Column(name = "snmpIfOperStatus")
     public Integer getIfOperStatus() {
         return m_ifOperStatus;
     }
@@ -230,7 +231,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifOperStatus = snmpifoperstatus;
     }
 
-    @Column(name="snmpIfAlias", length=256)
+    @Column(name = "snmpIfAlias", length = 256)
     public String getIfAlias() {
         return m_ifAlias;
     }
@@ -239,8 +240,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifAlias = snmpifalias;
     }
 
-    @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="nodeId")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
@@ -266,97 +267,102 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
 
 	public void visit(EntityVisitor visitor) {
-		visitor.visitSnmpInterface(this);
-		visitor.visitSnmpInterfaceComplete(this);
-	}
-
-    @OneToMany(mappedBy="snmpInterface", fetch=FetchType.LAZY)
-	public Set<OnmsIpInterface> getIpInterfaces() {
-    	return m_ipInterfaces;
-	}
-    
-    public void setIpInterfaces(Set<OnmsIpInterface> ipInterfaces) {
-    	m_ipInterfaces = ipInterfaces;
+        visitor.visitSnmpInterface(this);
+        visitor.visitSnmpInterfaceComplete(this);
     }
 
-//	@Transient
-//	public Set getIpInterfaces() {
-//		
-//		Set ifsForSnmpIface = new LinkedHashSet();
-//		for (Iterator it = getNode().getIpInterfaces().iterator(); it.hasNext();) {
-//			OnmsIpInterface	iface = (OnmsIpInterface) it.next();		
-//			if (getIfIndex().equals(iface.getIfIndex()))
-//				ifsForSnmpIface.add(iface);
-//		}
-//		return ifsForSnmpIface;
-//	}
+    @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
+    public Set<OnmsIpInterface> getIpInterfaces() {
+        return m_ipInterfaces;
+    }
 
-	@Transient
-	public CollectionType getCollectionType() {
-		CollectionType maxCollType = CollectionType.NO_COLLECT;
-		for (Iterator it = getIpInterfaces().iterator(); it.hasNext();) {
-			OnmsIpInterface ipIface = (OnmsIpInterface) it.next();
-			maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
-		}
-		return maxCollType;		
-	}
+    public void setIpInterfaces(Set<OnmsIpInterface> ipInterfaces) {
+        m_ipInterfaces = ipInterfaces;
+    }
 
-	public Category log() {
-		return ThreadCategory.getInstance(getClass());
-	}
+    // @Transient
+    // public Set getIpInterfaces() {
+    //		
+    // Set ifsForSnmpIface = new LinkedHashSet();
+    // for (Iterator it = getNode().getIpInterfaces().iterator();
+    // it.hasNext();) {
+    // OnmsIpInterface iface = (OnmsIpInterface) it.next();
+    // if (getIfIndex().equals(iface.getIfIndex()))
+    // ifsForSnmpIface.add(iface);
+    // }
+    // return ifsForSnmpIface;
+    // }
 
-	public String computePhysAddrForRRD() {
-		/*
-		 * In order to assure the uniqueness of the RRD file names
-		 * we now append the MAC/physical address to the end of
-		 * label if it is available.
-		 */
-		String physAddrForRRD = null;
-        
-		if (getPhysAddr() != null) {
-			String parsedPhysAddr = AlphaNumeric.parseAndTrim(getPhysAddr());
-			if (parsedPhysAddr.length() == 12) {
-				physAddrForRRD = parsedPhysAddr;
-			} else {
-				if (log().isDebugEnabled()) {
-					log().debug(
-							"physAddrForRRD: physical address len "
-							+ "is NOT 12, physAddr="
-							+ parsedPhysAddr);
-				}
-			}
-		}
-        log().debug("computed physAddr for "+this+" to be "+physAddrForRRD);
-		return physAddrForRRD;
-	}
+    @Transient
+    public CollectionType getCollectionType() {
+        CollectionType maxCollType = CollectionType.NO_COLLECT;
+        for (Iterator it = getIpInterfaces().iterator(); it.hasNext();) {
+            OnmsIpInterface ipIface = (OnmsIpInterface) it.next();
+            maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
+        }
+        return maxCollType;
+    }
 
-	public String computeNameForRRD() {
-		/*
-		 * Determine the label for this interface. The label will be
-		 * used to create the RRD file name which holds SNMP data
-		 * retreived from the remote agent. If available ifName is
-		 * used to generate the label since it is guaranteed to be
-		 * unique. Otherwise ifDescr is used. In either case, all
-		 * non alpha numeric characters are converted to underscores
-		 * to ensure that the resuling string will make a decent
-		 * file name and that RRD won't have any problems using it
-		 */
-		String label = null;
-		if (getIfName() != null) {
-			label = AlphaNumeric.parseAndReplace(getIfName(), '_');
-		} else if (getIfDescr() != null) {
-			label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
-		} else {
-			log().info("Interface ("+this+") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
-			label = "no_ifLabel";
-		}
-		return label;
-	}
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
-	public String computeLabelForRRD() {
-		String name = computeNameForRRD();
-		String physAddrForRRD = computePhysAddrForRRD();
-		return (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
-	}
+    public String computePhysAddrForRRD() {
+        /*
+         * In order to assure the uniqueness of the RRD file names we now
+         * append the MAC/physical address to the end of label if it is
+         * available.
+         */
+        String physAddrForRRD = null;
+
+        if (getPhysAddr() != null) {
+            String parsedPhysAddr = AlphaNumeric.parseAndTrim(getPhysAddr());
+            if (parsedPhysAddr.length() == 12) {
+                physAddrForRRD = parsedPhysAddr;
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug(
+                                "physAddrForRRD: physical address len "
+                                        + "is NOT 12, physAddr="
+                                        + parsedPhysAddr);
+                }
+            }
+        }
+        log().debug(
+                    "computed physAddr for " + this + " to be "
+                            + physAddrForRRD);
+        return physAddrForRRD;
+    }
+
+    public String computeNameForRRD() {
+        /*
+         * Determine the label for this interface. The label will be used to
+         * create the RRD file name which holds SNMP data retreived from the
+         * remote agent. If available ifName is used to generate the label
+         * since it is guaranteed to be unique. Otherwise ifDescr is used. In
+         * either case, all non alpha numeric characters are converted to
+         * underscores to ensure that the resuling string will make a decent
+         * file name and that RRD won't have any problems using it
+         */
+        String label = null;
+        if (getIfName() != null) {
+            label = AlphaNumeric.parseAndReplace(getIfName(), '_');
+        } else if (getIfDescr() != null) {
+            label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
+        } else {
+            log().info(
+                       "Interface ("
+                               + this
+                               + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+            label = "no_ifLabel";
+        }
+        return label;
+    }
+
+    public String computeLabelForRRD() {
+        String name = computeNameForRRD();
+        String physAddrForRRD = computePhysAddrForRRD();
+        return (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
+    }
 
 }
