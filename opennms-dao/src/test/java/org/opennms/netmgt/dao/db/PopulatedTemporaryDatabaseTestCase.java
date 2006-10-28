@@ -6,7 +6,7 @@ import java.io.PrintStream;
 public class PopulatedTemporaryDatabaseTestCase extends
         TemporaryDatabaseTestCase {
     
-    private InstallerDb installerDb;
+    private InstallerDb m_installerDb;
     
     private ByteArrayOutputStream m_outputStream;
     
@@ -21,30 +21,30 @@ public class PopulatedTemporaryDatabaseTestCase extends
             return;
         }
         
-        installerDb = new InstallerDb();
+        m_installerDb = new InstallerDb();
 
         // Create a ByteArrayOutputSteam to effectively throw away output.
         resetOutputStream();
-        installerDb.setDatabaseName(getTestDatabase());
-        installerDb.setDataSource(getDataSource());
+        m_installerDb.setDatabaseName(getTestDatabase());
+        m_installerDb.setDataSource(getDataSource());
         
-        installerDb.setCreateSqlLocation(
+        m_installerDb.setCreateSqlLocation(
             "../opennms-daemon/src/main/filtered/etc/create.sql");
 
-        installerDb.setStoredProcedureDirectory(
+        m_installerDb.setStoredProcedureDirectory(
             "../opennms-daemon/src/main/filtered/etc");
 
         //installerDb.setDebug(true);
 
-        installerDb.readTables();
+        m_installerDb.readTables();
         
-        installerDb.createSequences();
-        installerDb.updatePlPgsql();
-        installerDb.addStoredProcedures();
+        m_installerDb.createSequences();
+        m_installerDb.updatePlPgsql();
+        m_installerDb.addStoredProcedures();
         
-        installerDb.createTables();
+        m_installerDb.createTables();
 
-        installerDb.closeConnection();
+        m_installerDb.closeConnection();
     }
 
     public ByteArrayOutputStream getOutputStream() {
@@ -53,6 +53,6 @@ public class PopulatedTemporaryDatabaseTestCase extends
     
     public void resetOutputStream() {
         m_outputStream = new ByteArrayOutputStream();
-        installerDb.setOutputStream(new PrintStream(m_outputStream));
+        m_installerDb.setOutputStream(new PrintStream(m_outputStream));
     }
 }
