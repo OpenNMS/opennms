@@ -34,30 +34,28 @@ package org.opennms.netmgt.dao;
 import java.io.Serializable;
 import java.util.Collection;
 
-
 public interface OnmsDao<T, K extends Serializable> {
-	
+
     public abstract void initialize(Object obj);
 
     public abstract void flush();
-    
+
     public abstract void clear();
-    
+
     public abstract int countAll();
-    
+
     public abstract void delete(T entity);
-    
+
     public abstract Collection<T> findAll();
-    
-	public abstract T get(K id);
-    
+
+    public abstract T get(K id);
+
     public abstract T load(K id);
 
     public abstract void save(T entity);
 
     public abstract void saveOrUpdate(T entity);
 
-	public abstract void update(T entity);
+    public abstract void update(T entity);
 
-    
 }
