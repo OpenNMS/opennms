@@ -151,6 +151,97 @@ public class ElementUtil extends Object {
         return shortLabel;
     }
     
+    
+    public static Interface getInterfaceByParams(HttpServletRequest request)
+            throws ServletException, SQLException {
+        return getInterfaceByParams(request, "ipinterfaceid", "node", "intf",
+                                    "ifindex");
+    }
+    
+    public static Interface getInterfaceByParams(HttpServletRequest request,
+                                                 String ipInterfaceIdParam,
+                                                 String nodeIdParam,
+                                                 String ipAddrParam,
+                                                 String ifIndexParam)
+            throws ServletException, SQLException {
+        Interface intf;
+        
+        if (request.getParameter(ipInterfaceIdParam) != null) {
+            String ifServiceIdString = request.getParameter(ipInterfaceIdParam);
+            
+            int ipInterfaceId;
+            
+            try {
+                ipInterfaceId = Integer.parseInt(ifServiceIdString);
+            } catch (NumberFormatException e) {
+                throw new ServletException("Wrong data type for \""
+                                           + ipInterfaceIdParam + "\" "
+                                           + "(value: \"" + ipInterfaceIdParam
+                                           + "\"), should be integer", e);
+                }
+
+                intf = NetworkElementFactory.getInterface(ipInterfaceId);
+        } else {
+            String nodeIdString = request.getParameter(nodeIdParam);
+            String ipAddr = request.getParameter(ipAddrParam);
+            String ifIndexString = request.getParameter(ifIndexParam);
+            
+            int nodeId;
+            int ifIndex = -1;
+
+            final String[] requiredParameters = new String[] {
+                nodeIdParam,
+                ipAddrParam
+            };
+
+            if (nodeIdString == null) {
+                throw new MissingParameterException(nodeIdParam,
+                                                    requiredParameters);
+            }
+
+            if (ipAddr == null) {
+                throw new MissingParameterException(ipAddrParam,
+                                                    requiredParameters);
+            }
+
+            try {
+                nodeId = Integer.parseInt(nodeIdString);
+            } catch (NumberFormatException e) {
+                throw new ServletException("Wrong data type for \""
+                                           + nodeIdParam + "\" "
+                                           + "(value: \"" + nodeIdString
+                                           + "\"), should be integer", e);
+            }
+
+            if (ifIndexString != null) {
+                try {
+                    ifIndex = Integer.parseInt(ifIndexString);
+                } catch (NumberFormatException e) {
+                    throw new ServletException("Wrong data type for \""
+                                               + ifIndexParam + "\" "
+                                               + "(value: \""
+                                               + ifIndexString
+                                               + "\"), should be integer", e);
+                }
+            }
+
+            if (ifIndex != -1) {
+                intf = NetworkElementFactory.getInterface(nodeId, ipAddr,
+                                                          ifIndex);
+            } else {
+                intf = NetworkElementFactory.getInterface(nodeId, ipAddr);
+            }
+        }
+
+        if (intf == null) {
+            //handle this WAY better, very awful
+            throw new ServletException("No such interface in database");
+        }
+        
+        return intf;
+    }
+
+    
     public static Service getServiceByParams(HttpServletRequest request)
             throws ServletException, SQLException {
         return getServiceByParams(request, "ifserviceid", "node", "intf",
