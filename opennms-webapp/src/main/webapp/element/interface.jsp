@@ -88,47 +88,16 @@
 %>
 
 <%
-    String nodeIdString = request.getParameter( "node" );
-    String ipAddr = request.getParameter( "intf" );
-    String ifindexString = request.getParameter( "ifindex" );
+    Interface intf_db = ElementUtil.getInterfaceByParams(request);
+    int nodeId = intf_db.getNodeId();
+    String ipAddr = intf_db.getIpAddress();
+    String ifindexString = "";
+	if (intf_db.getIfIndex() > 0) {
+	    ifindexString = Integer.toString(intf_db.getIfIndex());
+	}
     
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node", new String[] { "node", "intf", "ifindex?"} );
-    }
+    AtInterface atif_db = NetworkElementFactory.getAtInterface(nodeId, ipAddr);
 
-    if( ipAddr == null ) {
-        throw new org.opennms.web.MissingParameterException( "intf", new String[] { "node", "intf", "ifindex?" } );
-    }
-
-    int nodeId = -1;
-    int ifindex = -1;
-    
-    try {
-        nodeId = Integer.parseInt( nodeIdString );
-        if (ifindexString != null) 
-            ifindex = Integer.parseInt( ifindexString );
-    }
-    catch( NumberFormatException e ) {
-        //throw new WrongParameterDataTypeException
-        throw new ServletException( "Wrong data type, should be integer", e );
-    }
-
-    Interface intf_db = null;
-    AtInterface atif_db = null;
-    
-    //see if we know the ifindex
-    if (ifindexString == null) {
-        intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr );
-        atif_db = NetworkElementFactory.getAtInterface(nodeId, ipAddr);
-    }
-    else {
-        intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr, ifindex );
-    }
-    
-    if( intf_db == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such interface in the database" );
-    }
 
     Service[] services = NetworkElementFactory.getServicesOnInterface( nodeId, ipAddr );
     if( services == null ) {

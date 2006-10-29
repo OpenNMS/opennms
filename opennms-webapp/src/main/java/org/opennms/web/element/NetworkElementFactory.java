@@ -426,6 +426,33 @@ public class NetworkElementFactory extends Object {
         return hostname;
     }
 
+    public static Interface getInterface(int ipInterfaceId) throws SQLException {
+        Interface intf = null;
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE ID = ?");
+            stmt.setInt(1, ipInterfaceId);
+            ResultSet rs = stmt.executeQuery();
+
+            Interface[] intfs = rs2Interfaces(rs);
+
+            rs.close();
+            stmt.close();
+
+            augmentInterfacesWithSnmpData(intfs, conn);
+
+            // what do I do if this actually returns more than one node?
+            if (intfs.length > 0) {
+                intf = intfs[0];
+            }
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return intf;
+    }
+
     public static Interface getInterface(int nodeId, String ipAddress) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
