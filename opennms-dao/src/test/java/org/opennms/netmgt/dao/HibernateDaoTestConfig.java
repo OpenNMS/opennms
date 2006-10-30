@@ -65,6 +65,7 @@ import org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -144,6 +145,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         	OnmsNotification.class,
         	OnmsUserNotification.class,
         	AvailabilityReportLocator.class,
+            OnmsApplication.class
 
         };
         
