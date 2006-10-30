@@ -50,7 +50,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "applications")
-public class OnmsApplication {
+public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private Integer m_id;
 
@@ -90,6 +90,10 @@ public class OnmsApplication {
 
     public void setMemberServices(Set<OnmsMonitoredService> memberServices) {
         m_memberServices = memberServices;
+    }
+
+    public int compareTo(OnmsApplication o) {
+        return getName().compareToIgnoreCase(o.getName());
     }
 
 }
