@@ -106,21 +106,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 		m_description = description;
 	}
 	
-	//Still trying to figure this out....
-//	/**
-//	 * @hibernate.set name="cn" lazy="true" cascade="save-update" table="category_node"
-//	 * @hibernate.key column="categoryid"
-//	 * @hibernate.many-to-many class="org.opennms.model.OnmsNode" column="nodeid"
-//	 * @return a <code>Set</code> of OnmsNodes matching the category
-//	 */
-//	public Set getNodes(OnmsCustomCategory category) {
-//		return m_nodes;
-//	}
-        
-    @ManyToMany
-    @JoinTable(name = "category_node",
-               joinColumns = { @JoinColumn(name = "categoryId") },
-               inverseJoinColumns = { @JoinColumn(name = "nodeId") })
+    @ManyToMany(mappedBy="categories")
     public Set<OnmsNode> getMemberNodes() {
         return m_memberNodes;
     }
