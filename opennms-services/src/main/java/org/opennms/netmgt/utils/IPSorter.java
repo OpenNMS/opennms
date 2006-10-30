@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Oct 30: Convert to use Java 5 generics - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,8 +37,7 @@
 package org.opennms.netmgt.utils;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -115,7 +118,6 @@ public class IPSorter extends Object {
                 octet = 0;
             } else {
                 // 48 is decimal for the character '0'
-                //
                 octet = octet * 10 + (buf[i] - 48);
             }
         }
@@ -131,30 +133,21 @@ public class IPSorter extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        ArrayList list = new ArrayList();
-
-        for (int i = 0; i < addresses.length; i++) {
-            list.add(addresses[i]);
-        }
-
-        return getLowestInetAddress(list);
+        return getLowestInetAddress(Arrays.asList(addresses));
     }
 
     /**
      * Given a list of IP addresses, return the lowest as determined by the
      * numeric representation and not the alphanumeric string.
      */
-    public static InetAddress getLowestInetAddress(List addresses) {
+    public static InetAddress getLowestInetAddress(List<InetAddress> addresses) {
         if (addresses == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         InetAddress lowest = null;
         long lowestLong = Long.MAX_VALUE;
-        Iterator iterator = addresses.iterator();
-
-        while (iterator.hasNext()) {
-            InetAddress temp = (InetAddress) iterator.next();
+        for (InetAddress temp : addresses) {
             long tempLong = convertToLong(temp.getAddress());
 
             if (tempLong < lowestLong) {
