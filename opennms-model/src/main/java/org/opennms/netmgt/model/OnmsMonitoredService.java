@@ -265,12 +265,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
         m_currentOutages = currentOutages;
     }
     
-    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-                name="application_service_map",
-                joinColumns={@JoinColumn(name="ifserviceid")},
-                inverseJoinColumns={@JoinColumn(name="appid")}
-    )
+    @ManyToMany(mappedBy="memberServices")
     public Set<OnmsApplication> getApplications() {
         return m_applications;
     }
