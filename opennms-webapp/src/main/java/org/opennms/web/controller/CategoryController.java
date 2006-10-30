@@ -30,19 +30,18 @@ public class CategoryController extends AbstractController {
         if (removeCategoryIdString != null) {
             m_adminCategoryService.removeCategory(removeCategoryIdString);
             
-            return new ModelAndView(new RedirectView("categories.htm"));
+            return new ModelAndView(new RedirectView("/admin/categories.htm", true));
         }
         
         if (newCategoryName != null) {
             OnmsCategory newCategory =
                 m_adminCategoryService.addNewCategory(newCategoryName);
 
-            return new ModelAndView(new RedirectView("categories.htm"
-                                                     + "?"
-                                                     + "categoryid="
-                                                     + newCategory.getId()
-                                                     + "&"
-                                                     + "edit"));
+            ModelAndView modelAndView = 
+                new ModelAndView(new RedirectView("/admin/categories.htm", true));
+            modelAndView.addObject("categoryid", newCategory.getId());
+            modelAndView.addObject("edit", null);
+            return modelAndView;
         }
         
         if (categoryIdString != null && editString != null) {
@@ -55,13 +54,12 @@ public class CategoryController extends AbstractController {
                                                       editAction,
                                                       toAdd,
                                                       toDelete);
-                
-                return new ModelAndView(new RedirectView("categories.htm"
-                                                         + "?"
-                                                         + "categoryid="
-                                                         + categoryIdString
-                                                         + "&"
-                                                         + "edit"));
+
+                ModelAndView modelAndView = 
+                    new ModelAndView(new RedirectView("/admin/categories.htm", true));
+                modelAndView.addObject("categoryid", categoryIdString);
+                modelAndView.addObject("edit", null);
+                return modelAndView;
             }
 
             EditModel model =
@@ -89,13 +87,12 @@ public class CategoryController extends AbstractController {
                                                        editAction,
                                                        toAdd,
                                                        toDelete);
-                
-                return new ModelAndView(new RedirectView("categories.htm"
-                                                         + "?"
-                                                         + "node="
-                                                         + nodeIdString
-                                                         + "&"
-                                                         + "edit"));
+
+                ModelAndView modelAndView = 
+                    new ModelAndView(new RedirectView("/admin/categories.htm", true));
+                modelAndView.addObject("node", nodeIdString);
+                modelAndView.addObject("edit", null);
+                return modelAndView;
             }
 
             NodeEditModel model =
