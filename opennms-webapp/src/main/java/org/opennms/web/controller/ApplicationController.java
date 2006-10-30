@@ -11,6 +11,7 @@ import org.opennms.web.svclayer.support.DefaultAdminApplicationService.EditModel
 import org.opennms.web.svclayer.support.DefaultAdminApplicationService.ServiceEditModel;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.view.RedirectView;
 
 public class ApplicationController extends AbstractController {
 
@@ -29,24 +30,20 @@ public class ApplicationController extends AbstractController {
         if (removeApplicationIdString != null) {
             m_adminApplicationService.removeApplication(removeApplicationIdString);
             
-            List<OnmsApplication> sortedApplications
-                = m_adminApplicationService.findAllApplications();
-        
-            return new ModelAndView("/admin/applications",
-                                    "applications",
-                                    sortedApplications);
+            
+            return new ModelAndView(new RedirectView("applications.htm"));
         }
         
         if (newApplicationName != null) {
             OnmsApplication newApplication =
                 m_adminApplicationService.addNewApplication(newApplicationName);
             
-            EditModel model =
-                m_adminApplicationService.findApplicationAndAllMonitoredServices(Integer.toString(newApplication.getId()));
-
-            return new ModelAndView("/admin/editApplication",
-                                    "model",
-                                    model);
+            return new ModelAndView(new RedirectView("applications.htm"
+                                                     + "?"
+                                                     + "applicationid="
+                                                     + newApplication.getId()
+                                                     + "&"
+                                                     + "edit"));
         }
         
         if (applicationIdString != null && editString != null) {
@@ -59,6 +56,13 @@ public class ApplicationController extends AbstractController {
                                                       editAction,
                                                       toAdd,
                                                       toDelete);
+                
+                return new ModelAndView(new RedirectView("applications.htm"
+                                                         + "?"
+                                                         + "applicationid="
+                                                         + applicationIdString
+                                                         + "&"
+                                                         + "edit"));
             }
 
             EditModel model =
@@ -86,6 +90,13 @@ public class ApplicationController extends AbstractController {
                                                        editAction,
                                                        toAdd,
                                                        toDelete);
+                
+                return new ModelAndView(new RedirectView("applications.htm"
+                                                         + "?"
+                                                         + "ifserviceid="
+                                                         + ifServiceIdString
+                                                         + "&"
+                                                         + "edit"));
             }
 
             ServiceEditModel model =
