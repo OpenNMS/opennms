@@ -41,12 +41,11 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.element.*,
-		org.opennms.web.category.*,
-		java.util.*,
+	import="
 		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.event.*,
-		org.opennms.web.MissingParameterException
+		org.opennms.web.element.ElementUtil,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.element.Service
 	"
 %>
 
@@ -130,6 +129,8 @@ function doDelete() {
           
             <!-- Availability box -->
             <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
+            
+            <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
             
       </div> <!-- class="TwoColLeft" -->
 

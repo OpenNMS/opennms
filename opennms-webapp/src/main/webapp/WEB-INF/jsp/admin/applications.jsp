@@ -13,17 +13,26 @@
 
 <table>
   <tr>
-    <th></th>
-    <th></th>
+    <th>Delete</th>
+    <th>Edit</th>
     <th>Application</th>
   </tr>
   <c:forEach items="${applications}" var="app">
 	  <tr>
-	    <td><a href="#"><img src="images/trash.gif" alt="Delete Application"/></a></td>
-	    <td><a href="#"><img src="images/modify.gif" alt="Edit Application"/></a></td>
-	    <td><c:out value="${app.name}" /></td>
+	    <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><img src="images/trash.gif" alt="Delete Application"/></a></td>
+	    <td><a href="admin/applications.htm?applicationid=${app.id}&edit"><img src="images/modify.gif" alt="Edit Application"/></a></td>
+	    <td><a href="admin/applications.htm?applicationid=${app.id}">${app.name}</a></td> 
   	  </tr>
   </c:forEach>
+  <tr>
+    <td></td>
+    <td></td>
+    <td>
+      <form action="admin/applications.htm">
+        <input type="textfield" name="newApplicationName" size="40"/>
+        <input type="submit" value="Add New Application"/>
+      </form>
+  </tr>
 </table>
 
 

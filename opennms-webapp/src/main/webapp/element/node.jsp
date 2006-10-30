@@ -48,21 +48,27 @@
 	session="true"
 	import="org.opennms.web.element.*,
 		java.util.*,
+		java.net.*,
+      	org.opennms.netmgt.dao.CategoryDao,
+	    org.opennms.netmgt.dao.NodeDao,
+		org.opennms.netmgt.utils.IPSorter,
+		org.opennms.web.Util,
 		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.*,
-		org.opennms.web.Util,
-		java.net.*,
-		org.opennms.netmgt.utils.IPSorter,
 		org.opennms.web.performance.*,
 		org.opennms.web.response.*,
 	    org.opennms.web.asset.Asset,
 	    org.opennms.web.asset.AssetModel,
+	    org.springframework.transaction.support.TransactionTemplate,
 		org.springframework.web.context.WebApplicationContext,
       	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
 <%!
+
+	private WebApplicationContext m_webAppContext;
+
     protected int telnetServiceId;
     protected int httpServiceId;
     protected int dellServiceId;
@@ -110,7 +116,7 @@
             throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
         }
 
-	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+	    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 		this.perfModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
 		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
@@ -321,7 +327,7 @@
 
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
-							<hr />
+
             <!-- Asset box, if info available --> 
             <% if( asset != null ) { %>
 							<h3>Asset Information</h3>
@@ -329,7 +335,6 @@
 								<p>Description: <%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></p>
 								<p>Comments: <%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></p>
 							</div>
-							<hr />
             <% } %>
 
             <!-- node desktop information box -->
@@ -379,6 +384,9 @@
               <% } %>
 					</ul>
 				</div>
+
+      <!-- Category box -->
+	  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
 	</div>
 
 

@@ -12,7 +12,14 @@
 	<property name="suffix" value=".jsp" />
   </bean>
   
-  <bean name="/admin/applications.htm" class="org.opennms.web.controller.ApplicationController">
+  <bean name="/admin/applications.htm"
+  		class="org.opennms.web.controller.ApplicationController">
+  	<property name="adminApplicationService" ref="adminApplicationService"/>
+  </bean>
+  
+  <bean name="/admin/categories.htm"
+  		class="org.opennms.web.controller.CategoryController">
+  	<property name="adminCategoryService" ref="adminCategoryService"/>
   </bean>
 
   <bean name="/aggregateStatus.htm"
@@ -101,6 +108,14 @@
   <bean name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
     <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
+  </bean>
+  
+  <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
+  	<property name="adminCategoryService" ref="adminCategoryService"/>
+  </bean>
+  
+  <bean name="/includes/serviceApplication-box.htm" class="org.opennms.web.controller.ServiceApplicationBoxController">
+  	<property name="adminApplicationService" ref="adminApplicationService"/>
   </bean>
  
   	<!--

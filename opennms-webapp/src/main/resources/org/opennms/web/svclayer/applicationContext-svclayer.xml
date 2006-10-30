@@ -123,4 +123,15 @@
   	</constructor-arg>
   	<property name="prefabGraphDao" ref="prefabGraphDao"/>
   </bean>
+  
+  <!-- Admin applications bean -->
+  <bean id="adminApplicationService" class="org.opennms.web.svclayer.support.DefaultAdminApplicationService">
+    <property name="applicationDao" ref="applicationDao"/>
+    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+  </bean>
+  
+  <bean id="adminCategoryService" class="org.opennms.web.svclayer.support.DefaultAdminCategoryService">
+    <property name="categoryDao" ref="categoryDao"/>
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
 </beans>

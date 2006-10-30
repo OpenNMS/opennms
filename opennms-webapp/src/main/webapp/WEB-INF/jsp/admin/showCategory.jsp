@@ -1,0 +1,33 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
+<jsp:include page="/includes/header.jsp" flush="false">
+	<jsp:param name="title" value="Category" />
+	<jsp:param name="headTitle" value="Category" />
+	<jsp:param name="breadcrumb"
+               value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb"
+	           value="<a href='admin/categories.htm'>Categories</a>" />
+	<jsp:param name="breadcrumb" value="Show" />
+</jsp:include>
+
+<h3>Category ${category.name}</h3>
+
+<p>
+Category '${category.name}' has ${fn:length(category.memberNodes)} nodes (<a href="admin/categories.htm?edit&categoryid=${category.id}">edit</a>)
+</p>
+
+
+<table>
+  <tr>
+    <th>Node</th>
+  </tr>
+  <c:forEach items="${category.memberNodes}" var="node">
+    <tr>
+    	<td><a href="element/node.jsp?node=${node.id}">${node.label}</a></td> 
+    </tr>
+  </c:forEach>
+</table>
+
+<jsp:include page="/includes/footer.jsp" flush="false"/>
