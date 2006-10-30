@@ -33,6 +33,8 @@
 package org.opennms.web.element;
 
 public class Service {
+    int m_id;
+    
     int m_nodeId;
 
     int m_ifIndex;
@@ -54,7 +56,8 @@ public class Service {
     public Service() {
     }
 
-    public Service(int nodeid, int ifindex, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
+    public Service(int id, int nodeid, int ifindex, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
+        m_id = id;
         m_nodeId = nodeid;
         m_ifIndex = ifindex;
         m_ipAddr = ipaddr;
@@ -64,6 +67,10 @@ public class Service {
         m_lastFail = lastFail;
         m_notify = notify;
         m_status = status;
+    }
+
+    public int getId() {
+        return m_id;
     }
 
     public int getNodeId() {
