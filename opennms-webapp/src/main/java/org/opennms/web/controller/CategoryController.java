@@ -11,6 +11,7 @@ import org.opennms.web.svclayer.support.DefaultAdminCategoryService.EditModel;
 import org.opennms.web.svclayer.support.DefaultAdminCategoryService.NodeEditModel;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.view.RedirectView;
 
 public class CategoryController extends AbstractController {
 
@@ -29,24 +30,19 @@ public class CategoryController extends AbstractController {
         if (removeCategoryIdString != null) {
             m_adminCategoryService.removeCategory(removeCategoryIdString);
             
-            List<OnmsCategory> sortedCategories
-                = m_adminCategoryService.findAllCategories();
-        
-            return new ModelAndView("/admin/categories",
-                                    "categories",
-                                    sortedCategories);
+            return new ModelAndView(new RedirectView("categories.htm"));
         }
         
         if (newCategoryName != null) {
             OnmsCategory newCategory =
                 m_adminCategoryService.addNewCategory(newCategoryName);
-            
-            EditModel model =
-                m_adminCategoryService.findCategoryAndAllNodes(Integer.toString(newCategory.getId()));
 
-            return new ModelAndView("/admin/editCategory",
-                                    "model",
-                                    model);
+            return new ModelAndView(new RedirectView("categories.htm"
+                                                     + "?"
+                                                     + "categoryid="
+                                                     + newCategory.getId()
+                                                     + "&"
+                                                     + "edit"));
         }
         
         if (categoryIdString != null && editString != null) {
@@ -59,6 +55,13 @@ public class CategoryController extends AbstractController {
                                                       editAction,
                                                       toAdd,
                                                       toDelete);
+                
+                return new ModelAndView(new RedirectView("categories.htm"
+                                                         + "?"
+                                                         + "categoryid="
+                                                         + categoryIdString
+                                                         + "&"
+                                                         + "edit"));
             }
 
             EditModel model =
@@ -86,6 +89,13 @@ public class CategoryController extends AbstractController {
                                                        editAction,
                                                        toAdd,
                                                        toDelete);
+                
+                return new ModelAndView(new RedirectView("categories.htm"
+                                                         + "?"
+                                                         + "node="
+                                                         + nodeIdString
+                                                         + "&"
+                                                         + "edit"));
             }
 
             NodeEditModel model =
