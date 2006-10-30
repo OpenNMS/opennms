@@ -12,7 +12,8 @@
 //
 // Modifications:
 //
-// 2006 Oct 30: Convert to use Java 5 generics. - dj@opennms.org
+// 2006 Oct 30: Convert to use Java 5 generics and clean up warnings.
+//              - dj@opennms.org
 // 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2004 Jan 15: Added node admin function.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -49,6 +50,7 @@
 		java.util.*,
 		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.*,
+		org.opennms.web.Util,
 		java.net.*,
 		org.opennms.netmgt.utils.IPSorter,
 		org.opennms.web.performance.*,
@@ -388,8 +390,8 @@
             </jsp:include>
 
             <!-- events list  box -->
-            <% String eventHeader = "<a href='event/list?filter=" + URLEncoder.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
-            <% String moreEventsUrl = "event/list?filter=" + URLEncoder.encode("node=" + nodeId); %>
+            <% String eventHeader = "<a href='event/list?filter=" + Util.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
+            <% String moreEventsUrl = "event/list?filter=" + Util.encode("node=" + nodeId); %>
 
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
