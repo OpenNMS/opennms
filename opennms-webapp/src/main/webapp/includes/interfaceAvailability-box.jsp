@@ -82,28 +82,9 @@
 %>
 
 <%
-    //required parameter node
-    String nodeIdString = request.getParameter( "node" );
-
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node", new String[] {"node", "intf"} );
-    }
-
-    //required parameter intf
-    String ipAddr = request.getParameter( "intf" );
-
-    if( ipAddr == null ) {
-        throw new org.opennms.web.MissingParameterException( "intf", new String[] {"node", "intf"} );
-    }
-    
-    int nodeId = Integer.parseInt( nodeIdString );
-
-    //get the database node info
-    Interface intf = NetworkElementFactory.getInterface(nodeId, ipAddr);
-    if( intf == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such interface in database" );
-    }
+    Interface intf = ElementUtil.getInterfaceByParams(request);
+    int nodeId = intf.getNodeId();
+    String ipAddr = intf.getIpAddress();
 
     //get the child services (in alphabetical order)
     Service[] services = this.getServices(intf);
@@ -158,9 +139,7 @@ if (overallRtcValue < 0) {
     </tr>
   <% } %>
   <tr>
-    <td></td>
-    <td colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
-
+    <td colspan="2" style="text-align: right;">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%>
   </tr>   
 </table>   
 
