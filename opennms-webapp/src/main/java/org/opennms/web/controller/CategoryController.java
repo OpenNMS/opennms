@@ -34,14 +34,16 @@ public class CategoryController extends AbstractController {
         }
         
         if (newCategoryName != null) {
-            OnmsCategory newCategory =
-                m_adminCategoryService.addNewCategory(newCategoryName);
-
-            ModelAndView modelAndView = 
-                new ModelAndView(new RedirectView("/admin/categories.htm", true));
-            modelAndView.addObject("categoryid", newCategory.getId());
-            modelAndView.addObject("edit", null);
-            return modelAndView;
+            m_adminCategoryService.addNewCategory(newCategoryName);
+            
+            /*
+             * We could be smart and take the user straight to the edit page
+             * for this new category, which would be great, however it's
+             * not so great if the site has a huge number of available
+             * category and they need to edit category member nodes
+             * from the node pages.  So, we don't do it.
+             */
+            return new ModelAndView(new RedirectView("/admin/categories.htm", true));
         }
         
         if (categoryIdString != null && editString != null) {
