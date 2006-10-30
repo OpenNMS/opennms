@@ -1018,6 +1018,7 @@ public class NetworkElementFactory extends Object {
 
             Object element = null;
             
+            service.m_id = rs.getInt("id");
             service.m_nodeId = rs.getInt("nodeid");
             service.m_ifIndex = rs.getInt("ifindex");
             service.m_ipAddr = rs.getString("ipaddr");
