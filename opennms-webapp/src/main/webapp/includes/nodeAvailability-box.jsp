@@ -110,6 +110,7 @@
 
 <div id="availability-box">
 
+<h3>Availability</h3>
 <table>
   <tr class="CellStatus">
     <td>Availability (last 24 hours)</td>
