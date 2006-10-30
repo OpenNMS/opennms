@@ -146,6 +146,8 @@
         <li><a HREF="admin/pollerConfig/index.jsp">Configure Pollers</a></li>
         <li><a HREF="admin/asset/index.jsp">Import and Export Asset Information</a></li>
         <li><a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
+        <li><a HREF="admin/categories.htm">Manage node categories</a></li>
+        <li><a HREF="admin/applications.htm">Manage applications</a></li>
       </ul>
       <!-- security link -->
     </div>
@@ -227,6 +229,14 @@
 	<p><b>Scheduled Outages</b> provides an interface for adding and editing scheduled 
 	    outages.  You can pause notifications, polling, thresholding and data collection 
             (or any combination of the four) for any interface/node for any time.  
+	</p>
+
+	<p><b>Manage node categories</b> allows you to manage node categories
+	  (groups of nodes).
+	</p>
+
+	<p><b>Manage applications</b> allows you to manage applications (groups
+	  of services on interfaces).
 	</p>
 
         <p><b>Notification Status</b> provides both a visual reminder as to whether your users 

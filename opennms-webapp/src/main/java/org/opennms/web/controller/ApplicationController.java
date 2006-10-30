@@ -1,54 +1,118 @@
 package org.opennms.web.controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.web.svclayer.SimpleWebTable;
+import org.opennms.web.svclayer.AdminApplicationService;
+import org.opennms.web.svclayer.support.DefaultAdminApplicationService.EditModel;
+import org.opennms.web.svclayer.support.DefaultAdminApplicationService.ServiceEditModel;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 public class ApplicationController extends AbstractController {
 
+    private AdminApplicationService m_adminApplicationService;
+
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SimpleWebTable webTable = new SimpleWebTable();
-        webTable.setTitle("Applications");
+        OnmsApplication application = null;
         
-        webTable.addColumn("", "simpleWebTableHeader");
-        webTable.addColumn("", "simpleWebTableHeader");
-        webTable.addColumn("Application Name", "simpleWebTableHeader");
+        String removeApplicationIdString = request.getParameter("removeApplicationId");
+        String newApplicationName = request.getParameter("newApplicationName");
+        String applicationIdString = request.getParameter("applicationid");
+        String editString = request.getParameter("edit");
+        String ifServiceIdString = request.getParameter("ifserviceid");
         
-        webTable.newRow();
-        webTable.addCell("Delete", "simpleWebTableRowLabel", "#");
-        webTable.addCell("Edit", "simpleWebTableRowLabel", "#");
-        webTable.addCell("Big Application 1", "simpleWebTableRowLabel");
+        if (removeApplicationIdString != null) {
+            m_adminApplicationService.removeApplication(removeApplicationIdString);
+            
+            List<OnmsApplication> sortedApplications
+                = m_adminApplicationService.findAllApplications();
+        
+            return new ModelAndView("/admin/applications",
+                                    "applications",
+                                    sortedApplications);
+        }
+        
+        if (newApplicationName != null) {
+            OnmsApplication newApplication =
+                m_adminApplicationService.addNewApplication(newApplicationName);
+            
+            EditModel model =
+                m_adminApplicationService.findApplicationAndAllMonitoredServices(Integer.toString(newApplication.getId()));
 
-        webTable.newRow();
-        webTable.addCell("Delete", "simpleWebTableRowLabel", "#");
-        webTable.addCell("Edit", "simpleWebTableRowLabel", "#");
-        webTable.addCell("Big Application 2", "simpleWebTableRowLabel");
+            return new ModelAndView("/admin/editApplication",
+                                    "model",
+                                    model);
+        }
         
-        Collection<OnmsApplication> applications = new ArrayList<OnmsApplication>();
+        if (applicationIdString != null && editString != null) {
+            String editAction = request.getParameter("action");
+            if (editAction != null) {
+                String[] toAdd = request.getParameterValues("toAdd");
+                String[] toDelete = request.getParameterValues("toDelete");
+
+                m_adminApplicationService.performEdit(applicationIdString,
+                                                      editAction,
+                                                      toAdd,
+                                                      toDelete);
+            }
+
+            EditModel model =
+                m_adminApplicationService.findApplicationAndAllMonitoredServices(applicationIdString);
+
+            return new ModelAndView("/admin/editApplication",
+                                    "model",
+                                    model);
+        }
         
-        applications.add(createApp(1, "Big Application 1"));
-        applications.add(createApp(2, "Big Application 2"));
-        applications.add(createApp(3, "Big Application 3"));
+        if (applicationIdString != null) {
+            application = m_adminApplicationService.getApplication(applicationIdString);
+            return new ModelAndView("/admin/showApplication",
+                                    "application",
+                                    application);
+        }
         
+        if (ifServiceIdString != null && editString != null) {
+            String editAction = request.getParameter("action");
+            if (editAction != null) {
+                String[] toAdd = request.getParameterValues("toAdd");
+                String[] toDelete = request.getParameterValues("toDelete");
+
+                m_adminApplicationService.performServiceEdit(ifServiceIdString,
+                                                       editAction,
+                                                       toAdd,
+                                                       toDelete);
+            }
+
+            ServiceEditModel model =
+                m_adminApplicationService.findServiceApplications(ifServiceIdString);
+
+            return new ModelAndView("/admin/editServiceApplications",
+                                    "model",
+                                    model);
+        }
+
+
+
+        List<OnmsApplication> sortedApplications
+            = m_adminApplicationService.findAllApplications();
         
-        ModelAndView modelAndView = new ModelAndView("/admin/applications", "webTable", webTable);
-        modelAndView.addObject("applications", applications);
-        return modelAndView;
+        return new ModelAndView("/admin/applications",
+                                "applications",
+                                sortedApplications);
     }
 
-    private OnmsApplication createApp(int id, String name) {
-        OnmsApplication app1 = new OnmsApplication();
-        app1.setId(id);
-        app1.setName(name);
-        return app1;
+    public AdminApplicationService getAdminApplicationService() {
+        return m_adminApplicationService;
+    }
+
+    public void setAdminApplicationService(
+            AdminApplicationService adminApplicationService) {
+        m_adminApplicationService = adminApplicationService;
     }
 
 }
