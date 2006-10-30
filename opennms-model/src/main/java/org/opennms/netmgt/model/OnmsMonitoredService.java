@@ -36,12 +36,15 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -56,7 +59,8 @@ import org.springframework.core.style.ToStringCreator;
 
 @Entity
 @Table(name="ifServices")
-public class OnmsMonitoredService extends OnmsEntity implements Serializable {
+public class OnmsMonitoredService extends OnmsEntity implements Serializable,
+        Comparable<OnmsMonitoredService> {
 
     /**
      * 
@@ -93,6 +97,8 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
      * by more than one outage.
      */
     private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<OnmsOutage>();
+
+    private Set<OnmsApplication> m_applications;
 
     public OnmsMonitoredService() {
     }
@@ -257,6 +263,37 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
 
     public void setCurrentOutages(Set<OnmsOutage> currentOutages) {
         m_currentOutages = currentOutages;
+    }
+    
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+                name="application_service_map",
+                joinColumns={@JoinColumn(name="ifserviceid")},
+                inverseJoinColumns={@JoinColumn(name="appid")}
+    )
+    public Set<OnmsApplication> getApplications() {
+        return m_applications;
+    }
+    
+    public void setApplications(Set<OnmsApplication> applications) {
+        m_applications = applications;
+    }
+
+
+    public int compareTo(OnmsMonitoredService o) {
+        int diff;
+        
+        diff = getIpInterface().getNode().getLabel().compareToIgnoreCase(o.getIpInterface().getNode().getLabel());
+        if (diff != 0) {
+            return diff;
+        }
+        
+        diff = getIpAddress().compareToIgnoreCase(o.getIpAddress());
+        if (diff != 0) {
+            return diff;
+        }
+
+        return getServiceName().compareToIgnoreCase(o.getServiceName());
     }
 
 }
