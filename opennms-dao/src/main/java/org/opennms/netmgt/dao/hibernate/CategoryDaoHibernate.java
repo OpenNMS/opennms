@@ -16,10 +16,4 @@ public class CategoryDaoHibernate extends AbstractDaoHibernate<OnmsCategory, Int
 	public OnmsCategory findByName(String name) {
 		return findUnique("from OnmsCategory as category where category.name = ?", name);
 	}
-
-    public Set<OnmsCategory> findByNode(OnmsNode node) {
-        // XXX brozow/david: write this
-        throw new UnsupportedOperationException("method not yet implemented");
-    }
-
 }
