@@ -35,14 +35,16 @@ public class ApplicationController extends AbstractController {
         }
         
         if (newApplicationName != null) {
-            OnmsApplication newApplication =
-                m_adminApplicationService.addNewApplication(newApplicationName);
+            m_adminApplicationService.addNewApplication(newApplicationName);
             
-            ModelAndView modelAndView = 
-                new ModelAndView(new RedirectView("/admin/applications.htm", true));
-            modelAndView.addObject("applicationid", newApplication.getId());
-            modelAndView.addObject("edit", null);
-            return modelAndView;
+            /*
+             * We could be smart and take the user straight to the edit page
+             * for this new application, which would be great, however it's
+             * not so great if the site has a huge number of available
+             * applications and they need to edit application member services
+             * from the service pages.  So, we don't do it.
+             */
+            return new ModelAndView(new RedirectView("/admin/applications.htm", true));
         }
         
         if (applicationIdString != null && editString != null) {
