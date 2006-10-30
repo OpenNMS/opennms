@@ -57,20 +57,21 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-
 <%!  
-    protected OutageModel m_outageModel = new OutageModel();
+    private OutageModel m_outageModel = new OutageModel();
+	private WebApplicationContext m_webAppContext;
+	private NodeDao m_nodeDao;
+	private CategoryDao m_categoryDao;
+	private TransactionTemplate m_transTemplate;
+	private SiteStatusViewService m_siteStatusViewService;
 	
-%>
-
-<%
-
-WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-NodeDao m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", NodeDao.class);
-CategoryDao m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", CategoryDao.class);
-TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getBean("transactionTemplate", TransactionTemplate.class);
-SiteStatusViewService m_siteStatusViewService = (SiteStatusViewService) m_webAppContext.getBean("siteStatusViewService", SiteStatusViewService.class);
-
+    public void init() {
+		m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", NodeDao.class);
+		m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", CategoryDao.class);
+		m_transTemplate = (TransactionTemplate) m_webAppContext.getBean("transactionTemplate", TransactionTemplate.class);
+		m_siteStatusViewService = (SiteStatusViewService) m_webAppContext.getBean("siteStatusViewService", SiteStatusViewService.class);
+    }
 %>
 
 <%
