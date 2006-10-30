@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Oct 30: Convert to use Java 5 generics. - dj@opennms.org
 // 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2004 Jan 15: Added node admin function.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -68,13 +69,16 @@
     protected ResponseTimeModel rtModel;
 	protected AssetModel model = new AssetModel();
 
-	public static HashMap<Character, String> statusMap;
+	public static HashMap<Character, String> m_statusMap;
+
+	static {
+        m_statusMap = new HashMap<Character, String>();
+        m_statusMap.put(new Character('A'), "Active");
+        m_statusMap.put(new Character(' '), "Unknown");
+        m_statusMap.put(new Character('D'), "Deleted");
+	}
     
     public void init() throws ServletException {
-        this.statusMap = new HashMap<Character, String>();
-        this.statusMap.put( new Character('A'), "Active" );
-        this.statusMap.put( new Character(' '), "Unknown" );
-        this.statusMap.put( new Character('D'), "Deleted" );
         
         try {
             this.telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");
@@ -109,8 +113,8 @@
 		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
     
-    public String getStatusString( char c ) {
-        return this.statusMap.get(new Character(c));
+    public static String getStatusString(char c) {
+        return m_statusMap.get(new Character(c));
     }
 
 %>
@@ -142,7 +146,7 @@
     Service[] telnetServices = NetworkElementFactory.getServicesOnNode(nodeId, this.telnetServiceId);
     
     if( telnetServices != null && telnetServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < telnetServices.length; i++ ) {
             ips.add(InetAddress.getByName(telnetServices[i].getIpAddress()));
         }
@@ -159,7 +163,7 @@
     Service[] httpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.httpServiceId);
 
     if( httpServices != null && httpServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < httpServices.length; i++ ) {
             ips.add(InetAddress.getByName(httpServices[i].getIpAddress()));
         }
@@ -176,7 +180,7 @@
     Service[] dellServices = NetworkElementFactory.getServicesOnNode(nodeId, this.dellServiceId);
 
     if( dellServices != null && dellServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < dellServices.length; i++ ) {
             ips.add(InetAddress.getByName(dellServices[i].getIpAddress()));
         }
@@ -292,7 +296,7 @@
 
 	<div class="TwoColLeft">
             <!-- general info box -->
-						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
+						<h3>General (Status: <%=(getStatusString(node_db.getNodeType())!=null ? getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
 			<div class="boxWrapper">
 			     <ul class="plain">
 		            <% if( isRouteIP ) { %>
