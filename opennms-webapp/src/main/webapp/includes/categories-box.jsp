@@ -51,7 +51,7 @@
 <%@page language="java" contentType="text/html" session="true"
 	import="org.opennms.web.category.Category,
 		org.opennms.web.category.CategoryList,
-		java.net.URLEncoder,
+		org.opennms.web.Util,
 		java.util.Date,
 		java.util.Iterator,
 		java.util.List,
@@ -107,7 +107,7 @@
 %>
 	<tr class="CellStatus">
 		<td>
-		  <a href="<%= response.encodeURL("rtc/category.jsp?category=" + URLEncoder.encode(categoryName, "UTF-8")) %>"
+		  <a href="<%= response.encodeURL("rtc/category.jsp?category=" + Util.encode(categoryName)) %>"
 		     title="<%= category.getTitle() %>">
 		     <%= categoryName %>
 		  </a>
