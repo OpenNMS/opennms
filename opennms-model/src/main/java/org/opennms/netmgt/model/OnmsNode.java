@@ -67,7 +67,8 @@ import org.springframework.core.style.ToStringCreator;
 */
 @Entity
 @Table(name="node")
-public class OnmsNode extends OnmsEntity implements Serializable {
+public class OnmsNode extends OnmsEntity implements Serializable,
+        Comparable<OnmsNode> {
 
     private static final long serialVersionUID = -5736397583719151493L;
 
@@ -483,6 +484,10 @@ public class OnmsNode extends OnmsEntity implements Serializable {
             }
         }
         return null;
+    }
+
+    public int compareTo(OnmsNode o) {
+        return getLabel().compareToIgnoreCase(o.getLabel());
     }
 
 }
