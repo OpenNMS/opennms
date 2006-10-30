@@ -62,7 +62,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     /** persistent field */
     private String m_description;
 
-    private Set<OnmsNode> m_memberNodes;
+    //private Set<OnmsNode> m_memberNodes;
 
     public OnmsCategory(String name, String descr) {
         m_name = name;
@@ -106,6 +106,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 		m_description = description;
 	}
 	
+        /*
     @ManyToMany(mappedBy="categories")
     public Set<OnmsNode> getMemberNodes() {
         return m_memberNodes;
@@ -114,6 +115,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     public void setMemberNodes(Set<OnmsNode> memberNodes) {
         m_memberNodes = memberNodes;
     }
+    */
 
     public String toString() {
         return new ToStringCreator(this)

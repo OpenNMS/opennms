@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.svclayer.support.DefaultAdminCategoryService.CategoryAndMemberNodes;
 import org.opennms.web.svclayer.support.DefaultAdminCategoryService.EditModel;
 import org.opennms.web.svclayer.support.DefaultAdminCategoryService.NodeEditModel;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 public interface AdminCategoryService {
-    public OnmsCategory getCategory(String categoryIdString);
+    public CategoryAndMemberNodes getCategory(String categoryIdString);
 
     public List<OnmsNode> findAllNodes();
     

@@ -1,6 +1,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -20,6 +21,7 @@ public class DistributedStatusHistoryModel {
     private List<OnmsApplication> m_applications;
     private OnmsMonitoringLocationDefinition m_chosenLocation;
     private OnmsApplication m_chosenApplication;
+    private Collection<OnmsMonitoredService> m_chosenApplicationMemberServices;
     private List<String> m_errors;
     private List<RelativeTimePeriod> m_periods;
     private RelativeTimePeriod m_chosenPeriod;
@@ -34,6 +36,7 @@ public class DistributedStatusHistoryModel {
             List<RelativeTimePeriod> periods,
             OnmsMonitoringLocationDefinition chosenLocation,
             OnmsApplication chosenApplication,
+            Collection<OnmsMonitoredService> chosenApplicationMemberServices,
             OnmsLocationMonitor chosenMonitor,
             RelativeTimePeriod chosenPeriod,
             List<String> errors) {
@@ -43,6 +46,7 @@ public class DistributedStatusHistoryModel {
         m_periods = periods;
         m_chosenLocation = chosenLocation;
         m_chosenApplication = chosenApplication;
+        m_chosenApplicationMemberServices = chosenApplicationMemberServices;
         m_chosenMonitor = chosenMonitor;
         m_chosenPeriod = chosenPeriod;
         m_errors = errors;
@@ -60,6 +64,10 @@ public class DistributedStatusHistoryModel {
 
     public OnmsApplication getChosenApplication() {
         return m_chosenApplication;
+    }
+
+    public Collection<OnmsMonitoredService> getChosenApplicationMemberServices() {
+        return m_chosenApplicationMemberServices;
     }
 
     public OnmsMonitoringLocationDefinition getChosenLocation() {
@@ -92,8 +100,8 @@ public class DistributedStatusHistoryModel {
     
     // We need to init when we are constructed so lazy loading happens during our transaction
     private void initHttpGraphUrls() {
-        Set<OnmsMonitoredService> services =
-            getChosenApplication().getMemberServices(); 
+        Collection<OnmsMonitoredService> services =
+            getChosenApplicationMemberServices();
         List<OnmsMonitoredService> sortedServices =
             new ArrayList<OnmsMonitoredService>(services);
         Collections.sort(sortedServices, new Comparator<OnmsMonitoredService>() {

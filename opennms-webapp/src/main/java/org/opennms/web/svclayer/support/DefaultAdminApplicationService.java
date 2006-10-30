@@ -19,34 +19,21 @@ public class DefaultAdminApplicationService implements
     private ApplicationDao m_applicationDao;
     private MonitoredServiceDao m_monitoredServiceDao;
 
-    public OnmsApplication getApplication(String applicationIdString) {
+    public ApplicationAndMemberServices getApplication(String applicationIdString) {
         if (applicationIdString == null) {
             throw new IllegalArgumentException("applicationIdString must not be null");
         }
 
-        int applicationId = -1;
-        try {
-            applicationId = Integer.parseInt(applicationIdString);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("parameter 'applicationid' "
-                                               + "with value '"
-                                               + applicationIdString
-                                               + "' could not be parsed "
-                                               + "as an integer");
-        }
-
-        OnmsApplication application = m_applicationDao.get(applicationId);
-        if (application == null) {
-            throw new IllegalArgumentException("Could not find application "
-                                               + "with application ID "
-                                               + applicationId);
-        }
-        m_applicationDao.initialize(application.getMemberServices());
-        for (OnmsMonitoredService service : application.getMemberServices()) {
+        OnmsApplication application = findApplication(applicationIdString);
+        
+        Collection<OnmsMonitoredService> memberServices =
+            m_monitoredServiceDao.findByApplication(application);
+        for (OnmsMonitoredService service : memberServices) {
             m_applicationDao.initialize(service.getIpInterface());
             m_applicationDao.initialize(service.getIpInterface().getNode());
         }
-        return application;
+        
+        return new ApplicationAndMemberServices(application, memberServices);
     }
 
     public List<OnmsMonitoredService> findAllMonitoredServices() {
@@ -58,10 +45,12 @@ public class DefaultAdminApplicationService implements
     }
     
     public EditModel findApplicationAndAllMonitoredServices(String applicationIdString) {
-        OnmsApplication application = getApplication(applicationIdString);
+        ApplicationAndMemberServices app = getApplication(applicationIdString); 
+        
         List<OnmsMonitoredService> monitoredServices =
             findAllMonitoredServices();
-        return new EditModel(application, monitoredServices);
+        return new EditModel(app.getApplication(), monitoredServices,
+                             app.getMemberServices());
     }
 
     public ApplicationDao getApplicationDao() {
@@ -89,7 +78,7 @@ public class DefaultAdminApplicationService implements
             throw new IllegalArgumentException("editAction cannot be null");
         }
         
-        OnmsApplication application = getApplication(applicationIdString);
+        OnmsApplication application = findApplication(applicationIdString); 
        
         if (editAction.equals("Add")) {
             if (toAdd == null) {
@@ -112,17 +101,17 @@ public class DefaultAdminApplicationService implements
                                                        + "id of " + id
                                                        + "could not be found");
                 }
-                if (application.getMemberServices().contains(service)) {
+                if (service.getApplications().contains(application)) {
                     throw new IllegalArgumentException("monitored service with "
                                                        + "id of " + id
                                                        + "is already a member of "
                                                        + "application "
                                                        + application.getName());
                 }
-                application.getMemberServices().add(service);
+                
+                service.addApplication(application);
+                m_monitoredServiceDao.save(service);
             }
-            
-            m_applicationDao.save(application);
        } else if (editAction.equals("Remove")) {
             if (toDelete == null) {
                 return;
@@ -144,14 +133,16 @@ public class DefaultAdminApplicationService implements
                                                        + "id of " + id
                                                        + "could not be found");
                 }
-                if (!application.getMemberServices().contains(service)) {
+                if (!service.getApplications().contains(application)) {
                     throw new IllegalArgumentException("monitored service with "
                                                        + "id of " + id
                                                        + "is not a member of "
                                                        + "application "
                                                        + application.getName());
                 }
-                application.getMemberServices().remove(service);
+                
+                service.removeApplication(application);
+                m_monitoredServiceDao.save(service);
             }
 
             m_applicationDao.save(application);
@@ -179,7 +170,7 @@ public class DefaultAdminApplicationService implements
     }
 
     public void removeApplication(String applicationIdString) {
-        OnmsApplication application = getApplication(applicationIdString);
+        OnmsApplication application = findApplication(applicationIdString);
         m_applicationDao.delete(application);
     }
 
@@ -295,6 +286,27 @@ public class DefaultAdminApplicationService implements
         return new ServiceEditModel(service, applications);
     }
 
+    public OnmsApplication findApplication(String name) {
+        int applicationId = -1;
+        try {
+            applicationId = Integer.parseInt(name);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("parameter 'applicationid' "
+                                               + "with value '"
+                                               + name
+                                               + "' could not be parsed "
+                                               + "as an integer");
+        }
+
+        OnmsApplication application = m_applicationDao.get(applicationId);
+        if (application == null) {
+            throw new IllegalArgumentException("Could not find application "
+                                               + "with application ID "
+                                               + applicationId);
+        }
+        return application;
+        }
+
 
 
     private OnmsMonitoredService findService(String ifServiceIdString) {
@@ -318,23 +330,40 @@ public class DefaultAdminApplicationService implements
         return service;
     }
 
+    public class ApplicationAndMemberServices {
+        private OnmsApplication m_application;
+        private Collection<OnmsMonitoredService> m_memberServices;
 
+        public ApplicationAndMemberServices(OnmsApplication application,
+                Collection<OnmsMonitoredService> memberServices) {
+            m_application = application;
+            m_memberServices = memberServices;
+        }
+
+        public OnmsApplication getApplication() {
+            return m_application;
+        }
+
+        public Collection<OnmsMonitoredService> getMemberServices() {
+            return m_memberServices;
+        }
+    }
 
     public class EditModel {
         private OnmsApplication m_application;
         private List<OnmsMonitoredService> m_monitoredServices;
         private List<OnmsMonitoredService> m_sortedMemberServices;
 
-        public EditModel(OnmsApplication application, List<OnmsMonitoredService> monitoredServices) {
+        public EditModel(OnmsApplication application,
+                List<OnmsMonitoredService> monitoredServices,
+                Collection<OnmsMonitoredService> memberServices) {
             m_application = application;
             m_monitoredServices = monitoredServices;
             
-            for (OnmsMonitoredService service : m_application.getMemberServices()) {
-                m_monitoredServices.remove(service);
-            }
+            m_monitoredServices.removeAll(memberServices);
             
             m_sortedMemberServices =
-                new ArrayList<OnmsMonitoredService>(m_application.getMemberServices());
+                new ArrayList<OnmsMonitoredService>(memberServices);
             Collections.sort(m_sortedMemberServices);
         }
 

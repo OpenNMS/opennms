@@ -33,18 +33,28 @@ public class DefaultAdminCategoryService implements
         m_nodeDao = nodeDao;
     }
 
-    public OnmsCategory getCategory(String categoryIdString) {
+    public CategoryAndMemberNodes getCategory(String categoryIdString) {
         if (categoryIdString == null) {
             throw new IllegalArgumentException("categoryIdString must not be null");
         }
 
+        OnmsCategory category = findCategory(categoryIdString);
+        
+        Collection<OnmsNode> memberNodes =
+            m_nodeDao.findByCategory(category);
+        // XXX does anything need to be initialized in each member node?
+        
+        return new CategoryAndMemberNodes(category, memberNodes);
+    }
+    
+    private OnmsCategory findCategory(String name) {
         int categoryId = -1;
         try {
-            categoryId = Integer.parseInt(categoryIdString);
+            categoryId = Integer.parseInt(name);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("parameter 'categoryid' "
                                                + "with value '"
-                                               + categoryIdString
+                                               + name
                                                + "' could not be parsed "
                                                + "as an integer");
         }
@@ -55,8 +65,7 @@ public class DefaultAdminCategoryService implements
                                                + "with category ID "
                                                + categoryId);
         }
-        m_categoryDao.initialize(category.getMemberNodes());
-        // XXX does anything need to be initialized in each member node?
+
         return category;
     }
 
@@ -69,9 +78,10 @@ public class DefaultAdminCategoryService implements
     }
     
     public EditModel findCategoryAndAllNodes(String categoryIdString) {
-        OnmsCategory category = getCategory(categoryIdString);
+        CategoryAndMemberNodes cat = getCategory(categoryIdString); 
         List<OnmsNode> monitoredNodes = findAllNodes();
-        return new EditModel(category, monitoredNodes);
+        return new EditModel(cat.getCategory(), monitoredNodes,
+                             cat.getMemberNodes());
     }
 
     public void performEdit(String categoryIdString, String editAction,
@@ -83,7 +93,7 @@ public class DefaultAdminCategoryService implements
             throw new IllegalArgumentException("editAction cannot be null");
         }
         
-        OnmsCategory category = getCategory(categoryIdString);
+        OnmsCategory category = findCategory(categoryIdString);
        
         if (editAction.equals("Add")) {
             if (toAdd == null) {
@@ -106,17 +116,16 @@ public class DefaultAdminCategoryService implements
                                                        + "id of " + id
                                                        + "could not be found");
                 }
-                if (category.getMemberNodes().contains(node)) {
+                if (node.getCategories().contains(category)) {
                     throw new IllegalArgumentException("node with "
                                                        + "id of " + id
                                                        + "is already a member of "
                                                        + "category "
                                                        + category.getName());
                 }
-                category.getMemberNodes().add(node);
+                node.addCategory(category);
+                m_nodeDao.save(node);
             }
-            
-            m_categoryDao.save(category);
        } else if (editAction.equals("Remove")) {
             if (toDelete == null) {
                 return;
@@ -138,17 +147,16 @@ public class DefaultAdminCategoryService implements
                                                        + "id of " + id
                                                        + "could not be found");
                 }
-                if (!category.getMemberNodes().contains(node)) {
+                if (!node.getCategories().contains(category)) {
                     throw new IllegalArgumentException("Node with "
                                                        + "id of " + id
                                                        + "is not a member of "
                                                        + "category "
                                                        + category.getName());
                 }
-                category.getMemberNodes().remove(node);
+                node.removeCategory(category);
+                m_nodeDao.save(node);
             }
-
-            m_categoryDao.save(category);
        } else {
            throw new IllegalArgumentException("editAction of '"
                                               + editAction
@@ -173,7 +181,7 @@ public class DefaultAdminCategoryService implements
     }
 
     public void removeCategory(String categoryIdString) {
-        OnmsCategory category = getCategory(categoryIdString);
+        OnmsCategory category = findCategory(categoryIdString);
         m_categoryDao.delete(category);
     }
 
@@ -296,22 +304,42 @@ public class DefaultAdminCategoryService implements
         }
         return m_nodeDao.get(nodeId);
     }
+    
+    public class CategoryAndMemberNodes {
+        private OnmsCategory m_category;
+        private Collection<OnmsNode> m_memberNodes;
+
+        public CategoryAndMemberNodes(OnmsCategory category,
+                Collection<OnmsNode> memberNodes) {
+            m_category = category;
+            m_memberNodes = memberNodes;
+        }
+
+        public OnmsCategory getCategory() {
+            return m_category;
+        }
+
+        public Collection<OnmsNode> getMemberNodes() {
+            return m_memberNodes;
+        }
+    }
 
     public class EditModel {
         private OnmsCategory m_category;
         private List<OnmsNode> m_nodes;
         private List<OnmsNode> m_sortedMemberNodes;
 
-        public EditModel(OnmsCategory category, List<OnmsNode> nodes) {
+        public EditModel(OnmsCategory category, List<OnmsNode> nodes,
+                Collection<OnmsNode> memberNodes) {
             m_category = category;
             m_nodes = nodes;
             
-            for (OnmsNode node : m_category.getMemberNodes()) {
+            for (OnmsNode node : memberNodes) {
                 m_nodes.remove(node);
             }
             
             m_sortedMemberNodes =
-                new ArrayList<OnmsNode>(m_category.getMemberNodes());
+                new ArrayList<OnmsNode>(memberNodes);
             Collections.sort(m_sortedMemberNodes);
         }
 
@@ -328,6 +356,7 @@ public class DefaultAdminCategoryService implements
         }
         
     }
+    
     public class NodeEditModel {
         private OnmsNode m_node;
         private List<OnmsCategory> m_categories;

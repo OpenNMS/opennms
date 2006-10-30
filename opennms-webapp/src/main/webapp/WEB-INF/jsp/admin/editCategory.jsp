@@ -15,7 +15,7 @@
 <h3>Edit category ${model.category.name}</h3>
 
 <p>
-Category '${model.category.name}' has ${fn:length(model.category.memberNodes)} nodes 
+Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} nodes  
 </p>
 
 <form action="admin/categories.htm" method="get">

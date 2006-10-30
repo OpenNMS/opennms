@@ -56,7 +56,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private String m_name;
 
-    private Set<OnmsMonitoredService> m_memberServices;
+    //private Set<OnmsMonitoredService> m_memberServices;
     
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -78,6 +78,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         m_name = name;
     }
 
+    /*
     @ManyToMany
     @JoinTable(
     		name="application_service_map",
@@ -91,6 +92,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     public void setMemberServices(Set<OnmsMonitoredService> memberServices) {
         m_memberServices = memberServices;
     }
+    */
 
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());

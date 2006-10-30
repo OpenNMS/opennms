@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 /**
@@ -87,6 +88,13 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         
         
         return matchingServices;
+    }
+
+    public Collection<OnmsMonitoredService> findByApplication(OnmsApplication application) {
+        return find("select distinct svc from OnmsMonitoredService as svc "
+                    + "join svc.applications a "
+                    + "where a.name = ?",
+                    application.getName());
     }
 
 }

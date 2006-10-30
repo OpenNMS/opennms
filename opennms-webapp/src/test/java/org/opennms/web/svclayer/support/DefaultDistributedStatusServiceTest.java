@@ -65,6 +65,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private OnmsNode m_node;
 
     private String m_ip;
+
+    private HashSet<OnmsMonitoredService> m_applicationServices1;
+
+    private HashSet<OnmsMonitoredService> m_applicationServices2;
         
     protected void setUp() {
         m_service.setPollerConfig(m_pollerConfig);
@@ -119,14 +123,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTPS")));
 
         // Can't shuffle since these since they are sets
-        Set<OnmsMonitoredService> applicationServices1 = new HashSet<OnmsMonitoredService>();
-        applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTP"));
-        applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTPS"));
-        m_application1.setMemberServices(applicationServices1);
+        m_applicationServices1 = new HashSet<OnmsMonitoredService>();
+        m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTP"));
+        m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTPS"));
+//        m_application1.setMemberServices(applicationServices1);
         
-        Set<OnmsMonitoredService> applicationServices2 = new HashSet<OnmsMonitoredService>();
-        applicationServices2.add(findMonitoredService(m_services, m_ip, "HTTPS"));
-        m_application2.setMemberServices(applicationServices2);
+        m_applicationServices2 = new HashSet<OnmsMonitoredService>();
+        m_applicationServices2.add(findMonitoredService(m_services, m_ip, "HTTPS"));
+//        m_application2.setMemberServices(applicationServices2);
 
 
         /*
@@ -174,6 +178,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     public void testFindLocationSpecificStatus() {
         expectEverything();
         
+        expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1);
+        
         replayEverything();
         
         List<OnmsLocationSpecificStatus> status =
@@ -194,6 +200,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     
     public void runTestCreateStatus() {
         expectEverything();
+        
+        expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1);
         
         replayEverything();
         SimpleWebTable table =
@@ -349,6 +357,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
         expect(m_locationMonitorDao.getAllStatusChangesAt(startDate)).andReturn(Collections.EMPTY_SET);
 
+        expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1).times(3);
+        expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(3);
 
         replayEverything();
         SimpleWebTable table = m_service.createFacilityStatusTable(startDate,
@@ -403,7 +413,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         replayEverything();
         String percentage =
             m_service.calculatePercentageUptime(Collections.singleton(m_locationMonitor1_1),
-                                                m_application1.getMemberServices(),
+                                                m_applicationServices1,
                                                 statuses,
                                                 startDate,
                                                 endDate);
@@ -433,7 +443,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         monitors.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
         
-        for (OnmsMonitoredService service : m_application2.getMemberServices()) {
+        for (OnmsMonitoredService service : m_applicationServices2) {
             m_locationMonitorDao.initialize(service.getIpInterface());
             m_locationMonitorDao.initialize(service.getIpInterface().getNode());
         }
@@ -443,6 +453,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         String monitorId = "";
         String timeSpan = "Last Day";
         String previousLocation = "";
+        
+        expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(2);
         
         replayEverything();
         
@@ -495,7 +507,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         monitors.add(m_locationMonitor1_1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(monitors);
         
-        for (OnmsMonitoredService service : m_application2.getMemberServices()) {
+        for (OnmsMonitoredService service : m_applicationServices2) {
             m_locationMonitorDao.initialize(service.getIpInterface());
             m_locationMonitorDao.initialize(service.getIpInterface().getNode());
         }
@@ -505,6 +517,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         String monitorId = "";
         String previousLocation = "";
         String timeSpan = "";
+        
+        expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(2);
         
         replayEverything();
         
@@ -562,7 +576,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         monitors.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
 
-        for (OnmsMonitoredService service : m_application1.getMemberServices()) {
+        for (OnmsMonitoredService service : m_applicationServices1) {
             m_locationMonitorDao.initialize(service.getIpInterface());
             m_locationMonitorDao.initialize(service.getIpInterface().getNode());
         }
@@ -573,6 +587,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         String previousLocation = "";
         String timeSpan = "";
         
+        expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1).times(2);
+
         replayEverything();
         
         DistributedStatusHistoryModel summary =
