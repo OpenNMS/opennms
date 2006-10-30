@@ -45,7 +45,11 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.outage.*,
+	import="
+		org.opennms.netmgt.EventConstants,
+		org.opennms.web.element.ElementUtil,
+		org.opennms.web.element.Interface,
+		org.opennms.web.outage.*,
 		java.util.*
 	"
 %>
@@ -55,21 +59,9 @@
 %>
 
 <%
-    //required parameter node
-    String nodeIdString = request.getParameter("node");
-    
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("node", new String[] {"node", "intf"}); 
-    }
-
-    //required parameter intf
-    String ipAddr = request.getParameter("intf");
-
-    if( ipAddr == null ) {
-        throw new org.opennms.web.MissingParameterException("intf", new String[] {"node", "intf"}); 
-    }
-    
-    int nodeId = Integer.parseInt(nodeIdString);
+    Interface intf = ElementUtil.getInterfaceByParams(request);
+    int nodeId = intf.getNodeId();
+    String ipAddr = intf.getIpAddress();
 
     //determine yesterday's respresentation
     Calendar cal = new GregorianCalendar();
@@ -91,10 +83,10 @@
   </tr>
 <% } else { %>
   <tr>
-    <th>Service</td>
-    <th>Lost</td>
-    <th>Regained</td>
-    <th>Outage ID</td>
+    <th>Service</th>
+    <th>Lost</th>
+    <th>Regained</th>
+    <th>Outage ID</th>
   </tr>
   <% for( int i=0; i < outages.length; i++ ) { %>
      <% if( outages[i].getRegainedServiceTime() == null ) { %>
@@ -103,11 +95,11 @@
        <tr class="Cleared">
      <% } %>
       <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
-      <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
+      <td class="divider"><%=EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
         <td class="divider"><b>DOWN</b></td>
       <% } else { %>        
-        <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
+        <td class="divider"><%=EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
       <% } %>
       <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>  
      </tr>
