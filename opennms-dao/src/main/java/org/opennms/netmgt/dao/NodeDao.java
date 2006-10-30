@@ -52,8 +52,9 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue,
             Collection<OnmsCategory> categories);
     
-    Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
-
-    Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
+    public abstract Collection<OnmsNode> findByCategory(OnmsCategory category);
     
+    public abstract Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
+
+    public abstract Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
 }

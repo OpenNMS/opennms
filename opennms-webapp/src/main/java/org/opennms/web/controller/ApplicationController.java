@@ -74,10 +74,9 @@ public class ApplicationController extends AbstractController {
         }
         
         if (applicationIdString != null) {
-            application = m_adminApplicationService.getApplication(applicationIdString);
             return new ModelAndView("/admin/showApplication",
-                                    "application",
-                                    application);
+                                    "model",
+                                    m_adminApplicationService.getApplication(applicationIdString));
         }
         
         if (ifServiceIdString != null && editString != null) {

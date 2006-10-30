@@ -15,7 +15,7 @@
 <h3>Edit application ${model.application.name}</h3>
 
 <p>
-Application '${model.application.name}' has ${fn:length(model.application.memberServices)} services 
+Application '${model.application.name}' has ${fn:length(model.sortedMemberServices)} services 
 </p>
 
 <form action="admin/applications.htm" method="get">

@@ -265,7 +265,13 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
         m_currentOutages = currentOutages;
     }
     
-    @ManyToMany(mappedBy="memberServices")
+//    @ManyToMany(mappedBy="memberServices")
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+                name="application_service_map",
+                joinColumns={@JoinColumn(name="ifserviceid")},
+                inverseJoinColumns={@JoinColumn(name="appid")}
+    )
     public Set<OnmsApplication> getApplications() {
         return m_applications;
     }
@@ -274,6 +280,13 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
         m_applications = applications;
     }
 
+    public boolean addApplication(OnmsApplication application) {
+        return getApplications().add(application);
+    }
+
+    public boolean removeApplication(OnmsApplication application) {
+        return getApplications().remove(application);
+    }
 
     public int compareTo(OnmsMonitoredService o) {
         int diff;
@@ -290,5 +303,4 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
 
         return getServiceName().compareToIgnoreCase(o.getServiceName());
     }
-
 }

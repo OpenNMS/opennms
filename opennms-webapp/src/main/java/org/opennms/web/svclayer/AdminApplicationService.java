@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.web.svclayer.support.DefaultAdminApplicationService.ApplicationAndMemberServices;
 import org.opennms.web.svclayer.support.DefaultAdminApplicationService.EditModel;
 import org.opennms.web.svclayer.support.DefaultAdminApplicationService.ServiceEditModel;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 public interface AdminApplicationService {
-    public OnmsApplication getApplication(String applicationIdString);
+    public ApplicationAndMemberServices getApplication(String applicationIdString);
 
     public List<OnmsMonitoredService> findAllMonitoredServices();
     

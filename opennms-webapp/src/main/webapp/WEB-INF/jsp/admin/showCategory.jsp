@@ -12,10 +12,11 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<h3>Category ${category.name}</h3>
+<h3>Category ${model.category.name}</h3>
 
 <p>
-Category '${category.name}' has ${fn:length(category.memberNodes)} nodes (<a href="admin/categories.htm?edit&categoryid=${category.id}">edit</a>)
+Category '${model.category.name}' has ${fn:length(model.memberNodes)} nodes
+(<a href="admin/categories.htm?edit&categoryid=${model.category.id}">edit</a>)
 </p>
 
 
@@ -23,7 +24,7 @@ Category '${category.name}' has ${fn:length(category.memberNodes)} nodes (<a hre
   <tr>
     <th>Node</th>
   </tr>
-  <c:forEach items="${category.memberNodes}" var="node">
+  <c:forEach items="${model.memberNodes}" var="node">
     <tr>
     	<td><a href="element/node.jsp?node=${node.id}">${node.label}</a></td> 
     </tr>

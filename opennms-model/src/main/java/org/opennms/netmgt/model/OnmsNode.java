@@ -426,6 +426,14 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public void setCategories(Set<OnmsCategory> categories) {
         m_categories = categories;
     }
+    
+    public boolean addCategory(OnmsCategory category) {
+        return getCategories().add(category);
+    }
+    
+    public boolean removeCategory(OnmsCategory category) {
+        return getCategories().remove(category);
+    }
 
     public String toString() {
         return new ToStringCreator(this)

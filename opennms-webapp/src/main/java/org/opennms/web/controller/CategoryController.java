@@ -73,10 +73,9 @@ public class CategoryController extends AbstractController {
         }
         
         if (categoryIdString != null) {
-            category = m_adminCategoryService.getCategory(categoryIdString);
             return new ModelAndView("/admin/showCategory",
-                                    "category",
-                                    category);
+                                    "model",
+                                    m_adminCategoryService.getCategory(categoryIdString));
         }
         
         if (nodeIdString != null && editString != null) {

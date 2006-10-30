@@ -150,7 +150,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Collection<OnmsMonitoredService> services =
             m_monitoredServiceDao.findMatchingServices(selector);
         
-        Set<OnmsMonitoredService> applicationServices = application.getMemberServices();
+        Collection<OnmsMonitoredService> applicationServices =
+            m_monitoredServiceDao.findByApplication(application);
         services.retainAll(applicationServices);
 
         List<OnmsLocationSpecificStatus> status = new LinkedList<OnmsLocationSpecificStatus>();
@@ -264,6 +265,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             table.addCell(locationDefinition.getName(), "simpleWebTableRowLabel");
             
             for (OnmsApplication application : sortedApplications) {
+                Collection<OnmsMonitoredService> memberServices =
+                    m_monitoredServiceDao.findByApplication(application);
                 /*
                  *  XXX this is totally wrong.... we need to add a single cell
                  *  for each application composed of the status for all
@@ -273,12 +276,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 //}
                 String status =
                     calculateCurrentStatus(monitors,
-                                           application.getMemberServices(),
+                                           memberServices,
                                            mostRecentStatuses);
 
                 String percentage =
                     calculatePercentageUptime(monitors,
-                                              application.getMemberServices(),
+                                              memberServices,
                                               statusesPeriod,
                                               startDate, endDate);
                 
@@ -292,7 +295,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     
     public String calculateCurrentStatus(
             Collection<OnmsLocationMonitor> monitors,
-            Set<OnmsMonitoredService> applicationServices,
+            Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
         int goodMonitors = 0;
         int badMonitors = 0;
@@ -334,7 +337,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
     
     public String calculateCurrentStatus(OnmsLocationMonitor monitor,
-            Set<OnmsMonitoredService> applicationServices,
+            Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
         Set<PollStatus> pollStatuses = new HashSet<PollStatus>();
         
@@ -384,7 +387,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      */
     public String calculatePercentageUptime(
             Collection<OnmsLocationMonitor> monitors,
-            Set<OnmsMonitoredService> applicationServices,
+            Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses,
             Date startDate, Date endDate) {
         /*
@@ -593,17 +596,24 @@ public class DefaultDistributedStatusService implements DistributedStatusService
          * a LazyInitializationException later when the JSP page is pulling
          * data out of the model object.
          */
-        for (OnmsMonitoredService service : application.getMemberServices()) {
+        Collection<OnmsMonitoredService> memberServices =
+            m_monitoredServiceDao.findByApplication(application);
+        for (OnmsMonitoredService service : memberServices) {
             m_locationMonitorDao.initialize(service.getIpInterface());
             m_locationMonitorDao.initialize(service.getIpInterface().getNode());
         }
 
+        Collection<OnmsMonitoredService> applicationMemberServices =
+            m_monitoredServiceDao.findByApplication(application);
         return new DistributedStatusHistoryModel(locationDefinitions,
                                                  sortedApplications,
                                                  sortedMonitors,
                                                  periods,
-                                                 location, application,
-                                                 monitor, period,
+                                                 location,
+                                                 application,
+                                                 applicationMemberServices,
+                                                 monitor,
+                                                 period,
                                                  errors);
     }
 }

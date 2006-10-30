@@ -35,6 +35,7 @@ package org.opennms.netmgt.dao;
 
 import java.util.Collection;
 
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 
@@ -52,5 +53,7 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
     public abstract Collection<OnmsMonitoredService> findByType(String typeName);
     
     public abstract Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
+
+    public abstract Collection<OnmsMonitoredService> findByApplication(OnmsApplication application);
 
 }

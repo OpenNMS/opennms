@@ -12,10 +12,10 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<h3>Application ${application.name}</h3>
+<h3>Application ${model.application.name}</h3>
 
 <p>
-Application '${application.name}' has ${fn:length(application.memberServices)} services (<a href="admin/applications.htm?edit&applicationid=${application.id}">edit</a>)
+Application '${model.application.name}' has ${fn:length(model.memberServices)} services (<a href="admin/applications.htm?edit&applicationid=${model.application.id}">edit</a>)
 </p>
 
 
@@ -25,7 +25,7 @@ Application '${application.name}' has ${fn:length(application.memberServices)} s
     <th>Interface</th>
     <th>Service</th>
   </tr>
-  <c:forEach items="${application.memberServices}" var="service">
+  <c:forEach items="${model.memberServices}" var="service">
     <tr>
     	<td><a href="element/node.jsp?node=${service.ipInterface.node.id}">${service.ipInterface.node.label}</a></td> 
     	<td><a href="element/interface.jsp?node=${service.ipInterface.node.id}&amp;intf=${service.ipAddress}">${service.ipAddress}</a></td> 
