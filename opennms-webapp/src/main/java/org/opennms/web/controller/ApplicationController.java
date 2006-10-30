@@ -31,19 +31,18 @@ public class ApplicationController extends AbstractController {
             m_adminApplicationService.removeApplication(removeApplicationIdString);
             
             
-            return new ModelAndView(new RedirectView("applications.htm"));
+            return new ModelAndView(new RedirectView("/admin/applications.htm", true));
         }
         
         if (newApplicationName != null) {
             OnmsApplication newApplication =
                 m_adminApplicationService.addNewApplication(newApplicationName);
             
-            return new ModelAndView(new RedirectView("applications.htm"
-                                                     + "?"
-                                                     + "applicationid="
-                                                     + newApplication.getId()
-                                                     + "&"
-                                                     + "edit"));
+            ModelAndView modelAndView = 
+                new ModelAndView(new RedirectView("/admin/applications.htm", true));
+            modelAndView.addObject("applicationid", newApplication.getId());
+            modelAndView.addObject("edit", null);
+            return modelAndView;
         }
         
         if (applicationIdString != null && editString != null) {
@@ -56,13 +55,12 @@ public class ApplicationController extends AbstractController {
                                                       editAction,
                                                       toAdd,
                                                       toDelete);
-                
-                return new ModelAndView(new RedirectView("applications.htm"
-                                                         + "?"
-                                                         + "applicationid="
-                                                         + applicationIdString
-                                                         + "&"
-                                                         + "edit"));
+
+                ModelAndView modelAndView = 
+                    new ModelAndView(new RedirectView("/admin/applications.htm", true));
+                modelAndView.addObject("applicationid", applicationIdString);
+                modelAndView.addObject("edit", null);
+                return modelAndView;
             }
 
             EditModel model =
@@ -91,12 +89,11 @@ public class ApplicationController extends AbstractController {
                                                        toAdd,
                                                        toDelete);
                 
-                return new ModelAndView(new RedirectView("applications.htm"
-                                                         + "?"
-                                                         + "ifserviceid="
-                                                         + ifServiceIdString
-                                                         + "&"
-                                                         + "edit"));
+                ModelAndView modelAndView = 
+                    new ModelAndView(new RedirectView("/admin/applications.htm", true));
+                modelAndView.addObject("ifserviceid", ifServiceIdString);
+                modelAndView.addObject("edit", null);
+                return modelAndView;
             }
 
             ServiceEditModel model =
@@ -106,8 +103,6 @@ public class ApplicationController extends AbstractController {
                                     "model",
                                     model);
         }
-
-
 
         List<OnmsApplication> sortedApplications
             = m_adminApplicationService.findAllApplications();
