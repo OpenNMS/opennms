@@ -32,11 +32,15 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -45,7 +49,7 @@ import org.springframework.core.style.ToStringCreator;
 
 @Entity
 @Table(name="categories")
-public class OnmsCategory implements Serializable {
+public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 
     private static final long serialVersionUID = 4694348093332239377L;
 
@@ -57,6 +61,8 @@ public class OnmsCategory implements Serializable {
     
     /** persistent field */
     private String m_description;
+
+    private Set<OnmsNode> m_memberNodes;
 
     public OnmsCategory(String name, String descr) {
         m_name = name;
@@ -110,6 +116,18 @@ public class OnmsCategory implements Serializable {
 //	public Set getNodes(OnmsCustomCategory category) {
 //		return m_nodes;
 //	}
+        
+    @ManyToMany
+    @JoinTable(name = "category_node",
+               joinColumns = { @JoinColumn(name = "categoryId") },
+               inverseJoinColumns = { @JoinColumn(name = "nodeId") })
+    public Set<OnmsNode> getMemberNodes() {
+        return m_memberNodes;
+    }
+
+    public void setMemberNodes(Set<OnmsNode> memberNodes) {
+        m_memberNodes = memberNodes;
+    }
 
     public String toString() {
         return new ToStringCreator(this)
@@ -129,6 +147,10 @@ public class OnmsCategory implements Serializable {
 
     public int hashCode() {
         return m_name.hashCode();
+    }
+
+    public int compareTo(OnmsCategory o) {
+        return m_name.compareToIgnoreCase(o.m_name);
     }
 
 }
