@@ -38,8 +38,11 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -77,12 +80,6 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         }
         return node;
 
-    }
-
-    public OnmsNode findByAssetNumber(String assetNumber) {
-        return (OnmsNode) findUnique(
-                                     "from OnmsNode as n where n.assetRecord.assetNumber = ?",
-                                     assetNumber);
     }
 
     public Collection<OnmsNode> findByLabel(String label) {
@@ -153,5 +150,19 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     	results.retainAll(colNodes);
     	
     	return results;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
+        List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
+        Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
+        for (Object[] pair : pairs) {
+            foreignIdMap.put((String)pair[1], (Integer)pair[0]);
+        }
+        return foreignIdMap;
+    }
+
+    public OnmsNode findByForeignId(String foreignSource, String foreignId) {
+        return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
     }
 }

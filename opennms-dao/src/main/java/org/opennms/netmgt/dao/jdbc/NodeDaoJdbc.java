@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -334,10 +335,6 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
         return new NodeUpdate(getDataSource());
     }
 
-	public OnmsNode findByAssetNumber(String assetNumber) {
-		return new FindByAssetNumber(getDataSource()).findUnique(assetNumber);
-	}
-
 	public Collection findByLabel(String label) {
 		return new FindByNodeLabel(getDataSource()).execute(label);
 	}
@@ -414,6 +411,14 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
      }
 
     public Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
+        throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
+    }
+
+    public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
+        throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
+    }
+
+    public OnmsNode findByForeignId(String foreignSource, String foreignId) {
         throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
     }
 

@@ -279,6 +279,10 @@ create table distPoller (
 --# nodeDomainName   : NetBIOS damain name associated with the node.
 --# operatingSystem  : Operating system running on the node.
 --# lastCapsdPoll    : Date and time of last Capsd scan.
+--# foreignSource    : When importing nodes this contains the source of the
+--#                       nodes, null otherwise
+--# foriegnId        : When importing nodes this contains the id of the node
+--#                       as known to the foriegn source, null otherwise
 --########################################################################
 
 create table node (
@@ -298,6 +302,8 @@ create table node (
 	nodeDomainName  varchar(16),
 	operatingSystem varchar(64),
 	lastCapsdPoll   timestamp without time zone,
+	foreignSource	varchar(64),
+	foreignId       varchar(64),
 
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_dpName foreign key (dpName) references distPoller

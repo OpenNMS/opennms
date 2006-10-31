@@ -76,7 +76,8 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 		m_node.setLabel(nodeLabel);
 		m_node.setLabelSource("U");
 		m_node.setType("A");
-        m_node.getAssetRecord().setAssetNumber(foreignSource + foreignId);
+        m_node.setForeignSource(foreignSource);
+        m_node.setForeignId(foreignId);
         m_node.getAssetRecord().setBuilding(building);
         m_node.getAssetRecord().setCity(city);
 	}

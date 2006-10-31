@@ -163,8 +163,8 @@ public class BaseImporter implements ImportOperationFactory {
         return updateOperation;
     }
 
-    public DeleteOperation createDeleteOperation(Integer nodeId, String assetNumber) {
-        return new DeleteOperation(nodeId, assetNumber, m_nodeDao);
+    public DeleteOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId) {
+        return new DeleteOperation(nodeId, foreignSource, foreignId, m_nodeDao);
     }
     
     protected void importModelFromResource(Resource resource) throws IOException, ModelImportException {
@@ -189,9 +189,9 @@ public class BaseImporter implements ImportOperationFactory {
         stats.beginAuditNodes();
         createDistPollerIfNecessary();
         
-        Map assetNumbersToNodes = getAssetNumberToNodeMap(specFile.getForeignSource());
+        Map<String, Integer> foreignIdsToNodes = getForeignIdToNodeMap(specFile.getForeignSource());
         
-        ImportOperationsManager opsMgr = createImportOperationsManager(assetNumbersToNodes, stats);
+        ImportOperationsManager opsMgr = createImportOperationsManager(foreignIdsToNodes, stats);
         opsMgr.setForeignSource(specFile.getForeignSource());
         opsMgr.setScanThreads(m_scanThreads);
         opsMgr.setWriteThreads(m_writeThreads);
@@ -215,8 +215,8 @@ public class BaseImporter implements ImportOperationFactory {
         return EventUtil.getNamedParmValue("parm[foreignSource]", event);
     }
 
-	protected ImportOperationsManager createImportOperationsManager(Map assetNumbersToNodes, ImportStatistics stats) {
-		ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumbersToNodes, this);
+	protected ImportOperationsManager createImportOperationsManager(Map<String, Integer> foreignIdsToNodes, ImportStatistics stats) {
+		ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, this);
         opsMgr.setStats(stats);
 		return opsMgr;
 	}
@@ -274,7 +274,7 @@ public class BaseImporter implements ImportOperationFactory {
 		}
 
 		private OnmsNode findNodeByForeignId(String foreignId) {
-			return getNodeDao().findByAssetNumber(m_opsMgr.getForeignSource() + foreignId);
+            return getNodeDao().findByForeignId(m_opsMgr.getForeignSource(), foreignId);
 		}
 
 	};
@@ -287,10 +287,11 @@ public class BaseImporter implements ImportOperationFactory {
     	return ThreadCategory.getInstance(getClass());
 	}
 
-	private Map getAssetNumberToNodeMap(final String foreignSource) {
+	@SuppressWarnings("unchecked")
+    private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
         return (Map)m_transTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
-                return getAssetRecordDao().findImportedAssetNumbersToNodeIds(foreignSource);
+                return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
             }
         });
         

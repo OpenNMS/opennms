@@ -45,12 +45,45 @@ public class NetworkBuilder {
 		m_distPoller = distPoller;
 	}
 
-	public OnmsNode addNode(String label) {
+	public NodeBuilder addNode(String label) {
 		m_currentNode = new OnmsNode(m_distPoller);
 		m_currentNode.setLabel(label);
-		return m_currentNode;
+		return new NodeBuilder(m_currentNode);
 	}
-
+    
+    public class NodeBuilder {
+        OnmsNode m_node;
+        
+        NodeBuilder(OnmsNode node) {
+            m_node = node;
+        }
+        
+        public OnmsNode getNode() {
+            return m_node;
+        }
+        
+        public NodeBuilder setId(Integer id) {
+            m_node.setId(id);
+            return this;
+        }
+        
+        public NodeBuilder setForeignSource(String foreignSource) {
+            m_node.setForeignSource(foreignSource);
+            return this;
+        }
+        
+        public NodeBuilder setForeignId(String foreignId) {
+            m_node.setForeignId(foreignId);
+            return this;
+        }
+        
+        public OnmsAssetRecord getAssetRecord() {
+            return m_node.getAssetRecord();
+        }
+        
+        
+    }
+    
     public InterfaceBuilder addInterface(String ipAddr) {
 		m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
 //        return m_currentIf;
@@ -91,8 +124,9 @@ public class NetworkBuilder {
 
 		}
 
-		public void setId(int id) {
+		public InterfaceBuilder setId(int id) {
 		    m_iface.setId(id);
+            return this;
 		}
 	}
     

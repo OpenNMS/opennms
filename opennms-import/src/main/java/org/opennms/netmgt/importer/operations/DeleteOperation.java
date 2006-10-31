@@ -44,12 +44,10 @@ import org.opennms.netmgt.model.OnmsNode;
 public class DeleteOperation extends AbstractImportOperation {
     
     Integer m_nodeId;
-    String m_assetNumber;
     NodeDao m_nodeDao;
 
-    public DeleteOperation(Integer nodeId, String assetNumber, NodeDao nodeDao) {
+    public DeleteOperation(Integer nodeId, String foreignSource, String foreignId, NodeDao nodeDao) {
         m_nodeId = nodeId;
-        m_assetNumber = assetNumber;
         m_nodeDao = nodeDao;
     }
 

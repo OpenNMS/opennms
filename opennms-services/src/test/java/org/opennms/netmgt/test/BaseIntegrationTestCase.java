@@ -192,7 +192,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
         }
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
-        builder.addNode("node1").getAssetRecord().setAssetNumber("imported:"+"1");
+        builder.addNode("node1").setForeignSource("imported:").setForeignId("1");
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
@@ -206,7 +206,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         
-        builder.addNode("node2").getAssetRecord().setAssetNumber("imported:"+"2");
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2");
         builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -218,7 +218,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         
-        builder.addNode("node3").getAssetRecord().setAssetNumber("imported:"+"3");
+        builder.addNode("node3").setForeignSource("imported:").setForeignId("3");
         builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -230,7 +230,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         
-        builder.addNode("node4").getAssetRecord().setAssetNumber("imported:"+"4");
+        builder.addNode("node4").setForeignSource("imported:").setForeignId("4");
         builder.addInterface("192.168.4.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));

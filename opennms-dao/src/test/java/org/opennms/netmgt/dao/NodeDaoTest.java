@@ -34,6 +34,7 @@ package org.opennms.netmgt.dao;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -139,6 +140,15 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
                 ip.getIpAddress();
             }
         }
+    }
+    
+    public void testGetForeignIdToNodeIdMap() {
+        Map<String, Integer> arMap = getNodeDao().getForeignIdToNodeIdMap("imported-id:");
+        assertTrue(arMap.containsKey("1"));
+        
+        OnmsNode node1 = getNodeDao().get(arMap.get("1"));
+        assertEquals("node1", node1.getLabel());
+
     }
     
     private void validateNode(OnmsNode n) throws Exception {
