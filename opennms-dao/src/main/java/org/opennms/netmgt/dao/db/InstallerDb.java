@@ -1122,7 +1122,8 @@ public class InstallerDb {
             c.setColumnType(c.getColumn().getColumnSqlType());
             
             ColumnChangeReplacement r = c.getColumnReplacement();
-            if (r == null || r.addColumnIfColumnIsNew()) {
+            if (r == null || c.getSelectIndex() > 0
+                    || r.addColumnIfColumnIsNew()) {
                 insertColumns.add(c.getColumn().getName());
                 questionMarks.add("?");
                 c.setPrepareIndex(questionMarks.size());
@@ -1183,7 +1184,8 @@ public class InstallerDb {
             for (ColumnChange change : columnChanges.values()) {
                 String name = change.getColumn().getName();
                 
-                if (change.hasColumnReplacement()
+                if (change.getSelectIndex() == 0 &&
+                        change.hasColumnReplacement()
                         && !change.getColumnReplacement().addColumnIfColumnIsNew()) {
                     continue;
                 }

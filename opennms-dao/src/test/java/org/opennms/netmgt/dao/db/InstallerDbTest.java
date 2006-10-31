@@ -1758,6 +1758,35 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         
         addTableFromSQL("ipinterface");
     }
+    
+    public void testUpgradeExistingDoNotAddColumnBug1685() throws Exception {
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        
+        // Add snmpinterface table with an arbitrary change so it gets upgraded
+        addTableFromSQLWithReplacements("snmpinterface", new String[][] {
+                new String[] {
+                        "snmpIfAlias\\s+varchar\\(\\d+\\),", ""
+                } });
+
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        
+        int id = jdbcTemplate.queryForInt("SELECT id from snmpInterface");
+        
+        getInstallerDb().createTables();
+
+        int id2 = jdbcTemplate.queryForInt("SELECT id from snmpInterface");
+
+        assertEquals("id before upgrade should equal id after upgrade", id,
+                     id2);
+    }
 
     public void addTableFromSQL(String tableName) throws SQLException {
         String partialSQL = null;
