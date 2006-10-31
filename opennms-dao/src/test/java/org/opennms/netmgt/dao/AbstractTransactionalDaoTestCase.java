@@ -57,8 +57,7 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
         getDistPollerDao().flush();
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
-        m_node1 = builder.addNode("node1").getNode();
-        m_node1.getAssetRecord().setAssetNumber("imported:"+"1");
+        m_node1 = builder.addNode("node1").setForeignSource("imported:").setForeignId("1").getNode();
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();

@@ -49,6 +49,10 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 //public class NodeDaoTest extends AbstractDaoTestCase {
 public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
     
+    public NodeDaoTest() {
+        System.setProperty("mock.rundbtests", "true");
+    }
+    
     public void testSave() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
@@ -143,11 +147,11 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testGetForeignIdToNodeIdMap() {
-        Map<String, Integer> arMap = getNodeDao().getForeignIdToNodeIdMap("imported-id:");
-        assertTrue(arMap.containsKey("1"));
-        
+        Map<String, Integer> arMap = getNodeDao().getForeignIdToNodeIdMap("imported:");
+        assertTrue("Expected to find foriegnId 1", arMap.containsKey("1"));
         OnmsNode node1 = getNodeDao().get(arMap.get("1"));
-        assertEquals("node1", node1.getLabel());
+        assertNotNull("Exepected foreignId to be mapped to a node", node1);
+        assertEquals("Expected foreignId to be mapped to 'node1'", "node1", node1.getLabel());
 
     }
     
