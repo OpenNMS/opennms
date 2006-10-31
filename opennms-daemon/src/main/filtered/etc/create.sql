@@ -1751,7 +1751,7 @@ create table element (
     elementX         integer,
 	elementY         integer,
 	
-	constraint pk_element primary key (mapId,elementId),
+	constraint pk_element primary key (mapId,elementId,elementType),
 	constraint fk_mapID foreign key (mapId) references map on delete cascade
 );
 
