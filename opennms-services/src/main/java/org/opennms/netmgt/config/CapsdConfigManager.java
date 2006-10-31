@@ -110,18 +110,44 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * The SQL statement used to retrieve all non-deleted/non-forced unamanaged
      * IP interfaces from the 'ipInterface' table.
      */
-    static final String SQL_DB_RETRIEVE_IP_INTERFACE = "SELECT nodeid,ipaddr,ismanaged FROM ipinterface WHERE ipaddr!='0.0.0.0' AND isManaged!='D' AND isManaged!='F'";
+    static final String SQL_DB_RETRIEVE_IP_INTERFACE = 
+        "SELECT ip.nodeid, ip.ipaddr, ip.ismanaged " +
+        "FROM ipinterface ip " +
+        "JOIN node n ON ip.nodeid = n.nodeid " +
+        "WHERE ip.ipaddr!='0.0.0.0' " +
+        "AND ip.isManaged!='D' " +
+        "AND ip.isManaged!='F' " +
+        "AND n.foreignSource is null";
     /**
      * The SQL statement used to retrieve all non-deleted/non-forced unamanaged
      * IP interfaces from the 'ipInterface' table with the local OpenNMS server
      * restriction.
      */
-    static final String SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER = "SELECT ip.nodeid, ip.ipaddr, ip.ismanaged " + "FROM ipinterface ip, servermap s " + "WHERE ip.ipaddr = s.ipaddr " + "AND ip.ipaddr!='0.0.0.0' " + "AND ip.isManaged!='D' " + "AND ip.isManaged!='F' " + "AND s.servername = ?";
+    static final String SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER = 
+        "SELECT ip.nodeid, ip.ipaddr, ip.ismanaged " + 
+        "FROM ipinterface ip " +
+        "JOIN node n ON n.nodeid = ip.nodeid " +
+        "JOIN servermap s ON ip.ipaddr = s.ipaddr " + 
+        "WHERE ip.ipaddr!='0.0.0.0' " + 
+        "AND ip.isManaged!='D' " + 
+        "AND ip.isManaged!='F' " + 
+        "AND s.servername = ? " +
+        "AND n.foreignSource is null";
     /**
      * SQL statement to retrieve all non-deleted IP addresses from the
      * ipInterface table which support SNMP.
      */
-    private static String SQL_DB_RETRIEVE_SNMP_IP_INTERFACES = "SELECT DISTINCT ipinterface.nodeid,ipinterface.ipaddr,ipinterface.ifindex,ipinterface.issnmpprimary,snmpinterface.snmpiftype,snmpinterface.snmpifindex FROM ipinterface,ifservices,service,snmpinterface WHERE ipinterface.ismanaged!='D' AND ifservices.status != 'D' AND ipinterface.ipaddr=ifservices.ipaddr AND ipinterface.ipaddr=snmpinterface.ipaddr AND ifservices.serviceid=service.serviceid AND service.servicename='SNMP' AND ipinterface.nodeid=snmpinterface.nodeid";
+    private static String SQL_DB_RETRIEVE_SNMP_IP_INTERFACES = 
+        "SELECT DISTINCT ipinterface.nodeid,ipinterface.ipaddr,ipinterface.ifindex,ipinterface.issnmpprimary,snmpinterface.snmpiftype,snmpinterface.snmpifindex " +
+        "FROM ipinterface " +
+        "JOIN node ON node.nodeid = ipinterface.nodeid " +
+        "JOIN snmpinterface ON ipinterface.snmpinterfaceid = snmpinterface.id " +
+        "JOIN ifservices ON ifservices.ipinterfaceid = ipinterface.id " +
+        "JOIN service ON ifservices.serviceid = service.serviceid " +
+        "WHERE ipinterface.ismanaged!='D' " +
+        "AND ifservices.status != 'D' " +
+        "AND service.servicename='SNMP' " +
+        "AND node.foreignSource is null";
     /**
      * SQL statement used to update the 'isSnmpPrimary' field of the ipInterface
      * table.
@@ -147,12 +173,24 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * The SQL statement used to determine if an IP address is already in the
      * ipInterface table and there is known.
      */
-    private static final String RETRIEVE_IPADDR_SQL = "SELECT ipaddr FROM ipinterface WHERE ipaddr=? AND ismanaged!='D'";
+    private static final String RETRIEVE_IPADDR_SQL = 
+        "SELECT ip.ipaddr " +
+        "FROM ipinterface ip " +
+        "JOIN node n ON ip.nodeid = n.nodeid " +
+        "WHERE ip.ipaddr=? " +
+        "AND ip.ismanaged!='D'" +
+        "AND n.foreignSource is null";
     /**
      * The SQL statement used to determine if an IP address is already in the
      * ipInterface table and if so what its parent nodeid is.
      */
-    private static final String RETRIEVE_IPADDR_NODEID_SQL = "SELECT nodeid FROM ipinterface WHERE ipaddr=? AND ismanaged!='D'";
+    private static final String RETRIEVE_IPADDR_NODEID_SQL = 
+        "SELECT ip.nodeid " +
+        "FROM ipinterface ip " +
+        "JOIN node n ON ip.nodeid = n.nodeid " +
+        "WHERE ip.ipaddr=? " +
+        "AND ip.ismanaged!='D' " +
+        "AND n.foreignSource is null";
     /**
      * The SQL statement used to load the currenly defined service table.
      */
@@ -167,16 +205,24 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     private static final String NEXT_SVC_ID_SQL = "SELECT nextval('serviceNxtId')";
     private static String m_nextSvcIdSql;
-    /**
-     * The SQL statement used to delete all entries from the outage table which
-     * refer to the specified serviceId
-     */
-    private static final String DELETE_OUTAGES_SQL = "DELETE FROM outages WHERE serviceID=?";
+
     /**
      * The SQL statement used to mark all ifservices table entries which refer
      * to the specified serviceId as deleted.
      */
-    private static final String DELETE_IFSERVICES_SQL = "UPDATE ifservices SET status='D' WHERE serviceID=?";
+    private static final String DELETE_IFSERVICES_SQL = 
+            "update ifservices " + 
+            "   set status = 'D' " + 
+            " where serviceid = ?" +
+            "   and id in (" + 
+            "   select if.id" + 
+            "     from ifservices if" + 
+            "     join ipinterface ip" + 
+            "       on (ip.id = if.ipinterfaceid)" + 
+            "     join node n" + 
+            "       on (n.nodeid = ip.nodeid)" + 
+            "    where n.foreignsource is null);"; 
+   
     /**
      * The map of service identifiers, mapped by the service id and name. The
      * identifier keys are integers and the names are string. The integers map
@@ -540,12 +586,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     
                     // Delete 'outage' table entries which refer to the service
                     Integer id = (Integer) m_serviceIds.get(service);
-    
-                    if (log.isDebugEnabled())
-                        log.debug("syncServices: deleting all references to service id " + id + " from the Outages table.");
-                    delFromOutagesStmt = conn.prepareStatement(DELETE_OUTAGES_SQL);
-                    delFromOutagesStmt.setInt(1, id.intValue());
-                    delFromOutagesStmt.executeUpdate();
     
                     // Delete 'ifServices' table entries which refer to the
                     // service

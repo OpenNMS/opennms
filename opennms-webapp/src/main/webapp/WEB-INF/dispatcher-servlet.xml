@@ -12,6 +12,9 @@
 	<property name="suffix" value=".jsp" />
   </bean>
   
+  <bean name="/admin/import.htm" class="org.opennms.web.controller.ImportController">
+  </bean>
+  
   <bean name="/admin/applications.htm"
   		class="org.opennms.web.controller.ApplicationController">
   	<property name="adminApplicationService" ref="adminApplicationService"/>

@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.utils.JDBCTemplate;
 
 /**
  * <P>
@@ -157,84 +158,15 @@ public class Capsd extends AbstractServiceDaemon {
 	}
 
 	protected void onInit() {
-		// Initialize the Capsd configuration factory.
-        try {
-            CapsdConfigFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load Capsd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load Capsd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load Capsd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
+		initialCapsdConfig();
 
-        // Initialize the poller configuration factory.
-        try {
-            PollerConfigFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load poller configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load poller configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load poller configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
+        initializePollerConfig();
 
-        // Initialize the collectd configuration factory.
-        try {
-            CollectdConfigFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
+        initializeCollectdConfig();
 
-        // Initialize the Database configuration factory
-        try {
-            DataSourceFactory.init();
-        } catch (IOException ie) {
-            log().fatal("IOException loading database config", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log().fatal("Marshall Exception loading database config", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log().fatal("Validation Exception loading database config", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (ClassNotFoundException ce) {
-            log().fatal("Class lookup failure loading database config", ce);
-            throw new UndeclaredThrowableException(ce);
-        } catch (PropertyVetoException pve) {
-            log().fatal("Property veto failure loading database config", pve);
-            throw new UndeclaredThrowableException(pve);
-        } catch (SQLException sqle) {
-            log().fatal("SQL exception loading database config", sqle);
-            throw new UndeclaredThrowableException(sqle);
-        }
+        initializeDataSourceFactory();
 
-        // Initialize the SNMP Peer Factory
-        try {
-            SnmpPeerFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
+        initializeSnmpPeerFactory();
 
 	/*
          * Get connection to the database and use it to sync the
@@ -253,21 +185,21 @@ public class Capsd extends AbstractServiceDaemon {
          * the latest configuration information via a call to
          * syncSnmpPrimaryState()
          */
+        
+        
         java.sql.Connection conn = null;
         try {
             conn = DataSourceFactory.getInstance().getConnection();
-            if (log().isDebugEnabled()) {
-                log().debug("init: Loading services into database...");
-            }
+            
+            log().debug("init: Loading services into database...");
             CapsdConfigFactory.getInstance().syncServices(conn);
-            if (log().isDebugEnabled()) {
-                log().debug("init: Syncing management state...");
-            }
+            
+            log().debug("init: Syncing management state...");
             CapsdConfigFactory.getInstance().syncManagementState(conn);
-            if (log().isDebugEnabled()) {
-                log().debug("init: Syncing primary SNMP interface state...");
-            }
+            
+            log().debug("init: Syncing primary SNMP interface state...");
             CapsdConfigFactory.getInstance().syncSnmpPrimaryState(conn);
+            
         } catch (SQLException sqlE) {
             log().fatal("SQL Exception while syncing database with latest configuration information.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
@@ -326,18 +258,105 @@ public class Capsd extends AbstractServiceDaemon {
         }
 	}
 
+    private void initializeSnmpPeerFactory() {
+        // Initialize the SNMP Peer Factory
+        try {
+            SnmpPeerFactory.init();
+        } catch (MarshalException ex) {
+            log().error("Failed to load SNMP configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log().error("Failed to load SNMP configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log().error("Failed to load SNMP configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
+
+    private void initializeDataSourceFactory() {
+        // Initialize the Database configuration factory
+        try {
+            DataSourceFactory.init();
+        } catch (IOException ie) {
+            log().fatal("IOException loading database config", ie);
+            throw new UndeclaredThrowableException(ie);
+        } catch (MarshalException me) {
+            log().fatal("Marshall Exception loading database config", me);
+            throw new UndeclaredThrowableException(me);
+        } catch (ValidationException ve) {
+            log().fatal("Validation Exception loading database config", ve);
+            throw new UndeclaredThrowableException(ve);
+        } catch (ClassNotFoundException ce) {
+            log().fatal("Class lookup failure loading database config", ce);
+            throw new UndeclaredThrowableException(ce);
+        } catch (PropertyVetoException pve) {
+            log().fatal("Property veto failure loading database config", pve);
+            throw new UndeclaredThrowableException(pve);
+        } catch (SQLException sqle) {
+            log().fatal("SQL exception loading database config", sqle);
+            throw new UndeclaredThrowableException(sqle);
+        }
+    }
+
+    private void initializeCollectdConfig() {
+        // Initialize the collectd configuration factory.
+        try {
+            CollectdConfigFactory.init();
+        } catch (MarshalException ex) {
+            log().error("Failed to load collectd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log().error("Failed to load collectd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log().error("Failed to load collectd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
+
+    private void initializePollerConfig() {
+        // Initialize the poller configuration factory.
+        try {
+            PollerConfigFactory.init();
+        } catch (MarshalException ex) {
+            log().error("Failed to load poller configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log().error("Failed to load poller configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log().error("Failed to load poller configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
+
+    private void initialCapsdConfig() {
+        // Initialize the Capsd configuration factory.
+        try {
+            CapsdConfigFactory.init();
+        } catch (MarshalException ex) {
+            log().error("Failed to load Capsd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log().error("Failed to load Capsd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log().error("Failed to load Capsd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
+
     protected void onStart() {
 		// Start the suspect event and rescan thread pools
-        if (log().isDebugEnabled()) {
-            log().debug("start: Starting runnable thread pools...");
-        }
+        log().debug("start: Starting runnable thread pools...");
+
         m_suspectRunner.start();
         m_rescanRunner.start();
 
         // Start the rescan scheduler
-        if (log().isDebugEnabled()) {
-            log().debug("start: Starting rescan scheduler");
-        }
+        log().debug("start: Starting rescan scheduler");
+        
         m_scheduler.start();
 	}
 
