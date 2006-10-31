@@ -1,4 +1,5 @@
 package org.opennms.web.map;
+
 /*
  * Created on 8-giu-2005
  *
@@ -20,54 +21,64 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VMap;
 
-
 /**
  * @author mmigliore
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * 
+ * TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
-public class InitMapsApplicationServlet extends HttpServlet
-{	
-	
+public class InitMapsApplicationServlet extends HttpServlet {
+
 	static final long serialVersionUID = 2006102700;
 
-	private static final String LOG4J_CATEGORY = "OpenNMS.Map";
-	
 	Category log;
- 
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-    {
-    try{
-      ThreadCategory.setPrefix(LOG4J_CATEGORY);
-      log = ThreadCategory.getInstance(this.getClass());
-      log.info("Init maps application");
-      HttpSession userSession = request.getSession();
-      Manager m = new Manager();
-      VMap sessionMap = m.newMap();
-      userSession.setAttribute("sessionMap",sessionMap);
-      
-      Integer mapToOpen =(Integer) userSession.getAttribute("mapToOpen");
 
-      String refreshTime = (String)userSession.getAttribute("refreshTime");
-      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
-      String strToSend = "InitOK"+refreshTime;
-      if(mapToOpen!=null){
-      	strToSend+="&"+mapToOpen.intValue();
-      }
-      bw.write(strToSend);
-      bw.close();
-      log.info("Sending response to the client '"+strToSend+"'");
-    }catch(Exception e){
-    	log.error("Init maps application: "+e);
-    	throw new ServletException(e);   	
-    	}  
-    }
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		BufferedWriter bw = new BufferedWriter(
+				new OutputStreamWriter(response.getOutputStream()));
+		String strToSend=null;
+		try {
+			ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+			log = ThreadCategory.getInstance(this.getClass());
+			log.info("Init maps application");
+			
+			String action = request.getParameter("action");
 
-    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-    {
-      doPost(request,response); 	
-    }
-    
-  
+			strToSend = action + "OK";
+
+			if (action.equals(MapsConstants.INIT_ACTION)) {
+				HttpSession userSession = request.getSession();
+				Manager m = new Manager();
+				VMap sessionMap = m.newMap();
+
+				Integer mapToOpen = (Integer) userSession.getAttribute("mapToOpen");
+
+				String refreshTime = (String) userSession.getAttribute("refreshTime");
+				if(refreshTime!=null){
+					strToSend += refreshTime;
+				}
+				if (mapToOpen != null) {
+					strToSend += "&" + mapToOpen.intValue();
+				} 
+			} else {
+				strToSend = MapsConstants.INIT_ACTION + "Failed";
+			}
+		} catch (Exception e) {
+			log.error("Init maps application: " + e);
+			strToSend = MapsConstants.INIT_ACTION + "Failed";
+		}finally{
+			bw.write(strToSend);
+			bw.close();
+			log.info("Sending response to the client '" + strToSend + "'");
+		}
+		
+	}
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doPost(request, response);
+	}
+
 }

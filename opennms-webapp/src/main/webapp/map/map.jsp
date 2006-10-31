@@ -143,12 +143,18 @@
 	var CLEAR_ACTION = "Clear";
 	
 	var LOAD_NODES_INFO_ACTION = "LoadNodesInfo";
+	
+	var DELETEMAP_ACTION = "DeleteMap";
 
+	var INIT_ACTION = "Init";
+	var LOADMAPS_ACTION = "LoadMaps";
+	var LOADNODES_ACTION = "LoadNodes";
+	
 	var NEWMAP_ACTION = "NewMap";
 	var OPENMAP_ACTION = "OpenMap";	
 	var CLOSEMAP_ACTION = "CloseMap";
 
-	
+	var SAVEMAP_ACTION = "SaveMap";
 	
 	var IMAGES_FOLDER = "images";
 	var IMAGES_BACKGROUND_FOLDER = IMAGES_FOLDER+"/background/";

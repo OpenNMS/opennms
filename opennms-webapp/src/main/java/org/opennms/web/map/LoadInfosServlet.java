@@ -32,15 +32,11 @@ import org.opennms.web.map.config.MapPropertiesFactory;
  */
 public class LoadInfosServlet extends HttpServlet {
 
-	private static final String LOG4J_CATEGORY = "OpenNMS.Map";
-	
-	private static final String LOAD_NODES_INFO_ACTION = "LoadNodesInfo";
-
 	Category log;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 
 		String action = request.getParameter("action");
@@ -55,7 +51,7 @@ public class LoadInfosServlet extends HttpServlet {
 		log.info("Loading infos");
 
 		
-		if(action.equals(LOAD_NODES_INFO_ACTION)){
+		if(action.equals(MapsConstants.LOAD_NODES_INFO_ACTION)){
 			AssetModel am = new AssetModel();
 			SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
 			MapPropertiesFactory.init();
@@ -67,7 +63,7 @@ public class LoadInfosServlet extends HttpServlet {
 				nodeAsset = am.getAsset(Integer.parseInt(elem));
 				iface = NetworkElementFactory.getAllInterfacesOnNode(Integer.parseInt(elem));
 			}catch(SQLException e){
-				strToSend = action + "Failed";
+				strToSend = MapsConstants.LOAD_NODES_INFO_ACTION + "Failed";
 			}
 			String  ipAddress="-";
 			if(iface!=null){
@@ -173,7 +169,7 @@ public class LoadInfosServlet extends HttpServlet {
 			
 				
 			}else{
-				strToSend = action + "Failed";
+				strToSend = MapsConstants.LOAD_NODES_INFO_ACTION + "Failed";
 			}
 				
 		bw.write(strToSend);

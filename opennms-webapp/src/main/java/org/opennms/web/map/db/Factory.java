@@ -599,7 +599,7 @@ public class Factory {
   }
 
   public static List getOutagedVElems() throws SQLException {
-      final String sqlQuery = "select distinct nodeid,eventuei,eventseverity from events where eventid in (select svclosteventid from outages where ifregainedservice is null)  order by nodeid";
+      final String sqlQuery = "select distinct  outages.nodeid, eventuei,eventseverity from outages left join events on events.eventid = outages.svclosteventid where ifregainedservice is null order by nodeid";
 
       Connection dbConn = m_dbConnection;
       if(m_dbConnection==null)

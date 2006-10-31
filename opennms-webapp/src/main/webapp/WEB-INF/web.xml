@@ -888,8 +888,8 @@
   </servlet>
 
   <servlet>
-     <servlet-name>LoadCurrentNodes</servlet-name>
-    <servlet-class>org.opennms.web.map.LoadCurrentNodesServlet</servlet-class>
+     <servlet-name>ModifyMap</servlet-name>
+    <servlet-class>org.opennms.web.map.ModifyMapServlet</servlet-class>
   </servlet>
 
   <servlet>
@@ -901,6 +901,16 @@
      <servlet-name>OpenMap</servlet-name>
     <servlet-class>org.opennms.web.map.OpenMapServlet</servlet-class>
   </servlet>  
+  
+  <servlet>
+    <servlet-name>NewMap</servlet-name>
+    <servlet-class>org.opennms.web.map.NewMapServlet</servlet-class>
+  </servlet> 
+
+  <servlet>
+     <servlet-name>CloseMap</servlet-name>
+    <servlet-class>org.opennms.web.map.CloseMapServlet</servlet-class>
+  </servlet>   
   
   <servlet>
   	<servlet-name>purdyChart</servlet-name>
@@ -972,8 +982,8 @@
   </servlet-mapping>
 
  <servlet-mapping>
-    <servlet-name>LoadCurrentNodes</servlet-name>
-    <url-pattern>/map/LoadCurrentNodes</url-pattern>
+    <servlet-name>ModifyMap</servlet-name>
+    <url-pattern>/map/ModifyMap</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -985,6 +995,16 @@
     <servlet-name>OpenMap</servlet-name>
     <url-pattern>/map/OpenMap</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>CloseMap</servlet-name>
+    <url-pattern>/map/CloseMap</url-pattern>
+  </servlet-mapping>  
+  
+  <servlet-mapping>
+    <servlet-name>NewMap</servlet-name>
+    <url-pattern>/map/NewMap</url-pattern>
+  </servlet-mapping>  
 
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->  

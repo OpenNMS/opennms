@@ -27,16 +27,16 @@ import java.text.SimpleDateFormat;
  * proper session objects to use when working with maps
  * 
  */
-public class OpenMapServlet extends HttpServlet {
+public class CloseMapServlet extends HttpServlet {
 	
 	static final long serialVersionUID = 2006102300; 
-	
+
+
 	Category log;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		BufferedWriter bw = null;
-		String strToSend=null;
 		try {
 			ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 			log = ThreadCategory.getInstance(this.getClass());
@@ -45,9 +45,10 @@ public class OpenMapServlet extends HttpServlet {
 
 			String action = request.getParameter("action");
 
-			strToSend = action+"OK";
+			String strToSend = null;
 			HttpSession session = request.getSession(false);
 			if (session != null) {
+				strToSend = action + "OK";
 				String lastModTime = "";
 				String createTime = "";
 				float widthFactor = 1;
@@ -64,61 +65,19 @@ public class OpenMapServlet extends HttpServlet {
 				
 				VMap map = null;
 				
-				if (action.equals(MapsConstants.OPENMAP_ACTION)) {
-					SimpleDateFormat formatter = new SimpleDateFormat(
-					"HH.mm.ss dd/MM/yy");
 
-					map = m.getMap(mapId);
-					int oldMapWidth = map.getWidth();
-					int oldMapHeight = map.getHeight();
-					widthFactor = (float) mapWidth / oldMapWidth;
-					heightFactor = (float) mapHeight / oldMapHeight;
-					log.debug("Old saved mapWidth=" + oldMapWidth
-							+ " and MapHeight=" + oldMapHeight);
-					log.debug("widthFactor=" + widthFactor);
-					log.debug("heightFactor=" + heightFactor);
-					if (map.getCreateTime() != null)
-						createTime = formatter.format(map.getCreateTime());
-					if (map.getLastModifiedTime() != null)
-						lastModTime = formatter.format(map
-								.getLastModifiedTime());
-					strToSend += map.getId() + "+" + map.getBackground();
+				
+				if (action.equals(MapsConstants.CLOSEMAP_ACTION)) {
+					log.info("Close Map: closing opened map.");
+					map = null;
+					strToSend += MapsConstants.MAP_NOT_OPENED + "+" + MapsConstants.DEFAULT_BACKGROUND_COLOR;
+					//strToSend +="++++++";
 				}else{
-					strToSend=MapsConstants.OPENMAP_ACTION+"Failed";
+					strToSend=MapsConstants.CLOSEMAP_ACTION+"Failed";
 				}
 				
-				if(map!=null){
-					strToSend +="+" + map.getAccessMode() + "+"
-						+ map.getName() + "+" + map.getOwner() + "+"
-						+ map.getUserLastModifies() + "+" + createTime
-						+ "+" + lastModTime;
-					
-					VElement[] elems = map.getAllElements();
-					if (elems != null) {
-						for (int i = 0; i < elems.length; i++) {
-							int x = (int) (elems[i].getX() * widthFactor);
-							int y = (int) (elems[i].getY() * heightFactor);
-		
-							strToSend += "&" + elems[i].getId()
-									+ elems[i].getType() + "+" + x + "+"
-									+ y + "+" + elems[i].getIcon() + "+"
-									+ elems[i].getLabel();
-							strToSend += "+" + elems[i].getRtc() + "+"
-									+ elems[i].getStatus() + "+"
-									+ elems[i].getSeverity();
-						}
-					}
-					VLink[] links = map.getAllLinks();
-					if (links != null) {
-						for (int i = 0; i < links.length; i++) {
-							strToSend += "&" + links[i].getFirst().getId()
-									+ links[i].getFirst().getType() + "+"
-									+ links[i].getSecond().getId()
-									+ links[i].getSecond().getType();
-						}
-					}
-				}
-
+				bw.write(strToSend);
+				bw.close();
 				m.endSession();
 				
 				session.setAttribute("sessionMap", map);
@@ -126,19 +85,18 @@ public class OpenMapServlet extends HttpServlet {
 						+ "'");
 
 			} else {
-				strToSend=MapsConstants.OPENMAP_ACTION + "Failed";
+				bw.write(MapsConstants.CLOSEMAP_ACTION + "Failed");
+				bw.close();
 				log.error("HttpSession not initialized");
 			}
 		} catch (Exception e) {
-			strToSend=MapsConstants.OPENMAP_ACTION + "Failed";
 			if (bw == null) {
 				bw = new BufferedWriter(new OutputStreamWriter(response
 						.getOutputStream()));
 			}
-			log.error(this.getClass().getName()+" Error: "+e);
-		}finally{
-			bw.write(strToSend);
+			bw.write(MapsConstants.CLOSEMAP_ACTION+ "Failed");
 			bw.close();
+			log.error(this.getClass().getName()+" Failure: "+e);
 		}
 	}
 
