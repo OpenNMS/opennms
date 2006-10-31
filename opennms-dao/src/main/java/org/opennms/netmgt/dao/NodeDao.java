@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -39,13 +40,13 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
 	
-    public abstract OnmsNode findByAssetNumber(String string);
-    
     public abstract Collection<OnmsNode> findByLabel(String label);
     
     public abstract Collection<OnmsNode> findNodes(OnmsDistPoller dp);
     
     public abstract OnmsNode getHierarchy(Integer id);
+    
+    public abstract Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
     
     public abstract Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
     
@@ -57,4 +58,6 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
 
     public abstract Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
+
+    public abstract OnmsNode findByForeignId(String foreignSource, String foreignId);
 }

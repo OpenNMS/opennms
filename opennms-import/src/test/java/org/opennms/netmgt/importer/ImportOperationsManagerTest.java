@@ -155,7 +155,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
             	OnmsServiceType snmp = getServiceTypeDao().findByName("SNMP");
                 OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
                 NetworkBuilder builder = new NetworkBuilder(distPoller);
-                builder.addNode("node7").getAssetRecord().setAssetNumber("imported:"+"7");
+                builder.addNode("node7").setForeignSource("imported:").setForeignId("7");
                 builder.getCurrentNode().getAssetRecord().setDisplayCategory("cat7");
                 builder.addInterface("192.168.7.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
                 builder.addService(icmp);
@@ -169,7 +169,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 
         m_transTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
-            	OnmsNode node = getNodeDao().findByAssetNumber("imported:"+"7");
+                OnmsNode node = getNodeDao().findByForeignId("imported:", "7");
             	assertNotNull(node);
             	assertEquals("node7", node.getLabel());
             	assertEquals("cat7", node.getAssetRecord().getDisplayCategory());

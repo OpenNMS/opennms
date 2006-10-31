@@ -34,7 +34,6 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
@@ -57,10 +56,6 @@ public class AssetRecordDaoTest extends AbstractDaoTestCase {
         //Test countAll method
         assertEquals(7, getAssetRecordDao().countAll());
 
-        //test build map of nodeids to assetNumbers from AssetRecord objects
-        Map arMap = getAssetRecordDao().findImportedAssetNumbersToNodeIds("imported-id:");
-        Integer id = assetRecord.getNode().getId();
-        assertEquals(arMap.get("imported-id: 7"), id);
     }
     
 }

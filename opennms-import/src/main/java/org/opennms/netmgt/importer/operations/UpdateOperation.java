@@ -342,7 +342,15 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 			// TODO: nodeLabelChanged event
 		}
 
-		if (isSnmpDataForNodeUpToDate()) {
+        if (!nullSafeEquals(db.getForeignSource(), imported.getForeignSource())) {
+            db.setForeignSource(imported.getForeignSource());
+        }
+
+        if (!nullSafeEquals(db.getForeignId(), imported.getForeignId())) {
+            db.setForeignId(imported.getForeignId());
+        }
+
+        if (isSnmpDataForNodeUpToDate()) {
 
 			if (!nullSafeEquals(db.getSysContact(), imported.getSysContact())) {
 				db.setSysContact(imported.getSysContact());

@@ -41,6 +41,6 @@ public interface ImportOperationFactory {
 
     public abstract UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city);
     
-    public abstract DeleteOperation createDeleteOperation(Integer nodeId, String assetNumber);
+    public abstract DeleteOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId);
 
 }

@@ -149,10 +149,8 @@ public class PollerBackEndTest extends TestCase {
         m_locationMonitor.setDefinitionName(m_locationDefinition.getName());
         
         NetworkBuilder builder = new NetworkBuilder(new OnmsDistPoller("localhost", "127.0.0.1"));
-        OnmsNode node = builder.addNode("testNode");
-        node.setId(1);
-        OnmsIpInterface iface = builder.addInterface("192.168.1.1").getInterface();
-        iface.setId(1);
+        builder.addNode("testNode").setId(1);
+        builder.addInterface("192.168.1.1").setId(1);
         m_httpService = builder.addService(new OnmsServiceType("HTTP"));
         m_httpService.setId(1);
         m_dnsService = builder.addService(new OnmsServiceType("DNS"));

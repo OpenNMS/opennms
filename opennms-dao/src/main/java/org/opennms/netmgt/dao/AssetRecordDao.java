@@ -39,17 +39,6 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 
 public interface AssetRecordDao extends OnmsDao<OnmsAssetRecord, Integer> {
     
-    public abstract OnmsAssetRecord findByNodeId(Integer id);
-
-    /**
-     * Used to retrieve a tuple of the relation of nodeid to assetNumber.
-     * The assetNumber column is intended to be used for storing the id of
-     * a foreign provisioning system.
-     * 
-     * @return a <code>Map</code> containing nodeid keys and assetNumber
-     *         values.
-     */
-    public abstract Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource);
 
 
 }

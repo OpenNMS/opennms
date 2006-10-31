@@ -116,6 +116,10 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 
     /** nullable persistent field */
     private Date m_lastCapsdPoll;
+    
+    private String m_foreignSource;
+    
+    private String m_foreignId;
 
     /** persistent field */
     private OnmsDistPoller m_distPoller;
@@ -347,6 +351,25 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 
     public void setLastCapsdPoll(Date lastcapsdpoll) {
         m_lastCapsdPoll = lastcapsdpoll;
+    }
+    
+    
+    @Column(name="foreignId")
+    public String getForeignId() {
+        return m_foreignId;
+    }
+
+    public void setForeignId(String foreignId) {
+        m_foreignId = foreignId;
+    }
+
+    @Column(name="foreignSource")
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+
+    public void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
     }
 
     /**

@@ -59,9 +59,9 @@ import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
  */
 public class ImportOperationsManager {
     
-	private List m_inserts = new LinkedList();
-    private List m_updates = new LinkedList();
-    private Map m_assetNumbers;
+	private List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
+    private List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
+    private Map<String, Integer> m_foreignIdToNodeMap;
     
     private ImportOperationFactory m_operationFactory;
     private ImportStatistics m_stats = new DefaultImportStatistics();
@@ -71,8 +71,8 @@ public class ImportOperationsManager {
 	private int m_writeThreads = 4;
     private String m_foreignSource;
     
-    public ImportOperationsManager(Map assetNumbers, ImportOperationFactory operationFactory) {
-        m_assetNumbers = new HashMap(assetNumbers);
+    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ImportOperationFactory operationFactory) {
+        m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
         m_operationFactory = operationFactory;
     }
 
@@ -86,7 +86,7 @@ public class ImportOperationsManager {
     }
 
     private boolean nodeExists(String foreignId) {
-        return m_assetNumbers.containsKey(getAssetNumber(foreignId));
+        return m_foreignIdToNodeMap.containsKey(foreignId);
     }
     
     private SaveOrUpdateOperation insertNode(String foreignId, String nodeLabel, String building, String city) {
@@ -109,22 +109,11 @@ public class ImportOperationsManager {
      * @return a nodeId
      */
     private Integer processForeignId(String foreignId) {
-        return (Integer)m_assetNumbers.remove(getAssetNumber(foreignId));
-    }
-    
-    public String getAssetNumber(String foreignId) {
-        return getForeignSource()+foreignId;
-    }
-    
-    public String getForeignId(String assetNumber) {
-        if (assetNumber.startsWith(getForeignSource())) {
-            return assetNumber.substring(getForeignSource().length());
-        }
-        return null;
+        return (Integer)m_foreignIdToNodeMap.remove(foreignId);
     }
     
     public int getOperationCount() {
-        return m_inserts.size() + m_updates.size() + m_assetNumbers.size();
+        return m_inserts.size() + m_updates.size() + m_foreignIdToNodeMap.size();
     }
     
     public int getInsertCount() {
@@ -136,27 +125,27 @@ public class ImportOperationsManager {
     }
 
     public int getDeleteCount() {
-    	return m_assetNumbers.size();
+    	return m_foreignIdToNodeMap.size();
     }
     
     class DeleteIterator implements Iterator {
     	
-    	private Iterator m_assetNumbersIter = m_assetNumbers.entrySet().iterator();
+    	private Iterator m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
 
 		public boolean hasNext() {
-			return m_assetNumbersIter.hasNext();
+			return m_foreignIdIterator.hasNext();
 		}
 
 		public Object next() {
-            Map.Entry entry = (Map.Entry)m_assetNumbersIter.next();
+            Map.Entry entry = (Map.Entry)m_foreignIdIterator.next();
             Integer nodeId = (Integer)entry.getValue();
-            String assetNumber = (String)entry.getKey();
-            return m_operationFactory.createDeleteOperation(nodeId, assetNumber);
+            String foreignId = (String)entry.getKey();
+            return m_operationFactory.createDeleteOperation(nodeId, m_foreignSource, foreignId);
 			
 		}
 
 		public void remove() {
-			m_assetNumbersIter.remove();
+			m_foreignIdIterator.remove();
 		}
     	
     }
