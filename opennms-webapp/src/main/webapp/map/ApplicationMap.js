@@ -807,7 +807,7 @@ function handleLoadingMap(data) {
 					str=str.substring(CLOSEMAP_ACTION.length+2,str.length);
 					action = CLOSEMAP_ACTION;
 				}else{			
-					alert(action+' Failed!');
+					alert('Operation Failed!');
 					loading--;
 					assertLoading();
 					return;
@@ -815,7 +815,7 @@ function handleLoadingMap(data) {
 			}
 		}
 	} else {
-		        alert('Open/Close/New Map Failed!');
+		        alert('Operation Failed!');
 				loading--;
 				assertLoading();
 				return;
