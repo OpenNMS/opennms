@@ -61,7 +61,7 @@ function onClickMapElement(evt)
 			loading++;
 			assertLoading();
 			disableMenu();
-			postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapElement.getMapId()+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, openDownloadedMap, "text/xml", null );			
+			postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapElement.getMapId()+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );			
 		}
 	}
 }

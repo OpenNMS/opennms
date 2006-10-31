@@ -27,36 +27,40 @@ public class DeleteMapServlet extends HttpServlet
 
     static final long serialVersionUID = 2006102700;
 	
-    private static final String LOG4J_CATEGORY = "OpenNMS.Map";
-	
     Category log;
     
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
     {
       
-    	ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    	ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
       log = ThreadCategory.getInstance(this.getClass());
       
       BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 
+      String action = request.getParameter("action");
+      
+      String strToSend = action+"OK";
       int mapId = Integer.parseInt(request.getParameter("MapId"));
 
       if (log.isInfoEnabled())
     	  log.info("Deleting map with id="+mapId);
+      
       try{
-      	Manager m = new Manager();
-      	m.startSession();
-      	m.deleteMap(mapId);
-      	m.endSession();
+    	if(action.equals(MapsConstants.DELETEMAP_ACTION)){
+	      	Manager m = new Manager();
+	      	m.startSession();
+	      	m.deleteMap(mapId);
+	      	m.endSession();
+    	}else{
+    		strToSend=MapsConstants.DELETEMAP_ACTION+"Failed";
+    	}
       }catch(Exception e){
       	log.error("Delete map error "+e);
-      	throw new ServletException(e);
-      }
-      if (log.isInfoEnabled())
-    	  log.info("Map deleted");	
-      
-      bw.write("deleteMapOK");
-      bw.close();
+      	strToSend=MapsConstants.DELETEMAP_ACTION+"Failed";
+      }finally{
+	      bw.write(strToSend);
+	      bw.close();
+      } 
     }
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 

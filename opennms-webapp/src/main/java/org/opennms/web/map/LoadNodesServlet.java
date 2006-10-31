@@ -26,43 +26,41 @@ import org.opennms.web.element.Node;
  */
 public class LoadNodesServlet extends HttpServlet {
 
-	private static final String LOG4J_CATEGORY = "OpenNMS.Map";
+	
 
 	Category log;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-
+		String action = request.getParameter("action");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream()));
+		String strToSend = action + "OK";
 		log.info("Loading nodes");
-		String strToSend = "loadNodesOK";
 
 		Node[] onmsNodes = null;
 
 		try {
-			onmsNodes = NetworkElementFactory.getAllNodes();
+			if (action.equals(MapsConstants.LOADNODES_ACTION)) {
+				onmsNodes = NetworkElementFactory.getAllNodes();
+				for (int i = 0; i < onmsNodes.length; i++) {
+					Node n = onmsNodes[i];
+						if (i > 0) {
+							strToSend += "&";
+						}
+		
+						String nodeStr = n.getNodeId() + "+" + n.getLabel();
+						strToSend += nodeStr;
+				}
+			} else {
+				strToSend = MapsConstants.LOADNODES_ACTION + "Failed";
+			}
 		} catch (SQLException e) {
 			log.error(e.toString());
+			strToSend = MapsConstants.LOADNODES_ACTION + "Failed";
 		}
-
-		for (int i = 0; i < onmsNodes.length; i++) {
-			Node n = onmsNodes[i];
-
-			try {
-				if (i > 0) {
-					strToSend += "&";
-				}
-
-				String nodeStr = n.getNodeId() + "+" + n.getLabel();
-				strToSend += nodeStr;
-			} catch (Exception e) {
-				log.error(e);
-			}
-		}
-
 		bw.write(strToSend);
 		bw.close();
 		log.info("Sending response to the client '" + strToSend + "'");

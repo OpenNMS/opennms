@@ -177,18 +177,15 @@ function getSemaphoreFlash(severity, avail){
 function InitApplication(){
 	loading++;
 	assertLoading();
-	postURL ( "InitMapsApplication", null, analizeInitResponse, "text/xml", null );	
+	postURL ( "InitMapsApplication?action="+INIT_ACTION, null, handleInitResponse, "text/xml", null );	
 }
 
-function analizeInitResponse(data) {
+function handleInitResponse(data) {
 	var str = '';
 	if(data.success) {
 		str = data.content;
-		
-		var tmpStr=str.substring(0,6);
-		
-		if(tmpStr=="InitOK"){
-			str=str.substring(6,str.length);
+		if(testResponse(INIT_ACTION, str)){
+			str=str.substring(INIT_ACTION.length+2,str.length);
 		}
 		else{
 		     alert('Init Maps Application failed!');
@@ -196,17 +193,13 @@ function analizeInitResponse(data) {
 		     disableMenu();
 			return;
 		}
-		//alert(str);
 		var splitStr = str.split("&");
 		refreshNodesIntervalInSec=parseInt(splitStr[0])*60;
 		var mapToOpen = splitStr[1];
-		//alert("refreshnodesinterval= "+refreshNodesIntervalInSec+" isUserAdmin="+isUserAdmin+ " mapToOpen="+mapToOpen);
-
 		refreshNodesIntervalInSec=parseInt(str)*60;
 
 		if(mapToOpen!=undefined){
 			if(isUserAdmin=="false"){
-				
 				hideAll();
 	     		disableMenu();
 			}
@@ -226,25 +219,18 @@ function analizeInitResponse(data) {
 function LoadMaps(){
 	loading++;
 	assertLoading();
-	//alert("loadmaps");	
-	postURL ( "LoadMaps", null, analizeLoadMapsResponse, "text/xml", null );
-	
+	postURL ( "LoadMaps?action="+LOADMAPS_ACTION, null, handleLoadMapsResponse, "text/xml", null );
 }
 
-function analizeLoadMapsResponse(data) {
+function handleLoadMapsResponse(data) {
 	var str = '';
 	if(data.success) {
-
 		maps= [" "];
 		mapSorts = [null];
 		str = data.content;
-		
-		var tmpStr=str.substring(0,6);
-		
-		if(tmpStr=="LoadOK"){
-			str=str.substring(6,str.length);
-		}
-		else{
+		if(testResponse(LOADMAPS_ACTION, str)){
+			str=str.substring(LOADMAPS_ACTION.length+2,str.length);
+		}else{
 		    alert('Load Maps failed!');
 	        loading--;	
 			assertLoading();
@@ -252,9 +238,6 @@ function analizeLoadMapsResponse(data) {
   	        disableMenu();			
 			return;
 		}
-		//alert(str);
-
-				
 		var st = str.split("&");
 		if(str.indexOf("+")>=0){
 			for(var k=0;k<st.length;k++){
@@ -271,13 +254,9 @@ function analizeLoadMapsResponse(data) {
 				var tmpMap = new ElemMap(id, name, owner);
 				maps.push(name);
 				mapSorts.push(tmpMap);
-				//alert('id='+id+' name='+name+' owner='+owner);
 			}
 		}
-		
-
 		mapSortAss = assArrayPopulate(maps,mapSorts);	
-		//alert('Loading Maps OK!');	
 		loading--;	
 		assertLoading();
 		mapsLoaded=true;
@@ -293,25 +272,19 @@ function analizeLoadMapsResponse(data) {
 function LoadNodes(){
 	loading++;
 	assertLoading();
-	//alert("loading nodes");
-	postURL ( "LoadNodes", null, analizeLoadNodesResponse, "text/xml", null );
+	postURL ( "LoadNodes?action="+LOADNODES_ACTION, null, handleLoadNodesResponse, "text/xml", null );
 	
 }
 
-function analizeLoadNodesResponse(data) {
+function handleLoadNodesResponse(data) {
 	var str = '';
 	if(data.success) {
 		nodes= [" "];
 		nodeSorts = [null];
 		str = data.content;
-		var tmpStr=str.substring(0,11);
-
-		//alert(tmpStr);
-
-		if(tmpStr=="loadNodesOK"){
-			str=str.substring(11,str.length);
-		}
-		else{
+		if(testResponse(LOADNODES_ACTION, str)){
+			str=str.substring(LOADNODES_ACTION.length+2,str.length);
+		}else{
 		     alert('Load Nodes failed!');
 		     hideAll();
 			 loading--;	
@@ -319,9 +292,6 @@ function analizeLoadNodesResponse(data) {
 		     disableMenu();		          
 			return;
 		}
-		//alert(str);
-		//alert(str.indexOf("&"));
-		
 		var st = str.split("&");
 		if(str.indexOf("+")>=0){
 			for(var k=0;k<st.length;k++){
@@ -341,7 +311,6 @@ function analizeLoadNodesResponse(data) {
 					}
 					counter++;
 				}
-
 				var tmpNode = new Node(id, label);
 				nodes.push(label);
 				nodeSorts.push(tmpNode);
@@ -352,7 +321,6 @@ function analizeLoadNodesResponse(data) {
 		loading--;
 		assertLoading();
 		nodesLoaded=true;
-		//alert('Loading Nodes OK!');		
 	} else {
 		alert('Loading Nodes has failed');
 		hideAll();
@@ -363,11 +331,9 @@ function analizeLoadNodesResponse(data) {
 }
 
 function addMapElement(){
-	//alert(selectedMapElemInList);
 	if(selectedMapElemInList==0 ){
 		return;
 	}
-			
 	var point = getFirstFreePoint();
 	if(point==null){
 		alert("no free points in the grid, cambiare grandezza nodi!!");
@@ -376,11 +342,8 @@ function addMapElement(){
 	loading++;
 	assertLoading();
 	disableMenu();
-
 	var elem = nodeSortAss[selectedMapElemInList].id;
-	//alert("loading nodes");
-	postURL ( "LoadCurrentNodes?action="+ADDNODES_ACTION+"&elems="+elem, null, analizeAddNodeResponse, "text/xml", null );
-
+	postURL ( "ModifyMap?action="+ADDNODES_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addRangeOfNodes(){
@@ -392,16 +355,14 @@ function addRangeOfNodes(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "LoadCurrentNodes?action="+ADDRANGE_ACTION+"&elems="+range, null, analizeAddNodeResponse, "text/xml", null );
-
+	postURL ( "ModifyMap?action="+ADDRANGE_ACTION+"&elems="+range, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapElemNeigh(id){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "LoadCurrentNodes?action="+ADDNODES_NEIG_ACTION+"&elems="+id, null, analizeAddNodeResponse, "text/xml", null );
-
+	postURL ( "ModifyMap?action="+ADDNODES_NEIG_ACTION+"&elems="+id, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapElementWithNeighbors()
@@ -412,10 +373,8 @@ function addMapElementWithNeighbors()
 	loading++;
 	assertLoading();
 	disableMenu();
-
 	var elem = nodeSortAss[selectedMapElemInList].id;
-	//alert("loading nodes");
-	postURL ( "LoadCurrentNodes?action="+ADDNODES_WITH_NEIG_ACTION+"&elems="+elem, null, analizeAddNodeResponse, "text/xml", null );
+	postURL ( "ModifyMap?action="+ADDNODES_WITH_NEIG_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapAsNode(){ 
@@ -423,11 +382,9 @@ function addMapAsNode(){
 		alert('No Maps opened');
 	 	return;
 	}
-	
 	if(selectedMapInList==0){
 		return;
 	}
-	
 	var mapId = mapSortAss[selectedMapInList].id;
 	if(mapId==currentMapId){
 		var childNode = menuSvgDocument.getElementById("DownInfoText");
@@ -437,12 +394,10 @@ function addMapAsNode(){
 		"</text>",menuSvgDocument));			
 		return;
 	}
-	
 	loading++;
 	assertLoading();
 	disableMenu();
-	//alert(mapSortAss[selectedMapInList].id);
-	postURL ( "LoadCurrentNodes?action="+ADDMAPS_ACTION+"&elems="+mapId, null, analizeAddNodeResponse, "text/xml", null );
+	postURL ( "ModifyMap?action="+ADDMAPS_ACTION+"&elems="+mapId, null, handleAddElementResponse, "text/xml", null );
 }
 
 function deleteMapElement(elemMap)
@@ -460,8 +415,7 @@ function deleteMapElement(elemMap)
 		ACTION = DELETENODES_ACTION;
 		id = elemMap.getNodeId();
 	}
-
-	postURL ( "LoadCurrentNodes?action="+ACTION+"&elems="+id, null, analizeDeleteNodeResponse, "text/xml", null );
+	postURL ( "ModifyMap?action="+ACTION+"&elems="+id, null, handleDeleteNodeResponse, "text/xml", null );
 }
 
 function getElemInfo(elemMap)
@@ -471,29 +425,25 @@ function getElemInfo(elemMap)
 	var ACTION = "";
 	var id = -1;
 	if (elemMap.isMap()) {
-		//ACTION = LOAD_NODES_INFO_ACTION;
-		//id = elemMap.getMapId();
+		//do nothing...
 	}
 	if (elemMap.isNode()) {
 		ACTION = LOAD_NODES_INFO_ACTION;
 		id = elemMap.getNodeId();
 	}
-
-	postURL ( "LoadInfos?action="+ACTION+"&elem="+id, null, analizeLoadInfosResponse, "text/xml", null );
+	postURL ( "LoadInfos?action="+ACTION+"&elem="+id, null, handleLoadInfosResponse, "text/xml", null );
 }
 
-function analizeDeleteNodeResponse(data) {
+function handleDeleteNodeResponse(data) {
 	var str = '';
 	if(data.success) {
 		str = data.content;
-		var tmpStr=str.substring(0,DELETENODES_ACTION.length+2);
-		if(tmpStr==DELETENODES_ACTION+"OK"){
+		if(testResponse(DELETENODES_ACTION, str)){
 			str=str.substring(DELETENODES_ACTION.length+2,str.length);
-		} else {
-		tmpStr=str.substring(0,DELETEMAPS_ACTION.length+2);
-		if(tmpStr==DELETEMAPS_ACTION+"OK"){
-			str=str.substring(DELETEMAPS_ACTION.length+2,str.length);
-			} else {
+		}else{
+			if(testResponse(DELETEMAPS_ACTION, str)){
+				str=str.substring(DELETEMAPS_ACTION.length+2,str.length);
+			}else{
 	    	    alert('Deleting Element/s failed!');
 				loading--;
 				assertLoading();
@@ -515,45 +465,35 @@ function analizeDeleteNodeResponse(data) {
 		var id;
 		while(counter< nodeST.length){
 			var tmp = nodeST[counter];
-				
-			//read the information of the map (id, name, ecc.)
-		
+			//read the mapid
 			if(counter==0) 
 			{
 				id=tmp;
 			}
-			//alert(counter);	
 			counter++;
 		}
 		map.deleteMapElement(id);
 	}
-
 	loading--;
 	assertLoading();
 	clearTopInfo();
 	enableMenu();
-	
 	var childNode = menuSvgDocument.getElementById("DownInfoText");		
 	if (childNode)
 		menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
 	menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">" +
 		"<tspan x=\"5\" dy=\"0\">Deleted selected element/s.</tspan>" +
 		"</text>",menuSvgDocument));	
-
-	//reloadGrid();	
-//	savedMapString=getMapString();
-	
 }
 
 
-function analizeLoadInfosResponse(data) {
+function handleLoadInfosResponse(data) {
 	var str = '';
 	if(data.success) {
 		str = data.content;
-		var tmpStr=str.substring(0,LOAD_NODES_INFO_ACTION.length+2);
-		if(tmpStr==LOAD_NODES_INFO_ACTION+"OK"){
+		if(testResponse(LOAD_NODES_INFO_ACTION, str)){
 			str=str.substring(LOAD_NODES_INFO_ACTION.length+2,str.length);
-		} else {
+		}else{
 			//if load infos failed, do nothing 
 			loading--;
 			assertLoading();
@@ -561,7 +501,7 @@ function analizeLoadInfosResponse(data) {
 			return;			
 		}
 	} else {
-        	loading--;
+    	loading--;
 		assertLoading();
 		enableMenu();
 		return;
@@ -579,38 +519,31 @@ function analizeLoadInfosResponse(data) {
 		labelText.firstChild.nodeValue+=" ("+nodeToken+")";
 		tiText.appendChild(parseXML(infos,menuSvgDocument));
 	}
-       	loading--;
+	loading--;
 	assertLoading();	
 }
 
-function analizeAddNodeResponse(data) {
-	
+function handleAddElementResponse(data) {
 	var str = '';
 	if(data.success) {
 		str = data.content;
-		var tmpStr=str.substring(0,ADDNODES_ACTION.length+2);
-		if(tmpStr==ADDNODES_ACTION+"OK"){
+		if(testResponse(ADDNODES_ACTION, str)){
 			str=str.substring(ADDNODES_ACTION.length+2,str.length);
-			selectedMapElemInList=0;
-		} else {
-			tmpStr=str.substring(0,ADDRANGE_ACTION.length+2)
-			if(tmpStr==ADDRANGE_ACTION+"OK"){
+		}else{
+			if(testResponse(ADDRANGE_ACTION, str)){
 				str=str.substring(ADDRANGE_ACTION.length+2,str.length);
-			} else {
-				tmpStr=str.substring(0,ADDNODES_NEIG_ACTION.length+2)
-				if(tmpStr==ADDNODES_NEIG_ACTION+"OK"){
+			}else{
+				if(testResponse(ADDNODES_NEIG_ACTION, str)){
 					str=str.substring(ADDNODES_NEIG_ACTION.length+2,str.length);
-				} else {
-					tmpStr=str.substring(0,ADDNODES_WITH_NEIG_ACTION.length+2)
-					if(tmpStr==ADDNODES_WITH_NEIG_ACTION+"OK"){
+				}else{
+					if(testResponse(ADDNODES_WITH_NEIG_ACTION, str)){
 						str=str.substring(ADDNODES_WITH_NEIG_ACTION.length+2,str.length);
 						selectedMapElemInList=0;
-					} else {
-						tmpStr=str.substring(0,ADDMAPS_ACTION.length+2)
-						if(tmpStr==ADDMAPS_ACTION+"OK"){
+					}else{				
+						if(testResponse(ADDMAPS_ACTION, str)){
 							str=str.substring(ADDMAPS_ACTION.length+2,str.length);
-						} else {
-				    	    alert('Adding Node/s failed!');
+						}else{
+							alert('Adding Element/s failed!');
 							loading--;
 							assertLoading();
 							return;
@@ -625,7 +558,6 @@ function analizeAddNodeResponse(data) {
 		assertLoading();
 		return;
 	}
-	
 	var nodesAdded=false;
 	var nodesToAdd = new Array();
 	var linksToAdd = new Array();
@@ -832,7 +764,7 @@ function newMap(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "OpenMap?action="+NEWMAP_ACTION+"&MapId="+NEW_MAP+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, openDownloadedMap, "text/xml", null );
+	postURL ( "NewMap?action="+NEWMAP_ACTION+"&MapId="+NEW_MAP+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
 }
 
 function openMap(mapId){ 
@@ -850,35 +782,32 @@ function openMap(mapId){
 		if(mapIdToOpen==undefined || (typeof mapIdToOpen)=="object")
 			mapIdToOpen = mapSortAss[selectedMapInList].id;
 		//alert("OpenMap: mapIdToOpen="+mapIdToOpen);
-		postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapIdToOpen+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, openDownloadedMap, "text/xml", null );
+		postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapIdToOpen+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
 	}
 	
 }
 
-function openDownloadedMap(data) {
+function handleLoadingMap(data) {
 	var str = '';
 	var action = null;
 	//reset zoom and pan
 	reset();
 	if(data.success) {
 		str = data.content;
-		var tmpStr=str.substring(0,OPENMAP_ACTION.length+2);
-		if(tmpStr==OPENMAP_ACTION+"OK"){
+		if(testResponse(OPENMAP_ACTION, str)){
 			str=str.substring(OPENMAP_ACTION.length+2,str.length);
 			action = OPENMAP_ACTION;
 			selectedMapInList=0;
-		} else {
-			tmpStr=str.substring(0,NEWMAP_ACTION.length+2);
-			if(tmpStr==NEWMAP_ACTION+"OK"){
+		}else{		
+			if(testResponse(NEWMAP_ACTION, str)){
 				str=str.substring(NEWMAP_ACTION.length+2,str.length);
 				action = NEWMAP_ACTION;
-			} else {	
-				tmpStr=str.substring(0,CLOSEMAP_ACTION.length+2);
-				if(tmpStr==CLOSEMAP_ACTION+"OK"){
+			}else{				
+				if(testResponse(CLOSEMAP_ACTION, str)){
 					str=str.substring(CLOSEMAP_ACTION.length+2,str.length);
 					action = CLOSEMAP_ACTION;
-				} else {			
-					alert('Loading Map Failed!');
+				}else{			
+					alert(action+' Failed!');
 					loading--;
 					assertLoading();
 					return;
@@ -886,7 +815,7 @@ function openDownloadedMap(data) {
 			}
 		}
 	} else {
-		        alert('Loading Map: Response Failed!');
+		        alert('Open/Close/New Map Failed!');
 				loading--;
 				assertLoading();
 				return;
@@ -1063,54 +992,54 @@ function openDownloadedMap(data) {
 
 function saveMap() {
 	if(currentMapId!=MAP_NOT_OPENED){
-	var query="Nodes=";
-	var count=0;
-	clearTopInfo();
-	clearDownInfo();
-	var childNode = menuSvgDocument.getElementById("DownInfoText");
-	if (childNode)
-		menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-		menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Saving map '" +currentMapName+"'"+
-	"</text>",menuSvgDocument));		
+		var query="Nodes=";
+		var count=0;
+		clearTopInfo();
+		clearDownInfo();
+		var childNode = menuSvgDocument.getElementById("DownInfoText");
+		if (childNode)
+			menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
+			menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Saving map '" +currentMapName+"'"+
+		"</text>",menuSvgDocument));		
+			
 		
-	
-	//construct the query to post to the servlet. 
-	//the map is formatted as follows: id,x,y,image,type
-	var splitInPackets = false;
-	var totalPackets = parseInt(map.mapElementSize/70)+1;
-	//alert(totalPackets);
-	if(totalPackets>1){
-		splitInPackets = true;
-	}
-	for (elemToRender in map.mapElements){
-		if(count>70){
-			break;
+		//construct the query to post to the servlet. 
+		//the map is formatted as follows: id,x,y,image,type
+		var splitInPackets = false;
+		var totalPackets = parseInt(map.mapElementSize/70)+1;
+		//alert(totalPackets);
+		if(totalPackets>1){
+			splitInPackets = true;
+		}
+		for (elemToRender in map.mapElements){
+			if(count>70){
+				break;
+				}
+			if(count>0)
+				query+="*"; //  '*' = nodes delimiter char
+			var elem = map.mapElements[elemToRender];
+			var type = NODE_TYPE;
+			var id = "";
+			if (elem.isMap()) {
+				type=MAP_TYPE;
+				id = elem.getMapId();
+			} else {
+				id = elem.getNodeId();
 			}
-		if(count>0)
-			query+="*"; //  '*' = nodes delimiter char
-		var elem = map.mapElements[elemToRender];
-		var type = NODE_TYPE;
-		var id = "";
-		if (elem.isMap()) {
-			type=MAP_TYPE;
-			id = elem.getMapId();
-		} else {
-			id = elem.getNodeId();
-		}
-
-		query+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
-		
-		count++;
-		}
-
-	query+="&MapId="+currentMapId+"&MapName="+currentMapName+"&MapBackground="+currentMapBackGround+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight();
-	if(splitInPackets==true){
-		query+="&packet=1&totalPackets="+totalPackets;
-	}
-	//alert(query);
 	
-	postURL ( "SaveMap?"+query, null, viewSaveResponse, "text/xml", null );
-	disableMenu();
+			query+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
+			
+			count++;
+			}
+	
+		query+="&MapId="+currentMapId+"&MapName="+currentMapName+"&MapBackground="+currentMapBackGround+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight();
+		if(splitInPackets==true){
+			query+="&packet=1&totalPackets="+totalPackets;
+		}
+		//alert(query);
+		
+		postURL ( "SaveMap?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
+		disableMenu();
 	}else{
 		alert("No maps opened");
 	}
@@ -1152,7 +1081,7 @@ function saveMap2(packet, totalPackets) {
 	query+="&packet="+packetInt+"&totalPackets="+totalPackets;
 		
 	//alert(query);
-	postURL ( "SaveMap?"+query, null, viewSaveResponse, "text/xml", null );
+	postURL ( "SaveMap?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
 	disableMenu();
 	}else{
 		alert("No maps opened");
@@ -1160,25 +1089,22 @@ function saveMap2(packet, totalPackets) {
 }
 
 
-function viewSaveResponse(data) {
+function handleSaveResponse(data) {
 	if(data.success) {
-		
-		var answerST = data.content.split("+");
-		//alert(answerST[0]);
-		if(answerST[0]!="saveMapOK")
-			{	
+		var str=data.content;
+		if(testResponse(SAVEMAP_ACTION, str)){
+			str=str.substring(SAVEMAP_ACTION.length+2,str.length);
+		}else{			
 			alert('Saving Map has failed ');	
 			clearDownInfo();
 			enableMenu();
 			return;
-			}
+			}		
+		var answerST = str.split("+");
 		//alert(answerST[0]+" "+answerST[1]+" "+answerST[2]+" "+answerST[3]+" "+answerST[4]+" "+answerST[5]+" "+answerST[6]+" "+answerST[7]+" "+answerST[8]);
-		
-		
-
 		var packet = answerST[9];
 		var totalPackets = answerST[10];
-		//alert("viewSaveResponse: packet="+packet+" totalPackets="+totalPackets);
+		//alert("handleSaveResponse: packet="+packet+" totalPackets="+totalPackets);
 		if(packet==totalPackets){
 
 			currentMapId=parseInt(answerST[1]);
@@ -1265,7 +1191,7 @@ function testMapNameLength(evt){
 function deleteMap(){
 	if(currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
 	    if(confirm('Are you sure to delete the map?')==true){ 
-	    	postURL ( "DeleteMap?MapId="+currentMapId, null, viewDeleteResponse, "text/xml", null );
+	    	postURL ( "DeleteMap?action="+DELETEMAP_ACTION+"&MapId="+currentMapId, null, handleDeleteResponse, "text/xml", null );
 	    	}else return;
 	}else{
 		alert('No maps opened or saved');
@@ -1275,14 +1201,13 @@ function deleteMap(){
         disableMenu();
 }
 
-function viewDeleteResponse(data) {
+function handleDeleteResponse(data) {
 	if(data.success) {
-
-		if(data.content!="deleteMapOK")
-			{	
-			alert('Deleting Map has failed'+data.content);	
+		var str=data.content;
+		if(!testResponse(DELETEMAP_ACTION, str)){
+			alert('Delete Map Failed');	
 			return;
-			}
+		}
 		map.clear();
 		clearMapInfo();
 		clearDownInfo();
@@ -1344,11 +1269,11 @@ function clearMap(){
     	loading++;
 		assertLoading();
 		disableMenu();
-     	postURL ( "LoadCurrentNodes?action="+CLEAR_ACTION+"&elems=", null, analizeClearMapResponse, "text/xml", null );
+     	postURL ( "ModifyMap?action="+CLEAR_ACTION+"&elems=", null, handleClearMapResponse, "text/xml", null );
      }
 }
 
-function analizeClearMapResponse(data) {
+function handleClearMapResponse(data) {
 	var str = '';
 	if(data.success) {
 		str = data.content;
@@ -1408,7 +1333,7 @@ function close(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "OpenMap?action="+CLOSEMAP_ACTION+"&MapId="+MAP_NOT_OPENED+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, openDownloadedMap, "text/xml", null );
+	postURL ( "CloseMap?action="+CLOSEMAP_ACTION+"&MapId="+MAP_NOT_OPENED+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
 }
 
 
@@ -1427,7 +1352,7 @@ function RefreshNodes(){
 	var elems="";
 	if(map!=undefined && map.mapElementSize>0){
 	//alert("loading nodes");
-		postURL ( "LoadCurrentNodes?action="+REFRESH_ACTION+"&elems="+elems, null, analizeRefreshNodesResponse, "text/xml", null );
+		postURL ( "ModifyMap?action="+REFRESH_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
 	}else{
 		menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
 		enableMenu();
@@ -1437,7 +1362,7 @@ function RefreshNodes(){
 
 var count=0;
 
-function analizeRefreshNodesResponse(data) {
+function handleRefreshNodesResponse(data) {
 	var str = '';
 	if(data.success) {
 		str = data.content;
@@ -1631,6 +1556,13 @@ function saveMapInHistory(){
 		}
 
 	}
+}
+
+function testResponse(action, response){
+		var tmpStr=response.substring(0,action.length+2);
+		if(tmpStr==(action+"OK"))
+			return true;
+		return false;
 }
 		
 		

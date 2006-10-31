@@ -37,37 +37,18 @@ import java.util.*;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class LoadCurrentNodesServlet extends HttpServlet {
+public class ModifyMapServlet extends HttpServlet {
 
-	private static final String ADDNODES_ACTION = "AddNodes";
+	
 
-	private static final String ADDRANGE_ACTION = "AddRange";
+	
 
-	private static final String ADDMAPS_ACTION = "AddMaps";
-
-	private static final String REFRESH_ACTION = "Refresh";
-
-	private static final String ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
-
-	private static final String ADDMAPS_WITH_NEIG_ACTION = "AddMapsWithNeig";
-
-	private static final String ADDNODES_NEIG_ACTION = "AddNodesNeig";
-
-	private static final String ADDMAPS_NEIG_ACTION = "AddMapsNeig";
-
-	private static final String DELETENODES_ACTION = "DeleteNodes";
-
-	private static final String DELETEMAPS_ACTION = "DeleteMaps";
-
-	private static final String CLEAR_ACTION = "Clear";
-
-	private static final String LOG4J_CATEGORY = "OpenNMS.Map";
 
 	Category log;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		String elems = request.getParameter("elems");
 		String action = request.getParameter("action");
@@ -98,7 +79,7 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 
 					boolean actionfound = false;
 					
-					if (action.equals(ADDNODES_ACTION)) {
+					if (action.equals(MapsConstants.ADDNODES_ACTION)) {
 						actionfound = true;
 						String[] snodeids = elems.split(",");
 						nodeids = new Integer[snodeids.length];
@@ -107,24 +88,24 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 						}
 					}
 
-					if (action.equals(ADDRANGE_ACTION)) {
+					if (action.equals(MapsConstants.ADDRANGE_ACTION)) {
 						actionfound = true;
 						nodeids = (Integer[]) NetworkElementFactory.getNodeIdsWithIpLike(elems).toArray(new Integer[0]);
 					}
 
-					if (action.equals(ADDNODES_NEIG_ACTION)) {
+					if (action.equals(MapsConstants.ADDNODES_NEIG_ACTION)) {
 						actionfound = true;
 						nodeids = (Integer[]) NetworkElementFactory.getLinkedNodeIdOnNode(Integer.parseInt(elems)).toArray(new Integer[0]);
 					}
 
-					if (action.equals(ADDNODES_WITH_NEIG_ACTION)) {
+					if (action.equals(MapsConstants.ADDNODES_WITH_NEIG_ACTION)) {
 						actionfound = true;
 						Set linkednodeids = NetworkElementFactory.getLinkedNodeIdOnNode(Integer.parseInt(elems));
 						linkednodeids.add(new Integer(elems));
 						nodeids = (Integer[]) linkednodeids.toArray(new Integer[0]);
 					} 
 					
-					if (action.equals(ADDMAPS_ACTION)) {
+					if (action.equals(MapsConstants.ADDMAPS_ACTION)) {
 						actionfound = true;
 						TYPE = VElement.MAP_TYPE;
 						String[] snodeids = elems.split(",");
@@ -199,7 +180,7 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 					}   // and first if action found	
 					
 					if (!actionfound) {
-						if (action.equals(DELETENODES_ACTION)) {
+						if (action.equals(MapsConstants.DELETENODES_ACTION)) {
 							actionfound = true;
 							TYPE = VElement.NODE_TYPE;
 							String[] snodeids = elems.split(",");
@@ -209,7 +190,7 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 							}
 						}
 						
-						if (action.equals(DELETEMAPS_ACTION)) {
+						if (action.equals(MapsConstants.DELETEMAPS_ACTION)) {
 							actionfound = true;
 							TYPE = VElement.MAP_TYPE;
 							String[] snodeids = elems.split(",");
@@ -232,7 +213,7 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 						} 
 					}
 
-					if (action.equals(REFRESH_ACTION)) {
+					if (action.equals(MapsConstants.REFRESH_ACTION)) {
 						actionfound = true;
 
 						// First refresh Element objects
@@ -282,7 +263,7 @@ public class LoadCurrentNodesServlet extends HttpServlet {
 						
 					} 
 
-					if (action.equals(CLEAR_ACTION)) {
+					if (action.equals(MapsConstants.CLEAR_ACTION)) {
 						actionfound = true;
 						map.removeAllLinks();
 						map.removeAllElements();
