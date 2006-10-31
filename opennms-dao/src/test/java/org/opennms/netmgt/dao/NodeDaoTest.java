@@ -48,11 +48,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 //public class NodeDaoTest extends AbstractDaoTestCase {
 public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
-    
-    public NodeDaoTest() {
-        System.setProperty("mock.rundbtests", "true");
-    }
-    
     public void testSave() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
