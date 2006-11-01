@@ -242,9 +242,9 @@
 <div class="spacer"><!-- --></div>
 <p>
 <% if (listInterfaces) { %>
-  <%=nodes.length%> Nodes, <%=interfaceCount%> Interfaces
+  <%=nodes.length%> <%=nodes.length > 1 ? "Nodes" : "Node" %>, <%=interfaceCount%> <%=interfaceCount > 1 ? "Interfaces" : "Interface" %>
 <% } else { %>
-  <%=nodes.length%> Nodes
+  <%=nodes.length%> <%= nodes.length > 1 ? "Nodes" : "Node" %>
 <% } %>
 
 

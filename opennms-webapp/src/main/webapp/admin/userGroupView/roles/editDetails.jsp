@@ -77,44 +77,45 @@
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
   <input type="hidden" name="operation" value="saveDetails"/>
-  <input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
-		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+  <input type="hidden" name="role" value="${role.name}"/>
+  
+		 <table>
 	         <tr>
-    		    		<td bgcolor="#999999"><b>Name</b></td>
-				<td><input name="roleName" type="text" value="<c:out value='${role.name}'/>"/></td>
-    		    		<td bgcolor="#999999"><b>Currently On Call</b></td>
+    		    		<th>Name</th>
+				<td><input name="roleName" type="text" value="${role.name}"/></td>
+    		    		<th>Currently On Call</th>
 				<td>
 					<c:forEach var="scheduledUser" items="${role.currentUsers}">
-						<c:out value="${scheduledUser}"/>
+						${scheduledUser}
 					</c:forEach>	
 				</td>
           	</tr>
 	         <tr>
-    		    		<td bgcolor="#999999"><b>Supervisor</b></td>
+    		    		<th>Supervisor</th>
 				<td>
 					<select name="roleUser">
 					<c:forEach var="user" items="${userManager.users}">
 						<c:choose>
 							<c:when test="${user == role.defaultUser}">
-								<option selected><c:out value="${user}"/></option>
+								<option selected>${user}</option>
 							</c:when>
 							<c:otherwise>
-								<option><c:out value="${user}"/></option>
+								<option>${user}</option>
 							</c:otherwise>
 						</c:choose>
 					</c:forEach>
 					</select>
 				</td>
-    		    		<td bgcolor="#999999"><b>Membership Group</b></td>
+    		    		<th>Membership Group</th>
 				<td>
 					<select name="roleGroup">
 					<c:forEach var="group" items="${groupManager.groups}">
 						<c:choose>
 							<c:when test="${group == role.membershipGroup}">
-								<option selected><c:out value="${group}"/></option>
+								<option selected>${group}</option>
 							</c:when>
 							<c:otherwise>
-								<option><c:out value="${group}"/></option>
+								<option>${group}</option>
 							</c:otherwise>
 						</c:choose>
 					</c:forEach>
@@ -122,8 +123,8 @@
 				</td>
           	</tr>
           	<tr>
-    		    		<td bgcolor="#999999"><b>Description</b></td>
-				<td colspan="3"><input name="roleDescr" size="100" type="text" value="<c:out value='${role.description}'/>"/></td>
+    		    		<th>Description</th>
+				<td colspan="3"><input name="roleDescr" size="100" type="text" value="${role.description}"/></td>
           	</tr>
 		</table>
 

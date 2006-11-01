@@ -72,12 +72,12 @@
       <p>Alarms can be <em>acknowledged</em>, or removed from the view of other users, by
         selecting the alarm in the <em>Ack</em> check box and clicking the <em>Acknowledge
         Selected Alarms</em> at the bottom of the page.  Acknowledging an alarm gives
-        users the ability to personally take responsibility for addressing a network
+        users the ability to take personal responsibility for addressing a network
         or systems-related issue.  Any alarm that has not been acknowledged is
         active in all users' browsers and is considered <em>outstanding</em>.
       </p>
             
-      <p>If an alarm has been acknowledged in error, you can select the appropriate
+      <p>If an alarm has been acknowledged in error, you can select the 
         <em>View all acknowledged alarms</em> link, find the alarm, and <em>unacknowledge</em> it,
         making it available again to all users' views.
       </p>

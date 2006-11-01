@@ -42,6 +42,34 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
+	import="org.opennms.netmgt.config.users.*,
+	        org.opennms.netmgt.config.*,
+		java.util.*"
+%>
+
+<%
+	UserManager userFactory;
+  	Map users = null;
+	HashMap usersHash = new HashMap();
+	String curUserName = null;
+	
+	try
+    	{
+		UserFactory.init();
+		userFactory = UserFactory.getInstance();
+      		users = userFactory.getUsers();
+	}
+	catch(Exception e)
+	{
+		throw new ServletException("User:list " + e.getMessage());
+	}
+
+	Iterator i = users.keySet().iterator();
+	while (i.hasNext()) {
+		User curUser = (User)users.get(i.next());
+		usersHash.put(curUser.getUserId(), curUser.getFullName());
+	}
+
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -105,125 +133,103 @@
 
 <h3>View Role</h3>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-	         <tr>
-    		    		<td bgcolor="#999999"><b>Name</b></td>
-				<td><c:out value="${role.name}"/></td>
-    		    		<td bgcolor="#999999"><b>Currently On Call</b></td>
-				<td>
-					<c:forEach var="scheduledUser" items="${role.currentUsers}">
-						<c:out value="${scheduledUser}"/>
-					</c:forEach>	
-				</td>
-          	</tr>
-	         <tr>
-    		    		<td bgcolor="#999999"><b>Supervisor</b></td>
-				<td><c:out value="${role.defaultUser}"/></td>
-    		    		<td bgcolor="#999999"><b>Membership Group</b></td>
-				<td><c:out value="${role.membershipGroup}"/></td>
-          	</tr>
-          	<tr>
-    		    		<td bgcolor="#999999"><b>Description</b></td>
-				<td colspan="3"><c:out value="${role.description}"/></td>
-          	</tr>
-		</table>
-		</td>
-	</tr>
-	<tr align="right">
-		<td>&nbsp;</td>
-		<td>
-		<table border="0">
-		<tr>
-		<td>
+<table>
+  <tr>
+    <th>Name</th>
+	<td>${role.name}</td>
+    <th>Currently On Call</th>
+	<td>
+	  <c:forEach var="scheduledUser" items="${role.currentUsers}">
+		<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>
+		<span title="${fullName}">${scheduledUser}</span>
+	  </c:forEach>	
+	</td>
+  </tr>
+  
+  <tr>
+    <th>Supervisor</th>
+	<td>
+	  <c:set var="supervisorUser">${role.defaultUser}</c:set>
+	  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
+	  <span title="${fullName}">${role.defaultUser}</span></td>
+    <th>Membership Group</th>
+	<td>${role.membershipGroup}</td>
+  </tr>
+  
+  <tr>
+    <th>Description</th>
+	<td colspan="3">${role.description}</td>
+  </tr>
+</table>
+
+
 		<form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
 			<input type="hidden" name="operation" value="editDetails"/>
-			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+			<input type="hidden" name="role" value="${role.name}"/>
 			<input type="submit" value="Edit Details" />
 		</form>
-		</td>
-		<td>
+
 		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
 			<input type="submit" value="Done" />
 		</form>
-		</td>
-		</tr>
-		</table>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-		<h3>Role Schedule</h3>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;
+
+<h3>Role Schedule</h3>
+
+
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="role" value="${role.name}"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="nextMonthForm">
 					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="role" value="${role.name}"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="addEntryForm">
 					<input type="hidden" name="operation" value="addEntry"/>
-					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="role" value="${role.name}"/>
 					<input type="hidden" name="date"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="editEntryForm">
 					<input type="hidden" name="operation" value="editEntry"/>
-					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="role" value="${role.name}"/>
 					<input type="hidden" name="schedIndex"/>
 					<input type="hidden" name="timeIndex"/>
 				</form>
-			</td>
-		<td colspan="4">
-			<table  border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-			<caption>
+
+			<table>
+			  <caption>
 				<a href="javascript:prevMonth()">&lt;&lt;&lt;</a>&nbsp;
-				<B><c:out value="${calendar.monthAndYear}"/></B>&nbsp;
+				<b>${calendar.monthAndYear}</b>&nbsp;
 				<a href="javascript:nextMonth()">&gt;&gt;&gt;</a>
-			</caption>
+			  </caption>
 				<tr>
-				<c:forEach var="day" items="${calendar.weeks[0].days}">
-				<th bgcolor="#999999">
-					<b><c:out value="${day.dayOfWeek}"/></b>
-				</th>
-				</c:forEach>
+				  <c:forEach var="day" items="${calendar.weeks[0].days}">
+				    <th>${day.dayOfWeek}</th>
+				  </c:forEach>
 				</tr>
 				<c:forEach var="week" items="${calendar.weeks}">
-				<tr>
+				  <tr>
 					<c:forEach var="day" items="${week.days}">
-					<td>
-					<c:if test="${calendar.month == day.month}">
-						<c:set var="newHref">javascript:addEntry('<fmt:formatDate value='${day.date}' type='date' pattern='MM-dd-yyyy'/>')</c:set>
-						<b class="date"><c:out value="${day.dayOfMonth}"/></b><a class="new" href="<c:out value='${newHref}' escapeXml='false'/>"><img border=0 src="images/new.gif"/></a>
-						<br/>
-						<c:forEach var="entry" items="${day.entries}">
-							<fmt:formatDate value="${entry.startTime}" type="time" pattern="h:mm'&nbsp;'a"/>:<c:forEach var="owner" items="${entry.labels}"><c:set var="editHref">javascript:editEntry(<c:out value="${owner.schedIndex}"/>,<c:out value="${owner.timeIndex}"/>)</c:set>&nbsp;<c:choose><c:when test="${owner.supervisor}">unscheduled</c:when><c:otherwise><a href="<c:out value='${editHref}' escapeXml='false'/>"><c:out value="${owner.user}"/></a></c:otherwise></c:choose></c:forEach><br/>
-						</c:forEach>
-					</c:if>
-					</td>
+					  <td>
+					    <c:if test="${calendar.month == day.month}">
+						  <c:set var="newHref">javascript:addEntry('<fmt:formatDate value='${day.date}' type='date' pattern='MM-dd-yyyy'/>')</c:set>
+						  <b class="date"><c:out value="${day.dayOfMonth}"/></b><a class="new" href="<c:out value='${newHref}' escapeXml='false'/>"><img border=0 src="images/new.gif"/></a>
+						  <br/>
+						  <c:forEach var="entry" items="${day.entries}">
+							<fmt:formatDate value="${entry.startTime}" type="time" pattern="HH:mm"/>:<c:forEach var="owner" items="${entry.labels}"><c:set var="curUserName"><c:out value="${owner.user}"/></c:set><c:set var="fullName"><%= usersHash.get((String)pageContext.getAttribute("curUserName")) %></c:set><c:set var="editHref">javascript:editEntry(<c:out value="${owner.schedIndex}"/>,<c:out value="${owner.timeIndex}"/>)</c:set>&nbsp;<c:choose><c:when test="${owner.supervisor}">unscheduled</c:when><c:otherwise><a href="<c:out value='${editHref}' escapeXml='false'/>" title="<c:out value='${fullName}'/>"><c:out value="${owner.user}"/></a></c:otherwise></c:choose></c:forEach><br/>
+						  </c:forEach>
+					    </c:if>
+					  </td>
 					</c:forEach>
-				</tr>
+				  </tr>
 				</c:forEach>
 			</table>
-		</td>				
-	</tr>
-	<tr align="right">
-		<td>&nbsp;</td>
-		<td>
-		<table border="0">
-		<tr>
-		<td>
+
 		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
 			<input type="submit" value="Done" />
 		</form>
-		</td>
-		</tr>
-		</table>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

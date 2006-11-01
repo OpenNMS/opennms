@@ -42,6 +42,34 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
+	import="org.opennms.netmgt.config.users.*,
+	        org.opennms.netmgt.config.*,
+		java.util.*"
+%>
+
+<%
+	UserManager userFactory;
+  	Map users = null;
+	HashMap usersHash = new HashMap();
+	String curUserName = null;
+	
+	try
+    	{
+		UserFactory.init();
+		userFactory = UserFactory.getInstance();
+      		users = userFactory.getUsers();
+	}
+	catch(Exception e)
+	{
+		throw new ServletException("User:list " + e.getMessage());
+	}
+
+	Iterator i = users.keySet().iterator();
+	while (i.hasNext()) {
+		User curUser = (User)users.get(i.next());
+		usersHash.put(curUser.getUserId(), curUser.getFullName());
+	}
+
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -83,38 +111,60 @@
 
 <h3>Role Configuration</h3>
 
-<form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
-  <input name="operation" type="hidden" value="new"/>
-  <input type="submit" value="New Role"/>
-</form>
+<table>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-
-         <tr bgcolor="#999999">
-          <td/>
-          <td><b>Name</b></td>
-          <td><b>Supervisor</b></td>
-          <td><b>Currently On Call</b></td>
-          <td><b>Membership Group</b></td>
-          <td><b>Description</b></td>
+         <tr>
+          <th>Delete</th>
+          <th>Name</th>
+          <th>Supervisor</th>
+          <th>Currently On Call</th>
+          <th>Membership Group</th>
+          <th>Description</th>
+        </tr>
+        
+        <c:choose>
+          <c:when test="${empty roleManager.roles}">
+            <tr>
+              <td colspan="6">No roles defined.  Use the "Add New Role" button
+                to add roles.</td>
+            </tr>
+	 	  </c:when>
+	 	  
+	 	  <c:otherwise>
 			<c:forEach var="role" items="${roleManager.roles}">
 				<c:set var="deleteUrl" value="javascript:doDelete('${role.name}')" />
 				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
 				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${role.name}?')"/>
 				
 				<tr>
-				<td><a href="<c:out value='${deleteUrl}'/>" onclick="<c:out value='${confirmScript}'/>"><img src="images/trash.gif" alt="<c:out value='Delete ${role.name}'/>"></a></td>
-				<td><a href="<c:out value='${viewUrl}'/>"><c:out value="${role.name}"/></a></td>
-				<td><c:out value="${role.defaultUser}"/></td>
+				<td><a href="${deleteUrl}" onclick="${confirmScript}"><img src="images/trash.gif" alt="Delete ${role.name}"></a></td>
+				<td><a href="${viewUrl}">${role.name}</a></td>
+				<td>
+				  <c:set var="supervisorUser">${role.defaultUser}</c:set>
+				  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
+				  <span title="${fullName}">${role.defaultUser}</span>
+				</td>
 				<td>
 					<c:forEach var="scheduledUser" items="${role.currentUsers}">
-						<c:out value="${scheduledUser}"/>
+						<c:set var="curUserName">${scheduledUser}</c:set>
+						<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("curUserName").toString()) %></c:set>
+						<span title="${fullName}">${scheduledUser}</span>
 					</c:forEach>	
 				</td>
-				<td><c:out value="${role.membershipGroup}"/></td>
-				<td><c:out value="${role.description}"/></td>
+				<td>${role.membershipGroup}</td>
+				<td>${role.description}</td>
 				</tr>
 			</c:forEach>
+	 	  </c:otherwise>
+	 	</c:choose>
+	 	
 		</table>
+		
+<br/>
+
+<form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
+  <input name="operation" type="hidden" value="new"/>
+  <input type="submit" value="Add New Role"/>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

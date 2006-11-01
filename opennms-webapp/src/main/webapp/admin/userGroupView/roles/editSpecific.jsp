@@ -61,38 +61,39 @@
 
 <h3>Edit Schedule Entry</h3>
 
-<div class="error"><c:out value="${error}"/></div>
+<div class="error">${error}</div>
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="saveEntryForm">
   <input type="hidden" name="operation" value="saveEntry"/>
-  <input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
-  <input type="hidden" name="schedIndex" value="<c:out value='${schedIndex}'/>"/>
-  <input type="hidden" name="timeIndex" value="<c:out value='${timeIndex}'/>" /> 
-  <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+  <input type="hidden" name="role" value="${role.name}"/>
+  <input type="hidden" name="schedIndex" value="${schedIndex}"/>
+  <input type="hidden" name="timeIndex" value="${timeIndex}" /> 
+  
+  <table>
 	         <tr>
-    		    		<td bgcolor="#999999"><b>Role</b></td>
-				<td><c:out value='${role.name}'/></td>
-    		    		<td bgcolor="#999999"><b>User</b></td>
+    		    <th>Role</th>
+				<td>${role.name}</td>
+    		    <th>User</th>
 				<td>
 					<select name="roleUser">
 					<c:forEach var="user" items="${role.membershipGroup.users}">
 						<c:choose>
-							<c:when test="${user == scheduledUser}"><option selected><c:out value="${user}"/></option></c:when>
-							<c:otherwise><option><c:out value="${user}"/></option></c:otherwise>
+							<c:when test="${user == scheduledUser}"><option selected>${user}</option></c:when>
+							<c:otherwise><option>${user}</option></c:otherwise>
 						</c:choose>
 					</c:forEach>
 					</select>
 				</td>
           	</tr>
-	         <tr>
-    		    		<td bgcolor="#999999"><b>Start Date</b></td>
+	        <tr>
+    		    <th>Start Date</th>
 				<td> 
 					<c:import url="/includes/dateControl.jsp">
 						<c:param name="prefix" value="start"/>
 						<c:param name="date"><fmt:formatDate value="${start}" pattern="dd-MM-yyyy"/></c:param>
 					</c:import>
 				</td>
-    		    		<td bgcolor="#999999"><b>Start Time</b></td>
+    		    		<th>Start Time</th>
     		    		<td>
 					<c:import url="/includes/timeControl.jsp">
 						<c:param name="prefix" value="start"/>
@@ -101,14 +102,14 @@
 				</td>
           	</tr>
 	         <tr>
-    		    		<td bgcolor="#999999"><b>End Date</b></td>
+    		    		<th>End Date</th>
 				<td>
     		    			<c:import url="/includes/dateControl.jsp">
 						<c:param name="prefix" value="end"/>
 						<c:param name="date"><fmt:formatDate value="${end}" pattern="dd-MM-yyyy"/></c:param>
 					</c:import>
 				</td>
-    		    		<td bgcolor="#999999"><b>End Time</b></td>
+    		    		<th>End Time</th>
 				<td>
 					<c:import url="/includes/timeControl.jsp">
 						<c:param name="prefix" value="end"/>
