@@ -70,20 +70,24 @@
 	<table name="ifServices">
 		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
 		<column name="ipAddr" visable="false"/>
+		<column name="id"/>
 		<column name="serviceID"/>
 		<column name="lastGood"/>
 		<column name="lastFail"/>
 	</table>
+	
 	<table name="serverMap">
      		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
      		<column name="ipAddr" visable="false"/>
      		<column name="serverName"/>
 	</table>
+	
 	<table name="serviceMap">
      		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
      		<column name="ipAddr" visable="false"/>
      		<column name="serviceMapName"/>
 	</table>
+	
 	<table name="assets">
 		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
 		<column name="nodeID" visable="false"/>
@@ -91,6 +95,18 @@
 		<column name="notifyCategory"/>
 		<column name="pollerCategory"/>
 		<column name="thresholdCategory"/>
+	</table>
+
+	<table name="applications">
+		<join column="id" table="application_service_map" table-column="appId"/>
+		<column name="id" />
+		<column name="name" />
+	</table>
+
+	<table name="application_service_map">
+		<join column="ifServiceId" table="ifServices" table-column="id"/>
+		<column name="appId" visable="false" />
+		<column name="ifServiceId" visable="false" />
 	</table>
 
 
