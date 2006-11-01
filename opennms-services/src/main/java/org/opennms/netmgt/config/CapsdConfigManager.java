@@ -112,8 +112,8 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     static final String SQL_DB_RETRIEVE_IP_INTERFACE = 
         "SELECT ip.nodeid, ip.ipaddr, ip.ismanaged " +
-        "FROM ipinterface ip " +
-        "JOIN node n ON ip.nodeid = n.nodeid " +
+        "FROM ipinterface as ip " +
+        "JOIN node as n ON ip.nodeid = n.nodeid " +
         "WHERE ip.ipaddr!='0.0.0.0' " +
         "AND ip.isManaged!='D' " +
         "AND ip.isManaged!='F' " +
@@ -125,9 +125,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     static final String SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER = 
         "SELECT ip.nodeid, ip.ipaddr, ip.ismanaged " + 
-        "FROM ipinterface ip " +
-        "JOIN node n ON n.nodeid = ip.nodeid " +
-        "JOIN servermap s ON ip.ipaddr = s.ipaddr " + 
+        "FROM ipinterface as ip " +
+        "JOIN node as n ON n.nodeid = ip.nodeid " +
+        "JOIN servermap as s ON ip.ipaddr = s.ipaddr " + 
         "WHERE ip.ipaddr!='0.0.0.0' " + 
         "AND ip.isManaged!='D' " + 
         "AND ip.isManaged!='F' " + 
@@ -175,8 +175,8 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     private static final String RETRIEVE_IPADDR_SQL = 
         "SELECT ip.ipaddr " +
-        "FROM ipinterface ip " +
-        "JOIN node n ON ip.nodeid = n.nodeid " +
+        "FROM ipinterface as ip " +
+        "JOIN node as n ON ip.nodeid = n.nodeid " +
         "WHERE ip.ipaddr=? " +
         "AND ip.ismanaged!='D'" +
         "AND n.foreignSource is null";
@@ -186,8 +186,8 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     private static final String RETRIEVE_IPADDR_NODEID_SQL = 
         "SELECT ip.nodeid " +
-        "FROM ipinterface ip " +
-        "JOIN node n ON ip.nodeid = n.nodeid " +
+        "FROM ipinterface as ip " +
+        "JOIN node as n ON ip.nodeid = n.nodeid " +
         "WHERE ip.ipaddr=? " +
         "AND ip.ismanaged!='D' " +
         "AND n.foreignSource is null";
@@ -215,13 +215,13 @@ public abstract class CapsdConfigManager implements CapsdConfig {
             "   set status = 'D' " + 
             " where serviceid = ?" +
             "   and id in (" + 
-            "   select if.id" + 
-            "     from ifservices if" + 
-            "     join ipinterface ip" + 
-            "       on (ip.id = if.ipinterfaceid)" + 
-            "     join node n" + 
+            "   select svc.id" + 
+            "     from ifservices as svc" + 
+            "     join ipinterface as ip" + 
+            "       on (ip.id = svc.ipinterfaceid)" + 
+            "     join node as n" + 
             "       on (n.nodeid = ip.nodeid)" + 
-            "    where n.foreignsource is null);"; 
+            "    where n.foreignsource is null)"; 
    
     /**
      * The map of service identifiers, mapped by the service id and name. The
