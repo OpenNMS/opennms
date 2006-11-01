@@ -31,6 +31,7 @@ cp -pr work/docs /tmp/opennms/usr/local/opennms/
  mkdir webapps
  cd webapps
  cp ../../opennms/webapps/opennms.xml .
+ cd ../..
 
 4. put the packaging files from the package dir here in that directory
    (so, for opennms you'd copy the pkginfo and postinstall scripts to

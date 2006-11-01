@@ -179,6 +179,7 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
 
                 if (strBannerMatch == null || strBannerMatch.equals("*")) {
                     serviceStatus = SERVICE_AVAILABLE;
+                    responseTime = System.currentTimeMillis() - sentTime;
                     // Store response time in RRD
                     if (responseTime >= 0 && rrdPath != null) {
                         try {
