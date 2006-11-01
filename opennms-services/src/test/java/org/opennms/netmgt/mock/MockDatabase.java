@@ -97,11 +97,14 @@ public class MockDatabase implements DataSource, EventWriter {
                    "nodeDomainName  varchar(16)," +
                    "operatingSystem varchar(64)," +
                    "lastCapsdPoll   timestamp," +
+                   "foreignsource varchar(64)," +
+                   "foreignid varchar(64)," +
                    //"constraint fk_dpName foreign key (dpName) references distPoller," +
                    "constraint pk_nodeID primary key (nodeID)" +
         ");");
         
-        update("create table ipInterface (" +
+        update("create table ipInterface ( " +
+                   "id integer, " +
                    "nodeID integer, " +
                    "ipAddr varchar(16) not null, " +
                    "ifIndex         integer," +
@@ -110,10 +113,12 @@ public class MockDatabase implements DataSource, EventWriter {
                    "ipLastCapsdPoll     timestamp," +
                    "isSnmpPrimary           char(1)," +
                    "isManaged char(1), " +
+                   "snmpinterfaceid integer, " +
                    "constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE" +
         ");");
         
         update("create table snmpInterface (" +
+                "id integer, " +
                 "nodeID integer, " +
                 "ipAddr varchar(16) not null, " +
 		        "snmpIpAdEntNetMask varchar(16), " +
@@ -136,6 +141,7 @@ public class MockDatabase implements DataSource, EventWriter {
         ");");
         
         update("create table ifServices (" +
+                "id integer, " +
                    "nodeID          integer, " +
                    "ipAddr          varchar(16) not null," +
                    "ifIndex         integer," +
@@ -146,6 +152,7 @@ public class MockDatabase implements DataSource, EventWriter {
                    "status              char(1)," +
                    "source          char(1)," +
                    "notify                  char(1), " +
+                   "ipinterfaceid integer, " +
                    "constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE," +
                    "constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE" +
         ");");
