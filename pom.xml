@@ -92,6 +92,7 @@
     <module>opennms-services</module>
     <module>opennms-import</module>
     <module>opennms-reporting</module>
+    <module>opennms-qosdaemon</module>
     <module>opennms-webstart</module>
     <module>opennms-remote-poller</module>
     <module>opennms-webapp</module>
@@ -772,6 +773,11 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+	<artifactId>opennms-qosdaemon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
