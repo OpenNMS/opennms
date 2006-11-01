@@ -102,7 +102,7 @@
 <div class="boxWrapper">
 <p>
   The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as
-  distributed here, is copyright &copy; 2002-2004
+  distributed here, is copyright &copy; 2002-2006
   <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>.
   <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
   trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
@@ -150,9 +150,10 @@
 <hr />
 <h3>OSI Certified Open Source Software</h3>
 <div class="boxWrapper">
-<img src="images/osi-certified.png" style="float: left;"/>
+<a target="_new" href="http://www.opensource.org/"><img src="images/osi-certified.png" style="float: left;" alt="OSI Certified"/></a>
 <p>This software is OSI Certified Open Source Software.<br/>
-  OSI Certified is a certification mark of the Open Source Initiative.
+  OSI Certified is a certification mark of the
+  <a href="http://www.opensource.org/">Open Source Initiative</a>.
 </p>
 <div style="clear:both;"></div>
 </div>
@@ -164,19 +165,21 @@
       
       	   <td>
 		<p>
-        	Powered By Tomcat<br>
+        	Powered By Tomcat<br/>
 		<a href="http://jakarta.apache.org/tomcat/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" 
       		   border="0" alt="jakarta.apache.org"></a>.
       		</p>
 	   </td>
            <td>
 		<p>
+		Built on Tobi Oetiker's RRDTool<br/>
         	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool.gif" hspace="0" vspace="0"
            	border="0" alt="www.rrdtool.org"></a>
       		</p>      
 	   </td>
            <td>
 		<p>
+		PostgreSQL Powered<br/>
         	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power.jpg" hspace="0" vspace="0"
            	border="0" alt="www.postgresql.org"></a>
       		</p>      

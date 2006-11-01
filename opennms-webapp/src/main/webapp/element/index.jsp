@@ -178,7 +178,7 @@
       </p>
 
       <p>A search by ifAlias will find nodes with interfaces that match the given
-        search string.This is a case-insensitive inclusive search, and the underscore
+        search string. This is a case-insensitive inclusive search, and the underscore
 	character acts as a wildcard. A list of nodes with matching interfaces will
 	be displayed.
       </p>

@@ -74,11 +74,11 @@
   <div class="TwoColRight">
     <h3>Descriptions</h3>
     <div class="boxWrapper">
-      <p><b>Performance Reports</b> provide a way to easily 
-          visualize the critical SNMP data collected from managed nodes throughout
-          your network.  
+      <p><b>Performance Reports</b> provide an easy way to 
+          visualize the critical SNMP data collected from managed nodes
+	  throughout your network.  
       </p>
-      <p><b>Key SNMP Customized (KSC) Performance Reports and Node Reports</b>
+      <p><b>Key SNMP Customized (KSC) Performance Reports</b> and <b>Node Reports</b>
           KSC reports allow the user to create and view SNMP performance data using prefabricated graph types.
           The reports provide a great deal of flexibility in timespans and graphtypes. KSC report configurations may be saved allowing
           the user to define key reports that may be referred to at future dates.  Node reports show SNMP data for all
@@ -90,9 +90,9 @@
           month-to-date, previous month, and last twelve months by categories.
       </p>
     
-      <p><b>Response Time Reports</b> provide a way to easily 
-          visualize the response time data collected from managed nodes throughout
-          your network.  
+      <p><b>Response Time Reports</b> provide an easy way to
+          visualize the response time data collected from managed nodes
+	  throughout your network.  
       </p>
     </div>
   </div>

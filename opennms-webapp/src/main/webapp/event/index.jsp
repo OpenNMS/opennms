@@ -73,12 +73,12 @@
       <p>Events can be <em>acknowledged</em>, or removed from the view of other users, by
         selecting the event in the <em>Ack</em> check box and clicking the <em>Acknowledge
         Selected Events</em> at the bottom of the page.  Acknowledging an event gives
-        users the ability to personally take responsibility for addressing a network
+        users the ability to take personal responsibility for addressing a network
         or systems-related issue.  Any event that has not been acknowledged is
         active in all users' browsers and is considered <em>outstanding</em>.
       </p>
             
-      <p>If an event has been acknowledged in error, you can select the appropriate
+      <p>If an event has been acknowledged in error, you can select the 
         <em>View all acknowledged events</em> link, find the event, and <em>unacknowledge</em> it,
         making it available again to all users' views.
       </p>

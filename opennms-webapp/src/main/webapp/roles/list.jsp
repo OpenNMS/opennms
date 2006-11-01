@@ -42,6 +42,34 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
+	import="org.opennms.netmgt.config.users.*,
+	        org.opennms.netmgt.config.*,
+		java.util.*"
+%>
+
+<%
+	UserManager userFactory;
+  	Map users = null;
+	HashMap usersHash = new HashMap();
+	String curUserName = null;
+	
+	try
+    	{
+		UserFactory.init();
+		userFactory = UserFactory.getInstance();
+      		users = userFactory.getUsers();
+	}
+	catch(Exception e)
+	{
+		throw new ServletException("User:list " + e.getMessage());
+	}
+
+	Iterator i = users.keySet().iterator();
+	while (i.hasNext()) {
+		User curUser = (User)users.get(i.next());
+		usersHash.put(curUser.getUserId(), curUser.getFullName());
+	}
+
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -78,7 +106,6 @@
 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
          <tr bgcolor="#999999">
-          <td/>
           <td><b>Name</b></td>
           <td><b>Supervisor</b></td>
           <td><b>Currently On Call</b></td>
@@ -89,10 +116,11 @@
 				
 				<tr>
 				<td><a href="<c:out value='${viewUrl}'/>"><c:out value="${role.name}"/></a></td>
-				<td><c:out value="${role.defaultUser}"/></td>
+				<td><c:set var="supervisorUser"><c:out value="${role.defaultUser}"/></c:set><c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set><span title="<c:out value="${fullName}"/>"><c:out value="${role.defaultUser}"/></span></td>
 				<td>
 					<c:forEach var="scheduledUser" items="${role.currentUsers}">
-						<c:out value="${scheduledUser}"/>
+						<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>
+						<span title="<c:out value="${fullName}"/>"><c:out value="${scheduledUser}"/></span>
 					</c:forEach>	
 				</td>
 				<td><c:out value="${role.membershipGroup}"/></td>

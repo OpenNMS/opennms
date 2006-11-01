@@ -84,10 +84,10 @@
         and an important event must be received.
       </p>
 
-      <p>From this panel, you may <strong>Check your outstanding notices</strong>, 
-        which displays all unacknowledged notices sent to your user ID,
+      <p>From this panel, you may: <strong>Check your outstanding notices</strong>, 
+        which displays all unacknowledged notices sent to your user ID;
         <strong>View all outstanding notices</strong>, which displays all unacknowledged 
-        notices for all users, or <strong>View all acknowledged notices</strong>, 
+        notices for all users; or <strong>View all acknowledged notices</strong>, 
         which provides a summary of all notices sent and acknowledged for all users.
       </p>
 

@@ -42,7 +42,10 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Web Console" />
+  <jsp:param name="title" value="Charts" />
+  <jsp:param name="headTitle" value="Charts" />
+  <jsp:param name="location" value="chart" />
+  <jsp:param name="breadcrumb" value="Charts" />
 </jsp:include>
 
 <%@ page import="org.opennms.netmgt.charts.ChartUtils" %>

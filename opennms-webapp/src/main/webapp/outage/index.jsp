@@ -70,8 +70,8 @@
 		<div class="boxWrapper">
 			<p>Outages are tracked by OpenNMS by polling services that have been
 			discovered.  If the service does not respond to the poll, a service outage
-			is created and service level availbility levels are impacted.  Service 
-			outages created notifications.</p>
+			is created and service availability levels are impacted.  Service 
+			outages create notifications.</p>
 		</div>
   </div>
   <hr />                                   
