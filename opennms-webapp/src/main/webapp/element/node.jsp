@@ -329,23 +329,28 @@
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
 
             <!-- Asset box, if info available --> 
-            <% if( asset != null ) { %>
-							<h3>Asset Information</h3>
-							<div class="boxWrapper">
-								<p>Description: <%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></p>
-								<p>Comments: <%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></p>
-							</div>
+            <% if( asset != null && ((asset.getDescription() != null && asset.getDescription().length() > 0)
+                    || (asset.getComments() != null && asset.getComments().length() > 0))) { %>
+			  <h3>Asset Information</h3>
+			  <table>
+				<tr>
+				  <td width="10%">Description:</td>
+				  <td><%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></td>
+				</tr>
+				
+				<tr>
+				  <td width="10%">Comments:</td>
+				  <td><%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></td>
+				</tr>
+			  </table>
             <% } %>
-
-            <!-- node desktop information box -->
-            
 
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
-				<h3>SNMP Attributes</h3>
-	      <table class="standard">
+		      <h3>SNMP Attributes</h3>
+	          <table class="standard">
                 <tr>
-		  <!-- XXX should get rid of width... replace with a class? -->
+		          <!-- XXX should get rid of width... replace with a class? -->
                   <td class="standard" width="10%">Name:</td>
                   <td class="standard"><%=(node_db.getNodeSysName() == null) ? "&nbsp;" : node_db.getNodeSysName()%></td>
                 </tr>
@@ -366,13 +371,12 @@
                   <td class="standard" valign="top"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
                 </tr>
               </table>
-  						<hr />
             <% } %>
             
             <!-- Interface box -->
-	      <h3>Interfaces</h3>
-				<div class="boxWrapper">
-					<ul class="plain">
+	        <h3>Interfaces</h3>
+			<div class="boxWrapper">
+			  <ul class="plain">
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
                   <li><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
@@ -382,8 +386,8 @@
                       <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%></li>
                 <% } %>
               <% } %>
-					</ul>
-				</div>
+			  </ul>
+			</div>
 
       <!-- Category box -->
 	  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
@@ -407,7 +411,7 @@
               <jsp:param name="header" value="<%=eventHeader%>" />
               <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
             </jsp:include>
-            <hr />
+
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
        </div>
