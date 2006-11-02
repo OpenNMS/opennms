@@ -146,7 +146,7 @@
 	<div class="boxWrapper">
   <% if (nodes.length > 0) { %>
     <!-- left column -->
-    <div class="col">
+    <div class="TwoColLeft">
       <ul class="plain">
       <% if (isIfAliasSearch) { %>
         <% for (int i=0; i < lastIn1stColumn; i++) { %>
@@ -191,7 +191,7 @@
 
 
     <!-- right column -->
-    <div class="col">
+    <div class="TwoColRight">
       <ul class="plain">
       <% if (isIfAliasSearch) { %>
         <% for (int i=lastIn1stColumn; i < nodes.length; i++) { %>
