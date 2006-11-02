@@ -105,7 +105,7 @@ public class PollStatus implements Serializable {
     private static int decodeStatusName(String statusName) {
     	
     	for (int statusCode = 0; statusCode < s_statusNames.length; statusCode++) {
-			if (s_statusNames[statusCode].equals(statusName)) {
+			if (s_statusNames[statusCode].equalsIgnoreCase(statusName)) {
 				return statusCode;
 			}
 		}
