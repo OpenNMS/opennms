@@ -260,7 +260,7 @@
                                     <br/>
                                     <a href="graph/results?zoom=true&type=performance&resourceType=interface&resource=<%=intf%>&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&node=<%=nodeId%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
                                 <% } else {%>
-				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=node">Detail</a>
+				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=node&resource=">Detail</a>
 			            </td></tr></table>
                                     <br/>
                                     <a href="graph/results?zoom=true&type=performance&resourceType=node&resource=&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&node=<%=nodeId%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
