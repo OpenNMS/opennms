@@ -1,0 +1,947 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+   <!-- 
+        Version : 2.1 18-08-06 
+        Author  : Craig Gallen 
+        Notes   : JbossMQ configuration for XVT ( XML/JMS ) interfaces      
+    -->
+    
+<!-- 
+  Overview
+  ________
+  This file contains an example configuration for JBOSSMQ which sets up a number of sets of queues to allow a 
+  number of remote AlarmMonitor instances to communicate back to a core JBOSSMQ server and local receiver for each queue
+  
+  OSS/J naming conventions for this interface
+  ___________________________________________
+  This note outlines how the JMS topics and queues are named in this application
+  ( See OSS/J Documentation-  OSS Common API Final Release 3 - Version 1.2 Users Guide Section 5.2 
+  Registering to naming service (using JNDI)) The following convention is used for filling in each field seperated by a '/'. 
+  e.g.  
+  TopContext/SystemContext/SystemsInstanceContext/ApplicationTypeContext/ApplicationTypeInstanceContext/ApplicationContext/ApplicationInstanceContext/CompContext/CompInstance
+            /System       /OpenOSS               /ApplicationType       /AlarmMonitor                  /Application       /1-0;0-0;OpenNMS_OpenOSS_AM/Comp       /TopicConnectionFactory
+    
+  TopContext			- 	May be set by an operator specific to the network and the must be the same for all queues within this system
+  							By default not used.
+  SystemContext			- 	always set to 'System'
+  SystemsInstanceContext- 	set to the logical name of the specific system publishing to this topic ( e.g. OpenOSS1, OpenOSS2 etc where these are the
+  							logical system names of the OSS systems providing the interface
+  ApplicationTypeContext- 	always set to 'ApplicationType'
+  ApplicationTypeInstanceContext- 	always set to 'AlarmMonitor'
+  ApplicationContext	- 	always set to 'Application'
+  ApplicationInstanceContex- set to the details of the naming of the interface implementation binding follow the
+                             naming syntax: <API Version Number>;<Product Release Number>;<Product Name> 
+                             where the API version number and the Product release number are given by
+                             <MajorVersionNumber-MinorVersionNumber>. 
+                             For example  1-0;0-0;OpenNMS_OpenOSS_AM
+                             
+  CompContext			- 	always set to 'Comp'
+  CompInstance			-	Depending on purpose of queue; set to one of TopicConnectionFactory, JVTEventTopic,XVTEventTopic,MessageQueue,QueueConnectionFactory
+  
+  
+  Examples
+  ________
+	System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+	System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+-->
+
+<server>
+
+  <!--  LOCAL INTERACE  - OpenOSS local test interface
+  ______________________________________________________
+  	   	<jboss name>					          <Jndi name>
+  	OpenOSS_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS_OSSJ_QosFM_JVTEventTopic			  System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS_OSSJ_QosFM_XVTEventTopic			  System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS_OSSJ_QosFM_XVTQueueConnectionFactory  System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS_OSSJ_QosFM_XVTQueue					  System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+ <!--  END OF LOCAL INTERACE   -->
+ <!--  _____________________   -->
+ 
+ 
+ 
+ 
+  <!--  ________________   -->
+  <!--  REMOTE INTERACES   -->
+  <!--  ________________   -->
+  
+ 
+  <!--  INTERACE 1 - OpenOSS1 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS1_OSSJ_QosFM_TopicConnectionFactory      System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS1_OSSJ_QosFM_JVTEventTopic				System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS1_OSSJ_QosFM_XVTEventTopic				System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS1_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS1_OSSJ_QosFM_XVTQueue					System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS1_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS1_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS1_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS1_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS1_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS1/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+ <!--  END OF INTERACE 1  -->
+ <!--  _________________   -->
+ 
+ 
+ 
+ 
+  <!-- INTERACE 2 - OpenOSS2 
+  _________________________________________
+  	<jboss name>					                <Jndi name>
+  	OpenOSS2_OSSJ_QosFM_TopicConnectionFactory      System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS2_OSSJ_QosFM_JVTEventTopic				System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS2_OSSJ_QosFM_XVTEventTopic				System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS2_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS2_OSSJ_QosFM_XVTQueue					System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS2_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS2_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS2_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS2_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS2_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS2/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+ <!--  END OF INTERACE 2  -->
+ <!--  _________________   -->
+ 
+ 
+ 
+ 
+ 
+  <!--  INTERACE 3 - OpenOSS3 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS3_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS3_OSSJ_QosFM_JVTEventTopic				System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS3_OSSJ_QosFM_XVTEventTopic				System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS3_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS3_OSSJ_QosFM_XVTQueue					System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS3_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS3_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS3_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS3_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS3_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS3/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+ <!--  END OF INTERACE 3  -->
+ <!--  _________________   -->
+ 
+ 
+ 
+ 
+   <!--  INTERACE 4 - OpenOSS4 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS4_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS4_OSSJ_QosFM_JVTEventTopic				System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS4_OSSJ_QosFM_XVTEventTopic				System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS4_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS4_OSSJ_QosFM_XVTQueue					System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS4_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS4_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS4_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS4_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS4_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS4/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+
+
+ <!--  END OF INTERACE 4  -->
+ <!--  _________________   -->
+ 
+ 
+  <!--  INTERACE 5 - OpenOSS5 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS5_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS5_OSSJ_QosFM_JVTEventTopic				System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS5_OSSJ_QosFM_XVTEventTopic				System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS5_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS5_OSSJ_QosFM_XVTQueue					System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS5_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS5_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS5_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS5_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS5_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS5/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+
+
+ <!--  END OF INTERACE 5  -->
+ <!--  _________________   -->
+ 
+ 
+ 
+ 
+   <!--  INTERACE 6 - OpenOSS6 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS6_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS6_OSSJ_QosFM_JVTEventTopic				System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS6_OSSJ_QosFM_XVTEventTopic				System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS6_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS6_OSSJ_QosFM_XVTQueue					System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS6_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS6_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS6_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS6_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS6_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS6/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+
+
+ <!--  END OF INTERACE 6  -->
+ <!--  _________________   -->
+ 
+ 
+ 
+ 
+ 
+   <!--  INTERACE 7 - OpenOSS7 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS7_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS7_OSSJ_QosFM_JVTEventTopic				System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS7_OSSJ_QosFM_XVTEventTopic				System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS7_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS7_OSSJ_QosFM_XVTQueue					System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS7_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS7_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS7_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS7_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS7_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS7/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+
+
+ <!--  END OF INTERACE 7  -->
+ <!--  _________________   -->
+ 
+   <!--  INTERACE 8 - OpenOSS8 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS8_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS8_OSSJ_QosFM_JVTEventTopic				System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS8_OSSJ_QosFM_XVTEventTopic				System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS8_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS8_OSSJ_QosFM_XVTQueue					System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS8_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS8_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS8_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS8_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS8_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS8/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+
+
+ <!--  END OF INTERACE 8  -->
+ <!--  _________________   -->
+ 
+ 
+ 
+ 
+   <!--  INTERACE 9 - OpenOSS9 
+  _________________________________________
+  	   	<jboss name>					                <Jndi name>
+  	OpenOSS9_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS9_OSSJ_QosFM_JVTEventTopic				System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS9_OSSJ_QosFM_XVTEventTopic				System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS9_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS9_OSSJ_QosFM_XVTQueue					System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS9_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS9_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS9_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS9_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS9_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS9/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+
+
+ <!--  END OF INTERACE 9  -->
+ <!--  _________________   -->
+ 
+ 
+ 
+ 
+   <!--  INTERACE 10 - OpenOSS10 
+  _________________________________________
+  	<jboss name>					                <Jndi name>
+  	OpenOSS10_OSSJ_QosFM_TopicConnectionFactory     System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	OpenOSS10_OSSJ_QosFM_JVTEventTopic				System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+	OpenOSS10_OSSJ_QosFM_XVTEventTopic				System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+	OpenOSS10_OSSJ_QosFM_XVTQueueConnectionFactory	System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+ 	OpenOSS10_OSSJ_QosFM_XVTQueue					System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+ 
+  -->
+  
+   <!-- Configuration for JVT/XVT TopicConnectionFactory -->
+  <!-- Create OSS/J compliant JNDI alias name for the alarm connection factory -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS10_OSSJ_QosFM_TopicConnectionFactory">
+      <attribute name="FromName">System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for JVT interface JVTEventTopic -->
+  <!-- Note: destination without a configured SecurityManager or without a SecurityConf will default to 
+       role guest with read=true, write=true, create=false. -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS10_OSSJ_QosFM_JVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  
+     <!-- Configuration for XVT ( XML/JMS ) interfaces XVTEventTopic -->
+  <mbean code="org.jboss.mq.server.jmx.Topic"
+	 name="jboss.mq.destination:service=Topic,name=OpenOSS10_OSSJ_QosFM_XVTEventTopic">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+  
+  <!-- Create OSS/J compliant JNDI alias name for the XVT alarm interface QueueConnectionFactory  -->
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=OpenOSS10_OSSJ_QosFM_XVTQueueConnectionFactory">
+      <attribute name="FromName">System/OpenOSS10/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+
+  <!-- Configuration for XVT ( XML/JMS ) interfaces MessageQueue -->
+   <mbean code="org.jboss.mq.server.jmx.Queue"
+	 name="jboss.mq.destination:service=Queue,name=OpenOSS10_OSSJ_QosFM_XVTQueue">
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+    <depends optional-attribute-name="SecurityManager">jboss.mq:service=SecurityManager</depends>
+    <attribute name="JNDIName">System/OpenOSS100/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue</attribute>
+    <attribute name="SecurityConf">
+      <security>
+        <role name="guest" read="true" write="true"/>
+        <role name="publisher" read="true" write="true" create="false"/>
+        <role name="durpublisher" read="true" write="true" create="true"/>
+      </security>
+    </attribute>
+  </mbean>
+
+ <!--  END OF INTERACE 10  -->
+ <!--  _________________  -->
+ 
+ 
+ 
+   
+</server>

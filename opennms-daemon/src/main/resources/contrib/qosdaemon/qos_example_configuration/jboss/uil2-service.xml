@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id: uil2-service.xml,v 1.3 2006/09/07 14:44:16 cgallen Exp $ -->
+<!-- Craig changed from <attribute name="BindAddress">${jboss.bind.address}</attribute> to address of local machine -->
+
+<server>
+
+  <!-- JBossMQ using the Unified Invocation Layer
+       All communication uses one socket connection -->
+
+  <mbean code="org.jboss.mq.il.uil2.UILServerILService"
+	 name="jboss.mq:service=InvocationLayer,type=UIL2">
+
+    <!-- The server chain -->
+    <depends optional-attribute-name="Invoker">jboss.mq:service=Invoker</depends>
+    <!-- JNDI binding -->
+    <attribute name="ConnectionFactoryJNDIRef">ConnectionFactory</attribute>
+    <!-- JNDI binding for XA -->
+    <attribute name="XAConnectionFactoryJNDIRef">XAConnectionFactory</attribute>
+    <!-- The bind address -->
+    <!-- Craig changed from <attribute name="BindAddress">${jboss.bind.address}</attribute> to address of local machine -->
+    <attribute name="BindAddress">jbossjmsserver1</attribute>
+    <!-- The bind port -->
+    <attribute name="ServerBindPort">8093</attribute>
+    <!-- The ping period in millis -->
+    <attribute name="PingPeriod">60000</attribute>
+    <!-- Whether tcp/ip does not wait for buffer fills -->
+    <attribute name="EnableTcpNoDelay">true</attribute>
+    <!-- Used to disconnect the client if there is no activity -->
+    <!-- Ensure this is greater than the ping period -->
+    <attribute name="ReadTimeout">120000</attribute>
+    <!-- The size of the buffer (in bytes) wrapping the socket -->
+    <!-- The buffer is flushed after each request -->
+    <attribute name="BufferSize">2048</attribute>
+    <!-- Large messages may block the ping/pong -->
+    <!-- A pong is simulated after each chunk (in bytes) for both reading and writing -->
+    <!-- It must be larger than the buffer size -->
+    <attribute name="ChunkSize">1000000</attribute>
+  </mbean>
+
+  <!-- Aliases UIL -> UIL2 for backwards compatibility 
+       the deprecated UIL deployment can be found in docs/examples/jca -->
+   <mbean code="org.jboss.naming.NamingAlias" name="jboss.mq:service=InvocationLayer,type=UIL">
+      <attribute name="FromName">UILConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+   <mbean code="org.jboss.naming.NamingAlias" name="jboss.mq:service=InvocationLayer,type=UILXA">
+      <attribute name="FromName">UILXAConnectionFactory</attribute>
+      <attribute name="ToName">XAConnectionFactory</attribute>
+   </mbean>
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2,alias=UIL2ConnectionFactory">
+      <attribute name="FromName">UIL2ConnectionFactory</attribute>
+      <attribute name="ToName">ConnectionFactory</attribute>
+   </mbean>
+   <mbean code="org.jboss.naming.NamingAlias"
+      name="jboss.mq:service=InvocationLayer,type=UIL2XA,alias=UIL2XAConnectionFactory">
+      <attribute name="FromName">UIL2XAConnectionFactory</attribute>
+      <attribute name="ToName">XAConnectionFactory</attribute>
+   </mbean>
+</server>
