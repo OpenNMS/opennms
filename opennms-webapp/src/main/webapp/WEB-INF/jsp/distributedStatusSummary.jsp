@@ -8,6 +8,8 @@
 	<jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
+<jsp:include page="/includes/key.jsp" flush="false" />
+
 <h3><c:out value="${webTable.title}" /></h3>
 
 <table>
