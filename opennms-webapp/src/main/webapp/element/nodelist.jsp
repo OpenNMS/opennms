@@ -224,7 +224,7 @@
                 <% if (!"0.0.0.0".equals(interfaces[j].getIpAddress())) { 
                   interfaceCount++;
                   %>
-                  <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a><li>
+                  <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a></li>
                 <% } %>
               <% } %>
             </ul>
@@ -239,7 +239,9 @@
   <% } %>
 	<hr />
 </div>
+
 <div class="spacer"><!-- --></div>
+
 <p>
 <% if (listInterfaces) { %>
   <%=nodes.length%> <%=nodes.length > 1 ? "Nodes" : "Node" %>, <%=interfaceCount%> <%=interfaceCount > 1 ? "Interfaces" : "Interface" %>
