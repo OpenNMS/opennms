@@ -23,23 +23,29 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<!-- End of Content -->
+  <!-- End of Content -->
+  <div class="spacer"><!-- --></div>
 </div>
 
 <c:choose>
-<c:when test="${param.quiet == 'true'}">
-<!-- Not displaying footer -->
-</c:when>
+  <c:when test="${param.quiet == 'true'}">
+    <!-- Not displaying footer -->
+  </c:when>
 
-<c:otherwise>
-<!-- Footer -->
+  <c:otherwise>
+    <!-- Footer -->
 
-<div id="prefooter"></div>
+    <div id="prefooter"></div>
 
-<div id="footer">
-<p>OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2006 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a></p>
-</div>
-</c:otherwise>
+    <div id="footer">
+      <p>
+        OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2006
+	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
+	    OpenNMS&reg; is a registered trademark of
+        <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+	  </p>
+    </div>
+  </c:otherwise>
 </c:choose>
 
 </body>
