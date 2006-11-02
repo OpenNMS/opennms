@@ -89,7 +89,6 @@
 
 <h3><a href="KSC/index.jsp">KSC Reports</a></h3>
 <div class="boxWrapper">
-    <td class="standardmorepadding">
       <form method="get" name="choose_report" action="KSC/form_proc_main.jsp">
          <input type="hidden" name="report_action" value="View">
 	    <% if (report_array.length < 1) { %>

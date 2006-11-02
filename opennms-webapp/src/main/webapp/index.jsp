@@ -45,7 +45,7 @@
 	<jsp:param name="title" value="Web Console" />
 </jsp:include>
 
-    <!-- Column 1 of Body -->  
+    <!-- Left Column -->
     <div id="index-contentleft">
       <!-- Services down box -->
 		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
@@ -58,8 +58,8 @@
 		<jsp:include page="/includes/categories-box.jsp" flush="false" />
 		<hr />
 	</div>
-	<!--desktop query box --> 
-    <!-- Column 3 of Body -->
+	
+    <!-- Right Column -->
 	<div id="index-contentright">
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
@@ -79,7 +79,5 @@
 		<jsp:include page="/includes/security-box.jsp" flush="false" />
 		--%>
 	</div>
-	<div class="spacer"><!-- --></div>
-	<br/>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
