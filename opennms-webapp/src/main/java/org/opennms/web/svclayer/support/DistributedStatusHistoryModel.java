@@ -100,6 +100,11 @@ public class DistributedStatusHistoryModel {
     
     // We need to init when we are constructed so lazy loading happens during our transaction
     private void initHttpGraphUrls() {
+        if (m_chosenMonitor == null) {
+            // nothing to create graphs for
+            return;
+        }
+        
         Collection<OnmsMonitoredService> services =
             getChosenApplicationMemberServices();
         List<OnmsMonitoredService> sortedServices =
