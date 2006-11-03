@@ -42,8 +42,17 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.event.*,
-                org.opennms.web.acegisecurity.Authentication"
+	import="
+		java.util.HashMap,
+		java.util.regex.Matcher,
+		java.util.regex.Pattern,
+		org.opennms.netmgt.EventConstants,
+		org.opennms.web.event.AcknowledgeEventServlet,
+		org.opennms.web.event.Event,
+		org.opennms.web.event.EventFactory,
+		org.opennms.web.event.EventUtil,
+        org.opennms.web.acegisecurity.Authentication
+        "
 
 %>
 
@@ -82,6 +91,21 @@
         buttonName = "Unacknowledge";
         action = AcknowledgeEventServlet.UNACKNOWLEDGE_ACTION;
     }
+    
+    Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
+    
+    HashMap<String, String> parms = new HashMap<String, String>();
+    String[] parmStrings = event.getParms().split(";");
+    for (String parmString : parmStrings) {
+        Matcher m = p.matcher(parmString);
+        if (!m.matches()) {
+            log("Could not match event parameter string element '"
+                + parmString + "' in event ID " + event.getId());
+            continue;
+        }
+        
+        parms.put(m.group(1), m.group(2));
+    }
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -96,9 +120,9 @@
 
       <table>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td class="divider" width="10%">Severity</td>
+          <th class="divider" width="10%">Severity</th>
           <td class="divider"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
-          <td class="divider" width="10%">Node</td>
+          <th class="divider" width="10%">Node</th>
           <td class="divider">
             <% if( event.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
@@ -106,13 +130,14 @@
               &nbsp;
             <% } %>
           </td>
-          <td class="divider" width="10%">Acknowledged&nbsp;By</td>
+          <th class="divider" width="10%">Acknowledged&nbsp;By</th>
           <td class="divider"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
+        
         <tr  class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td>Time</td>
+          <th>Time</th>
           <td><%=org.opennms.netmgt.EventConstants.formatToUIString(event.getTime())%></td>
-          <td>Interface</td>
+          <th>Interface</th>
           <td>
             <% if( event.getIpAddress() != null ) { %>
               <% if( event.getNodeId() > 0 ) { %>
@@ -124,11 +149,12 @@
               &nbsp;
             <% } %>
           </td>
-          <td>Time&nbsp;Acknowledged</td>
+          <th>Time&nbsp;Acknowledged</th>
           <td><%=event.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
+        
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td>Service</td>
+          <th>Service</th>
           <td>
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
@@ -140,10 +166,17 @@
               &nbsp;
             <% } %>
           </td>
-          <td colspan="4">&nbsp;</td>
-          </tr> 
-          <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          	<td>UEI</td>
+          <% if (parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID)) { %>
+            <th>Location Monitor ID</th>
+            <td><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></td>
+            <td colspan="2">&nbsp;</td>
+          <% } else { %>
+            <td colspan="4">&nbsp;</td>
+          <% } %>
+        </tr> 
+          
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          	<th>UEI</th>
                 <td>
           	<% if( event.getUei() != null ) { %>
           	      <%=event.getUei()%>
@@ -155,11 +188,9 @@
         </tr>
       </table>
 
-      <br>
-            
       <table>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td>Log Message</td>
+          <th>Log Message</th>
         </tr>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
           <td><%=event.getLogMessage()%></td>
@@ -168,7 +199,7 @@
 
       <table>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td>Description</td>
+          <th>Description</th>
         </tr>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
           <td><%=event.getDescription()%></td>
@@ -177,7 +208,7 @@
       
       <table>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td>Operator Instructions</td>
+          <th>Operator Instructions</th>
         </tr>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
           <td>
@@ -189,8 +220,6 @@
 	  </td>
         </tr>
       </table>
-      
-      <br/>
 
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
         <form method="post" action="event/acknowledge">
