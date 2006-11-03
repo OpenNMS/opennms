@@ -6,7 +6,6 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import java.util.Set;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -219,7 +217,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Monitor", "simpleWebTableHeader");
         expectedTable.addColumn("Service", "simpleWebTableHeader");
         expectedTable.addColumn("Status", "simpleWebTableHeader");
-        expectedTable.addColumn("Response Time", "simpleWebTableHeader");
+        expectedTable.addColumn("Response", "simpleWebTableHeader");
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=null");
@@ -233,7 +231,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("Raleigh-1", "");
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
-        expectedTable.addCell("", "");
+        expectedTable.addCell("No status recorded for this service from this location", "");
         
         assertTableEquals(expectedTable, table);
     }
