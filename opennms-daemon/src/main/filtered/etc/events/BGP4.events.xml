@@ -15,7 +15,7 @@
    <mevalue>1</mevalue>
   </maskelement>
  </mask>
- <uei>http://uei.opennms.org/mib2opennms/bgpEstablished</uei>
+ <uei>http://uei.opennms.org/standards/rfc1657/traps/bgpEstablished</uei>
  <event-label>BGP4-MIB defined trap event: bgpEstablished</event-label>
  <descr>&lt;p&gt;The BGP Established event is generated when
 the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
@@ -37,7 +37,7 @@ the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td
    <mevalue>2</mevalue>
   </maskelement>
  </mask>
- <uei>http://uei.opennms.org/mib2opennms/bgpBackwardTransition</uei>
+ <uei>http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition</uei>
  <event-label>BGP4-MIB defined trap event: bgpBackwardTransition</event-label>
  <descr>&lt;p&gt;The BGPBackwardTransition Event is generated
 when the BGP FSM moves from a higher numbered
