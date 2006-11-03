@@ -56,7 +56,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         table.addColumn("Monitor", "simpleWebTableHeader");
         table.addColumn("Service", "simpleWebTableHeader");
         table.addColumn("Status", "simpleWebTableHeader");
-        table.addColumn("Response Time", "simpleWebTableHeader");
+        table.addColumn("Response", "simpleWebTableHeader");
         
         for (OnmsLocationSpecificStatus s : status) {
             OnmsNode node = s.getMonitoredService().getIpInterface().getNode();
@@ -74,12 +74,18 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                           + s.getMonitoredService().getId());
             table.addCell(s.getPollResult().getStatusName(),
                           "bright");
-            long responseTime = s.getPollResult().getResponseTime(); 
-            if (responseTime >= 0) {
-                table.addCell(responseTime + "ms", "");
+            
+            String responseValue = "";
+            if (s.getPollResult().isAvailable()) {
+                long responseTime = s.getPollResult().getResponseTime();
+                if (responseTime >= 0) {
+                    responseValue = responseTime + "ms"; 
+                }
             } else {
-                table.addCell("", "");
+                responseValue = s.getPollResult().getReason(); 
             }
+            
+            table.addCell(responseValue, "");
         }
         
         return table;
