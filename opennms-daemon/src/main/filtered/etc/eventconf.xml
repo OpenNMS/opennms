@@ -1258,29 +1258,37 @@
   <!-- Remote Location Monitor Events -->
   <event>
     <descr>
-      This event is sent when a service fails to respond to a remote
-      location monitor poll.
+      &lt;p&gt;A %service% outage was identified on interface
+	  %interface% from remote location monitor %parm[locationMonitorId]%.
+	  &lt;/p&gt;
     </descr>
     <uei>uei.opennms.org/remote/nodes/nodeLostService</uei>
     <event-label>A remote location monitor detected a node lost service</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor detected a node lost service.
+      %service% outage identified on interface %interface% from remote location
+      monitor %parm[locationMonitorId]% with reason code: %parm[eventReason]%.
     </logmsg>
-    <severity>Normal</severity>
+    <severity>Minor</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false" />
   </event>
   
   <event>
     <descr>
-      This event is sent when a service responds after having failed to
-      respond to a remote location monitor poll.
+      &lt;p&gt;The %service% service on interface %interface% was
+	  previously down as viewed by remote location monitor
+	  %parm[locationMonitorId]% and has been restored.&lt;/p&gt;
+	  &lt;p&gt;This event is generated when a service which had
+	  previously failed polling attempts is again responding to
+	  polls by OpenNMS. &lt;/p&gt;
     </descr>
     <uei>uei.opennms.org/remote/nodes/nodeRegainedService</uei>
     <event-label>A remote location monitor detected a node regained service</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor detected a node regained service.
+      The %service% outage on interface %interface% as viewed by
+      remote location monitor %parm[locationMonitorId]% has been
+	  cleared.
     </logmsg>
-    <severity>Normal</severity>
+    <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-uei="uei.opennms.org/remote/nodes/nodeLostService" auto-clean="false"/>
   </event>
   
@@ -1300,7 +1308,7 @@
   <event>
     <descr>
       This event is sent when a registered remote location monitor begins
-      monitoring services defined in it's configuration.
+      monitoring services defined in its configuration.
     </descr>
     <uei>uei.opennms.org/remote/locationMonitorStarted</uei>
     <event-label>A remote location monitor has started polling</event-label>
@@ -1329,7 +1337,7 @@
   
   <event>
     <descr>
-      This event is sent when a registered remote location monitor is cleaning
+      This event is sent when a registered remote location monitor is
       shutdown by the remote system.
     </descr>
     <uei>uei.opennms.org/remote/locationMonitorStopped</uei>
