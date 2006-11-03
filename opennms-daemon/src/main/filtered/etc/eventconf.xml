@@ -1288,7 +1288,7 @@
       remote location monitor %parm[locationMonitorId]% has been
 	  cleared.
     </logmsg>
-    <severity>Cleared</severity>
+    <severity>Normal</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-uei="uei.opennms.org/remote/nodes/nodeLostService" auto-clean="false"/>
   </event>
   
