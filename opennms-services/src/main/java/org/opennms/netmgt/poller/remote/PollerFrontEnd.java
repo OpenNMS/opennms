@@ -20,6 +20,11 @@ public interface PollerFrontEnd {
     public boolean isRegistered();
     
     /**
+     * Return the monitor name of the poller or null if none exist
+     */
+    public String getMonitorName();
+    
+    /**
      * Register the poller if it has not been registered before.
      * 
      * @param monitoringLocationName The name of the monitoring Location definition under

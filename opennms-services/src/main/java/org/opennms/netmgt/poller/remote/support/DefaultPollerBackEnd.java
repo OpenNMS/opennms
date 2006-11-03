@@ -230,6 +230,12 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
        
         
     }
+    
+
+    public String getMonitorName(int locationMonitorId) {
+        OnmsLocationMonitor locationMonitor = m_locMonDao.get(locationMonitorId);
+        return locationMonitor.getName();
+    }
 
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");

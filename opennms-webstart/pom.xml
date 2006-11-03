@@ -47,7 +47,7 @@
              <alias>opennms-webstart-key</alias>
              <validity></validity>
 
-             <dnameCn>A random user</dnameCn>
+             <dnameCn>OpenNMS</dnameCn>
              <dnameL>Pittsboro</dnameL>
              <dnameSt>North Carolina</dnameSt>
              <dnameC>US</dnameC>

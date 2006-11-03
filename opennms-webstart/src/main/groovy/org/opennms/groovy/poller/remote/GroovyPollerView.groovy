@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition
 import org.opennms.webstart.poller.helper.MonitoringLocationListCellRenderer;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
@@ -29,6 +30,7 @@ class GroovyPollerView implements InitializingBean {
    def m_frame;
    def m_cardPanel;
    def m_monLocation;
+   def m_idLabel;
    SimpleDateFormat m_dateFormat;
    
    public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
@@ -46,13 +48,13 @@ class GroovyPollerView implements InitializingBean {
 		m_table = swing.table(model:createTableModel())
 		
 		
-		def frame = swing.frame(title:'OpenNMS Remote Poller', location:[100,100], size:[800,500], defaultCloseOperation:JFrame.EXIT_ON_CLOSE) {
+		def frame = swing.frame(title:'OpenNMS Remote Poller', location:[100,100], size:[900,500], defaultCloseOperation:JFrame.EXIT_ON_CLOSE) {
 		    m_cardPanel = panel(layout:new CardLayout(), constraints:BorderLayout.CENTER) {
 		        panel(constraints:REGISTRATION) {
 		            tableLayout(cellpadding:5) {
 		                tr {
 		                    td(colfill:true) {
-		                    	label(text:'Current monitoring location:')
+		                    	label(text:'Current monitoring locations: ')
 		                    }
 		                    td {
 		                        m_monLocation = comboBox(items:getCurrentMonitoringLocations(), renderer:new MonitoringLocationListCellRenderer())
@@ -66,20 +68,23 @@ class GroovyPollerView implements InitializingBean {
 		            }
 		        }
 		        panel(constraints:STATUS, layout:new BorderLayout()) {
+		            m_idLabel = label(constraints:BorderLayout.NORTH, text:'Monitor: '+m_frontEnd.getMonitorName())
 		    	    scrollPane(constraints:BorderLayout.CENTER, viewportView:m_table)
 		        }
 		    }
+		    /*
 		    panel(layout:new FlowLayout(), constraints:BorderLayout.SOUTH) {
 		        button(text:"Show Registration", actionPerformed:{ setCurrentPanel(REGISTRATION) })
 		        button(text:"Show Status", actionPerformed:{ setCurrentPanel(STATUS) })
 		    }
+		    */
 		}
 		
 		updateCurrentPanel();
 		
 		m_frontEnd.pollStateChange = { updateTable() }
-		m_frontEnd.propertyChange = { updateCurrentPanel() }
-		m_frontEnd.configurationChanged = { updateTableModel() }
+		m_frontEnd.propertyChange = { updateCurrentPanel(); m_idLabel.text = m_frontEnd.getMonitorName() }
+		m_frontEnd.configurationChanged = { updateTableModel(); m_idLabel.text = m_frontEnd.getMonitorName() }
 
 		frame.show()	
 
@@ -124,12 +129,23 @@ class GroovyPollerView implements InitializingBean {
 			closureColumn(header:'Interface', read:{ pollState -> pollState.polledService.ipAddr })
 			closureColumn(header:'Service', read:{ pollState -> pollState.polledService.svcName })
 			closureColumn(header:'Last Status', read: { pollState -> (pollState.lastPoll == null ? '-' : pollState.lastPoll.statusName) })
+			closureColumn(header:'Reason/ResponseTime', read: { pollState -> reasonResponse(pollState.lastPoll)})
 			closureColumn(header:'Last Poll', read: { pollState -> formatPollTime(pollState.lastPollTime) })
 			closureColumn(header:'Next Poll', read: { pollState -> formatPollTime(pollState.nextPollTime) })
 		}
 		
 		
        
+   }
+   
+   private String reasonResponse(PollStatus lastPoll) {
+       if (lastPoll == null)
+           return '-';
+       if (lastPoll.responseTime >- 0)
+           return lastPoll.responseTime+" ms";
+       if (lastPoll.reason != null)
+           return lastPoll.reason
+       return '-';
    }
    
    private String formatPollTime(Date pollTime) {

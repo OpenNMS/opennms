@@ -30,6 +30,11 @@ public interface PollerBackEnd {
     public abstract int registerLocationMonitor(String monitoringLocationId);
     
     /**
+     * Get monitor name
+     */
+    public abstract String getMonitorName(int locationMonitorId);
+    
+    /**
      * Get service monitor locators for creating serviceMonitors for the poller.
      */
     public abstract Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);

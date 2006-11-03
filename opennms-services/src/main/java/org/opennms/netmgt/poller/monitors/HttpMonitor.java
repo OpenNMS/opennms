@@ -255,14 +255,14 @@ public class HttpMonitor extends IPv4Monitor {
                     // Connection Refused. Continue to retry.
                     //
                     e.fillInStackTrace();
-                    log().warn("Connection exception for " + getIpv4Addr(iface) + ":" + getPorts(parameters)[portIndex]);
-                    reason = "HTTP connection exception on port: "+getPorts(parameters)[portIndex];
+                    log().warn("Connection exception for " + getIpv4Addr(iface) + ":" + getPorts(parameters)[portIndex] + ":"+ e.getMessage(), e);
+                    reason = "HTTP connection exception on port: "+getPorts(parameters)[portIndex]+" : "+e.getMessage();
                 } catch (IOException e) {
                     // Ignore
                     //
                     e.fillInStackTrace();
                     log().warn("IOException while polling address " + getIpv4Addr(iface), e);
-                    reason = "IOException while polling address: "+getIpv4Addr(iface);
+                    reason = "IOException while polling address: "+getIpv4Addr(iface)+":"+e.getMessage();
                 } finally {
                     try {
                         // Close the socket
