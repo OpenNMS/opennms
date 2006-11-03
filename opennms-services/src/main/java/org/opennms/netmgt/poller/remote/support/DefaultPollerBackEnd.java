@@ -284,6 +284,12 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
                 
                 EventBuilder builder = createEventBuilder(newStatus.getLocationMonitor().getId(), uei)
                     .setMonitoredService(newStatus.getMonitoredService());
+                
+                if (!newStatus.getPollResult().isAvailable()) {
+                    if (newStatus.getPollResult().getReason() != null) {
+                        builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, newStatus.getPollResult().getReason());
+                    }
+                }
 
                 m_eventIpcManager.sendNow(builder.getEvent());
             }
