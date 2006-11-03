@@ -281,8 +281,36 @@ public final class DbIfServiceEntry {
             stmt.setString(ndx++, m_qualifier);
 
         // Run the insert
-        //
-        int rc = stmt.executeUpdate();
+        int rc;
+        try {
+            rc = stmt.executeUpdate();
+        } catch (SQLException e) {
+            log.warn("ifServices DB insert got exception; will retry after "
+                     + "deletion of any existing records for this ifService "
+                     + "that are marked for deletion.  "
+                     + "Exception: " + e.getMessage(),
+                     e);
+
+            /*
+             * Maybe there's already an entry for this (service, node, ipaddr)
+             * in the table, but it's marked for deletion. Delete it and try
+             * the insertion again.
+             */
+            c.rollback();
+            String delCmd = "DELETE FROM ifServices WHERE status = 'D' "
+                         + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
+
+            PreparedStatement delStmt = c.prepareStatement(delCmd);
+            delStmt.setInt(1, m_nodeId);
+            delStmt.setString(2, m_ipAddr.getHostAddress());
+            delStmt.setInt(3, m_serviceId);
+
+            rc = delStmt.executeUpdate();
+
+            delStmt.close();
+
+            rc = stmt.executeUpdate();
+        }
         log.debug("insert(): SQL update result = " + rc);
         stmt.close();
 
