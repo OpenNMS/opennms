@@ -192,7 +192,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
         return (servicePollState == null ? null : servicePollState.getPolledService());
     }
 
-    private int getMonitorId() {
+    public int getMonitorId() {
         return m_pollerSettings.getMonitorId();
     }
 
@@ -281,6 +281,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
         synchronized (m_pollState) {
             return new LinkedList<ServicePollState>(m_pollState.values());
         }
+    }
+
+    public String getMonitorName() {
+        return (isRegistered() ? m_backEnd.getMonitorName(getMonitorId()) : "");
     }
 
     

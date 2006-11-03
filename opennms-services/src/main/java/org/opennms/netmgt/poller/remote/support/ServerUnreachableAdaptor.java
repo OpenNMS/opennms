@@ -91,4 +91,9 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
 
+    public String getMonitorName(int locationMonitorId) {
+        return m_remoteBackEnd.getMonitorName(locationMonitorId);
+    }
+
+
 }
