@@ -43,18 +43,26 @@
   <tr>
     <td class="normal" align="right">Location monitor</td>
     <td class="normal">
-      <select name="monitorId" id="monitor">
-        <c:forEach items="${historyModel.monitors}" var="monitor">
-          <c:choose>
-            <c:when test="${monitor.id == historyModel.chosenMonitor.id}">
-              <option value="<c:out value="${monitor.id}"/>" selected="selected"><c:out value="${monitor.definitionName}-${monitor.id}"/></option>
-            </c:when>
-            <c:otherwise>
-              <option value="<c:out value="${monitor.id}"/>"><c:out value="${monitor.name}"/></option>
-            </c:otherwise>
-          </c:choose>
-        </c:forEach>
-      </select>
+      <c:choose>
+        <c:when test="${empty historyModel.monitors}">
+          No location monitors have registered for this location
+        </c:when>
+        
+	    <c:otherwise>
+          <select name="monitorId" id="monitor">
+            <c:forEach items="${historyModel.monitors}" var="monitor">
+              <c:choose>
+                <c:when test="${monitor.id == historyModel.chosenMonitor.id}">
+                  <option value="<c:out value="${monitor.id}"/>" selected="selected"><c:out value="${monitor.definitionName}-${monitor.id}"/></option>
+                </c:when>
+                <c:otherwise>
+                  <option value="<c:out value="${monitor.id}"/>"><c:out value="${monitor.name}"/></option>
+                </c:otherwise>
+              </c:choose>
+            </c:forEach>
+          </select>
+	    </c:otherwise>
+      </c:choose>
     </td> 
   </tr>
 

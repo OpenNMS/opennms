@@ -585,7 +585,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
         }
         
-        if (monitor == null) {
+        if (monitor == null && sortedMonitors.size() > 0) {
             monitor = sortedMonitors.get(0);
         }
         
