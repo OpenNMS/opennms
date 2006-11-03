@@ -118,6 +118,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     private Package getPollingPackageForMonitor(OnmsLocationMonitor mon) {
         OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
+        if (def == null) {
+            throw new IllegalStateException("Location definition '" + mon.getDefinitionName() + "' could not be found for location monitor ID " + mon.getId());
+        }
         String pollingPackageName = def.getPollingPackageName();
         
         Package pkg = m_pollerConfig.getPackage(pollingPackageName);
