@@ -276,19 +276,19 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         if (databaseStatusChanged(currentStatus, newStatus)) {
             m_locMonDao.saveStatusChange(newStatus);
             
+            PollStatus pollResult = newStatus.getPollResult();
+
             // if we don't know the current status only send an event if it is not up
             if (logicalStatusChanged(currentStatus, newStatus)) {
-                String uei = newStatus.getPollResult().isAvailable()
+                String uei = pollResult.isAvailable()
                              ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
                              : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
                 
                 EventBuilder builder = createEventBuilder(newStatus.getLocationMonitor().getId(), uei)
                     .setMonitoredService(newStatus.getMonitoredService());
                 
-                if (!newStatus.getPollResult().isAvailable()) {
-                    if (newStatus.getPollResult().getReason() != null) {
-                        builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, newStatus.getPollResult().getReason());
-                    }
+                if (!pollResult.isAvailable() && pollResult.getReason() != null) {
+                    builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, pollResult.getReason());
                 }
 
                 m_eventIpcManager.sendNow(builder.getEvent());
