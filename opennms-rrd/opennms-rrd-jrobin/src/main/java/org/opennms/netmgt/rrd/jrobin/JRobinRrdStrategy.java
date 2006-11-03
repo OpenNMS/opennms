@@ -459,8 +459,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
 
             return tempIn;
         } catch (Exception e) {
-            log.error("JRobin:exception occurred creating graph", e);
-            throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph.", e);
+            log.error("JRobin:exception occurred creating graph: " + e.getMessage(), e);
+            throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph: " + e.getMessage(), e);
         }
     }
     
