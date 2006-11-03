@@ -124,8 +124,8 @@ public final class DatabaseConnectionFactory {
         	DbConfiguration dbConfig = new DbConfiguration(database);
 
             m_singleton = (m_legacy 
-                    ? new LegacyDbConnectionFactory(dbConfig)
-                    : new C3P0DbConnectionFactory(dbConfig)
+                    ? (DbConnectionFactory) new LegacyDbConnectionFactory(dbConfig)
+                    : (DbConnectionFactory) new C3P0DbConnectionFactory(dbConfig)
                     );
             m_loaded = true;
 
