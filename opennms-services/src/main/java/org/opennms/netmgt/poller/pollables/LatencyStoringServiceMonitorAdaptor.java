@@ -127,7 +127,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         // add interface address to RRD repository path
         String path = repository + File.separator + addr.getHostAddress();
 
-        return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, m_pollerConfig.getStep(m_pkg), "GAUGE", 600, "U", "U", rraList);
+        return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, m_pollerConfig.getStep(m_pkg), "GAUGE", m_pollerConfig.getStep(m_pkg)*2, "U", "U", rraList);
 
     }
 
