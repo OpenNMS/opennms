@@ -34,7 +34,6 @@ package org.opennms.web.graph;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -44,7 +43,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -54,13 +52,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.performance.GraphAttribute;
 import org.opennms.web.performance.GraphResource;
 import org.opennms.web.performance.GraphResourceType;
@@ -124,8 +122,10 @@ public class RRDGraphServlet extends HttpServlet {
         try {
             RrdUtils.graphicsInitialize();
         } catch (RrdException e) {
-            log().warn("Could not inititalize the graphing system", e);
-            throw new ServletException("Could not initialize graphing system: " + e.getMessage(), e);
+            String message = "Could not inititalize the graphing system: "
+                + e.getMessage();
+            log().warn(message, e);
+            throw new ServletException(message, e);
         }
     }
 
@@ -137,29 +137,57 @@ public class RRDGraphServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+        String debugString = request.getParameter("debugGraph");
+        
+        boolean debug = (debugString != null);
+        
+        if (debug && !request.isUserInRole(Authentication.ADMIN_ROLE)) {
+            throw new ServletException("The 'debugGraph' parameter was set, "
+                                       + "however it can only be used by "
+                                       + "users with administrator "
+                                       + "privileges");
+        }
+        
+        try {
+            doGetWork(request, response, debug);
+        } catch (MissingParameterException e) {
+            if (debug) {
+                // TODO should we log anything?
+                throw e;
+            } else {
+                returnErrorImage(response, s_missingParamsPath);
+                return;
+            }
+        }
+        
+    }
+    
+    public void doGetWork(HttpServletRequest request,
+                          HttpServletResponse response,
+                          boolean debug)
+            throws ServletException, IOException {
         String typeName = request.getParameter("type");
         String resourceTypeName = request.getParameter("resourceType");
         String adhoc = request.getParameter("adhoc");
-        
+
         String[] requiredParameters = {
                 "type",
                 "resourceType"
         };
 
         if (typeName == null) {
-            throw new MissingParameterException("type", requiredParameters);
-//          returnErrorImage(response, s_missingParamsPath);
-//            return;
+            throw new MissingParameterException("type",
+                                                requiredParameters);
         }
         if (resourceTypeName == null) {
-            throw new MissingParameterException("resourceType", requiredParameters);
-//          returnErrorImage(response, s_missingParamsPath);
-//            return;
+            throw new MissingParameterException("resourceType",
+                                                requiredParameters);
         }
 
         PrefabGraphType type = m_prefabGraphDao.findByName(typeName);
         if (type == null) {
-            throw new IllegalArgumentException("graph type \"" + typeName + "\" is not valid");
+            throw new IllegalArgumentException("graph type \"" + typeName
+                                               + "\" is not valid");
         }
         
         GraphModel model = findGraphModelByName(type.getName());
@@ -182,7 +210,15 @@ public class RRDGraphServlet extends HttpServlet {
             
             int nodeId = -1;
             if (nodeIdString != null) {
-                nodeId = Integer.parseInt(nodeIdString);
+                try {
+                    nodeId = Integer.parseInt(nodeIdString);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Could not parse node "
+                                                       + "parameter '"
+                                                       + nodeIdString
+                                                       + "' as an integer",
+                                                       e);
+                }
             }
 
             String resourceName = request.getParameter("resource");
@@ -210,11 +246,6 @@ public class RRDGraphServlet extends HttpServlet {
                                          request, response);
 	}
 
-	if (command == null) {
-	    returnErrorImage(response, s_missingParamsPath);
-            return;
-        }
-
         File workDir = resourceType.getRrdDirectory();
 
         InputStream tempIn = null;
@@ -224,9 +255,25 @@ public class RRDGraphServlet extends HttpServlet {
 
             tempIn = RrdUtils.createGraph(command, workDir);
         } catch (RrdException e) {
-            log("Read from stderr: " + e.getMessage());
-	    returnErrorImage(response, s_rrdError);
-	    return;
+            String message = "RrdException received while creating graph: "
+                + e.getMessage(); 
+            log(message, e);
+            if (debug) {
+                throw new ServletException(message, e);
+            } else {
+                returnErrorImage(response, s_rrdError);
+                return;
+            }
+        } catch (IOException e) {
+            String message = "IOException received while creating graph: "
+                + e.getMessage(); 
+            log(message, e);
+            if (debug) {
+                throw new ServletException(message, e);
+            } else {
+                returnErrorImage(response, s_rrdError);
+                return;
+            }
 	}
 
         if (tempIn != null) {
@@ -241,18 +288,12 @@ public class RRDGraphServlet extends HttpServlet {
     public String getCommandNonAdhoc(PrefabGraphType type,
                                      GraphResourceType resourceType,
                                      HttpServletRequest request,
-                                     HttpServletResponse response)
-    throws ServletException {
+                                     HttpServletResponse response) {
         String report = request.getParameter("report");
         String[] rrds = request.getParameterValues("rrd");
         String propertiesFile = request.getParameter("props");
         String start = request.getParameter("start");
         String end = request.getParameter("end");
-
-//        if (report == null || rrds == null || start == null || end == null
-//                || resourceTypeName == null) {
-//            return null;
-//        }
         
         String[] requiredParameters = {
                 "report",
@@ -313,8 +354,7 @@ public class RRDGraphServlet extends HttpServlet {
             String commandPrefix,
             File workDir, String reportName,
             String[] rrds, String propertiesFile,
-            String start, String end)
-    throws ServletException {
+            String start, String end) {
         PrefabGraph graph = resourceType.getPrefabGraph(reportName);
 
         if (graph == null) {
@@ -401,7 +441,9 @@ public class RRDGraphServlet extends HttpServlet {
                 command = re.subst(command, s2);
             }
         } catch (RESyntaxException e) {
-            throw new ServletException("Invalid regular expression syntax, check rrd-properties file", e);
+            throw new IllegalArgumentException("Invalid regular expression "
+                                               + "syntax, check "
+                                               + "rrd-properties file", e);
         }
         
         return command;
@@ -416,7 +458,8 @@ public class RRDGraphServlet extends HttpServlet {
     	
     	File file = new File(workDir, propertiesFile);
     	if (!file.exists()) {
-    		log("loadExternalProperties: Properties file does not exist: " + file.getAbsolutePath());
+    		log("loadExternalProperties: Properties file does not exist: "
+                    + file.getAbsolutePath());
     		return externalProperties;
     	}
     	
@@ -424,22 +467,25 @@ public class RRDGraphServlet extends HttpServlet {
     	try {
     		fileInputStream = new FileInputStream(file);
     	} catch (Exception e) {
-    		log("createPrefabGraph: Error opening properties file: "+propertiesFile, e);
+    		log("createPrefabGraph: Error opening properties file: "
+                    + propertiesFile, e);
     		return externalProperties;
     	}
 
-   		try {
-			externalProperties.load(fileInputStream);
-		} catch (IOException e) {
-    		log("createPrefabGraph: Error loading properties file: "+propertiesFile, e);
-		} finally {
+   	try {
+            externalProperties.load(fileInputStream);
+        } catch (IOException e) {
+            log("createPrefabGraph: Error loading properties file: "
+                + propertiesFile, e);
+        } finally {
             try {
                 if (fileInputStream != null) {
-                	fileInputStream.close();
+                    fileInputStream.close();
                 }
             } catch (Exception e) {
-                this.log("createPrefabGraph: Error closing properties file: "+propertiesFile, e);
-            }      
+                this.log("createPrefabGraph: Error closing properties file: "
+                         + propertiesFile, e);
+            }
         }
     		
     	return externalProperties;
@@ -452,13 +498,18 @@ public class RRDGraphServlet extends HttpServlet {
                                   GraphResourceType resourceType,
 			          GraphResource resource,
                                   HttpServletRequest request,
-			          HttpServletResponse response)
-		throws ServletException {
+			          HttpServletResponse response) {
         String start = request.getParameter("start");
         String end = request.getParameter("end");
+        
+        String[] requiredParameters = new String[] { "start", "end" };
 
-        if (start == null || end == null) {
-            return null;
+        if (start == null) {
+            throw new MissingParameterException("start", requiredParameters);
+        }
+        
+        if (end == null) {
+            throw new MissingParameterException("end", requiredParameters);
         }
         
         return createAdHocCommand(request, adhocType,
@@ -487,26 +538,51 @@ public class RRDGraphServlet extends HttpServlet {
         String endtime = Long.toString(Long.parseLong(end) / 1000);
 
         String graphtitle = request.getParameter("title");
-
-        if (graphtitle == null) {
-            return null;
-        }
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(commandPrefix);
-        buf.append(" ");
-        buf.append(title);
-
         String dsNames[] = request.getParameterValues("ds");
         String dsAggregFxns[] = request.getParameterValues("agfunction");
         String colors[] = request.getParameterValues("color");
         String dsTitles[] = request.getParameterValues("dstitle");
         String dsStyles[] = request.getParameterValues("style");
 
-        if (dsNames == null || dsAggregFxns == null || colors == null ||
-	    dsTitles == null || dsStyles == null) {
-            return null;
+        String[] requiredParameters = new String[] {
+                "title",
+                "ds",
+                "agfunction",
+                "color",
+                "dstitle",
+                "style"
+        };
+
+        if (graphtitle == null) {
+            throw new MissingParameterException("title", requiredParameters);
         }
+
+        if (dsNames == null) {
+            throw new MissingParameterException("ds", requiredParameters);
+        }
+        
+        if (dsAggregFxns == null) {
+            throw new MissingParameterException("agfunction",
+                                                requiredParameters);
+        }
+        
+        if (colors == null) {
+            throw new MissingParameterException("color", requiredParameters);
+        }
+        
+        if (dsTitles == null) {
+            throw new MissingParameterException("dstitle",
+                                                requiredParameters);
+        }
+        
+        if (dsStyles == null) {
+            throw new MissingParameterException("style", requiredParameters);
+        }
+
+        StringBuffer buf = new StringBuffer();
+        buf.append(commandPrefix);
+        buf.append(" ");
+        buf.append(title);
         
         Set<String> attributeNames = new HashSet<String>();
         for (GraphAttribute attribute : resource.getAttributes()) {
