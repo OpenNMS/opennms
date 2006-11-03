@@ -15,7 +15,7 @@
 			<mevalue>9001</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventPTPReceiveFailed</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventPTPReceiveFailed</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventPTPReceiveFailed</event-label>
 	<descr>
 &lt;p&gt;The PTP1 communications layer did not receive a response
@@ -76,7 +76,7 @@ from a Card1 module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9002</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventPTPSendFailed</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventPTPSendFailed</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventPTPSendFailed</event-label>
 	<descr>
 &lt;p&gt;The PTP1 communications layer was unable to send a message
@@ -137,7 +137,7 @@ to a Card1 module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9200</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventSystemTimeChanged</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventSystemTimeChanged</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventSystemTimeChanged</event-label>
 	<descr>
 &lt;p&gt;The DVStation date and time were changed.
@@ -199,7 +199,7 @@ have been sent out of sequence.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9201</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventIPAddressChanged</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventIPAddressChanged</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventIPAddressChanged</event-label>
 	<descr>
 &lt;p&gt;The IP address of the WAN interface on the DVStation was changed.&lt;/p&gt;&lt;table&gt;
@@ -259,7 +259,7 @@ have been sent out of sequence.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9916</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventCardCagePowerFailed</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventCardCagePowerFailed</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventCardCagePowerFailed</event-label>
 	<descr>
 &lt;p&gt;Power to the DVStation card cage has failed.&lt;/p&gt;&lt;table&gt;
@@ -319,7 +319,7 @@ have been sent out of sequence.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9917</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventHostPowerFailing</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventHostPowerFailing</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventHostPowerFailing</event-label>
 	<descr>
 &lt;p&gt;Power to the DVStation host controller is failing.&lt;/p&gt;&lt;table&gt;
@@ -379,7 +379,7 @@ have been sent out of sequence.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9919</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventTRMSyncNotAcquired</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventTRMSyncNotAcquired</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventTRMSyncNotAcquired</event-label>
 	<descr>
 &lt;p&gt;Synchronization was not acquired from the Timing Reference Module.
@@ -440,7 +440,7 @@ Other Card1 modules will be started without a timebase from the TRM.&lt;/p&gt;&l
 			<mevalue>9921</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventTRMReceiveFailed</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventTRMReceiveFailed</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventTRMReceiveFailed</event-label>
 	<descr>
 &lt;p&gt;The PTP1 communications layer did not receive a response
@@ -501,7 +501,7 @@ from the Timing Reference Module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9922</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventTRMSendFailed</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventTRMSendFailed</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventTRMSendFailed</event-label>
 	<descr>
 &lt;p&gt;The PTP1 communications layer was unable to send a message
@@ -562,7 +562,7 @@ to the Timing Reference Module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9923</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventCardReset</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventCardReset</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventCardReset</event-label>
 	<descr>
 &lt;p&gt;A Card1 module was reset.&lt;/p&gt;&lt;table&gt;
@@ -622,7 +622,7 @@ to the Timing Reference Module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9924</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventReboot</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventReboot</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventReboot</event-label>
 	<descr>
 &lt;p&gt;The DVStation is being restarted.&lt;/p&gt;&lt;table&gt;
@@ -682,7 +682,7 @@ to the Timing Reference Module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9925</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventShutdown</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventShutdown</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventShutdown</event-label>
 	<descr>
 &lt;p&gt;The DVStation is being shut down.&lt;/p&gt;&lt;table&gt;
@@ -742,7 +742,7 @@ to the Timing Reference Module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9926</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventClockSourceChanged</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventClockSourceChanged</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventClockSourceChanged</event-label>
 	<descr>
 &lt;p&gt;The clock source was changed.&lt;/p&gt;&lt;table&gt;
@@ -802,7 +802,7 @@ to the Timing Reference Module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9927</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventSyncSourceChanged</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventSyncSourceChanged</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventSyncSourceChanged</event-label>
 	<descr>
 &lt;p&gt;The timing synchronization source was changed.&lt;/p&gt;&lt;table&gt;
@@ -862,7 +862,7 @@ to the Timing Reference Module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9928</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventIpVideoTrafficLoss</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventIpVideoTrafficLoss</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventIpVideoTrafficLoss</event-label>
 	<descr>
 &lt;p&gt;Loss of video traffic between 2 machines in the IP network.
@@ -923,7 +923,7 @@ Applies to DVStation-IP only.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9929</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dvstationEventIpVideoTrafficRestored</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/dvstationEventIpVideoTrafficRestored</uei>
 	<event-label>PIXMET-DVSTATION-MIB defined trap event: dvstationEventIpVideoTrafficRestored</event-label>
 	<descr>
 &lt;p&gt;Restoration of video traffic between 2 machines in the IP network.
@@ -986,7 +986,7 @@ Applies to DVStation-IP only.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1000</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPIDBandwidthAboveMaxThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPIDBandwidthAboveMaxThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPIDBandwidthAboveMaxThreshold</event-label>
 	<descr>
 &lt;p&gt;The maximum bandwidth used by transport stream packets on the
@@ -1066,7 +1066,7 @@ given PID is above the maximum threshold configured for this PID.&lt;/p&gt;&lt;t
 			<mevalue>1001</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPIDBandwidthBelowMinThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPIDBandwidthBelowMinThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPIDBandwidthBelowMinThreshold</event-label>
 	<descr>
 &lt;p&gt;The minimum bandwidth used by transport stream packets on the
@@ -1146,7 +1146,7 @@ given PID is below the minimum threshold configured for this PID.&lt;/p&gt;&lt;t
 			<mevalue>1004</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSelectedPIDsBandwidthAboveMaxThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSelectedPIDsBandwidthAboveMaxThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSelectedPIDsBandwidthAboveMaxThreshold</event-label>
 	<descr>
 &lt;p&gt;The bandwidth used by the selected PIDS in the transport stream
@@ -1216,7 +1216,7 @@ is above the maximum configured threshold.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1005</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSelectedPIDsBandwidthBelowMinThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSelectedPIDsBandwidthBelowMinThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSelectedPIDsBandwidthBelowMinThreshold</event-label>
 	<descr>
 &lt;p&gt;The bandwidth used by the selected PIDS in the transport stream
@@ -1286,7 +1286,7 @@ is below the minimum configured threshold.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1006</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPIDBandwidthWithinThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPIDBandwidthWithinThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPIDBandwidthWithinThreshold</event-label>
 	<descr>
 &lt;p&gt;The bandwidth used by transport stream packets on the
@@ -1356,7 +1356,7 @@ given PID is within the thresholds configured for this PID.&lt;/p&gt;&lt;table&g
 			<mevalue>1007</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSelectedPIDsBandwidthWithinThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSelectedPIDsBandwidthWithinThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSelectedPIDsBandwidthWithinThreshold</event-label>
 	<descr>
 &lt;p&gt;The bandwidth used by the selected PIDS in the transport stream
@@ -1426,7 +1426,7 @@ is within the configured thresholds.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1010</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPCRJitterAboveMaxThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPCRJitterAboveMaxThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPCRJitterAboveMaxThreshold</event-label>
 	<descr>
 &lt;p&gt;The maximum PCR jitter measured on the given PID is above the
@@ -1506,7 +1506,7 @@ threshold configured for this PID.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1011</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPCRJitterBelowMinThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPCRJitterBelowMinThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPCRJitterBelowMinThreshold</event-label>
 	<descr>
 &lt;p&gt;The minimum PCR jitter measured on the given PID is below the
@@ -1586,7 +1586,7 @@ threshold configured for this PID.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1012</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPCRJitterOffsetAboveMaxThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPCRJitterOffsetAboveMaxThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPCRJitterOffsetAboveMaxThreshold</event-label>
 	<descr>
 &lt;p&gt;The maximum PCR jitter offset measured on the given PID is above
@@ -1656,7 +1656,7 @@ the threshold configured for this PID.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1020</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPacketIntAboveMaxThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPacketIntAboveMaxThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPacketIntAboveMaxThreshold</event-label>
 	<descr>
 &lt;p&gt;The mean packet interval measured on the given PID exceeds
@@ -1736,7 +1736,7 @@ the maximum threshold configured for this PID.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1021</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPacketIntBelowMinThreshold</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPacketIntBelowMinThreshold</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPacketIntBelowMinThreshold</event-label>
 	<descr>
 &lt;p&gt;The mean packet interval measured on the given PID is below
@@ -1816,7 +1816,7 @@ the minimum threshold configured for this PID.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1100</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingCAT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingCAT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingCAT</event-label>
 	<descr>
 &lt;p&gt;Transport stream packets with the transport_scrambling_control
@@ -1887,7 +1887,7 @@ field set to '1' were received, but no Conditional Access Table
 			<mevalue>1101</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventInvalidCAT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventInvalidCAT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventInvalidCAT</event-label>
 	<descr>
 &lt;p&gt;A table section with a table_id field other than 0x01 (ie. not
@@ -1962,7 +1962,7 @@ a CAT) was received on PID 0x0001.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1110</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventContinuityCountError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventContinuityCountError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventContinuityCountError</event-label>
 	<descr>
 &lt;p&gt;The continuity_counter field in the transport stream packets
@@ -2038,7 +2038,7 @@ a packet which occurred more than twice, or a lost packet.&lt;/p&gt;&lt;table&gt
 			<mevalue>1120</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventCRCError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventCRCError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventCRCError</event-label>
 	<descr>
 &lt;p&gt;A table section with an invalid cyclical redundancy check (CRC)
@@ -2108,7 +2108,7 @@ field was received, indicating a damaged table section.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1130</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingEIT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingEIT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingEIT</event-label>
 	<descr>
 &lt;p&gt;At least one DVB Event Information Table (EIT-P/F, actual TS;
@@ -2215,7 +2215,7 @@ maximum allowed interval.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1131</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventInvalidEIT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventInvalidEIT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventInvalidEIT</event-label>
 	<descr>
 &lt;p&gt;A table section with an invalid table_id field was received
@@ -2306,7 +2306,7 @@ Allowed values are 0x4E..0x6F and 0x72.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1132</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventEITArrivedLate</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventEITArrivedLate</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventEITArrivedLate</event-label>
 	<descr>
 &lt;p&gt;This notification is obsolete, and will no longer be generated.
@@ -2332,7 +2332,7 @@ The tspEventMissingEIT notification is now sent instead.&lt;/p&gt;&lt;table&gt;&
 			<mevalue>1133</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventEITArrivedEarly</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventEITArrivedEarly</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventEITArrivedEarly</event-label>
 	<descr>
 &lt;p&gt;The interval between receipt of two successive sections of the
@@ -2429,7 +2429,7 @@ EIT sections are arriving too quickly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1140</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingNIT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingNIT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingNIT</event-label>
 	<descr>
 &lt;p&gt;The DVB Network Information Table (NIT_actual; table_id 0x40)
@@ -2535,7 +2535,7 @@ the table were received within the maximum allowed interval.&lt;/p&gt;&lt;table&
 			<mevalue>1141</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventInvalidNIT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventInvalidNIT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventInvalidNIT</event-label>
 	<descr>
 &lt;p&gt;A table section with an invalid table_id field was received
@@ -2626,7 +2626,7 @@ Allowed values are 0x40, 0x41, and 0x72.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1142</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventNITArrivedLate</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventNITArrivedLate</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventNITArrivedLate</event-label>
 	<descr>
 &lt;p&gt;This notification is obsolete, and will no longer be generated.
@@ -2652,7 +2652,7 @@ The tspEventMissingNIT notification is now sent instead.&lt;/p&gt;&lt;table&gt;&
 			<mevalue>1143</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventNITArrivedEarly</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventNITArrivedEarly</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventNITArrivedEarly</event-label>
 	<descr>
 &lt;p&gt;The interval between receipt of two successive sections of the
@@ -2749,7 +2749,7 @@ NIT sections are arriving too quickly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1150</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventScrambledPacketsOnPATPID</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventScrambledPacketsOnPATPID</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventScrambledPacketsOnPATPID</event-label>
 	<descr>
 &lt;p&gt;Transport stream packets with the transport_scrambling_control
@@ -2820,7 +2820,7 @@ field set to '1' were received on the Program Association Table
 			<mevalue>1151</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventInvalidPAT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventInvalidPAT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventInvalidPAT</event-label>
 	<descr>
 &lt;p&gt;A table section with an invalid table_id field was received
@@ -2911,7 +2911,7 @@ Allowed value is 0x00.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1152</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPATArrivedLate</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPATArrivedLate</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPATArrivedLate</event-label>
 	<descr>
 &lt;p&gt;The Program Association Table (PAT; table_id 0x00) for this
@@ -3017,7 +3017,7 @@ were received within the maximum allowed interval.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1160</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventInvalidRST</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventInvalidRST</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventInvalidRST</event-label>
 	<descr>
 &lt;p&gt;A table section with an invalid table_id field was received
@@ -3108,7 +3108,7 @@ Allowed values are 0x71 and 0x72.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1163</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventRSTArrivedEarly</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventRSTArrivedEarly</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventRSTArrivedEarly</event-label>
 	<descr>
 &lt;p&gt;The interval between receipt of two successive sections of the
@@ -3205,7 +3205,7 @@ RST sections are arriving too quickly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1170</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingSDT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingSDT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingSDT</event-label>
 	<descr>
 &lt;p&gt;The DVB Service Description Table (SDT_actual; table_id 0x42)
@@ -3311,7 +3311,7 @@ the table were received within the maximum allowed interval.&lt;/p&gt;&lt;table&
 			<mevalue>1171</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventInvalidSDT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventInvalidSDT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventInvalidSDT</event-label>
 	<descr>
 &lt;p&gt;A table section with an invalid table_id field was received
@@ -3402,7 +3402,7 @@ Allowed values are 0x42, 0x46, 0x4A, and 0x72.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1172</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSDTArrivedLate</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSDTArrivedLate</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSDTArrivedLate</event-label>
 	<descr>
 &lt;p&gt;This notification is obsolete, and will no longer be generated.
@@ -3428,7 +3428,7 @@ The tspEventMissingSDT notification is now sent instead.&lt;/p&gt;&lt;table&gt;&
 			<mevalue>1173</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSDTArrivedEarly</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSDTArrivedEarly</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSDTArrivedEarly</event-label>
 	<descr>
 &lt;p&gt;The interval between receipt of two successive sections of the
@@ -3525,7 +3525,7 @@ SDT sections are arriving too quickly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1180</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSyncByteError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSyncByteError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSyncByteError</event-label>
 	<descr>
 &lt;p&gt;A transport stream packet with a sync_byte field not equal to
@@ -3595,7 +3595,7 @@ SDT sections are arriving too quickly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1190</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSyncLost</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSyncLost</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSyncLost</event-label>
 	<descr>
 &lt;p&gt;Transport stream synchronization was lost on the current
@@ -3665,7 +3665,7 @@ input of this Transport Stream Processor module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1192</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSyncAcquired</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSyncAcquired</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSyncAcquired</event-label>
 	<descr>
 &lt;p&gt;Transport stream synchronization was acquired on the current
@@ -3735,7 +3735,7 @@ input of this Transport Stream Processor module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1194</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventTSIDChanged</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventTSIDChanged</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventTSIDChanged</event-label>
 	<descr>
 &lt;p&gt;The transport_stream_id value received in the PAT for this
@@ -3810,7 +3810,7 @@ transport stream has changed.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1195</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPATVersionNumberChanged</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPATVersionNumberChanged</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPATVersionNumberChanged</event-label>
 	<descr>
 &lt;p&gt;The version_number of the PAT for this transport stream
@@ -3890,7 +3890,7 @@ has changed.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1200</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingTDT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingTDT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingTDT</event-label>
 	<descr>
 &lt;p&gt;The DVB Time and Date Table (TDT; table_id 0x70) for this
@@ -3981,7 +3981,7 @@ interval.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1201</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventInvalidTDT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventInvalidTDT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventInvalidTDT</event-label>
 	<descr>
 &lt;p&gt;A table section with an invalid table_id field was received
@@ -4072,7 +4072,7 @@ Allowed values are 0x70, 0x72, and 0x73.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1202</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventTDTArrivedLate</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventTDTArrivedLate</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventTDTArrivedLate</event-label>
 	<descr>
 &lt;p&gt;This notification is obsolete, and will no longer be generated.
@@ -4098,7 +4098,7 @@ The tspEventMissingTDT notification is now sent instead.&lt;/p&gt;&lt;table&gt;&
 			<mevalue>1203</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventTDTArrivedEarly</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventTDTArrivedEarly</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventTDTArrivedEarly</event-label>
 	<descr>
 &lt;p&gt;The interval between receipt of two successive sections of the
@@ -4195,7 +4195,7 @@ TDT sections are arriving too quickly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1210</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventTransportError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventTransportError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventTransportError</event-label>
 	<descr>
 &lt;p&gt;A transport stream packet with a transport_error_indicator field
@@ -4271,7 +4271,7 @@ contains at least one uncorrectable bit error.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1220</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingPacketsOnPID</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingPacketsOnPID</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingPacketsOnPID</event-label>
 	<descr>
 &lt;p&gt;No transport stream packets were received on a referenced PID
@@ -4351,7 +4351,7 @@ within the maximum interval allowed.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1230</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingPMT</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingPMT</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingPMT</event-label>
 	<descr>
 &lt;p&gt;This notification is obsolete, and will no longer be generated.
@@ -4377,7 +4377,7 @@ The tspEventPMTMissing notification is now sent instead.&lt;/p&gt;&lt;table&gt;&
 			<mevalue>1231</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventScrambledPacketsOnPMTPID</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventScrambledPacketsOnPMTPID</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventScrambledPacketsOnPMTPID</event-label>
 	<descr>
 &lt;p&gt;Transport stream packets with the transport_scrambling_control
@@ -4453,7 +4453,7 @@ PMT PID in the Program Association Table (PAT).&lt;/p&gt;&lt;table&gt;
 			<mevalue>1232</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPMTArrivedLate</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPMTArrivedLate</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPMTArrivedLate</event-label>
 	<descr>
 &lt;p&gt;This notification is obsolete, and will no longer be generated.
@@ -4479,7 +4479,7 @@ The tspEventPMTMissing notification is now sent instead.&lt;/p&gt;&lt;table&gt;&
 			<mevalue>1234</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPMTMissing</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPMTMissing</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPMTMissing</event-label>
 	<descr>
 &lt;p&gt;No Program Map Table (PMT) sections were received within the
@@ -4575,7 +4575,7 @@ PMT PID in the Program Association Table (PAT).&lt;/p&gt;&lt;table&gt;
 			<mevalue>1240</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPCRRepetitionError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPCRRepetitionError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPCRRepetitionError</event-label>
 	<descr>
 &lt;p&gt;The time interval between two consecutive Program Clock Reference
@@ -4650,7 +4650,7 @@ PMT PID in the Program Association Table (PAT).&lt;/p&gt;&lt;table&gt;
 			<mevalue>1241</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPCRDiscontinuityError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPCRDiscontinuityError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPCRDiscontinuityError</event-label>
 	<descr>
 &lt;p&gt;A discontinuity occurred in the Program Clock Reference (PCR)
@@ -4726,7 +4726,7 @@ discontinuity_indicator field.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1242</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventMissingPCR</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventMissingPCR</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventMissingPCR</event-label>
 	<descr>
 &lt;p&gt;No Program Clock Reference (PCR) values were received within the
@@ -4801,7 +4801,7 @@ specified tspPCRLossCheckInterval.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1250</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventPacketOnUnreferencedPID</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventPacketOnUnreferencedPID</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventPacketOnUnreferencedPID</event-label>
 	<descr>
 &lt;p&gt;Transport stream packets were received on one or more PIDs which
@@ -4871,7 +4871,7 @@ have not been referenced by any System Information (SI) tables.&lt;/p&gt;&lt;tab
 			<mevalue>1251</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventUnreferencedPID</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventUnreferencedPID</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventUnreferencedPID</event-label>
 	<descr>
 &lt;p&gt;Transport stream packets were received on a PID which has not
@@ -4946,7 +4946,7 @@ been referenced by any System Information (SI) tables.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1260</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventSIRepetitionRateError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventSIRepetitionRateError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventSIRepetitionRateError</event-label>
 	<descr>
 &lt;p&gt;The repetition rates of System Information (SI) tables is
@@ -5016,7 +5016,7 @@ outside the specified limits.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1290</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventETR290ResultsChanged</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventETR290ResultsChanged</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventETR290ResultsChanged</event-label>
 	<descr>
 &lt;p&gt;The result of one or more ETR 290 tests has changed.
@@ -5308,7 +5308,7 @@ module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1291</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventETR290ErrorCountsReset</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventETR290ErrorCountsReset</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventETR290ErrorCountsReset</event-label>
 	<descr>
 &lt;p&gt;The error counts for all TR 101 290 tests were reset to zero.&lt;/p&gt;&lt;table&gt;
@@ -5377,7 +5377,7 @@ module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1670</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventTableSectionOctetsReceived</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventTableSectionOctetsReceived</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventTableSectionOctetsReceived</event-label>
 	<descr>
 &lt;p&gt;A table section was received.  This notification contains the
@@ -5502,7 +5502,7 @@ undecoded octets of the received table section.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1671</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventTableSectionFieldsReceived</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventTableSectionFieldsReceived</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventTableSectionFieldsReceived</event-label>
 	<descr>
 &lt;p&gt;A table section was received.  This notification contains the
@@ -5628,7 +5628,7 @@ with an element corresponding to each field.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1700</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventASIPhysicalLayerError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventASIPhysicalLayerError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventASIPhysicalLayerError</event-label>
 	<descr>
 &lt;p&gt;A physical layer error has occurred on the ASI input for
@@ -5698,7 +5698,7 @@ this Transport Stream Processor module.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1701</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventTransportDMABufferError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventTransportDMABufferError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventTransportDMABufferError</event-label>
 	<descr>
 &lt;p&gt;The transport DMA buffer on this Transport Stream Processor
@@ -5768,7 +5768,7 @@ module has overflowed.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1800</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVNetworkIDError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVNetworkIDError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVNetworkIDError</event-label>
 	<descr>
 &lt;p&gt;The received network_id is different than the expected value.&lt;/p&gt;&lt;table&gt;
@@ -5852,7 +5852,7 @@ module has overflowed.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1801</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVNetworkNameError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVNetworkNameError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVNetworkNameError</event-label>
 	<descr>
 &lt;p&gt;The received network_name is different than the expected value.&lt;/p&gt;&lt;table&gt;
@@ -5941,7 +5941,7 @@ module has overflowed.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1810</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVTransportStreamIDError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVTransportStreamIDError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVTransportStreamIDError</event-label>
 	<descr>
 &lt;p&gt;The transport_stream_id is different than the expected value.&lt;/p&gt;&lt;table&gt;
@@ -6020,7 +6020,7 @@ module has overflowed.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1811</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVTransportStreamMinRateError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVTransportStreamMinRateError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVTransportStreamMinRateError</event-label>
 	<descr>
 &lt;p&gt;The bandwidth used by this transport stream is less than
@@ -6105,7 +6105,7 @@ the specified minimum rate.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1812</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVTransportStreamMaxRateError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVTransportStreamMaxRateError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVTransportStreamMaxRateError</event-label>
 	<descr>
 &lt;p&gt;The bandwidth used by this transport stream exceeds the
@@ -6190,7 +6190,7 @@ specified maximum rate.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1813</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVTSNumServicesError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVTSNumServicesError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVTSNumServicesError</event-label>
 	<descr>
 &lt;p&gt;The number of running services on this transport stream is
@@ -6275,7 +6275,7 @@ different than the expected value.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1820</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVServiceIDError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVServiceIDError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVServiceIDError</event-label>
 	<descr>
 &lt;p&gt;The major Service Identifier is different than the expected
@@ -6374,7 +6374,7 @@ will be reported.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1821</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVServiceNameError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVServiceNameError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVServiceNameError</event-label>
 	<descr>
 &lt;p&gt;The service name is different than the expected value.&lt;/p&gt;&lt;table&gt;
@@ -6458,7 +6458,7 @@ will be reported.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1822</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVServiceCATError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVServiceCATError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVServiceCATError</event-label>
 	<descr>
 &lt;p&gt;The service category is different than the expected category.&lt;/p&gt;&lt;table&gt;
@@ -6547,7 +6547,7 @@ will be reported.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1823</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVServiceComponentError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVServiceComponentError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVServiceComponentError</event-label>
 	<descr>
 &lt;p&gt;The number of service components for a service is different
@@ -6637,7 +6637,7 @@ than the expected value.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1824</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVServicePMTPIDError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVServicePMTPIDError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVServicePMTPIDError</event-label>
 	<descr>
 &lt;p&gt;The PMT for this service did not arrive on the expected PID.&lt;/p&gt;&lt;table&gt;
@@ -6726,7 +6726,7 @@ than the expected value.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1825</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVServiceCAError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVServiceCAError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVServiceCAError</event-label>
 	<descr>
 &lt;p&gt;The conditional access status for a service did not match
@@ -6822,7 +6822,7 @@ the expected status.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1826</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVUnexpectedServiceError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVUnexpectedServiceError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVUnexpectedServiceError</event-label>
 	<descr>
 &lt;p&gt;This service was not expected on this transport stream.&lt;/p&gt;&lt;table&gt;
@@ -6901,7 +6901,7 @@ the expected status.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1827</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVServiceMissingError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVServiceMissingError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVServiceMissingError</event-label>
 	<descr>
 &lt;p&gt;This service is not present in this transport stream.&lt;/p&gt;&lt;table&gt;
@@ -6980,7 +6980,7 @@ the expected status.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1828</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVMinorServiceIDError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVMinorServiceIDError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVMinorServiceIDError</event-label>
 	<descr>
 &lt;p&gt;The minor Service Identifier is different than the expected
@@ -7074,7 +7074,7 @@ this error should never be reported.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1840</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVComponentStreamCategoryError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVComponentStreamCategoryError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVComponentStreamCategoryError</event-label>
 	<descr>
 &lt;p&gt;The service category of a service component on this transport
@@ -7169,7 +7169,7 @@ stream was different than the expected category.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1841</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVComponentLanguageError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVComponentLanguageError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVComponentLanguageError</event-label>
 	<descr>
 &lt;p&gt;The language code for a service component on this transport
@@ -7269,7 +7269,7 @@ stream was different than the expected language code.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1842</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVUnexpectedComponentError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVUnexpectedComponentError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVUnexpectedComponentError</event-label>
 	<descr>
 &lt;p&gt;An unexpected service component was present for a service on
@@ -7364,7 +7364,7 @@ this transport stream.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1843</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tspEventOCVMissingComponentError</uei>
+	<uei>uei.opennms.org/vendor/pixelmetrics/traps/tspEventOCVMissingComponentError</uei>
 	<event-label>PIXMET-TSP-MIB defined trap event: tspEventOCVMissingComponentError</event-label>
 	<descr>
 &lt;p&gt;An expected service component was missing from a service on

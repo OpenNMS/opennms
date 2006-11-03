@@ -15,7 +15,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/coDot11SNRLevelNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/coDot11SNRLevelNotification</uei>
     <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11SNRLevelNotification</event-label>
     <descr>
       &lt;p&gt;The average SNR level for all the stations using this virtual ap during the last three intervals is low.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -43,7 +43,7 @@
         <mevalue>2</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/coDot11AssociationNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/coDot11AssociationNotification</uei>
     <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11AssociationNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a new association is made or sent periodically using interval specified by coDot11AssociationNotificationInterval object.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -79,7 +79,7 @@
         <mevalue>3</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/coDot11UnauthorizedAPNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/coDot11UnauthorizedAPNotification</uei>
     <event-label>COLUBRIS-802DOT11-MIB defined trap event: coDot11UnauthorizedAPNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a new unauthorized AP is detected.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -110,7 +110,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/configurationUpdateNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/configurationUpdateNotification</uei>
     <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: configurationUpdateNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a configuration update was attempted from a remote server.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -135,7 +135,7 @@
         <mevalue>2</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/configurationLocalUpdateNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/configurationLocalUpdateNotification</uei>
     <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: configurationLocalUpdateNotification</event-label>
     <descr>
       &lt;p&gt;Sent whenever the configuration changes.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -159,7 +159,7 @@
         <mevalue>3</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/certificateAboutToExpireNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/certificateAboutToExpireNotification</uei>
     <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: certificateAboutToExpireNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a certificate is about to expire.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -184,7 +184,7 @@
         <mevalue>4</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/certificateExpiredNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/certificateExpiredNotification</uei>
     <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: certificateExpiredNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a certificate has expired.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -208,7 +208,7 @@
         <mevalue>5</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/firmwareUpdateNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/firmwareUpdateNotification</uei>
     <event-label>COLUBRIS-MAINTENANCE-MIB defined trap event: firmwareUpdateNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a firmware update was attempted from a remote server.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -235,7 +235,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/publicAccessStatusChangedTrap</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessStatusChangedTrap</uei>
     <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessStatusChangedTrap</event-label>
     <descr>
       &lt;p&gt;This notification is sent whenever the authentication system status changes (up or down).&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -260,7 +260,7 @@
         <mevalue>2</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/publicAccessUsersThresholdTrap</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersThresholdTrap</uei>
     <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersThresholdTrap</event-label>
     <descr>
       &lt;p&gt;This notification is sent whenever publicAccessUsersThreshold is exceeded.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -284,7 +284,7 @@
         <mevalue>3</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/publicAccessUsersSessionStartTrap</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionStartTrap</uei>
     <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionStartTrap</event-label>
     <descr>
       &lt;p&gt;When a user successfully authenticate itself a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -308,7 +308,7 @@
         <mevalue>4</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/publicAccessUsersSessionStopTrap</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionStopTrap</uei>
     <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionStopTrap</event-label>
     <descr>
       &lt;p&gt;When a user terminate his session a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -332,7 +332,7 @@
         <mevalue>5</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/publicAccessUsersSessionFailTrap</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersSessionFailTrap</uei>
     <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersSessionFailTrap</event-label>
     <descr>
       &lt;p&gt;When a user authentication fail a trap is generated if the publicAccessUsersSessionTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -356,7 +356,7 @@
         <mevalue>6</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/publicAccessUsersLoggedInTrap</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessUsersLoggedInTrap</uei>
     <event-label>COLUBRIS-PUBLIC-ACCESS-MIB defined trap event: publicAccessUsersLoggedInTrap</event-label>
     <descr>
       &lt;p&gt;This is sent when a user is authenticated or periodically (see publicAccessUSersLoggedInTrapInterval) if the publicAccessUsersLoggedInTrapEnabled is set to True.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -393,7 +393,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/publicAccessRetentionSessionMaxCountReachedTrap</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/publicAccessRetentionSessionMaxCountReachedTrap</uei>
     <event-label>COLUBRIS-PUBLIC-ACCESS-RETENTION-MIB defined trap event: publicAccessRetentionSessionMaxCountReachedTrap</event-label>
     <descr>
       &lt;p&gt;This notification is sent whenever the number of session exceed the value of publicAccessRetentionSessionsMaxCount.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -420,7 +420,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/satelliteUpNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/satelliteUpNotification</uei>
     <event-label>COLUBRIS-SATELLITE-MANAGEMENT-MIB defined trap event: satelliteUpNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a new satellite is detected.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -449,7 +449,7 @@
         <mevalue>2</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/satelliteDownNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/satelliteDownNotification</uei>
     <event-label>COLUBRIS-SATELLITE-MANAGEMENT-MIB defined trap event: satelliteDownNotification</event-label>
     <descr>
       &lt;p&gt;Sent when a satellite becomes unreachable.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -480,7 +480,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/syslogSeverityNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/syslogSeverityNotification</uei>
     <event-label>COLUBRIS-SYSLOG-MIB defined trap event: syslogSeverityNotification</event-label>
     <descr>
       &lt;p&gt;Sent when the device generated a syslog message that is of the right severity level. This severity level is set by syslogTrapSeverityLevel.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -507,7 +507,7 @@
         <mevalue>2</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/syslogRegExMatchNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/syslogRegExMatchNotification</uei>
     <event-label>COLUBRIS-SYSLOG-MIB defined trap event: syslogRegExMatchNotification</event-label>
     <descr>
       &lt;p&gt;Sent when the device generated a syslog message that matches the regular expression specified in syslogMessageRegEx.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -536,7 +536,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/adminAccessAuthFailureNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/adminAccessAuthFailureNotification</uei>
     <event-label>COLUBRIS-SYSTEM-MIB defined trap event: adminAccessAuthFailureNotification</event-label>
     <descr>
       &lt;p&gt;Sent after an administrator authentication failure.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -560,7 +560,7 @@
         <mevalue>2</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/adminAccessLoginNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/adminAccessLoginNotification</uei>
     <event-label>COLUBRIS-SYSTEM-MIB defined trap event: adminAccessLoginNotification</event-label>
     <descr>&lt;p&gt;Sent after an administrator is sucessfully authenticated.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
     <logmsg dest='logndisplay'>&lt;p&gt; adminAccessLoginNotification trap received&lt;/p&gt;</logmsg>
@@ -581,7 +581,7 @@
         <mevalue>3</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/systemColdStart</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/systemColdStart</uei>
     <event-label>COLUBRIS-SYSTEM-MIB defined trap event: systemColdStart</event-label>
     <descr>
       &lt;p&gt;Sent at system boot up.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -608,7 +608,7 @@
         <mevalue>4</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/systemHeartbeatNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/systemHeartbeatNotification</uei>
     <event-label>COLUBRIS-SYSTEM-MIB defined trap event: systemHeartbeatNotification</event-label>
     <descr>
       &lt;p&gt;Sent every heartbeatPeriod.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -652,7 +652,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/traceStatusNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/traceStatusNotification</uei>
     <event-label>COLUBRIS-TOOLS-MIB defined trap event: traceStatusNotification</event-label>
     <descr>
       &lt;p&gt;Sent when the user trigs the IP Trace tool either by starting a new trace or stopping an existing session.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -678,7 +678,7 @@
         <mevalue>1</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/colubrisVpnNewUserNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/colubrisVpnNewUserNotification</uei>
     <event-label>COLUBRIS-VPN-MIB defined trap event: colubrisVpnNewUserNotification</event-label>
     <descr>
       &lt;p&gt;Generated when a VPN user has been granted access to the system.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -704,7 +704,7 @@
         <mevalue>2</mevalue>
       </maskelement>
     </mask>
-    <uei>uei.opennms.org/mib2opennms/colubrisVpnRemoveUserNotification</uei>
+    <uei>uei.opennms.org/vendors/colubris/traps/colubrisVpnRemoveUserNotification</uei>
     <event-label>COLUBRIS-VPN-MIB defined trap event: colubrisVpnRemoveUserNotification</event-label>
     <descr>
       &lt;p&gt;Generated when a VPN user disconnects from the system.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
