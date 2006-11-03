@@ -50,8 +50,7 @@
 <%
 	UserManager userFactory;
   	Map users = null;
-	HashMap usersHash = new HashMap();
-	String curUserName = null;
+	HashMap<String, String> usersHash = new HashMap<String, String>();
 	
 	try
     	{
