@@ -15,7 +15,7 @@
 			<mevalue>10</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonCRalarmSet</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonCRalarmSet</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonCRalarmSet</event-label>
 	<descr>
 &lt;p&gt;Generated when a critical alarm is set.&lt;/p&gt;&lt;table&gt;
@@ -110,7 +110,7 @@
 			<mevalue>11</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonCRalarmClr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonCRalarmClr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonCRalarmClr</event-label>
 	<descr>
 &lt;p&gt;Generated when a critical alarm clears.&lt;/p&gt;&lt;table&gt;
@@ -205,7 +205,7 @@
 			<mevalue>12</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonMJalarmSet</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonMJalarmSet</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonMJalarmSet</event-label>
 	<descr>
 &lt;p&gt;Generated when a major alarm is set.&lt;/p&gt;&lt;table&gt;
@@ -300,7 +300,7 @@
 			<mevalue>13</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonMJalarmClr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonMJalarmClr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonMJalarmClr</event-label>
 	<descr>
 &lt;p&gt;Generated when a major alarm clears.&lt;/p&gt;&lt;table&gt;
@@ -395,7 +395,7 @@
 			<mevalue>14</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonMNalarmSet</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonMNalarmSet</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonMNalarmSet</event-label>
 	<descr>
 &lt;p&gt;Generated when a minor alarm is set.&lt;/p&gt;&lt;table&gt;
@@ -490,7 +490,7 @@
 			<mevalue>15</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonMNalarmClr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonMNalarmClr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonMNalarmClr</event-label>
 	<descr>
 &lt;p&gt;Generated when a minor alarm clears.&lt;/p&gt;&lt;table&gt;
@@ -585,7 +585,7 @@
 			<mevalue>16</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonSTalarmSet</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonSTalarmSet</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonSTalarmSet</event-label>
 	<descr>
 &lt;p&gt;Generated when a status alarm is set.&lt;/p&gt;&lt;table&gt;
@@ -680,7 +680,7 @@
 			<mevalue>17</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tmonSTalarmClr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/tmonSTalarmClr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: tmonSTalarmClr</event-label>
 	<descr>
 &lt;p&gt;Generated when a status alarm clears.&lt;/p&gt;&lt;table&gt;
@@ -775,7 +775,7 @@
 			<mevalue>20</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUPointSet</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUPointSet</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUPointSet</event-label>
 	<descr>
 &lt;p&gt;Generated when a point is set.&lt;/p&gt;&lt;table&gt;
@@ -845,7 +845,7 @@
 			<mevalue>21</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUPointClr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUPointClr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUPointClr</event-label>
 	<descr>
 &lt;p&gt;Generated when a point clears.&lt;/p&gt;&lt;table&gt;
@@ -915,7 +915,7 @@
 			<mevalue>101</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUsumPSet</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUsumPSet</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUsumPSet</event-label>
 	<descr>
 &lt;p&gt;Generated when any point is set.&lt;/p&gt;&lt;table&gt;
@@ -955,7 +955,7 @@
 			<mevalue>102</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUsumPClr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUsumPClr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUsumPClr</event-label>
 	<descr>
 &lt;p&gt;Generated when all points clear.&lt;/p&gt;&lt;table&gt;
@@ -995,7 +995,7 @@
 			<mevalue>103</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUcomFailed</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUcomFailed</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUcomFailed</event-label>
 	<descr>
 &lt;p&gt;Generated when polled unit fails to respond.&lt;/p&gt;&lt;table&gt;
@@ -1035,7 +1035,7 @@
 			<mevalue>104</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUcomRestored</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUcomRestored</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUcomRestored</event-label>
 	<descr>
 &lt;p&gt;Generated when failed unit resumes responding.&lt;/p&gt;&lt;table&gt;
@@ -1075,7 +1075,7 @@
 			<mevalue>10001</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0001Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0001Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0001Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 1 is set.&lt;/p&gt;&lt;table&gt;
@@ -1145,7 +1145,7 @@
 			<mevalue>10002</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0002Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0002Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0002Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 2 is set.&lt;/p&gt;&lt;table&gt;
@@ -1215,7 +1215,7 @@
 			<mevalue>10003</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0003Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0003Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0003Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 3 is set.&lt;/p&gt;&lt;table&gt;
@@ -1285,7 +1285,7 @@
 			<mevalue>10004</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0004Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0004Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0004Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 4 is set.&lt;/p&gt;&lt;table&gt;
@@ -1355,7 +1355,7 @@
 			<mevalue>10005</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0005Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0005Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0005Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 5 is set.&lt;/p&gt;&lt;table&gt;
@@ -1425,7 +1425,7 @@
 			<mevalue>10006</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0006Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0006Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0006Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 6 is set.&lt;/p&gt;&lt;table&gt;
@@ -1495,7 +1495,7 @@
 			<mevalue>10007</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0007Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0007Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0007Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 7 is set.&lt;/p&gt;&lt;table&gt;
@@ -1565,7 +1565,7 @@
 			<mevalue>10008</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0008Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0008Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0008Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 8 is set.&lt;/p&gt;&lt;table&gt;
@@ -1635,7 +1635,7 @@
 			<mevalue>10009</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0009Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0009Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0009Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 9 is set.&lt;/p&gt;&lt;table&gt;
@@ -1705,7 +1705,7 @@
 			<mevalue>10010</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0010Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0010Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0010Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 10 is set.&lt;/p&gt;&lt;table&gt;
@@ -1775,7 +1775,7 @@
 			<mevalue>10011</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0011Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0011Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0011Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 11 is set.&lt;/p&gt;&lt;table&gt;
@@ -1845,7 +1845,7 @@
 			<mevalue>10012</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0012Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0012Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0012Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 12 is set.&lt;/p&gt;&lt;table&gt;
@@ -1915,7 +1915,7 @@
 			<mevalue>10013</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0013Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0013Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0013Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 13 is set.&lt;/p&gt;&lt;table&gt;
@@ -1985,7 +1985,7 @@
 			<mevalue>10014</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0014Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0014Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0014Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 14 is set.&lt;/p&gt;&lt;table&gt;
@@ -2055,7 +2055,7 @@
 			<mevalue>10015</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0015Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0015Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0015Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 15 is set.&lt;/p&gt;&lt;table&gt;
@@ -2125,7 +2125,7 @@
 			<mevalue>10016</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0016Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0016Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0016Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 16 is set.&lt;/p&gt;&lt;table&gt;
@@ -2195,7 +2195,7 @@
 			<mevalue>10017</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0017Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0017Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0017Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 17 is set.&lt;/p&gt;&lt;table&gt;
@@ -2265,7 +2265,7 @@
 			<mevalue>10018</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0018Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0018Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0018Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 18 is set.&lt;/p&gt;&lt;table&gt;
@@ -2335,7 +2335,7 @@
 			<mevalue>10019</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0019Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0019Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0019Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 19 is set.&lt;/p&gt;&lt;table&gt;
@@ -2405,7 +2405,7 @@
 			<mevalue>10020</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0020Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0020Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0020Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 20 is set.&lt;/p&gt;&lt;table&gt;
@@ -2475,7 +2475,7 @@
 			<mevalue>10021</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0021Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0021Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0021Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 21 is set.&lt;/p&gt;&lt;table&gt;
@@ -2545,7 +2545,7 @@
 			<mevalue>10022</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0022Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0022Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0022Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 22 is set.&lt;/p&gt;&lt;table&gt;
@@ -2615,7 +2615,7 @@
 			<mevalue>10023</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0023Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0023Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0023Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 23 is set.&lt;/p&gt;&lt;table&gt;
@@ -2685,7 +2685,7 @@
 			<mevalue>10024</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0024Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0024Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0024Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 24 is set.&lt;/p&gt;&lt;table&gt;
@@ -2755,7 +2755,7 @@
 			<mevalue>10025</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0025Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0025Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0025Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 25 is set.&lt;/p&gt;&lt;table&gt;
@@ -2825,7 +2825,7 @@
 			<mevalue>10026</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0026Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0026Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0026Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 26 is set.&lt;/p&gt;&lt;table&gt;
@@ -2895,7 +2895,7 @@
 			<mevalue>10027</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0027Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0027Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0027Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 27 is set.&lt;/p&gt;&lt;table&gt;
@@ -2965,7 +2965,7 @@
 			<mevalue>10028</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0028Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0028Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0028Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 28 is set.&lt;/p&gt;&lt;table&gt;
@@ -3035,7 +3035,7 @@
 			<mevalue>10029</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0029Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0029Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0029Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 29 is set.&lt;/p&gt;&lt;table&gt;
@@ -3105,7 +3105,7 @@
 			<mevalue>10030</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0030Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0030Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0030Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 30 is set.&lt;/p&gt;&lt;table&gt;
@@ -3175,7 +3175,7 @@
 			<mevalue>10031</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0031Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0031Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0031Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 31 is set.&lt;/p&gt;&lt;table&gt;
@@ -3245,7 +3245,7 @@
 			<mevalue>10032</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0032Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0032Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0032Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 32 is set.&lt;/p&gt;&lt;table&gt;
@@ -3315,7 +3315,7 @@
 			<mevalue>10033</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0033Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0033Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0033Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 33 is set.&lt;/p&gt;&lt;table&gt;
@@ -3385,7 +3385,7 @@
 			<mevalue>10034</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0034Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0034Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0034Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 34 is set.&lt;/p&gt;&lt;table&gt;
@@ -3455,7 +3455,7 @@
 			<mevalue>10035</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0035Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0035Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0035Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 35 is set.&lt;/p&gt;&lt;table&gt;
@@ -3525,7 +3525,7 @@
 			<mevalue>10036</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0036Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0036Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0036Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 36 is set.&lt;/p&gt;&lt;table&gt;
@@ -3595,7 +3595,7 @@
 			<mevalue>10037</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0037Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0037Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0037Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 37 is set.&lt;/p&gt;&lt;table&gt;
@@ -3665,7 +3665,7 @@
 			<mevalue>10038</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0038Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0038Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0038Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 38 is set.&lt;/p&gt;&lt;table&gt;
@@ -3735,7 +3735,7 @@
 			<mevalue>10039</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0039Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0039Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0039Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 39 is set.&lt;/p&gt;&lt;table&gt;
@@ -3805,7 +3805,7 @@
 			<mevalue>10040</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0040Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0040Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0040Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 40 is set.&lt;/p&gt;&lt;table&gt;
@@ -3875,7 +3875,7 @@
 			<mevalue>10041</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0041Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0041Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0041Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 41 is set.&lt;/p&gt;&lt;table&gt;
@@ -3945,7 +3945,7 @@
 			<mevalue>10042</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0042Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0042Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0042Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 42 is set.&lt;/p&gt;&lt;table&gt;
@@ -4015,7 +4015,7 @@
 			<mevalue>10043</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0043Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0043Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0043Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 43 is set.&lt;/p&gt;&lt;table&gt;
@@ -4085,7 +4085,7 @@
 			<mevalue>10044</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0044Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0044Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0044Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 44 is set.&lt;/p&gt;&lt;table&gt;
@@ -4155,7 +4155,7 @@
 			<mevalue>10045</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0045Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0045Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0045Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 45 is set.&lt;/p&gt;&lt;table&gt;
@@ -4225,7 +4225,7 @@
 			<mevalue>10046</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0046Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0046Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0046Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 46 is set.&lt;/p&gt;&lt;table&gt;
@@ -4295,7 +4295,7 @@
 			<mevalue>10047</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0047Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0047Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0047Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 47 is set.&lt;/p&gt;&lt;table&gt;
@@ -4365,7 +4365,7 @@
 			<mevalue>10048</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0048Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0048Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0048Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 48 is set.&lt;/p&gt;&lt;table&gt;
@@ -4435,7 +4435,7 @@
 			<mevalue>10049</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0049Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0049Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0049Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 49 is set.&lt;/p&gt;&lt;table&gt;
@@ -4505,7 +4505,7 @@
 			<mevalue>10050</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0050Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0050Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0050Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 50 is set.&lt;/p&gt;&lt;table&gt;
@@ -4575,7 +4575,7 @@
 			<mevalue>10051</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0051Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0051Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0051Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 51 is set.&lt;/p&gt;&lt;table&gt;
@@ -4645,7 +4645,7 @@
 			<mevalue>10052</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0052Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0052Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0052Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 52 is set.&lt;/p&gt;&lt;table&gt;
@@ -4715,7 +4715,7 @@
 			<mevalue>10053</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0053Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0053Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0053Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 53 is set.&lt;/p&gt;&lt;table&gt;
@@ -4785,7 +4785,7 @@
 			<mevalue>10054</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0054Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0054Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0054Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 54 is set.&lt;/p&gt;&lt;table&gt;
@@ -4855,7 +4855,7 @@
 			<mevalue>10055</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0055Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0055Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0055Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 55 is set.&lt;/p&gt;&lt;table&gt;
@@ -4925,7 +4925,7 @@
 			<mevalue>10056</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0056Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0056Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0056Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 56 is set.&lt;/p&gt;&lt;table&gt;
@@ -4995,7 +4995,7 @@
 			<mevalue>10057</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0057Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0057Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0057Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 57 is set.&lt;/p&gt;&lt;table&gt;
@@ -5065,7 +5065,7 @@
 			<mevalue>10058</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0058Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0058Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0058Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 58 is set.&lt;/p&gt;&lt;table&gt;
@@ -5135,7 +5135,7 @@
 			<mevalue>10059</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0059Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0059Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0059Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 59 is set.&lt;/p&gt;&lt;table&gt;
@@ -5205,7 +5205,7 @@
 			<mevalue>10060</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0060Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0060Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0060Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 60 is set.&lt;/p&gt;&lt;table&gt;
@@ -5275,7 +5275,7 @@
 			<mevalue>10061</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0061Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0061Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0061Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 61 is set.&lt;/p&gt;&lt;table&gt;
@@ -5345,7 +5345,7 @@
 			<mevalue>10062</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0062Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0062Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0062Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 62 is set.&lt;/p&gt;&lt;table&gt;
@@ -5415,7 +5415,7 @@
 			<mevalue>10063</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0063Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0063Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0063Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 63 is set.&lt;/p&gt;&lt;table&gt;
@@ -5485,7 +5485,7 @@
 			<mevalue>10064</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0064Set</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0064Set</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0064Set</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 64 is set.&lt;/p&gt;&lt;table&gt;
@@ -5555,7 +5555,7 @@
 			<mevalue>20001</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0001Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0001Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0001Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 1 clears.&lt;/p&gt;&lt;table&gt;
@@ -5625,7 +5625,7 @@
 			<mevalue>20002</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0002Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0002Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0002Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 2 clears.&lt;/p&gt;&lt;table&gt;
@@ -5695,7 +5695,7 @@
 			<mevalue>20003</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0003Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0003Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0003Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 3 clears.&lt;/p&gt;&lt;table&gt;
@@ -5765,7 +5765,7 @@
 			<mevalue>20004</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0004Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0004Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0004Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 4 clears.&lt;/p&gt;&lt;table&gt;
@@ -5835,7 +5835,7 @@
 			<mevalue>20005</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0005Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0005Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0005Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 5 clears.&lt;/p&gt;&lt;table&gt;
@@ -5905,7 +5905,7 @@
 			<mevalue>20006</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0006Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0006Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0006Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 6 clears.&lt;/p&gt;&lt;table&gt;
@@ -5975,7 +5975,7 @@
 			<mevalue>20007</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0007Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0007Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0007Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 7 clears.&lt;/p&gt;&lt;table&gt;
@@ -6045,7 +6045,7 @@
 			<mevalue>20008</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0008Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0008Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0008Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 8 clears.&lt;/p&gt;&lt;table&gt;
@@ -6115,7 +6115,7 @@
 			<mevalue>20009</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0009Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0009Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0009Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 9 clears.&lt;/p&gt;&lt;table&gt;
@@ -6185,7 +6185,7 @@
 			<mevalue>20010</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0010Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0010Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0010Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 10 clears.&lt;/p&gt;&lt;table&gt;
@@ -6255,7 +6255,7 @@
 			<mevalue>20011</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0011Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0011Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0011Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 11 clears.&lt;/p&gt;&lt;table&gt;
@@ -6325,7 +6325,7 @@
 			<mevalue>20012</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0012Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0012Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0012Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 12 clears.&lt;/p&gt;&lt;table&gt;
@@ -6395,7 +6395,7 @@
 			<mevalue>20013</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0013Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0013Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0013Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 13 clears.&lt;/p&gt;&lt;table&gt;
@@ -6465,7 +6465,7 @@
 			<mevalue>20014</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0014Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0014Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0014Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 14 clears.&lt;/p&gt;&lt;table&gt;
@@ -6535,7 +6535,7 @@
 			<mevalue>20015</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0015Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0015Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0015Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 15 clears.&lt;/p&gt;&lt;table&gt;
@@ -6605,7 +6605,7 @@
 			<mevalue>20016</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0016Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0016Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0016Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 16 clears.&lt;/p&gt;&lt;table&gt;
@@ -6675,7 +6675,7 @@
 			<mevalue>20017</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0017Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0017Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0017Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 17 clears.&lt;/p&gt;&lt;table&gt;
@@ -6745,7 +6745,7 @@
 			<mevalue>20018</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0018Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0018Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0018Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 18 clears.&lt;/p&gt;&lt;table&gt;
@@ -6815,7 +6815,7 @@
 			<mevalue>20019</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0019Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0019Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0019Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 19 clears.&lt;/p&gt;&lt;table&gt;
@@ -6885,7 +6885,7 @@
 			<mevalue>20020</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0020Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0020Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0020Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 20 clears.&lt;/p&gt;&lt;table&gt;
@@ -6955,7 +6955,7 @@
 			<mevalue>20021</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0021Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0021Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0021Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 21 clears.&lt;/p&gt;&lt;table&gt;
@@ -7025,7 +7025,7 @@
 			<mevalue>20022</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0022Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0022Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0022Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 22 clears.&lt;/p&gt;&lt;table&gt;
@@ -7095,7 +7095,7 @@
 			<mevalue>20023</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0023Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0023Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0023Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 23 clears.&lt;/p&gt;&lt;table&gt;
@@ -7165,7 +7165,7 @@
 			<mevalue>20024</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0024Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0024Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0024Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 24 clears.&lt;/p&gt;&lt;table&gt;
@@ -7235,7 +7235,7 @@
 			<mevalue>20025</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0025Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0025Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0025Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 25 clears.&lt;/p&gt;&lt;table&gt;
@@ -7305,7 +7305,7 @@
 			<mevalue>20026</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0026Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0026Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0026Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 26 clears.&lt;/p&gt;&lt;table&gt;
@@ -7375,7 +7375,7 @@
 			<mevalue>20027</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0027Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0027Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0027Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 27 clears.&lt;/p&gt;&lt;table&gt;
@@ -7445,7 +7445,7 @@
 			<mevalue>20028</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0028Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0028Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0028Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 28 clears.&lt;/p&gt;&lt;table&gt;
@@ -7515,7 +7515,7 @@
 			<mevalue>20029</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0029Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0029Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0029Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 29 clears.&lt;/p&gt;&lt;table&gt;
@@ -7585,7 +7585,7 @@
 			<mevalue>20030</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0030Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0030Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0030Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 30 clears.&lt;/p&gt;&lt;table&gt;
@@ -7655,7 +7655,7 @@
 			<mevalue>20031</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0031Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0031Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0031Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 31 clears.&lt;/p&gt;&lt;table&gt;
@@ -7725,7 +7725,7 @@
 			<mevalue>20032</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0032Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0032Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0032Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 32 clears.&lt;/p&gt;&lt;table&gt;
@@ -7795,7 +7795,7 @@
 			<mevalue>20033</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0033Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0033Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0033Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 33 clears.&lt;/p&gt;&lt;table&gt;
@@ -7865,7 +7865,7 @@
 			<mevalue>20034</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0034Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0034Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0034Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 34 clears.&lt;/p&gt;&lt;table&gt;
@@ -7935,7 +7935,7 @@
 			<mevalue>20035</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0035Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0035Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0035Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 35 clears.&lt;/p&gt;&lt;table&gt;
@@ -8005,7 +8005,7 @@
 			<mevalue>20036</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0036Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0036Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0036Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 36 clears.&lt;/p&gt;&lt;table&gt;
@@ -8075,7 +8075,7 @@
 			<mevalue>20037</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0037Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0037Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0037Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 37 clears.&lt;/p&gt;&lt;table&gt;
@@ -8145,7 +8145,7 @@
 			<mevalue>20038</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0038Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0038Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0038Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 38 clears.&lt;/p&gt;&lt;table&gt;
@@ -8215,7 +8215,7 @@
 			<mevalue>20039</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0039Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0039Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0039Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 39 clears.&lt;/p&gt;&lt;table&gt;
@@ -8285,7 +8285,7 @@
 			<mevalue>20040</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0040Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0040Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0040Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 40 clears.&lt;/p&gt;&lt;table&gt;
@@ -8355,7 +8355,7 @@
 			<mevalue>20041</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0041Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0041Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0041Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 41 clears.&lt;/p&gt;&lt;table&gt;
@@ -8425,7 +8425,7 @@
 			<mevalue>20042</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0042Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0042Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0042Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 42 clears.&lt;/p&gt;&lt;table&gt;
@@ -8495,7 +8495,7 @@
 			<mevalue>20043</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0043Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0043Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0043Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 43 clears.&lt;/p&gt;&lt;table&gt;
@@ -8565,7 +8565,7 @@
 			<mevalue>20044</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0044Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0044Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0044Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 44 clears.&lt;/p&gt;&lt;table&gt;
@@ -8635,7 +8635,7 @@
 			<mevalue>20045</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0045Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0045Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0045Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 45 clears.&lt;/p&gt;&lt;table&gt;
@@ -8705,7 +8705,7 @@
 			<mevalue>20046</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0046Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0046Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0046Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 46 clears.&lt;/p&gt;&lt;table&gt;
@@ -8775,7 +8775,7 @@
 			<mevalue>20047</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0047Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0047Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0047Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 47 clears.&lt;/p&gt;&lt;table&gt;
@@ -8845,7 +8845,7 @@
 			<mevalue>20048</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0048Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0048Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0048Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 48 clears.&lt;/p&gt;&lt;table&gt;
@@ -8915,7 +8915,7 @@
 			<mevalue>20049</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0049Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0049Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0049Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 49 clears.&lt;/p&gt;&lt;table&gt;
@@ -8985,7 +8985,7 @@
 			<mevalue>20050</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0050Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0050Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0050Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 50 clears.&lt;/p&gt;&lt;table&gt;
@@ -9055,7 +9055,7 @@
 			<mevalue>20051</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0051Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0051Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0051Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 51 clears.&lt;/p&gt;&lt;table&gt;
@@ -9125,7 +9125,7 @@
 			<mevalue>20052</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0052Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0052Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0052Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 52 clears.&lt;/p&gt;&lt;table&gt;
@@ -9195,7 +9195,7 @@
 			<mevalue>20053</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0053Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0053Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0053Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 53 clears.&lt;/p&gt;&lt;table&gt;
@@ -9265,7 +9265,7 @@
 			<mevalue>20054</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0054Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0054Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0054Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 54 clears.&lt;/p&gt;&lt;table&gt;
@@ -9335,7 +9335,7 @@
 			<mevalue>20055</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0055Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0055Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0055Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 55 clears.&lt;/p&gt;&lt;table&gt;
@@ -9405,7 +9405,7 @@
 			<mevalue>20056</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0056Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0056Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0056Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 56 clears.&lt;/p&gt;&lt;table&gt;
@@ -9475,7 +9475,7 @@
 			<mevalue>20057</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0057Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0057Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0057Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 57 clears.&lt;/p&gt;&lt;table&gt;
@@ -9545,7 +9545,7 @@
 			<mevalue>20058</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0058Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0058Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0058Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 58 clears.&lt;/p&gt;&lt;table&gt;
@@ -9615,7 +9615,7 @@
 			<mevalue>20059</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0059Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0059Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0059Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 59 clears.&lt;/p&gt;&lt;table&gt;
@@ -9685,7 +9685,7 @@
 			<mevalue>20060</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0060Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0060Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0060Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 60 clears.&lt;/p&gt;&lt;table&gt;
@@ -9755,7 +9755,7 @@
 			<mevalue>20061</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0061Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0061Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0061Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 61 clears.&lt;/p&gt;&lt;table&gt;
@@ -9825,7 +9825,7 @@
 			<mevalue>20062</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0062Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0062Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0062Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 62 clears.&lt;/p&gt;&lt;table&gt;
@@ -9895,7 +9895,7 @@
 			<mevalue>20063</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0063Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0063Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0063Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 63 clears.&lt;/p&gt;&lt;table&gt;
@@ -9965,7 +9965,7 @@
 			<mevalue>20064</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/dpsRTUp0064Clr</uei>
+	<uei>uei.opennms.org/vendor/dpstelecom/traps/dpsRTUp0064Clr</uei>
 	<event-label>DPS-MIB-V38 defined trap event: dpsRTUp0064Clr</event-label>
 	<descr>
 &lt;p&gt;Generated when granular point 64 clears.&lt;/p&gt;&lt;table&gt;
