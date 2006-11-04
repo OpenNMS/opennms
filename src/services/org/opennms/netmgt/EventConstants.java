@@ -684,6 +684,14 @@ public class EventConstants {
 
     public final static int XMLRPC_NOTIFY_FAILURE = 2;
 
+    public static final String PARM_VERSION = "version";
+
+    public static final String PARM_TIMEOUT = "timeout";
+
+    public static final String PARM_RETRY_COUNT = "retryCount";
+
+    public static final String PARM_PORT = "port";
+
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
      * string should be in the locale specific DateFormat.FULL style for both

@@ -53,6 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.SnmpPeerFactory.SnmpEventInfo;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -739,7 +740,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @param event The event to process.
      */
-    private void configureSNMPHandler(Event event) {
+    protected void configureSNMPHandler(Event event) {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
@@ -748,79 +749,90 @@ final class BroadcastEventProcessor implements EventListener {
         // Extract the IP adddress range and SNMP community string from the
         // event parms.
         //
-        String firstIPAddress = null;
-        String lastIPAddress = null;
-        String communityString = null;
+        
         Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
+        if (parms == null) return;
+        SnmpEventInfo info = SnmpPeerFactory.getInstance().createSnmpEventInfo();
+        
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
 
-            Enumeration parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
-
-                // First IP Address
-                if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
-                    firstIPAddress = parmContent;
-                }
-
-                // Last IP Address (optional parameter)
-                else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
-                    lastIPAddress = parmContent;
-                }
-
-                // SNMP community string
-                else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
-                    communityString = parmContent;
-                }
+        Enumeration parmEnum = parms.enumerateParm();
+        while (parmEnum.hasMoreElements()) {
+            Parm parm = (Parm) parmEnum.nextElement();
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            
+            if (parmValue == null) continue;
+            
+            parmContent = parmValue.getContent();
+            
+            if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
+                info.setFirstIPAddress(parmContent);
+            } else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
+                info.setLastIPAddress(parmContent);
+            } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
+                info.setCommunityString(parmContent);
+            } else if (parmName.equals(EventConstants.PARM_RETRY_COUNT)) {
+                info.setRetryCount(Integer.parseInt(parmContent));
+            } else if (parmName.equals(EventConstants.PARM_TIMEOUT)) {
+                info.setTimeout(Integer.parseInt(parmContent));
+            } else if (parmName.equals(EventConstants.PARM_VERSION)) {
+                info.setVersion(parmContent);
+            } else if (parmName.equals(EventConstants.PARM_PORT)) {
+                info.setPort(Integer.parseInt(parmContent));
             }
         }
 
-        if (firstIPAddress != null && !firstIPAddress.equals("")) {
-            int begin = new IPv4Address(firstIPAddress).getAddress();
-            int end = begin;
-            if (lastIPAddress != null && !lastIPAddress.equals("")) {
-                end = new IPv4Address(lastIPAddress).getAddress();
-                if (end < begin)
-                    end = begin;
-            }
+        if (isBlank(info.getFirstIPAddress())) return;
+        
+        int begin = new IPv4Address(info.getFirstIPAddress()).getAddress();
+        int end = begin;
+        if (!isBlank(info.getLastIPAddress())) {
+            end = new IPv4Address(info.getLastIPAddress()).getAddress();
+            if (end < begin)
+                end = begin;
+        }
 
-            SnmpPeerFactory factory = SnmpPeerFactory.getInstance();
+        StringBuffer sb;
 
-            for (int address = begin; address <= end; address++) {
-                try {
-                    InetAddress ip =
-                        InetAddress.getByAddress(new IPv4Address(address).getAddressBytes());
-
-                    factory.define(ip, communityString);
-                }
-                catch (Exception e) {
-                    log.warn("configureSNMPHandler: Failed to process IP address "
-                             + IPv4Address.addressToString(address)
-                             + ": " + e.getMessage(), e);
-                }
-            }
-
+        for (int address = begin; address <= end; address++) {
             try {
-                SnmpPeerFactory.saveCurrent();
+                InetAddress ip = InetAddress.getByAddress(new IPv4Address(address).getAddressBytes());
+                SnmpPeerFactory.getInstance().define(ip, info);
             }
             catch (Exception e) {
-                log.warn("configureSNMPHandler: Failed to store SNMP configuration"
-                         + ": " + e.getMessage(), e);
+                sb = new StringBuffer();
+                sb.append("configureSNMPHandler: Failed to process IP address ");
+                sb.append(IPv4Address.addressToString(address));
+                sb.append(": ");
+                log.warn(sb.toString(), e);
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("configureSNMPHandler: processing configure SNMP event for IP "
-                      + firstIPAddress + "-" + lastIPAddress + " completed.");
+        try {
+            SnmpPeerFactory.saveCurrent();
+        }
+        catch (Exception e) {
+            log.error("configureSNMPHandler: Failed to store SNMP configuration: ", e);
+        }
+
+        if (log.isDebugEnabled()) {
+            sb = new StringBuffer();
+            sb.append("configureSNMPHandler: processing configure SNMP event for IP ");
+            sb.append(info.getFirstIPAddress());
+            sb.append("-");
+            sb.append(info.getLastIPAddress());
+            sb.append(" completed.");
+            log.debug(sb.toString());
+        }
+    }
+
+    private boolean isBlank(String string) {
+        boolean blank = false;
+        if (string == null || string.length() == 0) blank = true;
+        return blank;
     }
 
     private void scheduleForCollection(Event event) {

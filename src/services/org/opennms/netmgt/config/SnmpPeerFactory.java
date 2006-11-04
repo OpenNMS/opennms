@@ -398,12 +398,76 @@ public final class SnmpPeerFactory {
 
         return result;
     }
+    
+    public class SnmpEventInfo {
+        private String m_firstIPAddress = null;
+        private String m_lastIPAddress = null;
+        private String m_communityString = null;
+        private int m_timeout = -1;
+        private int m_retryCount = -1;
+        private String m_version = null;
+        private int m_port = -1;
+        public String getCommunityString() {
+            return m_communityString;
+        }
+        public void setCommunityString(String communityString) {
+            m_communityString = communityString;
+        }
+        public String getFirstIPAddress() {
+            return m_firstIPAddress;
+        }
+        public void setFirstIPAddress(String firstIPAddress) {
+            m_firstIPAddress = firstIPAddress;
+        }
+        public String getLastIPAddress() {
+            return m_lastIPAddress;
+        }
+        public void setLastIPAddress(String lastIPAddress) {
+            m_lastIPAddress = lastIPAddress;
+        }
+        public int getRetryCount() {
+            return m_retryCount;
+        }
+        public void setRetryCount(int retryCount) {
+            m_retryCount = retryCount;
+        }
+        public int getTimeout() {
+            return m_timeout;
+        }
+        public void setTimeout(int timeout) {
+            m_timeout = timeout;
+        }
+        public String getVersion() {
+            return m_version;
+        }
+        public void setVersion(String version) {
+            m_version = version;
+        }
+        public int getPort() {
+            return m_port;
+        }
+        public void setPort(int port) {
+            m_port  = port;
+        }
+        public Definition createDef() {
+            Definition definition = new Definition();
+            if (getCommunityString() != null) definition.setReadCommunity(getCommunityString());
+            if (getVersion() != null && ("v1".equals(getVersion()) ||"v2c".equals(getVersion()))) {
+                definition.setVersion(getVersion());
+            }
+            if (getRetryCount() != -1) definition.setRetry(getRetryCount());
+            if (getTimeout() != -1) definition.setTimeout(getTimeout());
+            if (getPort() != -1) definition.setPort(getPort());
+            return definition;
+        }
+    }
+
 
     /**
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
      */
-    public void define(InetAddress ip, String community) throws UnknownHostException {
+    public void define(InetAddress ip, SnmpEventInfo info) throws UnknownHostException {
         Category log = ThreadCategory.getInstance(SnmpPeerFactory.class);
 
         // Convert IP to long so that it easily compared in range elements
@@ -411,25 +475,21 @@ public final class SnmpPeerFactory {
 
         // Copy the current definitions so that elements can be added and
         // removed
-        ArrayList definitions =
-            new ArrayList(m_config.getDefinitionCollection());
+        ArrayList definitions = new ArrayList(m_config.getDefinitionCollection());
 
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
         for (Iterator definitionsIterator = definitions.iterator();
              definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+            Definition currentDefinition = (Definition) definitionsIterator.next();
 
-            if ((currentDefinition.getReadCommunity() != null
-                 && currentDefinition.getReadCommunity().equals(community))
-                || (currentDefinition.getReadCommunity() == null
-                    && m_config.getReadCommunity() != null
-                    && m_config.getReadCommunity().equals(community))) {
+            if ( (currentDefinition.getReadCommunity() != null && 
+                    currentDefinition.getReadCommunity().equals(info.getCommunityString()))
+                || (currentDefinition.getReadCommunity() == null && m_config.getReadCommunity() != null
+                    && m_config.getReadCommunity().equals(info.getCommunityString()))) {
                 if (log.isDebugEnabled())
-                    log.debug("define: Found existing definition "
-                              + "with read-community " + community);
+                    log.debug("define: Found existing definition with read-community " + info.getCommunityString());
                 definition = currentDefinition;
                 break;
             }
@@ -438,8 +498,7 @@ public final class SnmpPeerFactory {
             if (log.isDebugEnabled())
                 log.debug("define: Creating new definition");
 
-            definition = new Definition();
-            definition.setReadCommunity(community);
+            definition = info.createDef();
             definitions.add(definition);
         }
         definition.addSpecific(ip.getHostAddress());
@@ -739,4 +798,8 @@ public final class SnmpPeerFactory {
         return peer;
 
     } // end getPeer();
+
+    public SnmpEventInfo createSnmpEventInfo() {
+        return new SnmpEventInfo();
+    }
 }
