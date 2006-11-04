@@ -10,6 +10,9 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -17,17 +20,14 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 public class ImportController extends SimpleFormController {
     
     public ImportController() {
-        super.setSessionForm(true);
         super.setCommandName("importData");
         super.setBindOnNewForm(true);
-        super.setSuccessView("/admin/import");
+        super.setSuccessView("debug");
     }
-
-    @Override
-    protected void doSubmitAction(Object arg0) throws Exception {
-        // TODO Auto-generated method stub
-        super.doSubmitAction(arg0);
-    }
+    
+    
+    
+    
 
     @Override
     protected Object formBackingObject(HttpServletRequest arg0) throws Exception {
