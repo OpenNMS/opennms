@@ -158,6 +158,42 @@
              </td>
           </tr>
 
+         <tr>
+            <td width="25%">
+               Timeout:
+            </td>
+            <td width="50%">
+               <input size=15 name="timeout"> (Optional)
+            </td>
+          </tr>
+
+         <tr>
+            <td width="25%">
+               Version:
+            </td>
+            <td width="50%">
+               <input size=15 name="version"> (Optional)
+            </td>
+          </tr>
+
+         <tr>
+            <td width="25%">
+               Retries:
+            </td>
+            <td width="50%">
+               <input size=15 name="retryCount"> (Optional)
+            </td>
+          </tr>
+
+         <tr>
+            <td width="25%">
+               Port:
+            </td>
+            <td width="50%">
+               <input size=15 name="port"> (Optional)
+            </td>
+          </tr>
+
           <tr>
              <td>
                 <input type="submit" value="Submit" onClick="verifyAndSubmit()">
@@ -174,7 +210,7 @@
       <h3>Updating SNMP Community Names</h3>
 
       <p>In the boxes on the left, enter in a specific IP address and community string, 
-         or a range of IP addresses and a community string.
+         or a range of IP addresses and a community string, and other SNMP parameters.
       </p>
 
       <p>OpenNMS will optimize this list, so enter the most generic first (i.e. the largest range) 

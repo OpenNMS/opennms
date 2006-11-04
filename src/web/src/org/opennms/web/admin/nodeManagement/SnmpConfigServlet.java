@@ -73,6 +73,10 @@ public class SnmpConfigServlet extends HttpServlet {
         String firstIPAddress = request.getParameter("firstIPAddress");
         String lastIPAddress = request.getParameter("lastIPAddress");
         String communityString = request.getParameter("communityString");
+        String timeout = request.getParameter("timeout");
+        String version = request.getParameter("version");
+        String retryCount = request.getParameter("retryCount");
+        String port = request.getParameter("port");
         if (log.isDebugEnabled())
             log.debug("doPost: firstIPAddress=" + firstIPAddress + ", "
                       + "lastIPAddress=" + lastIPAddress + ", and "
@@ -106,6 +110,38 @@ public class SnmpConfigServlet extends HttpServlet {
         parmValue.setContent(communityString);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
+	if ( timeout != null) {
+	    eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_TIMEOUT);
+            parmValue = new Value();
+            parmValue.setContent(timeout);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+	}
+	if ( port != null) {
+	    eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_PORT);
+            parmValue = new Value();
+            parmValue.setContent(port);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+	}
+	if ( retryCount != null) {
+	    eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_RETRY_COUNT);
+            parmValue = new Value();
+            parmValue.setContent(retryCount);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+	}
+	if ( version != null) {
+	    eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_VERSION);
+            parmValue = new Value();
+            parmValue.setContent(version);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+	}
 
         try {
             EventProxy eventProxy = Vault.createEventProxy();
