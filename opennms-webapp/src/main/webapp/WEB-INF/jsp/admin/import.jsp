@@ -1,9 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib tagdir="/WEB-INF/tags/tree" prefix="tree" %>
+<%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Application" />
+	<jsp:param name="title" value="Application" /> 
 	<jsp:param name="headTitle" value="Application" />
 	<jsp:param name="breadcrumb"
                value="<a href='admin/index.jsp'>Admin</a>" />
@@ -12,42 +16,58 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<h3>Add Nodes</h3>
- <a href="#">Add node</a>
+<h3>Manually Provisioned Nodes</h3>
 
-<form method="post" action="admin/import.htm">
-<table>
-  <c:forEach items="${importData.node}" var="node" varStatus="nodeIter">
-    <tr>
-      <td colspan="3"><input type="text" name="node[${nodeIter.index}].nodeLabel"/>${node.nodeLabel}</td>
-      <td><a href="#">Add Category</a></td>
-      <td><a href="#">Add Interface</a></td>
-    </tr>
-      <c:forEach items="${node.category}" var="category" varStatus="catIter">
-        <tr>
-          <td width="2%">&nbsp;</td>
-          <td colspan="4"><input type="text" name="node[${nodeIter.index}].category[${catIter.index}].name"/>${category.name}</td>
-        </tr>
-      </c:forEach>
-      <c:forEach items="${node.interface}" var="ipInterface" varStatus="ifIter">
-        <tr>
-          <td width="2%">&nbsp;</td>
-          <td colspan="3"><input type="text" name="node[${nodeIter.index}].interface[${ifIter.index}].ipAddr"/>${ipInterface.ipAddr}</td>
-          <td><a href="#">Add Service</a></td>
-        </tr>
-        <c:forEach items="${ipInterface.monitoredService}" var="svc" varStatus="svcIter">
-          <tr>
-            <td width="2%">&nbsp;</td>
-            <td width="2%">&nbsp;</td>
-            <td colspan="3">
-              <input type="text" name="node[${nodeIter.index}].interface[${ifIter.index}].monitoredService[${svcIter.index}].serviceName"/>
-            ${svc.serviceName}
-            </td> 
-        </c:forEach>
-      </c:forEach>
-  </c:forEach>
-</table>
+ 
+
+ <c:set var="editingNode" value="node[0].interface[1]" scope="request" />
+  
+ <tree:form commandName="importData"> 
+ 
+ <tree:action node="${importData}" label="Add Node" action="addNode"/> 
+
+ <tree:tree root="${importData}" childProperty="node" var="node" varStatus="nodeIter">
+    <!-- Form for editing node fields -->
+    <tree:nodeForm root="${node}">
+      <tree:field node="${node}" label="Node" property="nodeLabel" />
+      <tree:field node="${node}" label="ForeignId" property="foreignId" />
+      <tree:select node="${node}" label="Primary Interface" property="parentNodeLabel" itemLabel="ipAddr" items="${node.interface}" />
+      <tree:action node="${node}" label="Add Interface" action="addInterface" />
+      <tree:action node="${node}" label="Add Category" action="addCategory" />
+    </tree:nodeForm> 
+    
+    <!--  Tree of interface under the node -->
+    <tree:tree root="${node}" childProperty="interface" var="ipInterface" varStatus="ipIter">
+    
+      <!-- Form for editing an interface -->
+      <tree:nodeForm root="${interface}">
+        <tree:field node="${ipInterface}" label="IP Interface" property="ipAddr" />
+        <tree:field node="${ipInterface}" label="Description" property="descr" />
+      <tree:action node="$[ipInterface}" label="Add Service" action="addService" />
+      </tree:nodeForm>
+
+      <!-- Tree of services under the interface -->
+      <tree:tree root="${ipInterface}" childProperty="monitoredService" var="svc" varStatus="svcIter">
+      
+        <!--  Form for editing a service -->
+        <tree:nodeForm root="${svc}">  
+            <tree:field node="${svc}" label="Service" property="serviceName" />
+        </tree:nodeForm>
+      </tree:tree>
+
+    </tree:tree>
+    
+    <!--  Tree of categories for a node -->
+    <tree:tree root="${node}" childProperty="category" var="category" varStatus="catIter">
+    
+      <!--  Form for editing a category -->
+      <tree:nodeForm root="${category}">
+        <tree:field node="${category}" label="Category" property="name" />
+      </tree:nodeForm>
+      
+    </tree:tree>
+ </tree:tree>
 <input type="submit"/>
-</form>
 
+</tree:form> 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
