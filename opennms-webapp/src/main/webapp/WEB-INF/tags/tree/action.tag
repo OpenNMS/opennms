@@ -9,6 +9,6 @@
 
 <c:set var="suffixed" value="${editingNode}." scope="page" />
 <c:if test="${nestedPath != suffixed}">
-  <a href="javascript:submitTreeForm('${org_opennms_web_treeFormName}', '${nestedPath}', '${action}' })">${label}</a>
+  <a href="javascript:submitTreeForm('${org_opennms_web_treeFormName}', '${nestedPath}', '${action}')">${label}</a>
 </c:if>
 
