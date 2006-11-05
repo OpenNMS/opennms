@@ -110,7 +110,7 @@ public class SnmpConfigServlet extends HttpServlet {
         parmValue.setContent(communityString);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
-	if ( timeout != null) {
+	if ( timeout.length() > 0) {
 	    eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_TIMEOUT);
             parmValue = new Value();
@@ -118,7 +118,7 @@ public class SnmpConfigServlet extends HttpServlet {
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 	}
-	if ( port != null) {
+	if ( port.length() > 0 ) {
 	    eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_PORT);
             parmValue = new Value();
@@ -126,7 +126,7 @@ public class SnmpConfigServlet extends HttpServlet {
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 	}
-	if ( retryCount != null) {
+	if ( retryCount.length() > 0 ) {
 	    eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_RETRY_COUNT);
             parmValue = new Value();
@@ -134,7 +134,7 @@ public class SnmpConfigServlet extends HttpServlet {
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 	}
-	if ( version != null) {
+	if ( version.length() > 0 ) {
 	    eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_VERSION);
             parmValue = new Value();
