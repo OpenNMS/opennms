@@ -48,7 +48,6 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -194,34 +193,32 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         // print out the uei
         //
-        if (log.isDebugEnabled()) {
-            log.debug("received event, uei = " + event.getUei());
+        if (log().isDebugEnabled()) {
+            log().debug("received event, uei = " + event.getUei());
         }
 
 	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-		log.warn("Reloading Collectd config factory");
+		log().warn("Reloading Collectd config factory");
 		//Reload the collectd configuration
 		try {
 			CollectdConfigFactory.reload();
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.error("Failed to reload CollectdConfigFactory because "+e.getMessage());
+			log().error("Failed to reload CollectdConfigFactory because "+e.getMessage());
 		}
 		Collectd.getInstance().refreshServicePackages();
 	}
 	else if(!event.hasNodeid() && !event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) 
 	{
 		// For all other events, if the event doesn't have a nodeId it can't be processed.
-		log.info("no database node id found, discarding event");
+		log().info("no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("no interface found, discarding event");
+                log().info("no interface found, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
             }
@@ -229,7 +226,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("no interface found, discarding event");
+                log().info("no interface found, discarding event");
             } else {
                 primarySnmpInterfaceChangedHandler(event);
             }
@@ -237,7 +234,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("no interface found, discarding event");
+                log().info("no interface found, discarding event");
             } else {
                 reinitializePrimarySnmpInterfaceHandler(event);
             }
@@ -245,7 +242,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("no interface found, discarding event");
+                log().info("no interface found, discarding event");
             } else {
                 interfaceReparentedHandler(event);
             }
@@ -256,7 +253,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("no interface found, discarding event");
+                log().info("no interface found, discarding event");
             } else {
                 interfaceDeletedHandler(event);
             }
@@ -264,11 +261,11 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("no interface found, discarding event");
+                log().info("no interface found, discarding event");
             } else if (event.getService() == null || event.getService().length() == 0) {
                 // If there is no service then it cannot be processed
                 //
-                log.info("no service found, discarding event");
+                log().info("no service found, discarding event");
             } else {
                 serviceDeletedHandler(event);
             }
@@ -303,10 +300,8 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event to process.
      */
     private void reinitializePrimarySnmpInterfaceHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         if (event.getInterface() == null) {
-            log.error("reinitializePrimarySnmpInterface event is missing an interface.");
+            log().error("reinitializePrimarySnmpInterface event is missing an interface.");
             return;
         }
 
@@ -324,8 +319,8 @@ final class BroadcastEventProcessor implements EventListener {
                 CollectableService cSvc = (CollectableService) iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (log.isDebugEnabled())
-                    log.debug("Comparing CollectableService ip address = " + addr.getHostAddress() + " and event ip interface = " + event.getInterface());
+                if (log().isDebugEnabled())
+                    log().debug("Comparing CollectableService ip address = " + addr.getHostAddress() + " and event ip interface = " + event.getInterface());
                 if (addr.getHostAddress().equals(event.getInterface())) {
                     synchronized (cSvc) {
                         // Got a match! Retrieve the CollectorUpdates object
@@ -335,8 +330,8 @@ final class BroadcastEventProcessor implements EventListener {
 
                         // Now set the reinitialization flag
                         updates.markForReinitialization();
-                        if (log.isDebugEnabled())
-                            log.debug("reinitializePrimarySnmpInterfaceHandler: marking " + event.getInterface() + " for reinitialization for service SNMP.");
+                        if (log().isDebugEnabled())
+                            log().debug("reinitializePrimarySnmpInterfaceHandler: marking " + event.getInterface() + " for reinitialization for service SNMP.");
                     }
                 }
             }
@@ -355,13 +350,12 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void nodeGainedServiceHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
         // Currently only support SNMP data collection.
         //
 	// TODO This should not be hard coded
         if (!(event.getService().equals("SNMP") || event.getService().equals("SNMPv1") || event.getService().equals("SNMPv2"))) {
-            if (log.isDebugEnabled())
-                log.debug("nodeGainedServiceHandler: Datacollection not scheduled for service "+event.getService() +", currently only supporting SNMP service for collection.");
+            if (log().isDebugEnabled())
+                log().debug("nodeGainedServiceHandler: Datacollection not scheduled for service "+event.getService() +", currently only supporting SNMP service for collection.");
             return;
         }
 
@@ -388,10 +382,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void primarySnmpInterfaceChangedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
+        if (log().isDebugEnabled())
+            log().debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
 
         // Currently only support SNMP data collection.
         //
@@ -457,8 +449,8 @@ final class BroadcastEventProcessor implements EventListener {
 
                             // Now set the deleted flag
                             updates.markForDeletion();
-                            if (log.isDebugEnabled())
-                                log.debug("primarySnmpInterfaceChangedHandler: marking " + oldPrimaryIfAddr + " as deleted for service SNMP.");
+                            if (log().isDebugEnabled())
+                                log().debug("primarySnmpInterfaceChangedHandler: marking " + oldPrimaryIfAddr + " as deleted for service SNMP.");
                         }
 
                         // Now safe to remove the collectable service from
@@ -473,8 +465,8 @@ final class BroadcastEventProcessor implements EventListener {
         //
         scheduleForCollection(event);
 
-        if (log.isDebugEnabled())
-            log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
+        if (log().isDebugEnabled())
+            log().debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
     }
 
     /**
@@ -493,9 +485,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void interfaceReparentedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
+        if (log().isDebugEnabled())
+            log().debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -535,7 +526,7 @@ final class BroadcastEventProcessor implements EventListener {
         // Only proceed provided we have both an old and a new nodeId
         //
         if (oldNodeIdStr == null || newNodeIdStr == null) {
-            log.warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
+            log().warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
             return;
         }
 
@@ -560,8 +551,8 @@ final class BroadcastEventProcessor implements EventListener {
                 if (addr.getHostAddress().equals(event.getInterface())) {
                     synchronized (cSvc) {
                         // Got a match!
-                        if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: got a CollectableService match for " + event.getInterface());
+                        if (log().isDebugEnabled())
+                            log().debug("interfaceReparentedHandler: got a CollectableService match for " + event.getInterface());
 
                         // Retrieve the CollectorUpdates object associated with
                         // this CollectableService.
@@ -569,15 +560,15 @@ final class BroadcastEventProcessor implements EventListener {
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr);
-                        if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
+                        if (log().isDebugEnabled())
+                            log().debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
                     }
                 }
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
+        if (log().isDebugEnabled())
+            log().debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
     }
 
     /**
@@ -588,8 +579,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void nodeDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         int nodeId = (int) event.getNodeid();
 
         // Iterate over the collectable service list and mark any entries
@@ -622,8 +611,8 @@ final class BroadcastEventProcessor implements EventListener {
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid " + nodeId + " completed.");
+        if (log().isDebugEnabled())
+            log().debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid " + nodeId + " completed.");
     }
 
     /**
@@ -634,8 +623,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void interfaceDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         int nodeId = (int) event.getNodeid();
         String ipAddr = event.getInterface();
 
@@ -671,8 +658,8 @@ final class BroadcastEventProcessor implements EventListener {
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("interfaceDeletedHandler: processing of interfaceDeleted event for " + nodeId + "/" + ipAddr + " completed.");
+        if (log().isDebugEnabled())
+            log().debug("interfaceDeletedHandler: processing of interfaceDeleted event for " + nodeId + "/" + ipAddr + " completed.");
     }
 
     /**
@@ -683,8 +670,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void serviceDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         // Currently only support SNMP data collection.
         //
         if (!event.getService().equals("SNMP") && !event.getService().equals("SNMPv1") && !event.getService().equals("SNMPv2"))
@@ -710,8 +695,8 @@ final class BroadcastEventProcessor implements EventListener {
                 if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr) && cSvc.getServiceName().equals(svcName)))
                     continue;
 
-        	if (log.isDebugEnabled())
-            		log.debug("serviceDeletedHandler: deleting " + nodeId + "/" + ipAddr + "/" + svcName);
+        	if (log().isDebugEnabled())
+            		log().debug("serviceDeletedHandler: deleting " + nodeId + "/" + ipAddr + "/" + svcName);
 
                 synchronized (cSvc) {
                     // Retrieve the CollectorUpdates object associated with
@@ -731,8 +716,8 @@ final class BroadcastEventProcessor implements EventListener {
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+        if (log().isDebugEnabled())
+            log().debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
     }
 
     /**
@@ -741,10 +726,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @param event The event to process.
      */
     protected void configureSNMPHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("configureSNMPHandler: processing configure SNMP event...");
+        if (log().isDebugEnabled())
+            log().debug("configureSNMPHandler: processing configure SNMP event...");
 
         // Extract the IP adddress range and SNMP community string from the
         // event parms.
@@ -775,13 +758,13 @@ final class BroadcastEventProcessor implements EventListener {
             } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
                 info.setCommunityString(parmContent);
             } else if (parmName.equals(EventConstants.PARM_RETRY_COUNT)) {
-                info.setRetryCount(Integer.parseInt(parmContent));
+                info.setRetryCount(computeIntValue(parmContent));
             } else if (parmName.equals(EventConstants.PARM_TIMEOUT)) {
-                info.setTimeout(Integer.parseInt(parmContent));
+                info.setTimeout(computeIntValue(parmContent));
             } else if (parmName.equals(EventConstants.PARM_VERSION)) {
                 info.setVersion(parmContent);
             } else if (parmName.equals(EventConstants.PARM_PORT)) {
-                info.setPort(Integer.parseInt(parmContent));
+                info.setPort(computeIntValue(parmContent));
             }
         }
 
@@ -807,7 +790,7 @@ final class BroadcastEventProcessor implements EventListener {
                 sb.append("configureSNMPHandler: Failed to process IP address ");
                 sb.append(IPv4Address.addressToString(address));
                 sb.append(": ");
-                log.warn(sb.toString(), e);
+                log().warn(sb.toString(), e);
             }
         }
 
@@ -815,18 +798,33 @@ final class BroadcastEventProcessor implements EventListener {
             SnmpPeerFactory.saveCurrent();
         }
         catch (Exception e) {
-            log.error("configureSNMPHandler: Failed to store SNMP configuration: ", e);
+            log().error("configureSNMPHandler: Failed to store SNMP configuration: ", e);
         }
 
-        if (log.isDebugEnabled()) {
+        if (log().isDebugEnabled()) {
             sb = new StringBuffer();
             sb.append("configureSNMPHandler: processing configure SNMP event for IP ");
             sb.append(info.getFirstIPAddress());
             sb.append("-");
             sb.append(info.getLastIPAddress());
             sb.append(" completed.");
-            log.debug(sb.toString());
+            log().debug(sb.toString());
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    private int computeIntValue(String parmContent) throws IllegalArgumentException {
+        int val = 0;
+        try {
+            val = Integer.parseInt(parmContent);
+        } catch (NumberFormatException e) {
+            log().error("computeIntValue: parm value passed in the event isn't a valid number." ,e);
+            throw new IllegalArgumentException(e);
+        }
+        return val;
     }
 
     private boolean isBlank(String string) {
