@@ -151,7 +151,7 @@
   <jsp:param name="title" value="Path Outline" />
   <jsp:param name="headTitle" value="Path Outline" />
   <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="breadcrumb" value="a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>" />
   <jsp:param name="breadcrumb" value="Path Outline" />
