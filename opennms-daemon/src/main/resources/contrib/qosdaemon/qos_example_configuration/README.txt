@@ -14,3 +14,5 @@ to get the fault management interface working.
 The script is written to work with Fedora Core 4
 Check the script to ensure it deploys to the correct locations for your 
 distribution.
+
+See qosdconfiguration.html for description
