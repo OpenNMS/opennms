@@ -10,23 +10,19 @@ public interface ManualProvisioningService {
     
     ModelImport getProvisioningGroup(String name);
     
-    ModelImport createProvisiongGroup(String groupName);
+    ModelImport createProvisioningGroup(String name);
+    
+    ModelImport saveProvisioningGroup(String groupName, ModelImport groupData);
     
     ModelImport addNewNodeToGroup(String groupName, String nodeLabel);
     
-    ModelImport setNodeLabel(String groupName, String pathToNode, String newLabel);
-    
     ModelImport addCategoryToNode(String groupName, String pathToNode, String categoryName);
-    
-    ModelImport setCategoryName(String groupName, String pathToCategory, String categoryName);
     
     ModelImport addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
     
-    ModelImport setIpAddress(String groupName, String pathToInterface, String ipAddr);
-    
     ModelImport addServiceToInterface(String groupName, String pathToInterface, String serviceName);
     
-    ModelImport setServiceName(String groupName, String pathToService, String serviceName);
+    ModelImport deletePath(String groupName, String pathToDelete);
     
     void importProvisioningGroup(String groupName);
 

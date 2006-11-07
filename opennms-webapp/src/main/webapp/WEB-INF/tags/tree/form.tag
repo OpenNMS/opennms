@@ -8,8 +8,7 @@
 
 <script language="Javascript" type="text/javascript" >
 	function submitTreeForm(formName, target, action) {
-	    alert('submitTreeForm: '+formName+' '+target+' '+action);
-	    document[formName].target.value = target;
+	    document[formName].formPath.value = target;
 	    document[formName].action.value = action;
 		document[formName].submit();
 	}
@@ -18,9 +17,15 @@
 
 <form:form commandName="${commandName}" name="${commandName}"> 
   
-  <input type="hidden" name="target" />
-  <input type="hidden" name="action" />
-  <c:set var="org_opennms_web_treeFormName" value="${commandName}" scope="request" />
+  <c:set var="treeFormName" value="${commandName}" scope="request" />
+  <c:set var="treeFormModel" value="${requestScope[commandName]}" scope="request" />
   
-  <jsp:doBody />
+  <form:hidden path="formPath"/>
+  <form:hidden path="action" />
+
+  <spring:nestedPath path="formData">
+
+    <jsp:doBody />
+  
+  </spring:nestedPath>
 </form:form>

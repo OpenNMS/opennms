@@ -1,4 +1,3 @@
-<%@ attribute name="node" type="java.lang.Object" rtexprvalue="true" required="true" %>
 <%@ attribute name="label" required="true" %>
 <%@ attribute name="property" required="true" %>
 <%@ attribute name="items" type="java.lang.Object" rtexprvalue="true" required="true" %>

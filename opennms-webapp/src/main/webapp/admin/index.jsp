@@ -148,6 +148,7 @@
         <li><a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
         <li><a HREF="admin/categories.htm">Manage node categories</a></li>
         <li><a HREF="admin/applications.htm">Manage applications</a></li>
+        <li><a HREF="admin/import.htm">Manually Provisioned Nodes</a></li>
       </ul>
       <!-- security link -->
     </div>
@@ -237,6 +238,11 @@
 
 	<p><b>Manage applications</b> allows you to manage applications (groups
 	  of services on interfaces).
+	</p>
+	
+	<p><b>Manually Provisioned Nodes</b> allows you to manually add nodes interfaces
+	and services to OpenNMS.  The creation of these nodes are managed completely by you 
+	rather by creating an import file and sending the data to the OpenNMS importer.
 	</p>
 
         <p><b>Notification Status</b> provides both a visual reminder as to whether your users 

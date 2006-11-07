@@ -1,4 +1,3 @@
-<%@ attribute name="node" type="java.lang.Object" rtexprvalue="true" required="true" %>
 <%@ attribute name="label" required="true" %>
 <%@ attribute name="action" required="true" %>
 
@@ -7,8 +6,8 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
-<c:set var="suffixed" value="${editingNode}." scope="page" />
-<c:if test="${nestedPath != suffixed}">
-  <a href="javascript:submitTreeForm('${org_opennms_web_treeFormName}', '${nestedPath}', '${action}')">${label}</a>
+<c:set var="nestedPathSansDot" value="${fn:substring(nestedPath, 0, fn:length(nestedPath)-1)}" scope="page" />
+<c:if test="${nestedPathSansDot != treeFormModel.currentNode}">
+  <a href="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', '${action}')">${label}</a>
 </c:if>
 
