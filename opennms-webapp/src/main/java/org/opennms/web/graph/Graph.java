@@ -206,4 +206,12 @@ public class Graph implements Comparable {
 	return m_graph.compareTo(otherGraph.m_graph);
     }
 
+    public String getGraphWidth() {
+        return m_graph.getGraphWidth();
+    }
+
+    public String getGraphHeight() {
+        return m_graph.getGraphHeight();
+    }
+
 }

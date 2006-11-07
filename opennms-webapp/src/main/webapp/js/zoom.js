@@ -214,7 +214,6 @@ function zoomGraphObjRefresh() {
 	//  constants
 	var cZoomBoxName = "zoomBox";
 
-	// Provided by OpenNMS results.jsp
 	// var cZoomBoxRightOffset = -16;
 	// var cZoomBoxTopOffsetWText = -75;
 
@@ -235,8 +234,8 @@ function zoomGraphObjRefresh() {
 	var height;
 
 	// zoomable selection area Width and Height
-	var zoomBoxWidth;
-	var zoomBoxHeight;
+	// var zoomBoxWidth;
+	// var zoomBoxHeight;
 
 	imgObject = this.imgObject;
 	//imgSource = imgObject.src;
@@ -247,10 +246,23 @@ function zoomGraphObjRefresh() {
 	height = imgObject.height;
 
 	// get the graph area size from the url
-//	zoomBoxWidth = parseInt(gUrlObj.getUrlParameterValue("graph_width")) + 1;
-//	zoomBoxHeight = parseInt(gUrlObj.getUrlParameterValue("graph_height")) + 1;
-	zoomBoxWidth = 401;
-	zoomBoxHeight = 101;
+	if ( gUrlObj.getUrlParameterValue("graph_width") != null ) {
+		zoomBoxWidth = parseInt(gUrlObj.getUrlParameterValue("graph_width")) + 1;
+		}
+	else {
+		zoomBoxWidth = 401;
+		}
+	if ( gUrlObj.getUrlParameterValue("graph_height") != null ) {
+		zoomBoxHeight = parseInt(gUrlObj.getUrlParameterValue("graph_height")) + 1;
+		}
+	else {
+		zoomBoxHeight = 101;
+		}
+	
+	// zoomBoxWidth = parseInt(gUrlObj.getUrlParameterValue("graph_width")) + 1;
+	// zoomBoxHeight = parseInt(gUrlObj.getUrlParameterValue("graph_height")) + 1;
+	// zoomBoxWidth = 401;
+	// zoomBoxHeight = 101;
 
 	// Get absolute image position relative to the overall window.
 	//

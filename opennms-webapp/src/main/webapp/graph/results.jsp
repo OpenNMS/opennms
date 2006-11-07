@@ -88,8 +88,8 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
     out.println("var gZoomBoxTopOffsetWOText = 31;");
     out.println("var gZoomBoxRightOffset = -22;");
 } else if ("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy".equals(strategy_name)) {
-    out.println("var gZoomBoxTopOffsetWOText = -72;");
-    out.println("var gZoomBoxRightOffset = -30;");
+    out.println("var cZoomBoxTopOffsetWText = -72;");
+    out.println("var cZoomBoxRightOffset = -30;");
 } else {
     throw new ServletException("Unknown RRD strategy: " + strategy_name);
 }
@@ -133,7 +133,7 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
 
     <c:when test="${!empty results.graphs}"> 
       <c:forEach var="graph" items="${results.graphs}">
-	<a href="graph/results?zoom=true&type=<c:out value="${param.type}"/>&resourceType=<c:out value="${graph.resourceType}"/>&resource=<c:out value="${graph.resource}"/>&amp;node=<c:out value="${graph.nodeId}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties">
+	<a href="graph/results?zoom=true&type=<c:out value="${param.type}"/>&resourceType=<c:out value="${graph.resourceType}"/>&resource=<c:out value="${graph.resource}"/>&amp;node=<c:out value="${graph.nodeId}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;graph_width=<c:out value="${graph.graphWidth}"/>&amp;graph_height=<c:out value="${graph.graphHeight}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties">
           <img src="<c:out value="${graph.graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties"/>
 	</a>
 	<br/>

@@ -57,10 +57,14 @@ public class PrefabGraph extends Object implements Comparable {
 
     private String m_description;
 
+    private String m_graphWidth;
+
+    private String m_graphHeight;
+
     public PrefabGraph(String name, String title, String[] columns,
             String command, String[] externalValues,
             String[] propertiesValues, int order, String type,
-            String description) {
+            String description, String graphWidth, String graphHeight) {
         if (name == null || title == null || columns == null
                 || command == null || externalValues == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -79,6 +83,12 @@ public class PrefabGraph extends Object implements Comparable {
 
         // description can be null
         m_description = description;
+
+        // width can be null
+        m_graphWidth = graphWidth;
+
+        // height can be null
+        m_graphHeight = graphHeight;
     }
 
     public String getName() {
@@ -118,6 +128,16 @@ public class PrefabGraph extends Object implements Comparable {
     /** Can be null. */
     public String getDescription() {
         return m_description;
+    }
+
+    /** Can be null. */
+    public String getGraphWidth() {
+        return m_graphWidth;
+    }
+
+    /** Can be null. */
+    public String getGraphHeight() {
+        return m_graphHeight;
     }
 
     public int compareTo(Object obj) {

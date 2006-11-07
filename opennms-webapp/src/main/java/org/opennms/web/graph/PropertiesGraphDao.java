@@ -212,11 +212,17 @@ public class PropertiesGraphDao implements GraphDao {
 
         // can be null
         String description = getReportProperty(props, key, "description", false);
+
+        // can be null
+        String graphWidth = getReportProperty(props, key, "width", false);
+
+        // can be null
+        String graphHeight = getReportProperty(props, key, "height", false);
         
         return new PrefabGraph(key, title, columns,
                 command, externalValues,
                 propertiesValues, order, type,
-                description);
+                description, graphWidth, graphHeight);
 
     }
 
