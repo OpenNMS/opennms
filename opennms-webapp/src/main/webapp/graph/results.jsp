@@ -128,7 +128,7 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
 	  #why {position: static; width: auto}
 	</style>
 
-        <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties&amp;"/>
+        <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;graph_width=<c:out value="${results.graphs[0].graphWidth}"/>&amp;graph_height=<c:out value="${results.graphs[0].graphHeight}"/>"/>
     </c:when>
 
     <c:when test="${!empty results.graphs}"> 
