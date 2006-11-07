@@ -213,6 +213,14 @@ public class PropertiesGraphDao implements GraphDao {
         // can be null
         String description = getReportProperty(props, key, "description", false);
 
+
+	// TODO: Right now a "width" and "height" property is required
+	// in order to get zoom to work properly on non-standard sized
+	// graphs. A more elegant solution would be to parse the
+	// command string and look for --width and --height and set
+	// the following two variables automagically, without having
+	// to rely on a config file.
+
         // can be null
         String graphWidth = getReportProperty(props, key, "width", false);
 
