@@ -246,24 +246,15 @@ function zoomGraphObjRefresh() {
 	height = imgObject.height;
 
 	// get the graph area size from the url
-	if ( gUrlObj.getUrlParameterValue("graph_width") != null ) {
-		zoomBoxWidth = parseInt(gUrlObj.getUrlParameterValue("graph_width")) + 1;
-		}
-	else {
-		zoomBoxWidth = 401;
-		}
-	if ( gUrlObj.getUrlParameterValue("graph_height") != null ) {
-		zoomBoxHeight = parseInt(gUrlObj.getUrlParameterValue("graph_height")) + 1;
-		}
-	else {
-		zoomBoxHeight = 101;
-		}
 	
-	// zoomBoxWidth = parseInt(gUrlObj.getUrlParameterValue("graph_width")) + 1;
-	// zoomBoxHeight = parseInt(gUrlObj.getUrlParameterValue("graph_height")) + 1;
-	// zoomBoxWidth = 401;
-	// zoomBoxHeight = 101;
-
+	zoomBoxWidth = parseInt(gUrlObj.getUrlParameterValue("graph_width")) + 1;
+	zoomBoxHeight = parseInt(gUrlObj.getUrlParameterValue("graph_height")) + 1;
+	if (isNaN(zoomBoxWidth)) {
+	    zoomBoxWidth = 401;
+	}
+	if (isNaN(zoomBoxHeight)) {
+	    zoomBoxHeight = 101;
+	}
 	// Get absolute image position relative to the overall window.
 	//
 	imagePos = pos(document.getElementById("zoomGraphImage"));
