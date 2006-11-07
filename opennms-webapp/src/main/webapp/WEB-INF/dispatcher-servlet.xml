@@ -13,6 +13,7 @@
   </bean>
   
   <bean name="/admin/import.htm" class="org.opennms.web.controller.ImportController">
+    <property name="provisioningService" ref="manualProvisioningService" />
   </bean>
   
   <bean name="/admin/applications.htm"

@@ -17,41 +17,37 @@
 </jsp:include>
 
 <h3>Manually Provisioned Nodes</h3>
-
- 
-
- <c:set var="editingNode" value="node[0].interface[1]" scope="request" />
   
- <tree:form commandName="importData"> 
+ <tree:form commandName="nodeEditForm"> 
  
- <tree:action node="${importData}" label="Add Node" action="addNode"/> 
+ <tree:action label="Add Node" action="addNode"/> 
 
- <tree:tree root="${importData}" childProperty="node" var="node" varStatus="nodeIter">
+ <tree:tree root="${nodeEditForm.formData}" childProperty="node" var="node" varStatus="nodeIter">
     <!-- Form for editing node fields -->
-    <tree:nodeForm root="${node}">
-      <tree:field node="${node}" label="Node" property="nodeLabel" />
-      <tree:field node="${node}" label="ForeignId" property="foreignId" />
-      <tree:select node="${node}" label="Primary Interface" property="parentNodeLabel" itemLabel="ipAddr" items="${node.interface}" />
-      <tree:action node="${node}" label="Add Interface" action="addInterface" />
-      <tree:action node="${node}" label="Add Category" action="addCategory" />
+    <tree:nodeForm>
+      <tree:field label="Node" property="nodeLabel" />
+      <tree:field label="ForeignId" property="foreignId" />
+      <!-- tree:select label="Primary Interface" property="parentNodeLabel" itemLabel="ipAddr" items="${node.interface}" / -->
+      <tree:action label="Add Interface" action="addInterface" />
+      <tree:action label="Add Category" action="addCategory" />
     </tree:nodeForm> 
     
     <!--  Tree of interface under the node -->
     <tree:tree root="${node}" childProperty="interface" var="ipInterface" varStatus="ipIter">
     
       <!-- Form for editing an interface -->
-      <tree:nodeForm root="${interface}">
-        <tree:field node="${ipInterface}" label="IP Interface" property="ipAddr" />
-        <tree:field node="${ipInterface}" label="Description" property="descr" />
-      <tree:action node="$[ipInterface}" label="Add Service" action="addService" />
+      <tree:nodeForm>
+        <tree:field label="IP Interface" property="ipAddr" />
+        <tree:field label="Description" property="descr" />
+        <tree:action label="Add Service" action="addService" />
       </tree:nodeForm>
 
       <!-- Tree of services under the interface -->
       <tree:tree root="${ipInterface}" childProperty="monitoredService" var="svc" varStatus="svcIter">
       
         <!--  Form for editing a service -->
-        <tree:nodeForm root="${svc}">  
-            <tree:field node="${svc}" label="Service" property="serviceName" />
+        <tree:nodeForm>  
+            <tree:field label="Service" property="serviceName" />
         </tree:nodeForm>
       </tree:tree>
 
@@ -61,13 +57,12 @@
     <tree:tree root="${node}" childProperty="category" var="category" varStatus="catIter">
     
       <!--  Form for editing a category -->
-      <tree:nodeForm root="${category}">
-        <tree:field node="${category}" label="Category" property="name" />
+      <tree:nodeForm>
+        <tree:field label="Category" property="name" />
       </tree:nodeForm>
       
     </tree:tree>
  </tree:tree>
-<input type="submit"/>
 
 </tree:form> 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

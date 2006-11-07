@@ -1,28 +1,25 @@
 
-<%@ attribute name="root" type="java.lang.Object" rtexprvalue="true" required="false" %>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
 
-<c:set var="suffixed" value="${editingNode}." scope="page" />
+<c:set var="nestedPathSansDot" value="${fn:substring(nestedPath, 0, fn:length(nestedPath)-1)}" scope="page" />
 <c:choose>
-  <c:when test="${nestedPath == suffixed}">
-    <input type="hidden" value="${editingNode}" />
+  <c:when test="${nestedPathSansDot == treeFormModel.currentNode}">
+    <spring:bind ignoreNestedPath="true" path="${treeFormName}.currentNode">
+	    <input type="hidden" name="${status.expression}" value="${treeFormModel.currentNode}" />
+    </spring:bind>
     <jsp:doBody /> 
-    <input type="button" value="Save" onclick="javascript:submitTreeForm('${org_opennms_web_treeFormName}', '${nestedPath}', 'save')"/>
+    <input type="button" value="Save" onclick="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'save')"/>
   </c:when>
   <c:otherwise>
   
-    <a href="javascript:submitTreeForm('${org_opennms_web_treeFormName}', '${nestedPath}', 'delete')"><img src="images/trash.gif"/></a>
+    <a href="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'delete')"><img src="images/trash.gif"/></a>
     
-    <c:url var="editUrl" value="/admin/import.htm" scope="page">
-      <c:param name="path" value="${nestedPath}"/>
-      <c:param name="action" value="edit"/>
-    </c:url>
-    <a href="javascript:submitTreeForm('${org_opennms_web_treeFormName}', '${nestedPath}', 'edit')"><img src="images/modify.gif"/></a>
+    <a href="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'edit')"><img src="images/modify.gif"/></a>
     
     <jsp:doBody /> 
   </c:otherwise> 

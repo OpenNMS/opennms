@@ -91,7 +91,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         
         int initialCount = m_testData.getNodeCount();
         
-        expect(m_provisioningDao.get(groupName)).andReturn(group);
+        expect(m_provisioningDao.get(groupName)).andReturn(group).atLeastOnce();
         m_provisioningDao.save(groupName, group);
         
         replayMocks();
@@ -104,7 +104,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         
         assertEquals(initialCount+1, newCount);
         
-        assertEquals(nodeLabel, result.getNode(initialCount).getNodeLabel());
+        assertEquals(nodeLabel, result.getNode(0).getNodeLabel());
     }
     
     public void testAddCategoryToNode() {
@@ -114,7 +114,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         
         int initialCount = BeanUtils.getPathValue(m_testData, pathToNode+".categoryCount", int.class); 
         
-        expect(m_provisioningDao.get(groupName)).andReturn(m_testData);
+        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
         m_provisioningDao.save(groupName, m_testData);
 
         replayMocks();
@@ -126,7 +126,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         int newCount = BeanUtils.getPathValue(result, pathToNode+".categoryCount", int.class);
         
         assertEquals(initialCount+1, newCount);
-        Category newCategory = BeanUtils.getPathValue(result, pathToNode+".category["+initialCount+"]", Category.class);
+        Category newCategory = BeanUtils.getPathValue(result, pathToNode+".category[0]", Category.class);
         assertNotNull(newCategory);
         assertEquals(categoryName, newCategory.getName());
     }
@@ -138,7 +138,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         
         int initialCount = BeanUtils.getPathValue(m_testData, pathToNode+".interfaceCount", int.class); 
 
-        expect(m_provisioningDao.get(groupName)).andReturn(m_testData);
+        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
         m_provisioningDao.save(groupName, m_testData);
 
         replayMocks();
@@ -151,7 +151,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         
         assertEquals(initialCount+1, newCount);
         
-        Interface newIface = BeanUtils.getPathValue(result, pathToNode+".interface["+initialCount+"]", Interface.class);
+        Interface newIface = BeanUtils.getPathValue(result, pathToNode+".interface[0]", Interface.class);
         assertNotNull(newIface);
         assertEquals(ipAddr, newIface.getIpAddr());
     }
@@ -163,7 +163,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         
         int initialCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
 
-        expect(m_provisioningDao.get(groupName)).andReturn(m_testData);
+        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
         m_provisioningDao.save(groupName, m_testData);
 
         replayMocks();
@@ -176,10 +176,36 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         
         assertEquals(initialCount+1, newCount);
         
-        MonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService["+initialCount+"]", MonitoredService.class);
+        MonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", MonitoredService.class);
         assertNotNull(svc);
         assertEquals(serviceName, svc.getServiceName());
-}
+    }
+    
+    public void testDeletePath() {
+        String groupName = "groupName";
+        String pathToInterface = "node[0].interface[0]";
+        String pathToDelete = pathToInterface+".monitoredService[0]";
+        
+        int initialCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
+        String svcName = BeanUtils.getPathValue(m_testData, pathToDelete+".serviceName", String.class);
+
+        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
+        m_provisioningDao.save(groupName, m_testData);
+
+        replayMocks();
+
+        ModelImport result = m_provisioningService.deletePath(groupName, pathToDelete);
+
+        verifyMocks();
+        
+        int newCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
+        
+        assertEquals(initialCount-1, newCount);
+        
+        MonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", MonitoredService.class);
+        assertNotNull(svc);
+        assertFalse(svc.getServiceName().equals(svcName));
+    }
     
     @SuppressWarnings("unchecked")
     private <T> T createMock(Class<T> name) {

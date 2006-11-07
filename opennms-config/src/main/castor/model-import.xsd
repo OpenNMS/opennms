@@ -8,7 +8,7 @@
     </annotation>
     <complexType>
       <sequence>
-        <element ref="this:node" minOccurs="1" maxOccurs="unbounded" />
+        <element ref="this:node" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="date-stamp" type="dateTime" />
       <attribute name="foreign-source" type="string" use="optional" default="imported:" />
@@ -20,7 +20,7 @@
     </annotation>
     <complexType>
       <sequence>
-        <element ref="this:interface" minOccurs="1" maxOccurs="unbounded" />
+        <element ref="this:interface" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:category" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="node-label" use="required">
@@ -31,7 +31,7 @@
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="foreign-id" type="string" use="optional" >
+      <attribute name="foreign-id" type="string" use="required" >
         <annotation>
           <documentation>
           This optional attribute can be used to facilitate integration by making the key from the integrating DB available adjacent to the OpenNMS key.
@@ -83,7 +83,7 @@
           <documentation>This will be used to set a description field.  Currently a calculation of (ifDescr | ifName | ifAlias)</documentation>
         </annotation>
       </attribute>
-      <attribute name="status" use="required" type="integer">
+      <attribute name="status" use="optional" type="integer" default="1">
         <annotation>
           <documentation>Set this optional value to 3 to indicate &quot;testing&quot;. Any other value is ignored.</documentation>
         </annotation>
