@@ -214,8 +214,9 @@ function zoomGraphObjRefresh() {
 	//  constants
 	var cZoomBoxName = "zoomBox";
 
-	var cZoomBoxRightOffset = -16;
-	var cZoomBoxTopOffsetWText = -75;
+	// Provided by OpenNMS results.jsp
+	// var cZoomBoxRightOffset = -16;
+	// var cZoomBoxTopOffsetWText = -75;
 
 	// zone outside of Zoom box where user can move cursor to without causing odd behavior
 	var cZoomSensitiveZoneName = "zoomSensitiveZone";
