@@ -20,6 +20,10 @@ public class PrefabGraphType {
 
     private String m_outputMimeType;
 
+    private String m_graphWidth;
+
+    private String m_graphHeight;
+
     public PrefabGraphType() {
         
     }
@@ -58,6 +62,22 @@ public class PrefabGraphType {
 
     public PrefabGraph getQuery(String queryName) {
         return m_reportMap.get(queryName);
+    }
+    
+    public void setGraphWidth(String graphWidth) {
+        m_graphWidth = graphWidth;
+    }
+
+    public String getGraphWidth() {
+        return m_graphWidth;
+    }
+    
+    public void setGraphHeight(String graphHeight) {
+        m_graphHeight = graphHeight;
+    }
+
+    public String getGraphHeight() {
+        return m_graphHeight;
     }
 
     /**
