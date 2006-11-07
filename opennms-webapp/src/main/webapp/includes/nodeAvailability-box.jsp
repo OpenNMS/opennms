@@ -106,6 +106,9 @@
 
     //get the node's overall service level availiability for the last 24 hrs
     double overallRtcValue = this.model.getNodeAvailability(nodeId);
+
+    String availClass;
+    String availValue;
 %>
 
 <div id="availability-box">
@@ -113,14 +116,23 @@
 <h3>Availability</h3>
 <table>
   <tr class="CellStatus">
-    <td>Availability (last 24 hours)</td>
 
-<% if( overallRtcValue < 0 ) { %>
-      <td colspan="2" class="Indeterminate">Unmanaged</td>
-<% } else { %>
-      <td colspan="2" class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
+<%
+  if (overallRtcValue < 0) {
+    availClass = "Indeterminate";
+    availValue = "Unmanaged";
+  } else {
+    availClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
+    availValue = CategoryUtil.formatValue(overallRtcValue);
+  }
+%>
+
+    <td class="<%= availClass %> nobright">Availability (last 24 hours)</td>
+    <td colspan="2" class="<%= availClass %>"><%= availValue %></td>
 
   </tr>
+
+<%  if (overallRtcValue >= 0) { %>
        <% Interface[] availIntfs = this.getInterfaces(nodeId); %>
            
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
@@ -133,29 +145,38 @@
             <% Service[] svcs = this.getServices(intf); %>
     
             <tr class="CellStatus">
-              <td rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
-              <% if (svcs.length < 1) { %>
-              <td colspan=2 class="Indeterminate">  Not Monitored </td>
-              <% } else { %>
-              <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, intfValue)%>" colspan="2"><%=CategoryUtil.formatValue(intfValue)%>%</td>
-              <% } %>
+	      <%
+                if (svcs.length < 1) {
+                  availClass = "Indeterminate";
+                  availValue = "Not Monitored";
+                } else {
+                  availClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, intfValue);
+                  availValue = CategoryUtil.formatValue(intfValue) + "%";
+                }
+	      %>
+              <td class="<%= availClass %> nobright" rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
+              <td class="<%= availClass %> nobright">Overall</td>
+              <td class="<%= availClass %>"><%= availValue %></td>
             </tr>
     
             <% for( int j=0; j < svcs.length; j++ ) { %>
-              <% Service service = svcs[j]; %>
+              <%
+                Service service = svcs[j];
+
+                if (service.isManaged()) {
+                  double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+                  availClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
+                  availValue = CategoryUtil.formatValue(svcValue) + "%";
+                } else {
+                  availClass = "Indeterminate";
+                  availValue = ElementUtil.getServiceStatusString(service);
+                }
+              %>
                        
-              <% if( service.isManaged() ) { %>
-                <% double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>
                 <tr class="CellStatus">
-                  <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-                  <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>"><%=CategoryUtil.formatValue(svcValue)%>%</td>
+                  <td class="<%= availClass %> nobright"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+                  <td class="<%= availClass %>"><%= availValue %></td>
                 </tr>
-              <% } else { %>
-                <tr class="CellStatus">
-                  <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-                  <td class="Indeterminate"><%=ElementUtil.getServiceStatusString(service)%></td>
-                </tr>
-              <% } %>
             <% } %>
           <% } else { %>
             <%-- interface is not managed --%>
@@ -171,10 +192,7 @@
             <% } %>
           <% } %>
         <% } %>
-  <tr>
-<%-- next iteration, read this from same properties file that sets up for RTCVCM --%>
 <% } %>
-  </tr>   
 </table>   
 
 </div>

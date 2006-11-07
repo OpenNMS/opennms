@@ -643,3 +643,8 @@ tr.CellStatus td.Cleared
 	border-top: 2px solid #999 !important;
 	background-image: url(../images/bgCleared.png);
 }
+
+tr.CellStatus td.nobright
+{
+	background-image: none;
+}
