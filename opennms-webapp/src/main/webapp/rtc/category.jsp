@@ -114,37 +114,35 @@
   <jsp:param name="breadcrumb" value="Category"/>
 </jsp:include>
 
-        <table>
-          <tr>
-      <td><h3><%=category.getName()%></h3></td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
+<h3>
+  <span title="Last updated <%=category.getLastUpdated()%>">
+    <%=category.getName()%>
+  </span>
+</h3>
 
-      <FORM NAME="showoutages">
-        <% String showoutages = request.getParameter("showoutages"); %>
+<form name="showoutages">
+  <p>
+    Show interfaces:
+	<% String showoutages = request.getParameter("showoutages"); %>
 
         <%  
         if(showoutages == null ) {
            showoutages = "avail";
         } %>
 
-
-            <td align="center">
               <input type="radio" name="showout" <%=(showoutages.equals("all") ? "checked" : "")%>
-               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=all'" ></input>All<br>
-            </td>
-            <td align="center">
+               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=all'" ></input>All
+
+
               <input type="radio" name="showout" <%=(showoutages.equals("outages") ? "checked" : "")%>
-               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=outages'" ></input>Outages<br>
-            </td>
-            <td align="center">
+               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=outages'" ></input>With outages
+
+
               <input type="radio" name="showout" <%=(showoutages.equals("avail") ? "checked" : "")%>
-               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=avail'" ></input>Availability<br>
-            </td>
-          </tr>
-        </table>
-        </FORM>
+               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=avail'" ></input>With availability &lt; 100% 
+
+  </p>
+</form>
 
       <% if( category.getComment() != null ) { %>      
         <p><%=category.getComment()%></p>
@@ -152,11 +150,11 @@
 
       <!-- Last updated <%=category.getLastUpdated()%> -->
 
-      <table class="standardfirst">
+      <table>
         <tr>
-          <td class="standardheader">Nodes</td>
-          <td class="standardheader">Outages</td>
-          <td class="standardheader">24hr Avail</td>
+          <th>Nodes</th>
+          <th>Outages</th>
+          <th>24hr Availability</th>
         </tr>
       
         <%  
@@ -178,15 +176,15 @@
                        servicePercentage = ((double)(serviceCount-serviceDownCount))/(double)serviceCount*100.0;
                     }
                 
-                    String color = CategoryUtil.getCategoryColor( category, value );
-                    String outageColor = CategoryUtil.getCategoryColor( category, servicePercentage );
+                    String availClass = CategoryUtil.getCategoryClass( category, value );
+                    String outageClass = CategoryUtil.getCategoryClass( category, servicePercentage );
 
 		    if ( showoutages.equals("all") | (showoutages.equals("outages") & serviceDownCount > 0 ) | (showoutages.equals("avail") & value < 100 ) ) {
         %>
-                    <tr>
-                      <td class="standard"><a href="element/node.jsp?node=<%=node.getNodeid()%>"><%=nodeLabel%></a></td>
-                      <td class="standard" BGCOLOR="<%=outageColor%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
-                      <td class="standard" BGCOLOR="<%=color%>" ALIGN="right" WIDTH="30%"><b><%=CategoryUtil.formatValue(value)%>%</b></td>
+                    <tr class="CellStatus">
+                      <td><a href="element/node.jsp?node=<%=node.getNodeid()%>"><%=nodeLabel%></a></td>
+                      <td class="<%=outageClass%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
+                      <td class="<%=availClass%>" align="right" width="30%"><b><%=CategoryUtil.formatValue(value)%>%</b></td>
                     </tr>
             	    <%  } 
 		    if (value < 100 )
@@ -198,20 +196,21 @@
         <%  } %>
 
 	<% if ( showoutages.equals("outages") & outagecnt == 0 ) { %>
-		<tr><td colspan=3>
-		<b>There are currently no outages in this Category.</b>
-		</td></tr>
+		<tr>
+                  <td colspan="3">
+		    There are currently no outages in this Category
+		  </td>
+                </tr>
         <%  } %>
 
 	<% if ( showoutages.equals("avail") & valuecnt == 0 ) { %>
-		<tr><td colspan=3>
-		<b>All services in this Category are at 100%.</b>
-		</td></tr>
+		<tr>
+                  <td colspan="3">
+		    All services in this Category are at 100%
+		  </td>
+                </tr>
         <%  } %>
         
-      <tr>
-        <td class="standardheaderplain" colspan="3">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
-      </tr>    
     </table>
 
 
