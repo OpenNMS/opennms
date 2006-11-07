@@ -85,8 +85,8 @@ if (strategy instanceof org.opennms.netmgt.rrd.QueuingRrdStrategy) {
 <%
 
 if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
-    out.println("var gZoomBoxTopOffsetWOText = 31;");
-    out.println("var gZoomBoxRightOffset = -22;");
+    out.println("var cZoomBoxTopOffsetWText = -72;");
+    out.println("var cZoomBoxRightOffset = -22;");
 } else if ("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy".equals(strategy_name)) {
     out.println("var cZoomBoxTopOffsetWText = -72;");
     out.println("var cZoomBoxRightOffset = -30;");
