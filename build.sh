@@ -22,9 +22,10 @@ if [ `expr "$0" : '\(.\)'` = "/" ]; then
 	PREFIX=`dirname $0` export PREFIX
 else
 	if [ `expr "$0" : '\(..\)'` = ".." ]; then
+		orig_dir="`pwd`"
 		cd `dirname $0`
 		PREFIX=`$PWD_CMD` export PREFIX
-		cd -
+		cd "$orig_dir"
 	elif [ `expr "$0" : '\(.\)'` = "." ] || [ `expr "$0" : '\(.\)'` = "/" ]; then
 		PREFIX=`$PWD_CMD` export PREFIX
 	else
