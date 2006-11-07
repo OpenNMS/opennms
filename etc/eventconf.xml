@@ -55,7 +55,7 @@
         <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Oracle.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Patrol.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Pixelmetrics.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Pixelmetrix.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Quintum.events.xml</event-file>
         <event-file>@install.etc.dir@/events/RFC1628.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Redline.events.xml</event-file>
