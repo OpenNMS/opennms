@@ -88,8 +88,8 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
     out.println("var gZoomBoxTopOffsetWOText = 31;");
     out.println("var gZoomBoxRightOffset = -22;");
 } else if ("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy".equals(strategy_name)) {
-    out.println("var gZoomBoxTopOffsetWOText = 33;");
-    out.println("var gZoomBoxRightOffset = -28;");
+    out.println("var gZoomBoxTopOffsetWOText = -72;");
+    out.println("var gZoomBoxRightOffset = -30;");
 } else {
     throw new ServletException("Unknown RRD strategy: " + strategy_name);
 }
