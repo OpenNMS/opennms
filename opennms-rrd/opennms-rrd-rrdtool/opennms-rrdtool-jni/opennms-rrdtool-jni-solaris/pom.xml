@@ -39,7 +39,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-shared ${build.jni.compiler.arg} ${build.jni.linker.arg} -L${build.rrd.lib.dir} -lc -ldl</linkerStartOption>
+            <linkerStartOption>-shared ${build.jni.compiler.arg} ${build.jni.linker.arg} -L${build.rrd.lib.dir} -R${build.rrd.lib.dir} -lrrd -lc -ldl</linkerStartOption>
           </linkerStartOptions>
         </configuration>
       </plugin>
