@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Nov 06: Added Read-only User to assets
 // 2004 Jan 06: Added support for Display, Notify, Poller and threshold categories
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -44,6 +45,7 @@
 	session="true"
 	import="org.opennms.web.asset.*,
 		org.opennms.web.element.*,
+                org.opennms.web.acegisecurity.Authentication,
         	org.opennms.web.MissingParameterException
 	"
 %>
@@ -110,9 +112,11 @@
   </table>
 <% } %>      
 
+<% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
 <form action="asset/modifyAsset" method="post">
   <input type="hidden" name="node" value="<%=nodeId%>" />
   <input type="hidden" name="isnew" value="<%=isNew%>" />
+<% } %>      
 
   <table width="100%" cellspacing="0" cellpadding="2" border="0">
 	  <tr>
@@ -253,10 +257,12 @@
             <td colspan="6"><textarea name="comments" cols="100" rows="15"><%=asset.getComments()%></textarea></td>
           </tr>
           <tr>
+          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <td colspan="3">
               <input type="submit" value="Submit"/>
               <input type="reset" />
             </td>
+          <% } %>
             <td colspan="3" align="right"> 
               <font size="-1">
               <% if( isNew ) { %>
@@ -268,6 +274,7 @@
             </td>
           </tr>
         </table>
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
       </form>
 
 <p>
@@ -275,5 +282,6 @@
   submitted.  Please try to format your comments and other values without
   commas or hitting the return key to add new lines.
 </p>
+      <% } %>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
