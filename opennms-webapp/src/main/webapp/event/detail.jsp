@@ -95,16 +95,18 @@
     Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
     
     HashMap<String, String> parms = new HashMap<String, String>();
-    String[] parmStrings = event.getParms().split(";");
-    for (String parmString : parmStrings) {
-        Matcher m = p.matcher(parmString);
-        if (!m.matches()) {
-            log("Could not match event parameter string element '"
-                + parmString + "' in event ID " + event.getId());
-            continue;
-        }
-        
-        parms.put(m.group(1), m.group(2));
+    if (event.getParms() != null) {
+		String[] parmStrings = event.getParms().split(";");
+		for (String parmString : parmStrings) {
+			Matcher m = p.matcher(parmString);
+			if (!m.matches()) {
+				log("Could not match event parameter string element '"
+					+ parmString + "' in event ID " + event.getId());
+				continue;
+			}
+			
+			parms.put(m.group(1), m.group(2));
+		}
     }
 %>
 
