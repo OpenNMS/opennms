@@ -79,14 +79,20 @@ if (strategy instanceof org.opennms.netmgt.rrd.QueuingRrdStrategy) {
 
 %>
 
+
 <script type="text/javascript">
 
 
 <%
 
+String ua = request.getHeader( "User-Agent" );
+boolean isMSIE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
     out.println("var cZoomBoxTopOffsetWText = -72;");
     out.println("var cZoomBoxRightOffset = -22;");
+} else if ("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy".equals(strategy_name) && isMSIE) {
+    out.println("var cZoomBoxTopOffsetWText = -85;");
+    out.println("var cZoomBoxRightOffset = -50;");
 } else if ("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy".equals(strategy_name)) {
     out.println("var cZoomBoxTopOffsetWText = -72;");
     out.println("var cZoomBoxRightOffset = -30;");
