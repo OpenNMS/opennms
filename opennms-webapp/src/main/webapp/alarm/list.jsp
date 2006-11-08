@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Nov 08: Added Read Only Role
 // 2004 Feb 11: remove the extra 'limit' parameter in the base URL.
 // 2003 Sep 04: Added a check to allow for deleted node alarms to display.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -74,12 +75,14 @@
 
     String action = null;
 
-    if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) {
-        action = AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION;
+    if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) {     
+        if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) {
+            action = AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION;
+        } 
+        else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) {
+            action = AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION;
+        }
     } 
-    else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) {
-        action = AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION;
-    }
 
     int alarmCount = AlarmFactory.getAlarmCount( parms.ackType, parms.getFilters() );    
     
@@ -189,11 +192,13 @@
       <!-- end menu -->      
 
       <!-- hidden form for acknowledging the result set --> 
-      <form action="alarm/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
-        <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-        <input type="hidden" name="action" value="<%=action%>" />
-        <%=org.opennms.web.Util.makeHiddenTags(request)%>
-      </form>      
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <form action="alarm/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
+            <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+            <input type="hidden" name="action" value="<%=action%>" />
+            <%=org.opennms.web.Util.makeHiddenTags(request)%>
+          </form>      
+      <% } %>
 
 
 
@@ -226,19 +231,25 @@
               </p>           
             <% } %>
 
-    <form action="alarm/acknowledge" method="POST" name="acknowledge_form">
-      <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-      <input type="hidden" name="action" value="<%=action%>" />
-      <%=org.opennms.web.Util.makeHiddenTags(request)%>
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <form action="alarm/acknowledge" method="POST" name="acknowledge_form">
+          <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+          <input type="hidden" name="action" value="<%=action%>" />
+          <%=org.opennms.web.Util.makeHiddenTags(request)%>
+      <% } %>
 			<jsp:include page="/includes/key.jsp" flush="false" />
       <table>
 				<thead>
 					<tr>
+                                             <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
 						<% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
 							<th width="1%">Ack</th>
 							<% } else { %>
 								<th width="1%">UnAck</th>
 								<% } %>
+                                                <% } else { %>
+                                                        <th width="1%">&nbsp;</th>
+                                                <% } %>
 								<th width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
 								<th width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
 								<th width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
@@ -251,11 +262,16 @@
 						</thead>
       <% for( int i=0; i < alarms.length; i++ ) { %>        
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
-          <td class="divider" valign="top" rowspan="3">
-            <nobr>
-              <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
-            </nobr>
-          </td>
+          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+              <td class="divider" valign="top" rowspan="3">
+                <nobr>
+                  <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
+                </nobr>
+              </td>
+          <% } else { %>
+            <td valign="top" rowspan="3" class="divider">&nbsp;</td>
+          <% } %>
+
           <td class="divider" valign="top" rowspan="3">
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
           </td>
@@ -389,6 +405,7 @@
       </table>
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
         <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <input TYPE="reset" />
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
@@ -398,6 +415,7 @@
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <input type="button" value="Unacknowledge Alarms" onClick="submitForm('unacknowledge')"/>
         <% } %>
+      <% } %>
         </p>
       </form>
 
