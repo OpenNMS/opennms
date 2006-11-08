@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.graph.PrefabGraph;
@@ -90,22 +89,6 @@ public class AddReportsToUrlServlet extends HttpServlet {
         GraphResource resource = m_model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceTypeName);
         Set<GraphAttribute> attributes = resource.getAttributes();
 
-        // In this block of code, it is possible to end up with an empty
-        // list of queries. This will result in a somewhat cryptic
-        // "Missing parameter" message on the results.jsp page and will
-        // probably be changed soon to a nicer error message.
-
-
-        /*
-        PrefabGraph[] queries = null;
-        queries = m_model.getQueriesByResourceTypeAttributes(resourceTypeName, attributes);
-        String[] queryNames = new String[queries.length];
-
-        for (int i = 0; i < queries.length; i++) {
-            queryNames[i] = queries[i].getName();
-        }
-        */
-        
         List<PrefabGraph> queries =
             resourceType.getAvailablePrefabGraphs(attributes);
         List<String> queryNames = new ArrayList<String>(queries.size());
@@ -117,7 +100,6 @@ public class AddReportsToUrlServlet extends HttpServlet {
         Map additions = new HashMap();
         additions.put("reports", queryNames.toArray(new String[queryNames.size()]));
         additions.put("type", "performance");
-        additions.put("resourceType", resourceTypeName);
         String queryString = Util.makeQueryString(request, additions);
 
         response.sendRedirect(Util.calculateUrlBase(request) + "graph/results?"
