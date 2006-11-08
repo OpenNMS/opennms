@@ -60,7 +60,7 @@
     String[] requiredParameters = new String[] { "report or domain", "type" };
 
     // Get number of graphs per line
-    int report_graphsperline=2;
+    int report_graphsperline=1;
 
     // Get Form Variable
     String report_type = request.getParameter("type");
