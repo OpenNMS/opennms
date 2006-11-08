@@ -121,6 +121,12 @@
   <bean name="/includes/serviceApplication-box.htm" class="org.opennms.web.controller.ServiceApplicationBoxController">
   	<property name="adminApplicationService" ref="adminApplicationService"/>
   </bean>
+  
+  <!-- Graphing -->
+  <bean name="/performance/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
+    <property name="chooseResourceService" ref="chooseResourceService"/>
+  </bean>
+  
  
   	<!--
 		<property name="formView" value="displayCurrentOutages" />
