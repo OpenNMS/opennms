@@ -241,7 +241,7 @@
                             </td>
               
                             <td align="left">
-                                <img src="graph/graph.png?type=performance&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                                <img src="graph/graph.png?type=performance&resourceType=interface&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
                             </td>
                         </tr>
                     </table>
