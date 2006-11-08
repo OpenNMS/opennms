@@ -143,5 +143,10 @@
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
     <property name="provisioningDao" ref="manualProvisioningDao" />
   </bean>
-  
+
+  <!-- Graphing -->
+  <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
+    <property name="performanceModel" ref="performanceModel"/>
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
 </beans>
