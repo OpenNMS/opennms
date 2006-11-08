@@ -258,7 +258,7 @@
                 <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
             </td>
             <% } else { %>
-              <td class="divider">&nbsp;</td>
+              <td valign="top" rowspan="3" class="divider">&nbsp;</td>
             <% } %>
 
           <td valign="top" rowspan="3" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
