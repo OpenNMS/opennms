@@ -64,7 +64,7 @@ public final class Authentication extends Object {
     static {
     	m_oldToNewMap.put("OpenNMS RTC Daemon", RTC_ROLE);
     	m_oldToNewMap.put("OpenNMS Administrator", ADMIN_ROLE);
-    	m_oldToNewMap.put("OpenNMS Read-Only User", ROLE_READONLY);
+    	m_oldToNewMap.put("OpenNMS Read-Only User", READONLY_ROLE);
     	// There is no entry for USER_ROLE, because all authenticated people are users
     }
 
