@@ -301,7 +301,7 @@ public class PerformanceModel extends GraphModelAbstract {
         File rrdDirectory = getRrdDirectory();
         
         if (verify && !rrdDirectory.isDirectory()) {
-            throw new IllegalArgumentException("RRD directory does not exist: " + rrdDirectory.getAbsolutePath());
+            throw new ObjectRetrievalFailureException("RRD directory does not exist: " + rrdDirectory.getAbsolutePath(), rrdDirectory);
         }
         
         return rrdDirectory;

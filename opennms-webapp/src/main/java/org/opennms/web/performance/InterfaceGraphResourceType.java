@@ -34,7 +34,7 @@ public class InterfaceGraphResourceType implements GraphResourceType {
     public boolean isResourceTypeOnNode(int nodeId) {
         try {
             return m_performanceModel.getQueryableInterfacesForNode(nodeId).size() > 0;
-        } catch (IllegalArgumentException e) {
+        } catch (DataAccessException e) {
             return false;
         }
     }
