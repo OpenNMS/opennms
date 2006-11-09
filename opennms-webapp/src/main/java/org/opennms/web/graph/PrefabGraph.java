@@ -32,12 +32,6 @@
 
 package org.opennms.web.graph;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import org.opennms.core.utils.BundleLists;
-
 public class PrefabGraph extends Object implements Comparable {
     private String m_name;
 
