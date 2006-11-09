@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Nov 09: Added Read-Only User
 // 2006 Oct 04: Added zoom capability.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -46,6 +47,7 @@
 		org.opennms.web.performance.*,
 		org.opennms.web.graph.PrefabGraph,
 		org.opennms.web.element.NetworkElementFactory,
+                org.opennms.web.acegisecurity.Authentication,
 		org.opennms.netmgt.config.kscReports.*,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
@@ -357,9 +359,11 @@
                                 <input type="button" value="Update Report View" onclick="updateReport()"><br>
                             <% } %>
                         </td>
+                        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
                         <td>
                             <input type="button" value="Customize This Report" onclick="customizeReport()"><br>
                         </td>
+                        <% } %>
                     </tr>
                 </table>
             </td> 
