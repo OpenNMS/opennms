@@ -77,6 +77,15 @@ public class MockCategoryFactory implements CatFactory {
 	    "    <service>SNMP</service>" +
 	    "    <rule><![CDATA[(isICMP | isSNMP) & (ipaddr != \"0.0.0.0\")]]></rule>" +
 		"   </category>" +
+		" <category>" +
+	    "    <label><![CDATA[Web Servers]]></label>" +
+	    "    <comment>This is a more complex category</comment>" +
+	    "    <normal>99</normal>" +
+	    "    <warning>97</warning>" +
+	    "    <service>HTTP</service>" +
+	    "    <service>HTTPS</service>" +
+	    "    <rule><![CDATA[isHTTP | isHTTPS]]></rule>" +
+		"   </category>" +
 		"  </categories>" +
 		" </categorygroup>" +
 		"</catinfo>";
