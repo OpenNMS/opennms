@@ -123,7 +123,7 @@
     availValue = "Unmanaged";
   } else {
     availClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
-    availValue = CategoryUtil.formatValue(overallRtcValue);
+    availValue = CategoryUtil.formatValue(overallRtcValue) + "%";
   }
 %>
 
