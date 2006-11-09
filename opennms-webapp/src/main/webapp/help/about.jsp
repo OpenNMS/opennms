@@ -116,7 +116,7 @@
 <ul>
     <li>Original code base for OpenNMS version 1.0.0 Copyright &copy; 1999-2001
       <a href="http://www.oculan.com/">Oculan Corporation</a>.</li>
-    <li>Mapping code Copyright &copy; 2003
+    <li>Original (static) Mapping code Copyright &copy; 2003
       <a href="http://www.nksi.com">Networked Knowledge Systems, Inc.</a>.</li>
     <li>ScriptD code Copyright &copy; 2003
       <a href="http://www.tavve.com">Tavve Software Company</a>.</li>
