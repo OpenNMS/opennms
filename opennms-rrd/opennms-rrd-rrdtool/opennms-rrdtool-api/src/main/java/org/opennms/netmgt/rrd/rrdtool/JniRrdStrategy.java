@@ -368,7 +368,7 @@ public class JniRrdStrategy implements RrdStrategy {
         
         // Back through the RRD output until I get something interesting
         
-        for(int i = fetchStrings.length - 1; i > 1; i--) {
+        for(int i = fetchStrings.length - 2; i > 1; i--) {
         	if ( fetchStrings[i].trim().equalsIgnoreCase("nan") ) {
         		if (log.isEnabledFor(Priority.DEBUG))
         			log.debug("fetchInRange: Got a NaN value - continuing back in time");
