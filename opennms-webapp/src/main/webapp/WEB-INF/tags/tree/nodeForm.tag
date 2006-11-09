@@ -14,6 +14,7 @@
     </spring:bind>
     <jsp:doBody /> 
     <input type="button" value="Save" onclick="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'save')"/>
+    <input type="button" value="Cancel" onclick="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'cancel')"/>
   </c:when>
   <c:otherwise>
   

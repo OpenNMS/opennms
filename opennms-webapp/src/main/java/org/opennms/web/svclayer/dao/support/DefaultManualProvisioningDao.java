@@ -6,7 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -21,8 +23,8 @@ import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
-import org.springframework.dao.PessimisticLockingFailureException;
 
 public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     
@@ -73,16 +75,22 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         if (importFile.exists()) {
             ModelImport currentData = get(groupName);
             if (currentData.getDateStamp().after(group.getDateStamp())) {
-                throw new PessimisticLockingFailureException("Data in file "+importFile+" is newer than data to be saved!");
+                throw new OptimisticLockingFailureException("Data in file "+importFile+" is newer than data to be saved!");
             }
         }
         
         
         Writer w = null;
         try {
-            w = new FileWriter(importFile);
+            // write to a string to check constraints
+            StringWriter strWriter = new StringWriter();
             group.setDateStamp(new Date());
-            Marshaller.marshal(group, w);
+            Marshaller.marshal(group, strWriter);
+            
+            // if we successfully get here then the file is correct
+            w = new FileWriter(importFile);
+            w.write(strWriter.toString());
+            
         } catch (IOException e) {
             throw new PermissionDeniedDataAccessException("Unable to write file "+importFile, e);
         } catch (MarshalException e) {
@@ -98,6 +106,16 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
 
     private File getImportFile(String groupName) {
         return new File(m_importFileDir, "imports-"+groupName+".xml");
+    }
+
+    public String getUrlForGroup(String groupName) {
+        File groupFile = getImportFile(groupName);
+        try {
+            return groupFile.toURL().toString();
+        } catch (MalformedURLException e) {
+            // can this really happen?
+            throw new IllegalArgumentException("Unable to find URL for group "+groupName, e);
+        }
     }
 
 }

@@ -137,7 +137,7 @@
   
   <!--  Manual Provisioning -->
   <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
-    <property name="importFileDirectory" value="file:/${opennms.home}/etc" />
+    <property name="importFileDirectory" value="file:${opennms.home}/etc" />
   </bean>
   
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">

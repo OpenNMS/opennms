@@ -48,9 +48,9 @@ import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
 import org.opennms.netmgt.importer.operations.ImportOperation;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
@@ -68,17 +68,7 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 	
 	public static final String NAME = "ModelImporter";
 
-	public static final String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
-	
-	public static final String IMPORT_STARTED_UEI = "uei.opennms.org/internal/importer/importStarted";
-	
-	public static final String IMPORT_SUCCESSFUL_UEI = "uei.opennms.org/internal/importer/importSuccessful";
-	public static final String PARM_IMPORT_STATS = "importStats";
-
-	public static final String IMPORT_FAILED_UEI = "uei.opennms.org/internal/importer/importFailed";
-	public static final String PARM_FAILURE_MESSAGE = "failureMessage";
-    
-    private Resource m_importResource;
+	private Resource m_importResource;
 	private EventIpcManager m_eventManager;
 	private ImporterStats m_stats;
     
@@ -116,13 +106,13 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
     }
 
     private String getEventUrl(Event event) {
-        return EventUtil.getNamedParmValue("parm[url]", event);
+        return EventUtils.getParm(event, EventConstants.PARM_URL);
     }
     
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
     private void sendImportSuccessful(ImporterStats stats) {
-    	Event e = createEvent(IMPORT_SUCCESSFUL_UEI, PARM_IMPORT_STATS, stats.toString());
+    	Event e = createEvent(EventConstants.IMPORT_SUCCESSFUL_UEI, EventConstants.PARM_IMPORT_STATS, stats.toString());
 		m_eventManager.sendNow(e);
 	}
     
@@ -154,12 +144,12 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
     }
 
 	private void sendImportFailed(String msg) {
-		Event e = createEvent(IMPORT_FAILED_UEI, PARM_FAILURE_MESSAGE, msg);
+		Event e = createEvent(EventConstants.IMPORT_FAILED_UEI, EventConstants.PARM_FAILURE_MESSAGE, msg);
 		m_eventManager.sendNow(e);
 	}
 
 	private void sendImportStarted() {
-		Event e = createEvent(IMPORT_STARTED_UEI);
+		Event e = createEvent(EventConstants.IMPORT_STARTED_UEI);
 		m_eventManager.sendNow(e);
 	}
 
@@ -182,11 +172,11 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		m_eventManager.addEventListener(this, RELOAD_IMPORT_UEI);
+		m_eventManager.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 	}
 
 	public void destroy() throws Exception {
-		m_eventManager.removeEventListener(this, RELOAD_IMPORT_UEI);
+		m_eventManager.removeEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 		
 	}
 
@@ -196,7 +186,7 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 
 	public void onEvent(Event e) {
 
-		if (!RELOAD_IMPORT_UEI.equals(e.getUei())) return;
+		if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) return;
 		
 		doImport(e);
 	}
@@ -399,7 +389,7 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 		private String m_name;
 		private long m_totalTime;
 		private long m_sectionCount;
-		private ThreadLocal m_pendingSection = new ThreadLocal();
+		private ThreadLocal<Duration> m_pendingSection = new ThreadLocal<Duration>();
 		
 		public WorkEffort(String name) {
 			m_name = name;
@@ -412,7 +402,7 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 		}
 
 		public void end() {
-			Duration pending = (Duration)m_pendingSection.get();
+			Duration pending = m_pendingSection.get();
 			m_sectionCount++;
 			m_totalTime += pending.getLength();
 		}

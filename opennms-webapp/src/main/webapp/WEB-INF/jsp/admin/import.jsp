@@ -20,16 +20,19 @@
   
  <tree:form commandName="nodeEditForm"> 
  
- <tree:action label="Add Node" action="addNode"/> 
+ <div align="right">
+   <tree:action label="Add Node" action="addNode"/> 
+   <tree:action label="Import" action="import" />
+ </div>
 
  <tree:tree root="${nodeEditForm.formData}" childProperty="node" var="node" varStatus="nodeIter">
     <!-- Form for editing node fields -->
     <tree:nodeForm>
       <tree:field label="Node" property="nodeLabel" />
       <tree:field label="ForeignId" property="foreignId" />
-      <!-- tree:select label="Primary Interface" property="parentNodeLabel" itemLabel="ipAddr" items="${node.interface}" / -->
+      <!--  tree:select label="Primary Interface" property="parentNodeLabel" itemLabel="ipAddr" items="${node.interface}" / -->
       <tree:action label="Add Interface" action="addInterface" />
-      <tree:action label="Add Category" action="addCategory" />
+      <tree:action label="Add Node Category" action="addCategory" />
     </tree:nodeForm> 
     
     <!--  Tree of interface under the node -->
@@ -39,6 +42,8 @@
       <tree:nodeForm>
         <tree:field label="IP Interface" property="ipAddr" />
         <tree:field label="Description" property="descr" />
+        
+        <tree:select label="Snmp Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" />
         <tree:action label="Add Service" action="addService" />
       </tree:nodeForm>
 
@@ -58,7 +63,7 @@
     
       <!--  Form for editing a category -->
       <tree:nodeForm>
-        <tree:field label="Category" property="name" />
+        <tree:field label="Node Category" property="name" />
       </tree:nodeForm>
       
     </tree:tree>

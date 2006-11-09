@@ -1,5 +1,8 @@
 package org.opennms.web.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -61,10 +64,12 @@ public class ImportController extends SimpleFormController {
     
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-        String action = request.getParameter("action");
-        if (action == null)
+        TreeCommand treeCmd = (TreeCommand)command;
+        String action = treeCmd.getAction();
+        if (action == null) {
+            errors.reject("Unrecognized action: "+action);
             return super.onSubmit(request, response, command, errors);
-        else if ("addNode".equalsIgnoreCase(action)) {
+        } else if ("addNode".equalsIgnoreCase(action)) {
             return doAddNode(request, response, command, errors);
         } else if ("addInterface".equalsIgnoreCase(action)) {
             return doAddInterface(request, response, command, errors);
@@ -76,12 +81,33 @@ public class ImportController extends SimpleFormController {
             return doSave(request, response, command, errors);
         } else if ("edit".equalsIgnoreCase(action)) {
             return doEdit(request, response, command, errors);
+        } else if ("cancel".equalsIgnoreCase(action)) {
+            return doCancel(request, response, command, errors);
         } else if ("delete".equalsIgnoreCase(action)) {
             return doDelete(request, response, command, errors);
+        } else if ("import".equalsIgnoreCase(action)) {
+            return doImport(request, response, command, errors);
         } else {
             errors.reject("Unrecognized action: "+action);
             return super.onSubmit(request, response, command, errors);
         }
+        
+    }
+
+    private ModelAndView doCancel(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+        TreeCommand treeCmd = (TreeCommand)command;
+
+        ModelImport formData = m_provisioningService.getProvisioningGroup("manual");
+        treeCmd.setFormData(formData);
+        
+        treeCmd.setCurrentNode("");
+        
+        return showForm(request, response, errors);
+    }
+
+    private ModelAndView doImport(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+        m_provisioningService.importProvisioningGroup("manual");
+        return super.showForm(request, response, errors);
         
     }
 
@@ -168,6 +194,16 @@ public class ImportController extends SimpleFormController {
             importData = m_provisioningService.createProvisioningGroup("manual");
         }
         return importData;
+    }
+
+    @Override
+    protected Map referenceData(HttpServletRequest request) throws Exception {
+        Map map = new HashMap();
+        
+        String[] choices = { "P", "S", "C", "N" };
+        
+        map.put("snmpPrimaryChoices", choices);
+        return map;
     }
     
 }
