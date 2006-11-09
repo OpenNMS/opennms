@@ -43,6 +43,7 @@
 		org.opennms.web.Util,
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
+                org.opennms.web.acegisecurity.Authentication,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
 %>
@@ -188,6 +189,7 @@
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   
+<% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
   <tr>
     <td valign="top">
       <h3>KSC Performance Reports</h3>
@@ -206,10 +208,10 @@
                 <td>
                     <p> 
                         <input type="radio" name="report_action" value="View" CHECKED>View <br>
-                        <input type="radio" name="report_action" value="Customize">Customize <br>
-                        <input type="radio" name="report_action" value="Create">Create New<br>
-                        <input type="radio" name="report_action" value="CreateFrom">Create New From Existing<br>
-                        <input type="radio" name="report_action" value="Delete">Delete<br>
+                            <input type="radio" name="report_action" value="Customize">Customize <br>
+                            <input type="radio" name="report_action" value="Create">Create New<br>
+                            <input type="radio" name="report_action" value="CreateFrom">Create New From Existing<br>
+                            <input type="radio" name="report_action" value="Delete">Delete<br>
                     </p>
                     <p> <input type="button" value="Submit" onclick="submitReportForm()" alt="Initiates Action for Custom Report"/> </p>
                 </td>
@@ -219,6 +221,7 @@
     
     </td>
   </tr>
+<% } %>
   <tr>
     <td>&nbsp;</td>
   </tr>
