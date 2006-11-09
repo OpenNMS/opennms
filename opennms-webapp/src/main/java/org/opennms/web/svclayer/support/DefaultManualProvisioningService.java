@@ -1,16 +1,18 @@
 package org.opennms.web.svclayer.support;
 
-import java.beans.BeanInfo;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.apache.struts.tiles.PathAttribute;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.utils.EventProxyException;
+import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.web.BeanUtils;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
@@ -18,6 +20,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorUtils;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.util.Assert;
 
 public class DefaultManualProvisioningService implements
         ManualProvisioningService {
@@ -44,8 +48,12 @@ public class DefaultManualProvisioningService implements
         ModelImport group = m_provisioningDao.get(groupName);
         
         Node node = BeanUtils.getPathValue(group, pathToNode, Node.class);
+        
+        String snmpPrimary = "P";
+        if (node.getInterfaceCount() > 0)
+            snmpPrimary = "S";
 
-        Interface iface = createInterface(ipAddr);
+        Interface iface = createInterface(ipAddr, snmpPrimary);
         node.addInterface(0, iface);
         
         m_provisioningDao.save(groupName, group);
@@ -53,10 +61,11 @@ public class DefaultManualProvisioningService implements
         return m_provisioningDao.get(groupName);
     }
 
-    private Interface createInterface(String ipAddr) {
+    private Interface createInterface(String ipAddr, String snmpPrimary) {
         Interface iface = new Interface();
         iface.setIpAddr(ipAddr);
         iface.setStatus(1);
+        iface.setSnmpPrimary(snmpPrimary);
         return iface;
     }
 
@@ -124,7 +133,19 @@ public class DefaultManualProvisioningService implements
 
 
     public void importProvisioningGroup(String groupName) {
-        throw new UnsupportedOperationException("not yet implemented");
+        TcpEventProxy proxy = new TcpEventProxy();
+        
+        String url = m_provisioningDao.getUrlForGroup(groupName);
+        Assert.notNull(url, "Could not find url for group "+groupName+".  Does it exists?");
+        
+        EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
+        bldr.addParam(EventConstants.PARM_URL, url);
+        
+        try {
+            proxy.send(bldr.getEvent());
+        } catch (EventProxyException e) {
+            throw new DataAccessResourceFailureException("Unable to send event to import group "+groupName, e);
+        }
     }
 
     public void setProvisioningDao(ManualProvisioningDao provisioningDao) {

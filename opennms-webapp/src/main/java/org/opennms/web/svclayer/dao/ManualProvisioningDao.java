@@ -12,4 +12,6 @@ public interface ManualProvisioningDao {
 
     void save(String groupName, ModelImport group);
 
+    String getUrlForGroup(String groupName);
+
 }
