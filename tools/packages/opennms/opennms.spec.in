@@ -220,7 +220,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		rrdtool, curl, %{requires}
+Requires:		rrdtool >= 1.2, curl, %{requires}
 
 %description
 OpenNMS is an enterprise-grade network management package.
@@ -239,7 +239,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	rrdtool, opennms = %{version}-%{release_pkg}
+Requires:	rrdtool >= 1.2, opennms = %{version}-%{release_pkg}
 
 %description webapp
 The web UI for OpenNMS.
