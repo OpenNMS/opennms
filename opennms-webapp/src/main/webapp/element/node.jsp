@@ -239,9 +239,9 @@
          <a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
         </li -->
 
-        <% if(this.model.getAsset(nodeId).getBuilding() != null) { %>
+        <% if (asset != null && asset.getBuilding() != null) { %>
           <li>
-            <a href="siteStatusView.htm?statusSite=<%=this.model.getAsset(nodeId).getBuilding()%>">Site Status</a>
+            <a href="siteStatusView.htm?statusSite=<%=asset.getBuilding()%>">Site Status</a>
           </li>
         <% } %>
         
