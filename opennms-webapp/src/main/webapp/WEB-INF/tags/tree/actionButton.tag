@@ -8,6 +8,6 @@
 
 <c:set var="nestedPathSansDot" value="${fn:substring(nestedPath, 0, fn:length(nestedPath)-1)}" scope="page" />
 <c:if test="${nestedPathSansDot != treeFormModel.currentNode}">
-    <input type="button" value="Save" onclick="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', '${action}')"/>
+    <input type="button" value="${label}" onclick="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', '${action}')"/>
 </c:if>
 

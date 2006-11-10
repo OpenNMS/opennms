@@ -1,6 +1,7 @@
 package org.opennms.web.svclayer;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.opennms.netmgt.config.modelimport.ModelImport;
 
@@ -25,5 +26,17 @@ public interface ManualProvisioningService {
     ModelImport deletePath(String groupName, String pathToDelete);
     
     void importProvisioningGroup(String groupName);
+
+    Collection<ModelImport> getAllGroups();
+
+    void deleteProvisioningGroup(String groupName);
+
+    void deleteAllNodes(String groupName);
+
+    Map<String, Integer> getGroupDbNodeCounts();
+
+    Collection<String> getNodeCategoryNames();
+
+    Collection<String> getServiceTypeNames();
 
 }

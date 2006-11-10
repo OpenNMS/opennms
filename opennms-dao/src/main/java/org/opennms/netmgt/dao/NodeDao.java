@@ -60,4 +60,6 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
 
     public abstract OnmsNode findByForeignId(String foreignSource, String foreignId);
+
+    public abstract int getNodeCountForForeignSource(String groupName);
 }

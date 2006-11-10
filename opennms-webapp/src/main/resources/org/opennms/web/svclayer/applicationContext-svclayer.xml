@@ -43,11 +43,6 @@
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao" />
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao" />
   
-  <bean id="categoryDao" class="org.opennms.netmgt.dao.hibernate.CategoryDaoHibernate">
-  	<property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-  
-
 
 <!-- Demand Poll Service beans -->
   <bean id="eventProxy" class="org.opennms.netmgt.utils.TcpEventProxy">
@@ -142,6 +137,9 @@
   
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
     <property name="provisioningDao" ref="manualProvisioningDao" />
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="categoryDao" ref="categoryDao" />
+    <property name="serviceTypeDao" ref="serviceTypeDao" />
   </bean>
 
   <!-- Graphing -->
