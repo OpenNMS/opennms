@@ -59,8 +59,15 @@
 			  var width,height;
 			  if(dimension=="auto")
 				{
-				//available pixels - 200(=menu width)
-				var availWidth=screen.availWidth-200;
+				var scrollBarOffset=0;
+				if (navigator.appName=="Netscape") {
+					  scrollBarOffset=16;
+				}
+				if (navigator.appName.indexOf("Microsoft")!=-1) {
+					  scrollBarOffset=20;
+				}
+				//available pixels - 200(=menu width) - scrollbar offset (depending on browser)
+                		var availWidth=screen.availWidth-200-scrollBarOffset;
 				//var availHeight=screen.availableHeight;
 				if(availWidth>=1600){
 						width=1600;
