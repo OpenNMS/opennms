@@ -641,19 +641,22 @@ selectionList.prototype.scrollBarMove = function(evt) {
 }
 
 selectionList.prototype.scrollToKey = function(pressedKey) {
-	var oldActiveSelection = this.activeSelection;
-	for (var i=0;i<this.elementsArray.length;i++) {
-		if (this.elementsArray[i].toLowerCase().charAt(0) == pressedKey) {
-			if (this.listOpen == true) {
-				this.foldList();	
-			}
-			this.activeSelection = i;
-			this.unfoldList();
-			this.listOpen = true;
-			this.activeSelection = oldActiveSelection;
-			break;
-		}	
-	}	
+	if(this.exists){
+		var oldActiveSelection = this.activeSelection;
+		for (var i=0;i<this.elementsArray.length;i++) {
+			if (this.elementsArray[i].toLowerCase().charAt(0) == pressedKey) {
+				if (this.listOpen == true) {
+					this.foldList();	
+				}
+				this.activeSelection = i;
+				this.unfoldList();
+				this.listOpen = true;
+				this.activeSelection = oldActiveSelection;
+				break;
+			}	
+		}
+	}
+	
 }
 
 selectionList.prototype.elementExists = function(elementName) {

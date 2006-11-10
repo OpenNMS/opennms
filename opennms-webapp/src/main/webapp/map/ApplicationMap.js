@@ -1497,9 +1497,8 @@ function handleRefreshNodesResponse(data) {
 	map.render();
 	//reloadGrid();
 	menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
-	savedMapString=getMapString();
+	//savedMapString=getMapString();
 	enableMenu();
-		
 	startRefreshNodesTime();
 }
 
