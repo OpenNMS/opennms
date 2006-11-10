@@ -93,6 +93,17 @@
   </filter>
   
   <filter>
+    <description>Stroes HTTP request parameters in request attributes for later access</description>
+    <filter-name>StoreRequestProperties</filter-name>
+    <filter-class>org.opennms.web.StoreRequestPropertiesFilter</filter-class>
+    <init-param>
+      <description>Into which request attribute the value of HttpServletRequest.getServletPath() is stored</description>
+      <param-name>relativeServletPathAttribute</param-name>
+      <param-value>relativeRequestPath</param-value>
+    </init-param>
+  </filter>
+  
+  <filter>
     <filter-name>eXtremeExport</filter-name>
     <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
   </filter>
@@ -100,6 +111,11 @@
 
   <filter-mapping>
     <filter-name>Acegi Filter Chain Proxy</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <filter-mapping>
+    <filter-name>StoreRequestProperties</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
