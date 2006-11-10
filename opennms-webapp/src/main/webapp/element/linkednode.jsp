@@ -453,7 +453,7 @@
 				<% if(OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
 				<td class="standard" style="font-size:70%" align="center"><input type="button" value="Down" onClick="setDown(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"></td>
 				<% } else if (OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
-				<td class="standard" align="center"><input type="button" value="Up" onClick="setUp(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"> </td> 
+				<td class="standard" style="font-size:70%" align="center"><input type="button" value="Up" onClick="setUp(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"> </td> 
 				<% } else { %>
 				<td><b>&nbsp;</b></td> 
 				<% } %>
