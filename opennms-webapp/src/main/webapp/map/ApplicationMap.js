@@ -1102,19 +1102,19 @@ function handleSaveResponse(data) {
 			}		
 		var answerST = str.split("+");
 		//alert(answerST[0]+" "+answerST[1]+" "+answerST[2]+" "+answerST[3]+" "+answerST[4]+" "+answerST[5]+" "+answerST[6]+" "+answerST[7]+" "+answerST[8]);
-		var packet = answerST[9];
-		var totalPackets = answerST[10];
+		var packet = answerST[8];
+		var totalPackets = answerST[9];
 		//alert("handleSaveResponse: packet="+packet+" totalPackets="+totalPackets);
 		if(packet==totalPackets){
 
-			currentMapId=parseInt(answerST[1]);
-			currentMapBackGround=answerST[2];
-			currentMapAccess=answerST[3];
-			currentMapName=answerST[4];
-			currentMapOwner=answerST[5];
-			currentMapUserlast=answerST[6];
-			currentMapCreatetime=answerST[7];
-			currentMapLastmodtime=answerST[8];		
+			currentMapId=parseInt(answerST[0]);
+			currentMapBackGround=answerST[1];
+			currentMapAccess=answerST[2];
+			currentMapName=answerST[3];
+			currentMapOwner=answerST[4];
+			currentMapUserlast=answerST[5];
+			currentMapCreatetime=answerST[6];
+			currentMapLastmodtime=answerST[7];		
 			LoadMaps();
 			clearMapInfo();
 			viewMapInfo();
