@@ -2,6 +2,11 @@ package org.opennms.web.svclayer.support;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.netmgt.EventConstants;
@@ -10,6 +15,11 @@ import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.TcpEventProxy;
@@ -27,6 +37,25 @@ public class DefaultManualProvisioningService implements
         ManualProvisioningService {
 
     private ManualProvisioningDao m_provisioningDao;
+    private NodeDao m_nodeDao;
+    private CategoryDao m_categoryDao;
+    private ServiceTypeDao m_serviceTypeDao;
+    
+    public void setProvisioningDao(ManualProvisioningDao provisioningDao) {
+        m_provisioningDao = provisioningDao;
+    }
+    
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+    
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
+    }
+    
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        m_serviceTypeDao = serviceTypeDao;
+    }
 
     public ModelImport addCategoryToNode(String groupName, String pathToNode, String categoryName) {
         
@@ -73,6 +102,7 @@ public class DefaultManualProvisioningService implements
         ModelImport group = m_provisioningDao.get(groupName);
         
         Node node = createNode(nodeLabel, String.valueOf(System.currentTimeMillis()));
+        node.setBuilding(groupName);
         
         group.addNode(0, node);
         
@@ -118,9 +148,6 @@ public class DefaultManualProvisioningService implements
         ModelImport group = new ModelImport();
         group.setForeignSource(name);
         
-        Node node = createNode("New Node", String.valueOf(System.currentTimeMillis()));
-        group.addNode(node);
-        
         m_provisioningDao.save(name, group);
         return m_provisioningDao.get(name);
     }
@@ -133,6 +160,14 @@ public class DefaultManualProvisioningService implements
 
 
     public void importProvisioningGroup(String groupName) {
+
+        // first we update the import timestamp
+        ModelImport group = getProvisioningGroup(groupName);
+        group.setLastImport(new Date());
+        saveProvisioningGroup(groupName, group);
+        
+        
+        // then we send an event to the importer
         TcpEventProxy proxy = new TcpEventProxy();
         
         String url = m_provisioningDao.getUrlForGroup(groupName);
@@ -148,10 +183,6 @@ public class DefaultManualProvisioningService implements
         }
     }
 
-    public void setProvisioningDao(ManualProvisioningDao provisioningDao) {
-        m_provisioningDao = provisioningDao;
-    }
-    
     private static class PropertyPath {
         private PropertyPath parent = null;
         private String propertyName;
@@ -241,6 +272,54 @@ public class DefaultManualProvisioningService implements
         m_provisioningDao.save(groupName, group);
     
         return m_provisioningDao.get(groupName);
+    }
+
+    public Collection<ModelImport> getAllGroups() {
+        Collection<ModelImport> groups = new LinkedList<ModelImport>();
+        
+        for(String groupName : getProvisioningGroupNames()) {
+            groups.add(getProvisioningGroup(groupName));
+        }
+        
+        return groups;
+    }
+
+    public void deleteProvisioningGroup(String groupName) {
+        m_provisioningDao.delete(groupName);
+    }
+
+    public void deleteAllNodes(String groupName) {
+        ModelImport group = m_provisioningDao.get(groupName);
+        group.clearNode();
+        m_provisioningDao.save(groupName, group);
+    }
+
+    public Map<String, Integer> getGroupDbNodeCounts() {
+        Map<String, Integer> counts = new HashMap<String, Integer>();
+        
+        int i = 0;
+        for(String groupName : getProvisioningGroupNames()) {
+            counts.put(groupName, m_nodeDao.getNodeCountForForeignSource(groupName));
+        }
+        
+        return counts;
+        
+    }
+
+    public Collection<String> getNodeCategoryNames() {
+        Collection<String> names = new LinkedList<String>();
+        for (OnmsCategory category : m_categoryDao.findAll()) {
+            names.add(category.getName());
+        }
+        return names;
+    }
+
+    public Collection<String> getServiceTypeNames() {
+        Collection<String> names = new LinkedList<String>();
+        for(OnmsServiceType svcType : m_serviceTypeDao.findAll()) {
+            names.add(svcType.getName());
+        }
+        return names;
     }
 
 

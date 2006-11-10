@@ -14,4 +14,6 @@ public interface ManualProvisioningDao {
 
     String getUrlForGroup(String groupName);
 
+    void delete(String groupName);
+
 }

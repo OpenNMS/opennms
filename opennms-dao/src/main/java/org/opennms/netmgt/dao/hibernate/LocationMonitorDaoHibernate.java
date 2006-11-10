@@ -320,7 +320,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     public Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(Date timestamp) {
-    	return findObject(OnmsLocationSpecificStatus.class,
+    	return findObjects(OnmsLocationSpecificStatus.class,
     			"from OnmsLocationSpecificStatus as status " +
     			"where status.pollResult.timestamp = ( " +
     			"    select max(recentStatus.pollResult.timestamp) " +
@@ -334,7 +334,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate) {
 
-    	return findObject(OnmsLocationSpecificStatus.class,
+    	return findObjects(OnmsLocationSpecificStatus.class,
     			"from OnmsLocationSpecificStatus as status " +
     			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ?",
     			startDate, endDate

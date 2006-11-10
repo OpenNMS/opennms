@@ -12,8 +12,16 @@
 	<property name="suffix" value=".jsp" />
   </bean>
   
-  <bean name="/admin/import.htm" class="org.opennms.web.controller.ImportController">
+  <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
     <property name="provisioningService" ref="manualProvisioningService" />
+    <property name="commandName" value="groupAction" />
+  </bean>
+  
+  <bean name="/admin/editProvisioningGroup.htm" class="org.opennms.web.controller.EditProvisioningGroupController">
+    <property name="provisioningService" ref="manualProvisioningService" />
+    <property name="bindOnNewForm" value="true" />
+    <property name="commandName" value="nodeEditForm" />
+    <property name="successView" value="redirect:/admin/provisioningGroups.htm" />
   </bean>
   
   <bean name="/admin/applications.htm"

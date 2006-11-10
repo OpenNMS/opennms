@@ -86,7 +86,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
     }
     
     @SuppressWarnings("unchecked")
-	public <S> Collection<S> findObject(Class<S> clazz, String query, Object... values) {
+	public <S> Collection<S> findObjects(Class<S> clazz, String query, Object... values) {
     	return getHibernateTemplate().find(query, values);
     }
 
@@ -96,6 +96,24 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
             public Object doInHibernate(Session session)
                     throws HibernateException, SQLException {
                 return session.createQuery(query).uniqueResult();
+            }
+
+        };
+
+        Object result = getHibernateTemplate().execute(callback);
+        return ((Number) result).intValue();
+    }
+
+    protected int queryInt(final String queryString, final Object... args) {
+        HibernateCallback callback = new HibernateCallback() {
+
+            public Object doInHibernate(Session session)
+                    throws HibernateException, SQLException {
+                Query query = session.createQuery(queryString);
+                for (int i = 0; i < args.length; i++) {
+                    query.setParameter(i, args[i]);
+                }
+                return query.uniqueResult();
             }
 
         };

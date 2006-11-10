@@ -422,4 +422,8 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
         throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
     }
 
+    public int getNodeCountForForeignSource(String groupName) {
+        throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
+    }
+
 }

@@ -148,7 +148,7 @@
         <li><a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
         <li><a HREF="admin/categories.htm">Manage node categories</a></li>
         <li><a HREF="admin/applications.htm">Manage applications</a></li>
-        <li><a HREF="admin/import.htm">Manually Provisioned Nodes</a></li>
+        <li><a HREF="admin/provisioningGroups.htm">Manage Provisioning Groups</a></li>
       </ul>
       <!-- security link -->
     </div>

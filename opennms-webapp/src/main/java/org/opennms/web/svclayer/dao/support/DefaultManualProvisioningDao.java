@@ -4,14 +4,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -22,9 +25,9 @@ import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.util.Assert;
 
 public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     
@@ -35,7 +38,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     }
 
     public ModelImport get(String name) {
-        if (!"manual".equals(name)) return null;
+        checkGroupName(name);
         
         File importFile = getImportFile(name);
         
@@ -62,13 +65,24 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         
     }
 
+    private void checkGroupName(String name) {
+        Assert.hasLength(name, "Group name must not be null or the empty string");
+    }
+
     public Collection<String> getProvisioningGroupNames() {
-        return Collections.singleton("manual");
+        
+        String[] importFiles = m_importFileDir.list(getImportFilenameFilter());
+        
+        String[] groupNames = new String[importFiles.length];
+        for (int i = 0; i < importFiles.length; i++) {
+            groupNames[i] = getGroupNameForImportFileName(importFiles[i]);
+        }
+        
+        return Arrays.asList(groupNames);
     }
 
     public void save(String groupName, ModelImport group) {
-        if (!"manual".equals(groupName))
-            throw new InvalidDataAccessApiUsageException("groups other than 'manual' aren't currently supported");
+        checkGroupName(groupName);
         
         File importFile = getImportFile(groupName);
         
@@ -105,10 +119,34 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     }
 
     private File getImportFile(String groupName) {
+        checkGroupName(groupName);
         return new File(m_importFileDir, "imports-"+groupName+".xml");
     }
+    
+    public FilenameFilter getImportFilenameFilter() {
+        return new FilenameFilter() {
+
+            public boolean accept(File dir, String name) {
+                return name.matches("imports-.*\\.xml");
+            }
+            
+        };
+    }
+    
+    private String getGroupNameForImportFileName(String filename) {
+        Matcher matcher = Pattern.compile("imports-(.*)\\.xml").matcher(filename);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid import gorup file name "+filename+", doesn't match form imports-*.xml");
+        }
+        
+        return matcher.group(1);
+        
+    }
+
+
 
     public String getUrlForGroup(String groupName) {
+        checkGroupName(groupName);
         File groupFile = getImportFile(groupName);
         try {
             return groupFile.toURL().toString();
@@ -116,6 +154,11 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
             // can this really happen?
             throw new IllegalArgumentException("Unable to find URL for group "+groupName, e);
         }
+    }
+
+    public void delete(String groupName) {
+        File groupFile = getImportFile(groupName);
+        groupFile.delete();
     }
 
 }

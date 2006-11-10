@@ -12,17 +12,19 @@
 	<jsp:param name="breadcrumb"
                value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb"
-	           value="<a href='admin/import.htm'>Import</a>" />
-	<jsp:param name="breadcrumb" value="Show" />
+	           value="<a href='admin/provisioningGroups.htm'>Provisioning Groups</a>" />
+	<jsp:param name="breadcrumb" value="Edit" />
 </jsp:include>
 
-<h3>Manually Provisioned Nodes</h3>
-  
+<h3>Manually Provisioned Nodes for Group: ${nodeEditForm.groupName}</h3>
+
  <tree:form commandName="nodeEditForm"> 
+
+  <input type="hidden" id="groupName" name="groupName" value="${nodeEditForm.groupName}"/> 
  
  <div align="right">
-   <tree:action label="Add Node" action="addNode"/> 
-   <tree:action label="Import" action="import" />
+   <tree:actionButton label="Add Node" action="addNode"/> 
+   <tree:actionButton label="Done" action="done" />
  </div>
 
  <tree:tree root="${nodeEditForm.formData}" childProperty="node" var="node" varStatus="nodeIter">
@@ -30,7 +32,7 @@
     <tree:nodeForm>
       <tree:field label="Node" property="nodeLabel" />
       <tree:field label="ForeignId" property="foreignId" />
-      <!--  tree:select label="Primary Interface" property="parentNodeLabel" itemLabel="ipAddr" items="${node.interface}" / -->
+      <tree:field label="Site" property="building" />
       <tree:action label="Add Interface" action="addInterface" />
       <tree:action label="Add Node Category" action="addCategory" />
     </tree:nodeForm> 
@@ -52,7 +54,7 @@
       
         <!--  Form for editing a service -->
         <tree:nodeForm>  
-            <tree:field label="Service" property="serviceName" />
+            <tree:select label="Service" property="serviceName" items="${services}" />
         </tree:nodeForm>
       </tree:tree>
 
@@ -63,7 +65,7 @@
     
       <!--  Form for editing a category -->
       <tree:nodeForm>
-        <tree:field label="Node Category" property="name" />
+        <tree:select label="Node Category" property="name" items="${categories}"/>
       </tree:nodeForm>
       
     </tree:tree>

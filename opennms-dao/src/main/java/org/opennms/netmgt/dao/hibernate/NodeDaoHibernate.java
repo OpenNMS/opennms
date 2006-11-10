@@ -165,4 +165,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public OnmsNode findByForeignId(String foreignSource, String foreignId) {
         return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
     }
+
+    public int getNodeCountForForeignSource(String foreignSource) {
+        return queryInt("select count(*) from OnmsNode as n where n.foreignSource = ?", foreignSource);
+    }
 }
