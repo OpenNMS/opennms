@@ -970,5 +970,13 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return "[" + seconds + " sec]";
     }
 
+    public int getGraphRightOffset() {
+        return m_delegate.getGraphRightOffset();
+    }
+
+    public int getGraphTopOffsetWithText() {
+        return m_delegate.getGraphTopOffsetWithText();
+    }
+
 
 }
