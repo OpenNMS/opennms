@@ -541,4 +541,12 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return "";
     }
 
+    public int getGraphRightOffset() {
+        return -22;
+    }
+
+    public int getGraphTopOffsetWithText() {
+        return -72;
+    }
+
 }
