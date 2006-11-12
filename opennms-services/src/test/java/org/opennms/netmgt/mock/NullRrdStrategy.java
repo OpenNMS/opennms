@@ -58,4 +58,12 @@ public class NullRrdStrategy implements RrdStrategy {
 			throws Exception {
 	}
 
+    public int getGraphRightOffset() {
+        return 0;
+    }
+
+    public int getGraphTopOffsetWithText() {
+        return 0;
+    }
+
 }
