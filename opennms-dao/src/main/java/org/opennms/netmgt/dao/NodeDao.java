@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsCategory;
@@ -58,6 +59,11 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
 
     public abstract Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
+    
+    /**
+     * Returns a list of nodes ordered by label.
+     */
+    public abstract List<OnmsNode> findAll();
 
     public abstract OnmsNode findByForeignId(String foreignSource, String foreignId);
 
