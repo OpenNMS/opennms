@@ -39,6 +39,7 @@
 
 --%>
 
+
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -65,28 +66,24 @@
  
 <%
     String[] requiredParameters = new String[] {
-        "node or domain", 
+        "parentResourceType",
+        "parentResource",
         "resourceType",
         "resource"
     };
 
-    // optional parameter node
-    String nodeIdString = request.getParameter("node");
 
-    //optional parameter domain
-    String domain = request.getParameter("domain");
+    for (String requiredParameter : requiredParameters) {
+        if (request.getParameter(requiredParameter) == null) {
+            throw new MissingParameterException(requiredParameter,
+                                                requiredParameters);
+        }
+    }
 
-    //required parameter resourceType
+    String parentResourceTypeName = request.getParameter("parentResourceType");
+    String parentResourceName = request.getParameter("parentResource");
     String resourceTypeName = request.getParameter("resourceType");
-    if (resourceTypeName == null) {
-        throw new MissingParameterException("resourceType", requiredParameters);
-    }
-    
-    //required parameter resource
     String resourceName = request.getParameter("resource");
-    if (resourceName == null) {
-        throw new MissingParameterException("resource", requiredParameters);
-    }
     
 	GraphResourceType resourceType =
 	    model.getResourceTypeByName(resourceTypeName);
@@ -95,51 +92,25 @@
     
     String label = null;
     int nodeId = -1;
-    if (nodeIdString != null) {
-        nodeId = Integer.parseInt(nodeIdString);
+    if ("node".equals(parentResourceTypeName)) {
+        nodeId = Integer.parseInt(parentResourceName);
         label = NetworkElementFactory.getNodeLabel(nodeId);
         resource =
 	        model.getResourceForNodeResourceResourceType(nodeId,
         	                                             resourceName,
                                                          resourceTypeName);
-    } else if (domain != null) {
-        label = domain;
+    } else if ("domain".equals(parentResourceTypeName)) {
+        label = parentResourceName;
         resource =
-		    model.getResourceForDomainResourceResourceType(domain,
+		    model.getResourceForDomainResourceResourceType(parentResourceName,
     	    	                                           resourceName,
         	                                               resourceTypeName);
     } else {
-        throw new MissingParameterException("node or domain",
-                                            requiredParameters);
+        throw new IllegalArgumentException("parameter parentResourceType must "
+                                           + "be one of 'node' or 'domain', "
+                                           + "not '" + parentResourceTypeName
+                                           + "'");
     }
-
-    /*
-    File rrdPath = null;
-    File nodeDir = null;
-    String rrdDir = null;
-    if("".equals(intf) && nodeIdString != null) {
-        rrdPath = new File(this.model.getRrdDirectory(), nodeIdString);
-        rrdDir = nodeIdString;
-    } else {
-        if(nodeIdString != null) {
-            nodeDir = new File(this.model.getRrdDirectory(), nodeIdString);
-            rrdDir = nodeIdString + File.separator + intf;
-        } else {
-            nodeDir = new File(this.model.getRrdDirectory(), domain);
-            rrdDir = domain + File.separator + intf;
-        }
-        rrdPath = new File(nodeDir, intf);
-    }
-    
-    File[] rrds = rrdPath.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-
-    if (rrds == null) {
-        this.log("Invalid rrd directory: " + rrdPath);
-        throw new IllegalArgumentException("Invalid rrd directory: " + rrdPath);
-    }
-    */
-    
-
 
 %>
 
@@ -155,7 +126,7 @@
 
 <h3>Step 2: Choose the Data Sources</h3> 
 
-<% if(nodeIdString != null) { %>
+<% if ("node".equals(parentResourceTypeName)) { %>
   <% if("".equals(resourceName)) { %>
     Node: <%=label%>
   <% } else { %>

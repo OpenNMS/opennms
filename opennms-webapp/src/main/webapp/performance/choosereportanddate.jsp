@@ -67,26 +67,34 @@
 
 <%
     String[] requiredParameters = {
-      	"node or domain",
+      	"node or domain or parentResourceType and parentResource",
       	"resourceType",
       	"resource"
     };
-    
-    // optional parameter node
-    String nodeIdString = request.getParameter("node");
 
-    //optional parameter domain
-    String domain = request.getParameter("domain");
-    if(( nodeIdString == null ) && ( domain == null )) {
-        throw new MissingParameterException("node or domain",
-                                            requiredParameters);
+    String parentResourceType = request.getParameter("parentResourceType");
+    String parentResource = request.getParameter("parentResource");
+    
+    if (parentResourceType == null || parentResource != null) {
+	    // optional parameter node
+    	String nodeIdString = request.getParameter("node");
+
+	    //optional parameter domain
+	    String domain = request.getParameter("domain");
+	    if ((nodeIdString == null) && (domain == null)) {
+	        throw new MissingParameterException("node or domain",
+    	                                        requiredParameters);
+	    }
+	    
+	    if (nodeIdString != null) {
+	        parentResourceType = "node";
+	        parentResource = nodeIdString;
+	    } else {
+	        parentResourceType = "domain";
+	        parentResource = domain;
+	    }
     }
     
-    int nodeId = -1;
-    if (nodeIdString != null) {
-        nodeId = Integer.parseInt(nodeIdString);
-    }
-
     String resourceTypeName = request.getParameter("resourceType");
     if (resourceTypeName == null) {
         throw new MissingParameterException("resourceType",
@@ -97,15 +105,30 @@
         throw new MissingParameterException("resource",
                                             requiredParameters);
     }
+
+    GraphResource resource;
+	if ("node".equals(parentResourceType)) {
+ 		int nodeId;
+ 		try {
+	  	    nodeId = Integer.parseInt(parentResource);
+ 	    } catch (NumberFormatException e) {
+	        throw new IllegalArgumentException("Could not parse '"
+                                               + parentResource
+                                               + "' as an integer node ID: "
+                                               + e.getMessage(),
+                                               e);
+ 	    }
+ 	    
+	    resource = model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceTypeName);
+	} else if ("domain".equals(parentResourceType)) {
+	    resource = model.getResourceForDomainResourceResourceType(parentResource, resourceName, resourceTypeName);
+	} else {
+	    throw new IllegalArgumentException("parentResourceType '"
+	                                       + parentResourceType
+	                                       + "' is not valid");
+	}
     
     GraphResourceType resourceType = model.getResourceTypeByName(resourceTypeName);
-    
-	GraphResource resource;
-	if (nodeId != -1) {
-	    resource = model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceTypeName);
-	} else {
-	    resource = model.getResourceForDomainResourceResourceType(domain, resourceName, resourceTypeName);
-	}
 	
 	List<PrefabGraph> graphs = resourceType.getAvailablePrefabGraphs(resource.getAttributes());
     
@@ -163,21 +186,17 @@
     </p>
   </div>
 <% } else { %>
-  <% if (nodeIdString != null ) { %>
-    <form method="get" name="report" action="graph/results">
-  <% } else { %>
-    <form method="get" name="report" action="graph/domainResults">
-  <% } %>
+  <form method="get" name="report" action="performance/results.htm">
     <input type="hidden" name="type" value="performance"/>
-    <%=Util.makeHiddenTags(request)%>
+    <input type="hidden" name="parentResourceType" value="<%= parentResourceType %>"/>
+    <input type="hidden" name="parentResource" value="<%= parentResource %>"/>
+    <%=Util.makeHiddenTags(request, new String[] { "node", "domain", "parentResourceType", "parentResource" })%>
 
-    <div style="width: 40%; float: left;">
+    <div class="TwoColLeft">
       <p>
         Please choose one or more of the following queries to perform on
-        the node or interface.
-      </p>
-
-      <p>
+        the resource.
+		<br/>
         <select name="reports" multiple="multiple" size="10">
           <% for (PrefabGraph graph : graphs) { %>
             <option value=<%=graph.getName()%>><%=graph.getTitle()%></option>
@@ -186,7 +205,8 @@
       </p>
     </div>
 
-    <div style="width: 60%; float: left;">
+    <div class="TwoColRight">
+    <p>
       Query Start Time<br/>
 
       <select name="startMonth" size="1">
@@ -229,6 +249,7 @@
           </option>
         <% } %>
       </select>
+    </p>
     </div>
 
     <div class="spacer"><!-- --></div>

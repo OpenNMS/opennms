@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.netmgt.utils.IfLabel;
+import org.opennms.web.Util;
 
 public class Graph implements Comparable {
     private GraphModel m_model = null;
@@ -69,8 +70,7 @@ public class Graph implements Comparable {
         return m_graph.getName();
     }
 
-    public String getGraphURL()
-                throws SQLException, UnsupportedEncodingException {
+    public String getGraphURL() throws SQLException {
 
 	String rrdParm = getRRDParmString();
 	String externalValuesParm = encodeExternalValuesAsParmString();
@@ -93,51 +93,57 @@ public class Graph implements Comparable {
 
 	// XXX This is such a hack.  This logic should *not* be in here.
 	if (m_model.getType() == "performance") {
-            if (m_nodeId > -1) {
-	        url = url + "&" + m_nodeId + "/strings.properties";
-            } else if (m_domain != null) {
-	        url = url + "&" + m_domain + "/strings.properties";
-            }
+	    url = url + "&" + Util.encode(getParentResource())
+                + "/strings.properties";
 	}
 
 	return url;
     }
     
-    private String[] getRRDNames() {
+    public String[] getRRDNames() {
         String[] columns = m_graph.getColumns();
         String[] rrds = new String[columns.length];
 
+        String parentResource = getParentResource();
+
         for (int i=0; i < columns.length; i++) {
-            if(m_nodeId > -1) {
-                rrds[i] = m_model.getRelativePathForAttribute(m_resourceType, Integer.toString(m_nodeId), m_resource, columns[i]);
-            } else {
-                rrds[i] = m_model.getRelativePathForAttribute(m_resourceType, m_domain, m_resource, columns[i]);
-            }
+            rrds[i] = m_model.getRelativePathForAttribute(m_resourceType,
+                                                          parentResource,
+                                                          m_resource,
+                                                          columns[i]);
         }
 
         return rrds;
     }
+    
+    public String getParentResource() {
+        if (m_nodeId > -1) {
+            return Integer.toString(m_nodeId);
+        } else {
+            return m_domain;
+        }
+    }
 
-    private String getRRDParmString() throws UnsupportedEncodingException {
+
+    private String getRRDParmString() {
         String[] rrds = getRRDNames();
 	return encodeRRDNamesAsParmString(rrds);
     }
 
-    private String encodeRRDNamesAsParmString(String[] rrds)
-		throws UnsupportedEncodingException {
+    private String encodeRRDNamesAsParmString(String[] rrds) {
         if (rrds == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         String parmString = "";
 
-        if(rrds.length > 0) {
+        if (rrds.length > 0) {
             StringBuffer buffer = new StringBuffer("rrd=");
-            buffer.append(URLEncoder.encode(rrds[0], "UTF-8"));
+            buffer.append(Util.encode(rrds[0]));
 
-            for(int i=1; i < rrds.length; i++ ) {
+            for (int i=1; i < rrds.length; i++ ) {
                 buffer.append("&rrd=");
-                buffer.append(URLEncoder.encode(rrds[i], "UTF-8"));
+                buffer.append(Util.encode(rrds[i]));
             }
 
             parmString = buffer.toString();
@@ -157,7 +163,7 @@ public class Graph implements Comparable {
         if (externalValues != null && externalValues.length > 0) {
             StringBuffer buffer = new StringBuffer();
             
-            for(int i=0; i < externalValues.length; i++) {
+            for (int i=0; i < externalValues.length; i++) {
                 if ("ifSpeed".equals(externalValues[i])) {
                     String speed = getIfSpeed();
                     
@@ -185,7 +191,7 @@ public class Graph implements Comparable {
 
         // if the extended information was found correctly
         if (intfInfo != null) {
-            speed = (String)intfInfo.get("snmpifspeed");
+            speed = (String) intfInfo.get("snmpifspeed");
         }
 
         return speed;
@@ -212,6 +218,10 @@ public class Graph implements Comparable {
 
     public String getGraphHeight() {
         return m_graph.getGraphHeight();
+    }
+    
+    public PrefabGraph getPrefabGraph() {
+        return m_graph;
     }
 
 }

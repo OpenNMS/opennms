@@ -192,36 +192,58 @@
             <table width="100%" >
                 <% for (int i=0; i< graph_count; i++) { 
                        int nodeId = 0;
+                       String parentResourceType;
+                       String parentResourceTypeLabel;
+                       String parentResource;
+                       String parentResourceLabel;
+                       String parentResourceLink = null;
+                       
                        Graph current_graph = report.getGraph(i); 
-                       if(current_graph.getNodeId() != null && !current_graph.getNodeId().equals("null")) {
-                           nodeId = Integer.parseInt(current_graph.getNodeId());
-                       }
                        String curr_domain = current_graph.getDomain();
                        String intf = current_graph.getInterfaceId();
+                       
+                       if(current_graph.getNodeId() != null && !current_graph.getNodeId().equals("null")) {
+                           nodeId = Integer.parseInt(current_graph.getNodeId());
+                           parentResourceType = "node";
+                           parentResourceTypeLabel = "Node";
+                           parentResource = Integer.toString(nodeId);
+                           parentResourceLink = "element/node.jsp?node=" + nodeId;
+                           parentResourceLabel = NetworkElementFactory.getNodeLabel(nodeId);
+                       } else {
+                           parentResourceType = "domain";
+                           parentResourceTypeLabel = "Domain";
+                           parentResource = current_graph.getDomain();
+                           parentResourceLabel = current_graph.getDomain();
+                       }
+
                        String display_graphtype = null;
                        if (override_graphtype.equals("none")) {
                            display_graphtype = current_graph.getGraphtype();
-                       } 
-                       else { 
+                       } else { 
                            display_graphtype = override_graphtype;
                        } 
                        PrefabGraph display_graph = (PrefabGraph) this.model.getQuery(display_graphtype);
-                       
-                       // encode the RRD filenames based on the graph's required data sources 
-                       String[] rrds;
-                       if(nodeId > 0) {
-                           rrds = this.getRRDNames(nodeId, intf, display_graph);  
-                       } else {
-                           rrds = this.getRRDNames(curr_domain, intf, display_graph);  
-                       }
-                       String rrdParm = this.encodeRRDNamesAsParmString(rrds); 
 
-                       String externalValuesParm="";
-                       
-                       // handle external values, if any 
-                       if(nodeId > 0) {
-                           externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); 
+                       String resourceType;
+                       String resourceTypeLabel = null;
+                       String resource;
+                       String resourceLabel = null;
+                       String resourceLink = null;
+                       if (intf == null || "".equals(intf) || !display_graph.getType().equals("interface")) {
+                           resourceType = "node";
+                           resource = "";
+                       } else {
+                           resourceType = "interface";
+                           resourceTypeLabel = "Interface";
+                           resource = intf;
+                           if ("domain".equals(parentResourceType)) {
+                               resourceLabel = intf;
+                               resourceLink = "element/nodelist.jsp?listInterfaces&ifAlias=" + intf;
+                           } else {
+                               resourceLabel = this.model.getHumanReadableNameForIfLabel(nodeId, intf);
+                           }
                        }
+                       
                 %>
             
 		    <% if ((i == 0) || (i%report_graphsperline == 0)) { %>
@@ -252,31 +274,29 @@
                             <b>From</b> <%=startPretty%> <br>
                             <b>To</b> <%=endPretty%>
 			    </td><td>
-                            <%if(nodeId > 0) {%>
-                                Node: <a href="element/node.jsp?node=<%=nodeId%>">
-                                <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
-                                <% if(intf != null && !intf.equals("") && display_graph.getType().equals("interface")) { %>
-                                    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%><br>
-				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=interface&resource=<%=intf%>">Detail</a>
-			            </td></tr></table>
-                                    <br/>
-                                    <a href="graph/results?zoom=true&type=performance&resourceType=interface&resource=<%=intf%>&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&node=<%=nodeId%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
-                                <% } else {%>
-				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=node&resource=">Detail</a>
-			            </td></tr></table>
-                                    <br/>
-                                    <a href="graph/results?zoom=true&type=performance&resourceType=node&resource=&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&node=<%=nodeId%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
+                                <%= parentResourceTypeLabel %>:
+                                <% if (parentResourceLink != null) { %>
+                                  <a href="<%= parentResourceLink %>"><%= parentResourceLabel %></a>
+                                <% } else { %>
+                                  <%= parentResourceLabel %>
                                 <% } %>
-                            <%} else {%>
-                                Domain: <%=curr_domain%><br>
-                                Interface: <a href="element/nodelist.jsp?listInterfaces&ifAlias=<%=intf%>"><%=intf%></a><br>
-				<a href="performance/choosereportanddate.jsp?domain=<%=curr_domain%>&resourceType=interface&resource=<%=intf%>">Detail</a>
-			        </td></tr></table>
                                 <br/>
-                                <a href="graph/results?zoom=true&type=performance&resourceType=interface&resource=<%=intf%>&amp;reports=<%=display_graph.getName()%>&domain=<%=curr_domain%>&amp;start=<%=start%>&amp;end=<%=end%>&amp;props=<%=nodeId%>/strings.properties&<%=rrdParm%>&<%=externalValuesParm%>">
-                            <%}%>
+                                <% if (resourceTypeLabel != null) { %>
+                                    <%= resourceTypeLabel %>:
+                                    <% if (resourceLink != null) { %>
+                                      <a href="<%= resourceLink %>"><%= resourceLabel %></a>
+                                    <% } else { %>
+                                      <%= resourceLabel %>
+                                    <% } %>
+                                    <br/>
+                                <% } %>
+                                
+                                <a href="graph/results.htm?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;reports=all&amp;start=<%=start%>&amp;end=<%=end%>">Detail</a>
+			            </td></tr></table>
+                                    <br/>
+                                    <a href="graph/results.htm?zoom=true&amp;type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;reports=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>">
 
-                            <img src="graph/graph.png?type=performance&resourceType=interface&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                            <img src="graph/graph.png?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>"/>
                             </a>
 
                         </td>

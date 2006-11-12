@@ -139,25 +139,32 @@
                 <% int graph_count = report.getGraphCount();
                    for (int i=0; i< graph_count; i++) { 
                        int nodeId = 0;
+                       String parentResourceType;
+                       String parentResource;
+                       String resourceType;
+                       String resource;
                        Graph current_graph = report.getGraph(i); 
-                       if(current_graph.getNodeId() != null && !current_graph.getNodeId().equals("null")) {
-                           nodeId = Integer.parseInt(current_graph.getNodeId());
-                       }
                        String curr_domain = current_graph.getDomain();
                        String intf = current_graph.getInterfaceId();
                        PrefabGraph display_graph = (PrefabGraph) this.model.getQuery(current_graph.getGraphtype());
                        
-                       // encode the RRD filenames based on the graph's required data sources 
-                       String[] rrds;
-                       String externalValuesParm="";
-                       if(nodeId > 0) {
-                           rrds = this.getRRDNames(nodeId, intf, display_graph);  
-                           // handle external values, if any 
-                           externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); 
+                       if(current_graph.getNodeId() != null && !current_graph.getNodeId().equals("null")) {
+                           nodeId = Integer.parseInt(current_graph.getNodeId());
+                           parentResourceType = "node";
+                           parentResource = Integer.toString(nodeId);
+                           if (intf == null || "".equals(intf)) {
+                               resourceType = "node";
+                               resource = "";
+                           } else {
+                               resourceType = "interface";
+                               resource = intf;
+                           }
                        } else {
-                           rrds = this.getRRDNames(curr_domain, intf, display_graph);  
+                           parentResourceType = "domain";
+                           parentResource = current_graph.getDomain();
+                           resourceType = "interface";
+                           resource = intf;
                        }
-                       String rrdParm = this.encodeRRDNamesAsParmString(rrds); 
                        
                 %>
             
@@ -196,7 +203,7 @@
                         </td>
               
                         <td align="left">
-                            <img src="graph/graph.png?type=performance&resourceType=interface&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                            <img src="graph/graph.png?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;report=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>"/>
                         </td>
                     </tr>
                 <% }  //end for loop %> 

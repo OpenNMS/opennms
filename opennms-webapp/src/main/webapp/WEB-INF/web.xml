@@ -178,11 +178,13 @@
 
   <!-- desktop survey report servlet -->  
 
+<!--
   <servlet>
-    <!-- This servlet creates the graph images using RRDTool. -->
+    <description>This servlet creates the graph images using RRDTool.</description>
     <servlet-name>rrdgraph</servlet-name>
     <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
   </servlet>
+  -->
   
   <servlet>
     <!-- This servlet dumps out XML using RRDTool. -->
@@ -1035,10 +1037,12 @@
   	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
   </servlet-mapping>
 
+<!-- 
   <servlet-mapping>
     <servlet-name>rrdgraph</servlet-name>
     <url-pattern>/graph/graph.png</url-pattern>
   </servlet-mapping>
+  -->
 
   <servlet-mapping>
     <servlet-name>rrddump</servlet-name>
@@ -1540,6 +1544,11 @@
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/graph/graph.png</url-pattern>
   </servlet-mapping>
 
   <error-page>

@@ -142,14 +142,21 @@ public class DistributedStatusHistoryModel {
             long[] times) {
         return "graph/graph.png"
             + "?report=" + service.getServiceName().toLowerCase()
+            + "&parentResourceType=node"
+            + "&parentResource=" + service.getIpInterface().getNode().getId()
             + "&resourceType=distributedStatus"
+            + "&resource=" + getChosenMonitor().getId()
+                + "/" + service.getIpAddress()
             + "&type=performance"
             + "&start=" + times[0]
-            + "&end=" + times[1]
+            + "&end=" + times[1];
+
+        /*
             + "&rrd=" + getChosenMonitor().getId()
             + "%2F" + service.getIpAddress()
             + "%2F" + service.getServiceName().toLowerCase()
             + RrdUtils.getExtension();
+*/
     }
     
 }

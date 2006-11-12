@@ -12,30 +12,27 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 public class ChooseResourceController extends AbstractController {
     private ChooseResourceService m_chooseResourceService;
+    private String m_defaultEndUrl;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String[] requiredParameters = new String[] { "node or domain", "endUrl" };
+        assertPropertiesSet();
+        
+        String[] requiredParameters = new String[] { "parentResourceType", "parentResource" };
 
-        String nodeId = request.getParameter("node");
-        String domain = request.getParameter("domain");
+        String resourceType = request.getParameter("parentResourceType");
+        String resource = request.getParameter("parentResource");
         String endUrl = request.getParameter("endUrl");
         
-        if (request.getParameter("endUrl") == null) {
-            throw new MissingParameterException("endUrl", requiredParameters);
+        if (request.getParameter("parentResourceType") == null) {
+            throw new MissingParameterException("parentResourceType", requiredParameters);
+        }
+        if (request.getParameter("parentResource") == null) {
+            throw new MissingParameterException("parentResource", requiredParameters);
         }
         
-        String resourceType;
-        String resource;
-        if (nodeId != null) {
-            resourceType = "node";
-            resource = nodeId;
-        } else if (domain != null) {
-            resourceType = "domain";
-            resource = domain;
-        } else {
-            throw new MissingParameterException("node or domain",
-                                                requiredParameters);
+        if (endUrl == null || "".equals(endUrl)) {
+            endUrl = m_defaultEndUrl;
         }
 
         ChooseResourceModel model = 
@@ -47,6 +44,16 @@ public class ChooseResourceController extends AbstractController {
                                 "model",
                                 model);
     }
+    
+    private void assertPropertiesSet() {
+        if (m_chooseResourceService == null) {
+            throw new IllegalStateException("chooseResourceService property not set");
+        }
+        
+        if (m_defaultEndUrl == null) {
+            throw new IllegalStateException("defaultEndUrl property not set");
+        }
+    }
 
     public ChooseResourceService getChooseResourceService() {
         return m_chooseResourceService;
@@ -55,5 +62,13 @@ public class ChooseResourceController extends AbstractController {
     public void setChooseResourceService(
             ChooseResourceService chooseResourceService) {
         m_chooseResourceService = chooseResourceService;
+    }
+
+    public String getDefaultEndUrl() {
+        return m_defaultEndUrl;
+    }
+
+    public void setDefaultEndUrl(String defaultEndUrl) {
+        m_defaultEndUrl = defaultEndUrl;
     }
 }

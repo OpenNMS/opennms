@@ -64,6 +64,8 @@
       	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 
 <%!
 
@@ -73,8 +75,8 @@
     protected int httpServiceId;
     protected int dellServiceId;
     protected int snmpServiceId;
-    protected PerformanceModel perfModel;
-    protected ResponseTimeModel rtModel;
+    protected PerformanceModel m_performanceModel;
+//    protected ResponseTimeModel rtModel;
 	protected AssetModel model = new AssetModel();
 
 	public static HashMap<Character, String> m_statusMap;
@@ -117,8 +119,8 @@
         }
 
 	    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		this.perfModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
-		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
+		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+//		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
     
     public static String getStatusString(char c) {
@@ -262,16 +264,24 @@
           <a href="https://<%=dellIp%>:1311">OpenManage</a>
 	  </li>
         <% } %>
-
+<%--
         <% if(this.rtModel.isQueryableNode(nodeId)) { %>
 	  <li>
           <a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
 	  </li>
         <% } %>
+        --%>
         
-        <% if(this.perfModel.isQueryableNode(nodeId)) { %>
+        <% if (m_performanceModel.getResourceTypesForNode(nodeId).size() > 0) { %>
 	  <li>
-          <a href="performance/chooseresource.jsp?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
+        <c:url var="resourceGraphsUrl" value="performance/chooseresource.htm">
+          <c:param name="endUrl" value="performance/results.htm"/>
+          <c:param name="parentResourceType" value="node"/>
+          <c:param name="parentResource" value="<%= Integer.toString(nodeId) %>"/>
+          <c:param name="relativetime" value="lastday"/>
+          <c:param name="reports" value="all"/>
+        </c:url>
+          <a href="${resourceGraphsUrl}">Resource Graphs</a>
 	  </li>
         <% } %>
         

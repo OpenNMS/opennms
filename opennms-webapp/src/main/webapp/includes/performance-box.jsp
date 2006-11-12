@@ -45,44 +45,97 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="java.util.*,
-		org.opennms.web.performance.*,
-		org.opennms.web.Util,
+        import="
+        java.util.List,
+        org.opennms.netmgt.dao.NodeDao,
+        org.opennms.netmgt.model.OnmsNode,
+        org.opennms.web.Util,
 		org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 
 <%!
-    public PerformanceModel m_model = null;
+    public NodeDao m_nodeDao = null;
 
 
 	public void init() throws ServletException {
 	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+        m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", NodeDao.class);
     }
 %>
 
 <%
-    PerformanceModel.QueryableNode[] nodes = m_model.getQueryableNodes();
+    List<OnmsNode> nodes = m_nodeDao.findAll();
 %>
 
-<h3><a href="performance/index.jsp">Performance</a></h3>
+
+<script type="text/javascript">
+  function resetPerformanceBoxSelected() {
+    document.performanceBoxNodeList.parentResource[0].selected = true;
+  }
+  
+  function validatePerformanceBoxNodeChosen() {
+    var selectedParentResource = false
+    
+    for (i = 0; i < document.performanceBoxNodeList.parentResource.length; i++) {
+      // make sure something is checked before proceeding
+      if (document.performanceBoxNodeList.parentResource[i].selected
+          && document.performanceBoxNodeList.parentResource[i].value != "") {
+        selectedParentResource = document.performanceBoxNodeList.parentResource[i].value;
+        break;
+      }
+    }
+    
+    return selectedParentResource;
+  }
+  
+  function goPerformanceBoxChange() {
+    var nodeChosen = validatePerformanceBoxNodeChosen();
+    if (nodeChosen != false) {
+      document.performanceBoxForm.parentResource.value = nodeChosen;
+      document.performanceBoxForm.submit();
+      /*
+       * We reset the selection after submitting the form so if the user
+       * uses the back button to get back to this page, it will be set at
+       * the "choose a node" option.  Without this, they wouldn't be able
+       * to proceed forward to the same node because won't trigger the
+       * onChange action on the <select/> element.  We also do the submit
+       * in a separate form after we copy the chosen value over, just to
+       * ensure that no problems happen by resetting the selection
+       * immediately after calling submit().
+       */
+      resetPerformanceBoxSelected();
+    }
+  }
+  
+</script>
+
+<h3><a href="performance/index.jsp">Resource Graphs</a></h3>
 <div class="boxWrapper">
 
-<%  if( nodes != null && nodes.length > 0 ) { %>
-      <form method="GET" action="performance/chooseresource.jsp" >
-        <input type="hidden" name="endUrl" value="performance/addReportsToUrl" />
+<%  if( nodes != null && nodes.size() > 0 ) { %>
+      <form method="get" name="performanceBoxForm" action="graph/chooseresource.htm" >
+        <input type="hidden" name="parentResourceType" value="node" />
+        <input type="hidden" name="reports" value="all"/>
         <input type="hidden" name="relativetime" value="lastday" />
+        <input type="hidden" name="parentResource" value="" />
+      </form>
+      
+      <form name="performanceBoxNodeList">
               <p>Choose a <label for="node">node to query</label>:</p>
-              <select style="width: 100%;" name="node" id="node">
-                <% for( int i=0; i < nodes.length; i++ ) { %>
-                   <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
+              <select style="width: 100%;" name="parentResource" id="node" onchange="goPerformanceBoxChange();">
+                <option value="">-- Choose a node --</option>
+                <% for (OnmsNode node : nodes) { %>
+                  <option value="<%=node.getId()%>"><%=Util.htmlify(node.getLabel())%></option>
                 <% } %>
               </select>
-              <br/>
-              <input type="submit" value="Execute Query" />
       </form>
+      
+      <script type="text/javascript">
+        resetPerformanceBoxSelected();
+      </script>
+      
 <% } else { %>
-      <p>No performance data has been gathered yet</p>
+      <p>No nodes are in the database</p>
 <% }  %>
 </div>

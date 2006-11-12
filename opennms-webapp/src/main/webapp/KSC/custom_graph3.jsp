@@ -84,18 +84,33 @@
 
     PrefabGraph[] graph_options = null;
 
+    String parentResourceType;
+    String parentResource;
+    String resourceType;
+    String resource;
+
     if( nodeIdString != null && !nodeIdString.equals("null")) {
         boolean includeNodeQueries = false;
         nodeId = Integer.parseInt(nodeIdString);
         nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);
-	if(intf.equals("")) {
+	    if(intf.equals("")) {
             graph_options = this.model.getQueries(nodeId);
+            resourceType = "node";
+            resource = "";
         } else {
             graph_options = this.model.getQueries(nodeId, intf, includeNodeQueries);
+            resourceType = "interface";
+            resource = intf;
         }
+        parentResourceType = "node";
+        parentResource = nodeIdString;
     } else {
         graph_options = this.model.getQueriesForDomain(domain, intf);
         nodeIdString = "null";
+        parentResourceType = "domain";
+        parentResource = domain;
+        resourceType = "interface";
+        resource = intf;
     }
     Report report = this.reportFactory.getWorkingReport(); 
     org.opennms.netmgt.config.kscReports.Graph sample_graph = this.reportFactory.getWorkingGraph(); 
@@ -192,22 +207,6 @@
                                 <h3 align="center">Sample Graph Image</h3> 
                             </td>
                         </tr>
-		        <% String[] rrds; %>
-                        <%-- encode the RRD filenames based on the graph's required data sources --%>
-                        <% if(nodeId > 0) { %>
-                            <% rrds = this.getRRDNames(nodeId, intf, display_graph); %> 
-                        <% } else { %>
-                            <% rrds = this.getRRDNames(domain, intf, display_graph); %> 
-                        <% } %>
-                        <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
-
-                        <% String externalValuesParm = ""; %>
-                        
-                        <%-- handle external values, if any --%>
-                        <% if(nodeId > 0) { %>
-                            <% this.log("custom graph3: encoding external values for node " + nodeId); %>
-                            <% externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); %>
-                        <% } %>
 
                         <tr>
                             <td align="right">
@@ -241,7 +240,7 @@
                             </td>
               
                             <td align="left">
-                                <img src="graph/graph.png?type=performance&resourceType=interface&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                                <img src="graph/graph.png?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;report=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>"/>
                             </td>
                         </tr>
                     </table>
