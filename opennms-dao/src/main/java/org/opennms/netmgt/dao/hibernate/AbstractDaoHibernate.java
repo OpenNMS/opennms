@@ -38,6 +38,7 @@ package org.opennms.netmgt.dao.hibernate;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -76,17 +77,17 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<T> find(String query) {
+    public List<T> find(String query) {
         return getHibernateTemplate().find(query);
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<T> find(String query, Object... values) {
+    public List<T> find(String query, Object... values) {
         return getHibernateTemplate().find(query, values);
     }
     
     @SuppressWarnings("unchecked")
-	public <S> Collection<S> findObjects(Class<S> clazz, String query, Object... values) {
+	public <S> List<S> findObjects(Class<S> clazz, String query, Object... values) {
     	return getHibernateTemplate().find(query, values);
     }
 

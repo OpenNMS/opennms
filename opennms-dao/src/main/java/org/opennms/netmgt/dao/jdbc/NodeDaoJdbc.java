@@ -34,6 +34,7 @@ package org.opennms.netmgt.dao.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -189,8 +190,8 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
         getNodeDeleter().doDelete(node);
     }
 
-    public Collection findAll() {
-        return new FindAll(getDataSource()).findSet();
+    public List findAll() {
+        return new ArrayList(new FindAll(getDataSource()).findSet());
     }
 
     public Set findNodes(OnmsDistPoller dp) {
