@@ -83,16 +83,18 @@
       }
   </script>
 
+  <h2>
+    ${model.resourceTypeLabel}: <a href="<c:url value='${model.resourceLink}'/>">${model.resourceLabel}</a>
+  </h2> 
+
   <c:choose>
 	<c:when test="${empty model.resourceTypes}">
-	  No resources are available to graph for this ${model.resourceTypeLabel}
+      <p>
+	    No resources are available to graph for this ${model.resourceTypeLabel}
+      </p>
 	</c:when>
 	
 	<c:otherwise>
-	  <h2>
-        ${model.resourceTypeLabel}: <a href="<c:url value='${model.resourceLink}'/>">${model.resourceLabel}</a>
-	  </h2>
-	  
       <h3>
         Choose a Resource to Query
       </h3>
@@ -109,6 +111,7 @@
       
         <form method="GET" name="report" action="${model.endUrl}">
           <%=Util.makeHiddenTags(request, new String[] {"endUrl"})%>
+          <input type="hidden" name="type" value="performance"/>
           <input type="hidden" name="resourceType" value="${resourceType.key.name}"/>
 
           <c:choose>

@@ -147,4 +147,26 @@
     <property name="performanceModel" ref="performanceModel"/>
     <property name="nodeDao" ref="nodeDao"/>
   </bean>
+
+  <bean id="rrdStrategy-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.graphicsInitialize</value></property>
+  </bean>
+
+  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rrdStrategy-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.getStrategy</value></property>
+  </bean>
+  
+  <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
+    <property name="performanceModel" ref="performanceModel"/>
+    <property name="responseTimeModel" ref="responseTimeModel"/>
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
+  
+  <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
+    <property name="performanceModel" ref="performanceModel"/>
+    <property name="responseTimeModel" ref="responseTimeModel"/>
+    <property name="prefabGraphDao" ref="prefabGraphDao"/>
+    <property name="rrdStrategy" ref="rrdStrategy"/>
+  </bean>
+  
 </beans>

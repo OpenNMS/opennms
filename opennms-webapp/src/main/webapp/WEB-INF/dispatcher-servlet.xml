@@ -131,8 +131,18 @@
   </bean>
   
   <!-- Graphing -->
-  <bean name="/performance/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
+  <bean name="/graph/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
     <property name="chooseResourceService" ref="chooseResourceService"/>
+    <property name="defaultEndUrl"><value>graph/results.htm</value></property>
+  </bean>
+  
+  <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
+    <property name="graphResultsService" ref="graphResultsService"/>
+    <property name="rrdStrategy" ref="rrdStrategy"/>
+  </bean>
+  
+  <bean name="/graph/graph.png" class="org.opennms.web.controller.RrdGraphController">
+    <property name="rrdGraphService" ref="rrdGraphService"/>
   </bean>
   
  

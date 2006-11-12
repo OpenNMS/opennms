@@ -63,8 +63,8 @@
 <%!
     protected int telnetServiceId;
     protected int httpServiceId;
-    protected PerformanceModel perfModel;
-    protected ResponseTimeModel rtModel;
+    protected PerformanceModel m_performanceModel;
+//    protected ResponseTimeModel rtModel;
     
     public void init() throws ServletException {
         try {
@@ -82,8 +82,8 @@
         }
 
 	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		this.perfModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
-		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
+		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+//		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 %>
 
@@ -175,29 +175,29 @@ function doDelete() {
           <a href="http://<%=httpIp%>">HTTP</a>
 	  </li>
         <% } %>
-        
-        <% if(this.rtModel.isQueryableInterface(ipAddr)) { %>
-	  <li>
-          <a href="response/addReportsToUrl?node=<%=nodeId%>&resourceType=node&resource=<%=ipAddr%>&relativetime=lastday">Response Time</a>
-	  </li>
-        <% } %>
 
-        <% if(hasSNMPData(intf_db) && ifindexString == null) { %>
-              <% String ifLabel = IfLabel.getIfLabel(nodeId, ipAddr); %>
-          <% if(ifLabel != null && this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
-	    <li>
-            <a href="performance/addReportsToUrl?resourceType=interface&node=<%=nodeId%>&resource=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
-	    </li>
-          <% } %>
-        <% } %>
-        <% if(hasSNMPData(intf_db) && ifindexString != null) { %>
-              <% String ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString); %>
-          <% if(ifLabel != null && this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
-	    <li>
-            <a href="performance/addReportsToUrl?resourceType=interface&node=<%=nodeId%>&resource=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
-	    </li>
-          <% } %>
-        <% } %>
+      <%
+      
+        Collection<GraphResourceType> resourceTypes =
+            m_performanceModel.getResourceTypesForNode(nodeId);
+        String ifLabel;
+        if (ifindexString != null) {
+            ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString);
+        } else {
+            ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
+        }
+        for (GraphResourceType resourceType : resourceTypes) {
+            List<GraphResource> resources =
+                resourceType.getResourcesForNode(nodeId);
+            for (GraphResource resource : resources) {
+                if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
+                    out.println("<li>");
+                    out.println("<a href=\"performance/results.htm?type=performance&reports=all&parentResourceType=node&parentResource=" + nodeId + "&resourceType=" + resourceType.getName() + "&resource=" + resource.getName() + "&relativetime=lastday\">" + resourceType.getLabel() + " Graphs</a>");
+                    out.println("</li>");
+                }
+            }
+        }
+      %>
         
         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 	 <li>
@@ -292,7 +292,7 @@ function doDelete() {
                     </tr>
                     <tr>
                       <td>Interface Type</td>
-                      <td><%=IFTYPES[intf_db.getSnmpIfType()]%></td>
+                      <td><%=getIfTypeString(intf_db.getSnmpIfType())%></td>
                     </tr>
                     <tr> 
                       <td>Status (Adm/Op)</td>
@@ -300,7 +300,7 @@ function doDelete() {
                         <% if( intf_db.getSnmpIfAdminStatus() < 1 || intf_db.getSnmpIfOperStatus() < 1 ) { %>
                           &nbsp;
                         <% } else { %>
-                          <%=OPER_ADMIN_STATUS[intf_db.getSnmpIfAdminStatus()]%>/<%=OPER_ADMIN_STATUS[intf_db.getSnmpIfOperStatus()]%>
+                          <%=getIfStatusString(intf_db.getSnmpIfAdminStatus())%>/<%=getIfStatusString(intf_db.getSnmpIfOperStatus())%>
                         <% } %>
                       </td>
                     </tr>
@@ -581,6 +581,21 @@ function doDelete() {
     "LowerLayerDown"   //7
   };
 
+  public String getIfTypeString(int ifTypeNum) {
+      if (ifTypeNum < IFTYPES.length) {
+          return IFTYPES[ifTypeNum];
+      } else {
+          return "Unknown (" + ifTypeNum + ")";
+      }
+  }
+  
+  public String getIfStatusString(int ifStatusNum) {
+      if (ifStatusNum < OPER_ADMIN_STATUS.length) {
+          return OPER_ADMIN_STATUS[ifStatusNum];
+      } else {
+          return "Unknown (" + ifStatusNum + ")";
+      }
+  }
   
   private boolean hasSNMPData(Interface intf_db)
   {

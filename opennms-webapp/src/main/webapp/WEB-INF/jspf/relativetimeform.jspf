@@ -1,5 +1,25 @@
 <div align="center">
   <form name="reltimeform" action="">
+  <p>
+    <br/>
+    Time period <select name="rtstatus" onchange="relativeTimeFormChange();">
+	  <c:forEach var="period"
+                 items="${requestScope.results.relativeTimePeriods}">
+        <c:set var="relativeTimeChecked"></c:set>
+        <c:if test="${period.id == requestScope.results.relativeTime}">
+		  <c:set var="relativeTimeChecked">selected</c:set>
+	    </c:if>
+	    <option value="${period.id}" ${relativeTimeChecked}>${period.name}</option>
+	  </c:forEach>
+	  
+      <c:set var="relativeTimeChecked"></c:set>
+      <c:if test="${'custom' == requestScope.results.relativeTime}">
+		<c:set var="relativeTimeChecked">selected</c:set>
+	  </c:if>
+	  <option value="custom" ${relativeTimeChecked}>Custom</option>
+	</select>
+  </p>
+<%--
     <table class="periods">
       <tbody>
         <tr>
@@ -23,5 +43,6 @@
         </tr>
       </tbody>
     </table>
+--%>
   </form>
 </div>

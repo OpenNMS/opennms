@@ -67,9 +67,6 @@
 		<!-- Performance box -->    
 		<jsp:include page="/includes/performance-box.jsp" flush="false" />
 		<hr />
-		<!-- Response Time box -->    
-		<jsp:include page="/includes/response-box.jsp" flush="false" />
-		<hr />
 		<!-- KSC Reports box -->    
 		<jsp:include page="/includes/ksc-box.jsp" flush="false" />
 		<hr />

@@ -149,15 +149,37 @@
     //gather information for displaying around the image
     String startPretty = new Date( Long.parseLong( start )).toString();
     String endPretty   = new Date( Long.parseLong( end )).toString();
+    
+    
+    String parentResourceType;
+    String parentResource;
+    
+    if (request.getParameter("parentResourceType") != null
+	    && request.getParameter("parentResource") != null) {
+	    parentResourceType = request.getParameter("parentResourceType");
+	    parentResource = request.getParameter("parentResource");
+    } else {
+	    if (request.getParameter("node") != null) {
+	        parentResourceType = "node";
+	        parentResource = request.getParameter("node");
+    	} else {
+	        parentResourceType = "domain";
+	        parentResource = request.getParameter("domain");
+    	}
+    }
 
-    String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour" };
+
+    String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour", "node", "domain", "parentResourceType", "parentResource" };
     Map additions = new HashMap();
     additions.put( "start", start );
     additions.put( "end", end );
     additions.put( "type", "performance" );
     additions.put( "adhoc", "true" );
+//    additions.put( "parentResourceType", parentResourceType );
+//    additions.put( "parentResource", parentResource );
+    
      
-    String queryString = Util.makeQueryString( request, additions, ignores ); 
+    String queryString = Util.makeQueryString( request, additions, ignores );
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -171,7 +193,7 @@
 </jsp:include>
 
 <div align="center">
-  <img src="graph/graph.png?<%=queryString%>" />
+  <img src="graph/graph.png?<%=queryString%>&parentResourceType=<%= parentResourceType %>&parentResource=<%= parentResource %>" />
 
   <br/>
 

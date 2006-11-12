@@ -78,10 +78,10 @@
   function validateNode()
   {
       var isChecked = false
-      for( i = 0; i < document.choose_node.node.length; i++ )
+      for( i = 0; i < document.choose_node.parentResource.length; i++ )
       {
          //make sure something is checked before proceeding
-         if (document.choose_node.node[i].selected)
+         if (document.choose_node.parentResource[i].selected)
          {
             isChecked=true;
          }
@@ -97,10 +97,10 @@
   function validateNodeAdhoc()
   {
       var isChecked = false
-      for( i = 0; i < document.choose_node_adhoc.node.length; i++ )
+      for( i = 0; i < document.choose_node_adhoc.parentResource.length; i++ )
       {
          //make sure something is checked before proceeding
-         if (document.choose_node_adhoc.node[i].selected)
+         if (document.choose_node_adhoc.parentResource[i].selected)
          {
             isChecked=true;
          }
@@ -116,10 +116,10 @@
   function validateDomain()
   {
       var isChecked = false
-      for( i = 0; i < document.choose_domain.domain.length; i++ )
+      for( i = 0; i < document.choose_domain.parentResource.length; i++ )
       {
          //make sure something is checked before proceeding
-         if (document.choose_domain.domain[i].selected)
+         if (document.choose_domain.parentResource[i].selected)
          {
             isChecked=true;
          }
@@ -135,10 +135,10 @@
   function validateDomainAdhoc()
   {
       var isChecked = false
-      for( i = 0; i < document.choose_domain_adhoc.domain.length; i++ )
+      for( i = 0; i < document.choose_domain_adhoc.parentResource.length; i++ )
       {
          //make sure something is checked before proceeding
-         if (document.choose_domain_adhoc.domain[i].selected)
+         if (document.choose_domain_adhoc.parentResource[i].selected)
          {
             isChecked=true;
          }
@@ -191,11 +191,11 @@
     Choose a node for a standard performance report.
   </p>
 
-  <form method="get" name="choose_node" action="performance/addIntfFromNode">
-    <input type="hidden" name="endUrl"
-	   value="performance/choosereportanddate.jsp" />
+  <form method="get" name="choose_node" action="graph/chooseresource.htm">
+    <input type="hidden" name="reports" value="all" />
+    <input type="hidden" name="parentResourceType" value="node" />
 
-    <select name="node" size="10">
+    <select name="parentResource" size="10">
       <% for( int i=0; i < nodes.length; i++ ) { %>
         <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
       <% } %>
@@ -213,12 +213,10 @@
     Choose a node for a custom performance report.
   </p>
 
-<!--
-  <form method="get" name="choose_node_adhoc" action="performance/adhoc.jsp">
-  -->
-  <form method="get" name="choose_node_adhoc" action="performance/chooseresource.jsp">
+  <form method="get" name="choose_node_adhoc" action="graph/chooseresource.htm">
     <input type="hidden" name="endUrl" value="performance/adhoc2.jsp"/>
-    <select name="node" size="10">
+    <input type="hidden" name="parentResourceType" value="node"/>
+    <select name="parentResource" size="10">
       <% for( int i=0; i < nodes.length; i++ ) { %>
         <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
       <% } %>
@@ -239,11 +237,11 @@
     Choose a domain for a standard performance report.
   </p>
 
-  <form method="get" name="choose_domain" action="performance/addIntfFromDomain">
-    <input type="hidden" name="endUrl"
-	   value="performance/choosereportanddate.jsp" />
+  <form method="get" name="choose_domain" action="graph/chooseresource.htm">
+    <input type="hidden" name="reports" value="all" />
+    <input type="hidden" name="parentResourceType" value="domain" />
 
-    <select name="domain" size="10">
+    <select name="parentResource" size="10">
       <% for( int i=0; i < domains.length; i++ ) { %>
         <option value="<%=domains[i]%>"><%=domains[i]%></option>
       <% } %>
@@ -261,8 +259,10 @@
     Choose a domain for a custom performance report.
   </p>
 
-  <form method="get" name="choose_domain_adhoc" action="performance/adhoc.jsp">
-    <select name="domain" size="10">
+  <form method="get" name="choose_domain_adhoc" action="graph/chooseresource.htm">
+    <input type="hidden" name="endUrl" value="performance/adhoc2.jsp"/>
+    <input type="hidden" name="parentResourceType" value="domain"/>
+    <select name="parentResource" size="10">
       <% for( int i=0; i < domains.length; i++ ) { %>
         <option value="<%=domains[i]%>"><%=domains[i]%></option>
       <% } %>
