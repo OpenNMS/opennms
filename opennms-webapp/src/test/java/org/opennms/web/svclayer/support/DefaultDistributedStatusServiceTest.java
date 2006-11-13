@@ -251,7 +251,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.EMPTY_SET);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.EMPTY_LIST);
         //expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
         //expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
         //expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
@@ -428,7 +428,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         locationDefinitions.add(m_locationDefinition3);
         expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
         
-        Set<OnmsApplication> applications = new HashSet<OnmsApplication>();
+        List<OnmsApplication> applications = new ArrayList<OnmsApplication>();
         applications.add(m_application1);
         applications.add(m_application2);
         expect(m_applicationDao.findAll()).andReturn(applications);
@@ -436,7 +436,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_locationMonitorDao.findMonitoringLocationDefinition("Durham")).andReturn(m_locationDefinition2);
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         
-        Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        List<OnmsLocationMonitor> monitors = new ArrayList<OnmsLocationMonitor>();
         monitors.add(m_locationMonitor2_1);
         monitors.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
@@ -493,7 +493,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         locationDefinitions.add(m_locationDefinition3);
         expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
         
-        Set<OnmsApplication> applications = new HashSet<OnmsApplication>();
+        List<OnmsApplication> applications = new ArrayList<OnmsApplication>();
         applications.add(m_application1);
         applications.add(m_application2);
         expect(m_applicationDao.findAll()).andReturn(applications);
@@ -501,7 +501,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_locationMonitorDao.findMonitoringLocationDefinition("Raleigh-bad")).andReturn(null);
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         
-        Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        List<OnmsLocationMonitor> monitors = new ArrayList<OnmsLocationMonitor>();
         monitors.add(m_locationMonitor1_1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(monitors);
         
@@ -561,7 +561,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         locationDefinitions.add(m_locationDefinition3);
         expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
         
-        Set<OnmsApplication> applications = new HashSet<OnmsApplication>();
+        List<OnmsApplication> applications = new ArrayList<OnmsApplication>();
         applications.add(m_application1);
         applications.add(m_application2);
         expect(m_applicationDao.findAll()).andReturn(applications);
@@ -569,7 +569,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition2.getName())).andReturn(m_locationDefinition2);
         expect(m_applicationDao.findByName("Big Bad Voodoo Daddy Application")).andReturn(null);
         
-        Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        List<OnmsLocationMonitor> monitors = new ArrayList<OnmsLocationMonitor>();
         monitors.add(m_locationMonitor2_1);
         monitors.add(m_locationMonitor2_2);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);

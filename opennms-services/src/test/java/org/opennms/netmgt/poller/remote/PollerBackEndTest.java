@@ -510,7 +510,7 @@ public class PollerBackEndTest extends TestCase {
         m_locationMonitor.setStatus(MonitorStatus.STARTED);
         m_locationMonitor.setLastCheckInTime(new Date(now.getTime() - UNRESPONSIVE_TIMEOUT - 100));
         
-        expect(m_locMonDao.findAll()).andReturn(Collections.singleton(m_locationMonitor));
+        expect(m_locMonDao.findAll()).andReturn(Collections.singletonList(m_locationMonitor));
         
         expect(m_timeKeeper.getCurrentDate()).andReturn(now);
         
