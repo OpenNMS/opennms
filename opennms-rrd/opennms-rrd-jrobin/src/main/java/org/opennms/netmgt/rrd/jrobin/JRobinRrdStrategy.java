@@ -541,12 +541,17 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return "";
     }
 
+    /*
+     * These offsets work for dj@ with Safari and JRobin 1.5.4.  It's not
+     * right if Camino is used.  The <div>s must not be correct.
+     * 
+     */
     public int getGraphRightOffset() {
-        return -22;
+        return -15;
     }
 
     public int getGraphTopOffsetWithText() {
-        return -72;
+        return -61;
     }
 
 }
