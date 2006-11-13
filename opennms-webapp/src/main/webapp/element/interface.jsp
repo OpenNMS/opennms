@@ -192,7 +192,7 @@ function doDelete() {
             for (GraphResource resource : resources) {
                 if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
                     out.println("<li>");
-                    out.println("<a href=\"performance/results.htm?type=performance&reports=all&parentResourceType=node&parentResource=" + nodeId + "&resourceType=" + resourceType.getName() + "&resource=" + resource.getName() + "&relativetime=lastday\">" + resourceType.getLabel() + " Graphs</a>");
+                    out.println("<a href=\"graph/results.htm?type=performance&amp;reports=all&amp;parentResourceType=node&amp;parentResource=" + nodeId + "&amp;resourceType=" + resourceType.getName() + "&amp;resource=" + resource.getName() + "\">" + resourceType.getLabel() + " Graphs</a>");
                     out.println("</li>");
                 }
             }

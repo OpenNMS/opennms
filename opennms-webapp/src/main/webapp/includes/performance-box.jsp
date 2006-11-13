@@ -68,7 +68,6 @@
     List<OnmsNode> nodes = m_nodeDao.findAll();
 %>
 
-
 <script type="text/javascript">
   function resetPerformanceBoxSelected() {
     document.performanceBoxNodeList.parentResource[0].selected = true;
@@ -110,7 +109,7 @@
   
 </script>
 
-<h3><a href="performance/index.jsp">Resource Graphs</a></h3>
+<h3><a href="graph/index.jsp">Resource Graphs</a></h3>
 <div class="boxWrapper">
 
 <%  if( nodes != null && nodes.size() > 0 ) { %>
@@ -122,7 +121,6 @@
       </form>
       
       <form name="performanceBoxNodeList">
-              <p>Choose a <label for="node">node to query</label>:</p>
               <select style="width: 100%;" name="parentResource" id="node" onchange="goPerformanceBoxChange();">
                 <option value="">-- Choose a node --</option>
                 <% for (OnmsNode node : nodes) { %>

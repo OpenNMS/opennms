@@ -66,12 +66,12 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Performance" />
-  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="title" value="Resource Graphs" />
+  <jsp:param name="headTitle" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="location" value="performance" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="Performance" />
+  <jsp:param name="breadcrumb" value="Resource Graphs" />
 </jsp:include>
 
 <script language="Javascript" type="text/javascript" >
@@ -214,7 +214,7 @@
   </p>
 
   <form method="get" name="choose_node_adhoc" action="graph/chooseresource.htm">
-    <input type="hidden" name="endUrl" value="performance/adhoc2.jsp"/>
+    <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
     <input type="hidden" name="parentResourceType" value="node"/>
     <select name="parentResource" size="10">
       <% for( int i=0; i < nodes.length; i++ ) { %>
@@ -260,7 +260,7 @@
   </p>
 
   <form method="get" name="choose_domain_adhoc" action="graph/chooseresource.htm">
-    <input type="hidden" name="endUrl" value="performance/adhoc2.jsp"/>
+    <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
     <input type="hidden" name="parentResourceType" value="domain"/>
     <select name="parentResource" size="10">
       <% for( int i=0; i < domains.length; i++ ) { %>

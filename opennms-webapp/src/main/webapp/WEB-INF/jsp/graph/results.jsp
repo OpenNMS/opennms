@@ -52,12 +52,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <c:import url="/includes/header.jsp">
-  <c:param name="title" value="${param.name} Results" />
+  <c:param name="title" value="Resource Graph Results" />
   <c:param name="headTitle" value="Results" />
-  <c:param name="headTitle" value="${param.name}" />
+  <c:param name="headTitle" value="Resource Graphs" />
   <c:param name="headTitle" value="Reports" />
   <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <c:param name="breadcrumb" value="${param.reportbreadcrumb}"/>
+  <c:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>"/>
   <c:param name="breadcrumb" value="Results" />
 </c:import>
 
