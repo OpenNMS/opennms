@@ -187,7 +187,7 @@
 	   </tr>
 	</table>
  
-</div>                                    
+                                   
 
 <jsp:include page="/includes/bookmarkAll.jsp" flush="false" >
   <jsp:param name="adminrole" 
