@@ -1,6 +1,6 @@
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
@@ -8,6 +8,6 @@ public interface AvailabilityReportLocatorDao extends OnmsDao<AvailabilityReport
 	
 	public abstract void delete(int id);
 	
-	public Collection<AvailabilityReportLocator> findByCategory(String category);
+	public List<AvailabilityReportLocator> findByCategory(String category);
 	
 }

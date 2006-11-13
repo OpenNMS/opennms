@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.utils.LazySet;
 import org.opennms.netmgt.collectd.StorageStrategy;
-import org.opennms.netmgt.dao.jdbc.LazySet;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.PrefabGraph;

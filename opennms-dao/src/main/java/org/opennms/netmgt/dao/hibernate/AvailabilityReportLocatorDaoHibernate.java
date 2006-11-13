@@ -1,6 +1,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
@@ -17,7 +17,7 @@ public class AvailabilityReportLocatorDaoHibernate extends AbstractDaoHibernate<
 		super.delete(locator);
 	}
 
-	public Collection<AvailabilityReportLocator> findByCategory(String category) {
+	public List<AvailabilityReportLocator> findByCategory(String category) {
 		return find("from AvailabilityReportLocator as a where a.category = ?", category);
 	}
 

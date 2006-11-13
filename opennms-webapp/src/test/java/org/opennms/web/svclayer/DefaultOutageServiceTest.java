@@ -10,8 +10,8 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.JdbcSet;
 import org.opennms.netmgt.dao.OutageDao;
-import org.opennms.netmgt.dao.jdbc.JdbcSet;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.DefaultOutageService;
 

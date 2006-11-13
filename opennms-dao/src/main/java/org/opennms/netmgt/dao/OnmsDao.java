@@ -32,7 +32,9 @@
 package org.opennms.netmgt.dao;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
+
+import org.opennms.netmgt.model.OnmsCriteria;
 
 public interface OnmsDao<T, K extends Serializable> {
 
@@ -46,7 +48,9 @@ public interface OnmsDao<T, K extends Serializable> {
 
     public abstract void delete(T entity);
 
-    public abstract Collection<T> findAll();
+    public abstract List<T> findAll();
+    
+    public abstract List<T> findMatching(OnmsCriteria criteria);
 
     public abstract T get(K id);
 
