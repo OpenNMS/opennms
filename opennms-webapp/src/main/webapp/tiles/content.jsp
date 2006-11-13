@@ -15,6 +15,7 @@
 	<input class="autocomplete_text" type="text" id="autocomplete" name="formtest"/>
 	<div class="autocomplete_choices" id="autocomplete_choices"></div>
 	* Well maybe someday.
+	
 	</p>
 
 	<p>
