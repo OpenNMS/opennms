@@ -65,7 +65,7 @@
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
 		<hr />
 		<!-- Performance box -->    
-		<jsp:include page="/includes/performance-box.jsp" flush="false" />
+		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
 		<hr />
 		<!-- KSC Reports box -->    
 		<jsp:include page="/includes/ksc-box.jsp" flush="false" />
