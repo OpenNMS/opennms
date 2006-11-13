@@ -85,7 +85,7 @@
 			
 			var iconPreviewRect = menuSvgDocument.createElementNS(svgNS,"rect");
 			iconPreviewRect.setAttributeNS(null,"x", 57);
-			iconPreviewRect.setAttributeNS(null,"y", 65);
+			iconPreviewRect.setAttributeNS(null,"y", 80);
 			iconPreviewRect.setAttributeNS(null,"width", 35);
 			iconPreviewRect.setAttributeNS(null,"height", 35);
 			iconPreviewRect.setAttributeNS(null,"fill", "white");
@@ -94,7 +94,7 @@
 			
 			var iconPreview = menuSvgDocument.createElementNS(svgNS,"image");
 			iconPreview.setAttributeNS(null,"x", 65);
-			iconPreview.setAttributeNS(null,"y", 70);
+			iconPreview.setAttributeNS(null,"y", 85);
 			iconPreview.setAttributeNS(null,"width", 20);
 			iconPreview.setAttributeNS(null,"height", 25);
 			iconPreview.setAttributeNS(application.svgnsXLink, "xlink:href",MEIconsSortAss[arrayVal] );
