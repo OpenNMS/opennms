@@ -80,7 +80,7 @@
 
 <script type="text/javascript">
   function resetKscBoxSelected() {
-    document.kscBoxNodeList.report[0].selected = true;
+    document.kscBoxReportList.report[0].selected = true;
   }
   
   function validateKscBoxReportChosen() {
