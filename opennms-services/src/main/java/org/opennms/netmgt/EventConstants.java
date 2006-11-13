@@ -477,7 +477,6 @@ public class EventConstants {
         */
        public final static String SCHEDOUTAGES_CHANGED_EVENT_UEI = "uei.opennms.org/internal/schedOutagesChanged";
        
-       
        public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
        public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
        public static final String LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorRegistered";
@@ -488,8 +487,17 @@ public class EventConstants {
        public static final String LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorReconnected";
        public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationChangeDetected";
        
-
        public final static String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
+
+       public static final String IMPORT_STARTED_UEI = "uei.opennms.org/internal/importer/importStarted";
+
+       public static final String IMPORT_SUCCESSFUL_UEI = "uei.opennms.org/internal/importer/importSuccessful";
+
+       public static final String IMPORT_FAILED_UEI = "uei.opennms.org/internal/importer/importFailed";
+
+       public static final String PARM_FAILURE_MESSAGE = "failureMessage";
+
+       public static final String PARM_IMPORT_STATS = "importStats";
 
 
     //
@@ -799,15 +807,5 @@ public class EventConstants {
     public static final String formatToUIString(Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
     }
-
-    public static final String IMPORT_STARTED_UEI = "uei.opennms.org/internal/importer/importStarted";
-
-    public static final String IMPORT_SUCCESSFUL_UEI = "uei.opennms.org/internal/importer/importSuccessful";
-
-    public static final String IMPORT_FAILED_UEI = "uei.opennms.org/internal/importer/importFailed";
-
-    public static final String PARM_FAILURE_MESSAGE = "failureMessage";
-
-    public static final String PARM_IMPORT_STATS = "importStats";
 
 }
