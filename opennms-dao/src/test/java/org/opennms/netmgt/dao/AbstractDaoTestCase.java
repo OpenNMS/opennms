@@ -272,7 +272,6 @@ public class AbstractDaoTestCase extends TestCase {
         }
         
         m_testConfig = new HibernateDaoTestConfig();
-        //m_testConfig = new JdbcDaoTestConfig();
         PlatformTransactionManager m_transMgr = m_testConfig.setUp(m_db, isCreateDb());
 
         m_transTemplate = new TransactionTemplate();

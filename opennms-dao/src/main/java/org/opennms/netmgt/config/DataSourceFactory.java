@@ -53,7 +53,6 @@ import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.dao.jdbc.Cache;
 
 /**
  * <p>

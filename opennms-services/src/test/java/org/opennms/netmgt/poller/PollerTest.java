@@ -37,7 +37,6 @@ import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -46,25 +45,22 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CapsdConfigManager;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.dao.DemandPollDao;
-import org.opennms.netmgt.dao.jdbc.DemandPollDaoJdbc;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockOutageConfig;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
-import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
@@ -90,7 +86,7 @@ public class PollerTest extends TestCase {
 
 	private OutageAnticipator m_outageAnticipator;
 
-	private DemandPollDao m_demandPollDao;
+	//private DemandPollDao m_demandPollDao;
 
 	//
 	// SetUp and TearDown
@@ -131,10 +127,10 @@ public class PollerTest extends TestCase {
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
 
-		DemandPollDaoJdbc demandPollDao = new DemandPollDaoJdbc(m_db);
-		demandPollDao.setAllocateIdStmt(m_db
-				.getNextSequenceValStatement("demandPollNxtId"));
-		m_demandPollDao = demandPollDao;
+//		DemandPollDao demandPollDao = new DemandPollDaoHibernate(m_db);
+//		demandPollDao.setAllocateIdStmt(m_db
+//				.getNextSequenceValStatement("demandPollNxtId"));
+//		m_demandPollDao = demandPollDao;
 
 		m_pollerConfig = new MockPollerConfig(m_network);
 		m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
@@ -199,21 +195,21 @@ public class PollerTest extends TestCase {
         poller = null;
     }
 
-	public void testDemandPollService() {
-		DemandPoll demandPoll = new DemandPoll();
-		demandPoll.setDescription("Test Poll");
-		demandPoll.setRequestTime(new Date());
-		demandPoll.setUserName("admin");
-
-		m_demandPollDao.save(demandPoll);
-
-		assertNotNull(demandPoll.getId());
-
-		MockService httpService = m_network
-				.getService(2, "192.168.1.3", "HTTP");
-		Event demandPollEvent = httpService.createDemandPollEvent(demandPoll.getId());
-
-	}
+//	public void testDemandPollService() {
+//		DemandPoll demandPoll = new DemandPoll();
+//		demandPoll.setDescription("Test Poll");
+//		demandPoll.setRequestTime(new Date());
+//		demandPoll.setUserName("admin");
+//
+//		m_demandPollDao.save(demandPoll);
+//
+//		assertNotNull(demandPoll.getId());
+//
+//		MockService httpService = m_network
+//				.getService(2, "192.168.1.3", "HTTP");
+//		Event demandPollEvent = httpService.createDemandPollEvent(demandPoll.getId());
+//
+//	}
 
 	public void FIXMEtestBug1564() {
 		// NODE processing = true;

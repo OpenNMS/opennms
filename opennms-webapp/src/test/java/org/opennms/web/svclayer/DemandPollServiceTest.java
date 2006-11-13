@@ -17,6 +17,7 @@ import org.easymock.IAnswer;
 import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -112,6 +113,10 @@ public class DemandPollServiceTest extends TestCase {
 			// TODO Auto-generated method stub
 			
 		}
+
+        public Collection<DemandPoll> findMatching(OnmsCriteria criteria) {
+            throw new UnsupportedOperationException("not yet implemeneted");
+        }
 		
 		
 	}

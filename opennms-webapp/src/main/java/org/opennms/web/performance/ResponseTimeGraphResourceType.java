@@ -14,8 +14,8 @@ import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.jdbc.LazySet;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.PrefabGraph;
