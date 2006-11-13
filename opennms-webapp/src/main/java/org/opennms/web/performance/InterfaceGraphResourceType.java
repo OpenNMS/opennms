@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.jdbc.LazySet;
@@ -139,7 +140,27 @@ public class InterfaceGraphResourceType implements GraphResourceType {
     public List<PrefabGraph> getAvailablePrefabGraphs(Set<GraphAttribute> attributes) {
         PrefabGraph[] graphs =
             m_performanceModel.getQueriesByResourceTypeAttributes(getName(), attributes);
-        return Arrays.asList(graphs);
+        List<PrefabGraph> graphList = Arrays.asList(graphs);
+        
+        // Doh... this doesn't work.  See bug #1703.
+        /*
+         * Remove any items that have external values, particularly due to
+         * ifSpeed.
+         */
+        /*
+        ListIterator<PrefabGraph> iterator = graphList.listIterator();
+        while (iterator.hasNext()) {
+            PrefabGraph graph = iterator.next();
+            
+            String[] external = graph.getExternalValues();
+            if (external != null && external.length > 0) {
+                iterator.remove();
+                continue;
+            }
+        }
+        */
+        
+        return graphList;
     }
 
     public class DomainAttributeLoader implements LazySet.Loader {
