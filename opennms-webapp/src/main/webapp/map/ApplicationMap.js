@@ -1363,6 +1363,10 @@ function RefreshNodes(){
 var count=0;
 
 function handleRefreshNodesResponse(data) {
+	var saved=true;
+	if(savedMapString!=getMapString()){
+		saved=false;
+	}
 	var str = '';
 	if(data.success) {
 		str = data.content;
@@ -1497,7 +1501,9 @@ function handleRefreshNodesResponse(data) {
 	map.render();
 	//reloadGrid();
 	menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
-	//savedMapString=getMapString();
+	if(saved){ 
+		savedMapString=getMapString();
+	}
 	enableMenu();
 	startRefreshNodesTime();
 }
