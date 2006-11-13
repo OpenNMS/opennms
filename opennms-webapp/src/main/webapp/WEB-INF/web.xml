@@ -93,7 +93,7 @@
   </filter>
   
   <filter>
-    <description>Stroes HTTP request parameters in request attributes for later access</description>
+    <description>Stores HTTP request parameters in request attributes for later access</description>
     <filter-name>StoreRequestProperties</filter-name>
     <filter-class>org.opennms.web.StoreRequestPropertiesFilter</filter-class>
     <init-param>
@@ -176,81 +176,6 @@
       <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
    </servlet>
 
-  <!-- desktop survey report servlet -->  
-
-<!--
-  <servlet>
-    <description>This servlet creates the graph images using RRDTool.</description>
-    <servlet-name>rrdgraph</servlet-name>
-    <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
-  </servlet>
-  -->
-  
-  <servlet>
-    <!-- This servlet dumps out XML using RRDTool. -->
-    <servlet-name>rrddump</servlet-name>
-    <servlet-class>org.opennms.web.performance.RRDDumpServlet</servlet-class>
-    <init-param>
-      <param-name>rrd-directory</param-name>
-      <param-value>${rrd.base.dir}/snmp/</param-value>
-    </init-param>
-    <init-param>
-      <param-name>rrd-dump-command</param-name>
-      <param-value>${rrd.binary} dump</param-value>
-    </init-param>    
-  </servlet>
-  <servlet>
-    <!-- This servlet creates a text file with one line for each RRD filename. -->
-    <servlet-name>rrdlist</servlet-name>
-    <servlet-class>org.opennms.web.performance.RRDListServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>addPerfReportsToUrl</servlet-name>
-    <servlet-class>org.opennms.web.performance.AddReportsToUrlServlet</servlet-class>
-  </servlet>  
-  <servlet>
-    <servlet-name>addIntfToPerfUrl</servlet-name>
-    <servlet-class>org.opennms.web.performance.AddInterfaceToURLServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
-      <param-name>chooseInterfaceUrl</param-name>
-      <param-value>performance/chooseresource.jsp</param-value>
-    </init-param>
-  </servlet>  
-
-  <servlet>
-    <!-- This servlet dumps out XML using RRDTool. -->
-    <servlet-name>rt-rrddump</servlet-name>
-    <servlet-class>org.opennms.web.response.RRDDumpServlet</servlet-class>
-    <init-param>
-      <param-name>rt-rrd-directory</param-name>
-      <param-value>${rrd.base.dir}/response/</param-value>
-    </init-param>
-    <init-param>
-      <param-name>rt-rrd-dump-command</param-name>
-      <param-value>${rrd.binary} dump</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <!-- This servlet creates a text file with one line for each RRD filename. -->
-    <servlet-name>rt-rrdlist</servlet-name>
-    <servlet-class>org.opennms.web.response.RRDListServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
-    <servlet-class>org.opennms.web.response.AddReportsToUrlServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
-    <servlet-class>org.opennms.web.response.AddInterfaceToURLServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>
-      <param-name>rt-chooseInterfaceUrl</param-name>
-      <param-value>response/chooseinterface.jsp</param-value>
-    </init-param>
-  </servlet>
-
-    
   <servlet>
     <!-- This servlet creates availability reports. -->
     <servlet-name>availabilityXml</servlet-name>
@@ -1035,59 +960,6 @@
   <servlet-mapping>
   	<servlet-name>scheduleEditor</servlet-name>
   	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
-  </servlet-mapping>
-
-<!-- 
-  <servlet-mapping>
-    <servlet-name>rrdgraph</servlet-name>
-    <url-pattern>/graph/graph.png</url-pattern>
-  </servlet-mapping>
-  -->
-
-  <servlet-mapping>
-    <servlet-name>rrddump</servlet-name>
-    <url-pattern>/performance/dump</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rrddump</servlet-name>
-    <url-pattern>/performance/raw</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rrdlist</servlet-name>
-    <url-pattern>/performance/list</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>addPerfReportsToUrl</servlet-name>
-    <url-pattern>/performance/addReportsToUrl</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>addIntfToPerfUrl</servlet-name>
-    <url-pattern>/performance/addIntfFromNode</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>addIntfToPerfUrl</servlet-name>
-    <url-pattern>/performance/addIntfFromDomain</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rt-rrddump</servlet-name>
-    <url-pattern>/response/dump</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-rrddump</servlet-name>
-    <url-pattern>/response/raw</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-rrdlist</servlet-name>
-    <url-pattern>/response/list</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
-    <url-pattern>/response/addReportsToUrl</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
-    <url-pattern>/response/addIntfFromNode</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
