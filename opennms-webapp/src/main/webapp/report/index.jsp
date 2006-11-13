@@ -62,10 +62,9 @@
     <h3>Reports</h3>
     <div class="boxWrapper">
       <ul class="plain">
-        <li><a href="performance/index.jsp">Performance</a></li>
+        <li><a href="graph/index.jsp">Resource Graphs</a></li>
         <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domain</a></li>
         <li><a href="availability/index.jsp">Availability</a></li>
-        <li><a href="response/index.jsp">Response Times</a></li>
       </ul>
     </div>
   <!-- more reports will follow -->
@@ -74,9 +73,9 @@
   <div class="TwoColRight">
     <h3>Descriptions</h3>
     <div class="boxWrapper">
-      <p><b>Performance Reports</b> provide an easy way to 
-          visualize the critical SNMP data collected from managed nodes
-	  throughout your network.  
+      <p><b>Resource Graphs</b> provide an easy way to 
+          visualize the critical SNMP, response time, and other data collected
+          from managed nodes throughout your network.  
       </p>
       <p><b>Key SNMP Customized (KSC) Performance Reports</b> and <b>Node Reports</b>
           KSC reports allow the user to create and view SNMP performance data using prefabricated graph types.
@@ -88,11 +87,6 @@
       <p><b>Availability Reports</b> provide graphical or numeric
           view of your service level metrics for the current
           month-to-date, previous month, and last twelve months by categories.
-      </p>
-    
-      <p><b>Response Time Reports</b> provide an easy way to
-          visualize the response time data collected from managed nodes
-	  throughout your network.  
       </p>
     </div>
   </div>

@@ -56,7 +56,7 @@ public class DefaultChooseResourceService implements ChooseResourceService {
             model.setResourceTypeName("domain");
             model.setResourceTypeLabel("Domain");
             model.setResourceLabel(resource);
-            model.setResourceLink("performance/chooseresource.jsp?domain=" + Util.encode(resource) + "&endUrl=performance%2Fchoosereportanddate.jsp");
+            model.setResourceLink("graph/chooseresource.htm?parentResourceType=domain&parentResource=" + Util.encode(resource));
         } else {
             throw new IllegalArgumentException("resourceType of '"
                                                + resourceType + "' is not "

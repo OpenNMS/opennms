@@ -171,7 +171,7 @@
 
 <h3 align="center"><%=report.getTitle()%></h3>
 <% if (report_type.equals("node") && this.model.getQueries(r_index).length > 0) { %>
-  <h3 align="center"><a href="performance/addReportsToUrl?node=<%=report_index%>&resourceType=node&resource=&relativetime=lastday">Show Node-level Performance Data</a></h3>
+  <h3 align="center"><a href="graph/results.htm?parentResourceType=node&amp;parentResource=<%=report_index%>&amp;resourceType=node&amp;resource=&amp;reports=all">Show Node-level Performance Data</a></h3>
 <% } %>
 
 <% int graph_count = report.getGraphCount(); %>

@@ -274,11 +274,9 @@
         
         <% if (m_performanceModel.getResourceTypesForNode(nodeId).size() > 0) { %>
 	  <li>
-        <c:url var="resourceGraphsUrl" value="performance/chooseresource.htm">
-          <c:param name="endUrl" value="performance/results.htm"/>
+        <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
           <c:param name="parentResourceType" value="node"/>
           <c:param name="parentResource" value="<%= Integer.toString(nodeId) %>"/>
-          <c:param name="relativetime" value="lastday"/>
           <c:param name="reports" value="all"/>
         </c:url>
           <a href="${resourceGraphsUrl}">Resource Graphs</a>
