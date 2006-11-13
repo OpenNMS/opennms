@@ -1,8 +1,6 @@
 package org.opennms.web.graph;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.Integer;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
