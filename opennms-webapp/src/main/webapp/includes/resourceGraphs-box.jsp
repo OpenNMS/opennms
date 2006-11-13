@@ -36,7 +36,7 @@
 
 <%--
   This page is included by other JSPs to create a box containing an
-  entry to the performance reporting system.
+  entry to the resource graph reporting system.
   
   It expects that a <base> tag has been set in the including page
   that directs all URLs to be relative to the servlet context.
@@ -69,18 +69,18 @@
 %>
 
 <script type="text/javascript">
-  function resetPerformanceBoxSelected() {
-    document.performanceBoxNodeList.parentResource[0].selected = true;
+  function resetChooseResourceBoxSelected() {
+    document.chooseResourceBoxNodeList.parentResource[0].selected = true;
   }
   
-  function validatePerformanceBoxNodeChosen() {
+  function validateChooseResourceBoxNodeChosen() {
     var selectedParentResource = false
     
-    for (i = 0; i < document.performanceBoxNodeList.parentResource.length; i++) {
+    for (i = 0; i < document.chooseResourceBoxNodeList.parentResource.length; i++) {
       // make sure something is checked before proceeding
-      if (document.performanceBoxNodeList.parentResource[i].selected
-          && document.performanceBoxNodeList.parentResource[i].value != "") {
-        selectedParentResource = document.performanceBoxNodeList.parentResource[i].value;
+      if (document.chooseResourceBoxNodeList.parentResource[i].selected
+          && document.chooseResourceBoxNodeList.parentResource[i].value != "") {
+        selectedParentResource = document.chooseResourceBoxNodeList.parentResource[i].value;
         break;
       }
     }
@@ -88,11 +88,11 @@
     return selectedParentResource;
   }
   
-  function goPerformanceBoxChange() {
-    var nodeChosen = validatePerformanceBoxNodeChosen();
+  function goChooseResourceBoxChange() {
+    var nodeChosen = validateChooseResourceBoxNodeChosen();
     if (nodeChosen != false) {
-      document.performanceBoxForm.parentResource.value = nodeChosen;
-      document.performanceBoxForm.submit();
+      document.chooseResourceBoxForm.parentResource.value = nodeChosen;
+      document.chooseResourceBoxForm.submit();
       /*
        * We reset the selection after submitting the form so if the user
        * uses the back button to get back to this page, it will be set at
@@ -103,25 +103,24 @@
        * ensure that no problems happen by resetting the selection
        * immediately after calling submit().
        */
-      resetPerformanceBoxSelected();
+      resetChooseResourceBoxSelected();
     }
   }
-  
 </script>
 
 <h3><a href="graph/index.jsp">Resource Graphs</a></h3>
 <div class="boxWrapper">
 
 <%  if( nodes != null && nodes.size() > 0 ) { %>
-      <form method="get" name="performanceBoxForm" action="graph/chooseresource.htm" >
+      <form method="get" name="chooseResourceBoxForm" action="graph/chooseresource.htm" >
         <input type="hidden" name="parentResourceType" value="node" />
         <input type="hidden" name="reports" value="all"/>
         <input type="hidden" name="relativetime" value="lastday" />
         <input type="hidden" name="parentResource" value="" />
       </form>
       
-      <form name="performanceBoxNodeList">
-              <select style="width: 100%;" name="parentResource" id="node" onchange="goPerformanceBoxChange();">
+      <form name="chooseResourceBoxNodeList">
+              <select style="width: 100%;" name="parentResource" onchange="goChooseResourceBoxChange();">
                 <option value="">-- Choose a node --</option>
                 <% for (OnmsNode node : nodes) { %>
                   <option value="<%=node.getId()%>"><%=Util.htmlify(node.getLabel())%></option>
@@ -130,7 +129,7 @@
       </form>
       
       <script type="text/javascript">
-        resetPerformanceBoxSelected();
+        resetChooseResourceBoxSelected();
       </script>
       
 <% } else { %>
