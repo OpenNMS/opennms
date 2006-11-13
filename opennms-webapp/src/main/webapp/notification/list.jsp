@@ -120,13 +120,13 @@
   <thead>
     <tr>
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-        <th width="5%">Ack</td>
+        <th width="5%">Ack</th>
       <% } %>
-      <th width="5%">Notice</td>
-      <th width="5%">Event ID</td>
-      <th width="5%">Event Severity</td>
-      <th width="25%">Time Sent</td>
-      <th>Message</td>
+      <th width="5%">Notice</th>
+      <th width="5%">Event ID</th>
+      <th width="5%">Event Severity</th>
+      <th width="25%">Time Sent</th>
+      <th>Message</th>
     </tr>
   </thead>
 
