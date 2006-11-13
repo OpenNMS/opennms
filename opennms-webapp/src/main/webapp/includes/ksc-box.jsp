@@ -50,8 +50,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.Util,
+	import="
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
@@ -64,43 +63,85 @@
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
 
 <%
-    PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
-%>
-
-<%
     int r_count=0;
     ReportsList report_configuration = this.reportFactory.getConfiguration();  
     Report[] report_array = null;
     try {
-         if (report_configuration == null){
-            throw new ServletException ( "Couldn't retrieve KSC Report File configuration");
-         }
-         else {
+         if (report_configuration == null) {
+            throw new ServletException("Couldn't retrieve KSC Report File configuration");
+         } else {
             r_count = report_configuration.getReportCount(); 
             report_array = report_configuration.getReport();
          } 
-    }
-    catch( Exception e ) {
-        throw new ServletException ( "Couldn't retrieve reports from KSC_PerformanceReportFactory.", e );
+    } catch (Exception e) {
+        throw new ServletException("Couldn't retrieve reports from KSC_PerformanceReportFactory.", e);
     }
 %>
+
+<script type="text/javascript">
+  function resetKscBoxSelected() {
+    document.kscBoxNodeList.report[0].selected = true;
+  }
+  
+  function validateKscBoxReportChosen() {
+    var report = -1;
+    
+    for (i = 0; i < document.kscBoxReportList.report.length; i++) {
+      // make sure something is checked before proceeding
+      if (document.kscBoxReportList.report[i].selected     
+          && document.kscBoxReportList.report[i].value != "") {
+        report = document.kscBoxReportList.report[i].value;
+        break;
+      }
+    }
+    
+    return report;
+  }
+  
+  function goKscBoxChange() {
+    var reportChosen = validateKscBoxReportChosen();
+    if (reportChosen != -1) {
+      document.kscBoxForm.report.value = reportChosen;
+      document.kscBoxForm.submit();
+      /*
+       * We reset the selection after submitting the form so if the user
+       * uses the back button to get back to this page, it will be set at
+       * the "choose a node" option.  Without this, they wouldn't be able
+       * to proceed forward to the same node because won't trigger the
+       * onChange action on the <select/> element.  We also do the submit
+       * in a separate form after we copy the chosen value over, just to
+       * ensure that no problems happen by resetting the selection
+       * immediately after calling submit().
+       */
+      resetKscBoxSelected();
+    }
+  }
+</script>
+
 
 <%-- Start the HTML Page Definition here --%>
 
 <h3><a href="KSC/index.jsp">KSC Reports</a></h3>
 <div class="boxWrapper">
-      <form method="get" name="choose_report" action="KSC/form_proc_main.jsp">
-         <input type="hidden" name="report_action" value="View">
-	    <% if (report_array.length < 1) { %>
-	      <p>No KSC reports defined</p>
-	    <% } else { %>
-    		<p>Choose a <label for="KSCReport">report to view</label>:</p>
-         <select style="width: 100%;" name="report" id="KSCReport">
-         <% for( int i=0; i < r_count; i++ ) { %>
-             <option value="<%=i%>"> <%=report_array[i].getTitle()%></option>
-         <% } %>
-			</select>
-			<input type="submit" value="Execute Query" />
-		<% } %>
-	</form>
+  <% if (report_array.length > 0) { %>
+    <form method="get" name="kscBoxForm" action="KSC/form_proc_main.jsp">
+      <input type="hidden" name="report_action" value="View">
+      <input type="hidden" name="report" value="" />
+    </form>
+
+    <form method="get" name="kscBoxReportList" action="do_nothing">
+      <select style="width: 100%;" name="report" onchange="goKscBoxChange();">
+        <option value="">-- Choose a report to view --</option>
+        <% for( int i=0; i < r_count; i++ ) { %>
+          <option value="<%=i%>"> <%=report_array[i].getTitle()%></option>
+        <% } %>
+      </select>
+    </form>
+    
+    <script type="text/javascript">
+      resetKscBoxSelected();
+    </script>
+  <% } else { %>
+    <p>No KSC reports defined</p>
+  <% } %>
 </div>
