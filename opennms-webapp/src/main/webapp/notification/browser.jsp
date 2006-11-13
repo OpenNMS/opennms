@@ -317,6 +317,7 @@
 				<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
 				<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/></p>
         <% } %>
+        
 	</p>
 	<!--		<% if( noticeCount > 0 ) { %>
 			<p align="right"><a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a></p>

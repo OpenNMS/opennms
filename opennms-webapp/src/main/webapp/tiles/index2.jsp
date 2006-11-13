@@ -147,26 +147,38 @@
 
       <p>
         <a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a>
+      </p>
         <!-- <p>
-          <a HREF="admin/eventconf/list.jsp">Configure Events</a> -->
+          <a HREF="admin/eventconf/list.jsp">Configure Events</a> 
+          </p>
+          -->
       <p>
         <a HREF="admin/notification/index.jsp">Configure Notifications</a>
+      </p>
       <p>
         <a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a>
+      </p>
       <p>
         <a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a>
+      </p>
       <p>
         <a HREF="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a>
+      </p>
       <p>
         <a HREF="javascript:addInterfacePost()">Add Interface</a>
+      </p>
       <p>
         <a HREF="javascript:deletePost()">Delete Nodes</a>
+      </p>
       <p>
         <a HREF="admin/pollerConfig/index.jsp">Configure Pollers</a>
+      </p>
       <p>
         <a HREF="admin/asset/index.jsp">Import and Export Asset Information</a>
+      </p>
       <p>
         <a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a>
+      </p>
       <p>
 
       <!-- security link -->
@@ -206,6 +218,7 @@
           </tr>
         </table>
         </FORM>
+        
         </p>
       
     </td>
