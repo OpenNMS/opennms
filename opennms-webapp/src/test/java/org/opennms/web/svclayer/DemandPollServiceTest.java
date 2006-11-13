@@ -10,6 +10,7 @@ import static org.easymock.EasyMock.verify;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -71,7 +72,7 @@ public class DemandPollServiceTest extends TestCase {
 				m_demandPoll = null;
 		}
 
-		public Collection<DemandPoll> findAll() {
+		public List<DemandPoll> findAll() {
 			return Collections.singletonList(m_demandPoll);
 		}
 
@@ -114,7 +115,7 @@ public class DemandPollServiceTest extends TestCase {
 			
 		}
 
-        public Collection<DemandPoll> findMatching(OnmsCriteria criteria) {
+        public List<DemandPoll> findMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemeneted");
         }
 		

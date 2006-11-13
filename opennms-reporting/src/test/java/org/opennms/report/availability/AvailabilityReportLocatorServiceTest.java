@@ -2,6 +2,7 @@ package org.opennms.report.availability;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
@@ -61,7 +62,7 @@ public class AvailabilityReportLocatorServiceTest extends TestCase {
 	
 	public void testLocateReports() {
 		
-		Collection expectedReports = new ArrayList();
+		List expectedReports = new ArrayList();
 		
 		expect(availabilityReportLocatorDao.findAll()).andReturn(expectedReports);
 		
