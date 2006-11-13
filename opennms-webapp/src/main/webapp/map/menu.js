@@ -550,7 +550,7 @@ function addIconList()
 	clearDownInfo();
 	resetFlags();
 
-	selMEIcons = new selectionList("meicons",MEIcons,150,2,0,3,0,myMEIconsResult);
+	selMEIcons = new selectionList("meicons",MEIcons,150,2,19,3,0,myMEIconsResult);
 	selMEIcons.sortList("asc");
 
 } 
