@@ -47,16 +47,18 @@ public class DefaultChooseResourceService implements ChooseResourceService {
                                                    + "nodeId of " + nodeId);
             }
             model.setResourceTypes(m_performanceModel.getResourceForNode(nodeId));
-            model.setResourceTypeName("node");
-            model.setResourceTypeLabel("Node");
-            model.setResourceLabel(n.getLabel());
-            model.setResourceLink("element/node.jsp?node=" + nodeId);
+            model.setParentResourceTypeName("node");
+            model.setParentResourceTypeLabel("Node");
+            model.setParentResourceName(resource);
+            model.setParentResourceLabel(n.getLabel());
+            model.setParentResourceLink("element/node.jsp?node=" + nodeId);
         } else if ("domain".equals(resourceType)) {
             model.setResourceTypes(m_performanceModel.getResourceForDomain(resource));
-            model.setResourceTypeName("domain");
-            model.setResourceTypeLabel("Domain");
-            model.setResourceLabel(resource);
-            model.setResourceLink("graph/chooseresource.htm?parentResourceType=domain&parentResource=" + Util.encode(resource));
+            model.setParentResourceTypeName("domain");
+            model.setParentResourceTypeLabel("Domain");
+            model.setParentResourceName(resource);
+            model.setParentResourceLabel(resource);
+            model.setParentResourceLink("graph/chooseresource.htm?parentResourceType=domain&parentResource=" + Util.encode(resource));
         } else {
             throw new IllegalArgumentException("resourceType of '"
                                                + resourceType + "' is not "

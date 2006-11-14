@@ -84,35 +84,31 @@
   </script>
 
   <h2>
-    ${model.resourceTypeLabel}: <a href="<c:url value='${model.resourceLink}'/>">${model.resourceLabel}</a>
+    ${model.parentResourceTypeLabel}: <a href="<c:url value='${model.parentResourceLink}'/>">${model.parentResourceLabel}</a>
   </h2> 
 
   <c:choose>
 	<c:when test="${empty model.resourceTypes}">
       <p>
-	    No resources are available to graph for this ${model.resourceTypeLabel}
+	    No resources are available to graph for this ${model.parentResourceTypeLabel}
       </p>
 	</c:when>
 	
 	<c:otherwise>
       <h3>
-        Choose a Resource to Query
+        Choose resources to query
       </h3>
 
       <p>
-        The ${model.resourceTypeLabel}
-        that you have chosen has performance data for multiple resources.
-        Please choose the resource that you wish to query.
+        Please choose one or more resources that you wish to query.
       </p>
+
+      <form method="GET" name="report" action="${model.endUrl}">
+        <%=Util.makeHiddenTags(request, new String[] { "parentResourceType", "parentResource", "endUrl"})%>
   
-      <c:forEach var="resourceType" items="${model.resourceTypes}">
+        <c:forEach var="resourceType" items="${model.resourceTypes}">
       
-        <h3>${resourceType.key.label}</h3>
-      
-        <form method="GET" name="report" action="${model.endUrl}">
-          <%=Util.makeHiddenTags(request, new String[] {"endUrl"})%>
-          <input type="hidden" name="type" value="performance"/>
-          <input type="hidden" name="resourceType" value="${resourceType.key.name}"/>
+          <h3>${resourceType.key.label}</h3>
 
           <c:choose>
             <c:when test="${fn:length(resourceType.value) < 10}">
@@ -123,29 +119,23 @@
               <c:set var="selectSize" value="10"/>
             </c:otherwise>
           </c:choose>
-          
-          <c:choose>
-            <c:when test="${fn:length(resourceType.value) == 1}">
-              <input type="hidden" name="resource" value="${resourceType.value[0].name}"/>
-              ${resourceType.value[0].label}
-            </c:when>
-            
-            <c:otherwise>
-              <select name="resource" size="${selectSize}">
-                <c:forEach var="resource" items="${resourceType.value}">
-                  <option value="${resource.name}">
-                    ${resource.label}
-                  </option>
-                </c:forEach>
-            </select>
-          </c:otherwise>
-        </c:choose>
-          
-  	      <input type="submit" value="Submit"/>
-<!--      <input type="button" value="Submit" onclick="submitForm()" /> -->
-        </form>
         
-      </c:forEach>
+          <select name="resourceId" size="${selectSize}" multiple>
+            <c:forEach var="resource" items="${resourceType.value}">
+              <option value="${resource.resourceId}">
+                ${resource.label}
+              </option>
+            </c:forEach>
+          </select>
+        
+        </c:forEach>
+      
+        <br/>
+        <br/>
+<!--      <input type="button" value="Submit" onclick="submitForm()" /> -->
+        <input type="submit" value="Submit"/>
+      </form>
+      
 	</c:otherwise>
   </c:choose>
   

@@ -50,17 +50,13 @@ public class DefaultRrdGraphService implements RrdGraphService {
     private ResponseTimeModel m_responseTimeModel;
     private RrdStrategy m_rrdStrategy;
 
-    public InputStream getAdhocGraph(String type,
-            String parentResourceType, String parentResource,
+    public InputStream getAdhocGraph(String parentResourceType, String parentResource,
             String resourceType, String resource, String title,
             String[] dataSources, String[] aggregateFunctions,
             String[] colors, String[] dataSourceTitles, String[] styles,
             long start, long end) {
         assertPropertiesSet();
         
-        if (type == null) {
-            throw new IllegalArgumentException("type argument cannot be null");
-        }
         if (parentResourceType == null) {
             throw new IllegalArgumentException("parentResourceType argument cannot be null");
         }
@@ -95,7 +91,7 @@ public class DefaultRrdGraphService implements RrdGraphService {
             throw new IllegalArgumentException("end time cannot be before start time");
         }
         
-        AdhocGraphType t = m_prefabGraphDao.findAdhocByName(type);
+        AdhocGraphType t = m_prefabGraphDao.findAdhocByName("performance");
         GraphModel model = findGraphModelByName(t.getName());
 
         GraphResourceType rt =
@@ -164,15 +160,12 @@ public class DefaultRrdGraphService implements RrdGraphService {
         return is;
     }
 
-    public InputStream getPrefabGraph(String type,
+    public InputStream getPrefabGraph(
             String parentResourceType, String parentResource,
             String resourceType, String resource, String report, long start,
             long end) {
         assertPropertiesSet();
 
-        if (type == null) {
-            throw new IllegalArgumentException("type argument cannot be null");
-        }
         if (parentResourceType == null) {
             throw new IllegalArgumentException("parentResourceType argument cannot be null");
         }
@@ -192,9 +185,9 @@ public class DefaultRrdGraphService implements RrdGraphService {
             throw new IllegalArgumentException("end time cannot be before start time");
         }
 
-        PrefabGraphType t = m_prefabGraphDao.findByName(type);
+        PrefabGraphType t = m_prefabGraphDao.findByName("performance");
         if (t == null) {
-            throw new IllegalArgumentException("graph type \"" + type
+            throw new IllegalArgumentException("graph type \"" + "performance"
                                                + "\" is not valid");
         }
         
@@ -214,24 +207,15 @@ public class DefaultRrdGraphService implements RrdGraphService {
                                                       null);
         }
         
-        Graph graph;
-        if ("node".equals(parentResourceType)) {
-            int nodeId;
-            try {
-                nodeId = Integer.parseInt(parentResource);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Could not parse parentResource '"
-                                                   + parentResource + "' as an integer node ID: " + e.getMessage(), e);
-            }
-            graph = new Graph(model, prefabGraph, nodeId, resource, resourceType, new Date(start), new Date(end));
-        } else if ("domain".equals(parentResourceType)){
-            graph = new Graph(model, prefabGraph, parentResource, resource, resourceType, new Date(start), new Date(end));
-        } else {
+        if (!"node".equals(parentResourceType) && !"domain".equals(parentResourceType)) {
             throw new IllegalArgumentException("parentResourceType '"
                                                + parentResourceType
                                                + "' is not supported");
             
         }
+        
+        // XXX should we verify that the parentResource is an integer if parentResourceType == "node"??
+        Graph graph = new Graph(prefabGraph, parentResourceType, parentResource, resourceType, resource, new Date(start), new Date(end));
 
         String attributePath = rt.getRelativePathForAttribute(parentResource, resource, "bogusAttribute");
         int lastSeparator = attributePath.lastIndexOf(File.separatorChar);
@@ -387,6 +371,21 @@ public class DefaultRrdGraphService implements RrdGraphService {
                                    report,
                                    relativePropertiesPath);
     }
+    
+
+    private String[] getRRDNames(Graph graph) {
+        String[] columns = graph.getPrefabGraph().getColumns();
+        String[] rrds = new String[columns.length];
+
+        for (int i=0; i < columns.length; i++) {
+            rrds[i] = m_performanceModel.getRelativePathForAttribute(graph.getResourceType(),
+                                                          graph.getParentResource(),
+                                                          graph.getResource(),
+                                                          columns[i]);
+        }
+
+        return rrds;
+    }
 
     protected String createPrefabCommand(Graph graph,
             String commandPrefix,
@@ -394,11 +393,8 @@ public class DefaultRrdGraphService implements RrdGraphService {
             String relativePropertiesPath) {
         PrefabGraph prefabGraph = graph.getPrefabGraph();
 
-        String[] rrds = graph.getRRDNames();
-        /*
-        String propertiesFile = graph.getParentResource()
-            + "/" + File.separator + "strings.properties";
-            */
+        String[] rrds = getRRDNames(graph);
+        
         
         StringBuffer buf = new StringBuffer();
         buf.append(commandPrefix);
@@ -432,8 +428,7 @@ public class DefaultRrdGraphService implements RrdGraphService {
 
         for (String externalValue : prefabGraph.getExternalValues()) { 
             if ("ifSpeed".equals(externalValue)) {
-                int nodeId = graph.getNodeId();
-                if (nodeId < 0) {
+                if (!"node".equals(graph.getParentResourceType())) {
                     throw new IllegalStateException("Report requires an "
                                                     + "external value of "
                                                     + externalValue
@@ -445,6 +440,8 @@ public class DefaultRrdGraphService implements RrdGraphService {
                                                     + "node");
                 }
                 
+                // XXX error checking
+                int nodeId = Integer.parseInt(graph.getParentResource());
                 String speed = getIfSpeed(nodeId, graph.getResource());
                 if (speed == null) {
                     throw new IllegalStateException("Report requires an "

@@ -44,10 +44,11 @@
 	import="java.util.*,
 		java.io.*,
 		org.opennms.web.*,
-		org.opennms.web.performance.*,
+        org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.graph.PrefabGraph,
+		org.opennms.web.graph.ResourceId,
 		org.opennms.web.element.NetworkElementFactory,
-                org.opennms.web.acegisecurity.Authentication,
+		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
@@ -171,7 +172,7 @@
 
 <h3 align="center"><%=report.getTitle()%></h3>
 <% if (report_type.equals("node") && this.model.getQueries(r_index).length > 0) { %>
-  <h3 align="center"><a href="graph/results.htm?parentResourceType=node&amp;parentResource=<%=report_index%>&amp;resourceType=node&amp;resource=&amp;reports=all">Show Node-level Performance Data</a></h3>
+  <h3 align="center"><a href="graph/results.htm?resourceId=<%= Util.encode(new ResourceId("node", Integer.toString(report_index), "node", "").getResourceId()) %>&amp;reports=all">Show Node-level Performance Data</a></h3>
 <% } %>
 
 <% int graph_count = report.getGraphCount(); %>
@@ -291,10 +292,10 @@
                                     <br/>
                                 <% } %>
                                 
-                                <a href="graph/results.htm?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;reports=all&amp;start=<%=start%>&amp;end=<%=end%>">Detail</a>
+                                <a href="graph/results.htm?resourceId=<%= Util.encode(new ResourceId(parentResourceType, parentResource, resourceType, resource).getResourceId()) %>&amp;reports=all&amp;start=<%=start%>&amp;end=<%=end%>">Detail</a>
 			            </td></tr></table>
                                     <br/>
-                                    <a href="graph/results.htm?zoom=true&amp;type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;reports=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>">
+                                    <a href="graph/results.htm?zoom=true&amp;resourceId=<%= Util.encode(new ResourceId(parentResourceType, parentResource, resourceType, resource).getResourceId()) %>&amp;reports=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>">
 
                             <img src="graph/graph.png?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>"/>
                             </a>

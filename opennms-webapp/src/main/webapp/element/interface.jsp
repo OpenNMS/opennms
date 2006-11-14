@@ -48,10 +48,12 @@
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
 				org.opennms.netmgt.config.PollerConfig,
-				org.opennms.web.element.*,
 				java.util.*,
+				org.opennms.web.Util,
                 org.opennms.web.acegisecurity.Authentication,
+				org.opennms.web.element.*,
 				org.opennms.web.event.*,
+				org.opennms.web.graph.ResourceId,
 				org.opennms.web.performance.*,
 				org.opennms.netmgt.utils.IfLabel,
 				org.opennms.web.response.*,
@@ -64,7 +66,6 @@
     protected int telnetServiceId;
     protected int httpServiceId;
     protected PerformanceModel m_performanceModel;
-//    protected ResponseTimeModel rtModel;
     
     public void init() throws ServletException {
         try {
@@ -83,7 +84,6 @@
 
 	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
-//		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
 %>
 
@@ -191,8 +191,16 @@ function doDelete() {
                 resourceType.getResourcesForNode(nodeId);
             for (GraphResource resource : resources) {
                 if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
+                    ResourceId resourceId =
+                        new ResourceId("node", Integer.toString(nodeId),
+                                       resourceType.getName(),
+                                       resource.getName());
                     out.println("<li>");
-                    out.println("<a href=\"graph/results.htm?type=performance&amp;reports=all&amp;parentResourceType=node&amp;parentResource=" + nodeId + "&amp;resourceType=" + resourceType.getName() + "&amp;resource=" + resource.getName() + "\">" + resourceType.getLabel() + " Graphs</a>");
+                    out.println("<a href=\"graph/results.htm?reports=all"
+                                + "&amp;resourceId="
+                                + Util.encode(resourceId.getResourceId())
+                                + "\">" + resourceType.getLabel()
+                                + " Graphs</a>");
                     out.println("</li>");
                 }
             }

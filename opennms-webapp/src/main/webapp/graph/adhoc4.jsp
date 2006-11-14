@@ -44,7 +44,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.*,
-		org.opennms.web.performance.*,
+		org.opennms.web.graph.ResourceId,
 		java.util.*
 	"
 %>
@@ -52,8 +52,7 @@
 <%!
     public final static String[] REQUIRED_PARAMS =
 	new String[] {
-		"resourceType",
-		"resource",
+		"resourceId",
 		"title",
 		"style",
 		"ds",
@@ -69,8 +68,8 @@
 %>
 
 <%
-	String resourceTypeName = request.getParameter( "resourceType" );
-	String resourceName = request.getParameter( "resource" );
+	String resourceId = request.getParameter( "resourceId" );
+
     String title = request.getParameter( "title" );
     String style = request.getParameter( "style" );
     String ds = request.getParameter( "ds" );
@@ -85,11 +84,9 @@
     String endYear  = request.getParameter( "endYear" );
     String endHour  = request.getParameter( "endHour" );
 
-    if( resourceTypeName == null ) {
-        throw new MissingParameterException( "resourceType", REQUIRED_PARAMS );
-    }
-    if( resourceName == null ) {
-        throw new MissingParameterException( "resource", REQUIRED_PARAMS );
+    
+    if( resourceId == null ) {
+        throw new MissingParameterException( "resourceId", REQUIRED_PARAMS );
     }
     if( title == null ) {
         throw new MissingParameterException( "title", REQUIRED_PARAMS );
@@ -124,6 +121,13 @@
     if( endHour == null ) {
         throw new MissingParameterException( "endHour", REQUIRED_PARAMS );
     }
+    
+    ResourceId r = ResourceId.parseResourceId(resourceId);
+
+    String parentResourceType = r.getParentResourceType();
+    String parentResource = r.getParentResource();
+    String resourceType = r.getResourceType();
+    String resource = r.getResource();
 
     Calendar startCal = Calendar.getInstance();
     startCal.set( Calendar.MONTH, Integer.parseInt( startMonth ));
@@ -151,24 +155,6 @@
     String endPretty   = new Date( Long.parseLong( end )).toString();
     
     
-    String parentResourceType;
-    String parentResource;
-    
-    if (request.getParameter("parentResourceType") != null
-	    && request.getParameter("parentResource") != null) {
-	    parentResourceType = request.getParameter("parentResourceType");
-	    parentResource = request.getParameter("parentResource");
-    } else {
-	    if (request.getParameter("node") != null) {
-	        parentResourceType = "node";
-	        parentResource = request.getParameter("node");
-    	} else {
-	        parentResourceType = "domain";
-	        parentResource = request.getParameter("domain");
-    	}
-    }
-
-
     String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour", "node", "domain", "parentResourceType", "parentResource" };
     Map additions = new HashMap();
     additions.put( "start", start );
@@ -193,7 +179,7 @@
 </jsp:include>
 
 <div align="center">
-  <img src="graph/graph.png?<%=queryString%>&parentResourceType=<%= parentResourceType %>&parentResource=<%= parentResource %>" />
+  <img src="graph/graph.png?<%=queryString%>&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>" />
 
   <br/>
 
