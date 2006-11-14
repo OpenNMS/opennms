@@ -71,7 +71,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class RrdUtils {
 
-    private static final String DEFAULT_RRD_STRATEGY_CLASSNAME = "org.opennms.netmgt.rrd.rrdtool.JRobinRrdStrategy";
+    private static final String DEFAULT_RRD_STRATEGY_CLASSNAME = "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
 
     private static final boolean USE_QUEUE = RrdConfig.getProperty("org.opennms.rrd.usequeue", true);
 
