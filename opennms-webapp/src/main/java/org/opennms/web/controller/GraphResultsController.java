@@ -1,7 +1,6 @@
 package org.opennms.web.controller;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +9,7 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
+import org.opennms.web.graph.ResourceId;
 import org.opennms.web.svclayer.GraphResultsService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -26,15 +26,9 @@ public class GraphResultsController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] {
-                "type",
-                "parentResourceType",
-                "parentResource",
-                "resourceType",
-                "resource",
-                "reports",
-//                "start",
-//                "end"
-                };
+                "resourceId",
+                "reports"
+        };
         
         for (String requiredParameter : requiredParameters) {
             if (request.getParameter(requiredParameter) == null) {
@@ -43,11 +37,7 @@ public class GraphResultsController extends AbstractController {
             }
         }
 
-        String type = request.getParameter("type");
-        String parentResourceType = request.getParameter("parentResourceType");
-        String parentResource = request.getParameter("parentResource");
-        String resourceType = request.getParameter("resourceType");
-        String resource = request.getParameter("resource");
+        String[] resourceIds = request.getParameterValues("resourceId");
         String[] reports = request.getParameterValues("reports");
         
         // see if the start and end time were explicitly set as params
@@ -146,12 +136,16 @@ public class GraphResultsController extends AbstractController {
             endLong = times[1];
         }
         
+        ResourceId[] resources = new ResourceId[resourceIds.length];
+        for (int i = 0; i < resourceIds.length; i++) {
+            resources[i] = ResourceId.parseResourceId(resourceIds[i]);
+        }
+
         GraphResults model =
-            m_graphResultsService.findResults(type, parentResourceType,
-                                              parentResource, resourceType,
-                                              resource, reports, startLong,
+            m_graphResultsService.findResults(resources,
+                                              reports, startLong,
                                               endLong, relativeTime);
-        
+
         ModelAndView modelAndView = new ModelAndView("/graph/results",
                                                      "results",
                                                      model);

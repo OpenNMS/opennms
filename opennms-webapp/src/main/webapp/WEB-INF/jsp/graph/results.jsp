@@ -74,49 +74,22 @@
   var cZoomBoxRightOffset = ${rrdStrategy.graphRightOffset} + ${rightOffset};
 </script>
 
-
 <div id="graph-results">
-  <h3>
-    ${results.parentResourceTypeLabel}:
-    <c:choose>
-      <c:when test="${!empty results.parentResourceLink}">
-        <a href="<c:url value='${results.parentResourceLink}'/>">${results.parentResourceLabel}</a>
-      </c:when>
-      <c:otherwise>
-        ${results.parentResourceLabel}
-      </c:otherwise>
-    </c:choose>
-    
-    <c:if test="${!empty results.resource}">
-      <br/>
-      ${results.resourceTypeLabel}:
-      <c:choose>
-        <c:when test="${!empty results.resourceLink}">
-          <a href="<c:url value='${results.resourceLink}'/>">${results.resourceLabel}</a>
-        </c:when>
-        <c:otherwise>
-          ${results.resourceLabel}
-        </c:otherwise>
-      </c:choose>
-    </c:if>
-  </h3>
 
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
 
     <c:set var="showCustom"></c:set>
-    <c:if test="${param.relativetime != 'custom'}">
+    <c:if test="${results.relativeTime != 'custom'}">
       <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
     <div id="customTimeForm" name="customTimeForm" ${showCustom}>
     
     <form action="${requestScope.relativeRequestPath}" method="get">
-        <input type="hidden" name="type" value="${results.type}"/>
-        <input type="hidden" name="parentResourceType" value="${results.parentResourceType}"/>
-        <input type="hidden" name="parentResource" value="${results.parentResource}"/>
-        <input type="hidden" name="resourceType" value="${results.resourceType}"/>
-        <input type="hidden" name="resource" value="${results.resource}"/>
-        <c:forEach var="graph" items="${results.graphs}">
-          <input type="hidden" name="reports" value="${graph.name}"/>
+        <c:forEach var="resultSet" items="${results.graphResultSets}">
+          <input type="hidden" name="resourceId" value="${resultSet.resourceId}"/>
+        </c:forEach>
+        <c:forEach var="report" items="${results.reports}">
+          <input type="hidden" name="reports" value="${report}"/>
         </c:forEach>
         <input type="hidden" name="relativetime" value="custom"/>
         <input type="hidden" name="zoom" value="${param.zoom}"/>
@@ -168,6 +141,32 @@
     <strong>To</strong> ${results.end} <br/>
   </p>
 
+
+  <c:forEach var="resultSet" items="${results.graphResultSets}">
+	<h3>${resultSet.parentResourceTypeLabel}: <c:choose>
+      <c:when test="${!empty resultSet.parentResourceLink}">
+        <a href="<c:url value='${resultSet.parentResourceLink}'/>">${resultSet.parentResourceLabel}</a>
+      </c:when>
+      <c:otherwise>
+        ${resultSet.parentResourceLabel}
+      </c:otherwise>
+    </c:choose>
+	
+	<c:if test="${!empty resultSet.resource}">
+      <br />
+      ${resultSet.resourceTypeLabel}:
+      <c:choose>
+			<c:when test="${!empty resultSet.resourceLink}">
+				<a href="<c:url value='${resultSet.resourceLink}'/>">${resultSet.resourceLabel}</a>
+			</c:when>
+			<c:otherwise>
+          ${resultSet.resourceLabel}
+          </c:otherwise>
+		</c:choose>
+	  </c:if>
+    </h3>
+    
+    
   <c:choose>
     <c:when test="${param.zoom == 'true'}">
 	  <div id='zoomBox' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; background:red; filter:alpha(opacity=50); -moz-opacity:0.5; -khtml-opacity:.5; opacity:0.5'></div>
@@ -181,42 +180,36 @@
 	  </style>
 	  
 	  <c:url var="graphUrl" value="graph/graph.png">
-        <c:param name="type" value="${results.type}"/>
-        <c:param name="parentResourceType" value="${results.parentResourceType}"/>
-        <c:param name="parentResource" value="${results.parentResource}"/>
-        <c:param name="resourceType" value="${results.resourceType}"/>
-        <c:param name="resource" value="${results.resource}"/>
-        <c:param name="report" value="${results.graphs[0].name}"/>
+        <c:param name="parentResourceType" value="${resultSet.parentResourceType}"/>
+        <c:param name="parentResource" value="${resultSet.parentResource}"/>
+        <c:param name="resourceType" value="${resultSet.resourceType}"/>
+        <c:param name="resource" value="${resultSet.resource}"/>
+        <c:param name="report" value="${resultSet.graphs[0].name}"/>
         <c:param name="start" value="${results.start.time}"/>
         <c:param name="end" value="${results.end.time}"/>
-        <c:param name="graph_width" value="${results.graphs[0].graphWidth}"/>
-        <c:param name="graph_height" value="${results.graphs[0].graphHeight}"/>
+        <c:param name="graph_width" value="${resultSet.graphs[0].graphWidth}"/>
+        <c:param name="graph_height" value="${resultSet.graphs[0].graphHeight}"/>
       </c:url>
 
       <img id="zoomGraphImage" src="${graphUrl}"/>
     </c:when>
 
-    <c:when test="${!empty results.graphs}"> 
-      <c:forEach var="graph" items="${results.graphs}">
+    <c:when test="${!empty resultSet.graphs}"> 
+      <c:forEach var="graph" items="${resultSet.graphs}">
         <c:url var="zoomUrl" value="${requestScope.relativeRequestPath}">
           <c:param name="zoom" value="true"/>
           <c:param name="relativetime" value="custom"/>
-          <c:param name="type" value="${results.type}"/>
-          <c:param name="parentResourceType" value="${results.parentResourceType}"/>
-          <c:param name="parentResource" value="${results.parentResource}"/>
-          <c:param name="resourceType" value="${results.resourceType}"/>
-          <c:param name="resource" value="${results.resource}"/>
+          <c:param name="resourceId" value="${resultSet.resourceId}"/>
           <c:param name="reports" value="${graph.name}"/>
           <c:param name="start" value="${results.start.time}"/>
           <c:param name="end" value="${results.end.time}"/>
 		</c:url>
 		
 		<c:url var="graphUrl" value="graph/graph.png">
-          <c:param name="type" value="${results.type}"/>
-          <c:param name="parentResourceType" value="${results.parentResourceType}"/>
-          <c:param name="parentResource" value="${results.parentResource}"/>
-          <c:param name="resourceType" value="${results.resourceType}"/>
-          <c:param name="resource" value="${results.resource}"/>
+          <c:param name="parentResourceType" value="${resultSet.parentResourceType}"/>
+          <c:param name="parentResource" value="${resultSet.parentResource}"/>
+          <c:param name="resourceType" value="${resultSet.resourceType}"/>
+          <c:param name="resource" value="${resultSet.resource}"/>
           <c:param name="report" value="${graph.name}"/>
           <c:param name="start" value="${results.start.time}"/>
           <c:param name="end" value="${results.end.time}"/>
@@ -231,18 +224,16 @@
       There is no data for this resource.
     </c:otherwise>
   </c:choose>
-
-  <c:import url="/includes/bookmark.jsp"/>
+    
+  </c:forEach>
 </div>
 
 <c:url var="relativeTimeReloadUrl" value="${requestScope.relativeRequestPath}">
-  <c:param name="type" value="${results.type}"/>
-  <c:param name="parentResourceType" value="${results.parentResourceType}"/>
-  <c:param name="parentResource" value="${results.parentResource}"/>
-  <c:param name="resourceType" value="${results.resourceType}"/>
-  <c:param name="resource" value="${results.resource}"/>
-  <c:forEach var="graph" items="${results.graphs}">
-    <c:param name="reports" value="${graph.name}"/>
+  <c:forEach var="resultSet" items="${results.graphResultSets}">
+    <c:param name="resourceId" value="${resultSet.resourceId}"/>
+  </c:forEach>
+  <c:forEach var="report" items="${results.reports}">
+    <c:param name="reports" value="${report}"/>
   </c:forEach>
 </c:url>
 
@@ -275,12 +266,10 @@
   <c:url var="zoomReloadUrl" value="${requestScope.relativeRequestPath}">
     <c:param name="zoom" value="true"/>
     <c:param name="relativetime" value="custom"/>
-    <c:param name="type" value="${results.type}"/>
-    <c:param name="parentResourceType" value="${results.parentResourceType}"/>
-    <c:param name="parentResource" value="${results.parentResource}"/>
-    <c:param name="resourceType" value="${results.resourceType}"/>
-    <c:param name="resource" value="${results.resource}"/>
-    <c:param name="reports" value="${results.graphs[0].name}"/>
+    <c:forEach var="resultSet" items="${results.graphResultSets}">
+      <c:param name="resourceId" value="${resultSet.resourceId}"/>
+    </c:forEach>
+    <c:param name="reports" value="${results.reports[0]}"/>
   </c:url>
 
   <script type="text/javascript">

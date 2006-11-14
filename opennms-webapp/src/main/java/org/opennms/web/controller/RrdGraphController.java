@@ -25,7 +25,6 @@ public class RrdGraphController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] {
-                "type",
                 "parentResourceType",
                 "parentResource",
                 "resourceType",
@@ -41,7 +40,6 @@ public class RrdGraphController extends AbstractController {
             }
         }
 
-        String type = request.getParameter("type");
         String parentResourceType = request.getParameter("parentResourceType");
         String parentResource = request.getParameter("parentResource");
         String resourceType = request.getParameter("resourceType");
@@ -89,8 +87,7 @@ public class RrdGraphController extends AbstractController {
             String[] dataSourceTitles = request.getParameterValues("dstitle");
             String[] styles = request.getParameterValues("style");
             
-            tempIn = m_rrdGraphService.getAdhocGraph(type,
-                                                     parentResourceType,
+            tempIn = m_rrdGraphService.getAdhocGraph(parentResourceType,
                                                      parentResource,
                                                      resourceType,
                                                      resource,
@@ -107,7 +104,7 @@ public class RrdGraphController extends AbstractController {
                 throw new MissingParameterException("report");
             }
             
-            tempIn = m_rrdGraphService.getPrefabGraph(type,
+            tempIn = m_rrdGraphService.getPrefabGraph(
                     parentResourceType, parentResource,
                     resourceType, resource, report, startTime, endTime);
         }

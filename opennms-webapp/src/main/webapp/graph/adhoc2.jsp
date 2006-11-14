@@ -66,13 +66,9 @@
  
 <%
     String[] requiredParameters = new String[] {
-        "parentResourceType",
-        "parentResource",
-        "resourceType",
-        "resource"
+        "resourceId"
     };
-
-
+    
     for (String requiredParameter : requiredParameters) {
         if (request.getParameter(requiredParameter) == null) {
             throw new MissingParameterException(requiredParameter,
@@ -80,10 +76,13 @@
         }
     }
 
-    String parentResourceTypeName = request.getParameter("parentResourceType");
-    String parentResourceName = request.getParameter("parentResource");
-    String resourceTypeName = request.getParameter("resourceType");
-    String resourceName = request.getParameter("resource");
+    String resourceId = request.getParameter("resourceId");
+    ResourceId r = ResourceId.parseResourceId(resourceId);
+
+    String parentResourceTypeName = r.getParentResourceType();
+    String parentResourceName = r.getParentResource();
+    String resourceTypeName = r.getResourceType();
+    String resourceName = r.getResource();
     
 	GraphResourceType resourceType =
 	    model.getResourceTypeByName(resourceTypeName);
@@ -124,6 +123,16 @@
   <jsp:param name="breadcrumb" value="Custom" />
 </jsp:include>
 
+
+<% if (request.getParameterValues("resourceId").length > 1) { %>
+<h3>Only one resource supported</h3>
+
+<p>
+At this time, we only support one resource at a time in custom resource
+graphs.  Please go back and choose a single resource.
+</p>
+
+<% } else { %>
 <h3>Step 2: Choose the Data Sources</h3> 
 
 <% if ("node".equals(parentResourceTypeName)) { %>
@@ -209,5 +218,7 @@
   <input type="submit" value="Next"/>
   <input type="reset" />
 </form>
+
+<% } %>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -8,9 +8,12 @@ import java.util.Set;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.Util;
+import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.PrefabGraph;
 import org.opennms.web.graph.RelativeTimePeriod;
+import org.opennms.web.graph.ResourceId;
+import org.opennms.web.graph.GraphResults.GraphResultSet;
 import org.opennms.web.performance.GraphAttribute;
 import org.opennms.web.performance.GraphResource;
 import org.opennms.web.performance.GraphResourceType;
@@ -33,23 +36,10 @@ public class DefaultGraphResultsService implements GraphResultsService {
         m_periods = RelativeTimePeriod.getDefaultPeriods();
     }
 
-    public GraphResults findResults(String graphType, String parentResourceType,
-            String parentResource, String resourceType, String resource,
+    public GraphResults findResults(ResourceId[] resources,
             String[] reports, long start, long end, String relativeTime) {
-        if (graphType == null) {
-            throw new IllegalArgumentException("graphType argument cannot be null");
-        }
-        if (parentResourceType == null) {
-            throw new IllegalArgumentException("parentResourceType argument cannot be null");
-        }
-        if (parentResource == null) {
-            throw new IllegalArgumentException("parentResource argument cannot be null");
-        }
-        if (resourceType == null) {
-            throw new IllegalArgumentException("resourceType argument cannot be null");
-        }
-        if (resource == null) {
-            throw new IllegalArgumentException("resource argument cannot be null");
+        if (resources == null) {
+            throw new IllegalArgumentException("resources argument cannot be null");
         }
         if (reports == null) {
             throw new IllegalArgumentException("reports argument cannot be null");
@@ -59,126 +49,98 @@ public class DefaultGraphResultsService implements GraphResultsService {
         }
 
         GraphResults graphResults = new GraphResults();
-        graphResults.setType(graphType);
+        graphResults.setStart(new Date(start));
+        graphResults.setEnd(new Date(end));
+        graphResults.setRelativeTime(relativeTime);
+        graphResults.setRelativeTimePeriods(m_periods);
+        graphResults.setReports(reports);
 
-        if ("performance".equals(graphType)) {
-            GraphResourceType rt = m_performanceModel.getResourceTypeByName(resourceType);
-            GraphResource r;
+        for (ResourceId resource : resources) {
+            graphResults.addGraphResultSet(createGraphResultSet(resource, reports, graphResults));
+        }
+        
+        return graphResults;
+    }
+    
+    public GraphResultSet createGraphResultSet(ResourceId r, String[] reports, GraphResults graphResults) {
+        String parentResourceType = r.getParentResourceType();
+        String parentResource = r.getParentResource();
+        String resourceType = r.getResourceType();
+        String resource = r.getResource();
+        
+        GraphResourceType rt = m_performanceModel.getResourceTypeByName(resourceType);
+        
+        GraphResource graphResource;
+        GraphModel model;
+        
+        GraphResultSet rs = graphResults.new GraphResultSet();
 
-            if ("node".equals(parentResourceType)) {
-                int nodeId;
-                try {
-                    nodeId = Integer.parseInt(parentResource);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Could not parse parentResource parameter "
-                                               + "into an integer for a node", e);
-                }
-
-                graphResults.setNodeId(nodeId);
-                OnmsNode n = m_nodeDao.get(nodeId);
-                if (n == null) {
-                    throw new IllegalArgumentException("could find node with a "
-                                                       + "nodeId of " + nodeId);
-                }
-                graphResults.setNodeLabel(n.getLabel());
-                graphResults.setParentResourceLink("element/node.jsp?node=" + nodeId);
-                graphResults.setParentResourceLabel(n.getLabel());
-
-
-                r = m_performanceModel.getResourceForNodeResourceResourceType(
-                                                                                            nodeId,
-                                                                                            resource,
-                                                                                            resourceType);
-                graphResults.setParentResourceTypeLabel("Node");
-                graphResults.setResourceTypeLabel(rt.getLabel());
-                graphResults.setResourceLabel(r.getLabel());
-
-                graphResults.setModel(rt.getModel());
-            } else if ("domain".equals(parentResourceType)) {
-                graphResults.setModel(m_performanceModel);
-                
-                r = m_performanceModel.getResourceForDomainResourceResourceType(
-                                                                                            parentResource,
-                                                                                            resource,
-                                                                                            resourceType);
-
-                graphResults.setDomain(parentResource);
-
-                graphResults.setParentResourceTypeLabel("Domain");
-                graphResults.setParentResourceLabel(parentResource);
-                graphResults.setResourceTypeLabel("Interface");
-                graphResults.setResourceLabel(resource);
-            } else {
-                throw new IllegalArgumentException("parentResourceType of '" + parentResourceType + "' is not supported.");
-            }
-            
-            if (reports.length == 1 && "all".equals(reports[0])) {
-                Set<GraphAttribute> attributes = r.getAttributes();
-
-                List<PrefabGraph> queries =
-                    rt.getAvailablePrefabGraphs(attributes);
-                List<String> queryNames = new ArrayList<String>(queries.size());
-                for (PrefabGraph query : queries) {
-                    queryNames.add(query.getName());
-                }
-
-                reports = queryNames.toArray(new String[queryNames.size()]);
-            }
-        } else if ("response".equals(graphType)) {
-            graphResults.setModel(m_responseTimeModel);
-
+        if ("node".equals(parentResourceType)) {
             int nodeId;
             try {
                 nodeId = Integer.parseInt(parentResource);
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Could not parse node's "
-                                                   + "parentResource parameter '"
-                                                   + parentResource
-                                                   + "' into an integer: "
-                                                   + e.getMessage(), e);
+                throw new IllegalArgumentException("Could not parse parentResource parameter "
+                                                   + "into an integer for a node", e);
             }
 
-            graphResults.setNodeId(nodeId);
             OnmsNode n = m_nodeDao.get(nodeId);
             if (n == null) {
                 throw new IllegalArgumentException("could find node with a "
                                                    + "nodeId of " + nodeId);
             }
-            graphResults.setNodeLabel(n.getLabel());
-            graphResults.setParentResourceLink("element/node.jsp?node=" + nodeId);
-            graphResults.setParentResourceLabel(n.getLabel());
+            rs.setParentResourceLink("element/node.jsp?node=" + nodeId);
+            rs.setParentResourceLabel(n.getLabel());
 
 
-            graphResults.setResourceTypeLabel("Interface");
-            graphResults.setResourceLabel(resource);
-            graphResults.setResourceLink("element/interface.jsp?node="
-                                         + nodeId + "&intf="
-                                         + Util.encode(resource));
-            graphResults.setParentResourceTypeLabel("Node");
+            graphResource =
+                m_performanceModel.getResourceForNodeResourceResourceType(nodeId,
+                                                                          resource,
+                                                                          resourceType);
+            rs.setParentResourceTypeLabel("Node");
+            rs.setResourceTypeLabel(rt.getLabel());
+            rs.setResourceLabel(graphResource.getLabel());
+
+            model = rt.getModel();
+        } else if ("domain".equals(parentResourceType)) {
+            model = m_performanceModel;
+
+            graphResource =
+                m_performanceModel.getResourceForDomainResourceResourceType(parentResource,
+                                                                            resource,
+                                                                            resourceType);
+
+            rs.setParentResourceTypeLabel("Domain");
+            rs.setParentResourceLabel(parentResource);
+            rs.setResourceTypeLabel("Interface");
+            rs.setResourceLabel(resource);
         } else {
-            throw new IllegalArgumentException("graph type of '" + graphType + "' is not supported.");
-        }
-        
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        
-        graphResults.setParentResourceType(parentResourceType);
-        graphResults.setParentResource(parentResource);
-        graphResults.setResourceType(resourceType);
-        graphResults.setResource(resource);
-        graphResults.setReports(reports);
-        graphResults.setStart(startDate);
-        graphResults.setEnd(endDate);
-        graphResults.setRelativeTime(relativeTime);
-        graphResults.setRelativeTimePeriods(m_periods);
-
-        if ("performance".equals(graphType) && "domain".equals(parentResourceType)) {
-            graphResults.initializeDomainGraphs();
-        } else {
-            graphResults.initializeGraphs();
+            throw new IllegalArgumentException("parentResourceType of '"
+                                               + parentResourceType
+                                               + "' is not supported.");
         }
 
-        return graphResults;
+        if (reports.length == 1 && "all".equals(reports[0])) {
+            Set<GraphAttribute> attributes = graphResource.getAttributes();
+
+            List<PrefabGraph> queries =
+                rt.getAvailablePrefabGraphs(attributes);
+            List<String> queryNames = new ArrayList<String>(queries.size());
+            for (PrefabGraph query : queries) {
+                queryNames.add(query.getName());
+            }
+
+            reports = queryNames.toArray(new String[queryNames.size()]);
+        }
+        
+        rs.setParentResourceType(parentResourceType);
+        rs.setParentResource(parentResource);
+        rs.setResourceType(resourceType);
+        rs.setResource(resource);
+
+        rs.initializeGraphs(model, reports);
+        
+        return rs;
     }
 
     public PerformanceModel getPerformanceModel() {
