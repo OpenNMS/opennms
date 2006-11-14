@@ -978,5 +978,9 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.getGraphTopOffsetWithText();
     }
 
+    public String getDefaultFileExtension() {
+        return m_delegate.getDefaultFileExtension();
+    }
+
 
 }

@@ -66,4 +66,8 @@ public class NullRrdStrategy implements RrdStrategy {
         return 0;
     }
 
+    public String getDefaultFileExtension() {
+        return ".nullRrd";
+    }
+
 }
