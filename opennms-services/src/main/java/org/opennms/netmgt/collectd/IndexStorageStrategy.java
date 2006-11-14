@@ -17,7 +17,7 @@ public class IndexStorageStrategy implements StorageStrategy {
         buffer.append(resource);
         buffer.append(File.separator);
         buffer.append(attribute);
-        buffer.append(RrdFileConstants.RRD_SUFFIX);
+        buffer.append(RrdFileConstants.getRrdSuffix());
         return buffer.toString();
     }
 

@@ -49,13 +49,10 @@ public class RrdFileConstants extends Object {
     /** The longest an RRD filename can be, currently 1024 characters. */
     public static final int MAX_RRD_FILENAME_LENGTH = 1024;
 
-    /** Suffix common to all RRD filenames. */
-    public static final String RRD_SUFFIX = RrdUtils.getExtension();
-
     /** Convenience filter that matches only RRD files. */
     public static final FilenameFilter RRD_FILENAME_FILTER = new FilenameFilter() {
         public boolean accept(File file, String name) {
-            return name.endsWith(RRD_SUFFIX);
+            return name.endsWith(getRrdSuffix());
         }
     };
 
@@ -232,5 +229,9 @@ public class RrdFileConstants extends Object {
         }
 
         return buffer.toString();
+    }
+
+    public static String getRrdSuffix() {
+        return RrdUtils.getExtension();
     }
 }
