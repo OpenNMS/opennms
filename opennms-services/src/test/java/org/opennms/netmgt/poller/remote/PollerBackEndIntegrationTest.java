@@ -10,6 +10,7 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class PollerBackEndIntegrationTest extends
@@ -125,7 +126,7 @@ public class PollerBackEndIntegrationTest extends
         String ipAddr = queryForString("select ipaddr from ifservices where id = ?", serviceId);
         
         // make sure there is no rrd data
-        File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ipAddr+"/http.rrd");
+        File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ipAddr+"/http"+RrdUtils.getExtension());
         if (rrdFile.exists())
             rrdFile.delete();
         
