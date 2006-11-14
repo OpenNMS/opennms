@@ -554,4 +554,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return -61;
     }
 
+    public String getDefaultFileExtension() {
+        return ".jrb";
+    }
+
 }

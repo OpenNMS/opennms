@@ -42,6 +42,10 @@
 
 package org.opennms.netmgt.vmmgr;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -52,6 +56,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.management.Attribute;
 import javax.management.MBeanServer;
@@ -529,6 +534,8 @@ public class Manager implements ManagerMBean {
 
         // set up the JMX logging
         mx4j.log.Log.redirectTo(new mx4j.log.Log4JLogger());
+        
+        loadGlobalProperties();
 
         for (int i = 0; i < argv.length; i++) {
             if (argv[i].equals("-h")) {
@@ -581,7 +588,45 @@ public class Manager implements ManagerMBean {
             System.exit(1);
         }
     }
+
+    private static void loadGlobalProperties() {
+        File propertiesFile = getPropertiesFile();
+        if (!propertiesFile.exists()) {
+            // don't require the file
+            return;
+        }
+        
+        Properties props = new Properties(System.getProperties());
+        InputStream fin = null;
+        try {
+            fin = new FileInputStream(propertiesFile);
+            props.load(fin);
+        } catch (IOException e) {
+            System.err.println("Error trying to read "+propertiesFile+": "+e.getMessage());
+            System.exit(1);
+        } finally {
+            closeQuietly(fin);
+        }
+        
+        
+        System.setProperties(props);
+    }
+
+    private static File getPropertiesFile() {
+        String homeDir = System.getProperty("opennms.home");
+        File etcDir = new File(homeDir, "etc");
+        File propertiesFile = new File(etcDir, "opennms.properties");
+        return propertiesFile;
+    }
     
+    private static void closeQuietly(InputStream in) {
+        try {
+            if (in != null) in.close();
+        } catch (IOException e) {
+            // ignore this
+        }
+    }
+
     private static void doStartCommand() {
         MBeanServer server = MBeanServerFactory.createMBeanServer("OpenNMS");
         start(server);

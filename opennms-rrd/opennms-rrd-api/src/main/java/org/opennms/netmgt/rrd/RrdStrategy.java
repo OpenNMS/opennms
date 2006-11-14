@@ -62,6 +62,11 @@ public interface RrdStrategy {
      * application to avoid the need for the JNI infrastructure in the webapp.
      */
     void graphicsInitialize() throws Exception;
+    
+    /**
+     * Get the file extension appropriate for files of this type
+     */
+    String getDefaultFileExtension();
 
     /**
      * Create a round robin database definition from the supplied parameters.

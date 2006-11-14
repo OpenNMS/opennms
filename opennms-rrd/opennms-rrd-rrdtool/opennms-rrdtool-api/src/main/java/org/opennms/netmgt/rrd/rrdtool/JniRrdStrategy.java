@@ -444,4 +444,8 @@ public class JniRrdStrategy implements RrdStrategy {
     public int getGraphTopOffsetWithText() {
         return -75;
     }
+
+    public String getDefaultFileExtension() {
+        return ".rrd";
+    }
 }

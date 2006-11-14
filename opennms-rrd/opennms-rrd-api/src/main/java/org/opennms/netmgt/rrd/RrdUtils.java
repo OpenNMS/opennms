@@ -71,7 +71,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class RrdUtils {
 
-    private static final String DEFAULT_RRD_STRATEGY_CLASSNAME = "org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy";
+    private static final String DEFAULT_RRD_STRATEGY_CLASSNAME = "org.opennms.netmgt.rrd.rrdtool.JRobinRrdStrategy";
 
     private static final boolean USE_QUEUE = RrdConfig.getProperty("org.opennms.rrd.usequeue", true);
 
@@ -79,9 +79,9 @@ public class RrdUtils {
 
     private static RrdStrategy m_rrdStrategy = null;
     
-    private static String m_rrdExtension = RrdConfig.getProperty("org.opennms.rrd.fileExtension",".rrd");
+    private static String m_rrdExtension = RrdConfig.getProperty("org.opennms.rrd.fileExtension", null);
 
-    public static RrdStrategy getStrategy() throws RrdException {
+    public static RrdStrategy getStrategy() {
         if (m_rrdStrategy == null)
             throw new IllegalStateException("RrdUtils not initiailzed");
         return m_rrdStrategy;
@@ -332,6 +332,8 @@ public class RrdUtils {
     }
 
 	public static String getExtension() {
+        if (m_rrdExtension == null)
+            return getStrategy().getDefaultFileExtension();
 		return m_rrdExtension;
 	}
 

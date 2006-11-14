@@ -426,7 +426,7 @@ public class CollectionSet implements Collectable {
     }
 
     private BasePersister createPersister(ServiceParameters params) {
-        if (Boolean.getBoolean("rrd.storeByGroup")) {
+        if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
             return new GroupPersister(params);
         } else {
             return new OneToOnePersister(params);
