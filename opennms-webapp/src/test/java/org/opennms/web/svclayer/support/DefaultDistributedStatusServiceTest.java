@@ -112,6 +112,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_node = new OnmsNode();
         m_ip = "1.1.1.1";
         m_node.setLabel("Node 1");
+        m_node.setId(1);
         
         // Can't shuffle since it's a set
         m_services = new HashSet<OnmsMonitoredService>();
@@ -220,14 +221,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Response", "simpleWebTableHeader");
         
         expectedTable.newRow();
-        expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=null");
+        expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=1");
         expectedTable.addCell("Raleigh-1", "");
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
         expectedTable.newRow();
         
-        expectedTable.addCell("Node 1", "Critical", "element/node.jsp?node=null");
+        expectedTable.addCell("Node 1", "Critical", "element/node.jsp?node=1");
         expectedTable.addCell("Raleigh-1", "");
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
