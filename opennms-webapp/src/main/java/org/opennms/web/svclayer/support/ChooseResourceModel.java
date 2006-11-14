@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.web.Util;
+import org.opennms.web.graph.ResourceId;
 import org.opennms.web.performance.GraphAttribute;
 import org.opennms.web.performance.GraphResource;
 import org.opennms.web.performance.GraphResourceType;
@@ -97,9 +98,10 @@ public class ChooseResourceModel {
         }
 
         public String getResourceId() {
-            return Util.encode(m_parentResourceTypeName) + "[" + Util.encode(m_parentResourceName) + "]."
-                   + Util.encode(m_resourceTypeName) + "[" + Util.encode(m_delegate.getName()) + "]";
-
+            ResourceId r = 
+                new ResourceId(m_parentResourceTypeName, m_parentResourceName,
+                               m_resourceTypeName, m_delegate.getName());
+            return r.getResourceId();
         }
 
         public Set<GraphAttribute> getAttributes() {

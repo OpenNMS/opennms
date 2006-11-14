@@ -180,10 +180,7 @@
 	  </style>
 	  
 	  <c:url var="graphUrl" value="graph/graph.png">
-        <c:param name="parentResourceType" value="${resultSet.parentResourceType}"/>
-        <c:param name="parentResource" value="${resultSet.parentResource}"/>
-        <c:param name="resourceType" value="${resultSet.resourceType}"/>
-        <c:param name="resource" value="${resultSet.resource}"/>
+        <c:param name="resourceId" value="${resultSet.resourceId}"/>
         <c:param name="report" value="${resultSet.graphs[0].name}"/>
         <c:param name="start" value="${results.start.time}"/>
         <c:param name="end" value="${results.end.time}"/>
@@ -206,10 +203,7 @@
 		</c:url>
 		
 		<c:url var="graphUrl" value="graph/graph.png">
-          <c:param name="parentResourceType" value="${resultSet.parentResourceType}"/>
-          <c:param name="parentResource" value="${resultSet.parentResource}"/>
-          <c:param name="resourceType" value="${resultSet.resourceType}"/>
-          <c:param name="resource" value="${resultSet.resource}"/>
+		  <c:param name="resourceId" value="${resultSet.resourceId}"/>
           <c:param name="report" value="${graph.name}"/>
           <c:param name="start" value="${results.start.time}"/>
           <c:param name="end" value="${results.end.time}"/>

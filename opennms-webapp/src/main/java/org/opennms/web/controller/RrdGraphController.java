@@ -14,6 +14,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.graph.ResourceId;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -25,10 +26,7 @@ public class RrdGraphController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] {
-                "parentResourceType",
-                "parentResource",
-                "resourceType",
-                "resource",
+                "resourceId",
                 "start",
                 "end"
         };
@@ -40,10 +38,7 @@ public class RrdGraphController extends AbstractController {
             }
         }
 
-        String parentResourceType = request.getParameter("parentResourceType");
-        String parentResource = request.getParameter("parentResource");
-        String resourceType = request.getParameter("resourceType");
-        String resource = request.getParameter("resource");
+        String resourceIdString = request.getParameter("resourceId");
         String start = request.getParameter("start");
         String end = request.getParameter("end");
         
@@ -61,6 +56,12 @@ public class RrdGraphController extends AbstractController {
             throw new IllegalArgumentException("Could not parse end '"
                                                + end + "' as an integer time: " + e.getMessage(), e);
         }
+        
+        ResourceId resourceId = ResourceId.parseResourceId(resourceIdString);
+        String parentResourceType = resourceId.getParentResourceType();
+        String parentResource = resourceId.getParentResource();
+        String resourceType = resourceId.getResourceType();
+        String resource = resourceId.getResource();
         
         InputStream tempIn;
         if ("true".equals(request.getParameter("adhoc"))) {

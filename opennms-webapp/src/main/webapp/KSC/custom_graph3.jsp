@@ -44,6 +44,7 @@
 		org.opennms.web.performance.*,
 		org.opennms.web.*,
 		org.opennms.web.graph.PrefabGraph,
+		org.opennms.web.graph.ResourceId,
 		java.io.File,
 		org.opennms.netmgt.config.kscReports.*,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
@@ -112,6 +113,13 @@
         resourceType = "interface";
         resource = intf;
     }
+    
+    ResourceId resourceId =
+        new ResourceId(parentResourceType, parentResource,
+                       resourceType, resource);
+    String resourceIdEncoded =
+        Util.encode(resourceId.getResourceId());
+    
     Report report = this.reportFactory.getWorkingReport(); 
     org.opennms.netmgt.config.kscReports.Graph sample_graph = this.reportFactory.getWorkingGraph(); 
     if (sample_graph == null) {
@@ -240,7 +248,7 @@
                             </td>
               
                             <td align="left">
-                                <img src="graph/graph.png?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;report=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>"/>
+                                <img src="graph/graph.png?resourceId=<%= resourceIdEncoded %>&amp;report=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>"/>
                             </td>
                         </tr>
                     </table>

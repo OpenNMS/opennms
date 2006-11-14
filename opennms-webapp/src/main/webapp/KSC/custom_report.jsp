@@ -40,6 +40,8 @@
 	session="true"
 	import="java.util.*,
 		java.io.*,
+		org.opennms.web.Util,
+		org.opennms.web.graph.ResourceId,
 		org.opennms.web.performance.*,
 		org.opennms.web.graph.PrefabGraph,
 		org.opennms.web.element.NetworkElementFactory,
@@ -166,6 +168,12 @@
                            resource = intf;
                        }
                        
+                       ResourceId resourceId =
+                           new ResourceId(parentResourceType, parentResource,
+                                          resourceType, resource);
+                       String resourceIdEncoded =
+                           Util.encode(resourceId.getResourceId());
+                       
                 %>
             
                     <tr>
@@ -203,7 +211,7 @@
                         </td>
               
                         <td align="left">
-                            <img src="graph/graph.png?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;report=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>"/>
+                            <img src="graph/graph.png?resourceId=<%= resourceIdEncoded %>&amp;report=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>"/>
                         </td>
                     </tr>
                 <% }  //end for loop %> 
