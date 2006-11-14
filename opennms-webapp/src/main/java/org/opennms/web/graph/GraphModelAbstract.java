@@ -323,7 +323,7 @@ public abstract class GraphModelAbstract implements GraphModel {
 
         List<String> dataSources = new LinkedList<String>();
         File nodeDir = new File(getRrdDirectory(), nodeId);
-        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
+        int suffixLength = RrdFileConstants.getRrdSuffix().length();
 
         // get the node data sources
         File[] nodeFiles =
@@ -358,7 +358,7 @@ public abstract class GraphModelAbstract implements GraphModel {
         File nodeOrDomainDir = new File(getRrdDirectory(), nodeIdOrDomain);
         File intfDir = new File(nodeOrDomainDir, intf);
 
-        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
+        int suffixLength = RrdFileConstants.getRrdSuffix().length();
 
         // get the node data sources
         if (includeNodeQueries && isNode) {
@@ -479,7 +479,7 @@ public abstract class GraphModelAbstract implements GraphModel {
 					   boolean includeNodeQueries);
 
     public List<String> getDataSourcesInDirectory(File directory) {
-        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
+        int suffixLength = RrdFileConstants.getRrdSuffix().length();
 
         // get the interface data sources
         File[] files =

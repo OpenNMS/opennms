@@ -111,6 +111,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_mockRrdStrategy = mock(RrdStrategy.class);
 		RrdUtils.setStrategy((RrdStrategy)m_mockRrdStrategy.proxy());
 		m_mockRrdStrategy.expects(atLeastOnce()).method("initialize");
+        m_mockRrdStrategy.expects(atLeastOnce()).method("getDefaultFileExtension").will(returnValue(".mockRrd"));
 	}
 
 	protected void setupDatabase() {

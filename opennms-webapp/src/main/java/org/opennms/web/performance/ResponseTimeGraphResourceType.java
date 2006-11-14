@@ -59,7 +59,7 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
         buffer.append(resource);
         buffer.append(File.separator);
         buffer.append(attribute);
-        buffer.append(RrdFileConstants.RRD_SUFFIX);
+        buffer.append(RrdFileConstants.getRrdSuffix());
         return buffer.toString();
     }
 
