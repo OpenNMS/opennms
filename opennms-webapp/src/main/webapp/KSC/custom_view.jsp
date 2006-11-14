@@ -245,6 +245,12 @@
                            }
                        }
                        
+                       ResourceId resourceId =
+                           new ResourceId(parentResourceType, parentResource,
+                                          resourceType, resource);
+                       String resourceIdEncoded =
+                           Util.encode(resourceId.getResourceId());
+                       
                 %>
             
 		    <% if ((i == 0) || (i%report_graphsperline == 0)) { %>
@@ -292,12 +298,12 @@
                                     <br/>
                                 <% } %>
                                 
-                                <a href="graph/results.htm?resourceId=<%= Util.encode(new ResourceId(parentResourceType, parentResource, resourceType, resource).getResourceId()) %>&amp;reports=all&amp;start=<%=start%>&amp;end=<%=end%>">Detail</a>
+                                <a href="graph/results.htm?resourceId=<%= resourceIdEncoded %>&amp;reports=all&amp;start=<%=start%>&amp;end=<%=end%>">Detail</a>
 			            </td></tr></table>
                                     <br/>
-                                    <a href="graph/results.htm?zoom=true&amp;resourceId=<%= Util.encode(new ResourceId(parentResourceType, parentResource, resourceType, resource).getResourceId()) %>&amp;reports=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>">
+                                    <a href="graph/results.htm?zoom=true&amp;resourceId=<%= resourceIdEncoded %>&amp;reports=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>">
 
-                            <img src="graph/graph.png?type=performance&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>&amp;report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>"/>
+                            <img src="graph/graph.png?resourceId=<%= resourceIdEncoded %>&amp;report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>"/>
                             </a>
 
                         </td>

@@ -13,8 +13,9 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.web.Util;
 import org.opennms.web.graph.RelativeTimePeriod;
+import org.opennms.web.graph.ResourceId;
 
 public class DistributedStatusHistoryModel {
     private List<OnmsMonitoringLocationDefinition> m_locations;
@@ -140,23 +141,19 @@ public class DistributedStatusHistoryModel {
 
     private String getHttpGraphUrlForService(OnmsMonitoredService service,
             long[] times) {
+        int nodeId = service.getIpInterface().getNode().getId();
+        String resourceString = getChosenMonitor().getId()
+            + "/" + service.getIpAddress();
+
+        ResourceId r = new ResourceId("node",
+                                      Integer.toString(nodeId),
+                                      "distributedStatus",
+                                      resourceString); 
         return "graph/graph.png"
             + "?report=" + service.getServiceName().toLowerCase()
-            + "&parentResourceType=node"
-            + "&parentResource=" + service.getIpInterface().getNode().getId()
-            + "&resourceType=distributedStatus"
-            + "&resource=" + getChosenMonitor().getId()
-                + "/" + service.getIpAddress()
-            + "&type=performance"
+            + "&resourceId=" + Util.encode(r.getResourceId())
             + "&start=" + times[0]
             + "&end=" + times[1];
-
-        /*
-            + "&rrd=" + getChosenMonitor().getId()
-            + "%2F" + service.getIpAddress()
-            + "%2F" + service.getServiceName().toLowerCase()
-            + RrdUtils.getExtension();
-*/
     }
     
 }

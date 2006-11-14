@@ -225,8 +225,11 @@ public class GraphResults {
         }
         
         public String getResourceId() {
-            return Util.encode(m_parentResourceType) + "[" + Util.encode(m_parentResource) + "]."
-                   + Util.encode(m_resourceType) + "[" + Util.encode(m_resource) + "]";
+            ResourceId r = new ResourceId(m_parentResourceType,
+                                          m_parentResource,
+                                          m_resourceType,
+                                          m_resource);
+            return r.getResourceId();
         }
 
         /**

@@ -121,13 +121,6 @@
     if( endHour == null ) {
         throw new MissingParameterException( "endHour", REQUIRED_PARAMS );
     }
-    
-    ResourceId r = ResourceId.parseResourceId(resourceId);
-
-    String parentResourceType = r.getParentResourceType();
-    String parentResource = r.getParentResource();
-    String resourceType = r.getResourceType();
-    String resource = r.getResource();
 
     Calendar startCal = Calendar.getInstance();
     startCal.set( Calendar.MONTH, Integer.parseInt( startMonth ));
@@ -155,15 +148,11 @@
     String endPretty   = new Date( Long.parseLong( end )).toString();
     
     
-    String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour", "node", "domain", "parentResourceType", "parentResource" };
+    String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour" };
     Map additions = new HashMap();
     additions.put( "start", start );
     additions.put( "end", end );
-    additions.put( "type", "performance" );
     additions.put( "adhoc", "true" );
-//    additions.put( "parentResourceType", parentResourceType );
-//    additions.put( "parentResource", parentResource );
-    
      
     String queryString = Util.makeQueryString( request, additions, ignores );
 %>
@@ -179,7 +168,7 @@
 </jsp:include>
 
 <div align="center">
-  <img src="graph/graph.png?<%=queryString%>&amp;parentResourceType=<%= parentResourceType %>&amp;parentResource=<%= parentResource %>&amp;resourceType=<%= resourceType %>&amp;resource=<%= resource %>" />
+  <img src="graph/graph.png?<%=queryString%>" />
 
   <br/>
 
