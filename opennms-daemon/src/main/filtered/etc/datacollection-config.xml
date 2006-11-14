@@ -254,6 +254,7 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.1550" instance="8" alias="cfwBuff1550BBmin" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="6" alias="cfwConnectCurr" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="7" alias="cfwConnectMax" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer"/>
       </group>
       <group name="cisco-router" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.2.1.58" instance="0" alias="avgBusy5" type="integer" />
