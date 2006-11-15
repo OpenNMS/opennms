@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- JNLP File for SwingSet2 Demo Application -->
+<!-- JNLP File for OpenNMS Remote Monitoring GUI -->
 <jnlp
   spec="1.5+"
   codebase="$$codebase"
