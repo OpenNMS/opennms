@@ -865,6 +865,7 @@ create table notifications (
        constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE
 );
 
+create index notifications_nodeid_idx on notifications(nodeid);
 create index notifications_ipaddr_idx on notifications(interfaceID);
 create index notifications_serviceid_idx on notifications(serviceID);
 create index notifications_eventid_idx on notifications(eventID);
@@ -1366,7 +1367,7 @@ create table atinterface (
 	ifindex		integer not null,
 	lastPollTime	timestamp not null,
     constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr),
-	constraint fk_ia_nodeID1 foreign key (nodeid) references node
+	constraint fk_ia_nodeID1 foreign key (nodeid) references node on delete cascade
 );
 
 
@@ -1435,12 +1436,13 @@ create table stpnode (
     basevlan                 integer not null,
     basevlanname			 varchar(32),
     constraint pk_stpnode primary key (nodeid,basevlan),
-	constraint fk_ia_nodeID2 foreign key (nodeid) references node
+	constraint fk_ia_nodeID2 foreign key (nodeid) references node on delete cascade
 );
 
 
-
-create index stpnode_nodeIdBaseVlan_idx on stpnode(nodeid,basevlan);
+#not required because primary key creates the same index
+#create index stpnode_nodeIdBaseVlan_idx on stpnode(nodeid,basevlan);
+create index stpnode_nodeid_idx on stpnode(nodeid);
 create index stpnode_baseBridgeAddress_idx on stpnode(baseBridgeAddress);
 create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
 
@@ -1505,12 +1507,13 @@ create table stpinterface (
     stpvlan                 integer not null,
 
     constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan),
-	constraint fk_ia_nodeID3 foreign key (nodeid) references node
+	constraint fk_ia_nodeID3 foreign key (nodeid) references node on delete cascade
 );
 
 
 
-create index stpinterface_node_bridgeport_stpvlan on stpinterface(nodeid,bridgeport,stpvlan);
+#not required because primary key creates the same index
+#create index stpinterface_node_bridgeport_stpvlan on stpinterface(nodeid,bridgeport,stpvlan);
 create index stpinterface_node_ifindex_idx on stpinterface(nodeid,ifindex);
 create index stpinterface_node_idx on stpinterface(nodeid);
 create index stpinterface_stpvlan_idx on stpinterface(stpvlan);
@@ -1595,12 +1598,13 @@ create table iprouteinterface (
     lastPollTime            timestamp not null,
 
 	constraint pk_iprouteinterface primary key (nodeid,routedest),
-	constraint fk_ia_nodeID4 foreign key (nodeid) references node
+	constraint fk_ia_nodeID4 foreign key (nodeid) references node on delete cascade
 );
 
 
-
-create index iprouteinterface_node_routedest_idx on iprouteinterface(nodeid,routedest);
+#not required because primary key creates the same index
+#create index iprouteinterface_node_routedest_idx on iprouteinterface(nodeid,routedest);
+create index iprouteinterface_nodeid_idx on iprouteinterface(nodeid);
 create index iprouteinterface_node_ifdex_idx on iprouteinterface(nodeid,routeifindex);
 create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 
@@ -1635,13 +1639,14 @@ create table datalinkinterface (
     lastPollTime timestamp not null,
 
     constraint pk_datalinkinterface primary key (nodeid,ifindex),
-	constraint fk_ia_nodeID5 foreign key (nodeid) references node,
+	constraint fk_ia_nodeID5 foreign key (nodeid) references node on delete cascade,
 	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid)
 );
 
 
 create index dlint_node_idx on datalinkinterface(nodeid);
-create index dlint_node_ifindex_idx on datalinkinterface(nodeid,ifindex);
+#not required because primary key creates the same index
+#create index dlint_node_ifindex_idx on datalinkinterface(nodeid,ifindex);
 create index dlint_nodeparent_idx on datalinkinterface(nodeparentid);
 create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,parentifindex);
 
@@ -1673,10 +1678,11 @@ create table inventory (
         pathtofile varchar(256) not null,
 	    status char(1) not null,
 
-		constraint fk_ia_nodeID7 foreign key (nodeID)	references node
+		constraint fk_ia_nodeID7 foreign key (nodeID) references node on delete cascade
         );
 
 create index inventory_nodeid_name_idx on inventory(nodeid,name);
+create index inventory_nodeid_idx on inventory(nodeid);
 create index inventory_lastpolltime_idx on inventory(lastpolltime);
 create index inventory_status_idx on inventory(status);
 
