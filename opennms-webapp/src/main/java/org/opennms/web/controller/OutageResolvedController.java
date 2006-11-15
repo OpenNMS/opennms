@@ -70,7 +70,7 @@ public class OutageResolvedController extends UrlFilenameViewController {
                 this.successView = successView;
         }
 
-        public void setdisplayResolvedOutages(String successView) {
+        public void setDisplayResolvedOutages(String successView) {
                 this.successView = successView;
         }
 

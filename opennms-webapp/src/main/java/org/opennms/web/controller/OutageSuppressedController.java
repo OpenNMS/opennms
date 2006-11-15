@@ -156,7 +156,7 @@ public class OutageSuppressedController extends AbstractController {
 		this.successView = successView;
 	}
 
-	public void setdisplaySuppressedOutages(String successView) {
+	public void setDisplaySuppressedOutages(String successView) {
 		this.successView = successView;
 	}
 
