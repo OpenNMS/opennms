@@ -107,7 +107,7 @@
       
 <p>
   The interface has had its SNMP information updated. This should cause any
-  changes in SNMP community names or collection to take affect.
+  changes in SNMP community names or collection to take effect.
 </p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
