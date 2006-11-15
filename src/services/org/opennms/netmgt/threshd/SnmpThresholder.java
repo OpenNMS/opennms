@@ -42,6 +42,7 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.NullPointerException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -610,8 +611,10 @@ final class SnmpThresholder implements ServiceThresholder {
                 String dsLabelValue = "Unknown";
                 String propertiesFile = directory + "/strings.properties";
                 Properties stringProps = new Properties();
+                FileInputStream strPropsFile = null;
                 try {
-                        stringProps.load(new FileInputStream(propertiesFile));
+                        strPropsFile = new FileInputStream(propertiesFile);
+                        stringProps.load(strPropsFile);
                         dsLabelValue = stringProps.getProperty(threshold.getDatasourceLabel());
                 } catch (FileNotFoundException e) {
                         log.debug ("Label: No strings.properties file found for node id: " + nodeId + " looking here: " + propertiesFile);
@@ -619,6 +622,12 @@ final class SnmpThresholder implements ServiceThresholder {
                         log.debug ("Label: No data source label for node id: " + nodeId );
                 } catch (java.io.IOException e) {
                         log.debug ("Label: I/O exception when looking for strings.properties file for node id: "+ nodeId + " looking here: " + propertiesFile);
+                } finally {
+                    try {
+                        strPropsFile.close();
+                    } catch (IOException e) {
+                        log.error("checkNodeDir: I/O exception closing properties file: "+strPropsFile.toString());
+                    }
                 }
 
                 if (log.isDebugEnabled())
