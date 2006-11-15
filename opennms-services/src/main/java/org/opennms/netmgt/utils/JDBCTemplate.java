@@ -37,6 +37,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataRetrievalFailureException;
+
 /**
  * @author brozow
  *
@@ -82,7 +84,7 @@ abstract public class JDBCTemplate {
              doExecute(values);
          } catch (SQLException e) {
              String vals = argsToString(values);
-             throw new RuntimeException("Problem executing statement: "+m_sql+" with values "+vals, e);
+             throw new DataRetrievalFailureException("Problem executing statement: "+m_sql+" with values "+vals, e);
          }
      }
 

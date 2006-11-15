@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -55,41 +54,19 @@ public class Threshd implements ThreshdMBean {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         
-        Category log = ThreadCategory.getInstance();
-        
         // Load threshd configuration file
         //
         try {
             ThreshdConfigFactory.reload();
-        } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-        
-        // Load threshd configuration file
-        //
-        try {
             ThresholdingConfigFactory.reload();
         } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
+            log().fatal("start: Failed to load threshd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
+            log().fatal("start: Failed to load threshd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
+            log().fatal("start: Failed to load threshd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
         
@@ -98,45 +75,50 @@ public class Threshd implements ThreshdMBean {
         try {
             PollOutagesConfigFactory.reload();
         } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load poll-outage configuration", ex);
+            log().fatal("start: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load poll-outage configuration", ex);
+            log().fatal("start: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load poll-outage configuration", ex);
+            log().fatal("start: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
 
         
-        org.opennms.netmgt.threshd.Threshd.getInstance().setThreshdConfig(ThreshdConfigFactory.getInstance());
+        getInstance().setThreshdConfig(ThreshdConfigFactory.getInstance());
 
-        org.opennms.netmgt.threshd.Threshd.getInstance().init();
+        getInstance().init();
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance();
+    }
+
+    private org.opennms.netmgt.threshd.Threshd getInstance() {
+        return org.opennms.netmgt.threshd.Threshd.getInstance();
     }
 
     public void start() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        org.opennms.netmgt.threshd.Threshd.getInstance().start();
+        getInstance().start();
     }
 
     public void stop() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        org.opennms.netmgt.threshd.Threshd.getInstance().stop();
+        getInstance().stop();
     }
 
     public int getStatus() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        return org.opennms.netmgt.threshd.Threshd.getInstance().getStatus();
+        return getInstance().getStatus();
     }
 
     public String status() {

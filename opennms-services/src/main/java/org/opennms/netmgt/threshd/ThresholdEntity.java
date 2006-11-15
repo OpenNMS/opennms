@@ -484,4 +484,11 @@ final class ThresholdEntity implements Cloneable {
 	        }
 	    }
 	}
+
+    void setThreshold(Threshold thresh) {
+        if (thresh.getType().equals(ThresholdEntity.HIGH_THRESHOLD))
+            setHighThreshold(thresh);
+        else if (thresh.getType().equals(ThresholdEntity.LOW_THRESHOLD))
+            setLowThreshold(thresh);
+    }
 }
