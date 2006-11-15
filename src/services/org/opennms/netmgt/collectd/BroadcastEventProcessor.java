@@ -822,7 +822,7 @@ final class BroadcastEventProcessor implements EventListener {
             val = Integer.parseInt(parmContent);
         } catch (NumberFormatException e) {
             log().error("computeIntValue: parm value passed in the event isn't a valid number." ,e);
-            throw new IllegalArgumentException(e);
+            throw e;
         }
         return val;
     }
