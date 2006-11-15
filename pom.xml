@@ -643,6 +643,19 @@ opennms.home = ${opennms.home}
     </profile>
 
     <profile>
+      <id>solaris-postgres81</id>
+      <activation>
+       <file>
+         <exists>/usr/local/pgsql/lib/libpq.so.4.1</exists>
+       </file>
+      </activation>
+
+      <properties>
+       <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+
+    <profile>
       <id>solaris-local-rrdtool1.0.49</id>
       <activation>
       	<file>
