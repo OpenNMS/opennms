@@ -211,7 +211,7 @@ public final class ThresholdingConfigFactory {
     public Group getGroup(String groupName) {
         Group group = (Group) m_groupMap.get(groupName);
         if (group == null)
-            throw new IllegalArgumentException("Group does not exist.");
+            throw new IllegalArgumentException("Thresholding group "+groupName+" does not exist.");
         return group;
     }
 

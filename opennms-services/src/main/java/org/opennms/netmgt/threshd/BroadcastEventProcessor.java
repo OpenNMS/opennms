@@ -342,7 +342,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Schedule the new service...
         //
-        m_threshd.scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleService((int) event.getNodeid(), event.getInterface(), event.getService(), false);
     }
 
     /**
@@ -440,7 +440,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Now we can schedule the new service...
         //
-        m_threshd.scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleService((int) event.getNodeid(), event.getInterface(), event.getService(), false);
 
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");

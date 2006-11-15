@@ -41,10 +41,8 @@ package org.opennms.netmgt.threshd;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -52,24 +50,22 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.Level;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
-import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.springframework.dao.DataRetrievalFailureException;
 
 public final class Threshd extends AbstractServiceDaemon {
     /**
@@ -86,7 +82,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * List of all ThresholdableService objects.
      */
-    private List m_thresholdableServices;
+    private List<ThresholdableService> m_thresholdableServices;
 
     /**
      * Reference to the threshd scheduler
@@ -111,7 +107,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * Map of all available ServiceThresholder objects indexed by service name
      */
-    private static Map m_svcThresholders;
+    private static Map<String, ServiceThresholder> m_svcThresholders;
 
     private ThreshdConfigManager m_threshdConfig;
 
@@ -121,8 +117,8 @@ public final class Threshd extends AbstractServiceDaemon {
     Threshd() {
     	super("OpenNMS.Threshd");
         m_scheduler = null;
-        m_svcThresholders = Collections.synchronizedMap(new TreeMap());
-        m_thresholdableServices = Collections.synchronizedList(new LinkedList());
+        m_svcThresholders = Collections.synchronizedMap(new TreeMap<String, ServiceThresholder>());
+        m_thresholdableServices = Collections.synchronizedList(new LinkedList<ThresholdableService>());
 
         m_proxy = new EventProxy() {
             public void send(Event e) {
@@ -137,22 +133,94 @@ public final class Threshd extends AbstractServiceDaemon {
 
     protected void onInit() {
 
-    	// get the category logger
-        if (log().isDebugEnabled())
-            log().debug("start: Initializing thresholding daemon");
+        log().debug("start: Initializing thresholding daemon");
 
-        if (log().isDebugEnabled())
-            log().debug("start: Loading thresholders");
+        log().debug("start: Loading thresholders");
 
         // Threshd configuration
         //
-        ThreshdConfiguration config = m_threshdConfig.getConfiguration();
-
         // Load up an instance of each thresholder from the config
         // so that the event processor will have them for
         // new incomming events to create collectable service objects.
         //
-        Enumeration eiter = config.enumerateThresholder();
+        initializeThresholders();
+
+        // Create a scheduler
+        //
+        initializeScheduler();
+
+        if (log().isDebugEnabled())
+            log().debug("start: Scheduling existing interfaces");
+
+        // Schedule existing interfaces for thresholding
+        //
+
+        scheduleBackgroundInitTask();
+
+        // Create an event receiver. The receiver will
+        // receive events, process them, creates network
+        // interfaces, and schedulers them.
+        //
+        createBroadcastEventProcessor();
+
+        // Set the status of the service as running.
+        //
+        setStatus(RUNNING);
+
+        if (log().isDebugEnabled())
+            log().debug("start: Threshd running");
+    }
+
+    private void createBroadcastEventProcessor() {
+        try {
+            if (log().isDebugEnabled())
+                log().debug("start: Creating event broadcast event processor");
+
+            m_receiver = new BroadcastEventProcessor(this, m_thresholdableServices);
+        } catch (Throwable t) {
+            if (log().isEnabledFor(Level.FATAL))
+                log().fatal("start: Failed to initialized the broadcast event receiver", t);
+
+            throw new UndeclaredThrowableException(t);
+        }
+    }
+
+    private void scheduleBackgroundInitTask() {
+        ReadyRunnable interfaceScheduler = new ReadyRunnable() {
+
+            public boolean isReady() {
+                return true;
+            }
+
+            public void run() {
+                //
+                try {
+                    scheduleExistingInterfaces();
+                } catch (DataRetrievalFailureException sqlE) {
+                    log().error("start: Failed to schedule existing interfaces", sqlE);
+                } finally {
+                    setSchedulingCompleted(true);
+                }
+
+            }
+        };
+
+        m_scheduler.schedule(interfaceScheduler, 0);
+    }
+
+    private void initializeScheduler() {
+        try {
+            log().debug("start: Creating threshd scheduler");
+
+            m_scheduler = new LegacyScheduler("Threshd", m_threshdConfig.getConfiguration().getThreads());
+        } catch (RuntimeException e) {
+            log().fatal("start: Failed to create threshd scheduler", e);
+            throw e;
+        }
+    }
+
+    private void initializeThresholders() {
+        Enumeration eiter = m_threshdConfig.getConfiguration().enumerateThresholder();
         while (eiter.hasMoreElements()) {
             Thresholder thresholder = (Thresholder) eiter.nextElement();
             try {
@@ -166,105 +234,35 @@ public final class Threshd extends AbstractServiceDaemon {
                 //
 
                 // Store service name in map keyed by "svcName"
-                Map properties = new HashMap();
+                Map<String, String> properties = new HashMap<String, String>();
                 properties.put("svcName", thresholder.getService());
 
                 st.initialize(properties);
 
                 m_svcThresholders.put(thresholder.getService(), st);
             } catch (Throwable t) {
-                if (log().isEnabledFor(Priority.WARN)) {
-                    log().warn("start: Failed to load thresholder " + thresholder.getClassName() + " for service " + thresholder.getService(), t);
-                }
+                log().warn("start: Failed to load thresholder " + thresholder.getClassName() + " for service " + thresholder.getService(), t);
             }
         }
-
-        // Create a scheduler
-        //
-        try {
-            if (log().isDebugEnabled())
-                log().debug("start: Creating threshd scheduler");
-
-            m_scheduler = new LegacyScheduler("Threshd", config.getThreads());
-        } catch (RuntimeException e) {
-            if (log().isEnabledFor(Priority.FATAL))
-                log().fatal("start: Failed to create threshd scheduler", e);
-            throw e;
-        }
-
-        if (log().isDebugEnabled())
-            log().debug("start: Scheduling existing interfaces");
-
-        // Schedule existing interfaces for thresholding
-        //
-
-        ReadyRunnable interfaceScheduler = new ReadyRunnable() {
-
-            public boolean isReady() {
-                return true;
-            }
-
-            public void run() {
-                //
-                try {
-                    scheduleExistingInterfaces();
-                } catch (SQLException sqlE) {
-                    if (log().isEnabledFor(Priority.ERROR))
-                        log().error("start: Failed to schedule existing interfaces", sqlE);
-                } finally {
-                    setSchedulingCompleted(true);
-                }
-
-            }
-        };
-
-        m_scheduler.schedule(interfaceScheduler, 0);
-
-        // Create an event receiver. The receiver will
-        // receive events, process them, creates network
-        // interfaces, and schedulers them.
-        //
-        try {
-            if (log().isDebugEnabled())
-                log().debug("start: Creating event broadcast event processor");
-
-            m_receiver = new BroadcastEventProcessor(this, m_thresholdableServices);
-        } catch (Throwable t) {
-            if (log().isEnabledFor(Priority.FATAL))
-                log().fatal("start: Failed to initialized the broadcast event receiver", t);
-
-            throw new UndeclaredThrowableException(t);
-        }
-
-        // Set the status of the service as running.
-        //
-        setStatus(RUNNING);
-
-        if (log().isDebugEnabled())
-            log().debug("start: Threshd running");
     }
 
     protected void onStart() {
-		// get the category logger
-        if (log().isDebugEnabled())
-            log().debug("start: Initializing thresholding daemon");
+
+        log().debug("start: Initializing thresholding daemon");
 
         // start the scheduler
         //
         try {
-            if (log().isDebugEnabled())
-                log().debug("start: Starting threshd scheduler");
+            log().debug("start: Starting threshd scheduler");
 
             m_scheduler.start();
         } catch (RuntimeException e) {
-            if (log().isEnabledFor(Priority.FATAL))
-                log().fatal("start: Failed to start scheduler", e);
+            log().fatal("start: Failed to start scheduler", e);
             throw e;
         }
 
 
-        if (log().isDebugEnabled())
-            log().debug("start: Threshd running");
+        log().debug("start: Threshd running");
 	}
 
     protected void onStop() {
@@ -313,7 +311,7 @@ public final class Threshd extends AbstractServiceDaemon {
      *         specified service.
      */
     public ServiceThresholder getServiceThresholder(String svcName) {
-        return (ServiceThresholder) m_svcThresholders.get(svcName);
+        return m_svcThresholders.get(svcName);
     }
 
     /**
@@ -322,79 +320,29 @@ public final class Threshd extends AbstractServiceDaemon {
      * @throws SQLException
      *             if database errors encountered.
      */
-    private void scheduleExistingInterfaces() throws SQLException {
-        // get the category logger
+    private void scheduleExistingInterfaces() {
+
+        // Loop through loaded thresholders and schedule for each one
+        // present
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        for(final String svcName : m_svcThresholders.keySet()) {
 
-        // Database connection
-        java.sql.Connection dbConn = null;
+            // find the monitored services for each thresholder and schedule them
+            Querier querier = new Querier(DataSourceFactory.getDataSource(), SQL_RETRIEVE_INTERFACES) {
 
-        PreparedStatement stmt = null;
-        try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
-
-            stmt = dbConn.prepareStatement(SQL_RETRIEVE_INTERFACES);
-
-            // Loop through loaded thresholders and schedule for each one
-            // present
-            //
-            Set svcNames = m_svcThresholders.keySet();
-            Iterator i = svcNames.iterator();
-            while (i.hasNext()) {
-                String svcName = (String) i.next();
-                ServiceThresholder thresholder = (ServiceThresholder) m_svcThresholders.get(svcName);
-
-                if (log.isDebugEnabled())
-                    log.debug("scheduleExistingInterfaces: Scheduling existing interfaces for thresholder: " + svcName);
-
-                // Retrieve list of interfaces from the database which
-                // support the service collected by this thresholder
-                //
-                List interfaceList = new ArrayList();
-                try {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
-
-                    stmt.setString(1, svcName); // Service name
-                    ResultSet rs = stmt.executeQuery();
-
-                    // Iterate over result set and schedule each
-                    // interface/service
-                    // pair which passes the criteria
-                    //
-                    while (rs.next()) {
-                        int nodeId = rs.getInt(1);
-                        String ipAddress = rs.getString(2);
-
-                        scheduleInterface(nodeId, ipAddress, svcName, true);
-                    } // end while more interfaces in result set
-
-                    rs.close();
-                } catch (SQLException sqle) {
-                    log.warn("scheduleExistingInterfaces: SQL exception while querying ipInterface table", sqle);
-                    throw sqle;
+                @Override
+                public void processRow(ResultSet rs) throws SQLException {
+                    int nodeId = rs.getInt(1);
+                    String ipAddress = rs.getString(2);
+                    
+                    log().debug("Scheduling service nodeId/ipAddress/svcName "+nodeId+'/'+ipAddress+'/'+svcName);
+                    scheduleService(nodeId, ipAddress, svcName, true);
                 }
-            } // end while more service thresholders
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleExistingInterfaces: an exception occured closing the SQL statement", e);
-                }
-            }
 
-            if (dbConn != null) {
-                try {
-                    dbConn.close();
-                } catch (Throwable t) {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleExistingInterfaces: an exception occured closing the SQL connection", t);
-                }
-            }
-        }
+            };
+            querier.execute(svcName);
+
+        } 
     }
 
     /**
@@ -411,12 +359,9 @@ public final class Threshd extends AbstractServiceDaemon {
      *            True if called by scheduleExistingInterfaces(), false
      *            otheriwse
      */
-    void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        ThreshdConfiguration config = m_threshdConfig.getConfiguration();
-        Enumeration epkgs = config.enumeratePackage();
-
+    void scheduleService(int nodeId, String ipAddress, String svcName, boolean existing) {
+        Enumeration epkgs = m_threshdConfig.getConfiguration().enumeratePackage();
+        
         // Compare interface/service pair against each threshd package
         // For each match, create new ThresholdableService object and
         // schedule it for collection
@@ -428,14 +373,14 @@ public final class Threshd extends AbstractServiceDaemon {
             // and enabled!
             //
             if (!m_threshdConfig.serviceInPackageAndEnabled(svcName, pkg)) {
-                if (log.isDebugEnabled())
-                    log.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+                if (log().isDebugEnabled())
+                    log().debug("scheduleService: address/service: " + ipAddress + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
             }
 
             // Is the interface in the package?
             //
-            log.debug("scheduleInterface: checking ipaddress " + ipAddress + " for inclusion in pkg " + pkg.getName());
+            log().debug("scheduleService: checking ipaddress " + ipAddress + " for inclusion in pkg " + pkg.getName());
             boolean foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             if (!foundInPkg && existing == false) {
                 // The interface might be a newly added one, rebuild the package
@@ -445,12 +390,12 @@ public final class Threshd extends AbstractServiceDaemon {
                 foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             }
             if (!foundInPkg) {
-                if (log.isDebugEnabled())
-                    log.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                if (log().isDebugEnabled())
+                    log().debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
             }
 
-            log.debug("scheduleInterface: ipaddress " + ipAddress + " IS in pkg " + pkg.getName());
+            log().debug("scheduleService: ipaddress " + ipAddress + " IS in pkg " + pkg.getName());
 
             if (existing == false) {
                 // It is possible that both a nodeGainedService and a
@@ -463,8 +408,8 @@ public final class Threshd extends AbstractServiceDaemon {
                 // services list.
                 //
                 if (alreadyScheduled(ipAddress, pkg.getName())) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("scheduleInterface: ipAddr/pkgName " + ipAddress + "/" + pkg.getName() + " already in thresholdable service list, skipping.");
+                    if (log().isDebugEnabled()) {
+                        log().debug("scheduleService: ipAddr/pkgName " + ipAddress + "/" + pkg.getName() + " already in thresholdable service list, skipping.");
                     }
                     continue;
                 }
@@ -499,14 +444,14 @@ public final class Threshd extends AbstractServiceDaemon {
                 // there is data available to be fetched.
                 m_scheduler.schedule(tSvc, tSvc.getInterval());
 
-                if (log.isDebugEnabled())
-                    log.debug("scheduleInterface: " + nodeId + "/" + ipAddress + " scheduled for " + svcName + " threshold checking");
+                if (log().isDebugEnabled())
+                    log().debug("scheduleService: " + nodeId + "/" + ipAddress + " scheduled for " + svcName + " threshold checking");
             } catch (UnknownHostException ex) {
-                log.error("scheduleInterface: Failed to schedule interface " + ipAddress + " for service " + svcName + ", illegal address", ex);
+                log().error("scheduleService: Failed to schedule interface " + ipAddress + " for service " + svcName + ", illegal address", ex);
             } catch (RuntimeException rE) {
-                log.warn("scheduleInterface: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage(), rE);
+                log().warn("scheduleService: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage(), rE);
             } catch (Throwable t) {
-                log.error("scheduleInterface: Uncaught exception, failed to schedule interface " + ipAddress + " for service " + svcName, t);
+                log().error("scheduleService: Uncaught exception, failed to schedule interface " + ipAddress + " for service " + svcName, t);
             }
         } // end while more packages exist
     }
@@ -516,7 +461,6 @@ public final class Threshd extends AbstractServiceDaemon {
      * thresholdable services list. False otherwise.
      */
     private boolean alreadyScheduled(String ipAddress, String pkgName) {
-        Category log = ThreadCategory.getInstance(getClass());
 
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
