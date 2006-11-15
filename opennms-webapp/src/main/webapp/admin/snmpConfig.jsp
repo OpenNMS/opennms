@@ -176,7 +176,7 @@
       <p>For devices that have already been discovered and that have an event stating that 
          data collection has failed because the community name changed, it may be necessary to 
          update the SNMP information on the interface page for that device (by selecting the "Update SNMP"
-         link) for these changes to take affect.
+         link) for these changes to take effect.
       </p>
   </div>
 
