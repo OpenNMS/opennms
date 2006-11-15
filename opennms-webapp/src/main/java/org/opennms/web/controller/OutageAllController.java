@@ -161,7 +161,7 @@ public class OutageAllController extends UrlFilenameViewController {
 		this.successView = successView;
 	}
 
-	public void setdisplayAllOutages(String successView) {
+	public void setDisplayAllOutages(String successView) {
 		this.successView = successView;
 	}
 
