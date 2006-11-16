@@ -613,9 +613,9 @@ final class SuspectEventProcessor implements Runnable {
                 log.debug("SuspectEventProcessor: setting ifindex for "
                         + ifaddr + " to " + ifIndex);
             }
-            ipIfEntry.setIfIndex(ifIndex);
         }
         
+        ipIfEntry.setIfIndex(ifIndex);
         ipIfEntry.store(dbc);
         
         return ifIndex;
