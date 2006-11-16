@@ -84,6 +84,12 @@ public class Linkd implements PausableFiber {
 
 	private static boolean m_auto_discovery = true;
 
+	/**
+	 * the list of ipaddress for which new suspect event is sent
+	 */
+
+	private List<String> ipaddressNewSuspenctevents= null;
+	
 	private Linkd() {
 		m_scheduler = null;
 		m_status = START_PENDING;
@@ -318,6 +324,10 @@ public class Linkd implements PausableFiber {
 		if (log.isDebugEnabled()) {
 			log.debug("init: Creating event Manager");
 		}
+
+		// initialize the ipaddrsentevents
+		ipaddressNewSuspenctevents = new ArrayList<String>();
+		ipaddressNewSuspenctevents.add("127.0.0.1");
 
 		// Create an event receiver.
 		//
@@ -847,16 +857,23 @@ public class Linkd implements PausableFiber {
 	 *            generated
 	 */
 	void sendNewSuspectEvent(String ipInterface,String ipowner) {
-		// construct event with 'trapd' as source
-		Event event = new Event();
-		event.setSource("linkd");
-		event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-		event.setHost(ipowner);
-		event.setInterface(ipInterface);
-		event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+		// construct event with 'linkd' as source
+		
+		// first of all verify that ipaddress has been not sent
+		if (!ipaddressNewSuspenctevents.contains(ipInterface)) {
+			
+			Event event = new Event();
+			event.setSource("linkd");
+			event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+			event.setHost(ipowner);
+			event.setInterface(ipInterface);
+			event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 
-		// send the event to eventd
-		m_eventMgr.sendNow(event);
+			// send the event to eventd
+			m_eventMgr.sendNow(event);
+			
+			ipaddressNewSuspenctevents.add(ipInterface);
+		}
 	}
 
 	EventIpcManager getIpcManager() {

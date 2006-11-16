@@ -497,8 +497,9 @@ public class DbEventWriter implements Runnable {
 						dbConn, targetCdpNodeId, cdpTargetDevicePort);
 
 				if (targetCdpNodeId == -1 || cdpTargetIfindex == -1) {
-					log.warn("No nodeid found: cdp interface not added to Linkable Snmp Node");
+					log.warn("No nodeid found: cdp interface not added to Linkable Snmp Node. Skipping");
 					sendNewSuspectEvent(cdpTargetIpAddr);
+					continue;
 				} else  {
 
 					cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
@@ -519,21 +520,44 @@ public class DbEventWriter implements Runnable {
 						.debug("store: saving ipRouteTable to iprouteinterface table in DB");
 			while (ite.hasNext()) {
 				IpRouteTableEntry ent = (IpRouteTableEntry) ite.next();
-                
-                log.debug("storeSnmpCollection: ent="+ent);
 
-				InetAddress routedest = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_DEST);
-				InetAddress routemask = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_MASK);
-				InetAddress nexthop = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_NXTHOP);
 				Integer ifindex = ent.getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
-                log.debug("storeSnmpCollection: ifindex is: "+ (ifindex < 1 ? "less than 1" : ifindex)+"; IP_ROUTE_IFINDEX: "+IpRouteTableEntry.IP_ROUTE_IFINDEX);
 
-                if (ifindex == null) {
+				if (ifindex == null) {
 					log.warn("store: Not valid ifindex" + ifindex 
 							+ " Skipping...");
 					continue;
 				}
-                
+
+				InetAddress routedest = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_DEST);
+				InetAddress routemask = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_MASK);
+				InetAddress nexthop = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_NXTHOP);
+
+				if (log.isDebugEnabled()) {
+					log.debug("storeSnmpCollection: parsing routedest/routemask/nexthop: " 
+							+ routedest + "/" 
+							+ routemask + "/"
+							+ nexthop + " ifindex " + (ifindex < 1 ? "less than 1" : ifindex));
+					
+				}
+				
+				if (nexthop.isLoopbackAddress()) {
+					if (log.isInfoEnabled()) 
+						log.info("storeSnmpCollection: loopbackaddress found skipping.");
+					continue;
+				}
+				if (nexthop.getHostAddress().equals("0.0.0.0")) {
+					if (log.isInfoEnabled()) 
+						log.info("storeSnmpCollection: broadcast address found skipping.");
+					continue;
+				}
+				
+				if (nexthop.isMulticastAddress()) {
+					if (log.isInfoEnabled()) 
+						log.info("storeSnmpCollection: multicast ddress found skipping.");
+					continue;
+				}
+				
 				Integer routemetric1 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
 				Integer routemetric2 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC2);
 				Integer routemetric3  =ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC3);
@@ -573,7 +597,6 @@ public class DbEventWriter implements Runnable {
 					if (snmpiftype == -1) {
 						log.warn("store: interface has wrong or null snmpiftype "
 								+ snmpiftype + " . Skip adding to DiscoverLink ");
-						
 					} else {
 						if (log.isDebugEnabled())
 							log.debug("store: interface has snmpiftype "
@@ -592,7 +615,7 @@ public class DbEventWriter implements Runnable {
 					}
 				}
 
-				// save info to DB
+				// always save info to DB
 				DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry
 						.get(dbConn, nodeid, routedest.getHostAddress());
 				if (iprouteInterfaceEntry == null) {
@@ -1347,9 +1370,20 @@ public class DbEventWriter implements Runnable {
 	}
 	
 	private void sendNewSuspectEvent(InetAddress ipaddress) {
-		if (ipaddress.isLoopbackAddress() || ipaddress.isMulticastAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) return;
-		if (m_snmpcoll.isAutoDiscoveryEnabled())
+		if (m_snmpcoll.isAutoDiscoveryEnabled()) { 
+			Category log = ThreadCategory.getInstance(getClass());
+			if (log.isDebugEnabled())
+				log.debug("sendNewSuspectEvent:  found ip address to send :" + ipaddress);
 
-			Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), m_snmpcoll.getSnmpIpPrimary().getHostAddress());
+			if (ipaddress.isLoopbackAddress() || ipaddress.isMulticastAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) {
+				if (log.isDebugEnabled())
+					log.debug("sendNewSuspectEvent: not sending event for invalid ip address");
+			} else {
+					if (log.isDebugEnabled())
+						log.debug("sendNewSuspectEvent: sending event for valid ip address");
+					Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), m_snmpcoll.getSnmpIpPrimary().getHostAddress());
+			}
+		}
+
 	}
 }
