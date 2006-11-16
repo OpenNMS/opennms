@@ -10,7 +10,7 @@ public class SnmpThresholderState {
 
     public static SnmpThresholderState get(NetworkInterface netIface, Map parms) {
         SnmpThresholderState state = (SnmpThresholderState)netIface.getAttribute(KEY);
-        if (netIface == null) {
+        if (state == null) {
             state = new SnmpThresholderState();
             netIface.setAttribute(KEY, state);
         }
