@@ -1051,6 +1051,14 @@ public class SnmpSession extends Object {
         return getResult(SnmpPduPacket.GET, oid);
     }
 
+    public SnmpSyntax set(SnmpObjectId oid, SnmpSyntax value) {
+        return getResult(SnmpPduPacket.SET, oid, value);
+    }
+
+    public SnmpSyntax[] set(SnmpObjectId[] oids, SnmpSyntax[] values) {
+        return getResults(SnmpPduPacket.SET, oids, values);
+    }
+
     public SnmpSyntax[] get(SnmpObjectId[] oids) {
         return getResults(SnmpPduPacket.GET, oids);
     }
@@ -1069,17 +1077,36 @@ public class SnmpSession extends Object {
         SnmpSyntax[] result = getResults(requestType, new SnmpObjectId[] { oid });
         return (result == null || result.length <= 0 ? null : result[0]);
     }
-    
+
+    private SnmpSyntax getResult(int requestType, SnmpObjectId oid, SnmpSyntax value) {
+        SnmpSyntax[] result = getResults(requestType, new SnmpObjectId[] { oid }, new SnmpSyntax[] { oid });
+        return (result == null || result.length <= 0 ? null : result[0]);
+    }
+
     private SnmpSyntax[] getResults(int requestType, SnmpObjectId[] oids) {
         SnmpVarBind[] varbinds = createVarBinds(oids);
         SnmpPduPacket request = new SnmpPduRequest(requestType, varbinds);
         return getResults(request);
     }
-    
+
+    private SnmpSyntax[] getResults(int requestType, SnmpObjectId[] oids, SnmpSyntax[] values) {
+        SnmpVarBind[] varbinds = createVarBinds(oids,values);
+        SnmpPduPacket request = new SnmpPduRequest(requestType, varbinds);
+        return getResults(request);
+    }
+
     private SnmpVarBind[] createVarBinds(SnmpObjectId[] oids) {
         SnmpVarBind[] varbinds = new SnmpVarBind[oids.length];
         for(int i = 0; i < oids.length; i++) {
             varbinds[i] = new SnmpVarBind(oids[i]);
+        }
+        return varbinds;
+    }
+
+    private SnmpVarBind[] createVarBinds(SnmpObjectId[] oids, SnmpSyntax[] values) {
+        SnmpVarBind[] varbinds = new SnmpVarBind[oids.length];
+        for(int i = 0; i < oids.length; i++) {
+            varbinds[i] = new SnmpVarBind(oids[i],values[i]);
         }
         return varbinds;
     }
@@ -1094,7 +1121,7 @@ public class SnmpSession extends Object {
         }
         return vals;
     }
-    
+
     public SnmpPduPacket getResponse(SnmpPduPacket request) {
         SnmpResponseHandler handler = new SnmpResponseHandler();
         synchronized (handler) {
