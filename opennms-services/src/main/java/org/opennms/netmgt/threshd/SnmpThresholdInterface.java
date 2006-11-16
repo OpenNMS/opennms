@@ -1,7 +1,6 @@
 package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
-import java.util.Map;
 
 import org.opennms.netmgt.poller.NetworkInterface;
 
@@ -50,15 +49,6 @@ public class SnmpThresholdInterface {
 
     InetAddress getInetAddress() {
         return (InetAddress) getNetworkInterface().getAddress();
-    }
-
-    @SuppressWarnings("unchecked")
-    Map<String, Map<String, ThresholdEntity>> getAllInterfaceMap() {
-        return (Map<String, Map<String, ThresholdEntity>>)getNetworkInterface().getAttribute(SnmpThresholdInterface.ALL_IF_THRESHOLD_MAP_KEY);
-    }
-
-    void setAllInterfaceMap(Map<String, Map<String, ThresholdEntity>> allInterfaceMap) {
-        getNetworkInterface().setAttribute(SnmpThresholdInterface.ALL_IF_THRESHOLD_MAP_KEY, allInterfaceMap);
     }
 
     String getIpAddress() {
