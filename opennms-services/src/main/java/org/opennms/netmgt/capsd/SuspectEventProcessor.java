@@ -608,11 +608,11 @@ final class SuspectEventProcessor implements Runnable {
             // IP address
             snmpEntry.setIfAddress(ifaddr);
             snmpEntry.store(dbc);
+        }
 
-            if (log.isDebugEnabled()) {
-                log.debug("SuspectEventProcessor: setting ifindex for "
-                        + ifaddr + " to " + ifIndex);
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("SuspectEventProcessor: setting ifindex for "
+                    + nodeId + "/" + ifaddr + " to " + ifIndex);
         }
         
         ipIfEntry.setIfIndex(ifIndex);
