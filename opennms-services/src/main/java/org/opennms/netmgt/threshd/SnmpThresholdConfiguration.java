@@ -81,4 +81,12 @@ public class SnmpThresholdConfiguration {
         setBaseInterfaceMap(getThreshConfig().createThresholdMap(getGroupName(), "if"));
     }
 
+    int getRange() {
+        return getSnmpParameters().getRange();
+    }
+
+    int getInterval() {
+        return getSnmpParameters().getInterval();
+    }
+
 }
