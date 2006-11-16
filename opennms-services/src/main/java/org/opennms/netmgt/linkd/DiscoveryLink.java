@@ -769,10 +769,14 @@ final class DiscoveryLink implements ReadyRunnable {
 					RouterInterface routeIface = (RouterInterface) sub_ite
 							.next();
 
+					if (log.isDebugEnabled()) {
+						log.debug("run: parsing RouterInterface: " + routeIface.toString());
+					}
+
 					if (routeIface.getMetric() == -1) {
-						if (log.isDebugEnabled())
+						if (log.isInfoEnabled())
 							log
-									.debug("run: Router interface has invalid metric "
+									.info("run: Router interface has invalid metric "
 											+ routeIface.getMetric()
 											+ ". Skipping");
 						continue;
@@ -781,27 +785,27 @@ final class DiscoveryLink implements ReadyRunnable {
 					int snmpiftype = routeIface.getSnmpiftype();
 					
 					if (snmpiftype == SNMP_IF_TYPE_ETHERNET) {
-						if (log.isDebugEnabled())
+						if (log.isInfoEnabled())
 							log
-									.debug("run: Ethernet interface for nodeid. Skipping ");
+									.info("run: Ethernet interface for nodeid. Skipping ");
 						continue;
 					} else if (snmpiftype == SNMP_IF_TYPE_PROP_VIRTUAL) {
-						if (log.isDebugEnabled())
+						if (log.isInfoEnabled())
 							log
-									.debug("run: PropVirtual interface for nodeid. Skipping ");
+									.info("run: PropVirtual interface for nodeid. Skipping ");
 						continue;
 					} else if (snmpiftype == -1) {
-						if (log.isDebugEnabled())
-							log.debug("store: interface has unknown snmpiftype "
+						if (log.isInfoEnabled())
+							log.info("store: interface has unknown snmpiftype "
 									+ snmpiftype + " . Skipping ");
 					} 
 
 					InetAddress nexthop = routeIface.getNextHop();
 
 					if (nexthop.getHostAddress().equals("0.0.0.0")) {
-						if (log.isDebugEnabled())
+						if (log.isInfoEnabled())
 							log
-									.debug("run: nexthop address is broadcast address "
+									.info("run: nexthop address is broadcast address "
 											+ nexthop.getHostAddress()
 											+ " . Skipping ");
 						//TODO this should be further analized 
@@ -814,9 +818,9 @@ final class DiscoveryLink implements ReadyRunnable {
 					}
 
 					if (nexthop.isLoopbackAddress()) {
-						if (log.isDebugEnabled())
+						if (log.isInfoEnabled())
 							log
-									.debug("run: nexthop address is localhost address "
+									.info("run: nexthop address is localhost address "
 											+ nexthop.getHostAddress()
 											+ " . Skipping ");
 						continue;
@@ -825,9 +829,9 @@ final class DiscoveryLink implements ReadyRunnable {
 					int nextHopNodeid = routeIface.getNextHopNodeid();
 
 					if (nextHopNodeid == -1) {
-						if (log.isDebugEnabled())
+						if (log.isInfoEnabled())
 							log
-									.debug("run: no node id found for ip next hop address "
+									.info("run: no node id found for ip next hop address "
 											+ nexthop.getHostAddress()
 											+ " , skipping ");
 						continue;
@@ -845,15 +849,24 @@ final class DiscoveryLink implements ReadyRunnable {
 					int ifindex = routeIface.getIfindex();
 					
 					if (ifindex == 0) {
-						if (log.isDebugEnabled())
+						if (log.isInfoEnabled())
 							log
-									.debug("run: route interface has ifindex "
-											+ ifindex + " . Processing");
-							ifindex = getIfIndexFromRouter(curNode, routeIface.getNextHopNet());
-						if (log.isDebugEnabled())
-							log
-									.debug("run: found correct ifindex "
-											+ ifindex + " .");
+									.info("run: route interface has ifindex "
+											+ ifindex + " . trying to get ifindex from nextHopNet: " 
+											+ routeIface.getNextHopNet());
+						ifindex = getIfIndexFromRouter(curNode, routeIface.getNextHopNet());
+						if (ifindex == -1 ) {
+							if (log.isDebugEnabled())
+								log
+										.debug("run: found not correct ifindex "
+												+ ifindex + " skipping.");
+							continue;
+						} else {
+							if (log.isDebugEnabled())
+								log
+										.debug("run: found correct ifindex "
+												+ ifindex + " .");
+						}
 						
 					}
 					if (log.isDebugEnabled())

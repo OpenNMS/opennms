@@ -17,16 +17,16 @@ public class RouterInterface {
 	
 	int metric;
 	
-	int nextHopnodeid;
-	
-	int nextHopIfindex;
-	
 	InetAddress routedest;
 
 	InetAddress routemask;
 
 	InetAddress nextHop;
 
+	int nextHopnodeid;
+	
+	int nextHopIfindex;
+	
 	InetAddress nextHopNetmask;
 	
 	int snmpiftype; 
@@ -165,6 +165,24 @@ public class RouterInterface {
 
 	public void setRoutemask(InetAddress routemask) {
 		this.routemask = routemask;
+	}
+	
+	public String toString() {
+		String stringa = "";
+		stringa += "routedest = " + routedest + "\n"; 
+		stringa += "routemask = " + routemask + "\n";
+		stringa += "routeifindex = " + ifindex + "\n";
+		stringa += "routemetric = " + metric + "\n";
+		stringa += "nexthop = " + nextHop + "\n";
+		stringa += "nexthopmask = " + nextHopNetmask + "\n";
+		stringa += "nexthopnodeid = " + nextHopnodeid + "\n";
+		stringa += "nexthopifindex = " + nextHopIfindex + "\n";
+		stringa += "snmpiftype = " + snmpiftype + "\n";
+		stringa += "routenet = " + getRouteNet() + "\n";
+		stringa += "nexthopnet = " + getNextHopNet() + "\n";
+
+		
+		return stringa;
 	}
 }
 
