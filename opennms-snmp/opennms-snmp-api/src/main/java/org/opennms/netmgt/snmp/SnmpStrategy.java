@@ -37,7 +37,11 @@ import java.io.IOException;
 public interface SnmpStrategy {
 
     SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
-    
+
+    SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value);
+
+    SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId oid[], SnmpValue value[]);
+
     SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
     SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
 
