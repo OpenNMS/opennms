@@ -388,11 +388,14 @@
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
                   <li><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%></li>
                 <% } else { %>  
                   <li><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%></li>
+                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
                 <% } %>
+		       	<% if( intfs[i].getIfIndex() != 0 ) { %>
+				<%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
+		        <% } %>
+		        </li>
               <% } %>
 			  </ul>
 			</div>

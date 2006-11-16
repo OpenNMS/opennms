@@ -67,7 +67,8 @@
     protected ResponseTimeModel rtModel;
     
     public void init() throws ServletException {
-        this.statusMap = new HashMap();
+        
+    	this.statusMap = new HashMap();
         this.statusMap.put( new Character('A'), "Active" );
         this.statusMap.put( new Character(' '), "Unknown" );
         this.statusMap.put( new Character('D'), "Deleted" );
@@ -133,7 +134,7 @@
     Service[] telnetServices = NetworkElementFactory.getServicesOnNode(nodeId, this.telnetServiceId);
     
     if( telnetServices != null && telnetServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < telnetServices.length; i++ ) {
             ips.add(InetAddress.getByName(telnetServices[i].getIpAddress()));
         }
@@ -150,7 +151,7 @@
     Service[] httpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.httpServiceId);
 
     if( httpServices != null && httpServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < httpServices.length; i++ ) {
             ips.add(InetAddress.getByName(httpServices[i].getIpAddress()));
         }
@@ -167,7 +168,7 @@
     Service[] dellServices = NetworkElementFactory.getServicesOnNode(nodeId, this.dellServiceId);
 
     if( dellServices != null && dellServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < dellServices.length; i++ ) {
             ips.add(InetAddress.getByName(dellServices[i].getIpAddress()));
         }
@@ -189,7 +190,7 @@
 
 <%
     // find links
-    Map linkMap = new HashMap();
+    Map<Integer,Vector<Interface>> linkMap = new HashMap<Integer,Vector<Interface>>();
     DataLinkInterface[] dl_if = NetworkElementFactory.getDataLinksOnNode(nodeId);
 
     for (int i=0; i<dl_if.length;i++){
@@ -197,7 +198,7 @@
   	   int nodelinkedIf = -1;
   	   Integer ifindexmap = null;
   	   String iplinkaddress = null;
-       Vector ifs = new Vector();
+       Vector<Interface> ifs = new Vector<Interface>();
 
        nodelinkedId = dl_if[i].get_nodeparentid();
        nodelinkedIf = dl_if[i].get_parentifindex();
@@ -212,7 +213,7 @@
 	   		   iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress,nodelinkedIf);
 	   		}
 		   if (linkMap.containsKey(ifindexmap)){
-			   ifs = (Vector)linkMap.get(ifindexmap);
+			   ifs = linkMap.get(ifindexmap);
 	   		} 
 	   	ifs.addElement(iface);
 	   	linkMap.put(ifindexmap,ifs);
@@ -374,11 +375,14 @@
 		<td class="standard">
 		<% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
 		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-		<%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
 		<% } else { %>  
 		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
 		<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
 		<% } %>
+       	<% if( intfs[i].getIfIndex() != 0 ) { %>
+		<%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
+        <% } %>
+
 		</td>
 		
 		<td class="standard">
@@ -433,11 +437,13 @@
 			<td class="standard" style="font-size:70%" width="35%">
 		       	<% if( "0.0.0.0".equals( curlkif.getIpAddress() )) { %>
 		        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>&ifindex=<%=curlkif.getIfIndex()%>">Non-IP</a>
-		        <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
 		        <% } else { %>  
 		        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>"><%=curlkif.getIpAddress()%></a>
 		        <% } %>
-			</td>
+		       	<% if( curlkif.getIfIndex() != 0 ) { %>
+		        <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+		        <% } %>
+		    </td>
 			<td class="standard" style="font-size:70%" width="15%">
 			<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
 				<% if( curlkif.getSnmpIfAdminStatus() < 1 && curlkif.getSnmpIfOperStatus() < 1 ) { %>
