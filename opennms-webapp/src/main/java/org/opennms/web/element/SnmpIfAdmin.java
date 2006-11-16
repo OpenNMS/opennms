@@ -175,12 +175,16 @@ public class SnmpIfAdmin {
 
         SnmpObjId oid = SnmpObjId.get(snmpObjectId + "." +ifindex);
         SnmpValue val = SnmpUtils.getValueFactory().getInt32(value);
-        boolean status = SnmpUtils.set(m_agent, oid,val);
+        SnmpValue result = SnmpUtils.set(m_agent, oid,val);
 
-        if (status)
-            setIfAdminStatusInDB(ifindex, value);
+   	 	
 
-        return (status);
+        if (result != null && result.isNumeric()) {
+        	int retvalue = result.toInt();
+        	setIfAdminStatusInDB(ifindex, retvalue);
+        	if (retvalue == value) return true;
+        }
+        return false;
     }
 
     public static boolean isValidState(int status) {
