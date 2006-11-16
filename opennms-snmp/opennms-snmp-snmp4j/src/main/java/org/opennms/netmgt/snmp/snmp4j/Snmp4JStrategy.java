@@ -75,6 +75,7 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
@@ -118,6 +119,25 @@ public class Snmp4JStrategy implements SnmpStrategy {
      */
     public SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oid) {
         return null;
+    }
+
+    public SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value) {
+        if (log().isDebugEnabled())
+            log().debug("set: OID: "+oid+" value: " + value.toString() + " for Agent:"+agentConfig);
+        
+        SnmpObjId[] oids = {oid};
+        SnmpValue[] values = {value};
+        return set(agentConfig, oids,values)[0];
+        
+    }
+
+    public SnmpValue[] set(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+        
+    	Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(snmpAgentConfig);
+        if (log().isDebugEnabled())
+            log().debug("get: OID: "+oids+" values: " + values + " for Agent:"+agentConfig);
+        
+        return send(agentConfig, PDU.SET, oids, values);
     }
 
     /**
@@ -263,12 +283,104 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
     }
 
+    /**
+     * Sends and SNMP4J request pdu.  The attributes in SnmpAgentConfig should have been
+     * adapted from default SnmpAgentConfig values to those compatible with the SNMP4J library.
+     * 
+     * @param agentConfig
+     * @param pduType TODO
+     * @param oids
+     * @return
+     */
+    private SnmpValue[] send(Snmp4JAgentConfig agentConfig, int pduType, SnmpObjId[] oids, SnmpValue[] values) {
+        
+        SnmpValue[] retvalues = { null };
+        Snmp session = null;
+        
+        try {
+            session = SnmpHelpers.createSnmpSession(agentConfig);
+            session = new Snmp(new DefaultUdpTransportMapping());
+            session.listen();
+            
+            session.getUSM().addUser((agentConfig.getSecurityName()),
+                    new UsmUser(agentConfig.getSecurityName(),
+                            agentConfig.getAuthProtocol(),
+                            agentConfig.getAuthPassPhrase(),
+                            agentConfig.getPrivProtocol(),
+                            agentConfig.getPrivPassPhrase()));
+            
+            Target target = agentConfig.getTarget();
+            PDU pdu = SnmpHelpers.createPDU(agentConfig.getVersion());
+            pdu.setType(pduType);
+            
+            //TODO:log this
+            if (!buildPdu(pdu, oids, values))
+                return null;
+            
+            ResponseEvent responseEvent = session.send(pdu, target);
+            
+            if (responseEvent.getResponse() == null) {
+                log().warn("send: Timeout.  Agent: "+agentConfig);
+            } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
+                values[0] = null;
+            } else if (responseEvent.getError() != null) {
+                log().warn("send: Error during get operation.  Error: "+responseEvent.getError().getLocalizedMessage());
+            } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
+                log().warn("send: Error during get operation.  Report returned with varbinds: "+responseEvent.getResponse().getVariableBindings());
+            } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
+                log().warn("send: Received PDU with 0 varbinds.");
+            } else {
+                
+                retvalues = new Snmp4JValue[responseEvent.getResponse().getVariableBindings().size()];
+                
+                for (int i=0; i<values.length; i++) {
+                    retvalues[i] = new Snmp4JValue(responseEvent.getResponse().get(0).getVariable());
+                }
+                
+                if (log().isDebugEnabled())
+                    log().debug("send: Snmp operation successful. Value: "+values);
+            }
+            
+        } catch (IOException e) {
+            log().error("getNext: Could not create Snmp session for Agent: "+agentConfig+". "+e);
+        } finally {
+            try {
+                session.close();
+            } catch (IOException e) {
+                log().error("send: Error closinging SNMP connection: "+e);
+            }
+        }
+        return retvalues;
+        
+    }
+
     private boolean buildPdu(PDU pdu, SnmpObjId[] oids) {
         
         VariableBinding vb;
         
         for (int i=0; i<oids.length; i++) {
             vb = new VariableBinding(new OID(oids[i].toString()));
+            pdu.add(vb);
+        }
+        
+        if (pdu.getVariableBindings().size() == oids.length) {
+            return true;
+        } else {
+            return false;
+        }
+            
+    }
+
+
+    private boolean buildPdu(PDU pdu, SnmpObjId[] oids, SnmpValue[] values) {
+        
+        VariableBinding vb = null;
+        
+        if (values == null) return buildPdu(pdu,oids);
+        if (oids.length != values.length) return false;
+        
+        for (int i=0; i<oids.length; i++) {
+            vb = new VariableBinding(new OID(oids[i].toString()), new Snmp4JValue(values[0].getType(),values[0].getBytes()).getVariable());
             pdu.add(vb);
         }
         
