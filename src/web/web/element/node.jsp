@@ -40,7 +40,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*,org.opennms.web.asset.*" %>
+<%@page language="java" contentType="text/html" session="true" import="java.text.DateFormat,java.io.File,org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*,org.opennms.web.asset.*" %>
 
 <%!
     protected int telnetServiceId;
@@ -50,6 +50,7 @@
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
     AssetModel model = new AssetModel();
+    File file = new File("@install.etc.dir@/vulnerabilities.enable");
     
     public void init() throws ServletException {
         this.statusMap = new HashMap();
@@ -222,8 +223,12 @@
 
       <p>
         <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-        &nbsp;&nbsp;&nbsp;<a href="vulnerability/list?filter=node%3D<%=nodeId%>&limit=100&sortby=severity&restype=open">View Nessus</a>
-        &nbsp;&nbsp;&nbsp;<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
+        &nbsp;&nbsp;&nbsp;
+	<% if( file.exists() ) { %>
+	    <a href="vulnerability/list?filter=node%3D<%=nodeId%>&limit=100&sortby=severity&restype=open">View Nessus</a>
+        &nbsp;&nbsp;&nbsp;
+	<% } %>
+	<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
          
         <% if( telnetIp != null ) { %>
           &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
