@@ -114,6 +114,8 @@ final public class GpMonitor extends IPv4LatencyMonitor {
 
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        String hoption = ParameterMap.getKeyedString(parameters, "hoption", "--hostname");
+        String toption = ParameterMap.getKeyedString(parameters, "toption", "--timeout");
         //
         // convert timeout to seconds for ExecRunner
         //
@@ -161,9 +163,9 @@ final public class GpMonitor extends IPv4LatencyMonitor {
                 ExecRunner er = new ExecRunner();
                 er.setMaxRunTimeSecs(timeout);
                 if (args == null)
-                    exitStatus = er.exec(script + " --hostname " + ipv4Addr.getHostAddress() + " --timeout " + timeout);
+                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout);
                 else
-                    exitStatus = er.exec(script + " --hostname " + ipv4Addr.getHostAddress() + " --timeout " + timeout + " " + args);
+                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout + " " + args);
                 if (exitStatus != 0) {
                     log.debug(script + " failed with exit code " + exitStatus);
                     serviceStatus = SERVICE_UNAVAILABLE;

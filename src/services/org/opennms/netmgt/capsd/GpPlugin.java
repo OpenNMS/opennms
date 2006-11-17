@@ -106,17 +106,21 @@ public final class GpPlugin extends AbstractPlugin {
      * @param regex
      *            The regular expression used to determine banner match
      * @param bannerResult
+     * @param hoption
+     *            The option string passed to the exec for the IP address (hostname)
+     * @param toption
+     *            The option string passed to the exec for the timeout
      * 
      * @return True if a connection is established with the script and the
      *         banner line returned by the script matches the regular expression
      *         regex.
      */
-    private boolean isServer(InetAddress host, int retry, int timeout, String script, String args, RE regex, StringBuffer bannerResult) {
+    private boolean isServer(InetAddress host, int retry, int timeout, String script, String args, RE regex, StringBuffer bannerResult, String hoption, String toption) {
         Category log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
 
-        log.debug("poll: address = " + host.getHostAddress() + ", script = " + script + ", arguments = " + args + ", timeout(seconds) = " + timeout + ", retry = " + retry);
+        log.debug("poll: script = " + script + ", arguments = " + args + " " + hoption + " " + host.getHostAddress() + " " + toption + " timeout(seconds) = " + timeout + ", retry = " + retry);
 
         for (int attempts = 0; attempts <= retry && !isAServer; attempts++) {
             try {
@@ -124,9 +128,9 @@ public final class GpPlugin extends AbstractPlugin {
                 ExecRunner er = new ExecRunner();
                 er.setMaxRunTimeSecs(timeout);
                 if (args == null)
-                    exitStatus = er.exec(script + " --hostname " + host.getHostAddress() + " --timeout " + timeout);
+                    exitStatus = er.exec(script + " " + hoption + " " + host.getHostAddress() + " " + toption + " " + timeout);
                 else
-                    exitStatus = er.exec(script + " --hostname " + host.getHostAddress() + " --timeout " + timeout + " " + args);
+                    exitStatus = er.exec(script + " " + hoption + " " + host.getHostAddress() + " " + toption + " " + timeout + " " + args);
                 if (exitStatus != 0) {
                     log.debug(script + " failed with exit code " + exitStatus);
                     isAServer = false;
@@ -230,6 +234,8 @@ public final class GpPlugin extends AbstractPlugin {
         String match = null;
         String script = null;
         String args = null;
+        String hoption = "--hostname";
+        String toption = "--timeout";
         if (qualifiers != null) {
             retry = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
             timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
@@ -237,6 +243,8 @@ public final class GpPlugin extends AbstractPlugin {
             args = ParameterMap.getKeyedString(qualifiers, "args", null);
             banner = ParameterMap.getKeyedString(qualifiers, "banner", null);
             match = ParameterMap.getKeyedString(qualifiers, "match", null);
+            hoption = ParameterMap.getKeyedString(qualifiers, "hoption", "--hostname");
+            toption = ParameterMap.getKeyedString(qualifiers, "toption", "--timeout");
         }
         if (script == null) {
             throw new RuntimeException("GpPlugin: required parameter 'script' is not present in supplied properties.");
@@ -263,7 +271,7 @@ public final class GpPlugin extends AbstractPlugin {
                 bannerResult = new StringBuffer();
             }
 
-            boolean result = isServer(address, retry, timeout, script, args, regex, bannerResult);
+            boolean result = isServer(address, retry, timeout, script, args, regex, bannerResult, hoption, toption);
             if (result && qualifiers != null) {
                 if (bannerResult != null && bannerResult.length() > 0)
                     qualifiers.put("banner", bannerResult.toString());

@@ -1,5 +1,7 @@
-Post-1.2.8
+1.2.8-1.2.9
 ----------------------------------------------------------------------
+- Backported hoption and toption for GP Monitor and Plugin.
+- Added C3PO to handle database connections.
 - Patches from Johan Edstrom <johan.edstrom@sca.com> to make vulscand
   functional with current versions of Nessus.  Bug #1522.
 
