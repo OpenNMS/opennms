@@ -1,5 +1,6 @@
 1.2.8-1.2.9
 ----------------------------------------------------------------------
+- Added graphs_per_line and extlink config options to KSC reports.
 - Backported hoption and toption for GP Monitor and Plugin.
 - Added C3PO to handle database connections.
 - Patches from Johan Edstrom <johan.edstrom@sca.com> to make vulscand
