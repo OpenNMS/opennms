@@ -50,7 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -234,32 +233,27 @@ public class JniRrdStrategy implements RrdStrategy {
         
         String fetchCmd = "fetch " + rrdFile + " AVERAGE -s now-" + interval / 1000 + " -e now-" + interval / 1000;
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("fetch: Issuing RRD command: " + fetchCmd);
+        }
 
         String[] fetchStrings = Interface.launch(fetchCmd);
 
         // Sanity check the returned string array
         if (fetchStrings == null) {
-            if (log.isEnabledFor(Priority.ERROR)) {
-                log.error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
-            }
+            log.error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
             return null;
         }
 
         // Check error string at index 0, will be null if 'fetch' was successful
         if (fetchStrings[0] != null) {
-            if (log.isEnabledFor(Priority.ERROR)) {
-                log.error("fetch: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
-            }
+            log.error("fetch: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
             return null;
         }
 
         // Sanity check
         if (fetchStrings[1] == null || fetchStrings[2] == null) {
-            if (log.isEnabledFor(Priority.ERROR)) {
-                log.error("fetch: RRD database 'fetch' failed, no data retrieved.");
-            }
+            log.error("fetch: RRD database 'fetch' failed, no data retrieved.");
             return null;
         }
 
@@ -277,14 +271,14 @@ public class JniRrdStrategy implements RrdStrategy {
             try {
                 dsValue = new Double(fetchStrings[2].trim());
             } catch (NumberFormatException nfe) {
-                if (log.isEnabledFor(Priority.WARN))
-                    log.warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                log.warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
                 throw nfe;
             }
         }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("fetch: fetch successful: " + dsName + "= " + dsValue);
+        }
 
         return dsValue;
     }
@@ -324,8 +318,9 @@ public class JniRrdStrategy implements RrdStrategy {
         long latestUpdateTime = (now - (now % interval)) / 1000L;
         long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
         
-        if (log.isEnabledFor(Priority.DEBUG))
+        if (log.isDebugEnabled()) {
         	log.debug("fetchInRange: fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
+        }
         
         String fetchCmd = "fetch " + rrdFile + " AVERAGE -s " + earliestUpdateTime + " -e " + latestUpdateTime;
 
@@ -333,32 +328,27 @@ public class JniRrdStrategy implements RrdStrategy {
 
         // Sanity check the returned string array
         if (fetchStrings == null) {
-            if (log.isEnabledFor(Priority.ERROR)) {
-                log.error("fetchInRange: Unexpected error issuing RRD 'fetch' command, no error text available.");
-            }
+            log.error("fetchInRange: Unexpected error issuing RRD 'fetch' command, no error text available.");
             return null;
         }
 
         // Check error string at index 0, will be null if 'fetch' was successful
         if (fetchStrings[0] != null) {
-            if (log.isEnabledFor(Priority.ERROR)) {
-                log.error("fetchInRange: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
-            }
+            log.error("fetchInRange: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
             return null;
         }
 
         // Sanity check
         if (fetchStrings[1] == null || fetchStrings[2] == null) {
-            if (log.isEnabledFor(Priority.ERROR)) {
-                log.error("fetchInRange: RRD database 'fetch' failed, no data retrieved.");
-            }
+            log.error("fetchInRange: RRD database 'fetch' failed, no data retrieved.");
             return null;
         }
         
         int numFetched = fetchStrings.length;
         
-        if (log.isEnabledFor(Priority.DEBUG))
+        if (log.isDebugEnabled()) {
         	log.debug("fetchInRange: got " + numFetched + " strings from RRD");
+        }
 
         // String at index 1 contains the RRDs datasource names
         //
@@ -370,17 +360,16 @@ public class JniRrdStrategy implements RrdStrategy {
         
         for(int i = fetchStrings.length - 2; i > 1; i--) {
         	if ( fetchStrings[i].trim().equalsIgnoreCase("nan") ) {
-        		if (log.isEnabledFor(Priority.DEBUG))
-        			log.debug("fetchInRange: Got a NaN value - continuing back in time");
+        	    log.debug("fetchInRange: Got a NaN value - continuing back in time");
         	} else {
         		try {
                     dsValue = new Double(fetchStrings[i].trim());
-                    if (log.isEnabledFor(Priority.DEBUG))
+                    if (log.isDebugEnabled()) {
                         log.debug("fetchInRange: fetch successful: " + dsName + "= " + dsValue);
+                    }
                     return dsValue;
                 } catch (NumberFormatException nfe) {
-                    if (log.isEnabledFor(Priority.WARN))
-                        log.warn("fetchInRange: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                    log.warn("fetchInRange: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
                     throw nfe;
                 }
           	}
