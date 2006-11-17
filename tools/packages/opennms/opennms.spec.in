@@ -180,7 +180,7 @@
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
 %define requires        postgres >= 7.2
-%define webapp_requires tomcat >= 4.1.18
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse7
 %define platform_match	true
 %endif
@@ -189,7 +189,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define webapp_requires tomcat >= 4.1.18
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse8
 %define platform_match	true
 %endif
@@ -198,7 +198,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define webapp_requires tomcat >= 4.1.18
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
 %define platform_match	true
 %endif
