@@ -197,8 +197,9 @@ public class JRobinRrdStrategy implements RrdStrategy {
          	long now = System.currentTimeMillis();
             long latestUpdateTime = (now - (now % interval)) / 1000L;
             long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
-            if (log.isEnabledFor(Priority.DEBUG))
+            if (log.isDebugEnabled()) {
             	log.debug("fetchInRange: fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
+            }
             
             FetchData data = rrd.createFetchRequest("AVERAGE", earliestUpdateTime, latestUpdateTime).fetchData();
             
@@ -209,11 +210,13 @@ public class JRobinRrdStrategy implements RrdStrategy {
             
 		    for(int i = vals.length - 1; i >= 0; i--) {
             	if ( Double.isNaN(vals[i]) ) {
-            		if (log.isEnabledFor(Priority.DEBUG))
+            		if (log.isDebugEnabled()) {
             			log.debug("fetchInRange: Got a NaN value at interval: " + times[i] + " continuing back in time");
+                        }
             	} else {
-               		if (log.isEnabledFor(Priority.DEBUG))
+               		if (log.isDebugEnabled()) {
                			log.debug("Got a non NaN value at interval: " + times[i] + " : " + vals[i] );
+                        }
             		return new Double(vals[i]);
                	}
             }
