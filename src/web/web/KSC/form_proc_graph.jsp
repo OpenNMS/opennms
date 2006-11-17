@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Nov 06: Added graphs per line and external link
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -50,6 +51,7 @@
     String graphtype = request.getParameter("graphtype");
     String title = request.getParameter("title");
     String g_index = request.getParameter("graphindex");
+    String extlink = request.getParameter("extlink");
     int graph_index = (Integer.parseInt(g_index));
     graph_index--; 
  
@@ -57,6 +59,10 @@
     graph.setTitle(title);
     graph.setTimespan(timespan);
     graph.setGraphtype(graphtype);
+
+    if (extlink != null && extlink.trim().length() > 0) {
+        graph.setExtlink(extlink.trim());
+    }
 
     if (action.equals("Save")) {
         // The working graph is complete now... lets save working graph to working report 

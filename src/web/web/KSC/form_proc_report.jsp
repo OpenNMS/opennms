@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Nov 06: Added graphs per line and external link
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -62,6 +63,7 @@
     String report_title = request.getParameter("report_title");
     String show_timespan = request.getParameter("show_timespan");
     String show_graphtype = request.getParameter("show_graphtype");
+    int graphs_per_line = Integer.parseInt(request.getParameter("graphs_per_line"));
     String g_index = request.getParameter("graph_index");
     int graph_index = Integer.parseInt(g_index);
  
@@ -78,6 +80,12 @@
     }
     else {
         report.setShow_timespan_button(true);
+    } 
+    if (graphs_per_line == 0) {
+        report.setGraphs_per_line(1);
+    }
+    else {
+        report.setGraphs_per_line(graphs_per_line);
     } 
 
     if (action.equals("Save")) {

@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Nov 06: Added graphs per line and external link
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -253,6 +254,20 @@
                             <% } %>                  
                             </SELECT>   
                             (This selects the desired position in the report for the graph to be inserted) 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <!-- Select External Link Index -->  
+                            External Link
+                        </td>
+                        <td>
+                            <input type="text" size="40" name="extlink" value="
+				<% if (sample_graph.getExtlink() != null) { %>
+				    <%=sample_graph.getExtlink()%>
+				<% } %>
+				">
+                            (Put an optional external "Details" link here)
                         </td>
                     </tr>
                 </table>

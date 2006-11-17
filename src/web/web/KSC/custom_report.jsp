@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Nov 06: Added graphs per line and external link
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -208,6 +209,22 @@
                          </td>
                          <td>
                              Show Graphtype Button (allows global manipulation of report prefabricated graph type)
+                         </td>
+                     </tr>
+                     <tr>
+                         <td>
+				<select name="graphs_per_line">
+				<% for (int i=1; i<7; i++) { %> 
+					<option 
+					<% if (report.getGraphs_per_line() == i) { %>
+					    selected
+				        <% } %>
+                                        value="<%=i%>"><%=i%></a>
+				<% } %>
+				</select>
+                         </td>
+                         <td>
+                             Choose the number of graphs per line.
                          </td>
                      </tr>
                 </table> 
