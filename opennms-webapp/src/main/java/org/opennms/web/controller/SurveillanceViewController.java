@@ -47,6 +47,7 @@ import javax.servlet.http.HttpSession;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
+import org.opennms.web.svclayer.SurveillanceViewError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -71,6 +72,11 @@ public class SurveillanceViewController extends AbstractController {
             HttpServletResponse resp) throws Exception {
 
         final String progressMonitorKey = "surveillanceViewProgressMonitor";
+
+	if ( ! m_service.isViewName(req.getParameter("viewName")) ) {
+	    SurveillanceViewError viewError = createSurveillanceViewError( req.getParameter("viewName") );
+	    return new ModelAndView("surveillanceViewError", "error", viewError);
+	}
 
         HttpSession session = req.getSession();
         resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(req.getParameter("viewName")));
@@ -117,6 +123,19 @@ public class SurveillanceViewController extends AbstractController {
         bgRunner.start();
         progressMonitor = monitor;
         return progressMonitor;
+    }
+
+    private SurveillanceViewError createSurveillanceViewError(final String viewName) {
+	SurveillanceViewError viewError = new SurveillanceViewError();
+	if (viewName == null) {
+		viewError.setShortDescr("No default view");
+		viewError.setLongDescr("No view name was specified, and no default view exists in the system.");
+	} else {
+		viewError.setShortDescr("No such view");
+		viewError.setLongDescr("The requested view '" + viewName + "' does not exist in the system.");
+	}
+
+	return viewError;
     }
 
 }

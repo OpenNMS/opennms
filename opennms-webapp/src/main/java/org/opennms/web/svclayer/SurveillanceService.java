@@ -49,4 +49,6 @@ public interface SurveillanceService {
     SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor);
     
     String getHeaderRefreshSeconds(String viewName);
+
+    boolean isViewName(String viewName);
 }

@@ -314,4 +314,10 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return m_surveillanceConfigDao.getView(viewName).getRefreshSeconds();
     }
 
+    public boolean isViewName(String viewName) {
+	View view;
+        view = ( viewName == null ? m_surveillanceConfigDao.getDefaultView() : m_surveillanceConfigDao.getView(viewName) );
+	return (view == null) ? false : true;
+    }
+
 }
