@@ -58,6 +58,8 @@ import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * <p>
@@ -421,6 +423,46 @@ public class Manager implements ManagerMBean {
 
     public void doSystemExit() {
         System.exit(1);
+    }
+    
+    public void doTestLoadLibraries() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance(Manager.class);
+
+        IcmpSocket s = null;
+        
+        try {
+        	s = new IcmpSocket();
+        } catch (Throwable t) {
+        	String message = "Could not initialize IcmpSocket: " + t.getMessage(); 
+        	log.fatal(message, t);
+        	System.err.println(message);
+        	t.printStackTrace(System.err);
+        	doSystemExit();
+        	// not reached
+        }
+        
+        try {
+        	s.close();
+        } catch (Throwable t) {
+        	String message = "Could not close test IcmpSocket: " + t.getMessage(); 
+        	log.fatal(message, t);
+        	System.err.println(message);
+        	t.printStackTrace(System.err);
+        	doSystemExit();
+        	// not reached
+        }
+
+        try {
+        	RrdUtils.initialize();
+        } catch (Throwable t) {
+        	String message = "Could not initialize RrdUtils: " + t.getMessage(); 
+        	log.fatal(message, t);
+        	System.err.println(message);
+        	t.printStackTrace(System.err);
+        	doSystemExit();
+        	// not reached
+        }
     }
 
     public static void main(String[] args) {

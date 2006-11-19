@@ -71,7 +71,7 @@ VERBOSE_GC=""
 RUNJAVA_OPTIONS=""
 
 # URL that this script uses to communicate with a running OpenNMS daemon.
-INVOKE_URL="http://localhost:8181/invoke?objectname=OpenNMS:Name=FastExit"
+INVOKE_URL="http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=FastExit"
 
 # Unset http_proxy.  If people have it set, it will likely break wget/curl
 # when it tries to connect to localhost.
@@ -284,7 +284,8 @@ doStart(){
 	CMD="$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 	echo "Executing command: $CMD" >> "$REDIRECT"
 	$CMD >>"$REDIRECT" 2>&1 &
-	echo $! > "$OPENNMS_PIDFILE"
+	OPENNMS_PID=$!
+	echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
 	# disown # XXX specific to bash
     fi
 
@@ -300,6 +301,12 @@ doStart(){
 	if doStatus; then
 	    return 0
 	fi
+	if ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
+	    true	# Java process is still running... don't do anything
+        else
+            echo "Started OpenNMS, but it stopped running: check output.log" >&2
+            return 1
+        fi
 	sleep $STATUS_WAIT
 	STATUS_ATTEMPTS=`expr $STATUS_ATTEMPTS + 1`
     done
@@ -358,7 +365,7 @@ doStop() {
     while [ $STOP_ATTEMPTS -lt 5 ]; do
 	doStatus
 	if [ $? -eq 3 ]; then
-	    echo "" > "@install.pid.file@"
+	    echo "" > "$OPENNMS_PIDFILE"
 	    return 0
 	fi
 
@@ -382,14 +389,14 @@ doKill(){
 	get_url "${INVOKE_URL}&operation=doSystemExit"
     fi
 
-    pid="`cat @install.pid.file@`"
+    pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
     if [ x"$pid" != x"" ]; then
 	if ps -p "$pid" | grep "^root" > /dev/null; then
 	    kill -9 $pid > /dev/null 2>&1
 	fi
     fi
 
-    echo "" > "@install.pid.file@"
+    echo "" > "$OPENNMS_PIDFILE"
 }
 
 doStatus(){
