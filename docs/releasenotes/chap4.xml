@@ -28,11 +28,11 @@
     <bridgehead>CentOS 3 and CentOS 4</bridgehead>
 
     <formalpara>
-      <title>Fedora Core 1, Fedora Core 2, Fedora Core 3 and Fedora Core 4
-      (including x86).</title>
+      <title>Fedora Core 1, Fedora Core 2, Fedora Core 3, Fedora Core 4,
+      Fedore Core 5 and Fedora Core 6 (including x86).</title>
 
-      <para>OpenNMS is known to build and run on Fedora Core 1, Fedora Core 2,
-      Fedora Core 3 and Fedora Core 4.</para>
+      <para>OpenNMS is known to build and run on Fedora Core 1 through Fedora
+      Core 6.</para>
     </formalpara>
 
     <formalpara>

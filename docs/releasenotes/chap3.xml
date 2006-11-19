@@ -18,6 +18,16 @@
   </section>
 
   <section>
+    <title>Notes About Tomcat Version</title>
+
+    <para>OpenNMS 1.2.8+ supports Tomcat 4.1.18 and greater, up through Tomcat
+    5.0. It does not support Tomcat 5.5. There was no way to maintain the
+    authentication scheme in Tomcat 5.5. However, the development branch of
+    OpenNMS requires Tomcat 5.5 as it has an entirely new authentication
+    process.</para>
+  </section>
+
+  <section>
     <title>Invalid Symbolic Link on Some Distros</title>
 
     <para>On Mandrake 10, and perhaps others, the symbolic link created in

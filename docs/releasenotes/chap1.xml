@@ -4,6 +4,13 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>1.2.9 is a bug fix release along with a few new small features. There
+  are some instances on large systems where OpenNMS will be waiting for
+  PostgreSQL while PostgreSQL will be waiting for OpenNMS. This has been
+  fixed. Small improvements have been made to KSC reports and to the General
+  Purpose monitor to make them both more flexible. The code word for 1.2.9 is
+  "floss".</para>
+
   <para>OpenNMS 1.2.8 contains a number of new features, most back-ported from
   the development version of OpenNMS. These include Nagios support, the "zoom"
   feature from Cacti and support for Tomcat 5. None of these features resulted

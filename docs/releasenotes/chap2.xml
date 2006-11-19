@@ -4,12 +4,111 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-  <para>OpenNMS 1.2.8 is the most recent production, or "stable", release. It
-  is the ninth release in the stable branch of OpenNMS. Changes to the stable
-  branch are limited to bug fixes and simple improvements. The 1.3 tree is a
-  development, or "unstable" tree, where most new features are implemented,
-  but without the testing that goes into 1.2. When 1.3 is mature enough, it
-  will become OpenNMS 2.0, the next stable version.</para>
+  <para>OpenNMS 1.2.9 is the latest production or "stable" release of OpenNMS.
+  It contains a few new features and one large bug fix. However, if you don't
+  need the new features or are not experiences database problems, this release
+  could be considered optional.</para>
+
+  <para>Please Note: The 1.2.x branch of OpenNMS is built against Java 1.4.2
+  and RRDTool 1.0. If you are using Java 5 or RRDTool 1.2 it is best to
+  recompile the code against those versions. It is just not possible for us to
+  provide RPMs for all possible combinations, so the older versions are chosen
+  for the greatest compatibility. The only exception are the 64-bit RPMs,
+  which are built against the 64-bit version of Java 5 but still RRDTool 1.0.
+  The development branch, 1.3.x, is built against Java 5 and RRDTool
+  1.2.</para>
+
+  <section>
+    <title>Changes in OpenNMS 1.2.9</title>
+
+    <section>
+      <title>New Features</title>
+
+      <bridgehead>General Purpose Monitor Improvements (i.e. more Nagios
+      Support)</bridgehead>
+
+      <para>While it is most efficient in OpenNMS to use the built-in
+      monitors, sometimes it is just easier to call an external script. The
+      General Purpose (GP) monitor was designed for just this purpose. As
+      found below in the 1.1.4 release notes, OpenNMS will pass an IP address
+      using "--hostname" and a timeout using "--timeout" to any external
+      script. However, some scripts, like those used for Nagios, require
+      different parameters such as "-H" for hostname and "-t" for timeout.
+      </para>
+
+      <para>This feature adds the option to override the defaults for the flag
+      for the IP address and the timeout. Here is an example of a capsd plugin
+      configuration:</para>
+
+      <para><programlisting>        &lt;protocol-plugin protocol="Nagios_ICMP" class-name="org.opennms.netmgt.capsd.GpPlugin" scan="on" user-defined="false"&gt;
+                 &lt;property key="timeout" value="3000"/&gt;
+                 &lt;property key="retry" value="1"/&gt;
+                 &lt;property key="script" value="/opt/OpenNMS/contrib/plugins/check_icmp"/&gt;
+                 &lt;property key="banner" value="OK"/&gt;
+                 &lt;property key="hoption" value="-H"/&gt;
+                 &lt;property key="toption" value="-t"/&gt;
+        &lt;/protocol-plugin&gt;</programlisting></para>
+
+      <para>Add this entry to the
+      <filename>poller-configuration.xml</filename> file:</para>
+
+      <para><programlisting>                &lt;service name="Nagios_ICMP" interval="300000" user-defined="false" status="on"&gt;
+                        &lt;parameter key="retry" value="1"/&gt;
+                        &lt;parameter key="timeout" value="3000"/&gt;
+                        &lt;parameter key="script" value="/opt/OpenNMS/contrib/plugins/check_icmp"/&gt;
+                        &lt;parameter key="banner" value="OK"/&gt;
+                        &lt;parameter key="hoption" value="-H"/&gt;
+                        &lt;parameter key="toption" value="-t"/&gt;
+                &lt;/service&gt;</programlisting></para>
+
+      <para>Remember to add the monitor line at the bottom of the file:</para>
+
+      <para><programlisting>&lt;monitor service="Nagios_ICMP"    class-name="org.opennms.netmgt.poller.monitors.GpMonitor"/&gt;</programlisting></para>
+
+      <bridgehead>KSC Performance Report Improvements</bridgehead>
+
+      <para>A few small changes have been made to the KSC reports. First, the
+      zoom feature present on performance reports has been ported to KSC
+      reports. Just click on the image. The default link for the graph has now
+      been moved to a "Details" button. This button can be overridden on a
+      graph by graph basis - i.e. if the graph represents mail server traffic,
+      the link can be used to take the user to another page (internal or
+      external) that is related to mail servers. Finally, it is possible to
+      arrange more than one graph per line. Cacti tends to list two graphs per
+      row, but depending on the size of your graphs and the size of the
+      monitor, you can have up to 6 per line. This is configured per
+      report.</para>
+
+      <bridgehead>Vulnscand</bridgehead>
+
+      <para>OpenNMS, as a platform, is designed to be integrated into other
+      products, and one of those is the security product Nessus which is used
+      to scan for vulnerabilities. In much the same way that capsd scans for
+      services, vulscand uses Nessus to scan for security issues. This
+      functionality is being fully developed in the development branch, but it
+      exists in a rudimentary form in the stable branch. Visit <ulink
+      url="http://www.opennms.org/index.php/Vulnscand">http://www.opennms.org/index.php/Vulnscand</ulink>
+      for more information on how to enable it.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>On large installations of OpenNMS there has been observed a
+      problem where all database activity stops. Investigations revealed that
+      OpenNMS was waiting for PostgreSQL and PostgreSQL was waiting for
+      OpenNMS. This hung state caused all event activity to stop, although
+      data collection would continue. The only way to get it running again was
+      either to restart OpenNMS or get lucky and kill the offending process.
+      While it is usually against the philosophy of the stable branch to
+      change something this important, the database connections were changed
+      to be managed by a library called <ulink
+      url="http://sourceforge.net/projects/c3p0">C3PO</ulink>. This creates a
+      pool of connections that always stay open. Since the bug was related to
+      the establishment and tearing down of database connections, by having
+      such a pool the bug no longer occurs.</para>
+    </section>
+  </section>
 
   <section>
     <title>Changes in OpenNMS 1.2.8</title>
