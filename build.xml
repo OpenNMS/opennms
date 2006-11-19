@@ -909,6 +909,11 @@ your distribution.
 
  <target name="install.init" depends="prep, install.bin">
    <mkdir dir="${install.prefix}${install.init.dir}"/>
+   <exec executable="rm" dir="${install.prefix}${install.init.dir}"
+	failonerror="true">
+    <arg value="-f"/>
+    <arg value="${install.prefix}${install.init.dir}/${ant.project.name}"/>
+  </exec>
    <exec executable="ln" dir="${install.prefix}${install.init.dir}"
 	failonerror="true">
     <arg value="-sf"/>
@@ -1626,6 +1631,12 @@ OpenNMS as part of the post-install.
    </fileset>
   </copy>
   <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"/>
+  <exec executable="rm"
+        dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"
+	failonerror="true">
+    <arg value="-f"/>
+    <arg value="log4j.properties"/>
+  </exec>
   <exec executable="ln"
         dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"
 	failonerror="true">
