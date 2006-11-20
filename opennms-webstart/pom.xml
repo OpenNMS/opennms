@@ -26,10 +26,6 @@
 
            <!-- JNLP generation -->
            <jnlp>
-             <!-- default values -->
-             <!--resources>${project.basedir}/src/main/jnlp</resources-->
-             <!--inputTemplateResourcePath>${project.basedir}</inputTemplateResourcePath-->
-             <!--inputTemplate>src/jnlp/template.vm</inputTemplate--> <!-- relative to inputTemplateResourcePath -->
              <outputFile>app.jnlp</outputFile> <!-- defaults to launch.jnlp -->
 
              <!-- used to automatically identify the jar containing the main class. -->
@@ -40,36 +36,28 @@
            <!-- SIGNING in THIS way is 'fake' REAL signing will move to a profile since it is setup specific -->
            <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
            <sign>
-             <keystore>${project.build.directory}/build-generated-keystore.ks</keystore>
-             <keypass>opennms</keypass>
-             <storepass>opennms</storepass>
-             <!-- storetype></storetype -->
-             <alias>opennms-webstart-key</alias>
-             <validity></validity>
+             <keystore>${webstart.keystore}</keystore>
+             <keypass>${webstart.keypass}</keypass>
+             <storepass>${webstart.storepass}</storepass>
+             <alias>${webstart.keyalias}</alias>
 
-             <dnameCn>OpenNMS</dnameCn>
-             <dnameL>Pittsboro</dnameL>
-             <dnameSt>North Carolina</dnameSt>
-             <dnameC>US</dnameC>
+             <dnameCn>${webstart.dnameCn}</dnameCn>
+             <dnameL>${webstart.dnameL}</dnameL>
+             <dnameSt>${webstart.dnameSt}</dnameSt>
+             <dnameC>${webstart.dnameC}</dnameC>
 
              <verify>true</verify>
            </sign>
 
            <!-- KEYSTORE MANGEMENT -->
            <keystore>
-             <delete>true</delete>
-             <gen>true</gen>      
+             <delete>${webstart.keystore.delete}</delete>
+             <gen>${webstart.keygen}</gen>      
            </keystore>
 
            <!-- BUILDING PROCESS -->
            <!--usejnlpservlet>true</usejnlpservlet--> <!-- not yet supported -->
 
-           <!-- should we have some more configurations here? E.g. compression level (aka packing effort) -->
-           <!-- not yet implemented -->
-           <pack200>false</pack200>
-           <gzip>true</gzip> <!-- default force when pack200 false, true when pack200 selected ?? -->
-
-           <!--install>false</install--> <!-- not yet supported -->
            <verbose>false</verbose>
 
         </configuration>

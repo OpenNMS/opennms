@@ -421,6 +421,19 @@ opennms.home = ${opennms.home}
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
+
+   <!-- code signing properties - used in opennms-webstart -->
+   <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
+   <webstart.keypass>opennms</webstart.keypass>
+   <webstart.storepass>opennms</webstart.storepass>
+   <webstart.keyalias>opennms-webstart-key</webstart.keyalias>
+   <webstart.keystore.delete>true</webstart.keystore.delete>
+   <webstart.keygen>true</webstart.keygen>
+   <webstart.dnameCn>${user.name}</webstart.dnameCn>
+   <webstart.dnameL></webstart.dnameL>
+   <webstart.dnameSt></webstart.dnameSt>
+   <webstart.dnameC></webstart.dnameC>
+
   </properties>
 
   <profiles>
