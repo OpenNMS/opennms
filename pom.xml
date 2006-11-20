@@ -1159,7 +1159,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
-        <version>3.2.0.cr4</version>
+        <version>3.2.0.ga</version>
         <exclusions>
           <exclusion>
             <!-- need to use cglib-nodep instead -->
@@ -1181,7 +1181,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
-        <version>3.2.0.cr2</version>
+        <version>3.2.0.ga</version>
         <exclusions>
           <exclusion>
             <groupId>javax.persistence</groupId>
