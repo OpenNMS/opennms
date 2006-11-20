@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -21,9 +20,10 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.web.BeanUtils;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
 import org.springframework.beans.BeanWrapper;
@@ -168,7 +168,7 @@ public class DefaultManualProvisioningService implements
         
         
         // then we send an event to the importer
-        TcpEventProxy proxy = new TcpEventProxy();
+        EventProxy proxy = Util.createEventProxy();
         
         String url = m_provisioningDao.getUrlForGroup(groupName);
         Assert.notNull(url, "Could not find url for group "+groupName+".  Does it exists?");
@@ -297,7 +297,6 @@ public class DefaultManualProvisioningService implements
     public Map<String, Integer> getGroupDbNodeCounts() {
         Map<String, Integer> counts = new HashMap<String, Integer>();
         
-        int i = 0;
         for(String groupName : getProvisioningGroupNames()) {
             counts.put(groupName, m_nodeDao.getNodeCountForForeignSource(groupName));
         }
