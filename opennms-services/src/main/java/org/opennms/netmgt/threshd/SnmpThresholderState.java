@@ -1,5 +1,6 @@
 package org.opennms.netmgt.threshd;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -19,6 +20,10 @@ public class SnmpThresholderState {
     }
 
     private Map<String, Map<String, ThresholdEntity>> m_allInterfaceMap;
+    
+    private SnmpThresholderState() {
+        setAllInterfaceMap(new HashMap<String, Map<String, ThresholdEntity>>());
+    }
 
     public void setAllInterfaceMap(Map<String, Map<String, ThresholdEntity>> allInterfaceMap) {
         m_allInterfaceMap = allInterfaceMap;

@@ -46,8 +46,6 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,7 +56,6 @@ import java.util.Properties;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -88,7 +85,7 @@ final class SnmpThresholder implements ServiceThresholder {
     /**
      * SQL statement to retrieve interface's 'ipinterface' table information.
      */
-    private static final String SQL_GET_NODEID = "SELECT nodeid,ifindex,issnmpprimary FROM ipinterface WHERE ipAddr=? AND ismanaged!='D'";
+    static final String SQL_GET_NODEID = "SELECT nodeid,ifindex,issnmpprimary FROM ipinterface WHERE ipAddr=? AND ismanaged!='D'";
 
     /**
      * Name of monitored service.
@@ -155,114 +152,21 @@ final class SnmpThresholder implements ServiceThresholder {
         
         SnmpThresholdInterface snmpIface = SnmpThresholdInterface.get(netIface);
         SnmpThresholdConfiguration thresholdConfiguration = SnmpThresholdConfiguration.get(netIface, parms);
-        SnmpThresholderState thresholderState = SnmpThresholderState.get(netIface, parms);
         
         if (!snmpIface.isIPV4())
             throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
-
-        // Now create an empty map which will hold interface level
-        // ThresholdEntity objects for each of the node's interfaces.
-        // This map will be keyed by the interface's iflabel and will
-        // contain as a value a map of ThresholdEntity objects keyed
-        // by datasource name.
-        //
-        thresholderState.setAllInterfaceMap(new HashMap<String, Map<String, ThresholdEntity>>());
-
-        // Get database connection in order to retrieve the nodeid and
-        // ifIndex from the database for this interface.
-        //
-        java.sql.Connection dbConn = null;
-        try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
-        } catch (SQLException sqlE) {
-            log().error("initialize: Failed getting connection to the database.", sqlE);
-            throw new UndeclaredThrowableException(sqlE);
-        }
-
-        int nodeId = -1;
-        int primaryIfIndex = -1;
-        char isSnmpPrimary = DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE;
-
-        // All database calls wrapped in try/finally block so we make
-        // certain that the connection will be closed when we are
-        // finished.
-        //
-        try {
-            // Prepare & execute the SQL statement to get the 'nodeid',
-            // 'ifIndex' and 'isSnmpPrimary' fields from the ipInterface table.
-            //
-            PreparedStatement stmt = null;
-            try {
-                stmt = dbConn.prepareStatement(SQL_GET_NODEID);
-                stmt.setString(1, snmpIface.getIpAddress()); // interface address
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    nodeId = rs.getInt(1);
-                    if (rs.wasNull())
-                        nodeId = -1;
-                    primaryIfIndex = rs.getInt(2);
-                    if (rs.wasNull())
-                        primaryIfIndex = -1;
-                    String str = rs.getString(3);
-                    if (str != null)
-                        isSnmpPrimary = str.charAt(0);
-                }
-                rs.close();
-            } catch (SQLException sqle) {
-                log().debug("initialize: SQL exception!!", sqle);
-                throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + snmpIface.getIpAddress());
-            } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
-
-            if (log().isDebugEnabled())
-                log().debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + snmpIface.getIpAddress() + ", ifIndex = " + primaryIfIndex + ", isSnmpPrimary = " + isSnmpPrimary);
-
-            // RuntimeException is thrown if any of the following are true:
-            // - node id is invalid
-            // - primaryIfIndex is invalid
-            // - Interface is not the primary SNMP interface for the node
-            //
-            if (nodeId == -1)
-                throw new RuntimeException("Unable to retrieve node id for interface " + snmpIface.getIpAddress());
-
-            if (primaryIfIndex == -1)
-                // allow this for nodes without ipAddrTables
-                // throw new RuntimeException("Unable to retrieve ifIndex for interface " + ipAddr.getHostAddress());
-                if (log().isDebugEnabled())
-                    log().debug("initialize: db retrieval info: node " + nodeId + " does not have a legitimate primaryIfIndex. Assume node does not supply ipAddrTable and continue...");
-
-            if (isSnmpPrimary != DbIpInterfaceEntry.SNMP_PRIMARY)
-                throw new RuntimeException("Interface " + snmpIface.getIpAddress() + " is not the primary SNMP interface for nodeid " + nodeId);
-        } finally {
-            // Done with the database so close the connection
-            try {
-                dbConn.close();
-            } catch (SQLException sqle) {
-                log().info("initialize: SQLException while closing database connection", sqle);
-            }
-        }
-
-        // Add nodeId as an attribute of the interface for retrieval
-        // by the check() method.
-        //
-        snmpIface.setNodeId(nodeId);
 
         // Debug
         //
         if (log().isDebugEnabled()) {
             log().debug("initialize: dumping node thresholds defined for " + snmpIface.getIpAddress() + "/" + thresholdConfiguration.getGroupName() + ":");
-            Iterator iter = thresholdConfiguration.getNodeMap().values().iterator();
+            Iterator iter = thresholdConfiguration.getNodeResourceType().getThresholdMap().values().iterator();
             while (iter.hasNext()) {
                 log().debug((ThresholdEntity) iter.next());
             }
 
             log().debug("initialize: dumping interface thresholds defined for " + snmpIface.getIpAddress() + "/" + thresholdConfiguration.getGroupName() + ":");
-            iter = thresholdConfiguration.getBaseInterfaceMap().values().iterator();
+            iter = thresholdConfiguration.getIfResourceType().getThresholdMap().values().iterator();
             while (iter.hasNext()) {
                 log().debug((ThresholdEntity) iter.next());
             }
@@ -355,7 +259,7 @@ final class SnmpThresholder implements ServiceThresholder {
             for (int i = 0; i < files.length; i++) {
                 try {
                     // Found interface directory...
-                    checkIfDir(files[i], snmpIface.getNodeId(), snmpIface.getInetAddress(), thresholdConfiguration.getInterval(), thresholdConfiguration.getRange(), dateStamp, thresholdConfiguration.getBaseInterfaceMap(), thresholderState.getAllInterfaceMap(), events);
+                    checkIfDir(files[i], snmpIface, thresholdConfiguration, dateStamp, thresholderState.getAllInterfaceMap(), events);
                 } catch (IllegalArgumentException e) {
                     log().info("check: Threshold checking failed for primary SNMP interface " + snmpIface.getIpAddress(), e);
                     return THRESHOLDING_FAILED;
@@ -409,8 +313,10 @@ final class SnmpThresholder implements ServiceThresholder {
      *             if path parameter is not a directory.
      */
     private void checkNodeDir(File directory, SnmpThresholdInterface snmpIface, SnmpThresholdConfiguration thresholdConfiguration, Date date, Events events) throws IllegalArgumentException {
+        ThresholdResourceType resourceType = thresholdConfiguration.getNodeResourceType();
+        Map<String, ThresholdEntity> thresholdMap = resourceType.getThresholdMap();
         // Sanity Check
-        if (directory == null || snmpIface.getNodeId() == null || snmpIface.getInetAddress() == null || date == null || thresholdConfiguration.getNodeMap() == null || events == null) {
+        if (directory == null || snmpIface.getNodeId() == null || snmpIface.getInetAddress() == null || date == null || thresholdMap == null || events == null) {
             throw new IllegalArgumentException("Null parameters not permitted.");
         }
 
@@ -435,7 +341,7 @@ final class SnmpThresholder implements ServiceThresholder {
             // Lookup the ThresholdEntity object corresponding
             // to this datasource.
             //
-            ThresholdEntity threshold = (ThresholdEntity) thresholdConfiguration.getNodeMap().get(datasource);
+            ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
             if (threshold != null) {
 
                 // Get the value to use for the ds-label from this threshold
@@ -510,6 +416,15 @@ final class SnmpThresholder implements ServiceThresholder {
      * 
      * @param directory
      *            RRD repository directory
+     * @param snmpIface TODO
+     * @param thresholdConfiguration TODO
+     * @param date
+     *            Source for timestamp to be used for all generated events
+     * @param allIfThresholdMap
+     *            Map of threshold maps indexed by ifLabel
+     * @param events
+     *            Castor events object containing any events to be generated as
+     *            a result of threshold checking.
      * @param nodeId
      *            Node identifier
      * @param primary
@@ -519,23 +434,16 @@ final class SnmpThresholder implements ServiceThresholder {
      * @param range
      *            Time interval before last possible PDP is considered
      *            "out of date"
-     * @param date
-     *            Source for timestamp to be used for all generated events
      * @param baseIfThresholdMap
      *            Map of configured interface level ThresholdEntity objects
      *            keyed by datasource name.
-     * @param allIfThresholdMap
-     *            Map of threshold maps indexed by ifLabel
-     * @param events
-     *            Castor events object containing any events to be generated as
-     *            a result of threshold checking.
-     * 
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkIfDir(File directory, Integer nodeId, InetAddress primary, int interval, int range, Date date, Map baseIfThresholdMap, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
+    private void checkIfDir(File directory, SnmpThresholdInterface snmpIface, SnmpThresholdConfiguration thresholdConfiguration, Date date, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
+        ThresholdResourceType resourceType = thresholdConfiguration.getIfResourceType();
         // Sanity Check
-        if (directory == null || nodeId == null || primary == null || date == null || baseIfThresholdMap == null || allIfThresholdMap == null || events == null) {
+        if (directory == null || snmpIface.getNodeId() == null || snmpIface.getInetAddress() == null || date == null || resourceType.getThresholdMap() == null || allIfThresholdMap == null || events == null) {
             throw new IllegalArgumentException("Null parameters not permitted.");
         }
 
@@ -564,17 +472,7 @@ final class SnmpThresholder implements ServiceThresholder {
             // Doesn't exist yet, go ahead and create it
             // Must maintain a separate threshold map for
             // each interface.
-            thresholdMap = new HashMap<String, ThresholdEntity>();
-
-            // Iterate over base interface threshold map and clone each
-            // ThresholdEntity object and add it to the threshold map.
-            // for this interface.
-            // 
-            Iterator iter = baseIfThresholdMap.values().iterator();
-            while (iter.hasNext()) {
-                ThresholdEntity entity = (ThresholdEntity) iter.next();
-                thresholdMap.put(entity.getDatasourceName(), (ThresholdEntity)entity.clone());
-            }
+            thresholdMap = getAttributeMap(resourceType);
 
             // Add the new threshold map for this interface
             // to the all interfaces map.
@@ -615,14 +513,14 @@ final class SnmpThresholder implements ServiceThresholder {
                 //
                 Double dsValue = null;
                 try {
-                	if (range != 0) {
+                	if (thresholdConfiguration.getRange() != 0) {
                 		if (log().isDebugEnabled())
-                            log().debug("checking values within " + range + " mS of last possible PDP");
-                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
+                            log().debug("checking values within " + thresholdConfiguration.getRange() + " mS of last possible PDP");
+                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), thresholdConfiguration.getInterval(), thresholdConfiguration.getRange());
                 	} else {
                 		if (log().isDebugEnabled())
                             log().debug("checking value of last possible PDP only");
-                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), thresholdConfiguration.getInterval());
                 	}
                 } catch (NumberFormatException nfe) {
                     log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
@@ -668,7 +566,7 @@ final class SnmpThresholder implements ServiceThresholder {
                             // Make certain we close the connection
                             //
                             try {
-                                ifDataMap = IfLabel.getInterfaceInfoFromIfLabel(dbConn, nodeId.intValue(), ifLabel);
+                                ifDataMap = IfLabel.getInterfaceInfoFromIfLabel(dbConn, snmpIface.getNodeId().intValue(), ifLabel);
                             } catch (SQLException e) {
                                 // Logging a warning message but processing will
                                 // continue for
@@ -700,24 +598,40 @@ final class SnmpThresholder implements ServiceThresholder {
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date, dsLabelValue));
+                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date, dsLabelValue));
+                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
+                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
+                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
                         }
                     }
                 }
             }
         }
+    }
+
+    private Map<String, ThresholdEntity> getAttributeMap(ThresholdResourceType resourceType) {
+        Map<String, ThresholdEntity> thresholdMap;
+        thresholdMap = new HashMap<String, ThresholdEntity>();
+
+        // Iterate over base interface threshold map and clone each
+        // ThresholdEntity object and add it to the threshold map.
+        // for this interface.
+        // 
+        Iterator iter = resourceType.getThresholdMap().values().iterator();
+        while (iter.hasNext()) {
+            ThresholdEntity entity = (ThresholdEntity) iter.next();
+            thresholdMap.put(entity.getDatasourceName(), (ThresholdEntity)entity.clone());
+        }
+        return thresholdMap;
     }
 
     /**

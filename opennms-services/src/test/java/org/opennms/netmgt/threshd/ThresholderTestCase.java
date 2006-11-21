@@ -50,9 +50,11 @@ public class ThresholderTestCase extends MockObjectTestCase {
 	protected Map m_parameters;
 	private String m_fileName;
 	private int m_step;
-	protected LatencyThresholder m_thresholder;
+	protected ServiceThresholder m_thresholder;
 	private MockEventIpcManager m_eventMgr;
 	private MockNetwork m_network;
+    private String m_serviceName;
+    private String m_ipAddress;
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -97,6 +99,8 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_serviceParameters.put("svcName", serviceName);
 		m_parameters = new HashMap();
 		m_parameters.put("thresholding-group", groupName);
+        m_ipAddress = ipAddress;
+        m_serviceName = serviceName;
 		
 		Resource config = new ClassPathResource("/test-thresholds.xml");
 		Reader r = new InputStreamReader(config.getInputStream());
@@ -120,7 +124,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_network.addNode(1, "Router");
 		m_network.addInterface("192.168.1.1");
 		m_network.addService("ICMP");
-		m_network.addService("SMTP");
+		m_network.addService("SNMP");
 		m_network.addInterface("192.168.1.2");
 		m_network.addService("ICMP");
 		m_network.addService("SMTP");
@@ -150,7 +154,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 
 	private void ensureEventAfterFetches(int count, String dsName, String uei) {
 	    if (uei != null) {
-	        Event event = MockEventUtil.createServiceEvent("Test", uei, m_network.getService(1, "192.168.1.1", "ICMP"), null);
+	        Event event = MockEventUtil.createServiceEvent("Test", uei, m_network.getService(1, m_ipAddress, m_serviceName), null);
 	        Parms parms = new Parms();
 	        Parm parm = new Parm();
 	        parm.setParmName("ds");
