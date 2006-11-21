@@ -48,7 +48,7 @@ public class LatencyThresholderTest extends ThresholderTestCase {
 
         setupEventManager();
        
-        String dirName = "/tmp/192.168.1.1";
+        String dirName = "target/threshd-test/192.168.1.1";
         String fileName = "icmp"+RrdUtils.getExtension();
         String ipAddress = "192.168.1.1";
         String serviceName = "ICMP";
