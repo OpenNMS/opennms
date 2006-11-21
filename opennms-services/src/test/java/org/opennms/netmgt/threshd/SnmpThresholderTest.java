@@ -1,70 +1,109 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
+//
 package org.opennms.netmgt.threshd;
 
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Properties;
 
-import org.jmock.Mock;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
-import org.opennms.netmgt.rrd.RrdConfig;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 public class SnmpThresholderTest extends ThresholderTestCase {
 
-	private IPv4NetworkInterface m_iface;
-	private HashMap m_serviceParameters;
-	private HashMap m_parameters;
-	private Mock m_mockRrdStrategy;
-	private MockNetwork m_network;
-
-	public void testCreate() {
-	}
-	
-	protected void setUp() throws Exception {
-		super.setUp();
+    protected void setUp() throws Exception {
+        super.setUp();
         
         MockLogAppender.setupLogging();
-//	TODO: Finish pulling up into ThresholderTestCase like LatencyThresholderTest and finish writing the test case!!
-        setupDatabase();
-
-		// set this so we don't get exceptions in the log
-        RrdConfig.setProperties(new Properties());
-        m_mockRrdStrategy = mock(RrdStrategy.class);
-        RrdUtils.setStrategy((RrdStrategy)m_mockRrdStrategy.proxy());
-        m_mockRrdStrategy.expects(atLeastOnce()).method("initialize");
-
-		Resource config = new ClassPathResource("/test-thresholds.xml");
-		Reader r = new InputStreamReader(config.getInputStream());
-		ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
-		r.close();
-
-        m_iface = new IPv4NetworkInterface(InetAddress.getByName("192.168.1.1"));
-        m_serviceParameters = new HashMap();
-        m_serviceParameters.put("svcName", "ICMP");
-        m_parameters = new HashMap();
-        m_parameters.put("thresholding-group", "icmp-latency");
         
-        ThresholdingConfigFactory.getInstance().getGroup("icmp-latency").setRrdRepository("/tmp");
+        setupDatabase();
+        
+        createMockRrd();
 
-		SnmpThresholder m_thresholder = new SnmpThresholder();  
+        setupEventManager();
+       
+        String dirName = "/tmp/1";
+        String fileName = "cpuUtilization"+RrdUtils.getExtension();
+        String ipAddress = "192.168.1.1";
+        String serviceName = "SNMP";
+        String groupName = "default-snmp";
+        
+        setupThresholdConfig(dirName, fileName, ipAddress, serviceName, groupName);
+
+        m_thresholder = new SnmpThresholder();
         m_thresholder.initialize(m_serviceParameters);
         m_thresholder.initialize(m_iface, m_parameters);
 
-	}
+    }
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
+
+    protected void tearDown() throws Exception {
+        RrdUtils.setStrategy(null);
         MockLogAppender.assertNoWarningsOrGreater();
-		
-	}
+        super.tearDown();
+    }
+    
+    public void testNormalValue() throws Exception {
+        
+        setupFetchSequence(new double[] { 69.0, 79.0, 74.0, 74.0 });
+        
+        
+        ensureNoEventAfterFetches("cpuUtilization", 4);
+        
+    }
+    
+    public void testBigValue() throws Exception {
+        
+        setupFetchSequence(new double[] {99.0, 98.0, 97.0, 96.0, 95.0 });
+        
+        ensureExceededAfterFetches("cpuUtilization", 3);
+        ensureNoEventAfterFetches("cpuUtilization", 2);
+    }
+    
+    public void testRearm() throws Exception {
+        double values[] = { 
+                99.0,
+                91.0,
+                93.0, // expect exceeded
+                96.0,
+                15.0, // expect rearm
+                98.0,
+                98.0,
+                98.0 // expect exceeded
+        };
+        
+        setupFetchSequence(values);
+        
+        ensureExceededAfterFetches("cpuUtilization", 3);
+        ensureRearmedAfterFetches("cpuUtilization", 2);
+        ensureExceededAfterFetches("cpuUtilization", 3);
+    }
+
 
 }

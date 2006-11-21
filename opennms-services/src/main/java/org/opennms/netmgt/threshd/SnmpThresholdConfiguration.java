@@ -3,11 +3,26 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.utils.ParameterMap;
 
 public class SnmpThresholdConfiguration {
     
+    /**
+     * Default thresholding interval (in milliseconds).
+     * 
+     */
+    private static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
+    
+    /**
+     * Default age before which a data point is considered "out of date"
+     */
+    
+    private static final int DEFAULT_RANGE = 0; 
+
     private static final String THRESHD_SERVICE_CONFIG_KEY = SnmpThresholdConfiguration.class.getName();
 
 
@@ -20,73 +35,59 @@ public class SnmpThresholdConfiguration {
         return config;
     }
 
-    private SnmpThresholdParameters m_snmpParameters;
-    private SnmpThresholdConfig m_snmpThreshConfig;
     private File m_rrdRepository;
-    private Map<String, ThresholdEntity> m_nodeMap;
-    private Map<String, ThresholdEntity> m_baseIfMap;
-    
+    private Map m_parms;
+
+    private ThresholdResourceType m_nodeResourceType;
+
+    private ThresholdResourceType m_ifResourceType;
     
     private SnmpThresholdConfiguration(Map parms) {
-        this(new SnmpThresholdParameters(parms), new SnmpThresholdConfig(ThresholdingConfigFactory.getInstance()));
-    }
-
-    public SnmpThresholdConfiguration(SnmpThresholdParameters snmpParameters, SnmpThresholdConfig snmpThreshConfig) {
-        m_snmpParameters = snmpParameters;
-        m_snmpThreshConfig = snmpThreshConfig;
+        m_parms = parms;
+        m_rrdRepository = new File(getConfig().getRrdRepository(getGroupName()));
         
-        m_rrdRepository = new File(getThreshConfig().getRrdRepository(getGroupName()));
-        
-        initNodeMap();
-        initBaseInterfaceMap();
+        setNodeResourceType(new ThresholdResourceType("node", getGroupName()));
+        setIfResourceType(new ThresholdResourceType("if", getGroupName()));
     }
     
-    public SnmpThresholdParameters getSnmpParameters() {
-        return m_snmpParameters;
+    private ThresholdingConfigFactory getConfig() {
+        return ThresholdingConfigFactory.getInstance();
     }
     
-    public SnmpThresholdConfig getThreshConfig() {
-        return m_snmpThreshConfig;
-    }
-
     File getRrdRepository() {
         return m_rrdRepository;
     }
 
-    String getGroupName() {
-        return getSnmpParameters().getGroupName();
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
-    public void setNodeMap(Map<String, ThresholdEntity> nodeMap) {
-        m_nodeMap = nodeMap;
+    public String getGroupName() {
+        return ParameterMap.getKeyedString(m_parms, "thresholding-group", "default");
     }
 
-    public Map<String, ThresholdEntity> getNodeMap() {
-        return m_nodeMap;
+    public int getRange() {
+        return ParameterMap.getKeyedInteger(m_parms, "range", SnmpThresholdConfiguration.DEFAULT_RANGE);
     }
 
-    void initNodeMap() {
-        setNodeMap(getThreshConfig().createThresholdMap(getGroupName(), "node"));
+    public int getInterval() {
+        return ParameterMap.getKeyedInteger(m_parms, "interval", SnmpThresholdConfiguration.DEFAULT_INTERVAL);
     }
 
-    public void setBaseInterfaceMap(Map<String, ThresholdEntity> baseIfMap) {
-        m_baseIfMap = baseIfMap;
+    private void setNodeResourceType(ThresholdResourceType nodeResourceType) {
+        m_nodeResourceType = nodeResourceType;
     }
 
-    public Map<String, ThresholdEntity> getBaseInterfaceMap() {
-        return m_baseIfMap;
+    public ThresholdResourceType getNodeResourceType() {
+        return m_nodeResourceType;
     }
 
-    void initBaseInterfaceMap() {
-        setBaseInterfaceMap(getThreshConfig().createThresholdMap(getGroupName(), "if"));
+    private void setIfResourceType(ThresholdResourceType ifResourceType) {
+        m_ifResourceType = ifResourceType;
     }
 
-    int getRange() {
-        return getSnmpParameters().getRange();
-    }
-
-    int getInterval() {
-        return getSnmpParameters().getInterval();
+    public ThresholdResourceType getIfResourceType() {
+        return m_ifResourceType;
     }
 
 }
