@@ -66,7 +66,7 @@
 
             
             buffer.append(columns[i]);
-            buffer.append(org.opennms.netmgt.utils.RrdFileConstants.RRD_SUFFIX);            
+            buffer.append(org.opennms.netmgt.utils.RrdFileConstants.getRrdSuffix());            
 
             rrds[i] = buffer.toString();
         }   
@@ -89,7 +89,7 @@
             buffer.append(intf);
             buffer.append(File.separator);
             buffer.append(columns[i]);
-            buffer.append(org.opennms.netmgt.utils.RrdFileConstants.RRD_SUFFIX);
+            buffer.append(org.opennms.netmgt.utils.RrdFileConstants.getRrdSuffix());
 
             rrds[i] = buffer.toString();
         }
