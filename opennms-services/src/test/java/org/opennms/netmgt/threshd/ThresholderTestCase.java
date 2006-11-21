@@ -87,11 +87,13 @@ public class ThresholderTestCase extends MockObjectTestCase {
 
 	protected void setupThresholdConfig(String dirName, String fileName, String ipAddress, String serviceName, String groupName) throws IOException, UnknownHostException, FileNotFoundException, MarshalException, ValidationException {
 		File dir = new File(dirName);
-		dir.mkdir();
+		dir.mkdirs();
 		File f = new File(dir, fileName);
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		out.println("unused");
 		out.close();
+		f.deleteOnExit();
+		dir.deleteOnExit();
 		m_fileName = f.getAbsolutePath();
 		m_step = 300000;
 		m_iface = new IPv4NetworkInterface(InetAddress.getByName(ipAddress));
@@ -106,7 +108,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		Reader r = new InputStreamReader(config.getInputStream());
 		ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
 		r.close();
-		ThresholdingConfigFactory.getInstance().getGroup(groupName).setRrdRepository("/tmp");
+		ThresholdingConfigFactory.getInstance().getGroup(groupName).setRrdRepository(dir.getParentFile().getAbsolutePath());
 	}
 
 	protected void createMockRrd() {

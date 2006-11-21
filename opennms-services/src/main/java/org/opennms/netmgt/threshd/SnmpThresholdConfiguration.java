@@ -35,8 +35,9 @@ public class SnmpThresholdConfiguration {
         return config;
     }
 
-    private File m_rrdRepository;
     private Map m_parms;
+    
+    private ThresholdGroup m_thresholdGroup;
 
     private ThresholdResourceType m_nodeResourceType;
 
@@ -44,26 +45,26 @@ public class SnmpThresholdConfiguration {
     
     private SnmpThresholdConfiguration(Map parms) {
         m_parms = parms;
-        m_rrdRepository = new File(getConfig().getRrdRepository(getGroupName()));
+        m_thresholdGroup = new ThresholdGroup(ParameterMap.getKeyedString(m_parms, "thresholding-group", "default"));
         
-        setNodeResourceType(new ThresholdResourceType("node", getGroupName()));
-        setIfResourceType(new ThresholdResourceType("if", getGroupName()));
-    }
-    
-    private ThresholdingConfigFactory getConfig() {
-        return ThresholdingConfigFactory.getInstance();
+        setNodeResourceType(new ThresholdResourceType("node", m_thresholdGroup));
+        setIfResourceType(new ThresholdResourceType("if", m_thresholdGroup));
     }
     
     File getRrdRepository() {
-        return m_rrdRepository;
+        return getGroup().getRrdRepository();
     }
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
+    
+    public ThresholdGroup getGroup() {
+    	return m_thresholdGroup;
+    }
 
     public String getGroupName() {
-        return ParameterMap.getKeyedString(m_parms, "thresholding-group", "default");
+        return getGroup().getName();
     }
 
     public int getRange() {
