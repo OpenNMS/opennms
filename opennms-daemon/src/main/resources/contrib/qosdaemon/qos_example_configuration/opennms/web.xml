@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
-<!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/dtd/web-app_2_3.dtd">
-
-<!-- v2.4 C Gallen based on openoss 1.3.2-SNAPSHOT  Port web.xml  OpenNMS Version 4744  4-10-2006 -->
+<web-app id="opennms" version="2.4"
+		 xmlns="http://java.sun.com/xml/ns/j2ee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<!-- v2.5 web.xml C Gallen based on openoss 1.3.2-SNAPSHOT OpenNMS Version 5189 22-11-2006 -->
 <!-- changed from localhost:8080 to localhost:8081 in order to allow JBOSS to run on port 8080 -->
-<!-- added filter to make refresh of alarms jsp every 20 secs-->
+<!-- added filter to make refresh of alarms jsp every 10 secs-->
 <!-- IF THIS FILE IS UPDATED IN FUTURE RELEASE  - ADD BACK THESE CHANGES FOR ALARM MANAGEMENT -->
-
-<web-app>
+		 
   <display-name>opennms</display-name>
   <!-- Set this for JRobin graphs and Availablity Reporting -->
   <context-param>
@@ -40,33 +38,33 @@
 
   <!-- RTC Subscription parameters -->  
   <context-param>
+    <description>The username the RTC uses when authenticating itself in an HTTP POST.</description>
     <param-name>opennms.rtc-client.http-post.username</param-name>
     <param-value>rtc</param-value>
-    <description>The username the RTC uses when authenticating itself in an HTTP POST.</description>
   </context-param>
   <context-param>
+    <description>The password the RTC uses when authenticating itself in an HTTP POST.</description>
     <param-name>opennms.rtc-client.http-post.password</param-name>
     <param-value>rtc</param-value>
-    <description>The password the RTC uses when authenticating itself in an HTTP POST.</description>
   </context-param>
   <context-param>
+    <description>The hostname/IP address of the RTCd host for sending subscribe event.</description>
     <param-name>opennms.rtc.event.proxy.host</param-name>
     <param-value>127.0.0.1</param-value>
-    <description>The hostname/IP address of the RTCd host for sending subscribe event.</description>
   </context-param>
   <context-param>
+    <description>The port of the RTCd host for sending subscribe event (Requires host to be configured).</description>
     <param-name>opennms.rtc.event.proxy.port</param-name>
     <param-value>5817</param-value>
-    <description>The port of the RTCd host for sending subscribe event (Requires host to be configured).</description>
   </context-param>
   <context-param>
-    <param-name>opennms.rtc-client.http-post.base-url</param-name>
-
-    <!--****************** CG Modified to 8081 to allow Jboss on 8080-->    
-    <param-value>http://localhost:8081/opennms/rtc/post</param-value>
     <description>
       The base of a URL that RTC clients use when creating a RTC subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
     </description>
+    <param-name>opennms.rtc-client.http-post.base-url</param-name>
+    
+    <!--****************** CG Modified to 8081 to allow Jboss on 8080-->    
+    <param-value>http://localhost:8081/opennms/rtc/post</param-value>
   </context-param>
 
   <filter>
@@ -79,42 +77,64 @@
   </filter>
 
   <filter>
-    <filter-name>AddRefreshHeader-300</filter-name>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
+    <filter-name>AddRefreshHeader-300</filter-name>
     <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
     <init-param>
+      <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
       <param-value>300</param-value>
-      <description>This parameter specifies how often to refresh the page.</description>
     </init-param>
   </filter>
 
   <filter>
-    <filter-name>AddRefreshHeader-120</filter-name>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
+    <filter-name>AddRefreshHeader-120</filter-name>
     <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
     <init-param>
+      <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
       <param-value>120</param-value>
-      <description>This parameter specifies how often to refresh the page.</description>
     </init-param>
   </filter>
   
-      <!-- ****************** Added CG to refresh alarms list every 20 seconds -->
+  <!-- ****************** Added CG to refresh alarms list every 10 seconds -->
   <filter>
-    <filter-name>AddRefreshHeader-20</filter-name>
+    <filter-name>AddRefreshHeader-10</filter-name>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
     <init-param>
       <param-name>seconds</param-name>
-      <param-value>20</param-value>
+      <param-value>10</param-value>
       <description>This parameter specifies how often to refresh the page.</description>
     </init-param>
   </filter>
 
+  
+  <filter>
+    <description>Stores HTTP request parameters in request attributes for later access</description>
+    <filter-name>StoreRequestProperties</filter-name>
+    <filter-class>org.opennms.web.StoreRequestPropertiesFilter</filter-class>
+    <init-param>
+      <description>Into which request attribute the value of HttpServletRequest.getServletPath() is stored</description>
+      <param-name>relativeServletPathAttribute</param-name>
+      <param-value>relativeRequestPath</param-value>
+    </init-param>
+  </filter>
+  
+  <filter>
+    <filter-name>eXtremeExport</filter-name>
+    <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
+  </filter>
+  
 
   <filter-mapping>
     <filter-name>Acegi Filter Chain Proxy</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <filter-mapping>
+    <filter-name>StoreRequestProperties</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
@@ -151,20 +171,16 @@
     <url-pattern>/event/list</url-pattern>
   </filter-mapping>
   
-   <!--******************* cgallen  added to refresh alarms display every 20 secs -->
+  <!--******************* cgallen  added to refresh alarms display every 10 secs -->
   <filter-mapping>
-    <filter-name>AddRefreshHeader-20</filter-name>
+    <filter-name>AddRefreshHeader-10</filter-name>
     <url-pattern>/alarm/list</url-pattern>
   </filter-mapping> 
 
-<filter>
-  <filter-name>eXtremeExport</filter-name>
-  <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
-</filter>
-<filter-mapping>
-  <filter-name>eXtremeExport</filter-name>
-  <url-pattern>/*</url-pattern>
-</filter-mapping>
+  <filter-mapping>
+    <filter-name>eXtremeExport</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <listener>
     <!-- This listener handles our custom startup/shutdown behavior. -->
@@ -185,83 +201,6 @@
       <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
    </servlet>
 
-  <!-- desktop survey report servlet -->  
-
-  <servlet>
-    <!-- This servlet creates the graph images using RRDTool. -->
-    <servlet-name>rrdgraph</servlet-name>
-    <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
-    <init-param>
-      <param-name>rrd-properties</param-name>
-      <param-value>performance=etc/snmp-graph.properties;response=etc/response-graph.properties;performance-adhoc=etc/snmp-adhoc-graph.properties;response-adhoc=etc/response-adhoc-graph.properties</param-value>
-    </init-param>
-  </servlet>
-  
-  <servlet>
-    <!-- This servlet dumps out XML using RRDTool. -->
-    <servlet-name>rrddump</servlet-name>
-    <servlet-class>org.opennms.web.performance.RRDDumpServlet</servlet-class>
-    <init-param>
-      <param-name>rrd-directory</param-name>
-      <param-value>${rrd.base.dir}/snmp/</param-value>
-    </init-param>
-    <init-param>
-      <param-name>rrd-dump-command</param-name>
-      <param-value>${rrd.binary} dump</param-value>
-    </init-param>    
-  </servlet>
-  <servlet>
-    <!-- This servlet creates a text file with one line for each RRD filename. -->
-    <servlet-name>rrdlist</servlet-name>
-    <servlet-class>org.opennms.web.performance.RRDListServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>addPerfReportsToUrl</servlet-name>
-    <servlet-class>org.opennms.web.performance.AddReportsToUrlServlet</servlet-class>
-  </servlet>  
-  <servlet>
-    <servlet-name>addIntfToPerfUrl</servlet-name>
-    <servlet-class>org.opennms.web.performance.AddInterfaceToURLServlet</servlet-class>
-    <init-param>
-      <param-name>chooseInterfaceUrl</param-name>
-      <param-value>performance/chooseresource.jsp</param-value>
-      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
-    </init-param>
-  </servlet>  
-
-  <servlet>
-    <!-- This servlet dumps out XML using RRDTool. -->
-    <servlet-name>rt-rrddump</servlet-name>
-    <servlet-class>org.opennms.web.response.RRDDumpServlet</servlet-class>
-    <init-param>
-      <param-name>rt-rrd-directory</param-name>
-      <param-value>${rrd.base.dir}/response/</param-value>
-    </init-param>
-    <init-param>
-      <param-name>rt-rrd-dump-command</param-name>
-      <param-value>${rrd.binary} dump</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <!-- This servlet creates a text file with one line for each RRD filename. -->
-    <servlet-name>rt-rrdlist</servlet-name>
-    <servlet-class>org.opennms.web.response.RRDListServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
-    <servlet-class>org.opennms.web.response.AddReportsToUrlServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
-    <servlet-class>org.opennms.web.response.AddInterfaceToURLServlet</servlet-class>
-    <init-param>
-      <param-name>rt-chooseInterfaceUrl</param-name>
-      <param-value>response/chooseinterface.jsp</param-value>
-      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>
-    </init-param>
-  </servlet>
-
-    
   <servlet>
     <!-- This servlet creates availability reports. -->
     <servlet-name>availabilityXml</servlet-name>
@@ -288,79 +227,79 @@
       <param-value>etc/SVGAvailReport.xsl</param-value>
     </init-param>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>reportgenerating.jsp</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
     <init-param>
+      <description>Redirect to this sibling URL on failure.</description>
       <param-name>redirect.failure</param-name>
       <param-value>reportfailed.jsp</param-value>
-      <description>Redirect to this sibling URL on failure.</description>
     </init-param>
     <init-param>
+      <description>Redirect to this sibling URL if the user doesn't have an email address setup.</description>
       <param-name>redirect.noEmail</param-name>
       <param-value>noemail.jsp</param-value>
-      <description>Redirect to this sibling URL if the user doesn't have an email address setup.</description>
     </init-param>
     <init-param>
+      <description>Use this script to generate an Availability report on the command line.</description>
       <param-name>script.generateReport</param-name>
       <param-value>${opennms.bin.dir}/report.sh</param-value>
-      <description>Use this script to generate an Availability report on the command line.</description>
     </init-param>
     <init-param>
+      <description>Use this script to mail a file to a user from the command line.</description>
       <param-name>script.mailReport</param-name>
       <param-value>${opennms.bin.dir}/webreport.pl</param-value>
-      <description>Use this script to mail a file to a user from the command line.</description>
     </init-param>
     <init-param>
+      <description>Set this to false to use the JavaMailer class instead of the script set in script.mailReport.</description>
       <param-name>script.useScript</param-name>
       <param-value>false</param-value>
-      <description>Set this to false to use the JavaMailer class instead of the script set in script.mailReport.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeEvent</servlet-name>
     <servlet-class>org.opennms.web.event.AcknowledgeEventServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeEventByFilter</servlet-name>
     <servlet-class>org.opennms.web.event.AcknowledgeEventByFilterServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeAlarm</servlet-name>
     <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeAlarmByFilter</servlet-name>
     <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmByFilterServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeNotice</servlet-name>
     <servlet-class>org.opennms.web.notification.AcknowledgeNoticeServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>browse</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   
@@ -368,9 +307,9 @@
     <servlet-name>importAssets</servlet-name>
     <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>../../asset/nodelist.jsp?column=address1&amp;searchvalue=</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
@@ -381,9 +320,9 @@
     <servlet-name>modifyAsset</servlet-name>
     <servlet-class>org.opennms.web.asset.ModifyAssetServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
@@ -394,9 +333,9 @@
     <servlet-name>queryEvent</servlet-name>
     <servlet-class>org.opennms.web.event.EventQueryServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL after changing the parameter set.</description>
       <param-name>redirect.url</param-name>
       <param-value>list</param-value>
-      <description>Redirect to this sibling URL after changing the parameter set.</description>
     </init-param>    
   </servlet>
   <servlet>
@@ -407,9 +346,9 @@
     <servlet-name>queryAlarm</servlet-name>
     <servlet-class>org.opennms.web.alarm.AlarmQueryServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL after changing the parameter set.</description>
       <param-name>redirect.url</param-name>
       <param-value>list</param-value>
-      <description>Redirect to this sibling URL after changing the parameter set.</description>
     </init-param>    
   </servlet>
   <servlet>
@@ -579,9 +518,9 @@
     <servlet-name>deleteEvent</servlet-name>
     <servlet-class>org.opennms.web.eventconf.DeleteEventServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>index.jsp</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   
@@ -802,9 +741,9 @@
     <servlet-name>pollerConfig</servlet-name>
     <servlet-class>org.opennms.web.admin.pollerConfig.PollerConfigServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>finishPollerConfig.jsp</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
@@ -817,9 +756,9 @@
     <servlet-name>addPollerConfig</servlet-name>
     <servlet-class>org.opennms.web.admin.pollerConfig.AddPollerConfigServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>index.jsp</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
 
@@ -842,14 +781,14 @@
     <servlet-name>sendMail</servlet-name>
     <servlet-class>org.opennms.web.mail.MailerServlet</servlet-class>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>../help/index.jsp</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>
     <init-param>
+      <description>Redirect to this sibling URL on success.</description>
       <param-name>mail.program</param-name>
       <param-value>/bin/mail</param-value>
-      <description>Redirect to this sibling URL on success.</description>
     </init-param>    
   </servlet>
 
@@ -917,8 +856,8 @@
   </servlet>
 
   <servlet>
-     <servlet-name>LoadCurrentNodes</servlet-name>
-    <servlet-class>org.opennms.web.map.LoadCurrentNodesServlet</servlet-class>
+     <servlet-name>ModifyMap</servlet-name>
+    <servlet-class>org.opennms.web.map.ModifyMapServlet</servlet-class>
   </servlet>
 
   <servlet>
@@ -931,13 +870,16 @@
     <servlet-class>org.opennms.web.map.OpenMapServlet</servlet-class>
   </servlet>  
   
-  
   <servlet>
-     <servlet-name>AddMapAsNode</servlet-name>
-    <servlet-class>org.opennms.web.map.AddMapAsNodeServlet</servlet-class>
-  </servlet>  
+    <servlet-name>NewMap</servlet-name>
+    <servlet-class>org.opennms.web.map.NewMapServlet</servlet-class>
+  </servlet> 
 
-
+  <servlet>
+     <servlet-name>CloseMap</servlet-name>
+    <servlet-class>org.opennms.web.map.CloseMapServlet</servlet-class>
+  </servlet>   
+  
   <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
@@ -1008,8 +950,8 @@
   </servlet-mapping>
 
  <servlet-mapping>
-    <servlet-name>LoadCurrentNodes</servlet-name>
-    <url-pattern>/map/LoadCurrentNodes</url-pattern>
+    <servlet-name>ModifyMap</servlet-name>
+    <url-pattern>/map/ModifyMap</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -1021,11 +963,16 @@
     <servlet-name>OpenMap</servlet-name>
     <url-pattern>/map/OpenMap</url-pattern>
   </servlet-mapping>
-
+  
   <servlet-mapping>
-    <servlet-name>AddMapAsNode</servlet-name>
-    <url-pattern>/map/AddMapAsNode</url-pattern>
-  </servlet-mapping>
+    <servlet-name>CloseMap</servlet-name>
+    <url-pattern>/map/CloseMap</url-pattern>
+  </servlet-mapping>  
+  
+  <servlet-mapping>
+    <servlet-name>NewMap</servlet-name>
+    <url-pattern>/map/NewMap</url-pattern>
+  </servlet-mapping>  
 
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->  
@@ -1038,57 +985,6 @@
   <servlet-mapping>
   	<servlet-name>scheduleEditor</servlet-name>
   	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rrdgraph</servlet-name>
-    <url-pattern>/graph/graph.png</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rrddump</servlet-name>
-    <url-pattern>/performance/dump</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rrddump</servlet-name>
-    <url-pattern>/performance/raw</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rrdlist</servlet-name>
-    <url-pattern>/performance/list</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>addPerfReportsToUrl</servlet-name>
-    <url-pattern>/performance/addReportsToUrl</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>addIntfToPerfUrl</servlet-name>
-    <url-pattern>/performance/addIntfFromNode</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>addIntfToPerfUrl</servlet-name>
-    <url-pattern>/performance/addIntfFromDomain</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rt-rrddump</servlet-name>
-    <url-pattern>/response/dump</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-rrddump</servlet-name>
-    <url-pattern>/response/raw</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-rrdlist</servlet-name>
-    <url-pattern>/response/list</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
-    <url-pattern>/response/addReportsToUrl</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
-    <url-pattern>/response/addIntfFromNode</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -1546,6 +1442,11 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/graph/graph.png</url-pattern>
+  </servlet-mapping>
 
   <error-page>
     <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>
@@ -1587,21 +1488,4 @@
     <exception-type>java.lang.Throwable</exception-type>
     <location>/errors/unknownexception.jsp</location>
   </error-page>  
-  
-
-  <taglib>
-    <taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
-    <taglib-location>/WEB-INF/c.tld</taglib-location>
-  </taglib>
-
-  <taglib>
-    <taglib-uri>http://java.sun.com/jstl/core_rt</taglib-uri>
-    <taglib-location>/WEB-INF/c-rt.tld</taglib-location>
-  </taglib>
-  
-  <taglib>
-   <taglib-uri>/tld/extremecomponents</taglib-uri>
-   <taglib-location>/WEB-INF/extremecomponents.tld</taglib-location>
-</taglib>
-
 </web-app>
