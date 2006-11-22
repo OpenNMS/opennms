@@ -1,6 +1,6 @@
-<!-- v2.3 C Gallen  -->
-<!-- based on openoss 1.3.2_CANDIDATE Version 4744  Service-Consifuration.xml-->
-<!-- Modified to start QosD  -->
+<!-- v2.4 C Gallen  -->
+<!-- based on openoss 1.3.2_CANDIDATE Version 5189  Service-Consifuration.xml-->
+<!-- Modified to start QosD / Qosdrx -->
 
 <!-- NOTE!!!!!!!!!!!!!!!!!!!
 The order in which these services are specified is important - for example, Eventd
@@ -151,6 +151,17 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+	
+<!-- Added: Poller back end cannot be run when OSS/J Jboss is on same machine as conflicts with rmi port 1099
+	<service>
+		<name>OpenNMS:Name=PollerBackEnd</name>
+		<class-name>org.opennms.netmgt.poller.jmx.RemotePollerBackEnd</class-name>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
+		<invoke at="status" pass="0" method="status"/>
+		<invoke at="stop" pass="0" method="stop"/>
+	</service>
+-->
 	<service>
 		<name>OpenNMS:Name=Collectd</name>
 		<class-name>org.opennms.netmgt.collectd.jmx.Collectd</class-name>
@@ -239,7 +250,8 @@ maintained
     </service>
 -->
 
-	<!-- CGallen added - OpenNMS OSSJ QoSD TX interface daemon -->
+
+	<!-- Added: OpenNMS OSSJ QoSD TX interface daemon -->
 
         <service>							     
                 <name>OpenNMS:Name=QoSD</name>
@@ -261,6 +273,8 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
+
+
 
 
 

@@ -57,7 +57,7 @@
         <event-file>/opt/OpenNMS/etc/events/Novell.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/Oracle.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/Patrol.events.xml</event-file>
-        <event-file>/opt/OpenNMS/etc/events/Pixmet.events.xml</event-file>
+       <!-- <event-file>/opt/OpenNMS/etc/events/Pixmet.events.xml</event-file> -->
         <event-file>/opt/OpenNMS/etc/events/Quintum.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/Redline.events.xml</event-file>
         <event-file>/opt/OpenNMS/etc/events/Sensaphone.events.xml</event-file>
