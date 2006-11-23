@@ -28,7 +28,7 @@
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -O -D__DARWIN__ ${build.jni.compiler.arg}</compilerStartOption>
+            <compilerStartOption>-fPIC -Wall -Werror -O -D__DARWIN__ ${build.jni.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
             <source>
