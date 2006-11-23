@@ -71,6 +71,9 @@ import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * <p>
@@ -518,6 +521,27 @@ public class Manager implements ManagerMBean {
     public void doSystemExit() {
         log().debug("doSystemExit called... exiting.");
         System.exit(1);
+    }
+    
+    public void doTestLoadLibraries() {
+        IcmpSocket s = null;
+
+        try {
+            s = new IcmpSocket();
+        } catch (Throwable t) {
+            String message = "Could not initialize ICMP socket: "
+                + t.getMessage();
+            throw new UndeclaredThrowableException(t, message);
+        }
+        s.close();
+
+        try {
+            RrdUtils.initialize();
+        } catch (Throwable t) {
+            String message = "Could not initialize RRD subsystem: "
+                + t.getMessage();
+            throw new UndeclaredThrowableException(t, message);
+        }
     }
 
     public static void main(String[] argv) {
