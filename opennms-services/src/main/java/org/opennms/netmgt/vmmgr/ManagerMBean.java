@@ -42,4 +42,6 @@ public interface ManagerMBean {
     public void stop();
 
     public void doSystemExit();
+    
+    public void doTestLoadLibraries();
 }
