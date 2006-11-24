@@ -34,7 +34,8 @@ package org.opennms.netmgt.config;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -1519,11 +1520,11 @@ public abstract class CapsdConfigManager implements CapsdConfig {
             // open the file indicated by the url
             URL fileURL = new URL(url);
     
-            File file = new File(fileURL.getFile());
+            InputStream file = fileURL.openStream();
     
             // check to see if the file exists
-            if (file.exists()) {
-                BufferedReader buffer = new BufferedReader(new FileReader(file));
+            if (file != null) {
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(file));
     
                 String ipLine = null;
                 String specIP = null;

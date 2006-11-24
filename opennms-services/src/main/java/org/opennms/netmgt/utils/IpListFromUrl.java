@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -91,11 +93,11 @@ public class IpListFromUrl extends Object {
             // open the file indicated by the url
             URL fileURL = new URL(url);
 
-            File file = new File(fileURL.getFile());
+            InputStream file = fileURL.openStream();
 
             // check to see if the file exists
-            if (file.exists()) {
-                BufferedReader buffer = new BufferedReader(new FileReader(file));
+            if (file != null) {
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(file));
 
                 String ipLine = null;
                 String specIP = null;
