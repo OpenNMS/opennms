@@ -1,8 +1,4 @@
 <project name="OSSbeans">
-	<bannerRight>
-		<name>opennms-qosdaemon</name>
-		<href>http://sourceforge.net/projects/openoss</href>
-	</bannerRight>
 	<bannerLeft>
 		<name>Sourceforge</name>
 		<src>
@@ -10,6 +6,10 @@
 		</src>
 		<href>http://www.sourceforge.net/projects/openoss</href>
 	</bannerLeft>
+	<bannerRight>
+		<name>opennms-qosdaemon</name>
+		<href>http://sourceforge.net/projects/openoss</href>
+	</bannerRight>
 
 	<publishDate format="dd MMM yyyy" />
 	<body>
@@ -24,7 +24,8 @@
 			<item name="Spring" href="http://www.springframework.org/" />
 		</links>
 		<menu name="Overview">
-			<item name="Introduction" href="index.html" />
+			<item name="Introduction" href="qosdaemon.html" />
+			<item name="Package Overview" href="PackageOverview.html" />
 			<item name="Usage" href="usage.html" />
 			<item name="FAQ" href="faq.html" />
 		</menu>

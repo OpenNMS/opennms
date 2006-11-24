@@ -1,0 +1,14 @@
+<html>
+<body>
+
+Qosd responds to an alarm changed event by causing the OssDao to
+update it's cache of OnmsAlarm values with a new snapshot of the
+alarm list in the database, translates the OnmsAlarm values to OSS/J
+AlarmValues using the OnmsAlarmOssjMapper and then forwards this new
+list of alarms to the OSSBeans AlarmMonitor bean.
+The AlarmMonitor bean compares this new list with it's existing list
+and sends out AlarmEvents as alarms in its current list are added,
+deleted or changed to match the new list.
+
+</body>
+</html>
