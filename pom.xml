@@ -703,6 +703,25 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
+    <!--
+         This is for the postgresql package from Blastwave.org.
+         See this for more information:
+
+         http://www.blastwave.org/packages.php/postgresql
+      -->
+    <profile>
+      <id>solaris-blastwave-postgresql</id>
+      <activation>
+      	<file>
+	  <exists>/var/sadm/pkg/CSWpostgresql/pkginfo</exists>
+	</file>
+      </activation>
+
+      <properties>
+	<build.postgresql.include.dir>/opt/csw/postgresql/include/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+
 <!--
    The activation for this profile is broken as is activates on NON FreeBSD systems.
    Commonly activation is done by the existence of a file that is specific to the OS.
