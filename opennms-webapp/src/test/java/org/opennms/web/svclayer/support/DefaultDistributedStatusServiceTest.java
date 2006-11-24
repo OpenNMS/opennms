@@ -209,8 +209,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         verifyEverything();
         
-        //System.out.print(table.toString());
-        
         SimpleWebTable expectedTable = new SimpleWebTable();
         expectedTable.setTitle("Distributed poller view for Application 1 from Raleigh location");
         
