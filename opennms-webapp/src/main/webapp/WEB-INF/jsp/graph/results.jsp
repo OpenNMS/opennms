@@ -215,7 +215,9 @@
     </c:when>
 
     <c:otherwise>
-      There is no data for this resource.
+      <p>
+        There is no data for this resource.
+      </p>
     </c:otherwise>
   </c:choose>
     
