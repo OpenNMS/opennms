@@ -41,10 +41,10 @@ package org.opennms.netmgt.discovery;
 
 import java.beans.PropertyVetoException;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -162,11 +162,11 @@ public final class Discovery extends AbstractServiceDaemon {
             // open the file indicated by the url
             URL fileURL = new URL(url);
 
-            File file = new File(fileURL.getFile());
+            InputStream is = fileURL.openStream();
 
             // check to see if the file exists
-            if (file.exists()) {
-                BufferedReader buffer = new BufferedReader(new FileReader(file));
+            if (is != null) {
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
 
                 String ipLine = null;
                 String specIP = null;
