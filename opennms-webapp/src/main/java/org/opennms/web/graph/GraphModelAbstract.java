@@ -27,6 +27,7 @@ import org.opennms.web.performance.GraphAttribute;
 import org.opennms.web.performance.GraphResource;
 import org.opennms.web.performance.GraphResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.StringUtils;
 
 public abstract class GraphModelAbstract implements GraphModel {
     private GraphDao m_dao;
@@ -98,10 +99,17 @@ public abstract class GraphModelAbstract implements GraphModel {
                 continue;
             }
             
-            List requiredList = Arrays.asList(query.getColumns());
+            List<String> requiredList = Arrays.asList(query.getColumns());
 
             if (availDataSourceList.containsAll(requiredList)) {
+                if (log().isDebugEnabled()) {
+                    log().debug("adding " + query.getName() + " to query list");
+                }
                 returnList.add(query);
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("not adding " + query.getName() + " to query list because required list of attributes (" + StringUtils.collectionToDelimitedString(requiredList, ", ") + ") is not in the list of attributes on the resource (" + StringUtils.collectionToDelimitedString(availDataSourceList, ", ")+ ")");
+                }
             }
         }
 
