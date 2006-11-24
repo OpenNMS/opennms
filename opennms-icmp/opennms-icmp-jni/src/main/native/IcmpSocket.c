@@ -544,7 +544,6 @@ Java_org_opennms_protocols_icmp_IcmpSocket_initSocket (JNIEnv *env, jobject inst
         proto = getprotobyname("icmp");
 	if (proto == (struct protoent *) NULL) {
 		char	errBuf[128];	/* for exceptions */
-		int	savedErrno  = errno;
 		jclass  ioException = (*env)->FindClass(env, "java/net/SocketException");
 		if(ioException != NULL)
 		{
