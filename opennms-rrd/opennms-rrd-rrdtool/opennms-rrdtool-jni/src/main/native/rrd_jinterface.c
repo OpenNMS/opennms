@@ -297,7 +297,7 @@ Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, j
 
 	jstring utf_str;
 	jclass  clazz;
-	jobjectArray resultsArray;
+	jobjectArray resultsArray = NULL;
 	int bytesWritten;
 	jclass	clazzOutOfMem;
 
