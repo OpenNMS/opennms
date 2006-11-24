@@ -39,6 +39,10 @@
 #endif
 
 #include <ctype.h>		/* used for isdigit() & isspace() */
+
+#ifdef UNDEF_FILE_OFFSET_BITS
+# undef _FILE_OFFSET_BITS
+#endif /* UNDEF_FILE_OFFSET_BITS */
 #include <postgres.h>		/* PostgreSQL types */
 
 #ifdef DEBUG
