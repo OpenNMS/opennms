@@ -608,6 +608,134 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                      constraints.get(0).toString());
     }
 
+    public void testParseConstraintWithOnDeleteRestrict() throws Exception {
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on delete restrict\n"
+                + ");\n";
+
+        getInstallerDb().readTables(new StringReader(createSQL));
+        getInstallerDb().getTableFromSQL("a");
+        getInstallerDb().getTableFromSQL("b");
+    }
+
+    public void testGetFromDbConstraintWithOnDeleteRestrict() throws Exception {
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on delete restrict\n"
+                + ");\n";
+
+        executeSQL(createSQL);
+
+        List<Column> columns = getInstallerDb().getColumnsFromDB("b");
+        assertNotNull("column list not null", columns);
+        List<Constraint> constraints = getInstallerDb().getConstraintsFromDB("b");
+        assertNotNull("constraint list not null", constraints);
+        assertEquals("constraint list size", 1, constraints.size());
+        assertEquals("constraint zero toString()",
+                     "constraint fk_a foreign key (b1) references a (a1) "
+                     + "on delete restrict",
+                     constraints.get(0).toString());
+    }
+
+    public void testParseConstraintWithOnDeleteSetDefault() throws Exception {
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on delete set default\n"
+                + ");\n";
+
+        getInstallerDb().readTables(new StringReader(createSQL));
+        getInstallerDb().getTableFromSQL("a");
+        getInstallerDb().getTableFromSQL("b");
+    }
+
+    public void testGetFromDbConstraintWithOnDeleteSetDefault() throws Exception {
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on delete set default\n"
+                + ");\n";
+
+        executeSQL(createSQL);
+
+        List<Column> columns = getInstallerDb().getColumnsFromDB("b");
+        assertNotNull("column list not null", columns);
+        List<Constraint> constraints = getInstallerDb().getConstraintsFromDB("b");
+        assertNotNull("constraint list not null", constraints);
+        assertEquals("constraint list size", 1, constraints.size());
+        assertEquals("constraint zero toString()",
+                     "constraint fk_a foreign key (b1) references a (a1) "
+                     + "on delete set default",
+                     constraints.get(0).toString());
+    }
+
+
+    public void testParseConstraintWithOnDeleteSetNull() throws Exception {
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on delete set null\n"
+                + ");\n";
+
+        getInstallerDb().readTables(new StringReader(createSQL));
+        getInstallerDb().getTableFromSQL("a");
+        getInstallerDb().getTableFromSQL("b");
+    }
+
+    public void testGetFromDbConstraintWithOnDeleteSetNull() throws Exception {
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on delete set null\n"
+                + ");\n";
+
+        executeSQL(createSQL);
+
+        List<Column> columns = getInstallerDb().getColumnsFromDB("b");
+        assertNotNull("column list not null", columns);
+        List<Constraint> constraints = getInstallerDb().getConstraintsFromDB("b");
+        assertNotNull("constraint list not null", constraints);
+        assertEquals("constraint list size", 1, constraints.size());
+        assertEquals("constraint zero toString()",
+                     "constraint fk_a foreign key (b1) references a (a1) "
+                     + "on delete set null",
+                     constraints.get(0).toString());
+    }
+
+
     public void testParsePrimaryKeyMultipleColumns() throws Exception {
         // Make sure that every table, column, and key ID has at least one
         // upper case character
@@ -1097,7 +1225,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                                                         "(?i)snmpInterfaceId\\s+integer,",
                                                         "" },
                                                 new String[] {
-                                                        "(?i)CONSTRAINT snmpinterface_fkey2 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE CASCADE,",
+                                                        "(?i)CONSTRAINT snmpinterface_fkey2 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE SET NULL,",
                                                         "" } });
 
         addTableFromSQL("service");
@@ -1141,7 +1269,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                                                         "(?i)snmpInterfaceId\\s+integer,",
                                                         "" },
                                                 new String[] {
-                                                        "(?i)CONSTRAINT snmpinterface_fkey2 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE CASCADE,",
+                                                        "(?i)CONSTRAINT snmpinterface_fkey2 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE SET NULL,",
                                                         "" } }, false);
 
         addTableFromSQL("service");
