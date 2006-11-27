@@ -108,6 +108,18 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
 
     }
     
+    public void testDeleteNode() {
+        int preCount = dbQueryForInt("select count(*) from node");
+
+        OnmsNode n = getNodeDao().get(1);
+        getNodeDao().delete(n);
+        getNodeDao().flush();
+        
+        int postCount = dbQueryForInt("select count(*) from node");
+        
+        assertEquals(preCount-1, postCount);
+    }
+    
     public void testQueryWithHierarchy() throws Exception {
         
         OnmsNode n = getNodeDao().getHierarchy(1);

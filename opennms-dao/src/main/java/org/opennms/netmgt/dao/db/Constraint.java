@@ -183,7 +183,7 @@ public class Constraint {
     }
 
     public void setForeignDelType(String fdeltype) throws Exception {
-        if (fdeltype.equals("a") || fdeltype.equals("c")) {
+        if (fdeltype.equals("a") || fdeltype.equals("c") || fdeltype.equals("r") || fdeltype.equals("n") || fdeltype.equals("d")) {
             m_fdeltype = fdeltype;
         } else {
             throw new Exception("confdeltype \"" + fdeltype + "\" unknown");
@@ -226,6 +226,12 @@ public class Constraint {
 
         if ("c".equals(m_fdeltype)) {
             b.append(" on delete cascade");
+        } else if ("r".equals(m_fdeltype)) {
+            b.append(" on delete restrict");
+        } else if ("n".equals(m_fdeltype)) {
+            b.append(" on delete set null");
+        } else if ("d".equals(m_fdeltype)) {
+            b.append(" on delete set default");
         }
 
         if ("c".equals(m_fupdtype)) {
@@ -252,7 +258,7 @@ public class Constraint {
                 + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
                 + "references\\s+(\\S+)"
                 + "(?:\\s+\\(([^\\(\\)]+)\\))?"
-                + "(\\s+on\\s+delete\\s+cascade)?"
+                + "(\\s+on\\s+delete\\s+(?:(cascade)|(restrict)|(set\\s+null)|(set\\s+default)))?"
                 + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL);
         if (!m.matches()) {
             throw new Exception("Cannot parse constraint: " + constraintSQL);
@@ -272,10 +278,18 @@ public class Constraint {
         setForeignColumns(Arrays.asList(foreignColumns));
         if (m.group(5) == null) {
             setForeignDelType("a");
-        } else {
+        } else if (m.group(6) != null) {
             setForeignDelType("c");
+        } else if (m.group(7) != null) {
+            setForeignDelType("r");
+        } else if (m.group(8) != null) {
+            setForeignDelType("n");
+        } else if (m.group(9) != null) {
+            setForeignDelType("d");
+        } else {
+            throw new Exception("Invalid on delete constraint: "+m.group(5)+": for constraint: "+constraintSQL);
         }
-        if (m.group(6) == null) {
+        if (m.group(10) == null) {
             setForeignUpdType("a");
         } else {
             setForeignUpdType("c");

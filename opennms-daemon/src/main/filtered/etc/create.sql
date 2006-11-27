@@ -428,8 +428,7 @@ create table ipInterface (
 	snmpInterfaceId	integer,
 
 	CONSTRAINT ipinterface_pkey PRIMARY KEY (id),
-	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (nodeID, ifIndex) REFERENCES snmpInterface (nodeID, snmpIfIndex) ON DELETE CASCADE,
-	CONSTRAINT snmpinterface_fkey2 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id) ON DELETE CASCADE,
+	CONSTRAINT snmpinterface_fkey2 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id) ON DELETE SET NULL,
 	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
