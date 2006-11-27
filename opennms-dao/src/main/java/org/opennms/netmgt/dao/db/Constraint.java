@@ -249,11 +249,11 @@ public class Constraint {
         }
 
         m = Pattern.compile("(?i)constraint (\\S+)\\s+"
-			    + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
-			    + "references\\s+(\\S+)"
-			    + "(?:\\s+\\(([^\\(\\)]+)\\))?"
-			    + "(\\s+on\\s+delete\\s+cascade)?"
-                            + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL);
+                + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
+                + "references\\s+(\\S+)"
+                + "(?:\\s+\\(([^\\(\\)]+)\\))?"
+                + "(\\s+on\\s+delete\\s+cascade)?"
+                + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL);
         if (!m.matches()) {
             throw new Exception("Cannot parse constraint: " + constraintSQL);
         }
