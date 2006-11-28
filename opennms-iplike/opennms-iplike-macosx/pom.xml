@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-iplike-macosx</artifactId>
   <packaging>dylib</packaging>
-  <name>OpenNMS iplike Stored Procedure for PostgreSQL - MacOSX</name>
+  <name>OpenNMS iplike Stored Procedure for PostgreSQL - Mac OS X</name>
   <build>
     <plugins>
       <plugin>
@@ -17,7 +17,7 @@
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -Wall -Werror -O -D__DARWIN__ ${build.postgresql.compiler.arg}</compilerStartOption>
+            <compilerStartOption>-fPIC -Wall -Werror -O -D${platform.define} ${build.postgresql.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
             <source>

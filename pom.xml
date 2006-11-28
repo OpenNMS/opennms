@@ -115,6 +115,41 @@
     </plugins>
   </pluginManagement>
    <plugins>
+     <plugin>
+        <inherited>false</inherited>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <configuration>
+              <tasks>
+                <!-- I have to explicitly set Ant properties from Maven
+                     properties.  They aren't passed automatically, even
+                     when inheritAll="true" is used with <ant/>.  -->
+                <ant target="compile.check">
+                  <property name="java.vm.version" value="${java.vm.version}"/>
+                  <property name="java.home" value="${java.home}"/>
+                  <property name="platform" value="${platform}"/>
+                  <property name="platform.jdk.include.dir"
+                            value="${platform.jdk.include.dir}"/>
+                  <property name="platform.javahOS"
+                            value="${platform.javahOS}"/>
+                  <property name="build.rrd.include.dir"
+                            value="${build.rrd.include.dir}"/>
+                  <property name="build.rrd.lib.dir"
+                            value="${build.rrd.lib.dir}"/>
+                  <property name="build.postgresql.include.dir"
+                            value="${build.postgresql.include.dir}"/>
+                  <property name="platform.shlib" value="${platform.shlib}"/>
+                </ant>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+     </plugin>
 <!--
      <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -438,6 +473,87 @@ opennms.home = ${opennms.home}
 
   <profiles>
     <profile>
+      <id>Mac OS X</id>
+      
+      <activation>
+        <property>
+          <name>os.name</name>
+          <value>Mac OS X</value>
+        </property>
+      </activation>
+  
+      <properties>
+        <platform>macosx</platform>
+        <platform.jdk.include.dir>${java.home}/include</platform.jdk.include.dir>
+        <platform.javahOS>macosx</platform.javahOS>
+        <platform.define>__DARWIN__</platform.define>
+        <platform.shlib>dylib</platform.shlib>
+        <platform.jni>jnilib</platform.jni>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>Linux</id>
+      
+      <activation>
+        <property>
+          <name>os.name</name>
+          <value>Linux</value>
+        </property>
+      </activation>
+  
+      <properties>
+        <platform>linux</platform>
+        <platform.jdk.include.dir>${java.home}/../include</platform.jdk.include.dir>
+        <platform.javahOS>linux</platform.javahOS>
+        <platform.define>__LINUX__</platform.define>
+        <platform.shlib>so</platform.shlib>
+        <platform.jni>so</platform.jni>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>Solaris</id>
+      
+      <activation>
+        <property>
+          <name>os.name</name>
+          <value>SunOS</value>
+        </property>
+      </activation>
+  
+      <properties>
+    	<platform>solaris</platform>
+        <platform.jdk.include.dir>${java.home}/../include</platform.jdk.include.dir>
+        <platform.javahOS>solaris</platform.javahOS>
+        <platform.define>__SOLARIS__</platform.define>
+	<platform.shlib>so</platform.shlib>
+	<platform.jni>so</platform.jni>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>FreeBSD</id>
+      
+      <activation>
+        <property>
+          <name>os.name</name>
+          <value>FreeBSD</value>
+        </property>
+      </activation>
+
+      <properties>
+        <platform>freebsd</platform>
+        <platform.jdk.include.dir>${java.home}/../include</platform.jdk.include.dir>
+        <platform.javahOS>freebsd</platform.javahOS>
+        <platform.define>__FREEBSD__</platform.define>
+        <platform.shlib>so</platform.shlib>
+        <platform.jni>so</platform.jni>
+      </properties>
+    </profile>
+
+    <!-- Mac OS X -->
+    <profile>
       <id>darwinPorts</id>
       
       <activation>
@@ -447,9 +563,6 @@ opennms.home = ${opennms.home}
       </activation>
   
       <properties>
-        <platform>macosx</platform>
-        <platform.shlib>dylib</platform.shlib>
-        <platform.jni>jnilib</platform.jni>
         <build.rrd.include.dir>/opt/local/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/opt/local/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/opt/local/include/pgsql8/server</build.postgresql.include.dir>
@@ -468,9 +581,6 @@ opennms.home = ${opennms.home}
       </activation>
   
       <properties>
-        <platform>macosx</platform>
-        <platform.shlib>dylib</platform.shlib>
-        <platform.jni>jnilib</platform.jni>
         <build.rrd.include.dir>/sw/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/sw/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/sw/include/postgresql</build.postgresql.include.dir>
@@ -479,6 +589,7 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
   
+    <!-- Linux -->
     <profile>
       <id>centos</id>
       
@@ -489,9 +600,6 @@ opennms.home = ${opennms.home}
       </activation>
   
       <properties>
-        <platform>linux</platform>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
         <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
@@ -507,9 +615,6 @@ opennms.home = ${opennms.home}
       </activation>
   
       <properties>
-        <platform>linux</platform>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
         <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
@@ -525,9 +630,6 @@ opennms.home = ${opennms.home}
       </activation>
   
       <properties>
-        <platform>linux</platform>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
         <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
       </properties>
@@ -581,9 +683,6 @@ opennms.home = ${opennms.home}
       </activation>
   
       <properties>
-        <platform>linux</platform>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
         <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/usr/include/postgresql</build.postgresql.include.dir>
@@ -599,30 +698,13 @@ opennms.home = ${opennms.home}
       </activation>
   
       <properties>
-        <platform>linux</platform>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
         <build.rrd.include.dir>/usr/local/rrdtool-1.2.12/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/local/rrdtool-1.2.12/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
       </properties>
     </profile>
 
-    <profile>
-      <id>solaris</id>
-      <activation>
-      	<file>
-	  <exists>/var/sadm/pkg/SUNWloc/pkginfo</exists>
-	</file>
-      </activation>
-      <properties>
-    	<platform>solaris</platform>
-	<platform.shlib>so</platform.shlib>
-	<platform.jni>so</platform.jni>
-	<build.jni.compiler.arg>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/solaris</build.jni.compiler.arg>
-      </properties>
-    </profile>
-
+    <!-- Solaris -->
     <!--
          This is for the PostgreSQL package that ships with Solaris 10
          Update 2 and later.  See this for more information:
@@ -722,31 +804,21 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
+    <!-- FreeBSD -->
 <!--
-   The activation for this profile is broken as is activates on NON FreeBSD systems.
-   Commonly activation is done by the existence of a file that is specific to the OS.
-   I have commented this out until a more appropriate activation is found that doesn't
-   break the install on the other systems.
     <profile>
-      <id>freebsd</id>
+      <id>FreeBSD Ports</id>
       <activation>
-        <os>
-          <family>FreeBSD</family>
-        </os>
+        .... don't know how to activate this ....
       </activation>
   
       <properties>
-        <platform>freebsd</platform>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
-	<build.jni.compiler.arg>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/freebsd</build.jni.compiler.arg>
         <build.rrd.include.dir>/usr/local/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
 	<build.postgresql.compiler.arg>-I/usr/local/include</build.postgresql.compiler.arg>
         <build.postgresql.include.dir>/usr/local/include/postgresql/server</build.postgresql.include.dir>
       </properties>
     </profile>
-
 -->
  
   </profiles>
