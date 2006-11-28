@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<project name="opennms" default="usage" basedir=".">
+  <description>OpenNMS Ant Targets</description>
+
+  <target name="platform.check">
+    <fail unless="platform">
+Your operating system is not supported by the build system.  See the
+platform.* targets in the build.xml file for details on supported
+platforms.  You can try to work around this error by modifying an
+existing platform or creating your own (and don't forget to add it
+to the depends list in the platform.check target).
+    </fail>
+  </target>
+
+  <target name="java.check">
+    <condition property="java.versionokay">
+      <or>
+        <contains string="${java.vm.version}" substring="1.5."/>
+        <contains string="${java.vm.version}" substring="1.6."/>
+      </or>
+    </condition>
+
+    <fail unless="java.versionokay">
+Your Java version (${java.vm.version}) is not supported.  The
+build system is currently designed and tested to work with Java
+versions 1.4 and 1.5.  You can try to work around this error by
+modifying the java.check target in the build.xml file.
+    </fail>
+  </target>
+
+  <target name="compile.check" depends="java.check, platform.check">
+    <condition property="compile.check.jni.include">
+      <available file="${platform.jdk.include.dir}/jni.h"/>
+    </condition>
+
+    <fail unless="compile.check.jni.include">
+Could not find the jni.h include file in ${platform.jdk.include.dir}.
+Please make sure that you have a full Java Development Kit installed.
+    </fail>
+
+    <condition property="compile.check.jni_md.include">
+      <or>
+        <available file="${platform.jdk.include.dir}/${platform.javahOS}/jni_md.h"/>
+        <available file="${platform.jdk.include.dir}/jni_md.h"/>
+      </or>
+    </condition>
+
+    <fail unless="compile.check.jni_md.include">
+Could not find the jni_md.h include file in ${platform.jdk.include.dir}/${platform.javahOS}
+or ${platform.jdk.include.dir}.
+Please make sure that you have a full Java Development Kit installed.
+    </fail>
+
+    <condition property="compile.check.postgresql.include">
+      <available file="${build.postgresql.include.dir}/postgres.h"/>
+    </condition>
+
+    <fail unless="compile.check.postgresql.include">
+Could not find postgres.h include file in ${build.postgresql.include.dir}.
+Please make sure that you have the PostgreSQL development files installed
+or, if they are installed in a non-standard location, you may need to
+set the build.postgresql.include.dir property to the directory that
+contains postgres.h.  See README.build for details on setting properties.
+    </fail>
+
+    <condition property="compile.check.rrd.include">
+      <available file="${build.rrd.include.dir}/rrd.h"/>
+    </condition>
+
+    <fail unless="compile.check.rrd.include">
+     Could not find rrd.h include file in ${build.rrd.include.dir}.
+     Please make sure that you have the rrdtool development files installed
+     or, if they are installed in a non-standard location, you may need
+     to set the build.rrd.include.dir property to the directory that
+     contains rrd.h.  See README.build for details on setting properties.
+    </fail>
+
+    <condition property="compile.check.rrd.lib">
+      <or>
+        <available file="${build.rrd.lib.dir}/librrd.a"/>
+        <available file="${build.rrd.lib.dir}/librrd.${platform.shlib}"/>
+      </or>
+    </condition>
+
+    <fail unless="compile.check.rrd.lib">
+     Could not find librrd.a or librrd.${platform.shlib} library in ${build.rrd.lib.dir}.
+     Please make sure that you have the rrdtool development files installed
+     or, if they are installed in a non-standard location, you may need
+     to set the build.rrd.lib.dir property to the directory that
+     contains librrd.a or librrd.${platform.shlib}.  See README.build for details on setting
+     properties.
+    </fail>
+  </target>
+</project>

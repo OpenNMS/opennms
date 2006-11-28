@@ -20,12 +20,17 @@
             <goals>
               <goal>javah</goal>
             </goals>
+            <configuration>
+              <classNames>
+                <className>org.opennms.protocols.icmp.IcmpSocket</className>
+              </classNames>
+            </configuration>
           </execution>
         </executions>
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -Wall -Werror -O -D__LINUX__ ${build.jni.compiler.arg}</compilerStartOption>
+            <compilerStartOption>-fPIC -Wall -Werror -O -D${platform.define} ${build.jni.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
             <source>
@@ -38,7 +43,8 @@
           <linkerStartOptions>
             <linkerStartOption>-shared ${build.jni.compiler.arg} ${build.jni.linker.arg} -lc -ldl</linkerStartOption>
           </linkerStartOptions>
-          <javahOS>linux</javahOS>
+          <javahOS>${platform.javahOS}</javahOS>
+          <jdkIncludePath>${platform.jdk.include.dir}</jdkIncludePath>
         </configuration>
       </plugin>
     </plugins>
