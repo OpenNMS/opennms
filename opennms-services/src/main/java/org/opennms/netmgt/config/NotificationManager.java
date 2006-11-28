@@ -197,8 +197,6 @@ public abstract class NotificationManager {
             //from the time the event is received.
             if (eventNode == 0 && eventIf == null && eventSrv == null) {
                 return true;
-            } else {
-                if (event.getUei() == EventConstants.NODE_DOWN_EVENT_UEI) return true;
             }
     
             // ThreadCategory.getInstance(getClass()).debug("Notification Event
