@@ -47,8 +47,6 @@ public class SnmpThresholdConfiguration {
         m_parms = parms;
         m_thresholdGroup = new ThresholdGroup(ParameterMap.getKeyedString(m_parms, "thresholding-group", "default"));
         
-        setNodeResourceType(new ThresholdResourceType("node", m_thresholdGroup));
-        setIfResourceType(new ThresholdResourceType("if", m_thresholdGroup));
     }
     
     File getRrdRepository() {
@@ -75,20 +73,21 @@ public class SnmpThresholdConfiguration {
         return ParameterMap.getKeyedInteger(m_parms, "interval", SnmpThresholdConfiguration.DEFAULT_INTERVAL);
     }
 
-    private void setNodeResourceType(ThresholdResourceType nodeResourceType) {
-        m_nodeResourceType = nodeResourceType;
-    }
+	public ThresholdResourceType getIfResourceType() {
+		return m_thresholdGroup.getIfResourceType();
+	}
 
-    public ThresholdResourceType getNodeResourceType() {
-        return m_nodeResourceType;
-    }
+	public ThresholdResourceType getNodeResourceType() {
+		return m_thresholdGroup.getNodeResourceType();
+	}
 
-    private void setIfResourceType(ThresholdResourceType ifResourceType) {
-        m_ifResourceType = ifResourceType;
-    }
+	public void setIfResourceType(ThresholdResourceType ifResourceType) {
+		m_thresholdGroup.setIfResourceType(ifResourceType);
+	}
 
-    public ThresholdResourceType getIfResourceType() {
-        return m_ifResourceType;
-    }
+	public void setNodeResourceType(ThresholdResourceType nodeResourceType) {
+		m_thresholdGroup.setNodeResourceType(nodeResourceType);
+	}
+
 
 }
