@@ -96,7 +96,7 @@ public class ThreshdTest extends ThresholderTestCase {
         
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
 		
-        String dirName = "/tmp/192.168.1.1";
+        String dirName = "target/tmp/192.168.1.1";
         String fileName = "icmp.rrd";
         String ipAddress = "192.168.1.1";
         String serviceName = "ICMP";
