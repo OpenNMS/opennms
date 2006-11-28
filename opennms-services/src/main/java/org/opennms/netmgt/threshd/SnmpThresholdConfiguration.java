@@ -45,24 +45,20 @@ public class SnmpThresholdConfiguration {
     
     private SnmpThresholdConfiguration(Map parms) {
         m_parms = parms;
-        m_thresholdGroup = new ThresholdGroup(ParameterMap.getKeyedString(m_parms, "thresholding-group", "default"));
-        
+        DefaultThresholdsDao dao = new DefaultThresholdsDao();
+        m_thresholdGroup = dao.get(ParameterMap.getKeyedString(m_parms, "thresholding-group", "default"));
     }
     
     File getRrdRepository() {
-        return getGroup().getRrdRepository();
+        return m_thresholdGroup.getRrdRepository();
     }
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
     
-    public ThresholdGroup getGroup() {
-    	return m_thresholdGroup;
-    }
-
     public String getGroupName() {
-        return getGroup().getName();
+        return m_thresholdGroup.getName();
     }
 
     public int getRange() {
