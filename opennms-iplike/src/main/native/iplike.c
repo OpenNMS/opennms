@@ -142,10 +142,10 @@ int convertIP(const char *p, int len, int *dest)
 	 * shift past the non character data
 	 * and subtract for the invalid data on the end
 	 */
-	while(len > 0 && isspace(*p))
+	while(len > 0 && isspace((int)*p))
 		--len, p++;
 	
-	while(len > 0 && (isspace(p[len-1]) || p[len-1] == '\0'))
+	while(len > 0 && (isspace((int)p[len-1]) || (int)p[len-1] == '\0'))
 		--len;
 	
 	/*
@@ -166,7 +166,7 @@ int convertIP(const char *p, int len, int *dest)
 	ndx = 0;
 	while(len > 0 && ndx < 4)
 	{
-		if(isdigit(*p))
+		if(isdigit((int)*p))
 		{	
 			/*
 			 * convert the digit and multiply the 
@@ -261,13 +261,13 @@ int getRangeInfo(const char *p, int len, OctetRange_t *dest)
 	/*
  	 * increment past the space chars
 	 */
-	while(isspace(*p) && len > 0)
+	while(isspace((int)*p) && len > 0)
 		++p, --len;
 	
 	/*
 	 * shift space off the end
 	 */
-	while(len > 0 && (isspace(p[len-1]) || p[len-1] == '\0'))
+	while(len > 0 && (isspace((int)p[len-1]) || (int)p[len-1] == '\0'))
 		--len;
 	
 	/**
@@ -349,7 +349,7 @@ int getRangeInfo(const char *p, int len, OctetRange_t *dest)
 			hadDigit = 0;
 			octet    = 0;
 		}
-		else if(isdigit(*p))
+		else if(isdigit((int)*p))
 		{
 			octet = (octet * 10) + ((*p) - '0');
 			hadDigit = 1;
