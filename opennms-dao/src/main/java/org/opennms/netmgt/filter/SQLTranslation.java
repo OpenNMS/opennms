@@ -215,11 +215,11 @@ public class SQLTranslation extends DepthFirstAdapter {
             // removing this check since it's just used
             // internally
             //
-            tableForIdent = m_schemaFactory.findTableByVisableColumn("serviceName");
+            tableForIdent = m_schemaFactory.findTableByVisableColumn("ipAddr");
             if (tableForIdent != null)
-                expr = addColumnToStatement(tableForIdent, "serviceName");
+                expr = addColumnToStatement(tableForIdent, "ipAddr");
             if (expr != null)
-                expr = "ifservices.ipaddr not in (select ipaddr from ifservices,service where service.serviceName ='"+ serviceName + "' and service.serviceID = ifServices.serviceid)";
+                expr = expr + " not in (select ipaddr from ifservices,service where service.serviceName ='"+ serviceName + "' and service.serviceID = ifServices.serviceid)";
         }
 
         if (expr == null && ident.startsWith(VIRTUAL_CATINC_PREFIX)) {
@@ -227,11 +227,11 @@ public class SQLTranslation extends DepthFirstAdapter {
             // 
             // This is a kludge to get Alex's categories working
             //
-            tableForIdent = m_schemaFactory.findTableByVisableColumn("categoryName");
+            tableForIdent = m_schemaFactory.findTableByVisableColumn("nodeID");
             if (tableForIdent != null)
-                expr = addColumnToStatement(tableForIdent, "categoryName");
+                expr = addColumnToStatement(tableForIdent, "nodeID");
             if (expr != null)
-                expr = "ipinterface.nodeid in (select nodeid from category_node, categories where categories.categoryID = category_node.categoryID AND categories.categoryName = '"+ categoryName + "')";
+                expr = expr + " in (select nodeid from category_node, categories where categories.categoryID = category_node.categoryID AND categories.categoryName = '"+ categoryName + "')";
         }
 
         if (expr == null) {
