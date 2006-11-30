@@ -139,15 +139,11 @@
                   <% } %>		      
                   <% for(Iterator i = intfs.iterator(); i.hasNext(); ) { %>
                       <% String intf = (String) i.next(); %>
+                      <% String label = (nodeId == null ? intf : this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)); %>
                       <% if (intfId.equals(intf)) { %>
-                          <option value="<%=intf%>" SELECTED> 
+                          <option value="<%=intf%>" SELECTED><%=label%></option>
                       <% } else { %>
-                          <option value="<%=intf%>"> 
-                      <% } %>
-                      <% if( nodeId != null ) { %>		      
-                          <%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)%></option>
-                      <% } else { %>
-                          <%=intf%></option>
+                          <option value="<%=intf%>"><%=label%></option>
                       <% } %>
                   <% } %>
               </select>
