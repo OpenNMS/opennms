@@ -1,5 +1,7 @@
 package org.opennms.netmgt.dao.db;
 
+import java.util.Date;
+
 public class TemporaryDatabaseTestCaseTest extends TemporaryDatabaseTestCase {
     public void testNothing() {
         // Nothing, just make sure that setUp() and tearDown() work
@@ -10,6 +12,11 @@ public class TemporaryDatabaseTestCaseTest extends TemporaryDatabaseTestCase {
     }
     
     public void testExecuteSQLFromJdbcTemplate() {
-        jdbcTemplate.execute("SELECT now()");
+        jdbcTemplate.queryForObject("SELECT now()", Date.class);
     }
+    
+    public void testExecuteSQLFromGetJdbcTemplate() {
+        getJdbcTemplate().queryForObject("SELECT now()", Date.class);
+    }
+
 }

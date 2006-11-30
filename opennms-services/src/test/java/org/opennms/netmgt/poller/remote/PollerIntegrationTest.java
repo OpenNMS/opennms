@@ -4,8 +4,7 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 public class PollerIntegrationTest extends
 		AbstractDependencyInjectionSpringContextTests {
-	
-	private Poller m_poller;
+
     
     public PollerIntegrationTest() {
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");

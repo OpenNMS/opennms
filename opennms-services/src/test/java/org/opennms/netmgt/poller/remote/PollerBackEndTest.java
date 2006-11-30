@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -34,12 +35,10 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
@@ -100,6 +99,8 @@ public class PollerBackEndTest extends TestCase {
     private OnmsLocationSpecificStatus m_dnsCurrentStatus;
 
     private Date m_startTime;
+
+	private HashMap<String, String> m_pollerDetails;
 
     
     protected void setUp() throws Exception {
@@ -171,6 +172,12 @@ public class PollerBackEndTest extends TestCase {
 
         m_dnsCurrentStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, dnsResult);
         m_dnsCurrentStatus.setId(2);
+        
+        
+        m_pollerDetails = new HashMap<String, String>();
+        m_pollerDetails.put("os.name", "WonkaOS");
+        m_pollerDetails.put("os.version", "1.2.3");
+        
 
     }
     
@@ -437,14 +444,32 @@ public class PollerBackEndTest extends TestCase {
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
 
         
-        expectLocationMonitorStatusChanged(MonitorStatus.STARTED);
+        expectLocationMonitorStarted();
         
         replayMocks();
 
-        m_backEnd.pollerStarting(1);
+        m_backEnd.pollerStarting(1, m_pollerDetails);
         
         verifyMocks();
     }
+
+	private void expectLocationMonitorStarted() {
+		final Date now = new Date();
+		expect(m_timeKeeper.getCurrentDate()).andReturn(now);
+		expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(m_locationMonitor);
+		m_locMonDao.update(m_locationMonitor);
+		expectLastCall().andAnswer(new IAnswer<Object>() {
+		
+		    public Object answer() throws Throwable {
+		        OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
+		        assertEquals(MonitorStatus.STARTED, mon.getStatus());
+		        assertEquals(now, mon.getLastCheckInTime());
+		        assertEquals(m_pollerDetails, mon.getDetails());
+		        return null;
+		    }
+		    
+		});
+	}
 
     private void expectLocationMonitorStatusChanged(final MonitorStatus expectedStatus) {
         final Date now = new Date();

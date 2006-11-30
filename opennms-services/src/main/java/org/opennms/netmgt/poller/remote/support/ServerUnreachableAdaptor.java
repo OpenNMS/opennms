@@ -2,6 +2,8 @@ package org.opennms.netmgt.poller.remote.support;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -67,8 +69,8 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         }
     }
 
-    public boolean pollerStarting(int locationMonitorId) {
-        return m_remoteBackEnd.pollerStarting(locationMonitorId);
+    public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
+        return m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
     }
 
     public void pollerStopping(int locationMonitorId) {

@@ -37,7 +37,7 @@
 package org.opennms.netmgt.model;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,11 +45,16 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.MapKey;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -70,7 +75,7 @@ public class OnmsLocationMonitor {
 
     private Integer m_id;
 
-    private String m_name;
+    //private String m_name;
     
     private MonitorStatus m_status = MonitorStatus.NEW;
     
@@ -82,7 +87,9 @@ public class OnmsLocationMonitor {
      */
     private String m_definitionName;
 
-    private OnmsMonitoringLocationDefinition m_locationDefinition;
+    //private OnmsMonitoringLocationDefinition m_locationDefinition;
+
+	private Map<String, String> m_details;
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -147,5 +154,17 @@ public class OnmsLocationMonitor {
     public String getName() {
         return m_definitionName+'-'+getId(); 
     }
+
+    @CollectionOfElements
+    @JoinTable(name="location_Monitor_details", joinColumns = @JoinColumn(name="locationMonitorId"))
+    @MapKey(columns=@Column(name="property"))
+    @Column(name="propertyValue", nullable=false)
+	public Map<String, String> getDetails() {
+		return m_details;
+	}
+
+	public void setDetails(Map<String, String> pollerDetails) {
+		m_details = pollerDetails;
+	}
     
 }

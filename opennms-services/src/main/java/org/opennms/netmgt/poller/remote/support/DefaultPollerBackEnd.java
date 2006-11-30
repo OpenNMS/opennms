@@ -183,13 +183,14 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         return m_configurationTimestamp.after(currentConfigurationVersion);
     }
 
-    public boolean pollerStarting(int locationMonitorId) {
+    public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
         OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
             return false;
         }
         mon.setStatus(MonitorStatus.STARTED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
+        mon.setDetails(pollerDetails);
         m_locMonDao.update(mon);
         
         EventBuilder eventBuilder = createEventBuilder(locationMonitorId, EventConstants.LOCATION_MONITOR_STARTED_UEI);

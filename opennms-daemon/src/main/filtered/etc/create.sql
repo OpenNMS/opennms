@@ -1235,6 +1235,16 @@ CREATE TABLE location_monitors (
     CONSTRAINT location_monitors_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE location_monitor_details (
+    locationMonitorId INTEGER NOT NULL,
+    property VARCHAR(255) NOT NULL,
+    propertyValue VARCHAR(255),
+    
+    CONSTRAINT location_monitor_fkey1 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE
+);
+
+create index location_monitor_details_id on location_monitor_details(locationMonitorId);
+create unique index location_monitor_details_id_property on location_monitor_details(locationMonitorId, property);
 
 
 --#############################################################################
@@ -1266,6 +1276,8 @@ CREATE TABLE location_specific_status_changes (
     CONSTRAINT location_monitor_fkey1 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE,
     CONSTRAINT ifservices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
+
+
 
 --########################################################################
 --# applications table - Contains list of applications for services

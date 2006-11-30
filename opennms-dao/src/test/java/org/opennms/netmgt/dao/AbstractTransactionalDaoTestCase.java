@@ -3,6 +3,7 @@ package org.opennms.netmgt.dao;
 import java.util.Date;
 
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -27,8 +28,10 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
     private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
+    private LocationMonitorDaoHibernate m_locationMonitorDao;
     
     private OnmsNode m_node1;
+	private boolean m_populate = true;
     
     public AbstractTransactionalDaoTestCase() {
         System.setProperty("opennms.home", "../opennms-daemon/src/main/filtered");
@@ -43,6 +46,14 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
 
     @Override
     protected void onSetUpInTransactionIfEnabled() {
+    	populateDatabase();
+    }
+    
+    private void populateDatabase() {
+    	if (!m_populate ) {
+    		return;
+    	}
+    	
         //OnmsDistPoller distPoller = dao.load("localhost");
 
         getServiceTypeDao().save(new OnmsServiceType("ICMP"));
@@ -305,7 +316,19 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
         return m_node1;
     }
     
-    public int dbQueryForInt(String sql) {
-        return jdbcTemplate.queryForInt(sql);
-    }
+    public LocationMonitorDaoHibernate getLocationMonitorDao() {
+		return m_locationMonitorDao;
+	}
+
+	public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
+		m_locationMonitorDao = locationMonitorDao;
+	}
+
+	public boolean isPopulate() {
+		return m_populate;
+	}
+
+	public void setPopulate(boolean populate) {
+		m_populate = populate;
+	}
 }

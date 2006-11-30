@@ -1,5 +1,7 @@
 package org.opennms.netmgt.dao.db;
 
+import java.util.Date;
+
 public class PopulatedTemporaryDatabaseTestCaseTest extends
         PopulatedTemporaryDatabaseTestCase {
 
@@ -16,7 +18,10 @@ public class PopulatedTemporaryDatabaseTestCaseTest extends
     }
     
     public void testExecuteSQLFromJdbcTemplate() {
-        jdbcTemplate.execute("SELECT now()");
+        jdbcTemplate.queryForObject("SELECT now()", Date.class);
     }
-
+    
+    public void testExecuteSQLFromGetJdbcTemplate() {
+        getJdbcTemplate().queryForObject("SELECT now()", Date.class);
+    }
 }

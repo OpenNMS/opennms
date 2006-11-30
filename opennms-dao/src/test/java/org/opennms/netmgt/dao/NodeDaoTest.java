@@ -92,7 +92,7 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
     
     public void testDeleteOnOrphanIpInterface() {
         
-        int preCount = dbQueryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
         
         OnmsNode n = getNodeDao().get(1);
         Iterator it = n.getIpInterfaces().iterator();
@@ -101,7 +101,7 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         getNodeDao().saveOrUpdate(n);
         getNodeDao().flush();
         
-        int postCount = dbQueryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
         
         assertEquals(preCount-1, postCount);
         
@@ -109,13 +109,13 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testDeleteNode() {
-        int preCount = dbQueryForInt("select count(*) from node");
+        int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
 
         OnmsNode n = getNodeDao().get(1);
         getNodeDao().delete(n);
         getNodeDao().flush();
         
-        int postCount = dbQueryForInt("select count(*) from node");
+        int postCount = getJdbcTemplate().queryForInt("select count(*) from node");
         
         assertEquals(preCount-1, postCount);
     }

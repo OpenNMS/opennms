@@ -2,6 +2,8 @@ package org.opennms.netmgt.poller.remote;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -10,7 +12,6 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class PollerBackEndIntegrationTest extends
@@ -65,17 +66,18 @@ public class PollerBackEndIntegrationTest extends
     public void testPollingStarted() {
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
-        m_backEnd.pollerStarting(locationMonitorId);
+        m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
         
         assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
-        
+        assertEquals(2, queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", locationMonitorId));
+        assertEquals("WonkaOS", queryForString("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", locationMonitorId, "os.name"));
     }
     
     public void testPollingStopped() {
 
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
-        m_backEnd.pollerStarting(locationMonitorId);
+        m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
         
         assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
 
@@ -83,13 +85,14 @@ public class PollerBackEndIntegrationTest extends
         
         assertEquals("STOPPED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
         
+        
     }
     
     public void testPollerUnresponsive() throws Exception {
 
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
-        m_backEnd.pollerStarting(locationMonitorId);
+        m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
         
         assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
         
@@ -157,5 +160,12 @@ public class PollerBackEndIntegrationTest extends
     public int queryForInt(String sql, Object... args) {
         flush();
         return jdbcTemplate.queryForInt(sql, args);
+    }
+    
+    public Map<String, String> getPollerDetails() {
+        Map<String, String> pollerDetails = new HashMap<String, String>();
+        pollerDetails.put("os.name", "WonkaOS");
+        pollerDetails.put("os.version", "1.2.3");
+        return pollerDetails;
     }
 }

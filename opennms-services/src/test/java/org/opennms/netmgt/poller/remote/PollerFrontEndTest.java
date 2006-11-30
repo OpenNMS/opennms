@@ -1,27 +1,29 @@
 package org.opennms.netmgt.poller.remote;
 
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
-
 import org.opennms.netmgt.config.DefaultServiceMonitorLocator;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.monitors.HttpMonitor;
-import org.opennms.netmgt.poller.monitors.HttpMonitorTest;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
 
 public class PollerFrontEndTest extends TestCase {
@@ -79,7 +81,7 @@ public class PollerFrontEndTest extends TestCase {
         
         anticipateNewConfig(pollConfig());
         
-        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
         
         replayMocks();
         
@@ -122,7 +124,7 @@ public class PollerFrontEndTest extends TestCase {
         anticipateNewConfig(pollConfig());
         
         // expect the monitor to start
-        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
         
         replayMocks();
         
@@ -141,7 +143,7 @@ public class PollerFrontEndTest extends TestCase {
         
         anticipateNewConfig(pollConfig());
         
-        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
         
 
         replayMocks();
@@ -164,7 +166,7 @@ public class PollerFrontEndTest extends TestCase {
         
         anticipateNewConfig(pollConfig());
         
-        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
         
         
         PollStatus up = PollStatus.available(1234);
@@ -199,7 +201,7 @@ public class PollerFrontEndTest extends TestCase {
         anticipateNewConfig(pollConfig());
         
         
-        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
 
         
         expect(m_backEnd.pollerCheckingIn(1, m_pollerConfiguration.getConfigurationTimestamp())).andReturn(true);
@@ -228,7 +230,7 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateNewConfig(pollConfig());
         
-        expect(m_backEnd.pollerStarting(1)).andReturn(true);
+        expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
 
         
         m_backEnd.pollerStopping(1);
@@ -247,6 +249,16 @@ public class PollerFrontEndTest extends TestCase {
         verifyMocks();
     }
     
+    public void testDetails() {
+    	Map<String, String> details = m_frontEnd.getDetails();
+		assertPropertyEquals("os.name", details);
+		assertPropertyEquals("os.version", details);
+    }
+
+	private void assertPropertyEquals(String propertyName, Map<String, String> details) {
+		assertNotNull("has "+propertyName, details.get(propertyName));
+    	assertEquals(propertyName, System.getProperty(propertyName), details.get(propertyName));
+	}
 
     @SuppressWarnings("unchecked")
     private <T> T createMock(Class<T> name) {
@@ -330,5 +342,15 @@ public class PollerFrontEndTest extends TestCase {
         return null;
         
     }
+    
+    public Map<String, String> getPollerDetails() {
+    	/*
+        Map<String, String> pollerDetails = new HashMap<String, String>();
+        pollerDetails.put("os.name", System.getProperty("os.name"));
+        return pollerDetails;
+        */
+    	return m_frontEnd.getDetails();
+    }
+
 
 }
