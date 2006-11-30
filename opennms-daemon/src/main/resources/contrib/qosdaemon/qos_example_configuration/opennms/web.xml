@@ -100,13 +100,13 @@
   
   <!-- ****************** Added CG to refresh alarms list every 10 seconds -->
   <filter>
-    <filter-name>AddRefreshHeader-10</filter-name>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
+    <filter-name>AddRefreshHeader-10</filter-name>
     <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
     <init-param>
+      <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
       <param-value>10</param-value>
-      <description>This parameter specifies how often to refresh the page.</description>
     </init-param>
   </filter>
 
