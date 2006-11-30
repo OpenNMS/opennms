@@ -313,9 +313,9 @@
       <p><%=notices.length%> notices &nbsp;
 
         <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-      <input TYPE="reset" />
-				<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-				<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/></p>
+            <input TYPE="reset" />
+            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+            <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
         <% } %>
         
 	</p>
