@@ -33,8 +33,8 @@
       found below in the 1.1.4 release notes, OpenNMS will pass an IP address
       using "--hostname" and a timeout using "--timeout" to any external
       script. However, some scripts, like those used for Nagios, require
-      different parameters such as "-H" for hostname and "-t" for timeout.
-      </para>
+      different parameters such as "-H" for hostname and "-t" for
+      timeout.</para>
 
       <para>This feature adds the option to override the defaults for the flag
       for the IP address and the timeout. Here is an example of a capsd plugin
@@ -103,7 +103,7 @@
       While it is usually against the philosophy of the stable branch to
       change something this important, the database connections were changed
       to be managed by a library called <ulink
-      url="http://sourceforge.net/projects/c3p0">C3PO</ulink>. This creates a
+      url="http://sourceforge.net/projects/c3p0">C3P0</ulink>. This creates a
       pool of connections that always stay open. Since the bug was related to
       the establishment and tearing down of database connections, by having
       such a pool the bug no longer occurs.</para>
