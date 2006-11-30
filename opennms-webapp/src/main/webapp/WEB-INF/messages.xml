@@ -1,0 +1,30 @@
+ <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+ 
+ <properties>
+   <entry key="error">
+     Error
+   </entry>
+   
+   <entry key="location.not-specified">
+     Location definition not specified (should be passed with "{0}" parameter).
+   </entry>
+   
+   <entry key="location.not-found">
+     Location definition "{0}" not found.
+   </entry>
+   
+   <entry key="location.no-monitors">
+     No distributed monitors have reported for applications in "{0}" from
+     location "{1}".
+   </entry>
+   
+   <entry key="application.not-specified">
+     Application not specified (should be passed with "{0}" parameter).
+   </entry>
+   
+   <entry key="application.not-found">
+     Application "{0}" not found.
+   </entry>
+   
+   
+ </properties>

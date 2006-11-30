@@ -33,9 +33,14 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.ThrowableAnticipator;
+import org.opennms.web.command.DistributedStatusDetailsCommand;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -43,7 +48,6 @@ import junit.framework.TestCase;
 public class DefaultDistributedStatusServiceTest extends TestCase {
     private DefaultDistributedStatusService m_service = new DefaultDistributedStatusService();
     
-    private PollerConfig m_pollerConfig = createMock(PollerConfig.class);
     private MonitoredServiceDao m_monitoredServiceDao = createMock(MonitoredServiceDao.class);
     private LocationMonitorDao m_locationMonitorDao = createMock(LocationMonitorDao.class); 
     private ApplicationDao m_applicationDao = createMock(ApplicationDao.class);
@@ -57,8 +61,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private OnmsApplication m_application1;
     private OnmsApplication m_application2;
     
-    private Package m_pkg;
-    private ServiceSelector m_selector;
     private Collection<OnmsMonitoredService> m_services;
     private OnmsNode m_node;
 
@@ -67,9 +69,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private HashSet<OnmsMonitoredService> m_applicationServices1;
 
     private HashSet<OnmsMonitoredService> m_applicationServices2;
+    
+    public final static String IGNORE_MATCH = "**IGNORE*MATCH**";
         
     protected void setUp() {
-        m_service.setPollerConfig(m_pollerConfig);
         m_service.setMonitoredServiceDao(m_monitoredServiceDao);
         m_service.setLocationMonitorDao(m_locationMonitorDao);
         m_service.setApplicationDao(m_applicationDao);
@@ -88,26 +91,31 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_locationMonitor1_1.setId(1);
         m_locationMonitor1_1.setLastCheckInTime(new Date());
         m_locationMonitor1_1.setDefinitionName("Raleigh");
+        m_locationMonitor1_1.setStatus(MonitorStatus.STARTED);
+        assertEquals("location monitor 1.1 status", MonitorStatus.STARTED,
+                     m_locationMonitor1_1.getStatus());
         
         m_locationMonitor2_1 = new OnmsLocationMonitor();
         m_locationMonitor2_1.setId(2);
         m_locationMonitor2_1.setLastCheckInTime(new Date());
         m_locationMonitor2_1.setDefinitionName("Durham");
+        m_locationMonitor2_1.setStatus(MonitorStatus.STARTED);
+        assertEquals("location monitor 2.1 status", MonitorStatus.STARTED,
+                     m_locationMonitor2_1.getStatus());
         
         m_locationMonitor2_2 = new OnmsLocationMonitor();
         m_locationMonitor2_2.setId(3);
         m_locationMonitor2_2.setDefinitionName("Durham");
+        m_locationMonitor2_2.setStatus(MonitorStatus.STARTED);
+        assertEquals("location monitor 2.2 status", MonitorStatus.STARTED,
+                     m_locationMonitor2_2.getStatus());
         
-        m_pkg = new Package();
-
         List<String> serviceNames = new ArrayList<String>();
         serviceNames.add("ICMP");
         serviceNames.add("DNS");
         serviceNames.add("HTTP");
         serviceNames.add("HTTPS");
         Collections.shuffle(serviceNames); // shuffle to test sorting
-
-        m_selector = new ServiceSelector("IPADDR IPLIKE *.*.*.*", serviceNames);
         
         m_node = new OnmsNode();
         m_ip = "1.1.1.1";
@@ -143,10 +151,16 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testFindLocationSpecificStatusNullLocation() {
+        DistributedStatusDetailsCommand command =
+            new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+        
+        command.setApplication(m_application1.getName());
+        
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("locationName cannot be null"));
+        ta.anticipate(new IllegalArgumentException("location cannot be null"));
         try {
-            m_service.findLocationSpecificStatus(null, m_application1.getName());
+            m_service.findLocationSpecificStatus(command, errors);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -154,27 +168,87 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testFindLocationSpecificStatusNullApplication() {
+        DistributedStatusDetailsCommand command =
+            new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+        
+        command.setLocation(m_locationDefinition1.getName());
+        
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("applicationLabel cannot be null"));
+        ta.anticipate(new IllegalArgumentException("application cannot be null"));
         try {
-            m_service.findLocationSpecificStatus(m_locationDefinition1.getName(), null);
+            m_service.findLocationSpecificStatus(command, errors);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
     }
     
-    // XXX need to figure out what we should be doing here, if anything
-    public void XXXtestFindLocationSpecificStatusInvalidLocation() {
-        m_service.findLocationSpecificStatus("invalid location", m_application1.getName());
+    public void testFindLocationSpecificStatusInvalidLocation() {
+        DistributedStatusDetailsCommand command =
+            new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+        
+        command.setLocation("invalid location");
+        command.setApplication(m_application1.getName());
+        
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(command.getLocation())).andReturn(null);
+
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("Could not find location for location name \"" + command.getLocation() + "\""));
+        
+        replay(m_locationMonitorDao);
+        replay(m_applicationDao);
+        
+        try {
+            m_service.findLocationSpecificStatus(command, errors);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        
+        verify(m_locationMonitorDao);
+        verify(m_applicationDao);
+
+        ta.verifyAnticipated();
     }
     
-    // XXX need to figure out what we should be doing here, if anything
-    public void XXXtestFindLocationSpecificStatusInvalidApplication() {
-        m_service.findLocationSpecificStatus(m_locationDefinition1.getName(), "invalid application");
+    public void testFindLocationSpecificStatusInvalidApplication() {
+        DistributedStatusDetailsCommand command =
+            new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+
+        command.setLocation(m_locationDefinition1.getName());
+        command.setApplication("invalid application");
+        
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
+        expect(m_applicationDao.findByName(command.getApplication())).andReturn(null);
+
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("Could not find application for application name \"" + command.getApplication() + "\""));
+        
+        replay(m_locationMonitorDao);
+        replay(m_applicationDao);
+        
+        try {
+            m_service.findLocationSpecificStatus(command, errors);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        
+        verify(m_locationMonitorDao);
+        verify(m_applicationDao);
+        
+        ta.verifyAnticipated();
     }
     
     public void testFindLocationSpecificStatus() {
+        DistributedStatusDetailsCommand command =
+            new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+
+        command.setLocation(m_locationDefinition1.getName());
+        command.setApplication(m_application1.getName());
+
         expectEverything();
         
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1);
@@ -182,8 +256,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         replayEverything();
         
         List<OnmsLocationSpecificStatus> status =
-            m_service.findLocationSpecificStatus(m_locationDefinition1.getName(),
-                                                 m_application1.getName());
+            m_service.findLocationSpecificStatus(command, errors);
 
         verifyEverything();
         
@@ -198,25 +271,32 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void runTestCreateStatus() {
+        DistributedStatusDetailsCommand command =
+            new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+
+        command.setLocation(m_locationDefinition1.getName());
+        command.setApplication(m_application1.getName());
+
         expectEverything();
         
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1);
         
         replayEverything();
         SimpleWebTable table =
-            m_service.createStatusTable(m_locationDefinition1.getName(),
-                                        m_application1.getName());
+            m_service.createStatusTable(command, errors);
         
         verifyEverything();
         
         SimpleWebTable expectedTable = new SimpleWebTable();
         expectedTable.setTitle("Distributed poller view for Application 1 from Raleigh location");
         
-        expectedTable.addColumn("Node", "simpleWebTableHeader");
-        expectedTable.addColumn("Monitor", "simpleWebTableHeader");
-        expectedTable.addColumn("Service", "simpleWebTableHeader");
-        expectedTable.addColumn("Status", "simpleWebTableHeader");
-        expectedTable.addColumn("Response", "simpleWebTableHeader");
+        expectedTable.addColumn("Node", "");
+        expectedTable.addColumn("Monitor", "");
+        expectedTable.addColumn("Service", "");
+        expectedTable.addColumn("Status", "");
+        expectedTable.addColumn("Response", "");
+        expectedTable.addColumn("Last Update", "");
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=1");
@@ -224,6 +304,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
+        expectedTable.addCell(IGNORE_MATCH, "");
         expectedTable.newRow();
         
         expectedTable.addCell("Node 1", "Critical", "element/node.jsp?node=1");
@@ -231,6 +312,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("No status recorded for this service from this location", "");
+        expectedTable.addCell(IGNORE_MATCH, "");
         
         assertTableEquals(expectedTable, table);
     }
@@ -245,28 +327,31 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
     
     public void runTestCreateStatusNoLocationMonitor() {
-        //expectEverything();
+        DistributedStatusDetailsCommand command =
+            new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+
+        command.setLocation(m_locationDefinition3.getName());
+        command.setApplication(m_application2.getName());
+
         resetEverything();
-        
+
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(Collections.EMPTY_LIST);
-        //expect(m_pollerConfig.getPackage("columbus")).andReturn(m_pkg);
-        //expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
-        //expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
-        
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("No location monitors have registered for location \"Columbus\""));
-        
+
         replayEverything();
-        try {
-            SimpleWebTable table =
-                m_service.createStatusTable(m_locationDefinition3.getName(),
-                                            m_application2.getName());
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
+        SimpleWebTable table =
+            m_service.createStatusTable(command, errors);
+
+        assertEquals("Number of errors", 1, errors.getErrorCount());
+        assertEquals("Number of global errors", 1, errors.getGlobalErrorCount());
+        assertEquals("Number of field errors", 0, errors.getFieldErrorCount());
+        ObjectError e = (ObjectError) errors.getGlobalErrors().get(0);
+        assertEquals("Error code 0", "location.no-monitors", e.getCode());
+        assertEquals("Error 0 argument count", 2, e.getArguments().length);
+        assertEquals("Error argument 0.0", "Application 2", e.getArguments()[0]);
+        assertEquals("Error argument 0.0", "Columbus", e.getArguments()[1]);
 
         verifyEverything();
 
@@ -362,32 +447,35 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
                                                                    endDate);
         verifyEverything();
         
-        //System.out.print(table.toString());
-        
         SimpleWebTable expectedTable = new SimpleWebTable();
         expectedTable.setTitle("Distributed Poller Status Summary");
-        expectedTable.addColumn("Area", "simpleWebTableRowLabel");
-        expectedTable.addColumn("Location", "simpleWebTableRowLabel");
-        expectedTable.addColumn("Application 1", "simpleWebTableRowLabel");
-        expectedTable.addColumn("Application 2", "simpleWebTableRowLabel");
+        expectedTable.addColumn("Area", "");
+        expectedTable.addColumn("Location", "");
+        expectedTable.addColumn("Application 1", "");
+        expectedTable.addColumn("Application 2", "");
 
         expectedTable.newRow();
-        expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
-        expectedTable.addCell("Raleigh", "simpleWebTableRowLabel");
+        expectedTable.addCell("OpenNMS NC", "");
+        expectedTable.addCell("Raleigh", "");
         expectedTable.addCell("75.000%", "Normal", "distributedStatusHistory.htm?location=Raleigh&application=Application+1");
         expectedTable.addCell("75.000%", "Normal", "distributedStatusHistory.htm?location=Raleigh&application=Application+2");
         
         expectedTable.newRow();
-        expectedTable.addCell("OpenNMS NC", "simpleWebTableRowLabel");
-        expectedTable.addCell("Durham", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusHistory.htm?location=Durham&application=Application+1");
-        expectedTable.addCell("0.000%", "Normal", "distributedStatusHistory.htm?location=Durham&application=Application+2");
+        expectedTable.addCell("OpenNMS NC", "");
+        expectedTable.addCell("Durham", "");
+        expectedTable.addCell("No data", "Normal");
+        expectedTable.addCell("No data", "Normal");
         
         expectedTable.newRow();
-        expectedTable.addCell("OpenNMS OH", "simpleWebTableRowLabel");
-        expectedTable.addCell("Columbus", "simpleWebTableRowLabel");
-        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusHistory.htm?location=Columbus&application=Application+1");
-        expectedTable.addCell("0.000%", "Indeterminate", "distributedStatusHistory.htm?location=Columbus&application=Application+2");
+        expectedTable.addCell("OpenNMS OH", "");
+        expectedTable.addCell("Columbus", "");
+        expectedTable.addCell("No data", "Indeterminate");
+        expectedTable.addCell("No data", "Indeterminate");
+        
+        /*
+        System.out.print("Expected: " + expectedTable.toString());
+        System.out.print("Actual: " + table.toString());
+        */
 
         assertTableEquals(expectedTable, table);
     }
@@ -405,12 +493,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         Date startDate = new Date(2006 - 1900, 10 - 1, 12, 0, 0, 0);
         Date endDate = new Date(2006 - 1900, 10 - 1, 13, 0, 0, 0);
 
-//        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statuses);
-
         replayEverything();
         String percentage =
-            m_service.calculatePercentageUptime(Collections.singleton(m_locationMonitor1_1),
-                                                m_applicationServices1,
+            m_service.calculatePercentageUptime(m_applicationServices1,
                                                 statuses,
                                                 startDate,
                                                 endDate);
@@ -658,16 +743,21 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
                     + (expectedRowIterator.previousIndex() + 1) + " column "
                     + (expectedColumnIterator.previousIndex() + 1) + " "; 
                 
-                assertEquals(rowColumn + "content",
-                             expectedColumn.getContent(),
-                             column.getContent());
-                assertEquals(rowColumn + "styleClass",
-                             expectedColumn.getStyleClass(),
-                             column.getStyleClass());
-                assertEquals(rowColumn + "link",
-                             expectedColumn.getLink(),
-                             column.getLink());
-
+                if (!IGNORE_MATCH.equals(expectedColumn.getContent())) {
+                    assertEquals(rowColumn + "content",
+                                 expectedColumn.getContent(),
+                                 column.getContent());
+                }
+                if (!IGNORE_MATCH.equals(expectedColumn.getStyleClass())) {
+                    assertEquals(rowColumn + "styleClass",
+                                 expectedColumn.getStyleClass(),
+                                   column.getStyleClass());
+                }
+                if (!IGNORE_MATCH.equals(expectedColumn.getLink())) {
+                    assertEquals(rowColumn + "link",
+                                 expectedColumn.getLink(),
+                                 column.getLink());
+                }
             }
         }
     }
@@ -675,7 +765,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     public void resetEverything() {
         reset(m_applicationDao);
         reset(m_locationMonitorDao);
-        reset(m_pollerConfig);
         reset(m_monitoredServiceDao);
     }
 
@@ -685,10 +774,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_applicationDao.findByName("Application 1")).andReturn(m_application1);
         expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
-        expect(m_pollerConfig.getPackage("raleigh")).andReturn(m_pkg);
-        expect(m_pollerConfig.getServiceSelectorForPackage(m_pkg)).andReturn(m_selector);
-        expect(m_monitoredServiceDao.findMatchingServices(m_selector)).andReturn(m_services);
-
 
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
@@ -698,14 +783,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
 
     public void replayEverything() {
-        replay(m_pollerConfig);
         replay(m_monitoredServiceDao);
         replay(m_locationMonitorDao);
         replay(m_applicationDao);
     }
 
     public void verifyEverything() {
-        verify(m_pollerConfig);
         verify(m_monitoredServiceDao);
         verify(m_locationMonitorDao);
         verify(m_applicationDao);

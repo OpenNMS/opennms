@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.web.Util;
+import org.springframework.validation.Errors;
 
 /**
  * The idea of this class is to represent a simple table that has column headers
@@ -96,6 +97,7 @@ public class SimpleWebTable {
 	private List<List<Cell>> m_rows = new ArrayList<List<Cell>>();
 	private List<Cell> m_currentRow = null;
 	private String m_title = "";
+        private Errors m_errors = null;
 	
 	public List<Cell> getColumnHeaders() {
 		return m_columnHeaders;
@@ -181,5 +183,13 @@ public class SimpleWebTable {
         buf.append("</table>\n");
         
         return buf.toString();
+    }
+
+    public Errors getErrors() {
+        return m_errors;
+    }
+
+    public void setErrors(Errors errors) {
+        m_errors = errors;
     }
 }

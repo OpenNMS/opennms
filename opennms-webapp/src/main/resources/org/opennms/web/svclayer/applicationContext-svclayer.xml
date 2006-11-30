@@ -74,28 +74,22 @@
     <property name="daemonStatusDao" ref="daemonStatusDao" />
   </bean>
 
-<!-- Category Service Status beans -->
-   <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
+  <!-- Category Service Status beans -->
+  <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
     <property name="categoryConfigDao" ref="categoryConfigDao" />
     <property name="outageDao"  ref="outageDao" />
     <property name="viewDisplayDao" ref ="viewDisplayDao"/>
   </bean>
 
   <!-- Distributed Status Service Status beans -->
-  
-  <bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-pollerConfig-factory">
-	<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
-  </bean>
-
   <bean id="distributedStatusService" class="org.opennms.web.svclayer.support.DefaultDistributedStatusService">
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    <property name="pollerConfig" ref="pollerConfig"/>
     <property name="applicationDao" ref="applicationDao"/>
+  </bean>
+  
+  <bean id="distributedPollerService" class="org.opennms.web.svclayer.support.DefaultDistributedPollerService">
+    <property name="locationMonitorDao" ref="locationMonitorDao"/>
   </bean>
   
   <!--  Graphing beans -->
