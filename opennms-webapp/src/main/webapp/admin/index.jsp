@@ -136,19 +136,20 @@
     <div class="boxWrapper">
       <ul class="plain">  
         <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a></li>
-        <!-- <a HREF="admin/eventconf/list.jsp">Configure Events</a> -->
-        <li><a HREF="admin/notification/index.jsp">Configure Notifications</a></li>
-        <li><a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
-        <li><a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
-        <li><a HREF="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
-        <li><a HREF="javascript:addInterfacePost()">Add Interface</a></li>
-        <li><a HREF="javascript:deletePost()">Delete Nodes</a></li>
-        <li><a HREF="admin/pollerConfig/index.jsp">Configure Pollers</a></li>
-        <li><a HREF="admin/asset/index.jsp">Import and Export Asset Information</a></li>
-        <li><a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
-        <li><a HREF="admin/categories.htm">Manage Node Categories</a></li>
-        <li><a HREF="admin/applications.htm">Manage Applications</a></li>
-        <li><a HREF="admin/provisioningGroups.htm">Manage Provisioning Groups</a></li>
+        <!-- <a href="admin/eventconf/list.jsp">Configure Events</a> -->
+        <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
+        <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
+        <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
+        <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
+        <li><a href="javascript:addInterfacePost()">Add Interface</a></li>
+        <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+        <li><a href="admin/pollerConfig/index.jsp">Configure Pollers</a></li>
+        <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
+        <li><a href="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
+        <li><a href="admin/categories.htm">Manage Node Categories</a></li>
+        <li><a href="admin/applications.htm">Manage Applications</a></li>
+        <li><a href="admin/provisioningGroups.htm">Manage Provisioning Groups</a></li>
+        <li><a href="distributedPollerStatus.htm">Distributed poller status</a></li>
       </ul>
       <!-- security link -->
     </div>

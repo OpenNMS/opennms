@@ -12,6 +12,11 @@
 	<property name="suffix" value=".jsp" />
   </bean>
   
+  <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basename"><value>/WEB-INF/messages</value></property>
+    <property name="cacheSeconds"><value>2</value></property>
+  </bean>
+  
   <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
     <property name="provisioningService" ref="manualProvisioningService" />
     <property name="commandName" value="groupAction" />
@@ -105,8 +110,17 @@
 			  ref="distributedStatusService" />
   </bean>
 
+  <bean id="distributedStatusDetailsValidator" class="org.opennms.web.validator.DistributedStatusDetailsValidator">
+    <property name="applicationDao" ref="applicationDao"/>
+    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+  </bean>
+  
   <bean name="/distributedStatusDetails.htm"
 		class="org.opennms.web.controller.DistributedStatusDetailsController">
+    <property name="commandName"><value>command</value></property>
+    <property name="commandClass"><value>org.opennms.web.command.DistributedStatusDetailsCommand</value></property>
+    <property name="validator" ref="distributedStatusDetailsValidator"/>
+    <property name="successView"><value>distributedStatusDetails</value></property>
 	<property name="distributedStatusService"
 			  ref="distributedStatusService" />
   </bean>
@@ -117,6 +131,13 @@
 			  ref="distributedStatusService" />
   </bean>
   
+  <bean name="/distributedPollerStatus.htm"
+		class="org.opennms.web.controller.DistributedPollerStatusController">
+	<property name="distributedPollerService"
+			  ref="distributedPollerService" />
+  </bean>
+
+  <!--  "includes" -->  
   <bean name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
     <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>

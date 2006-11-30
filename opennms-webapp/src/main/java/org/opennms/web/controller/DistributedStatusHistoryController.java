@@ -34,7 +34,5 @@ public class DistributedStatusHistoryController extends AbstractController {
                                                           timeSpan,
                                                           previousLocation);
         return new ModelAndView("distributedStatusHistory", "historyModel", model);
-
     }
-
 }
