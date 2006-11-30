@@ -2,6 +2,7 @@ package org.opennms.netmgt.poller.remote;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -43,9 +44,10 @@ public interface PollerBackEnd {
      * Notifies the backend that a registered poller is starting
      * 
      * @param locationMonitorId the id of the requesting location monitor
+     * @param pollerDetails TODO
      * @returns true if and only if the server recognizes this locationMonitor
      */
-    public abstract boolean pollerStarting(int locationMonitorId);
+    public abstract boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails);
     
     /**
      * Notifies the backend that a registered poller is stopping

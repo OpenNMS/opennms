@@ -3,13 +3,11 @@ package org.opennms.netmgt.poller.remote;
 import java.io.File;
 import java.util.Properties;
 
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.test.BaseIntegrationTestCase;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.FileSystemResource;
 
 public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
 
@@ -80,15 +78,20 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
         
         assertTrue(m_frontEnd.isRegistered());
         Integer monitorId = m_settings.getMonitorId();
-        assertEquals(1, queryForInt("select count(*) from location_monitors where id=?", monitorId));
+        
+        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from location_monitors where id=?", monitorId));
+        assertEquals(5, getJdbcTemplate().queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", monitorId));
+
+        assertEquals(System.getProperty("os.name"), getJdbcTemplate().queryForObject("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", String.class, monitorId, "os.name"));
         
         Thread.sleep(10000);
         
-        assertEquals(0, queryForInt("select count(*) from location_monitors where status='UNRESPONSIVE' and id=?", monitorId));
+        assertEquals(0, getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='UNRESPONSIVE' and id=?", monitorId));
         
         m_frontEnd.stop();
+        assertTrue("Could not found any pollResults", 0 < getJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
         
-        assertTrue("Could not found any pollResults", 0 < queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
+      
     }
     
 }

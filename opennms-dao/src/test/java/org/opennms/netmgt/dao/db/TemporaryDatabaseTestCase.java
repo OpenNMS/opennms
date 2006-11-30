@@ -7,10 +7,10 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 /**
  * For each unit test method, creates a temporary database before the unit
@@ -23,7 +23,7 @@ import junit.framework.TestCase;
  */
 public class TemporaryDatabaseTestCase extends TestCase {
     
-    protected JdbcTemplate jdbcTemplate;
+    protected SimpleJdbcTemplate jdbcTemplate;
 
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     
@@ -162,7 +162,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
     
     public DataSource getDataSource() {
@@ -354,5 +354,9 @@ public class TemporaryDatabaseTestCase extends TestCase {
                 + "\nAlso received error on tearDown: "
                 + m_tearDownError.toString();
         }
+    }
+    
+    public SimpleJdbcTemplate getJdbcTemplate() {
+    	return jdbcTemplate;
     }
 }

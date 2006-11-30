@@ -2,13 +2,17 @@ package org.opennms.netmgt.poller.remote.support;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -107,12 +111,35 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
 
     private void start() {
         assertRegistered();
-        if (!m_backEnd.pollerStarting(getMonitorId())) {
+        if (!m_backEnd.pollerStarting(getMonitorId(), getDetails())) {
             m_pollerSettings.setMonitorId(null);
             throw new IllegalStateException("Monitor no longers exists on server.  You need to reregister");
         }
         m_started = true;
     }
+
+	public Map<String, String> getDetails() {
+		HashMap<String, String> details = new HashMap<String, String>();
+		
+		Properties p = System.getProperties();
+		
+		for (Map.Entry<Object, Object> e : p.entrySet()) {
+			if (e.getKey().toString().startsWith("os.")
+				&& e.getValue() != null) {
+				details.put(e.getKey().toString(), e.getValue().toString());
+			}
+		}
+
+		try {
+			InetAddress us = InetAddress.getLocalHost();
+			details.put("org.opennms.netmgt.poller.remote.hostAddress", us.getHostAddress());
+			details.put("org.opennms.netmgt.poller.remote.hostName", us.getHostName());
+		} catch (UnknownHostException e) {
+			// do nothing
+		}
+
+		return details;
+	}
 
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         return m_backEnd.getMonitoringLocations();

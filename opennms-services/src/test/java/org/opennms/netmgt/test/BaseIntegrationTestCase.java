@@ -25,7 +25,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -47,7 +47,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     private boolean m_dbCreated = false;
     private boolean m_dbPopulated = false;
 
-    protected JdbcTemplate jdbcTemplate;
+    private SimpleJdbcTemplate jdbcTemplate;
 
     
     protected void setCreateDbOnce(boolean createDbOnce) {
@@ -102,11 +102,7 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     }
     
     public void setDataSource(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
-    }
-    
-    protected int queryForInt(String sql, Object... args) {
-       return jdbcTemplate.queryForInt(sql, args); 
+        setJdbcTemplate(new SimpleJdbcTemplate(dataSource));
     }
     
     public void setTransactionTemplate(TransactionTemplate transTemplate) {
@@ -406,6 +402,14 @@ public abstract class BaseIntegrationTestCase extends AbstractDependencyInjectio
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
     }
+
+	protected void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	protected SimpleJdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
 
 
 

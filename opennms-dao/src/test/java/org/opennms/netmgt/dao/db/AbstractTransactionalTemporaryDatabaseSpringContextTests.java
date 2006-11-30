@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
@@ -79,4 +80,8 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
             m_populatedTempDb.tearDown();
         }
     }
+
+	protected SimpleJdbcTemplate getJdbcTemplate() {
+		return new SimpleJdbcTemplate(jdbcTemplate);
+	}
 }
