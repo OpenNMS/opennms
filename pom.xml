@@ -591,6 +591,52 @@ opennms.home = ${opennms.home}
   
     <!-- Linux -->
     <profile>
+      <id>linux-64bit-generic-rrdtool-shared</id>
+      
+      <activation>
+        <file>
+          <exists>/usr/lib64/librrd.so</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/lib64</build.rrd.lib.dir>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>linux-64bit-generic-rrdtool-static</id>
+      
+      <activation>
+        <file>
+          <exists>/usr/lib64/librrd.a</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/lib64</build.rrd.lib.dir>
+      </properties>
+    </profile>
+
+
+    <profile>
+      <id>generic-postgres</id>
+      
+      <activation>
+        <file>
+          <exists>/usr/include/pgsql/server/postgres.h</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+
+<!--
+    <profile>
       <id>centos</id>
       
       <activation>
@@ -605,6 +651,8 @@ opennms.home = ${opennms.home}
         <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
       </properties>
     </profile>
+-->
+
   
     <profile>
       <id>suse</id>
