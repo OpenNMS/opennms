@@ -11,11 +11,11 @@
 	Enter the name of your favorite OGP Member:
 	</p>
 
-	<p>
+	
 	<input class="autocomplete_text" type="text" id="autocomplete" name="formtest"/>
 	<div class="autocomplete_choices" id="autocomplete_choices"></div>
+    <p>
 	* Well maybe someday.
-	
 	</p>
 
 	<p>
