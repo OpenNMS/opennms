@@ -121,72 +121,69 @@
 
 <h2>Event Notifications</h2>
 
-<form method="post" name="notices"
-      action="admin/notification/noticeWizard/notificationWizard">
-      <input type="hidden" name="userAction" value=""/>
-      <input type="hidden" name="notice" value=""/>
-      <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTICES%>"/>
-        <tr>
-          <td><h3>Add a notification to an event or edit an existing event notification.</h3></td>
-        </tr>
-        <tr>
-          <td> <input type="button" value="Add New Event Notification" onclick="javascript:newNotice()"/>
-        </tr>
-        <tr>
-          <td valign="top">
-            <h4>Event Notifications</h4>
-            <table width="100%" cellspacing="2" cellpadding="2" border="1">
-              <tr bgcolor="#999999">
-                <td colspan="3">
-                    <b>Actions</b>
-                </td>
-                <td>
-                    <b>Notification</b>
-                </td>
-                <td>
-                    <b>Event</b>
-                </td>
-              </tr>
-            <% Map noticeMap = new TreeMap(m_notificationFactory.getNotifications());
-               Iterator iterator = noticeMap.keySet().iterator();
-               while(iterator.hasNext()) 
-               { 
-                 String key = (String)iterator.next();
-                 Notification curNotif = (Notification)noticeMap.get(key);
-            %>
-                <tr>
-                  <td>
-                    <input type="button" value="Edit" onclick="javascript:editNotice('<%=key%>')"/>
-                  </td>
-                  <td>
-                    <input type="button" value="Delete"  onclick="javascript:deleteNotice('<%=key%>')"/>
-                  </td>
-                  <td>
-                    <%if (curNotif.getStatus().equals("on")) { %>
-                      <input type="button" value="Turn Off" onclick="javascript:setStatus('<%=key%>','off')"/>
-                    <% } else { %>
-                      <input type="button" value="Turn On" onclick="javascript:setStatus('<%=key%>','on')"/>
-                    <% } %>
-                  </td>
-                  <td>
-                    <%=key%>
-                  </td>
-                  <td>
-                    <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
-                  </td>
-                </tr>
-            <% } %>
-            </table>
-          </td>
-        </tr>
-      </form>
+<form method="post" name="notices" action="admin/notification/noticeWizard/notificationWizard">
+  <input type="hidden" name="userAction" value=""/>
+  <input type="hidden" name="notice" value=""/>
+  <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTICES%>"/>
+  <table>
+    <tr>
+      <td><h3>Add a notification to an event or edit an existing event notification.</h3></td>
+    </tr>
+    <tr>
+      <td> <input type="button" value="Add New Event Notification" onclick="javascript:newNotice()"/>
+    </tr>
+    <tr>
+      <td valign="top">
+        <h4>Event Notifications</h4>
+        <table width="100%" cellspacing="2" cellpadding="2" border="1">
+          <tr bgcolor="#999999">
+            <td colspan="3">
+              <b>Actions</b>
+            </td>
+            <td>
+              <b>Notification</b>
+            </td>
+            <td>
+              <b>Event</b>
+            </td>
+          </tr>
+          <% Map<String, Notification> noticeMap = new TreeMap<String, Notification>(m_notificationFactory.getNotifications());
+             for(String key : noticeMap.keySet()) {
+               Notification curNotif = (Notification)noticeMap.get(key);
+          %>
+          <tr>
+            <td>
+              <input type="button" value="Edit" onclick="javascript:editNotice('<%=key%>')"/>
+            </td>
+            <td>
+              <input type="button" value="Delete"  onclick="javascript:deleteNotice('<%=key%>')"/>
+            </td>
+            <td>
+              <%if (curNotif.getStatus().equals("on")) { %>
+                <input type="button" value="Turn Off" onclick="javascript:setStatus('<%=key%>','off')"/>
+              <% } else { %>
+                 <input type="button" value="Turn On" onclick="javascript:setStatus('<%=key%>','on')"/>
+              <% } %>
+            </td>
+            <td>
+              <%=key%>
+            </td>
+            <td>
+              <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
+            </td>
+          </tr>
+          <% } %>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
 <%!
   public String stripUei(String uei)
     {
-        int index = 0;
         String leftover = uei;
         
         for (int i = 0; i < 3; i++)

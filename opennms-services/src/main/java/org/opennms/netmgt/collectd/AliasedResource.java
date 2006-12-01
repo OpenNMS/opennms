@@ -36,6 +36,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.opennms.netmgt.model.RrdRepository;
+
 
 public class AliasedResource extends CollectionResource {
     

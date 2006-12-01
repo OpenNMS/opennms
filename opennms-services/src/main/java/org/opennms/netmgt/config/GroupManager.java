@@ -75,13 +75,13 @@ public abstract class GroupManager {
     /**
      * The duty schedules for each group
      */
-    protected static HashMap m_dutySchedules;
+    protected static HashMap<String, List<DutySchedule>> m_dutySchedules;
 
     /**
      * A mapping of Group object by name
      */
-    private Map m_groups;
-    private Map m_roles;
+    private Map<String, Group> m_groups;
+    private Map<String, Role> m_roles;
     private Header m_oldHeader;
 
     /**
@@ -92,7 +92,7 @@ public abstract class GroupManager {
     protected synchronized void parseXml(Reader reader) throws MarshalException, ValidationException {
         Groupinfo groupinfo = (Groupinfo) Unmarshaller.unmarshal(Groupinfo.class, reader);
         Groups groups = groupinfo.getGroups();
-        m_groups = new HashMap();
+        m_groups = new HashMap<String, Group>();
         Collection groupList = groups.getGroupCollection();
         m_oldHeader = groupinfo.getHeader();
         Iterator i = groupList.iterator();
@@ -103,7 +103,7 @@ public abstract class GroupManager {
         buildDutySchedules(m_groups);
         
         Roles roles = groupinfo.getRoles();
-        m_roles = new HashMap();
+        m_roles = new HashMap<String, Role>();
         if (roles != null) {
             Iterator it = roles.getRoleCollection().iterator();
             while(it.hasNext()) {
@@ -116,27 +116,18 @@ public abstract class GroupManager {
     /**
      * Set the groups data
      */
-    public void setGroups(Map grp) {
+    public void setGroups(Map<String, Group> grp) {
         m_groups = grp;
     }
 
     /**
      * Get the groups
      */
-    public Map getGroups() throws IOException, MarshalException, ValidationException {
+    public Map<String, Group> getGroups() throws IOException, MarshalException, ValidationException {
     
         update();
     
-        Map newMap = new HashMap();
-    
-        Iterator i = m_groups.keySet().iterator();
-    
-        while (i.hasNext()) {
-            String key = (String) i.next();
-            newMap.put(key, (Group) m_groups.get(key));
-        }
-    
-        return newMap;
+        return new HashMap<String, Group>(m_groups);
     
     }
 
@@ -161,18 +152,10 @@ public abstract class GroupManager {
 
     /**
      */
-    public List getGroupNames() throws IOException, MarshalException, ValidationException {
+    public List<String> getGroupNames() throws IOException, MarshalException, ValidationException {
         update();
     
-        List groupNames = new ArrayList();
-    
-        Iterator i = m_groups.keySet().iterator();
-    
-        while (i.hasNext()) {
-            groupNames.add((String) i.next());
-        }
-    
-        return groupNames;
+        return new ArrayList<String>(m_groups.keySet());
     }
 
     /**
@@ -185,7 +168,7 @@ public abstract class GroupManager {
     public Group getGroup(String name) throws IOException, MarshalException, ValidationException {
         update();
     
-        return (Group) m_groups.get(name);
+        return m_groups.get(name);
     }
 
     /**
@@ -234,13 +217,13 @@ public abstract class GroupManager {
      * @param groups the map of groups parsed from the xml config file
      */
     private static void buildDutySchedules(Map groups) {
-        m_dutySchedules = new HashMap();
+        m_dutySchedules = new HashMap<String, List<DutySchedule>>();
         Iterator i = groups.keySet().iterator();
         while(i.hasNext()) {
             String key = (String)i.next();
             Group curGroup = (Group)groups.get(key);
             if (curGroup.getDutyScheduleCount() > 0) {
-                List dutyList = new ArrayList();
+                List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
                 Enumeration duties = curGroup.enumerateDutySchedule();
                 while(duties.hasMoreElements()) {
                     dutyList.add(new DutySchedule( (String)duties.nextElement() ));
@@ -431,7 +414,7 @@ public abstract class GroupManager {
         } else {
             Collection coll = (Collection) m_groups.values();
             Iterator iter = (Iterator) coll.iterator();
-            Map map = new HashMap();
+            Map<String, Group> map = new HashMap<String, Group>();
     
             while (iter.hasNext()) {
                 Group group = (Group) iter.next();
@@ -491,11 +474,11 @@ public abstract class GroupManager {
         return false;
     }
     
-    public List getSchedulesForRoleAt(String roleId, Date time) throws MarshalException, ValidationException, IOException {
+    public List<Schedule> getSchedulesForRoleAt(String roleId, Date time) throws MarshalException, ValidationException, IOException {
         update();
 
         Role role = getRole(roleId);
-        List schedules = new ArrayList();
+        List<Schedule> schedules = new ArrayList<Schedule>();
         for (Iterator it = role.getScheduleCollection().iterator(); it.hasNext();) {
             Schedule sched = (Schedule) it.next();
             if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
@@ -508,7 +491,7 @@ public abstract class GroupManager {
     public List getUserSchedulesForRole(String userId, String roleid) throws MarshalException, ValidationException, IOException {
         update();
 
-        List scheds = new ArrayList();
+        List<Schedule> scheds = new ArrayList<Schedule>();
         Role role = getRole(roleid);
         Iterator it = role.getScheduleCollection().iterator();
         while(it.hasNext()) {

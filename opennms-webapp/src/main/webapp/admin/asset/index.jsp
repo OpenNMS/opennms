@@ -42,7 +42,6 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.lang.*"
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >

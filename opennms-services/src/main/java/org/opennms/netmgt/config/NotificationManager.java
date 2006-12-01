@@ -689,7 +689,7 @@ public abstract class NotificationManager {
     /**
      * 
      */
-    public Map getNotifications() throws IOException, MarshalException, ValidationException {
+    public Map<String, Notification> getNotifications() throws IOException, MarshalException, ValidationException {
         update();
     
         Map<String, Notification> newMap = new HashMap<String, Notification>();

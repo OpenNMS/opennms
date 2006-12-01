@@ -41,8 +41,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
+	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"

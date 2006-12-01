@@ -44,6 +44,7 @@ import java.io.File;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
 

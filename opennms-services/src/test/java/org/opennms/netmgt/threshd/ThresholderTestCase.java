@@ -52,7 +52,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 	private int m_step;
 	protected ServiceThresholder m_thresholder;
 	private MockEventIpcManager m_eventMgr;
-	private MockNetwork m_network;
+	protected MockNetwork m_network;
     private String m_serviceName;
     private String m_ipAddress;
 
@@ -87,13 +87,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 
 	protected void setupThresholdConfig(String dirName, String fileName, String ipAddress, String serviceName, String groupName) throws IOException, UnknownHostException, FileNotFoundException, MarshalException, ValidationException {
 		File dir = new File(dirName);
-		dir.mkdirs();
-		File f = new File(dir, fileName);
-		PrintWriter out = new PrintWriter(new FileWriter(f));
-		out.println("unused");
-		out.close();
-		f.deleteOnExit();
-		dir.deleteOnExit();
+		File f = createFile(dir, fileName);
 		m_fileName = f.getAbsolutePath();
 		m_step = 300000;
 		m_iface = new IPv4NetworkInterface(InetAddress.getByName(ipAddress));
@@ -110,6 +104,17 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		r.close();
 		ThresholdingConfigFactory.getInstance().getGroup(groupName).setRrdRepository(dir.getParentFile().getAbsolutePath());
 	}
+
+    private File createFile(File dir, String fileName) throws IOException {
+        dir.mkdirs();
+		File f = new File(dir, fileName);
+		PrintWriter out = new PrintWriter(new FileWriter(f));
+		out.println("unused");
+		out.close();
+		f.deleteOnExit();
+		dir.deleteOnExit();
+        return f;
+    }
 
 	protected void createMockRrd() {
 		// set this so we don't get exceptions in the log

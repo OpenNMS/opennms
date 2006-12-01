@@ -48,16 +48,11 @@
 		org.opennms.web.graph.PrefabGraph,
 		org.opennms.web.graph.ResourceId,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
 %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %> 
-<%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
-<%@ include file="/WEB-INF/jspf/KSC/nodereport.jspf" %> 
-<%@ include file="/WEB-INF/jspf/KSC/domainreport.jspf" %> 
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
 
 <%
     String[] requiredParameters = new String[] { "report or domain", "type" };

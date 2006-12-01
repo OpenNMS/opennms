@@ -62,7 +62,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.MibObject;
-import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
@@ -71,6 +70,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
+import org.opennms.netmgt.model.RrdRepository;
 
 /**
  * This class is the main respository for SNMP data collection configuration

@@ -42,16 +42,14 @@
 		java.io.*,
 		org.opennms.web.Util,
 		org.opennms.web.graph.ResourceId,
-		org.opennms.web.performance.*,
 		org.opennms.web.graph.PrefabGraph,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
 %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %> 
-<%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
+
 
 <%
     // Get Form Variables

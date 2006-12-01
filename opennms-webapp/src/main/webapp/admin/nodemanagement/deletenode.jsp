@@ -42,7 +42,6 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.element.*,
-		java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.MissingParameterException
 	"

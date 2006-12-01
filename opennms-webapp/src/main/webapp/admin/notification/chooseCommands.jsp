@@ -45,7 +45,8 @@
 	import="java.util.*,
 		org.opennms.web.Util,
 		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.destinationPaths.*
+		org.opennms.netmgt.config.destinationPaths.*,
+        org.opennms.netmgt.config.notificationCommands.Command
 	"
 %>
 
@@ -174,23 +175,20 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
     {
         StringBuffer buffer = new StringBuffer("<select multiple size=\"3\" NAME=\"" + name + "Commands\">");
         
-        TreeMap commands = null;
-        Collection selectedOptions = null;
+        TreeMap<String, Command> commands = null;
+        Collection<String> selectedOptions = null;
         
         try {
           selectedOptions = DestinationPathFactory.getInstance().getTargetCommands(path, index, name);
-          commands = new TreeMap(NotificationCommandFactory.getInstance().getCommands());
+          commands = new TreeMap<String, Command>(NotificationCommandFactory.getInstance().getCommands());
         
         if (selectedOptions==null || selectedOptions.size()==0)
         {
-            selectedOptions = new ArrayList();
+            selectedOptions = new ArrayList<String>();
             selectedOptions.add("email");
         }
-        
-        Iterator i = commands.keySet().iterator();
-        while(i.hasNext())
-        {
-            String curCommand = (String)i.next();
+
+        for(String curCommand : commands.keySet()) {
             if (selectedOptions.contains(curCommand))
             {
                 buffer.append("<option selected VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");

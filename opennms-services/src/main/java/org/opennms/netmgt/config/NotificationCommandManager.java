@@ -55,7 +55,7 @@ public abstract class NotificationCommandManager {
     /**
      * 
      */
-    private Map m_commands;
+    private Map<String, Command> m_commands;
     /**
      */
     protected InputStream configIn;
@@ -67,7 +67,7 @@ public abstract class NotificationCommandManager {
      */
     protected void parseXML(Reader reader) throws MarshalException, ValidationException {
         Collection commands = ((NotificationCommands) Unmarshaller.unmarshal(NotificationCommands.class, reader)).getCommandCollection();
-        m_commands = new HashMap();
+        m_commands = new HashMap<String, Command>();
     
         Iterator i = commands.iterator();
         while (i.hasNext()) {
@@ -80,13 +80,13 @@ public abstract class NotificationCommandManager {
      * 
      */
     public Command getCommand(String name) {
-        return (Command) m_commands.get(name);
+        return m_commands.get(name);
     }
 
     /**
      * 
      */
-    public Map getCommands() {
+    public Map<String, Command> getCommands() {
         return m_commands;
     }
 

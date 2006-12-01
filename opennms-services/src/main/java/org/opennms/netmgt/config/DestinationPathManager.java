@@ -66,7 +66,7 @@ public abstract class DestinationPathManager {
     /**
      * 
      */
-    private Map m_destinationPaths;
+    private Map<String, Path> m_destinationPaths;
     /**
      * 
      */
@@ -85,7 +85,7 @@ public abstract class DestinationPathManager {
         allPaths = (DestinationPaths) Unmarshaller.unmarshal(DestinationPaths.class, reader);
         oldHeader = allPaths.getHeader();
     
-        m_destinationPaths = new TreeMap();
+        m_destinationPaths = new TreeMap<String, Path>();
     
         Iterator i = allPaths.getPathCollection().iterator();
         while (i.hasNext()) {
@@ -100,13 +100,13 @@ public abstract class DestinationPathManager {
     public Path getPath(String pathName) throws IOException, MarshalException, ValidationException {
         update();
     
-        return (Path) m_destinationPaths.get(pathName);
+        return m_destinationPaths.get(pathName);
     }
 
     /**
      * 
      */
-    public Map getPaths() throws IOException, MarshalException, ValidationException {
+    public Map<String, Path> getPaths() throws IOException, MarshalException, ValidationException {
         update();
     
         return m_destinationPaths;
@@ -115,7 +115,9 @@ public abstract class DestinationPathManager {
     /**
      * 
      */
-    public Collection getTargetCommands(Path path, int index, String target) throws IOException, MarshalException, ValidationException {
+    
+    @SuppressWarnings("unchecked")
+    public Collection<String> getTargetCommands(Path path, int index, String target) throws IOException, MarshalException, ValidationException {
         update();
     
         Target[] targets = getTargetList(index, path);

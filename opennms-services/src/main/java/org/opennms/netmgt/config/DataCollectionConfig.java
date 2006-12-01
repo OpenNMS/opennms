@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.collectd.MibObject;
-import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.model.RrdRepository;
 
 public interface DataCollectionConfig {
     

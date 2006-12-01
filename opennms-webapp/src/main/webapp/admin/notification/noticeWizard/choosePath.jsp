@@ -45,6 +45,7 @@
 	import="java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.notifications.*,
+        org.opennms.netmgt.config.destinationPaths.*,
 		org.opennms.netmgt.config.*
 	"
 %>
@@ -204,10 +205,10 @@
     {
          StringBuffer buffer = new StringBuffer("<select NAME=\"path\">");
          
-         Map pathsMap = null;
+         Map<String, Path> pathsMap = null;
          
          try {
-            pathsMap = new TreeMap(DestinationPathFactory.getInstance().getPaths());
+            pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
          Iterator iterator = pathsMap.keySet().iterator();
          while(iterator.hasNext())
          { 

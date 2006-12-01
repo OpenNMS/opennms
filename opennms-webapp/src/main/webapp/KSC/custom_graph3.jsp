@@ -36,26 +36,20 @@
 
 --%>
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="java.util.*,
-		java.io.*,
-		org.opennms.web.performance.*,
+<%@ page language="java" contentType="text/html" session="true" %>
+<%@ page import="java.util.*,
 		org.opennms.web.*,
 		org.opennms.web.graph.PrefabGraph,
 		org.opennms.web.graph.ResourceId,
 		java.io.File,
 		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
 		org.opennms.web.element.NetworkElementFactory,
-		org.springframework.web.context.WebApplicationContext,
-		org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
-<%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
+
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
+
 
 <%
     String[] requiredParameters = new String[] {"node or domain", "intf"};

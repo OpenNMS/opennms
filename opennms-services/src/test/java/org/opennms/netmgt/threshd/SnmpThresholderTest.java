@@ -32,6 +32,9 @@
 package org.opennms.netmgt.threshd;
 
 
+import org.opennms.netmgt.mock.MockElement;
+import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -47,14 +50,20 @@ public class SnmpThresholderTest extends ThresholderTestCase {
         createMockRrd();
 
         setupEventManager();
+        
+        MockService svc = m_network.getService(1, "192.168.1.1", "SNMP");
+        
+        MockNode node = svc.getNode();
+        
        
-        String dirName = "target/threshd-test/1";
+        String rrdRepository = "target/threshd-test";
         String fileName = "cpuUtilization"+RrdUtils.getExtension();
+        int nodeId = 1;
         String ipAddress = "192.168.1.1";
         String serviceName = "SNMP";
         String groupName = "default-snmp";
         
-        setupThresholdConfig(dirName, fileName, ipAddress, serviceName, groupName);
+        setupThresholdConfig(rrdRepository+"/"+nodeId, fileName, ipAddress, serviceName, groupName);
 
         m_thresholder = new SnmpThresholder();
         m_thresholder.initialize(m_serviceParameters);

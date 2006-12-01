@@ -3,6 +3,7 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.util.Collection;
 
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 public class GenericIndexResource extends CollectionResource {

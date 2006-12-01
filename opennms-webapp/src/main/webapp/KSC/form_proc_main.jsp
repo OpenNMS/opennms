@@ -39,14 +39,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.MissingParameterException,
-		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory
-	"
+	import="org.opennms.web.MissingParameterException"
 %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init1.jspf" %>
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
 
 <%
     // Get Form Variables

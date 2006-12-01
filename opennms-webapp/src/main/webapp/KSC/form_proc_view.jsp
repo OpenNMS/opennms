@@ -41,15 +41,11 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.*,
-		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
 %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
-<%@ include file="/WEB-INF/jspf/KSC/nodereport.jspf" %>
-<%@ include file="/WEB-INF/jspf/KSC/domainreport.jspf" %>
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
 
 <%
     // Get Form Variables

@@ -47,24 +47,17 @@
 --%>
 
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="
-		org.opennms.web.performance.*,
-		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
-		org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils"
-		
-%>
+<%@ page language="java" contentType="text/html" session="true" %>
 
+<%@ page import="org.opennms.netmgt.config.KSC_PerformanceReportFactory"%>
+<%@ page import="org.opennms.netmgt.config.kscReports.*" %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
+
 
 <%
     int r_count=0;
-    ReportsList report_configuration = this.reportFactory.getConfiguration();  
+    ReportsList report_configuration = KSC_PerformanceReportFactory.getConfiguration();  
     Report[] report_array = null;
     try {
          if (report_configuration == null) {

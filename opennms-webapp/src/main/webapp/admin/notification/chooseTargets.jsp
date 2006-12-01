@@ -43,42 +43,33 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
-		org.opennms.web.Util,
-		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.groups.*,
-		org.opennms.netmgt.config.destinationPaths.*
-	"
+            org.opennms.web.Util,
+            org.opennms.netmgt.config.*,
+            org.opennms.netmgt.config.destinationPaths.*"
 %>
 
-<%!
-    public void init() throws ServletException {
+<%!public void init() throws ServletException {
         try {
             UserFactory.init();
             GroupFactory.init();
             DestinationPathFactory.init();
+        } catch (Exception e) {
+            throw new ServletException("Cannot load configuration file", e);
         }
-        catch( Exception e ) {
-            throw new ServletException( "Cannot load configuration file", e );
-        }
-    }
-%>
+    }%>
 
 <%
-    HttpSession user = request.getSession(true);
-    Path newPath = (Path)user.getAttribute("newPath");
-    
-    String[] targetLinks = null;
-    Collection targets = null;
-    
-    int index = Integer.parseInt(request.getParameter("targetIndex"));
-    if (index < 0)
-    {
-        targets = newPath.getTargetCollection();
-    }
-    else
-    {
-        targets = newPath.getEscalate()[index].getTargetCollection();
-    }
+            HttpSession user = request.getSession(true);
+            Path newPath = (Path) user.getAttribute("newPath");
+
+            Collection targets = null;
+
+            int index = Integer.parseInt(request.getParameter("targetIndex"));
+            if (index < 0) {
+                targets = newPath.getTargetCollection();
+            } else {
+                targets = newPath.getEscalate()[index].getTargetCollection();
+            }
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -173,7 +164,8 @@
 </script>
 
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
+<h2><%=(newPath.getName() != null ? "Editing path: "
+                            + newPath.getName() + "<br>" : "")%></h2>
 
 <h3>Choose the users and groups to send the notice to.</h3>
 
@@ -207,49 +199,64 @@ action="admin/notification/destinationWizard" >
         <tr>
           <td width="25%" valign="top" align="left">
             <select WIDTH="200" STYLE="width: 200px" NAME="users" SIZE="10" multiple>
-             <% Map users = getUsers(targets);
-                Iterator iterator = users.keySet().iterator();
-                while(iterator.hasNext()) 
-                { 
-                  String key = (String)iterator.next();
-                  if ( ((Boolean)users.get(key)).booleanValue() )  {  %>
+             <%
+                         Map users = getUsers(targets);
+                         Iterator iterator = users.keySet().iterator();
+                         while (iterator.hasNext()) {
+                             String key = (String) iterator.next();
+                             if (((Boolean) users.get(key)).booleanValue()) {
+             %>
                     <option selected VALUE=<%=key%>><%=key%></option>
-            <%    } else { %>
+            <%
+            } else {
+            %>
                     <option VALUE=<%=key%>><%=key%></option>
-            <%    }
-               } %>
+            <%
+                        }
+                        }
+            %>
             </select>
           </td>
           <td>&nbsp;</td>
           <td width="25%" valign="top" align="left">
             <select WIDTH="200" STYLE="width: 200px" NAME="groups" SIZE="10" multiple>
-             <% Map groups = getGroups(targets);
-                iterator = groups.keySet().iterator();
-                while(iterator.hasNext()) 
-                { 
-                  String key = (String)iterator.next();
-                  if ( ((Boolean)groups.get(key)).booleanValue() ) {  %>
+             <%
+                         Map groups = getGroups(targets);
+                         iterator = groups.keySet().iterator();
+                         while (iterator.hasNext()) {
+                             String key = (String) iterator.next();
+                             if (((Boolean) groups.get(key)).booleanValue()) {
+             %>
                     <option selected VALUE=<%=key%>><%=key%></option>
-            <%    } else { %>
+            <%
+            } else {
+            %>
                     <option VALUE=<%=key%>><%=key%></option>
-            <%    }
-               } %>
+            <%
+                        }
+                        }
+            %>
             </select>
            </td>
            <td>&nbsp;</td>
           <td width="25%" valign="top" align="left">
             <select WIDTH="200" STYLE="width: 200px" NAME="roles" SIZE="10" multiple>
-             <% Map roles = getRoles(targets);
-                iterator = roles.keySet().iterator();
-                while(iterator.hasNext()) 
-                { 
-                  String key = (String)iterator.next();
-                  if ( ((Boolean)roles.get(key)).booleanValue() ) {  %>
+             <%
+                         Map roles = getRoles(targets);
+                         iterator = roles.keySet().iterator();
+                         while (iterator.hasNext()) {
+                             String key = (String) iterator.next();
+                             if (((Boolean) roles.get(key)).booleanValue()) {
+             %>
                     <option selected VALUE=<%=key%>><%=key%></option>
-            <%    } else { %>
+            <%
+            } else {
+            %>
                     <option VALUE=<%=key%>><%=key%></option>
-            <%    }
-               } %>
+            <%
+                        }
+                        }
+            %>
             </select>
            </td>
            <td>&nbsp;</td>
@@ -257,14 +264,16 @@ action="admin/notification/destinationWizard" >
             <input type="button" value="Add Address" onclick="javascript:addAddress()"/>
             <br>&nbsp;<br>
             <select  WIDTH="200" STYLE="width: 200px" NAME="emails" SIZE="7" multiple>
-             <% Map emails = getEmails(targets);
-                iterator = emails.keySet().iterator();
-                while(iterator.hasNext())
-                { 
-                  String key = (String)iterator.next();
-                %>
+             <%
+                         Map emails = getEmails(targets);
+                         iterator = emails.keySet().iterator();
+                         while (iterator.hasNext()) {
+                             String key = (String) iterator.next();
+             %>
                     <option VALUE=<%=key%>><%=key%></option>
-            <%  } %>
+            <%
+            }
+            %>
             </select>
             <br>
             <input type="button" value="Remove Address" onclick="javascript:removeAddress()"/>
@@ -287,130 +296,87 @@ action="admin/notification/destinationWizard" >
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
 <%!
-    public Map getUsers(Collection targets)
-      throws ServletException
-    {
-        Map allUsers = null;
-        
+public Map getUsers(Collection targets) throws ServletException {
+        Map<String, Boolean> allUsers = null;
+
         try {
-	  allUsers = new TreeMap(new Comparator() {
-		public int compare(Object o1, Object o2) {
-			if(o1 instanceof String && o2 instanceof String) {
-				return ((String)o1).compareToIgnoreCase((String)o2);
-			} 
-			throw new RuntimeException("Non string comparision for a string comparator");	
-		}
- 
-	  });
-          allUsers.putAll(UserFactory.getInstance().getUsers());
-        Collection targetNames = getTargetNames(targets);
-        
-        Iterator i = allUsers.keySet().iterator();
-        while(i.hasNext())
-        {
-            String key = (String)i.next();
-            if (targetNames.contains(key))
-            {
-                allUsers.put(key, new Boolean(true));
+            allUsers = new TreeMap<String, Boolean>(new Comparator<String>() {
+                public int compare(String o1, String o2) {
+                    return o1.compareToIgnoreCase(o2);
+                }
+
+            });
+            
+            Collection targetNames = getTargetNames(targets);
+            for (String key : UserFactory.getInstance().getUserNames()) {
+                allUsers.put(key, targetNames.contains(key));
             }
-            else
-            {
-                allUsers.put(key, new Boolean(false));
-            }
-        }
-        } catch (Exception e)
-        { 
+
+        } catch (Exception e) {
             throw new ServletException("could not get list of all users.", e);
         }
-        
+
         return allUsers;
     }
-    
-    public Map getGroups(Collection targets)
-      throws ServletException
-    {
-        Map allGroups = null;
-        
+
+    public Map getGroups(Collection targets) throws ServletException {
         try {
-          allGroups = new TreeMap(GroupFactory.getInstance().getGroups());
-        Collection targetNames = getTargetNames(targets);
-        
-        Iterator i = allGroups.keySet().iterator();
-        while(i.hasNext())
-        {
-            String key = (String)i.next();
-            if (targetNames.contains(key))
-            {
-                allGroups.put(key, new Boolean(true));
+            Collection targetNames = getTargetNames(targets);
+
+            Map<String, Boolean> allGroups = new TreeMap<String, Boolean>();
+            for(String key : GroupFactory.getInstance().getGroupNames()) {
+                allGroups.put(key, targetNames.contains(key));
             }
-            else
-            {
-                allGroups.put(key, new Boolean(false));
-            }
-           }
-        } catch (Exception e)
-        { 
+            return allGroups;
+            
+        } catch (Exception e) {
             throw new ServletException("could not get list of all groups.", e);
         }
-        
-        return allGroups;
     }
-    
-public Map getRoles(Collection targets) throws ServletException {
-	try {
-		Map rolesMap = new TreeMap();;
-      
-		Collection targetNames = getTargetNames(targets);
-      
-		Iterator i = GroupFactory.getInstance().getRoles().iterator();
-		while(i.hasNext()) {
-			Role role = (Role)i.next();
-			String key = role.getName();
-			if (targetNames.contains(key)) {
-				rolesMap.put(key, new Boolean(true));
-			} else {
-				rolesMap.put(key, new Boolean(false));
-			}
-		}
-      
-		return rolesMap;
-	} catch (Exception e) { 
-		throw new ServletException("could not get list of all groups.", e);
-	}
-}
-    public Map getEmails(Collection targets)
-      throws ServletException
-    {
-        Map emails = new TreeMap();
-        
+
+    public Map getRoles(Collection targets) throws ServletException {
         try {
-          Collection targetNames = getTargetNames(targets);
-          
-          Iterator i = targetNames.iterator();
-          while(i.hasNext())
-          {
-              String key = (String)i.next();
-              if (key.indexOf("@") > -1)
-              {
-                  emails.put(key, key);
-              }
-           }
-        } catch (Exception e)
-        { 
-            throw new ServletException("could not get list of email targets.", e);
+            Map<String, Boolean> rolesMap = new TreeMap<String, Boolean>();
+
+            Collection targetNames = getTargetNames(targets);
+
+            for(String key : GroupFactory.getInstance().getRoleNames()) {
+                rolesMap.put(key, targetNames.contains(key));
+            }
+
+            return rolesMap;
+        } catch (Exception e) {
+            throw new ServletException("could not get list of all groups.", e);
         }
-        
+    }
+
+    public Map getEmails(Collection targets) throws ServletException {
+        Map<String, String> emails = new TreeMap<String, String>();
+
+        try {
+            Collection targetNames = getTargetNames(targets);
+
+            Iterator i = targetNames.iterator();
+            while (i.hasNext()) {
+                String key = (String) i.next();
+                if (key.indexOf("@") > -1) {
+                    emails.put(key, key);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServletException("could not get list of email targets.",
+                    e);
+        }
+
         return emails;
     }
-    
-    public Collection getTargetNames(Collection targets)
-    {
-        Collection targetNames = new ArrayList();
-        
+
+    public Collection<String> getTargetNames(Collection targets) {
+        Collection<String> targetNames = new ArrayList<String>();
+
         Iterator i = targets.iterator();
-        while(i.hasNext())
-          targetNames.add( ((Target)i.next()).getName() );
-        
+        while (i.hasNext()) {
+            targetNames.add(((Target) i.next()).getName());
+        }
         return targetNames;
-    }
-%>
+    }%>
