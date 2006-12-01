@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.ParameterMap;
 
@@ -39,10 +38,6 @@ public class SnmpThresholdConfiguration {
     
     private ThresholdGroup m_thresholdGroup;
 
-    private ThresholdResourceType m_nodeResourceType;
-
-    private ThresholdResourceType m_ifResourceType;
-    
     private SnmpThresholdConfiguration(Map parms) {
         m_parms = parms;
         DefaultThresholdsDao dao = new DefaultThresholdsDao();

@@ -134,7 +134,7 @@
         StringBuffer buffer = new StringBuffer();
         
         List excludeList = getExcludeList();
-	TreeMap sortedMap = new TreeMap();
+	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 
         Iterator i = events.iterator();
 
@@ -170,7 +170,6 @@
     
     public String stripUei(String uei)
     {
-        int index = 0;
         String leftover = uei;
         
         for (int i = 0; i < 3; i++)
@@ -184,7 +183,7 @@
      public List getExcludeList()
       throws IOException, FileNotFoundException
      {
-        List excludes = new ArrayList();
+        List<String> excludes = new ArrayList<String>();
         
         Properties excludeProperties = new Properties();
 	excludeProperties.load( new FileInputStream( ConfigFileConstants.getFile(ConfigFileConstants.EXCLUDE_UEI_FILE_NAME )));

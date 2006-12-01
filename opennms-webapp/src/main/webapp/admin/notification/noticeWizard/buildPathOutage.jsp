@@ -41,12 +41,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		java.sql.*,
-		org.opennms.web.admin.notification.noticeWizard.*,
-		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*
-	"
+	import="org.opennms.web.admin.notification.noticeWizard.*"
 %>
 
 <%
@@ -78,11 +73,14 @@
 
 <form method="post" name="crpth"
       action="admin/notification/noticeWizard/notificationWizard" >
-    <h3><% String mode = request.getParameter("mode");
-           if (mode != null && mode.endsWith("failed")) { %>
-              <p style="color:red"><%=mode%>. Please check the entry for errors and re-submit.</p>
-           <% } %>
-    </h3>
+      
+      
+    <% String mode = request.getParameter("mode");
+       if (mode != null && mode.endsWith("failed")) { %>
+       
+        <h3 style="color:red"><%=mode%>. Please check the entry for errors and re-submit.</h3>
+              
+    <% } %>
 
     <h3>Define the Critical Path</h3>
 
@@ -128,7 +126,11 @@
            <br><br>
 
 	    Show matching node list:
-            <input type=checkbox name="showNodes"  <%= (showNodes != null ? "checked" : "") %> >
+            <% if (showNodes == null) { %>
+            <input type="checkbox" name="showNodes" checked="true" >
+            <% } else { %>
+            <input type="checkbox" name="showNodes">
+            <% } %>
            <br>
 
            <br>

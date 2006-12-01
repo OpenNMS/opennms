@@ -36,6 +36,8 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
+import org.opennms.netmgt.model.RrdRepository;
+
 
 /**
  * This class encapsulates all of the node-level data required by the SNMP data

@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.StringUtils;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;

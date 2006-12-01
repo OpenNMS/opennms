@@ -44,11 +44,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.element.*,
-		java.util.*,
-		org.opennms.web.event.*,
-		java.net.*,
-        	org.opennms.web.MissingParameterException
-	"
+        	org.opennms.web.MissingParameterException"
 %>
 
 <%

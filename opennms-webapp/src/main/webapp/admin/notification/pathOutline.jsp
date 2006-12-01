@@ -65,8 +65,8 @@
     String intervals[] = {"0m", "1m", "2m", "5m", "10m", "15m", "30m", "1h", "2h", "3h", "6h", "12h", "1d"};
     HttpSession user = request.getSession(true);
     Path newPath = (Path)user.getAttribute("newPath");
-    List targetLinks = new ArrayList();
-    List escalateDelays = new ArrayList();
+    List<String> targetLinks = new ArrayList<String>();
+    List<String> escalateDelays = new ArrayList<String>();
     
     targetLinks.add( "Initial Targets" );
     String[] targets = new String[newPath.getEscalateCount()];
@@ -163,28 +163,32 @@
   all editing is complete click the <i>Finish</i> button. No changes will
   be permanent until the <i>Finish</i> button has been clicked.</h3>
 
-<form method="post" name="outline"
-      action="admin/notification/destinationWizard">
-      <input type="hidden" name="sourcePage" value="pathOutline.jsp"/>
-      <input type="hidden" name="index"/>
-      <input type="hidden" name="userAction"/>
-      <input type="hidden" name="escalation" value="false"/>
-      <tr><td>Name: 
+<form method="post" name="outline" action="admin/notification/destinationWizard">
+  <input type="hidden" name="sourcePage" value="pathOutline.jsp"/>
+  <input type="hidden" name="index"/>
+  <input type="hidden" name="userAction"/>
+  <input type="hidden" name="escalation" value="false"/>
+  <table>
+    <tr>
+      <td>Name: 
       <% if (newPath.getName()==null) { %>
         <input type="text" name="name" value=""/>
       <% } else { %>
         <input type="text" name="name" value="<%=newPath.getName()%>"/>
       <% } %>
-      </td></tr>
-      <br>
-      <tr><td>
+      </td>
+    </tr>
+    <tr>
+      <td>
       Initial Delay: <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay())%>
-      </td></tr>
-      <% for (int i = 0; i < targetLinks.size(); i++) { %>
-        <tr><td>
+      </td>
+    </tr>
+    <% for (int i = 0; i < targetLinks.size(); i++) { %>
+     <tr>
+       <td>
         <table width="15%" bgcolor="#999999" cellspacing="2" cellpadding="2" border="1">
-           <tr>
-              <td width="10%">
+          <tr>
+            <td width="10%">
               <b>
               <% if (i==0) { %>
                 <%="Initial Targets"%>
@@ -198,8 +202,8 @@
                 <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalate(i-1).getDelay())%><br>
               <% } %>
               <%=buildTargetList(i, newPath, "escalate"+i)%>  
-              </td>
-              <td width="5%" valign="top">
+            </td>
+            <td width="5%" valign="top">
                 <input type="button" value="Edit" onclick="javascript:edit(<%=i-1%>)"/>
                 <br>
                 &nbsp;
@@ -209,23 +213,25 @@
                 <% } else { %>
                   &nbsp;
                 <% } %>
-              </td>
-            </tr>
+            </td>
+          </tr>
         </table>
-        <tr>
-          <td>
-              <input type="button" value="Add Escalation" onclick="javascript:add(<%=i%>)"/>
-          </td>
-        </tr>
-      <% } %>
-      <tr>
-        <td>
-          <input type="button" value="Finish" onclick="javascript:finish()"/>
-          <input type="button" value="Cancel" onclick="javascript:cancel()"/>
-        </td>
-      </tr>
-    </form>
-    </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="button" value="Add Escalation" onclick="javascript:add(<%=i%>)"/>
+      </td>
+    </tr>
+    <% } %>
+    <tr>
+      <td>
+        <input type="button" value="Finish" onclick="javascript:finish()"/>
+        <input type="button" value="Cancel" onclick="javascript:cancel()"/>
+      </td>
+    </tr>
+  </table>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
@@ -233,7 +239,6 @@
     public String buildDelaySelect(String[] intervals, String name, String currValue)
     {
           StringBuffer buffer = new StringBuffer("<select NAME=\"" + name  + "\">");
-          String selectedOption = "0m";
                     
           for (int i = 0; i < intervals.length; i++)
           {

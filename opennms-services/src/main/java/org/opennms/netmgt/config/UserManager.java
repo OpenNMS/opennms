@@ -70,11 +70,11 @@ public abstract class UserManager {
     /**
      * A mapping of user ids to the User objects
      */
-    protected HashMap m_users;
+    protected HashMap<String, User> m_users;
     /**
      * The duty schedules for each user
      */
-    protected HashMap m_dutySchedules;
+    protected HashMap<String, List<DutySchedule>> m_dutySchedules;
     private Header oldHeader;
 
     protected UserManager(GroupManager groupManager) {
@@ -90,7 +90,7 @@ public abstract class UserManager {
         Users users = userinfo.getUsers();
         oldHeader = userinfo.getHeader();
         Collection usersList = users.getUserCollection();
-        m_users = new HashMap();
+        m_users = new HashMap<String, User>();
     
         Iterator i = usersList.iterator();
         while (i.hasNext()) {
@@ -122,16 +122,14 @@ public abstract class UserManager {
      * @param users
      *            the map of users parsed from the xml config file
      */
-    private void buildDutySchedules(Map users) {
-        m_dutySchedules = new HashMap();
-        Iterator i = users.keySet().iterator();
-    
-        while (i.hasNext()) {
-            String key = (String) i.next();
+    private void buildDutySchedules(Map<String, User> users) {
+        m_dutySchedules = new HashMap<String, List<DutySchedule>>();
+        
+        for (String key : users.keySet()) {
             User curUser = (User) users.get(key);
     
             if (curUser.getDutyScheduleCount() > 0) {
-                List dutyList = new ArrayList();
+                List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
                 Enumeration duties = curUser.enumerateDutySchedule();
     
                 while (duties.hasMoreElements()) {
@@ -181,7 +179,7 @@ public abstract class UserManager {
     /**
      * Return a <code>Map</code> of usernames to user instances.
      */
-    public Map getUsers() throws IOException, MarshalException, ValidationException {
+    public Map<String, User> getUsers() throws IOException, MarshalException, ValidationException {
     
         update();
     
@@ -202,16 +200,14 @@ public abstract class UserManager {
 
     /**
      */
-    public List getUserNames() throws IOException, MarshalException, ValidationException {
+    public List<String> getUserNames() throws IOException, MarshalException, ValidationException {
     
         update();
     
-        List userNames = new ArrayList();
-    
-        Iterator i = m_users.keySet().iterator();
-    
-        while (i.hasNext()) {
-            userNames.add((String) i.next());
+        List<String> userNames = new ArrayList<String>();
+        
+        for (String key : m_users.keySet()) {
+            userNames.add(key);
         }
     
         return userNames;
@@ -608,7 +604,7 @@ public abstract class UserManager {
     public String[] getUsersWithRole(String roleid) throws IOException, MarshalException, ValidationException {
         update();
         
-        List usersWithRole = new ArrayList();
+        List<String> usersWithRole = new ArrayList<String>();
         
         Iterator i = m_users.values().iterator();
         
@@ -643,7 +639,7 @@ public abstract class UserManager {
     public String[] getUsersScheduledForRole(String roleid, Date time) throws MarshalException, ValidationException, IOException {
         update();
         
-        List usersScheduledForRole = new ArrayList();
+        List<String> usersScheduledForRole = new ArrayList<String>();
         
         Iterator i = m_users.values().iterator();
         

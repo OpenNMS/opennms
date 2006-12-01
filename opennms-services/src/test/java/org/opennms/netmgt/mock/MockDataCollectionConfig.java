@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.collectd.MibObject;
-import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.collectd.SnmpCollector;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 
 public class MockDataCollectionConfig implements DataCollectionConfig {

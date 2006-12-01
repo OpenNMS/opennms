@@ -51,10 +51,10 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.collectd.RrdRepository;
 import org.opennms.netmgt.config.datacollection.HttpCollection;
 import org.opennms.netmgt.config.datacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.opennms.netmgt.model.RrdRepository;
 
 /**
  * 

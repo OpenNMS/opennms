@@ -39,16 +39,14 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.Util,
+	import="
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
-                org.opennms.web.acegisecurity.Authentication,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory
+        org.opennms.web.acegisecurity.Authentication,
 	"
 %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
 
 <%
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();

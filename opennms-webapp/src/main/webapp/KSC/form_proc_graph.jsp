@@ -39,13 +39,11 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.netmgt.config.KSC_PerformanceReportFactory
-	"
+	import="org.opennms.netmgt.config.kscReports.*"
 %>
 
-<%@ include file="/WEB-INF/jspf/KSC/init1.jspf"%>
+<%@ page extends="org.opennms.web.graph.KscJspBase" %>
+
 
 <%
     // Get The Customizable (Working) Graph 
