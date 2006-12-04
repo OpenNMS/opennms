@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+            targetNamespace="http://www.opennms.org/xsd/config/http-site-config" 
+            xmlns:this="http://www.opennms.org/xsd/config/http-site-config">
+
+<!-- We need better name for this element and config file, this what we came up with for now -->
+
+  <annotation>
+    <documentation>
+    
+      This configuration file will be use by both the HttpCollector (eventually) and the HttpMonitor
+      for handling complex monitoring and datacollection.  Most of this config has been stolen from 
+      the http-collection-config.xsd and will soon be merged.
+      
+      With this configuration, an HttpMonitor has been developed for handling complex monitoring
+      of web sites that may require form based logins, following redirects, eating cookies, etc.
+      
+    </documentation>
+  </annotation>
+  
+  <element name="web-applications">
+    <complexType>
+      <sequence>
+        <element ref="this:web-app" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="web-app" >
+    <annotation>
+      <documentation>
+      
+        Use this container to define an application and the page sequences required to
+        effectively monitor its behavior.
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:page-sequence" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" />
+    </complexType>
+  </element>
+  
+  <element name="page-sequence" >
+    <annotation>
+      <documentation>
+      
+        Use this container to list the page in the order they are to be accessed for monitoring
+        or (soon) datacollection.
+      
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:page" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="force-logout" type="boolean" use="optional" default="true" />
+    </complexType>
+  </element>
+
+  <element name="page" >
+    <annotation>
+      <documentation>
+      
+        This element specifies all the possible attributes in as fine grained detail as possible.  All that
+        is really required (as you can see below) is the "path" attribute.  From that one attribute,
+        the IP address passed in through the ServiceMonitor and ServiceCollector interface, the URL will be
+        fully generated using the supplied defaults in this config.  Configure attributes these attributes to
+        the level of detail you need to fully control the behavior.
+        
+        A little bit of indirection is possible here with the host attribute.  If the host attribute is anything
+        other than the default, that value will be used instead of the IP address passed in through the API (Interface).
+        
+      </documentation>
+    </annotation>
+  
+    <complexType>
+      <sequence>
+        <element ref="this:parameter" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="method" type="this:allowed-methods" use="optional" default="GET" />
+      <attribute name="http-version" type="this:allowed-versions" use="optional" default="1.1" />
+      <attribute name="user-agent" type="string" use="optional" />
+      <attribute name="virtual-host" type="string" use="optional" />
+      <attribute name="scheme" type="string" use="optional" default="http" />
+      <attribute name="user-info" type="string" use="optional" />
+      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="port" type="positiveInteger" use="optional" default="80" />
+      <attribute name="path" type="string" use="required" />
+      <attribute name="query" type="string" use="optional" />
+      <attribute name="fragment" type="string" use="optional" />
+      <attribute name="matches" type="string" use="optional" default="(.*)" />
+      <attribute name="response-range" type="string" use="optional" default="100-399" />
+      <attribute name="page-type" type="string" use="optional" default="normal" />
+    </complexType>
+  </element>
+  
+    <element name="parameter">
+    <annotation>
+      <documentation>Currently only used for HTTP form parameters.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="key" type="string" use="required"/>
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+  
+    <simpleType name="allowed-methods" >
+    <restriction base="string" >
+      <pattern value="GET|POST" />
+    </restriction>
+  </simpleType>
+  
+    <simpleType name="allowed-versions" >
+    <restriction base="string" >
+      <pattern value="1\.0|1\.1" />
+    </restriction>
+  </simpleType>
+  
+</schema>
