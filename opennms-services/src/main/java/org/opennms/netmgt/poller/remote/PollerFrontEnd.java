@@ -10,8 +10,8 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 public interface PollerFrontEnd {
     
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
-
-	public Collection<PolledService> getPolledServices();
+    
+    public Collection<PolledService> getPolledServices();
     
     /**
      * Is the poller currently registered with the server.
@@ -38,7 +38,7 @@ public interface PollerFrontEnd {
      * @param polledServiceId the id of the polledService whose pollTime we are setting
      * @param initialPollTime the time to set its initialPollTime to
      */
-	public void setInitialPollTime(Integer polledServiceId, Date initialPollTime);
+    public void setInitialPollTime(Integer polledServiceId, Date initialPollTime);
     
     /**
      * Poll the service with id polledServiceId and report the results to the server
@@ -73,13 +73,13 @@ public interface PollerFrontEnd {
      * in the poller configuration
      * @param l
      */
-	public void addConfigurationChangedListener(ConfigurationChangedListener l);
+    public void addConfigurationChangedListener(ConfigurationChangedListener l);
     
     /**
      * Remove a config change listener
      * @param l
      */
-	public void removeConfigurationChangedListener(ConfigurationChangedListener l);
+    public void removeConfigurationChangedListener(ConfigurationChangedListener l);
 
     /**
      * Register a property change listener. (for exampe the 'registered' property)
