@@ -81,7 +81,6 @@
 
 <h3>Error Details</h3>
 
-<p>
   <pre><%
     while (exception != null) {
       exception.printStackTrace(new java.io.PrintWriter(out));
@@ -97,6 +96,5 @@
       }
     }
   %></pre>
-</p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

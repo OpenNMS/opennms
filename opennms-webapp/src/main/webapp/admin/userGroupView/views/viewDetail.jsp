@@ -116,11 +116,8 @@
               </td>
             </tr>
           </table>
-        </td>
-      </tr>
-      <tr>
-        <td align="left" valign="top">
-          <b>User Members:</b>
+          
+          <h2>User Members</h2>
           <table width="20%" border="1" cellspacing="0" cellpadding="2" >
             <%  Membership membership= view.getMembership();
 		if(membership != null)
@@ -142,10 +139,8 @@
                </tr>
                <% }}} %>
           </table>
-          
-        </td>
-        <td align="left" valign="top">
-          <b>Group Members:</b>
+
+          <h2>Group Members</h2>
           <table width="20%" border="1" cellspacing="0" cellpadding="2" >
             <%  membership= view.getMembership();
 		if(membership != null)
@@ -167,18 +162,8 @@
                </tr>
               <% }}} %>
           </table>
-        </td>
-        <td width="100%">
-          &nbsp;
-        </td>
-        
-      </tr>
-      <tr>
-        <td colspan="3">
-          <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-            <tr>
-              <td>
-                <b>Categories:</b>
+
+                <h2>Categories</h2>
                 <table width="100%" border="1" cellspacing="0" cellpadding="2" >
                   <tr bgcolor="#999999">
                     <td width="5%"><b>Label</b></td>
@@ -209,12 +194,5 @@
                     <tr>
                   <% } %>
                 </table>
-              </td>
-            </tr>
-          </table>
-        </td>
-        
-      </tr>
-    </table>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

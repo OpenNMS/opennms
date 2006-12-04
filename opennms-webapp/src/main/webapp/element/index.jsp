@@ -169,13 +169,13 @@
       <p>For example, the following search fields are all valid and would each create
         the same result set--all TCP/IP addresses from 192.168.0.0 through
         192.168.255.255:
+      </p>
       
         <ul>
             <li>192.168.*.*
             <li>192.168.0-255.0-255
             <li>192.168.0,1,2,3-255.*
         </ul>
-      </p>
 
       <p>A search by ifAlias will find nodes with interfaces that match the given
         search string. This is a case-insensitive inclusive search, and the underscore

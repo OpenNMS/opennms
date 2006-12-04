@@ -18,9 +18,9 @@
   </p>
 </c:if>
 
+<form action="distributedStatusHistory.htm">
+<input type="hidden" name="previousLocation" value="<c:out value="${historyModel.chosenLocation.name}"/>"/>
 <table class="normal">
-  <form action="distributedStatusHistory.htm">
-  <input type="hidden" name="previousLocation" value="<c:out value="${historyModel.chosenLocation.name}"/>"/>
   
   <tr>
     <td class="normal" align="right">Location</td>
@@ -109,23 +109,20 @@
     </td>
   </tr>
 
-  </form>
-  
-  <form action="distributedStatusDetails.htm">
-  <input type="hidden" name="location" value="<c:out value="${historyModel.chosenLocation.name}"/>"/>
-  <input type="hidden" name="application" value="<c:out value="${historyModel.chosenApplication.name}"/>"/>
-
   <tr>
     <td class="normal"></td>
     <td class="normal">
-      <input type="submit" value="View Status Details"/>
+      <input type="button" value="View Status Details" onClick="document.viewStatusDetails.submit();"/>
     </td>
   </tr>
-
-
+</table>
+</form>
+  
+  <form action="distributedStatusDetails.htm" name="viewStatusDetails">
+    <input type="hidden" name="location" value="<c:out value="${historyModel.chosenLocation.name}"/>"/>
+    <input type="hidden" name="application" value="<c:out value="${historyModel.chosenApplication.name}"/>"/>
   </form>
   
-</table>
 
 <c:forEach items="${historyModel.httpGraphUrls}" var="url">
   <p style="text-align: center">

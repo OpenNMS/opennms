@@ -81,9 +81,9 @@
   <td colspan="3">There have been no outages on this service in the last 24 hours.</td>
 <% } else { %>
   <tr>
-    <th>Lost</td>
-    <th>Regained</td>
-    <th>Outage ID</td>
+    <th>Lost</th>
+    <th>Regained</th>
+    <th>Outage ID</th>
   </tr>
   <%  for(int i=0; i < outages.length; i++) { %>
      <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "Critical" : "Normal"%>">

@@ -65,6 +65,7 @@
 
 <p>
   The following parameters are required:
+</p>
   <ul>
 <%      
         String[] params = mpe.getRequiredParameters();        
@@ -73,6 +74,5 @@
           <li> <%=params[i]%>
 <%      }    %>
   </ul>
-</p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

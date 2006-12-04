@@ -183,7 +183,7 @@
 
       <!-- security link -->
       
-      <FORM METHOD="POST" NAME="notificationStatus" ACTION="admin/updateNotificationStatus">
+      <form method="post" name="notificationStatus" action="admin/updateNotificationStatus">
         <%String status = "Unknown";
          try
           {
@@ -217,10 +217,7 @@
             <% } %>
           </tr>
         </table>
-        </FORM>
-        
-        </p>
-      
+      </form>
     </td>
 
     <td> &nbsp; </td>

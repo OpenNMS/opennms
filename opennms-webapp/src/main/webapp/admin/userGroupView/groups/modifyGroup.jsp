@@ -249,24 +249,9 @@
       <table width="100%" border="0" cellspacing="0" cellpadding="2" >
         <tr>
           <td>
-            <tr>
-              <td>
                 Assign and unassign users to the group using the select lists below. Also, change the ordering of
                 the selected users by highlighting a user in the "Currently in Group" list and click the "Move Up" and "Move Down" buttons.
                 The ordering of the users in the group will affect the order that the users are notified if this group is used in a notification.
-                <br>
-              </td>
-            </tr>
-            <!--<table width="100%" border="0" cellspacing="0" cellpadding="2">
-              <tr>
-                <td width="10%" valign="top">
-                  <b>Comments:</b>
-                </td>
-                <td width="90%" valign="top">
-                  <textarea rows="5" cols="50" name="comments"><%=group.getComments()%></textarea>
-                </td>
-              </tr>
-            </table>-->
           </td>
         </tr>
 
@@ -302,14 +287,7 @@
           </td>
         </tr>
       </table>
-    </td>
-    
-    <td>&nbsp;</td>
-  
-  </tr>
-
-  <tr>
-    <td width="100%" colspan="3">
+      
       <p><b>Duty Schedules</b></p>
       <table width="100%" border="1" cellspacing="0" cellpadding="2" >
         <tr bgcolor="#999999">
@@ -359,11 +337,6 @@
                     </tr>
                     <% i++; } %>
       </table>
-    </td>
-  </tr>
-
-
-  </table><p>
 
   <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addGroupDutySchedules()">
     <select name="numSchedules" value="3" size="1">
@@ -384,6 +357,7 @@
   <table>
     <tr>
       <td> &nbsp; </td>
+      <td>
         <table>
           <tr>
             <td>
@@ -392,6 +366,9 @@
             </td>
           </tr>
         </table>
+      </td>
+    </tr>
+  </table>
 </form>
   
 <script language="JavaScript">

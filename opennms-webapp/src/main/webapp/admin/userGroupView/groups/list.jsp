@@ -146,38 +146,14 @@
               Group curGroup = (Group)groups.get(i.next());
          %>
          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
-          <!--
-            <%--
-          <% if (!curGroup.getName().equals("Network/Systems") &&
-                 !curGroup.getName().equals("Desktops") &&
-                 !curGroup.getName().equals("Security") &&
-                 !curGroup.getName().equals("Management") ) { %>
-          <td width="5%" rowspan="2" align="center">
-            <a href="javascript:deleteGroup('<%=curGroup.getName()%>')" onclick="return confirm('Are you sure you want to delete the group <%=curGroup.getName()%>')"><img src="images/trash.gif" alt="<%="Delete " + curGroup.getName()%>"></a>
-          </td>
-          <% } else { %>
-          --%>
-              -->
           <td width="5%" rowspan="2" align="center">
             <img src="images/trash.gif" alt="Cannot delete <%=curGroup.getName()%> group">
           </td>
-          <!--<%--<% } %> --%>-->
           <td width="5%" rowspan="2" align="center">
             <a href="javascript:modifyGroup('<%=curGroup.getName()%>')"><img src="images/modify.gif"></a>
           </td>
           <td width="5%" rowspan="2" align="center">
-            <!--
-            <%--
-            <% if ( !curGroup.getName().equals("Network/Systems") &&
-                    !curGroup.getName().equals("Desktops") &&
-                    !curGroup.getName().equals("Security") &&
-                    !curGroup.getName().equals("Management") ) { %>
-                <input type="button" name="rename" value="Rename" onclick="renameGroup('<%=curGroup.getName()%>')">
-              <% } else { %>
-              --%>
-              -->
                 <input type="button" name="rename" value="Rename" onclick="alert('Sorry, the <%=curGroup.getName()%> group cannot be renamed.')">
-              <!--<%--<% } %> --%>-->
           </td>
           <td width="5%">
             <a href="javascript:detailGroup('<%=curGroup.getName()%>')"><%=curGroup.getName()%></a>
@@ -187,7 +163,6 @@
               <%= (curGroup.getComments()!=null && !curGroup.getComments().equals("") ? curGroup.getComments() : "No Comments") %>
             </td>
           </tr>
-         </tr>
          <% row++;
             } %>
      </table>
