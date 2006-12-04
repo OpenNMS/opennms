@@ -46,161 +46,155 @@ import javax.persistence.Transient;
 @Embeddable
 public class PollStatus implements Serializable {
     
+    
+    Date m_timestamp = new Date();
+
     /**
      * Status of the pollable object.
      */
-
-    //public static final PollStatus STATUS_UP = new PollStatus(PollStatus.SERVICE_AVAILABLE, "Up");
-
-//    public static final PollStatus STATUS_DOWN = new PollStatus(PollStatus.SERVICE_UNAVAILABLE, "Down");
-    
-//    public static final PollStatus STATUS_UNRESPONSIVE = new PollStatus(PollStatus.SERVICE_UNRESPONSIVE, "Unresponsive");
-    
-//    public static final PollStatus STATUS_UNKNOWN = new PollStatus(PollStatus.SERVICE_UNKNOWN, "Unknown");
-	
-    
-	Date m_timestamp = new Date();
     int m_statusCode;
+    
     String m_reason;
+    
     long m_responseTime = -1L;
 
-	/**
-	 * <P>
-	 * The constant that defines a service that is up but is most likely
-	 * suffering due to excessive load or latency issues and because of that has
-	 * not responded within the configured timeout period.
-	 * </P>
-	 */
-	public static final int SERVICE_UNRESPONSIVE = 3;
+    /**
+     * <P>
+     * The constant that defines a service that is up but is most likely
+     * suffering due to excessive load or latency issues and because of that has
+     * not responded within the configured timeout period.
+     * </P>
+     */
+    public static final int SERVICE_UNRESPONSIVE = 3;
 
-	/**
-	 * <P>
-	 * The constant that defines a service that is not working normally and
-	 * should be scheduled using the downtime models.
-	 * </P>
-	 */
-	public static final int SERVICE_UNAVAILABLE = 2;
+    /**
+     * <P>
+     * The constant that defines a service that is not working normally and
+     * should be scheduled using the downtime models.
+     * </P>
+     */
+    public static final int SERVICE_UNAVAILABLE = 2;
 
-	/**
-	 * <P>
-	 * The constant that defines a service as being in a normal state. If this
-	 * is returned by the poll() method then the framework will re-schedule the
-	 * service for its next poll using the standard uptime interval
-	 * </P>
-	 */
-	public static final int SERVICE_AVAILABLE = 1;
+    /**
+     * <P>
+     * The constant that defines a service as being in a normal state. If this
+     * is returned by the poll() method then the framework will re-schedule the
+     * service for its next poll using the standard uptime interval
+     * </P>
+     */
+    public static final int SERVICE_AVAILABLE = 1;
 
-	/**
-	 * The constant the defines a status is unknown. Used mostly internally
-	 */
-	public static final int SERVICE_UNKNOWN = 0;
-	
-	private static final String[] s_statusNames = {
-		"Unknown",
-		"Up",
-		"Down",
-		"Unresponsive"
-	};
-    
+    /**
+     * The constant the defines a status is unknown. Used mostly internally
+     */
+    public static final int SERVICE_UNKNOWN = 0;
+
+    private static final String[] s_statusNames = {
+        "Unknown",
+        "Up",
+        "Down",
+        "Unresponsive"
+    };
+
     private static int decodeStatusName(String statusName) {
-    	
-    	for (int statusCode = 0; statusCode < s_statusNames.length; statusCode++) {
-			if (s_statusNames[statusCode].equalsIgnoreCase(statusName)) {
-				return statusCode;
-			}
-		}
-    	return SERVICE_UNKNOWN;
+
+        for (int statusCode = 0; statusCode < s_statusNames.length; statusCode++) {
+            if (s_statusNames[statusCode].equalsIgnoreCase(statusName)) {
+                return statusCode;
+            }
+        }
+        return SERVICE_UNKNOWN;
     }
-    
+
     public static PollStatus decode(String statusName) {
-    	return decode(statusName, null, -1L);
+        return decode(statusName, null, -1L);
     }
-    
+
     public static PollStatus decode(String statusName, String reason) {
-    	return decode(statusName, reason, -1L);
+        return decode(statusName, reason, -1L);
     }
-    
+
     public static PollStatus decode(String statusName, long responseTime) {
-    	return decode(statusName, null, responseTime);
+        return decode(statusName, null, responseTime);
     }
-    
+
     public static PollStatus decode(String statusName, String reason, long responseTime) {
-    	return new PollStatus(decodeStatusName(statusName), reason, responseTime);
+        return new PollStatus(decodeStatusName(statusName), reason, responseTime);
     }
-    
+
     public static PollStatus get(int status, String reason) {
         return get(status, reason, -1L);
     }
-    
+
     public static PollStatus get(int status, String reason, long responseTime) {
-    	return new PollStatus(status, reason, responseTime);
+        return new PollStatus(status, reason, responseTime);
     }
-    
+
     private PollStatus() {
         this(SERVICE_UNKNOWN, null, -1L);
     }
-    
+
     private PollStatus(int statusCode, String reason, long responseTime) {
         m_statusCode = statusCode;
         m_reason = reason;
         m_responseTime = responseTime;
     }
-    
+
     public static PollStatus up() {
-    	return up(-1L);
+        return up(-1L);
     }
-    
+
     public static PollStatus up(long responseTime) {
-    	return available(responseTime);
+        return available(responseTime);
     }
-    
+
     public static PollStatus available() {
-    	return available(-1L);
+        return available(-1L);
     }
-    
+
     public static PollStatus available(long responseTime) {
-    	return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
+        return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
     }
-    
+
     public static PollStatus unknown() {
         return unknown(null);
     }
-    
+
     public static PollStatus unknown(String reason) {
         return new PollStatus(SERVICE_UNKNOWN, reason, -1L);
     }
-    
-    public static PollStatus unresponsive() {
-    	return unresponsive(null);
-    }
-    
-    public static PollStatus unresponsive(String reason) {
-    	return new PollStatus(SERVICE_UNRESPONSIVE, reason, -1L);
-    }
-    
-    public static PollStatus down() {
-    	return down(null);
-    }
-    
-    public static PollStatus unavailable() {
-    	return unavailable(null);
-    }
-    
-	public static PollStatus down(String reason) {
-		return unavailable(reason);
-	}
-	
-	public static PollStatus unavailable(String reason) {
-		return new PollStatus(SERVICE_UNAVAILABLE, reason, -1L);
-	}
 
-	public boolean equals(Object o) {
+    public static PollStatus unresponsive() {
+        return unresponsive(null);
+    }
+
+    public static PollStatus unresponsive(String reason) {
+        return new PollStatus(SERVICE_UNRESPONSIVE, reason, -1L);
+    }
+
+    public static PollStatus down() {
+        return down(null);
+    }
+
+    public static PollStatus unavailable() {
+        return unavailable(null);
+    }
+
+    public static PollStatus down(String reason) {
+        return unavailable(reason);
+    }
+
+    public static PollStatus unavailable(String reason) {
+        return new PollStatus(SERVICE_UNAVAILABLE, reason, -1L);
+    }
+
+    public boolean equals(Object o) {
         if (o instanceof PollStatus) {
             return m_statusCode == ((PollStatus)o).m_statusCode;
         }
         return false;
     }
-    
+
     public int hashCode() {
         return m_statusCode;
     }
@@ -209,27 +203,27 @@ public class PollStatus implements Serializable {
     public boolean isUp() {
         return !isDown();
     }
-    
+
     @Transient
     public boolean isAvailable() {
-    	return this.m_statusCode == SERVICE_AVAILABLE;
+        return this.m_statusCode == SERVICE_AVAILABLE;
     }
-    
+
     @Transient
     public boolean isUnresponsive() {
-    	return this.m_statusCode == SERVICE_UNRESPONSIVE;
+        return this.m_statusCode == SERVICE_UNRESPONSIVE;
     }
-    
+
     @Transient
     public boolean isUnavailable() {
-    	return this.m_statusCode == SERVICE_UNAVAILABLE;
+        return this.m_statusCode == SERVICE_UNAVAILABLE;
     }
-    
+
     @Transient
     public boolean isDown() {
         return this.m_statusCode == SERVICE_UNAVAILABLE;
     }
-    
+
     public String toString() {
         return getStatusName();
     }
@@ -247,20 +241,20 @@ public class PollStatus implements Serializable {
     public String getReason() {
         return m_reason;
     }
-    
+
     public void setReason(String reason) {
-    	m_reason = reason;
+        m_reason = reason;
     }
 
     @Column(name="responseTime", nullable=true)
     public long getResponseTime() {
-    	return m_responseTime;
+        return m_responseTime;
     }
-    
+
     public void setResponseTime(long responseTime) {
-    	m_responseTime = responseTime;
+        m_responseTime = responseTime;
     }
-    
+
     @Column(name="statusCode", nullable=false)
     public int getStatusCode() {
         return m_statusCode;
@@ -269,7 +263,7 @@ public class PollStatus implements Serializable {
     private void setStatusCode(int statusCode) {
         m_statusCode = statusCode;
     }
-    
+
     @Transient
     public String getStatusName() {
         return s_statusNames[m_statusCode];
