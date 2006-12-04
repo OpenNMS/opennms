@@ -42,12 +42,14 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.notifd.mock.MockDestinationPathManager;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
@@ -481,6 +483,7 @@ public class NotificationsTestCase extends TestCase {
     protected MockDatabase m_db;
     protected MockNetwork m_network;
     protected NotificationAnticipator m_anticipator;
+    private PollOutagesConfigManager m_pollOutagesConfigManager;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -505,6 +508,7 @@ public class NotificationsTestCase extends TestCase {
         m_destinationPathManager = new MockDestinationPathManager(DESTINATION_PATHS);        
         m_notificationCommandManger = new MockNotificationCommandManager(NOTIFICATION_COMMANDS);
         m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATIONS);
+        m_pollOutagesConfigManager = new MockPollerConfig(m_network);
         
         m_anticipator = new NotificationAnticipator();
         MockNotificationStrategy.setAnticpator(m_anticipator);
@@ -517,6 +521,7 @@ public class NotificationsTestCase extends TestCase {
         m_notifd.setDestinationPathManager(m_destinationPathManager);
         m_notifd.setNotificationCommandManager(m_notificationCommandManger);
         m_notifd.setNotificationManager(m_notificationManager);
+        m_notifd.setPollOutagesConfigManager(m_pollOutagesConfigManager);
                 
         m_notifd.init();
         m_notifd.start();
@@ -620,7 +625,7 @@ public class NotificationsTestCase extends TestCase {
         return expectedTime-interval;
     }
 
-    protected Collection getUsersInGroup(String groupName) throws Exception {
+    protected Collection<String> getUsersInGroup(String groupName) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
         String[] users = group.getUser();
         return Arrays.asList(users);

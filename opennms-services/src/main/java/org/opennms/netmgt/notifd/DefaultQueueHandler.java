@@ -38,7 +38,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -123,12 +122,11 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
         for (;;) {
             synchronized (this) {
                 // if stopped or stop pending then break out
-                //
-                if (m_status == STOP_PENDING || m_status == STOPPED)
+                if (m_status == STOP_PENDING || m_status == STOPPED) {
                     break;
+                }
 
                 // if paused or pause pending then block
-                //
                 while (m_status == PAUSE_PENDING || m_status == PAUSED) {
                     m_status = PAUSED;
                     try {
@@ -140,9 +138,9 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
                 }
 
                 // if resume pending then change to running
-                //
-                if (m_status == RESUME_PENDING)
+                if (m_status == RESUME_PENDING) {
                     m_status = RUNNING;
+                }
             }
 
             processQueue();
@@ -173,18 +171,11 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
 
         try {
             Long now = new Long(System.currentTimeMillis());
-            SortedMap readyNotices = m_noticeQueue.headMap(now);
+            SortedMap<Long, List<NotificationTask>> readyNotices = m_noticeQueue.headMap(now);
 
-            Iterator i = readyNotices.values().iterator();
-            while (i.hasNext()) {
-                Object o = i.next();
-                if (o instanceof NotificationTask) {
-                    startTask((NotificationTask) o);
-                } else if (o instanceof List) {
-                    List list = (List) o;
-                    for (int j = 0; j < list.size(); j++) {
-                        startTask((NotificationTask) list.get(j));
-                    }
+            for (List<NotificationTask> list : readyNotices.values()) {
+                for (NotificationTask task : list) {
+                    startTask(task);
                 }
             }
             readyNotices.clear();

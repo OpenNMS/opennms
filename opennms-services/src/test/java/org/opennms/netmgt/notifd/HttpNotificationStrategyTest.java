@@ -23,7 +23,7 @@ public class HttpNotificationStrategyTest extends OpenNMSTestCase {
         
         try {
         NotificationStrategy ns = new HttpNotificationStrategy();
-        List arguments = new ArrayList();
+        List<Argument> arguments = new ArrayList<Argument>();
         Argument arg = null;
         arg = new Argument("url", null, "http://172.16.8.68/cgi-bin/noauth/nmsgw.pl", false);
         arguments.add(arg);

@@ -62,20 +62,18 @@ public class CommandExecutor implements ExecutorStrategy {
      *            command line call
      * @return int, the return code of the command
      */
-    public int execute(String commandLine, List arguments) {
+    public int execute(String commandLine, List<Argument> arguments) {
         int returnCode = 0;
         Category log = ThreadCategory.getInstance(getClass());
 
-        List commandList = new ArrayList();
+        List<String> commandList = new ArrayList<String>();
         commandList.add(commandLine);
 
         StringBuffer streamBuffer = new StringBuffer();
         boolean streamed = false;
 
         // put the non streamed arguments into the argument array
-        for (int i = 0; i < arguments.size(); i++) {
-            Argument curArg = (Argument) arguments.get(i);
-
+        for (Argument curArg : arguments) {
             // only non streamed arguments go into this list
             if (!curArg.isStreamed()) {
                 if (curArg.getSubstitution() != null && !curArg.getSubstitution().trim().equals("")) {
@@ -86,16 +84,16 @@ public class CommandExecutor implements ExecutorStrategy {
                 }
             } else {
                 streamed = true;
-                if (log.isDebugEnabled())
-                    log.debug("streamed argument found");
+                log.debug("streamed argument found");
 
                 if (curArg.getSubstitution() != null && !curArg.getSubstitution().trim().equals("")) {
                     streamBuffer.append(curArg.getSubstitution());
                 }
                 if (!curArg.getValue().trim().equals("")) {
                     streamBuffer.append(curArg.getValue());
-                    if (log.isDebugEnabled())
+                    if (log.isDebugEnabled()) {
                         log.debug("Streamed argument value: " + curArg.getValue());
+                    }
                 }
             }
         }
@@ -104,8 +102,9 @@ public class CommandExecutor implements ExecutorStrategy {
             // set up the process
             String commandArray[] = new String[commandList.size()];
             commandArray = (String[]) commandList.toArray(commandArray);
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug(commandList);
+            }
 
             Process command = Runtime.getRuntime().exec(commandArray);
 
@@ -115,8 +114,9 @@ public class CommandExecutor implements ExecutorStrategy {
                 BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream()));
 
                 // put the streamed arguments into the stream
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("Streamed arguments: " + streamBuffer.toString());
+                }
 
                 processInput.write(streamBuffer.toString());
 
@@ -142,8 +142,7 @@ public class CommandExecutor implements ExecutorStrategy {
                 }
             }
 
-            if (log.isDebugEnabled())
-                log.debug(commandResult);
+            log.debug(commandResult);
         } catch (IOException e) {
             log.error("Error executing command " + commandLine, e);
         } catch (InterruptedException e) {

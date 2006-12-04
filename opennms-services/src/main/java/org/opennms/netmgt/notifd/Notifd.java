@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Dec 03: Organized imports, formatted code - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,13 +41,8 @@ package org.opennms.netmgt.notifd;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DestinationPathManager;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
@@ -72,19 +68,19 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 public final class Notifd extends AbstractServiceDaemon {
 
     /**
-     * The signlton instance.
+     * The singleton instance.
      */
     private static final Notifd m_singleton = new Notifd();
 
     /**
      * The map for holding different notice queues
      */
-    private Map m_noticeQueues;
+    private Map<String, NoticeQueue> m_noticeQueues;
 
     /**
      * 
      */
-    private Map m_queueHandlers;
+    private Map<String, NotifdQueueHandler> m_queueHandlers;
 
     /**
      * The broadcast event receiver.
@@ -94,8 +90,6 @@ public final class Notifd extends AbstractServiceDaemon {
     private EventIpcManager m_eventManager;
 
     private NotifdConfigManager m_configManager;
-
-    private DataSource m_dbConnectionFactory;
 
     private NotificationManager m_notificationManager;
     
@@ -112,44 +106,53 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * Constructs a new Notifd service daemon.
      */
-    Notifd() {
+    protected Notifd() {
     	super("OpenNMS.Notifd");
     }
 
     protected void onInit() {
-
-        m_noticeQueues = new HashMap();
-        m_queueHandlers = new HashMap();
-        m_eventReader = null;
-		try {
-
+        m_noticeQueues = new HashMap<String, NoticeQueue>();
+        m_queueHandlers = new HashMap<String, NotifdQueueHandler>();
+        m_eventReader = new BroadcastEventProcessor();
+        
+        try {
             log().info("Notification status = " + getConfigManager().getNotificationStatus());
 
             Queue queues[] = getConfigManager().getConfiguration().getQueue();
-            for (int i = 0; i < queues.length; i++) {
+            for (Queue queue : queues) {
                 NoticeQueue curQueue = new NoticeQueue();
 
-                Class handlerClass = Class.forName(queues[i].getHandlerClass().getName());
+                Class handlerClass = Class.forName(queue.getHandlerClass().getName());
                 NotifdQueueHandler handlerQueue = (NotifdQueueHandler) handlerClass.newInstance();
 
-                handlerQueue.setQueueID(queues[i].getQueueId());
+                handlerQueue.setQueueID(queue.getQueueId());
                 handlerQueue.setNoticeQueue(curQueue);
-                handlerQueue.setInterval(queues[i].getInterval());
+                handlerQueue.setInterval(queue.getInterval());
 
-                m_noticeQueues.put(queues[i].getQueueId(), curQueue);
-                m_queueHandlers.put(queues[i].getQueueId(), handlerQueue);
+                m_noticeQueues.put(queue.getQueueId(), curQueue);
+                m_queueHandlers.put(queue.getQueueId(), handlerQueue);
             }
         } catch (Throwable t) {
-            log().warn("start: Failed to load notifd queue handlers.", t);
+            log().error("start: Failed to load notifd queue handlers.", t);
+            throw new UndeclaredThrowableException(t);
         }
+        
+        m_eventReader.setDestinationPathManager(getDestinationPathManager());
+        m_eventReader.setEventManager(getEventManager());
+        m_eventReader.setGroupManager(getGroupManager());
+        m_eventReader.setNoticeQueues(m_noticeQueues);
+        m_eventReader.setNotifdConfigManager(getConfigManager());
+        m_eventReader.setNotificationCommandManager(getNotificationCommandManager());
+        m_eventReader.setNotificationManager(getNotificationManager());
+        m_eventReader.setPollOutagesConfigManager(getPollOutagesConfigManager());
+        m_eventReader.setUserManager(getUserManager());
 
         // start the event reader
-        //
         try {
-            m_eventReader = new BroadcastEventProcessor(this, m_noticeQueues);
-        } catch (Exception ex) {
-            log().error("Failed to setup event receiver", ex);
-            throw new UndeclaredThrowableException(ex);
+            m_eventReader.init();
+        } catch (Exception e) {
+            log().error("Failed to setup event receiver", e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 
@@ -209,48 +212,41 @@ public final class Notifd extends AbstractServiceDaemon {
     }
 
     protected void onStart() {
-		Iterator i = m_queueHandlers.keySet().iterator();
-        while (i.hasNext()) {
-            NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
+        for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
             curHandler.start();
         }
-	}
+    }
 
     protected void onStop() {
-		try {
-            Iterator i = m_queueHandlers.keySet().iterator();
-            while (i.hasNext()) {
-                NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
+        try {
+            for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
                 curHandler.stop();
             }
         } catch (Exception e) {
         }
 
-        if (m_eventReader != null)
+        if (m_eventReader != null) {
             m_eventReader.close();
+        }
 
         m_eventReader = null;
-	}
+    }
 
     protected void onPause() {
-		Iterator i = m_queueHandlers.keySet().iterator();
-        while (i.hasNext()) {
-            NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
+        for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
             curHandler.pause();
         }
-	}
+    }
 
     protected void onResume() {
-		Iterator i = m_queueHandlers.keySet().iterator(); 
-        while (i.hasNext()) {
-            NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
+        for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
             curHandler.resume();
         }
-	}
+    }
 
     /**
-     * Returns the singular instance of the Notifd daemon. There can be only one
-     * instance of this service per virtual machine.
+     * Returns the singular instance of the Notifd daemon. There can be only
+     * one instance of this service per virtual machine.
      */
     public static Notifd getInstance() {
         return m_singleton;
@@ -262,19 +258,12 @@ public final class Notifd extends AbstractServiceDaemon {
     public EventIpcManager getEventManager() {
         return m_eventManager;
     }
+    
     /**
      * @param eventManager The eventManager to set.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
-    }
-
-    /**
-     * @param dbConnectionFactory
-     */
-    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
-        m_dbConnectionFactory = dbConnectionFactory;
-        
     }
 
     public void setPollOutagesConfigManager(PollOutagesConfigManager configManager) {

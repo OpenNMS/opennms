@@ -39,7 +39,6 @@ import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -107,17 +106,17 @@ public class NotifdTest extends NotificationsTestCase {
     
     public void testNotifdStatus() throws Exception {
         
-            //test for off status passed in config XML string
-            assertEquals(m_notifdConfig.getNotificationStatus(), "on");
-            
-            //test for on status set here
-            m_notifdConfig.turnNotifdOff();
-            assertEquals(m_notifdConfig.getNotificationStatus(), "off");
-            
-            //test for off status set here
-            m_notifdConfig.turnNotifdOn();
-            assertEquals(m_notifdConfig.getNotificationStatus(), "on");
+        //test for off status passed in config XML string
+        assertEquals(m_notifdConfig.getNotificationStatus(), "on");
 
+        //test for on status set here
+        m_notifdConfig.turnNotifdOff();
+        assertEquals(m_notifdConfig.getNotificationStatus(), "off");
+
+        //test for off status set here
+        m_notifdConfig.turnNotifdOn();
+        assertEquals(m_notifdConfig.getNotificationStatus(), "on");
+            
     }
     
     public void testMockNotificationBasic() throws Exception {
@@ -253,7 +252,7 @@ public class NotifdTest extends NotificationsTestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
+        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -279,7 +278,7 @@ public class NotifdTest extends NotificationsTestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
+        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -319,7 +318,7 @@ public class NotifdTest extends NotificationsTestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1", "InitialGroup", downDate, 0);
+        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -327,17 +326,15 @@ public class NotifdTest extends NotificationsTestCase {
 
         sleep(1000);
         
-        Collection notifIds = m_db.findNoticesForEvent(event);
+        Collection<Integer> notifIds = m_db.findNoticesForEvent(event);
         
         Notification[] notification = m_notificationManager.getNotifForEvent(event);
         
         int index = 0;
-        for (Iterator it = notifIds.iterator(); it.hasNext(); index++) {
-            Integer notifId = (Integer) it.next();
+        for (Integer notifId : notifIds) {
+            Map<String, String> originalMap = m_notifd.getBroadcastEventProcessor().buildParameterMap(notification[index], event, notifId.intValue());
             
-            Map originalMap = m_notifd.getBroadcastEventProcessor().buildParameterMap(notification[index], event, notifId.intValue());
-            
-            Map resolutionMap = new HashMap(originalMap);
+            Map<String, String> resolutionMap = new HashMap<String, String>(originalMap);
             resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));
             resolutionMap.put(NotificationManager.PARAM_TEXT_MSG, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_TEXT_MSG));
            
@@ -346,6 +343,7 @@ public class NotifdTest extends NotificationsTestCase {
             
             assertEquals(resolutionMap, rebuiltMap);
             
+            index++;
         }
     }
     
@@ -353,7 +351,7 @@ public class NotifdTest extends NotificationsTestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
+        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -361,25 +359,22 @@ public class NotifdTest extends NotificationsTestCase {
 
         sleep(1000);
         
-        Collection expectedResults = new LinkedList();
-        Collection users = getUsersInGroup("InitialGroup");
-        for (Iterator userIt = users.iterator(); userIt.hasNext();) {
-            String userID = (String) userIt.next();
-            List cmdList = new LinkedList();
+        Collection<List<String>> expectedResults = new LinkedList<List<String>>();
+        Collection<String> users = getUsersInGroup("InitialGroup");
+        for (String userID : users) {
+            List<String> cmdList = new LinkedList<String>();
             cmdList.add(userID);
             cmdList.add("mockNotifier");
             expectedResults.add(cmdList);
         }
         
-        Collection notifIds = m_db.findNoticesForEvent(event);
+        Collection<Integer> notifIds = m_db.findNoticesForEvent(event);
         
-        for (Iterator notifIt = notifIds.iterator(); notifIt.hasNext();) {
-            Integer notifId = (Integer) notifIt.next();
-            
-            final Collection actualResults = new LinkedList();
+        for (Integer notifId : notifIds) {
+            final Collection<List<String>> actualResults = new LinkedList<List<String>>();
             RowProcessor rp = new RowProcessor() {
                 public void processRow(ResultSet rs) throws SQLException {
-                    List cmdList = new LinkedList();
+                    List<String> cmdList = new LinkedList<String>();
                     cmdList.add(rs.getString("userID"));
                     cmdList.add(rs.getString("media"));
                     actualResults.add(cmdList);

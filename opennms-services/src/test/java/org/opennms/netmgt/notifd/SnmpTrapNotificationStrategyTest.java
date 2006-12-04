@@ -61,7 +61,7 @@ public class SnmpTrapNotificationStrategyTest extends TestCase {
      * Test method for 'org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy.send(List)'
      */
     public void testSendWithNamedHost() {
-        List arguments = new ArrayList();
+        List<Argument> arguments = new ArrayList<Argument>();
         Argument arg = new Argument("trapHost", null, "localhost", false);
         arguments.add(arg);
         NotificationStrategy strategy = new SnmpTrapNotificationStrategy();

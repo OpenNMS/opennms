@@ -36,6 +36,7 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Enumeration;
 
 import org.apache.log4j.Category;
@@ -45,6 +46,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -231,5 +233,13 @@ public abstract class NotifdConfigManager {
         return getConfiguration().getNextUserNotifId();
     }
 
+    @SuppressWarnings("unchecked")
+    public Collection<AutoAcknowledge> getAutoAcknowledges() throws MarshalException, ValidationException, IOException {
+        return getConfiguration().getAutoAcknowledgeCollection();
+    }
 
+    @SuppressWarnings("unchecked")
+    public Collection<String> getOutageCalendarNames() throws MarshalException, ValidationException, IOException {
+        return getConfiguration().getOutageCalendarCollection();
+    }
 }

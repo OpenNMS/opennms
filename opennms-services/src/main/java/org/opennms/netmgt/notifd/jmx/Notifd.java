@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -48,7 +50,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 public class Notifd implements NotifdMBean {
     /**
-     * Logging categoyr for log4j
+     * Logging category for log4j
      */
     private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
 
@@ -62,53 +64,59 @@ public class Notifd implements NotifdMBean {
             NotifdConfigFactory.init();
         } catch (Throwable t) {
             log.error("start: Failed to init NotifdConfigFactory.", t);
+            throw new UndeclaredThrowableException(t);
         }
         
         try {
             NotificationFactory.init();
-        } catch( Throwable t) {
+        } catch (Throwable t) {
             log.error("start: Failed to init NotificationFactory.", t);
+            throw new UndeclaredThrowableException(t);
         }
         
         try {
             DataSourceFactory.init();
-        } catch (Exception e) {
-            log.error("start: Failed to init database connection factory.", e);
+        } catch (Throwable t) {
+            log.error("start: Failed to init database connection factory.", t);
+            throw new UndeclaredThrowableException(t);
         }
 
         try {
             GroupFactory.init();
-        } catch (Exception e) {
-            log.error("start: Failed to init group factory.", e);
+        } catch (Throwable t) {
+            log.error("start: Failed to init group factory.", t);
+            throw new UndeclaredThrowableException(t);
         }
 
         try {
             UserFactory.init();
-        } catch (Exception e) {
-            log.error("start: Failed to init user factory.", e);
+        } catch (Throwable t) {
+            log.error("start: Failed to init user factory.", t);
+            throw new UndeclaredThrowableException(t);
         }
         
         try {
             DestinationPathFactory.init();
-        } catch (Exception e) {
-            log.error("start: Failed to init destination path factory.", e);
+        } catch (Throwable t) {
+            log.error("start: Failed to init destination path factory.", t);
+            throw new UndeclaredThrowableException(t);
         }
         
         try {
             NotificationCommandFactory.init();
-        } catch (Exception e) {
-            log.error("start: Failed to init notification command factory.", e);            
+        } catch (Throwable t) {
+            log.error("start: Failed to init notification command factory.", t);            
+            throw new UndeclaredThrowableException(t);
         }
 
         try {
             PollOutagesConfigFactory.init();
-        } catch (Exception e) {
-            log.error("start: Failed to init poll outage config factory.", e);
+        } catch (Throwable t) {
+            log.error("start: Failed to init poll outage config factory.", t);
+            throw new UndeclaredThrowableException(t);
         }
         
-        getNotifd().setDbConnectionFactory(DataSourceFactory.getInstance());
         getNotifd().setEventManager(EventIpcManagerFactory.getIpcManager());
-        
         getNotifd().setConfigManager(NotifdConfigFactory.getInstance());
         getNotifd().setNotificationManager(NotificationFactory.getInstance());
         getNotifd().setGroupManager(GroupFactory.getInstance());

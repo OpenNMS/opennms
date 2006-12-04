@@ -10,7 +10,6 @@ import java.util.Properties;
 import org.apache.log4j.Category;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.GroupChat;
-import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -48,7 +47,7 @@ public class XMPPNotificationManager {
 
 	private int xmppPort;
 
-	private HashMap rooms;
+	private HashMap<String, GroupChat> rooms;
 
 	private static XMPPNotificationManager instance = null;
 
@@ -172,7 +171,7 @@ public class XMPPNotificationManager {
 			if (xmpp.isConnected()) {
 				log().debug("XMPP Manager logging in");
 				xmpp.login(xmppUser, xmppPassword, XMPP_RESOURCE);
-				rooms = new HashMap();
+				rooms = new HashMap<String, GroupChat>();
 			} else
 				log().debug("XMPP Manager unable to login: Not connected to XMPP server");
 		} catch (Exception e) {
@@ -232,7 +231,7 @@ public class XMPPNotificationManager {
 		String room = new String(xmppChatRoom);
 
 		if (rooms.containsKey(xmppChatRoom)) {
-			groupChat = (GroupChat) rooms.get(xmppChatRoom);
+			groupChat = rooms.get(xmppChatRoom);
 		} else {
 			log().debug("Adding room: " + xmppChatRoom);
 			groupChat = xmpp.createGroupChat(xmppChatRoom);

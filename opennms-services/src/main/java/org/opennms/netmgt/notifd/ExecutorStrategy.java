@@ -9,6 +9,8 @@ package org.opennms.netmgt.notifd;
 
 import java.util.List;
 
+import org.opennms.core.utils.Argument;
+
 /**
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
@@ -40,5 +42,5 @@ public interface ExecutorStrategy {
      *            command line call or the class execute method
      * @return int, the return code of the command/execute method
      */
-    public abstract int execute(String commandLine, List arguments);
+    public abstract int execute(String commandLine, List<Argument> arguments);
 }
