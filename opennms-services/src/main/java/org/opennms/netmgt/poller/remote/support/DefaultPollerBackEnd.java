@@ -71,6 +71,7 @@ import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 
 /**
@@ -219,8 +220,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     }
 
     public int registerLocationMonitor(String monitoringLocationId) {
-        
         OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
+        if (def == null) {
+            throw new ObjectRetrievalFailureException(OnmsMonitoringLocationDefinition.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
+        }
         OnmsLocationMonitor mon = new OnmsLocationMonitor();
         mon.setDefinitionName(def.getName());
         mon.setStatus(MonitorStatus.REGISTERED);
@@ -228,8 +231,6 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         m_locMonDao.save(mon);
         
         return mon.getId();
-       
-        
     }
     
 
