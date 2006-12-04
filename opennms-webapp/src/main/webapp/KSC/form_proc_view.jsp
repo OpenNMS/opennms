@@ -41,7 +41,7 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.*,
-		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.kscReports.*
 	"
 %>
 
