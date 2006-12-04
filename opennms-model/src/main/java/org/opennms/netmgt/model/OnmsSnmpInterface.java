@@ -298,7 +298,9 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         CollectionType maxCollType = CollectionType.NO_COLLECT;
         for (Iterator it = getIpInterfaces().iterator(); it.hasNext();) {
             OnmsIpInterface ipIface = (OnmsIpInterface) it.next();
-            maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
+            if (ipIface.getIsSnmpPrimary() != null) {
+                maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
+            }
         }
         return maxCollType;
     }
