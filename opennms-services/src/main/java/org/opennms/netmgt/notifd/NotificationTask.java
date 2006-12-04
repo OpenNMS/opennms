@@ -43,7 +43,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +51,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.users.User;
@@ -92,15 +92,17 @@ public class NotificationTask extends Thread {
 
     /**
      */
-    private Map m_params;
+    private Map<String, String> m_params;
 
     /**
      */
     private long m_sendTime;
 
-    private Notifd m_notifd;
-    
     private boolean m_started = false;
+
+    private NotificationManager m_notificationManager;
+
+    private UserManager m_userManager;
 
     /**
      * Constructor, initializes some information
@@ -108,10 +110,11 @@ public class NotificationTask extends Thread {
      * @param someParams the parameters from
      * Notify
      */
-    public NotificationTask(Notifd notifd, long sendTime, Map someParams, List siblings, String autoNotify) throws SQLException {
-        m_notifd = notifd;
+    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List siblings, String autoNotify) throws SQLException {
+        m_notificationManager = notificationManager;
+        m_userManager = userManager;
         m_sendTime = sendTime;
-        m_params = new HashMap(someParams);
+        m_params = new HashMap<String, String>(someParams);
         m_autoNotify = autoNotify;
 
     }
@@ -121,8 +124,8 @@ public class NotificationTask extends Thread {
     public String toString() {
         StringBuffer buffer = new StringBuffer("Send ");
 
-        for (int i = 0; i < m_commands.length; i++) {
-            buffer.append(m_commands[i].getName() + "/");
+        for (Command command : m_commands) {
+            buffer.append(command.getName() + "/");
         }
         buffer.append(" to " + m_user.getUserId() + " at " + new Date(m_sendTime));
 
@@ -190,25 +193,23 @@ public class NotificationTask extends Thread {
     }
     
     public Command[] getCommands() {
-        return (Command[])m_commands.clone();
+        return m_commands.clone();
     }
 
     /**
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
-
         boolean outstanding = false;
         try {
-            outstanding = m_notifd.getNotificationManager().noticeOutstanding(m_notifyId);
+            outstanding = getNotificationManager().noticeOutstanding(m_notifyId);
         } catch (Exception e) {
-            log.error("Unable to get response status on notice #" + m_notifyId, e);
+            log().error("Unable to get response status on notice #" + m_notifyId, e);
         }
 
         // check to see if someone has responded, if so remove all the brothers
         if (outstanding) {
             try {
-                if (m_notifd.getUserManager().isUserOnDuty(m_user.getUserId(), Calendar.getInstance())) {
+                if (getUserManager().isUserOnDuty(m_user.getUserId(), Calendar.getInstance())) {
                     // send the notice
 
                     ExecutorStrategy command = null;
@@ -218,14 +219,14 @@ public class NotificationTask extends Thread {
                         
                         cntct = getContactInfo(m_commands[i].getName());
                         try {
-                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct, m_autoNotify);
+                            getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct, m_autoNotify);
                         } catch (Exception e) {
-                            log.error("Could not insert notice info into database, aborting send notice...", e);
+                            log().error("Could not insert notice info into database, aborting send notice", e);
                             continue;
                         }
                         String binaryCommand = m_commands[i].getBinary();
                         if (binaryCommand == null) {
-                            log.error("binary flag not set for command: " + m_commands[i].getExecute() + ".  Guessing false.");
+                            log().error("binary flag not set for command: " + m_commands[i].getExecute() + ".  Guessing false.");
                             binaryCommand = "false";
                         }
                         if (binaryCommand.equals("true")) {
@@ -233,20 +234,26 @@ public class NotificationTask extends Thread {
                         } else {
                             command = new ClassExecutor();
                         }
-                        log.debug("Class created is: " + command.getClass());
+                        if (log().isDebugEnabled()) {
+                            log().debug("Class created is: " + command.getClass());
+                        }
 
                         int returnCode = command.execute(m_commands[i].getExecute(), getArgumentList(m_commands[i]));
-                        log.debug("command " + m_commands[i].getName() + " return code = " + returnCode);
+                        if (log().isDebugEnabled()) {
+                            log().debug("command " + m_commands[i].getName() + " return code = " + returnCode);
+                        }
                     }
                 } else {
-                    log.debug("User " + m_user.getUserId() + " is not on duty, skipping...");
+                    if (log().isDebugEnabled()) {
+                        log().debug("User " + m_user.getUserId() + " is not on duty, skipping");
+                    }
                 }
             } catch (IOException e) {
-                log.debug("Could not get user duty schedule information: ", e);
+                log().warn("Could not get user duty schedule information: ", e);
             } catch (MarshalException e) {
-                log.debug("Could not get user duty schedule information: ", e);
+                log().warn("Could not get user duty schedule information: ", e);
             } catch (ValidationException e) {
-                log.debug("Could not get user duty schedule information: ", e);
+                log().warn("Could not get user duty schedule information: ", e);
             }
         } else {
             // remove all the related notices that have yet to be sent
@@ -260,26 +267,42 @@ public class NotificationTask extends Thread {
         }
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    private NotificationManager getNotificationManager() {
+        return m_notificationManager;
+    }
+
+    private UserManager getUserManager() {
+        return m_userManager;
+    }
+
     private String getContactInfo(String cmdName) throws IOException, MarshalException, ValidationException {
-        
-        return m_notifd.getUserManager().getContactInfo(m_user, cmdName);
+        return getUserManager().getContactInfo(m_user, cmdName);
     }
 
     /**
      */
-    private List getArgumentList(Command command) {
-        Collection notifArgs = command.getArgumentCollection();
-        List commandArgs = new ArrayList();
+    private List<org.opennms.core.utils.Argument> getArgumentList(Command command) {
+        Collection<Argument> notifArgs = getArgumentsForCommand(command);
+        List<org.opennms.core.utils.Argument> commandArgs = new ArrayList<org.opennms.core.utils.Argument>();
 
-        Iterator i = notifArgs.iterator();
-        while (i.hasNext()) {
-            Argument curArg = (Argument) i.next();
-            ThreadCategory.getInstance(getClass()).debug("argument: " + curArg.getSwitch() + " " + curArg.getSubstitution() + " '" + getArgumentValue(curArg.getSwitch()) + "' " + Boolean.valueOf(curArg.getStreamed()).booleanValue());
+        for (Argument curArg : notifArgs) {
+            if (log().isDebugEnabled()) {
+                log().debug("argument: " + curArg.getSwitch() + " " + curArg.getSubstitution() + " '" + getArgumentValue(curArg.getSwitch()) + "' " + Boolean.valueOf(curArg.getStreamed()).booleanValue());
+            }
 
             commandArgs.add(new org.opennms.core.utils.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
         }
 
         return commandArgs;
+    }
+
+    @SuppressWarnings("unchecked")
+    private ArrayList<Argument> getArgumentsForCommand(Command command) {
+        return command.getArgumentCollection();
     }
 
     /**
@@ -294,18 +317,18 @@ public class NotificationTask extends Thread {
             } else if (NotificationManager.PARAM_EMAIL.equals(aSwitch)) {
 		value = getEmail();
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
-                value = m_notifd.getUserManager().getPagerEmail(m_user.getUserId());
+                value = getUserManager().getPagerEmail(m_user.getUserId());
             } else if (NotificationManager.PARAM_XMPP_ADDRESS.equals(aSwitch)) {
-            	value = m_notifd.getUserManager().getXMPPAddress(m_user.getUserId());
+            	value = getUserManager().getXMPPAddress(m_user.getUserId());
             } else if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
-                value = m_notifd.getUserManager().getTextPin(m_user.getUserId());
+                value = getUserManager().getTextPin(m_user.getUserId());
             } else if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {
-                value = m_notifd.getUserManager().getNumericPin(m_user.getUserId());
+                value = getUserManager().getNumericPin(m_user.getUserId());
             } else if (m_params.containsKey(aSwitch)) {
-                value = (String) m_params.get(aSwitch);
+                value = m_params.get(aSwitch);
             }
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("unable to get value for parameter " + aSwitch);
+            log().error("unable to get value for parameter " + aSwitch);
         }
 
         return value;
@@ -315,13 +338,13 @@ public class NotificationTask extends Thread {
         return getContactInfo("email");
     }
 
-	public synchronized void start() {
-		m_started = true;
-		super.start();
-	}
+    public synchronized void start() {
+        m_started = true;
+        super.start();
+    }
 
-	public boolean isStarted() {
-		return m_started;
-	}
-    
+    public boolean isStarted() {
+        return m_started;
+    }
+
 }

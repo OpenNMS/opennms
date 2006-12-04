@@ -380,7 +380,7 @@ public abstract class NotificationManager {
     /**
      * 
      */
-    public Collection acknowledgeNotice(Event event, String uei, String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
+    public Collection<Integer> acknowledgeNotice(Event event, String uei, String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
         Connection connection = null;
         List<Integer> notifIDs = new LinkedList<Integer>();
 

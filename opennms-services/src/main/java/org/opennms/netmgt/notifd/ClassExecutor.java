@@ -35,6 +35,7 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -55,22 +56,20 @@ public class ClassExecutor implements ExecutorStrategy {
      *            a list of Argument objects that need to be passed to the class
      * @return int, the return code of the send method of the plug-in
      */
-    public int execute(String className, List arguments) {
-        int returnCode = 0;
+    public int execute(String className, List<Argument> arguments) {
         Category log = ThreadCategory.getInstance(getClass());
 
         log.debug("Going for the class instance: " + className);
-        NotificationStrategy ns = null;
+        NotificationStrategy ns;
         try {
             ns = (NotificationStrategy) Class.forName(className).newInstance();
             log.debug(className + " class created: " + ns.getClass());
         } catch (Exception e) {
             log.error("Execption creating notification strategy class: " + className, e);
-            returnCode = 1;
+            return 1;
         }
 
-        returnCode = ns.send(arguments);
-        return returnCode;
+        return ns.send(arguments);
     }
 
 }

@@ -7,9 +7,7 @@
 package org.opennms.netmgt.notifd;
 
 import java.util.List;
-import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
@@ -43,10 +41,6 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 	 * Mapping of index values to meaningful strings.
 	 */
 	private static final String[] INDEX_TO_NAME;
-
-	private Properties props = new Properties();
-
-	private Category log = null;
 
 	// Initialize constant class data
 

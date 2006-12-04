@@ -42,9 +42,9 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class TaskCreationTest extends NotificationsTestCase {
     
-    BroadcastEventProcessor m_eventProcessor;
+    private BroadcastEventProcessor m_eventProcessor;
     private Notification m_notif;
-    private Map m_params;
+    private Map<String, String> m_params;
     private String[] m_commands;
 
     public static void main(String[] args) {

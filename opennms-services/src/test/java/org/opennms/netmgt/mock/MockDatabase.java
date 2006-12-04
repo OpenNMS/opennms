@@ -647,9 +647,9 @@ public class MockDatabase implements DataSource, EventWriter {
         return getOutages(null, new Object[0]);
     }
     
-    public Collection getOutages(String criteria, Object[] values) {
+    public Collection<Outage> getOutages(String criteria, Object[] values) {
         String critSql = (criteria == null ? "" : " where "+criteria);
-        final List outages = new LinkedList();
+        final List<Outage> outages = new LinkedList<Outage>();
         Querier loadExisting = new Querier(this, "select * from outages"+critSql) {
             public void processRow(ResultSet rs) throws SQLException {
                 Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
@@ -710,11 +710,11 @@ public class MockDatabase implements DataSource, EventWriter {
      * @param event
      * @return
      */
-    public Collection findNoticesForEvent(Event event) {
-        final List notifyIds = new LinkedList();
+    public Collection<Integer> findNoticesForEvent(Event event) {
+        final List<Integer> notifyIds = new LinkedList<Integer>();
         Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {
             public void processRow(ResultSet rs) throws SQLException {
-                notifyIds.add(rs.getObject(1));
+                notifyIds.add(rs.getInt(1));
             }
         };
         loadExisting.execute(new Integer(event.getDbid()));

@@ -53,7 +53,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,9 +65,13 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.config.DestinationPathManager;
+import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
+import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -97,7 +100,15 @@ import org.opennms.netmgt.xml.event.Value;
 public final class BroadcastEventProcessor implements EventListener {
     /**
      */
-    private Map m_noticeQueues;
+    private Map<String, NoticeQueue> m_noticeQueues;
+    private EventIpcManager m_eventManager;
+    private PollOutagesConfigManager m_pollOutagesConfigManager;
+    private NotificationManager m_notificationManager;
+    private NotifdConfigManager m_notifdConfigManager;
+    private DestinationPathManager m_destinationPathManager;
+    private UserManager m_userManager;
+    private GroupManager m_groupManager;
+    private NotificationCommandManager m_notificationCommandManager;
 
     /**
      * A regular expression for matching an expansion parameter delimited by
@@ -105,46 +116,71 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private static final String NOTIFD_EXPANSION_PARM = "%(noticeid)%";
 
-    private static RE notifdExpandRE;
+    private static RE m_expandRE;
+    
+    
+    public BroadcastEventProcessor() {
+    }
 
-    private Notifd m_notifd;
+    /**
+     * An event listener is created and this instance is setup as the
+     * endpoint for broadcast events. When a new event arrives it is processed
+     * and the appropriate action is taken.
+     */
+    protected void init() {
+        assertPropertiesSet();
+        
+        initExpandRe();
+        
+        // start to listen for events
+        getEventManager().addEventListener(this);
+    }
+    
+    private void assertPropertiesSet() {
+        if (m_noticeQueues == null) {
+            throw new IllegalStateException("property noticeQueues not set");
+        }
+        if (m_eventManager == null) {
+            throw new IllegalStateException("property eventManager not set");
+        }
+        if (m_pollOutagesConfigManager == null) {
+            throw new IllegalStateException("property pollOutagesConfigManager not set");
+        }
+        if (m_notificationManager == null) {
+            throw new IllegalStateException("property notificationManager not set");
+        }
+        if (m_notifdConfigManager == null) {
+            throw new IllegalStateException("property notifdConfigManager not set");
+        }
+        if (m_destinationPathManager == null) {
+            throw new IllegalStateException("property destinationPathManager not set");
+        }
+        if (m_userManager == null) {
+            throw new IllegalStateException("property userManager not set");
+        }
+        if (m_groupManager == null) {
+            throw new IllegalStateException("property groupManager not set");
+        }
+        if (m_notificationCommandManager == null) {
+            throw new IllegalStateException("property notificationCommandManager not set");
+        }
 
-     /**
-      * SQL statement for retrieving the critical path IP address and service
-      * from the pathOutage table
-      */
-    final static String SQL_DB_RETRIEVE_PATHOUTAGE = "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?";
+    }
 
     /**
      * Initializes the expansion regular expression. The exception is going to
      * be thrown away if the RE can't be compiled, thus the complilation should
      * be tested prior to runtime.
      */
-    static {
+    protected void initExpandRe() {
         try {
-            notifdExpandRE = new RE(NOTIFD_EXPANSION_PARM);
+            m_expandRE = new RE(NOTIFD_EXPANSION_PARM);
         } catch (RESyntaxException e) {
             // this shouldn't throw an exception, should be tested prior to
             // runtime
-            ThreadCategory.getInstance(BroadcastEventProcessor.class).error("failed to compile RE " + NOTIFD_EXPANSION_PARM, e);
+            log().error("failed to compile RE " + NOTIFD_EXPANSION_PARM, e);
+            throw e;
         }
-    }
-
-    /**
-     * This constructor is called to initilize the event receiver. A connection
-     * to the message server is opened and this instance is setup as the
-     * endpoint for broadcast events. When a new event arrives it is processed
-     * and the appropriate action is taken.
-     * 
-     */
-    BroadcastEventProcessor(Notifd notifd, Map noticeQueues) {
-        // set up the exectuable queue first
-        //
-        m_notifd = notifd;
-        m_noticeQueues = noticeQueues;
-
-        // start to listen for events
-        getEventManager().addEventListener(this);
     }
 
     /**
@@ -154,12 +190,6 @@ public final class BroadcastEventProcessor implements EventListener {
         getEventManager().removeEventListener(this);
     }
 
-    /**
-     * @return
-     */
-    private EventIpcManager getEventManager() {
-        return m_notifd.getEventManager();
-    }
 
     /**
      * This method is invoked by the EventIpcManager when a new event is
@@ -176,7 +206,9 @@ public final class BroadcastEventProcessor implements EventListener {
         if (notifsOn && (checkCriticalPath(event, notifsOn))) {
             scheduleNoticesForEvent(event);
         } else if (!notifsOn) {
-            log().debug("discarding event " + event.getUei() + ", notifd status on = " + notifsOn);
+            if (log().isDebugEnabled()) {
+                log().debug("discarding event " + event.getUei() + ", notifd status on = " + notifsOn);
+            }
         }
         automaticAcknowledge(event);
     }
@@ -184,13 +216,11 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * @return false if status is not defined in configuration as "on".
      */
-    private boolean computeNullSafeStatus() {
-        boolean status = false;
+    public boolean computeNullSafeStatus() {
+        String notificationStatus = null;
         
         try {
-            status = getConfigManager().getNotificationStatus() == null || 
-            !getConfigManager().getNotificationStatus().equalsIgnoreCase("on") 
-            ? false : true;
+            notificationStatus = getNotifdConfigManager().getNotificationStatus();
         } catch (MarshalException e) {
             log().error("onEvent: problem marshalling configuration", e);
         } catch (ValidationException e) {
@@ -198,7 +228,8 @@ public final class BroadcastEventProcessor implements EventListener {
         } catch (IOException e) {
             log().error("onEvent: IO problem marshalling configuration", e);
         }
-        return status;
+
+        return "on".equalsIgnoreCase(notificationStatus);
     }
 
     /**
@@ -219,7 +250,9 @@ public final class BroadcastEventProcessor implements EventListener {
                     isPathOk = false;
                     String cip = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_IP);
                     String csvc = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_SVC);
-                    log().debug("Critical Path " + cip + " " + csvc + " for nodeId " + nodeid + " did not respond. Checking to see if notice would have been sent...");
+                    if (log().isDebugEnabled()) {
+                        log().debug("Critical Path " + cip + " " + csvc + " for nodeId " + nodeid + " did not respond. Checking to see if notice would have been sent...");
+                    }
                     boolean mapsToNotice = false;
                     boolean noticeSupressed = false;
                     Notification[] notifications = null;
@@ -251,16 +284,17 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private void automaticAcknowledge(Event event) {
         try {
-            Collection ueis = getConfigManager().getConfiguration().getAutoAcknowledgeCollection();
+            Collection<AutoAcknowledge> autoAcks = getNotifdConfigManager().getAutoAcknowledges();
 
             // see if this event has an auto acknowledge for a notice
-            Iterator i = ueis.iterator();
-            while (i.hasNext()) {
-                AutoAcknowledge curAck = (AutoAcknowledge) i.next();
+            for (AutoAcknowledge curAck : autoAcks) {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
-                        log().debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
-                        Collection notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
+                        if (log().isDebugEnabled()) {
+                            log().debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
+                        }
+                        
+                        Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                         try {
                             if (curAck.getNotify()) {
                                 sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix());
@@ -279,16 +313,16 @@ public final class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, 
+    private void sendResolvedNotifications(Collection<Integer> notifIDs, Event event, String acknowledge, 
             String[] match, String resolutionPrefix) throws Exception {
-        Category log = log();
-        for (Iterator it = notifIDs.iterator(); it.hasNext();) {
-            int notifId = ((Integer) it.next()).intValue();
+        for (int notifId : notifIDs) {
             boolean wa = false;
             if(notifId < 0) {
                 notifId *= -1;
                 wa = true;
-                log.debug("Conditional autoNotify for notifId " + notifId);
+                if (log().isDebugEnabled()) {
+                    log().debug("Conditional autoNotify for notifId " + notifId);
+                }
             }
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix);
@@ -298,7 +332,7 @@ public final class BroadcastEventProcessor implements EventListener {
             
             String queueID = getNotificationManager().getQueueForNotification(notifId);
 
-            final Map<String, List<String>> userNotifitcations = new HashMap<String, List<String>>();
+            final Map<String, List<String>> userNotifications = new HashMap<String, List<String>>();
             RowProcessor ackNotifProcessor = new RowProcessor() {
                 public void processRow(ResultSet rs) throws SQLException {
                     String userID = rs.getString("userID");
@@ -312,10 +346,10 @@ public final class BroadcastEventProcessor implements EventListener {
                         autoNotifyChar = "C";
                     }
                     if(autoNotifyChar.equals("Y") || (autoNotifyChar.equals("C") && !wasAcked)) {
-                        List<String> cmdList = (List<String>) userNotifitcations.get(userID);
+                        List<String> cmdList = (List<String>) userNotifications.get(userID);
                         if (cmdList == null) {
                             cmdList = new ArrayList<String>();
-                            userNotifitcations.put(userID, cmdList);
+                            userNotifications.put(userID, cmdList);
                         }
                         cmdList.add(cmd);
                     }
@@ -323,53 +357,39 @@ public final class BroadcastEventProcessor implements EventListener {
             };
             getNotificationManager().forEachUserNotification(notifId, ackNotifProcessor);
 
-            for (Iterator userIt = userNotifitcations.keySet().iterator(); userIt.hasNext();) {
-                String userID = (String) userIt.next();
-                List<String> cmdList = (List<String>) userNotifitcations.get(userID);
-                String[] cmds = (String[]) cmdList.toArray(new String[cmdList.size()]);
-                log.debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
+            for (String userID : userNotifications.keySet()) {
+                List<String> cmdList = userNotifications.get(userID);
+                String[] cmds = cmdList.toArray(new String[cmdList.size()]);
+                if (log().isDebugEnabled()) {
+                    log().debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
+                }
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
             }
 
         }
     }
 
-    protected void sendResolvedNotificationsToUser(String queueID, String targetName, String[] commands, Map params) throws Exception {
+    protected void sendResolvedNotificationsToUser(String queueID, String targetName, String[] commands, Map<String, String> params) throws Exception {
         int noticeId = -1;
-        NoticeQueue noticeQueue = (NoticeQueue) m_noticeQueues.get(queueID);
+        NoticeQueue noticeQueue = m_noticeQueues.get(queueID);
         long now = System.currentTimeMillis();
 
-        if (m_notifd.getUserManager().hasUser(targetName)) {
+        if (getUserManager().hasUser(targetName)) {
             NotificationTask newTask = makeUserTask(now, params, noticeId, targetName, commands, null, null);
 
             if (newTask != null) {
-                noticeQueue.put(new Long(now), newTask);
+                noticeQueue.putItem(now, newTask);
             }
         } else if (targetName.indexOf("@") > -1) {
             NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null, null);
 
             if (newTask != null) {
-                noticeQueue.put(new Long(now), newTask);
+                noticeQueue.putItem(now, newTask);
             }
         } else {
-            Category log = log();
-            log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
+            log().warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
         }
 
-    }
-
-    /**
-     * @return
-     */
-    private NotificationManager getNotificationManager() {
-        return m_notifd.getNotificationManager();
-    }
-
-    /**
-     * @return
-     */
-    private NotifdConfigManager getConfigManager() {
-        return m_notifd.getConfigManager();
     }
 
     /**
@@ -386,7 +406,9 @@ public final class BroadcastEventProcessor implements EventListener {
         // can't check the database if any of these are null, so let the notice
         // continue
         if (nodeID == null || ipAddr == null || service == null || ipAddr.equals("0.0.0.0")) {
-            log().debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, continuing...");
+            if (log().isDebugEnabled()) {
+                log().debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, continuing...");
+            }
             return true;
         }
 
@@ -396,9 +418,13 @@ public final class BroadcastEventProcessor implements EventListener {
             String notify = getNotificationManager().getServiceNoticeStatus(nodeID, ipAddr, service);
             if ("Y".equals(notify)) {
                 continueNotice = true;
-                log().debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is 'Y', continuing...");
+                if (log().isDebugEnabled()) {
+                    log().debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is 'Y', continuing...");
+                }
             } else {
-                log().debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is " + notify + ", not continuing...");
+                if (log().isDebugEnabled()) {
+                    log().debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is " + notify + ", not continuing...");
+                }
             }
         } catch (Exception e) {
             continueNotice = true;
@@ -419,10 +445,8 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private boolean autoAckExistsForEvent(String eventUei) {
         try {
-            Collection ueis = getConfigManager().getConfiguration().getAutoAcknowledgeCollection();
-            Iterator i = ueis.iterator();
-            while (i.hasNext()) {
-                AutoAcknowledge curAck = (AutoAcknowledge) i.next();
+            Collection<AutoAcknowledge> autoAcks = getNotifdConfigManager().getAutoAcknowledges();
+            for (AutoAcknowledge curAck : autoAcks) {
                 if (curAck.getAcknowledge().equals(eventUei)) {
                     return true;
                 }
@@ -463,9 +487,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 long nodeid = event.getNodeid();
                 String ipaddr = event.getInterface();
                 if (notifications != null) {
-                    for (int i = 0; i < notifications.length; i++) {
-
-                        Notification notification = notifications[i];
+                    for (Notification notification : notifications) {
                         int noticeId = 0;
 
                         try {
@@ -475,21 +497,23 @@ public final class BroadcastEventProcessor implements EventListener {
                             continue;
                         }
 
-                        Map paramMap = buildParameterMap(notification, event, noticeId);
+                        Map<String, String> paramMap = buildParameterMap(notification, event, noticeId);
                         String queueID = (notification.getNoticeQueue() != null ? notification.getNoticeQueue() : "default");
 
-                        log().debug("destination : " + notification.getDestinationPath());
-                        log().debug("text message: " + (String) paramMap.get(NotificationManager.PARAM_TEXT_MSG));
-                        log().debug("num message : " + (String) paramMap.get(NotificationManager.PARAM_NUM_MSG));
-                        log().debug("subject     : " + (String) paramMap.get(NotificationManager.PARAM_SUBJECT));
-                        log().debug("node        : " + (String) paramMap.get(NotificationManager.PARAM_NODE));
-                        log().debug("interface   : " + (String) paramMap.get(NotificationManager.PARAM_INTERFACE));
-                        log().debug("service     : " + (String) paramMap.get(NotificationManager.PARAM_SERVICE));
+                        if (log().isDebugEnabled()) {
+                            log().debug("destination : " + notification.getDestinationPath());
+                            log().debug("text message: " + paramMap.get(NotificationManager.PARAM_TEXT_MSG));
+                            log().debug("num message : " + paramMap.get(NotificationManager.PARAM_NUM_MSG));
+                            log().debug("subject     : " + paramMap.get(NotificationManager.PARAM_SUBJECT));
+                            log().debug("node        : " + paramMap.get(NotificationManager.PARAM_NODE));
+                            log().debug("interface   : " + paramMap.get(NotificationManager.PARAM_INTERFACE));
+                            log().debug("service     : " + paramMap.get(NotificationManager.PARAM_SERVICE));
+                        }
 
                         // get the target and escalation information
                         Path path = null;
                         try {
-                            path = m_notifd.getDestinationPathManager().getPath(notification.getDestinationPath());
+                            path = getDestinationPathManager().getPath(notification.getDestinationPath());
                             if (path == null) {
                                 log().warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notifications.xml file.");
 
@@ -510,7 +534,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         try {
                             if (getUserCount(targets, escalations) == 0) {
                                 log().warn("The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified, not sending notice.");
-                                sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS, "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.", "The message of the notification is as follows: " + (String) paramMap.get(NotificationManager.PARAM_TEXT_MSG));
+                                sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS, "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.", "The message of the notification is as follows: " + paramMap.get(NotificationManager.PARAM_TEXT_MSG));
                                 return;
                             }
                         } catch (Exception e) {
@@ -537,7 +561,7 @@ public final class BroadcastEventProcessor implements EventListener {
                                 // if the auto ack catches the other event
                                 // before then,
                                 // then the page will not be sent
-                                Calendar endOfOutage = m_notifd.getPollOutagesConfigManager().getEndOfOutage(scheduledOutageName);
+                                Calendar endOfOutage = getPollOutagesConfigManager().getEndOfOutage(scheduledOutageName);
                                 startTime = endOfOutage.getTime().getTime();
                             } else {
                                 // No auto-ack exists - there's no point
@@ -551,7 +575,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         List<NotificationTask> targetSiblings = new ArrayList<NotificationTask>();
 
                         try {
-                            NoticeQueue noticeQueue = (NoticeQueue) m_noticeQueues.get(queueID);
+                            NoticeQueue noticeQueue = m_noticeQueues.get(queueID);
                             processTargets(targets, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
                             processEscalations(escalations, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
                         } catch (Exception e) {
@@ -560,11 +584,15 @@ public final class BroadcastEventProcessor implements EventListener {
 
                     }
                 } else {
-                    log().debug("Event doesn't match a notice: " + event.getUei() + " : " + nodeid + " : " + ipaddr + " : " + event.getService());
+                    if (log().isDebugEnabled()) {
+                        log().debug("Event doesn't match a notice: " + event.getUei() + " : " + nodeid + " : " + ipaddr + " : " + event.getService());
+                    }
                 }
             }
         } else {
-            log().debug("No notice match for uei: " + event.getUei());
+            if (log().isDebugEnabled()) {
+                log().debug("No notice match for uei: " + event.getUei());
+            }
         }
     }
 
@@ -604,11 +632,11 @@ public final class BroadcastEventProcessor implements EventListener {
         int count = 0;
         String targetName = target.getName();
 
-        if (m_notifd.getGroupManager().hasGroup(targetName)) {
-            count = m_notifd.getGroupManager().getGroup(targetName).getUserCount();
-        } else if (m_notifd.getUserManager().hasRole(targetName)) {
-            count = m_notifd.getUserManager().countUsersWithRole(targetName);
-        } else if (m_notifd.getUserManager().hasUser(targetName)) {
+        if (getGroupManager().hasGroup(targetName)) {
+            count = getGroupManager().getGroup(targetName).getUserCount();
+        } else if (getUserManager().hasRole(targetName)) {
+            count = getUserManager().countUsersWithRole(targetName);
+        } else if (getUserManager().hasUser(targetName)) {
             count = 1;
         } else if (targetName.indexOf("@") > -1) {
             count = 1;
@@ -616,6 +644,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
         return count;
     }
+
 
     /**
      * Sends and event related to a notification
@@ -699,13 +728,13 @@ public final class BroadcastEventProcessor implements EventListener {
      * @param paramMap
      *            a map that will supply the substitution values
      */
-    public static String expandNotifParms(final String input, final Map paramMap) {
+    public String expandNotifParms(final String input, final Map<String, String> paramMap) {
         String expanded = new String(input);
 
-        if (notifdExpandRE.match(expanded)) {
-            String replace = (String) paramMap.get(notifdExpandRE.getParen(1));
+        if (m_expandRE.match(expanded)) {
+            String replace = paramMap.get(m_expandRE.getParen(1));
             if (replace != null) {
-                expanded = notifdExpandRE.subst(expanded, replace);
+                expanded = m_expandRE.subst(expanded, replace);
             }
         }
         return expanded;
@@ -714,8 +743,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private void processTargets(Target[] targets, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
-        Category log = log();
+    private void processTargets(Target[] targets, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map<String, String> params, int noticeId) throws IOException, MarshalException, ValidationException {
         for (int i = 0; i < targets.length; i++) {
             String interval = (targets[i].getInterval() == null ? "0s" : targets[i].getInterval());
 
@@ -732,15 +760,17 @@ public final class BroadcastEventProcessor implements EventListener {
             } else {
                 autoNotify = "C";
             }
-            log.debug("Processing target " + targetName + ":" + interval);
+            if (log().isDebugEnabled()) {
+                log().debug("Processing target " + targetName + ":" + interval);
+            }
             
-		    NotificationTask[] tasks = null;
+            NotificationTask[] tasks = null;
             
-            if (m_notifd.getGroupManager().hasGroup((targetName))) {
+            if (getGroupManager().hasGroup((targetName))) {
                 tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
-            } else if (m_notifd.getUserManager().hasRole(targetName)) {
+            } else if (getUserManager().hasRole(targetName)) {
                 tasks = makeRoleTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
-            } else if (m_notifd.getUserManager().hasUser(targetName)) {
+            } else if (getUserManager().hasUser(targetName)) {
                 NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
                 tasks = userTasks;
             } else if (targetName.indexOf("@") > -1) {
@@ -749,47 +779,51 @@ public final class BroadcastEventProcessor implements EventListener {
             }
              
             if (tasks != null) {
-
                 for (int index = 0; index < tasks.length; index++) {
                     NotificationTask task = tasks[index];
                     if (task != null) {
-                        noticeQueue.put(task.getSendTime(), task);
+                        noticeQueue.putItem(task.getSendTime(), task);
                         targetSiblings.add(task);
                     }
                 }
             } else {
-                log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
+                log().warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
             }
         }
     }
 
-    NotificationTask[] makeGroupTasks(long startTime, Map params, int noticeId, String targetName, String[] command, List targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
-        Category log = log();
-        Group group = m_notifd.getGroupManager().getGroup(targetName);
+    NotificationTask[] makeGroupTasks(long startTime, Map<String, String> params, int noticeId, String targetName, String[] command, List targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
+        Group group = getGroupManager().getGroup(targetName);
 
         Calendar startCal = Calendar.getInstance();
         startCal.setTimeInMillis(startTime);
-        long next = m_notifd.getGroupManager().groupNextOnDuty(group.getName(), startCal);
+        long next = getGroupManager().groupNextOnDuty(group.getName(), startCal);
         
         // it the group is not on duty
         if (next < 0) {
-            log.debug("The group " + group.getName() + " is not scheduled to come back on duty. No notification will be sent to this group.");
+            if (log().isDebugEnabled()) {
+                log().debug("The group " + group.getName() + " is not scheduled to come back on duty. No notification will be sent to this group.");
+            }
             return null;
         }
 
-        log.debug("The group " + group.getName() + " is on duty in " + next + " millisec.");
+        if (log().isDebugEnabled()) {
+            log().debug("The group " + group.getName() + " is on duty in " + next + " millisec.");
+        }
         String[] users = group.getUser();
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            log.debug("Not sending notice, no users specified for group " + group.getName());
+            if (log().isDebugEnabled()) {
+                log().debug("Not sending notice, no users specified for group " + group.getName());
+            }
             return null;
         }
 
         return constructTasksFromUserList(users, startTime, next, params, noticeId, command, targetSiblings, autoNotify, interval);
     }
 
-    private NotificationTask[] constructTasksFromUserList(String[] users, long startTime, long offset, Map params, int noticeId, String[] command, List targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
+    private NotificationTask[] constructTasksFromUserList(String[] users, long startTime, long offset, Map<String, String> params, int noticeId, String[] command, List targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
         List<NotificationTask> taskList = new ArrayList<NotificationTask>(users.length);
         long curSendTime = 0;
         for (int j = 0; j < users.length; j++) {
@@ -804,14 +838,14 @@ public final class BroadcastEventProcessor implements EventListener {
     }
     
     
-    NotificationTask[] makeRoleTasks(long startTime, Map params, int noticeId, String targetName, String[] command, List targetSiblings, String autoNotify, long interval) throws MarshalException, ValidationException, IOException {
-        Category log = log();
-
-        String[] users = m_notifd.getUserManager().getUsersScheduledForRole(targetName, new Date(startTime));
+    NotificationTask[] makeRoleTasks(long startTime, Map<String, String> params, int noticeId, String targetName, String[] command, List targetSiblings, String autoNotify, long interval) throws MarshalException, ValidationException, IOException {
+        String[] users = getUserManager().getUsersScheduledForRole(targetName, new Date(startTime));
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            log.debug("Not sending notice, no users scheduled for role  " + targetName);
+            if (log().isDebugEnabled()) {
+                log().debug("Not sending notice, no users scheduled for role  " + targetName);
+            }
             return null;
         }
         
@@ -824,7 +858,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private void processEscalations(Escalate[] escalations, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
+    private void processEscalations(Escalate[] escalations, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map<String, String> params, int noticeId) throws IOException, MarshalException, ValidationException {
         for (int i = 0; i < escalations.length; i++) {
             Target[] targets = escalations[i].getTarget();
             startTime += TimeConverter.convertToMillis(escalations[i].getDelay());
@@ -835,17 +869,17 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    NotificationTask makeUserTask(long sendTime, Map parameters, int noticeId, String targetName, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
+    NotificationTask makeUserTask(long sendTime, Map<String, String> parameters, int noticeId, String targetName, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         try {
-            task = new NotificationTask(m_notifd, sendTime, parameters, siblings, autoNotify);
+            task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
 
-            User user = m_notifd.getUserManager().getUser(targetName);
+            User user = getUserManager().getUser(targetName);
 
             Command commands[] = new Command[commandList.length];
             for (int i = 0; i < commandList.length; i++) {
-                commands[i] = m_notifd.getNotificationCommandManager().getCommand(commandList[i]);
+                commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
             }
 
             // if either piece of information is missing don't add the task to
@@ -869,24 +903,26 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    NotificationTask makeEmailTask(long sendTime, Map parameters, int noticeId, String address, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
+    NotificationTask makeEmailTask(long sendTime, Map<String, String> parameters, int noticeId, String address, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         try {
-            task = new NotificationTask(m_notifd, sendTime, parameters, siblings, autoNotify);
+            task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
 
             User user = new User();
             user.setUserId(address);
             Contact contact = new Contact();
             contact.setType("email");
             // contact.setType("javaEmail");
-            log().debug("email address = " + address);
+            if (log().isDebugEnabled()) {
+                log().debug("email address = " + address);
+            }
             contact.setInfo(address);
             user.addContact(contact);
 
             Command commands[] = new Command[commandList.length];
             for (int i = 0; i < commandList.length; i++) {
-                commands[i] = m_notifd.getNotificationCommandManager().getCommand(commandList[i]);
+                commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
             }
 
             task.setUser(user);
@@ -930,10 +966,9 @@ public final class BroadcastEventProcessor implements EventListener {
      * @throws MarshalException
      */
     public String scheduledOutage(long nodeId, String theInterface) {
-        Category log = log();
         try {
 
-            PollOutagesConfigManager outageFactory = m_notifd.getPollOutagesConfigManager();
+            PollOutagesConfigManager outageFactory = getPollOutagesConfigManager();
 
             // Iterate over the outage names
             // For each outage...if the outage contains a calendar entry which
@@ -941,23 +976,23 @@ public final class BroadcastEventProcessor implements EventListener {
             // interface then break and return true. Otherwise process the
             // next outage.
             //
-            Iterator iter = getConfigManager().getConfiguration().getOutageCalendarCollection().iterator();
-            while (iter.hasNext()) {
-                String outageName = (String) iter.next();
+            Collection<String> outageCalendarNames = getNotifdConfigManager().getOutageCalendarNames();
+            for (String outageName : outageCalendarNames) {
 
                 // Does the outage apply to the current time?
                 if (outageFactory.isCurTimeInOutage(outageName)) {
                     // Does the outage apply to this interface or node?
 
                     if ((outageFactory.isNodeIdInOutage(nodeId, outageName)) || (outageFactory.isInterfaceInOutage(theInterface, outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
-                        if (log.isDebugEnabled())
-                            log.debug("scheduledOutage: configured outage '" + outageName + "' applies, notification for interface " + theInterface + " on node " + nodeId + " will not be sent");
+                        if (log().isDebugEnabled()) {
+                            log().debug("scheduledOutage: configured outage '" + outageName + "' applies, notification for interface " + theInterface + " on node " + nodeId + " will not be sent");
+                        }
                         return outageName;
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("Error determining current outages", e);
+            log().error("Error determining current outages", e);
         }
 
         return null;
@@ -970,8 +1005,10 @@ public final class BroadcastEventProcessor implements EventListener {
      * @param nodeEntry Entry of node which was rescanned
      */
     private void createPathOutageEvent(long nodeid, String nodeLabel, String intfc, String svc, boolean noticeSupressed) {
-        Category log = log();
-	log.debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
+        if (log().isDebugEnabled()) {
+            log().debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
+        }
+        
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.PATH_OUTAGE_EVENT_UEI);
         newEvent.setSource("OpenNMS.notifd");
@@ -989,8 +1026,7 @@ public final class BroadcastEventProcessor implements EventListener {
         parmValue = new Value();
         if (nodeLabel == null) {
             parmValue.setContent("");
-        }
-        else {
+        } else {
             parmValue.setContent(nodeLabel);
         }
         eventParm.setValue(parmValue);
@@ -1016,7 +1052,7 @@ public final class BroadcastEventProcessor implements EventListener {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_NOTICE_SUPRESSED);
         parmValue = new Value();
-	if(noticeSupressed) {
+	if (noticeSupressed) {
             parmValue.setContent("true");
         } else {
             parmValue.setContent("false");
@@ -1028,14 +1064,90 @@ public final class BroadcastEventProcessor implements EventListener {
         newEvent.setParms(eventParms);
 
         // Send the event
-        if (log.isDebugEnabled()) {
-            log.debug("Creating pathOutageEvent for nodeid: " + nodeid);
+        if (log().isDebugEnabled()) {
+            log().debug("Creating pathOutageEvent for nodeid: " + nodeid);
         }
+        
 	try {
-            EventIpcManagerFactory.getIpcManager().sendNow((Event) newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            log().warn("run: unexpected throwable exception caught during event send", t);
         }
+    }
+
+    public DestinationPathManager getDestinationPathManager() {
+        return m_destinationPathManager;
+    }
+
+    public void setDestinationPathManager(
+            DestinationPathManager destinationPathManager) {
+        m_destinationPathManager = destinationPathManager;
+    }
+
+    public EventIpcManager getEventManager() {
+        return m_eventManager;
+    }
+
+    public void setEventManager(EventIpcManager eventManager) {
+        m_eventManager = eventManager;
+    }
+
+    public GroupManager getGroupManager() {
+        return m_groupManager;
+    }
+
+    public void setGroupManager(GroupManager groupManager) {
+        m_groupManager = groupManager;
+    }
+
+    public NotifdConfigManager getNotifdConfigManager() {
+        return m_notifdConfigManager;
+    }
+
+    public void setNotifdConfigManager(NotifdConfigManager notifdConfigManager) {
+        m_notifdConfigManager = notifdConfigManager;
+    }
+
+    public NotificationCommandManager getNotificationCommandManager() {
+        return m_notificationCommandManager;
+    }
+
+    public void setNotificationCommandManager(
+            NotificationCommandManager notificationCommandManager) {
+        m_notificationCommandManager = notificationCommandManager;
+    }
+
+    public NotificationManager getNotificationManager() {
+        return m_notificationManager;
+    }
+
+    public void setNotificationManager(NotificationManager notificationManager) {
+        m_notificationManager = notificationManager;
+    }
+
+    public PollOutagesConfigManager getPollOutagesConfigManager() {
+        return m_pollOutagesConfigManager;
+    }
+
+    public void setPollOutagesConfigManager(
+            PollOutagesConfigManager pollOutagesConfigManager) {
+        m_pollOutagesConfigManager = pollOutagesConfigManager;
+    }
+
+    public UserManager getUserManager() {
+        return m_userManager;
+    }
+
+    public void setUserManager(UserManager userManager) {
+        m_userManager = userManager;
+    }
+
+    public Map<String, NoticeQueue> getNoticeQueues() {
+        return m_noticeQueues;
+    }
+
+    public void setNoticeQueues(Map<String, NoticeQueue> noticeQueues) {
+        m_noticeQueues = noticeQueues;
     }
 
 } // end class

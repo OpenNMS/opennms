@@ -32,15 +32,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -55,110 +46,26 @@ import org.opennms.core.utils.ThreadCategory;
  * @version 1.1.1.1
  * 
  */
-public class NoticeQueue extends TreeMap {
-    public NoticeQueue() {
-        super();
-    }
+public class NoticeQueue extends DuplicateTreeMap<Long, NotificationTask> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7463770974135218140L;
 
-    public NoticeQueue(Comparator c) {
-        super(c);
-    }
+    @Override
+    public NotificationTask putItem(Long key, NotificationTask value) {
+        NotificationTask ret = super.putItem(key, value);
 
-    public NoticeQueue(Map m) {
-        super(m);
-    }
-
-    public NoticeQueue(SortedMap m) {
-        super(m);
-    }
-
-    public Object put(Object key, Object task) {
         Category log = ThreadCategory.getInstance(getClass());
-        Object result = null;
-
-        // see if there is a collision
-        if (super.containsKey(key)) {
-            Object o = super.get(key);
-            if (o instanceof NotificationTask) {
-                List duplicate = new ArrayList();
-                duplicate.add(o);
-                duplicate.add(task);
-
-                result = super.put(key, duplicate);
-            } else if (o instanceof List) {
-                ((List) o).add(task);
-                result = o;
-            }
-        } else {
-            result = super.put(key, task);
-        }
+        
         if (log.isDebugEnabled()) {
-            if (task instanceof NotificationTask) {
-                NotificationTask notice = (NotificationTask) task;
-                if(notice.getNotifyId() == -1) {
-                    log.debug("autoNotify task queued");
-                } else {
-                    log.debug("task queued for notifyID " + notice.getNotifyId());
-                }
+            if (value.getNotifyId() == -1) {
+                log.debug("autoNotify task queued");
             } else {
-                log.debug("task is not an instance of NotificationTask");
+                log.debug("task queued for notifyID " + value.getNotifyId());
             }
         }
-        return result;
-    }
-    
-    public Object put(long time, Object task) {
-        return put(new Long(time), task);
-    }
-
-    public Object remove(Object task) {
-        Object result = null;
-
-        if (task instanceof NotificationTask) {
-            NotificationTask notice = (NotificationTask) task;
-            Long key = new Long(notice.getSendTime());
-
-            Object o = get(key);
-
-            if (o instanceof NotificationTask) {
-                result = super.remove(key);
-            } else if (o instanceof List) {
-                ((List) o).remove(task);
-                result = task;
-            }
-        } else {
-            result = super.remove(task);
-        }
-
-        return result;
-    }
-
-    public Collection values() {
-        Collection originals = super.values();
-        Collection expanded = new ArrayList();
-
-        Iterator i = originals.iterator();
-        while (i.hasNext()) {
-            Object next = i.next();
-            if (next instanceof NotificationTask) {
-                expanded.add(next);
-            } else if (next instanceof List) {
-                expanded.addAll((List) next);
-            }
-        }
-
-        return expanded;
-    }
-
-    public String toString() {
-        Collection values = values();
-        StringBuffer buffer = new StringBuffer();
-
-        Iterator i = values.iterator();
-        while (i.hasNext()) {
-            buffer.append(i.next().toString() + System.getProperty("line.separator"));
-        }
-
-        return buffer.toString();
+        
+        return ret;
     }
 }
