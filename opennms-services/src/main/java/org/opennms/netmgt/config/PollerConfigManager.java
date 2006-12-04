@@ -901,7 +901,11 @@ abstract public class PollerConfigManager implements PollerConfig {
         while(parms.hasMoreElements()) {
             Parameter parm = parms.nextElement();
             if (key.equals(parm.getKey())) {
-                return parm.getValue();
+            	if (parm.getValue() != null) {
+            		return parm.getValue();
+            	} else if (parm.getAnyObject() != null) {
+            		return parm.getAnyObject().toString();
+            	}
             }
         }
         return null;

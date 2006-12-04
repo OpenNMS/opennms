@@ -73,6 +73,12 @@ public class PollerConfigFactoryTest extends TestCase {
             "           <rra>RRA:MAX:0.5:12:4464</rra>\n" + 
             "       </rrd>\n" +
             "       <service name=\"ICMP\" interval=\"300000\">\n" +
+            "         <parameter key=\"test-key\" value=\"test-value\"/>\n" +
+            "         <parameter key=\"any-parm\">" +
+            "            <config>" +
+            "              <data/>" +
+            "            </config>" +
+            "         </parameter>" +
             "       </service>\n" +
             "       <downtime begin=\"0\" end=\"30000\"/>\n" + 
             "   </package>\n" +

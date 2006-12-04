@@ -159,7 +159,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         Enumeration<Parameter> serviceParms = serviceConfig.enumerateParameter();
         while(serviceParms.hasMoreElements()) {
             Parameter serviceParm = serviceParms.nextElement();
-            paramMap.put(serviceParm.getKey(), serviceParm.getValue());
+            
+            String value = serviceParm.getValue();
+            if (value == null) {
+            	value = (serviceParm.getAnyObject() == null ? "" : serviceParm.getAnyObject().toString());
+            }
+                        
+			paramMap.put(serviceParm.getKey(), value);
         }
         return paramMap;
     }
