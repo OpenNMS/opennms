@@ -43,7 +43,7 @@
 		org.opennms.web.graph.ResourceId,
 		java.io.File,
 		org.opennms.netmgt.config.kscReports.*,
-		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.element.NetworkElementFactory
 	"
 %>
 

@@ -42,7 +42,7 @@
 	import="
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
-        org.opennms.web.acegisecurity.Authentication,
+        org.opennms.web.acegisecurity.Authentication
 	"
 %>
 
