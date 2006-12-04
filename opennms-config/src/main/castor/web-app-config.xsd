@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
-            targetNamespace="http://www.opennms.org/xsd/config/http-site-config" 
-            xmlns:this="http://www.opennms.org/xsd/config/http-site-config">
+            targetNamespace="http://xmlns.opennms.org/xsd/web-app-config" 
+            xmlns:this="http://xmlns.opennms.org/xsd/web-app-config">
 
 <!-- We need better name for this element and config file, this what we came up with for now -->
 
