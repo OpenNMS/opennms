@@ -591,6 +591,36 @@ opennms.home = ${opennms.home}
   
     <!-- Linux -->
     <profile>
+      <id>linux-generic-rrdtool-shared</id>
+      
+      <activation>
+        <file>
+          <exists>/usr/lib/librrd.so</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>linux-generic-rrdtool-static</id>
+      
+      <activation>
+        <file>
+          <exists>/usr/lib/librrd.a</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+      </properties>
+    </profile>
+
+    <profile>
       <id>linux-64bit-generic-rrdtool-shared</id>
       
       <activation>
@@ -622,7 +652,7 @@ opennms.home = ${opennms.home}
 
 
     <profile>
-      <id>generic-postgres</id>
+      <id>generic-postgres-pgsql-server</id>
       
       <activation>
         <file>
@@ -636,81 +666,10 @@ opennms.home = ${opennms.home}
     </profile>
 
     <profile>
-      <id>centos</id>
-      
+      <id>generic-postgres-postgresql-server</id>
       <activation>
         <file>
-          <exists>/etc/redhat-release</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-        <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-  
-    <profile>
-      <id>suse</id>
-      <activation>
-        <file>
-          <exists>/etc/SuSE-release</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-        <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-    
-    <profile>
-      <id>debian</id>
-      <activation>
-        <file>
-          <exists>/etc/debian_version</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-      </properties>
-    </profile>
-    
-    <profile>
-      <id>debian-postgres8</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/8.0/server</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/postgresql/8.0/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-  
-    <profile>
-      <id>debian-postgres8.1</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/8.1/server</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/postgresql/8.1/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-  
-    <profile>
-      <id>debian-postgres7</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/server</exists>
+          <exists>/usr/include/postgresql/server/postgres.h</exists>
         </file>
       </activation>
   
@@ -720,32 +679,41 @@ opennms.home = ${opennms.home}
     </profile>
 
     <profile>
-      <id>ubuntu</id>
+      <id>generic-postgres-postgresql</id>
       <activation>
         <file>
-          <exists>/usr/share/doc/ubuntu-minimal</exists>
+          <exists>/usr/include/postgresql/postgres.h</exists>
         </file>
       </activation>
   
       <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/usr/include/postgresql</build.postgresql.include.dir>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>generic-postgres-8.0</id>
+      <activation>
+        <file>
+          <exists>/usr/include/postgresql/8.0/server/postgres.h</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.postgresql.include.dir>/usr/include/postgresql/8.0/server</build.postgresql.include.dir>
       </properties>
     </profile>
   
     <profile>
-      <id>slackware</id>
+      <id>generic-postgres-8.1</id>
       <activation>
         <file>
-          <exists>/etc/slackware-version</exists>
+          <exists>/usr/include/postgresql/8.1/server/postgres.h</exists>
         </file>
       </activation>
   
       <properties>
-        <build.rrd.include.dir>/usr/local/rrdtool-1.2.12/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/local/rrdtool-1.2.12/lib</build.rrd.lib.dir>
-        <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
+        <build.postgresql.include.dir>/usr/include/postgresql/8.1/server</build.postgresql.include.dir>
       </properties>
     </profile>
 
