@@ -75,13 +75,13 @@
   of the events</a> to find the event you are looking for.
 </p>
 
-<p>
-  <form method="get" action="event/detail.jsp">
+<form method="get" action="event/detail.jsp">
+  <p>
     Get&nbsp;details&nbsp;for&nbsp;Event&nbsp;ID:
     <br/>
     <input type="text" name="id"/>
     <input type="submit" value="Search"/>
-  </form>
-</p>
+  </p>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

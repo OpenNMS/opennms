@@ -124,27 +124,10 @@
 				<td colspan="3"><c:out value="${role.description}"/></td>
           	</tr>
 		</table>
-		</td>
-	</tr>
-	<tr align="right">
-		<td>&nbsp;</td>
-		<td>
-		<table border="0">
-		<tr>
-		<td>
-		</td>
-		<td>
-		</td>
-		</tr>
-		</table>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-		<h3>Role Schedule</h3>
-		</td>
-	</tr>
+
+
+<h3>Role Schedule</h3>
+  <table>
 	<tr>
 		<td>&nbsp;
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">

@@ -106,15 +106,15 @@
         <% } %>
       </p>
       
-      <p>
-        <form method="POST" action="element/rescan">
+      <form method="POST" action="element/rescan">
+        <p>
           <input type="hidden" name="node" value="<%=nodeId%>" />
           <input type="hidden" name="returnUrl" value="<%=returnUrl%>" />             
 
           <input type="submit" value="Rescan" />
           <input type="button" value="Cancel" onClick="window.open('<%=Util.calculateUrlBase(request) + "/" + returnUrl%>', '_self')" />             
-        </form>
-      </p>
+        </p>
+      </form>
   </div>
 
   <div style="width: 40%; float: left;">

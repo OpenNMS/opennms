@@ -290,18 +290,12 @@
         </tr>
         
       </table>
-    </td>
-    
-    <td>&nbsp;</td>
-  
-  </tr>
-
-  </table>
 
 <!-- finish and discard buttons -->
   <table>
     <tr>
       <td> &nbsp; </td>
+      <td>
         <table>
           <tr>
             <td>
@@ -310,6 +304,9 @@
             </td>
           </tr>
         </table>
+      </td>
+    </tr>
+  </table>
 </form>
 
 <script language="JavaScript">

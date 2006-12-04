@@ -67,9 +67,9 @@
 			
 		</c:forEach>
 		</table>
+		<form id="newScheduleForm" method="get">
 		<table>
 			<tr>
-			<form id="newScheduleForm" method="get">
 			<input id="newScheduleOp" name="op" type="hidden" value="newSchedule"/>
 			<td><input id="newScheduleName" name="name" type="text" readonly="true" value="Schedule Name"/></td>
 			<td>
@@ -80,8 +80,8 @@
 				</SELECT>
 			</td>
 			<td><input id="doNewSchedule" type="submit" name="submit" value="New Schedule"/></td>
-		</form>
 		</table>
+		</form>
 		
 	</body>
 </html>

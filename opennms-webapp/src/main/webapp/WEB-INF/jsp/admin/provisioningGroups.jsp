@@ -38,7 +38,7 @@
 
 
 
-<c:url var="editUrl" value="/admin/editProvisioningGroup.htm" />
+<c:url var="editUrl" value="admin/editProvisioningGroup.htm" />
 
 <form action="${editUrl}" name="edit" method="post">
   <input name="groupName" type="hidden"/>
@@ -78,7 +78,7 @@
 </c:forEach>
 <tr>
    <td></td>
-   <td colspan="7"><form name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="submit" value="Add New Group"/></form></td>
+   <td colspan="7"><form action="${editUrl}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="submit" value="Add New Group"/></form></td>
 </tr>
 </table>
 

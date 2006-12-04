@@ -184,7 +184,6 @@
     <input type="button" value="Reset Password" onClick="resetPassword()" />
   </p>
 
-  <p>
     <table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
               <td colspan="2">
@@ -301,7 +300,6 @@
               </td>
             </tr>
           </table>
- </p>
 </div>
 
 <div id="contentright">

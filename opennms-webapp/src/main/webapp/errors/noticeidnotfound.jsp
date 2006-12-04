@@ -75,12 +75,12 @@
   to find the notice you are looking for.
 </p>
 
-<p>
-  <form method="get" action="notice/detail.jsp">
+<form method="get" action="notice/detail.jsp">
+  <p>
     Get&nbsp;details&nbsp;for&nbsp;Notice&nbsp;ID:
     <br/>
     <input type="text" name="id"/>
-  </form>
-</p>
+  </p>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

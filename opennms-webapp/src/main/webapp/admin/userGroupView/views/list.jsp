@@ -159,7 +159,6 @@
               <%= (curView.getComment()!=null && !curView.getComment().equals("") ? curView.getComment() : "No Comments") %>
             </td>
           </tr>
-         </tr>
          <% row++;
             } %>
      </table>

@@ -71,7 +71,6 @@
         <a HREF="admin/userGroupView/views/list.jsp">Configure Views</a>
       </p>
       -->
-    </td>
 </div>
 
 <div style="width: 60%; float: left;">

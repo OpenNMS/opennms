@@ -75,13 +75,13 @@
   outages</a> to find the outage you are looking for.
 </p>
 
-<p>
-  <form method="get" action="outage/detail.jsp">
+<form method="get" action="outage/detail.jsp">
+  <p>
     Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID:
     <br/>
     <input type="text" name="id"/>
     <input type="submit" value="Search" />
-  </form>
-</p>
+  </p>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
