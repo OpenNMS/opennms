@@ -179,7 +179,10 @@ public final class BroadcastEventProcessor implements EventListener {
             // this shouldn't throw an exception, should be tested prior to
             // runtime
             log().error("failed to compile RE " + NOTIFD_EXPANSION_PARM, e);
-            throw e;
+            // FIXME: wrap this in runtime exception since SOMETIMES we are using
+            // an incorrect version of regexp pulled from xalan that is doesn't
+            // extend RuntimeException only Exception.  We really need to fix that
+            throw new RuntimeException(e);
         }
     }
 
