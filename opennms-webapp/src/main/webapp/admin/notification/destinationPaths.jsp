@@ -43,7 +43,8 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
-		org.opennms.netmgt.config.*
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.destinationPaths.*
 	"
 %>
 
@@ -121,11 +122,8 @@
   <h4>Existing Paths</h4>
  
   <select NAME="paths" SIZE="10">
-    <% Map pathsMap =
-	 new TreeMap(DestinationPathFactory.getInstance().getPaths());
-       Iterator iterator = pathsMap.keySet().iterator();
-       while(iterator.hasNext()) { 
-         String key = (String)iterator.next();
+    <% Map<String, Path> pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
+       for (String key : pathsMap.keySet()) {
     %>
          <option VALUE=<%=key%>><%=key%></option>
     <% } %>
