@@ -803,6 +803,7 @@ public class EventConstants {
      * @see java.text.DateFormat
      * @deprecated This is no longer used by the UI. All WebUI-specific code
      *             should under the org.opennms.web packages.
+     * @see org.opennms.web.Util.formatDataToUIString
      */
     public static final String formatToUIString(Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);

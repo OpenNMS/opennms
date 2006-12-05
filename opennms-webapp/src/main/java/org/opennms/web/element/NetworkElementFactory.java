@@ -48,12 +48,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
@@ -63,6 +61,7 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -86,12 +85,12 @@ public class NetworkElementFactory extends Object {
     /**
      * A mapping of service names (strings) to service identifiers (integers).
      */
-    protected static Map serviceName2IdMap;
+    protected static Map<String, Integer> serviceName2IdMap;
 
     /**
      * A mapping of service identifiers (integers) to service names (strings).
      */
-    protected static Map serviceId2NameMap;
+    protected static Map<Integer, String> serviceId2NameMap;
 
     /**
      * Private, empty constructor so that this class cannot be instantiated. All
@@ -879,8 +878,7 @@ public class NetworkElementFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Node[] nodes = null;
-        Vector vector = new Vector();
+        List<Node> nodes = new ArrayList<Node>();
         Object element = null;
 
         while (rs.next()) {
@@ -891,7 +889,8 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("nodeCreateTime");
             if (element != null)
-                node.m_nodeCreateTime = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
+                node.m_nodeCreateTime = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+            
 
             element = new Integer(rs.getInt("nodeParentID"));
             if (element != null) {
@@ -911,16 +910,11 @@ public class NetworkElementFactory extends Object {
             node.m_label = rs.getString("nodelabel");
             node.m_operatingSystem = rs.getString("operatingsystem");
 
-            vector.addElement(node);
+            nodes.add(node);
         }
+        
+        return (Node[]) nodes.toArray(new Node[nodes.size()]);
 
-        nodes = new Node[vector.size()];
-
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = (Node) vector.elementAt(i);
-        }
-
-        return (nodes);
     }
 
     /**
@@ -928,8 +922,7 @@ public class NetworkElementFactory extends Object {
      * ipinterface objects.
      */
     protected static Interface[] rs2Interfaces(ResultSet rs) throws SQLException {
-        Interface[] intfs = null;
-        Vector vector = new Vector();
+        List<Interface> intfs = new ArrayList<Interface>();
 
         while (rs.next()) {
             
@@ -949,18 +942,13 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("ipLastCapsdPoll");
             if (element != null)
-                intf.m_ipLastCapsdPoll = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
+                intf.m_ipLastCapsdPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
 
-            vector.addElement(intf);
+            intfs.add(intf);
         }
 
-        intfs = new Interface[vector.size()];
+        return (Interface[]) intfs.toArray(new Interface[intfs.size()]);
 
-        for (int i = 0; i < intfs.length; i++) {
-            intfs[i] = (Interface) vector.elementAt(i);
-        }
-
-        return intfs;
     }
 
     protected static void augmentInterfacesWithSnmpData(Interface[] intfs, Connection conn) throws SQLException {
@@ -1010,8 +998,7 @@ public class NetworkElementFactory extends Object {
     }
 
     protected static Service[] rs2Services(ResultSet rs) throws SQLException {
-        Service[] services = null;
-        Vector vector = new Vector();
+        List<Service> services = new ArrayList<Service>();
 
         while (rs.next()) {
             Service service = new Service();
@@ -1025,14 +1012,14 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("lastgood");
             if (element != null)
-                service.m_lastGood = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
+                service.m_lastGood = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
 
             service.m_serviceId = rs.getInt("serviceid");
             service.m_serviceName = rs.getString("servicename");
 
             element = rs.getTimestamp("lastfail");
             if (element != null)
-                service.m_lastFail = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
+                service.m_lastFail = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
 
             service.m_notify = rs.getString("notify");
 
@@ -1041,16 +1028,10 @@ public class NetworkElementFactory extends Object {
                 service.m_status = ((String) element).charAt(0);
             }
 
-            vector.addElement(service);
+            services.add(service);
         }
 
-        services = new Service[vector.size()];
-
-        for (int i = 0; i < services.length; i++) {
-            services[i] = (Service) vector.elementAt(i);
-        }
-
-        return services;
+        return (Service[]) services.toArray(new Service[services.size()]);
     }
 
     public static String getServiceNameFromId(int serviceId) throws SQLException {
@@ -1083,25 +1064,25 @@ public class NetworkElementFactory extends Object {
         return (serviceId);
     }
 
-    public static Map getServiceIdToNameMap() throws SQLException {
+    public static Map<Integer, String> getServiceIdToNameMap() throws SQLException {
         if (serviceId2NameMap == null) {
             createServiceIdNameMaps();
         }
 
-        return (new HashMap(serviceId2NameMap));
+        return (new HashMap<Integer, String>(serviceId2NameMap));
     }
 
-    public static Map getServiceNameToIdMap() throws SQLException {
+    public static Map<String, Integer> getServiceNameToIdMap() throws SQLException {
         if (serviceName2IdMap == null) {
             createServiceIdNameMaps();
         }
 
-        return (new HashMap(serviceName2IdMap));
+        return (new HashMap<String, Integer>(serviceName2IdMap));
     }
 
     protected static void createServiceIdNameMaps() throws SQLException {
-        HashMap idMap = new HashMap();
-        HashMap nameMap = new HashMap();
+        HashMap<Integer, String> idMap = new HashMap<Integer, String>();
+        HashMap<String, Integer> nameMap = new HashMap<String, Integer>();
         Connection conn = Vault.getDbConnection();
 
         try {
@@ -1464,8 +1445,8 @@ public class NetworkElementFactory extends Object {
     	
     }
 
-    public static Set getLinkedNodeIdOnNode(int nodeID) throws SQLException {
-        Set nodes = new TreeSet();
+    public static Set<Integer> getLinkedNodeIdOnNode(int nodeID) throws SQLException {
+        Set<Integer> nodes = new TreeSet<Integer>();
         Connection conn = Vault.getDbConnection();
         Integer node = null;
         
@@ -1502,8 +1483,8 @@ public class NetworkElementFactory extends Object {
         
     }
     
-    public static Set getLinkedNodeIdOnNode(int nodeID,Connection conn) throws SQLException {
-        Set nodes = new TreeSet();
+    public static Set<Integer> getLinkedNodeIdOnNode(int nodeID,Connection conn) throws SQLException {
+        Set<Integer> nodes = new TreeSet<Integer>();
         Integer node = null;
         
    
@@ -1536,14 +1517,14 @@ public class NetworkElementFactory extends Object {
         
     }    
 
-    public static Set getLinkedNodeIdOnNodes(Set nodeIds, Connection conn) throws SQLException {
+    public static Set<Integer> getLinkedNodeIdOnNodes(Set nodeIds, Connection conn) throws SQLException {
 		String LOG4J_CATEGORY = "OpenNMS.Map";
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		Category log= ThreadCategory.getInstance(NetworkElementFactory.class);
 		
-        List nodes = new ArrayList();
+        List<Integer> nodes = new ArrayList<Integer>();
         if(nodeIds==null || nodeIds.size()==0){
-        	return new TreeSet();
+        	return new TreeSet<Integer>();
         }
         
         Integer node = null;
@@ -1593,7 +1574,7 @@ public class NetworkElementFactory extends Object {
             
         }
         
-        return new TreeSet(nodes);
+        return new TreeSet<Integer>(nodes);
         
     }
     
@@ -1667,7 +1648,6 @@ public class NetworkElementFactory extends Object {
     throws SQLException {
 
     	DataLinkInterface[] nodes = null;
-    	DataLinkInterface node = null;
     	Connection conn = Vault.getDbConnection();
 
     	try {
@@ -1822,51 +1802,44 @@ public class NetworkElementFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        AtInterface[] nodes = null;
-        Vector vector = new Vector();
+        List<AtInterface> atIfs = new ArrayList<AtInterface>();
 
         while (rs.next()) {
-            AtInterface node = new AtInterface();
+            AtInterface atIf = new AtInterface();
 
             Object element = new Integer(rs.getInt("nodeId"));
-            node.m_nodeId = ((Integer) element).intValue();
+            atIf.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getString("ipaddr");
-            node.m_ipaddr = (String) element;
+            atIf.m_ipaddr = (String) element;
 
             element = rs.getString("atphysaddr");
-            node.m_physaddr = (String) element;
+            atIf.m_physaddr = (String) element;
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null)
-                node.m_lastPollTime = EventConstants.formatToString(new Date(
+                atIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("sourcenodeID"));
             if (element != null) {
-                node.m_sourcenodeid = ((Integer) element).intValue();
+                atIf.m_sourcenodeid = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("ifindex"));
             if (element != null) {
-                node.m_ifindex = ((Integer) element).intValue();
+                atIf.m_ifindex = ((Integer) element).intValue();
             }
 
             element = rs.getString("status");
             if (element != null) {
-                node.m_status = ((String) element).charAt(0);
+                atIf.m_status = ((String) element).charAt(0);
             }
 
-            vector.addElement(node);
+            atIfs.add(atIf);
         }
 
-        nodes = new AtInterface[vector.size()];
-
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = (AtInterface) vector.elementAt(i);
-        }
-
-        return (nodes);
+        return (AtInterface[]) atIfs.toArray(new AtInterface[atIfs.size()]);
     }
 
     /**
@@ -1879,84 +1852,77 @@ public class NetworkElementFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        IpRouteInterface[] nodes = null;
-        Vector vector = new Vector();
+        List<IpRouteInterface> ipRtIfs = new ArrayList<IpRouteInterface>();
 
         while (rs.next()) {
-            IpRouteInterface node = new IpRouteInterface();
+            IpRouteInterface ipRtIf = new IpRouteInterface();
 
             Object element = new Integer(rs.getInt("nodeId"));
-            node.m_nodeId = ((Integer) element).intValue();
+            ipRtIf.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getString("routedest");
-            node.m_routedest = (String) element;
+            ipRtIf.m_routedest = (String) element;
 
             element = rs.getString("routemask");
-            node.m_routemask = (String) element;
+            ipRtIf.m_routemask = (String) element;
 
             element = rs.getString("routenexthop");
-            node.m_routenexthop = (String) element;
+            ipRtIf.m_routenexthop = (String) element;
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null)
-                node.m_lastPollTime = EventConstants.formatToString(new Date(
+                ipRtIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("routeifindex"));
             if (element != null) {
-                node.m_routeifindex = ((Integer) element).intValue();
+                ipRtIf.m_routeifindex = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("routemetric1"));
             if (element != null) {
-                node.m_routemetric1 = ((Integer) element).intValue();
+                ipRtIf.m_routemetric1 = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("routemetric2"));
             if (element != null) {
-                node.m_routemetric2 = ((Integer) element).intValue();
+                ipRtIf.m_routemetric2 = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("routemetric3"));
             if (element != null) {
-                node.m_routemetric4 = ((Integer) element).intValue();
+                ipRtIf.m_routemetric4 = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("routemetric4"));
             if (element != null) {
-                node.m_routemetric4 = ((Integer) element).intValue();
+                ipRtIf.m_routemetric4 = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("routemetric5"));
             if (element != null) {
-                node.m_routemetric5 = ((Integer) element).intValue();
+                ipRtIf.m_routemetric5 = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("routetype"));
             if (element != null) {
-                node.m_routetype = ((Integer) element).intValue();
+                ipRtIf.m_routetype = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("routeproto"));
             if (element != null) {
-                node.m_routeproto = ((Integer) element).intValue();
+                ipRtIf.m_routeproto = ((Integer) element).intValue();
             }
 
             element = rs.getString("status");
             if (element != null) {
-                node.m_status = ((String) element).charAt(0);
+                ipRtIf.m_status = ((String) element).charAt(0);
             }
 
-            vector.addElement(node);
+            ipRtIfs.add(ipRtIf);
         }
 
-        nodes = new IpRouteInterface[vector.size()];
-
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = (IpRouteInterface) vector.elementAt(i);
-        }
-
-        return (nodes);
+        return (IpRouteInterface[]) ipRtIfs.toArray(new IpRouteInterface[ipRtIfs.size()]);
     }
 
     /**
@@ -1969,92 +1935,84 @@ public class NetworkElementFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StpInterface[] nodes = null;
-        Vector vector = new Vector();
+        List<StpInterface> stpIfs = new ArrayList<StpInterface>();
 
         while (rs.next()) {
-            StpInterface node = new StpInterface();
+            StpInterface stpIf = new StpInterface();
 
             Object element = new Integer(rs.getInt("nodeId"));
-            node.m_nodeId = ((Integer) element).intValue();
+            stpIf.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null)
-                node.m_lastPollTime = EventConstants.formatToString(new Date(
+                stpIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("bridgeport"));
             if (element != null) {
-                node.m_bridgeport = ((Integer) element).intValue();
+                stpIf.m_bridgeport = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("ifindex"));
             if (element != null) {
-                node.m_ifindex = ((Integer) element).intValue();
+                stpIf.m_ifindex = ((Integer) element).intValue();
             }
 
             element = rs.getString("stpportdesignatedroot");
-            node.m_stpdesignatedroot = (String) element;
+            stpIf.m_stpdesignatedroot = (String) element;
 
             element = new Integer(rs.getInt("stpportdesignatedcost"));
             if (element != null) {
-                node.m_stpportdesignatedcost = ((Integer) element).intValue();
+                stpIf.m_stpportdesignatedcost = ((Integer) element).intValue();
             }
 
             element = rs.getString("stpportdesignatedbridge");
-            node.m_stpdesignatedbridge = (String) element;
+            stpIf.m_stpdesignatedbridge = (String) element;
 
             element = rs.getString("stpportdesignatedport");
-            node.m_stpdesignatedport = (String) element;
+            stpIf.m_stpdesignatedport = (String) element;
 
             element = new Integer(rs.getInt("stpportpathcost"));
             if (element != null) {
-                node.m_stpportpathcost = ((Integer) element).intValue();
+                stpIf.m_stpportpathcost = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("stpportstate"));
             if (element != null) {
-                node.m_stpportstate = ((Integer) element).intValue();
+                stpIf.m_stpportstate = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("stpvlan"));
             if (element != null) {
-                node.m_stpvlan = ((Integer) element).intValue();
+                stpIf.m_stpvlan = ((Integer) element).intValue();
             }
 
             element = rs.getString("status");
             if (element != null) {
-                node.m_status = ((String) element).charAt(0);
+                stpIf.m_status = ((String) element).charAt(0);
             }
 
             element = new Integer(rs.getInt("dbridge"));
             if (element != null) {
-                node.m_stpbridgenodeid = ((Integer) element).intValue();
+                stpIf.m_stpbridgenodeid = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("droot"));
             if (element != null) {
-                node.m_stprootnodeid = ((Integer) element).intValue();
+                stpIf.m_stprootnodeid = ((Integer) element).intValue();
             }
             
-            if (node.get_ifindex() == -1 ) {
-                node.m_ipaddr = getIpAddress(node.get_nodeId());
+            if (stpIf.get_ifindex() == -1 ) {
+                stpIf.m_ipaddr = getIpAddress(stpIf.get_nodeId());
             } else {
-                node.m_ipaddr = getIpAddress(node.get_nodeId(), node
+                stpIf.m_ipaddr = getIpAddress(stpIf.get_nodeId(), stpIf
                         .get_ifindex());
             }
 
-            vector.addElement(node);
+            stpIfs.add(stpIf);
         }
 
-
-        nodes = new StpInterface[vector.size()];
-
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = (StpInterface) vector.elementAt(i);
-        }
-
-        return (nodes);
+        return (StpInterface[]) stpIfs.toArray(new StpInterface[stpIfs.size()]);
     }
 
     /**
@@ -2066,87 +2024,80 @@ public class NetworkElementFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StpNode[] nodes = null;
-        Vector vector = new Vector();
+        List<StpNode> stpNodes = new ArrayList<StpNode>();
 
         while (rs.next()) {
-            StpNode node = new StpNode();
+            StpNode stpNode = new StpNode();
 
             Object element = new Integer(rs.getInt("nodeId"));
-            node.m_nodeId = ((Integer) element).intValue();
+            stpNode.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getString("basebridgeaddress");
-            node.m_basebridgeaddress = (String) element;
+            stpNode.m_basebridgeaddress = (String) element;
 
             element = rs.getString("stpdesignatedroot");
-            node.m_stpdesignatedroot = (String) element;
+            stpNode.m_stpdesignatedroot = (String) element;
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null)
-                node.m_lastPollTime = EventConstants.formatToString(new Date(
+                stpNode.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("basenumports"));
             if (element != null) {
-                node.m_basenumports = ((Integer) element).intValue();
+                stpNode.m_basenumports = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("basetype"));
             if (element != null) {
-                node.m_basetype = ((Integer) element).intValue();
+                stpNode.m_basetype = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("basevlan"));
             if (element != null) {
-                node.m_basevlan = ((Integer) element).intValue();
+                stpNode.m_basevlan = ((Integer) element).intValue();
             }
 
             element = rs.getString("basevlanname");
             if (element != null) {
-                node.m_basevlanname = (String) element;
+                stpNode.m_basevlanname = (String) element;
             }
 
             element = new Integer(rs.getInt("stppriority"));
             if (element != null) {
-                node.m_stppriority = ((Integer) element).intValue();
+                stpNode.m_stppriority = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("stpprotocolspecification"));
             if (element != null) {
-                node.m_stpprotocolspecification = ((Integer) element)
+                stpNode.m_stpprotocolspecification = ((Integer) element)
                         .intValue();
             }
 
             element = new Integer(rs.getInt("stprootcost"));
             if (element != null) {
-                node.m_stprootcost = ((Integer) element).intValue();
+                stpNode.m_stprootcost = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("stprootport"));
             if (element != null) {
-                node.m_stprootport = ((Integer) element).intValue();
+                stpNode.m_stprootport = ((Integer) element).intValue();
             }
 
             element = rs.getString("status");
             if (element != null) {
-                node.m_status = ((String) element).charAt(0);
+                stpNode.m_status = ((String) element).charAt(0);
             }
 
             element = new Integer(rs.getInt("stpdesignatedrootnodeid"));
             if (element != null) {
-                node.m_stprootnodeid = ((Integer) element).intValue();
+                stpNode.m_stprootnodeid = ((Integer) element).intValue();
             }
 
-            vector.addElement(node);
+            stpNodes.add(stpNode);
         }
 
-        nodes = new StpNode[vector.size()];
-
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = (StpNode) vector.elementAt(i);
-        }
-
-        return (nodes);
+        return (StpNode[]) stpNodes.toArray(new StpNode[stpNodes.size()]);
     }
 
     /**
@@ -2159,60 +2110,53 @@ public class NetworkElementFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        DataLinkInterface[] nodes = null;
-        Vector vector = new Vector();
+        List<DataLinkInterface> dataLinkIfs = new ArrayList<DataLinkInterface>();
 
         while (rs.next()) {
-            DataLinkInterface node = new DataLinkInterface();
+            DataLinkInterface dataLinkIf = new DataLinkInterface();
 
             Object element = new Integer(rs.getInt("nodeId"));
-            node.m_nodeId = ((Integer) element).intValue();
+            dataLinkIf.m_nodeId = ((Integer) element).intValue();
 
             element = new Integer(rs.getInt("ifindex"));
             if (element != null) {
-                node.m_ifindex = ((Integer) element).intValue();
+                dataLinkIf.m_ifindex = ((Integer) element).intValue();
             }
 
             element = rs.getTimestamp("lastpolltime");
             if (element != null)
-                node.m_lastPollTime = EventConstants.formatToString(new Date(
+                dataLinkIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("nodeparentid"));
             if (element != null) {
-                node.m_nodeparentid = ((Integer) element).intValue();
+                dataLinkIf.m_nodeparentid = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("parentifindex"));
             if (element != null) {
-                node.m_parentifindex = ((Integer) element).intValue();
+                dataLinkIf.m_parentifindex = ((Integer) element).intValue();
             }
 
             element = rs.getString("status");
             if (element != null) {
-                node.m_status = ((String) element).charAt(0);
+                dataLinkIf.m_status = ((String) element).charAt(0);
             }
 
-            node.m_parentipaddress = getIpAddress(node.get_nodeparentid(), node
+            dataLinkIf.m_parentipaddress = getIpAddress(dataLinkIf.get_nodeparentid(), dataLinkIf
                     .get_parentifindex());
 
-            if (node.get_ifindex() == -1 ) {
-                node.m_ipaddress = getIpAddress(node.get_nodeId());
+            if (dataLinkIf.get_ifindex() == -1 ) {
+                dataLinkIf.m_ipaddress = getIpAddress(dataLinkIf.get_nodeId());
             } else {
-                node.m_ipaddress = getIpAddress(node.get_nodeId(), node
+                dataLinkIf.m_ipaddress = getIpAddress(dataLinkIf.get_nodeId(), dataLinkIf
                         .get_ifindex());
             }
 
-            vector.addElement(node);
+            dataLinkIfs.add(dataLinkIf);
         }
 
-        nodes = new DataLinkInterface[vector.size()];
-
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = (DataLinkInterface) vector.elementAt(i);
-        }
-
-        return (nodes);
+        return (DataLinkInterface[]) dataLinkIfs.toArray(new DataLinkInterface[dataLinkIfs.size()]);
     }
 
     protected static DataLinkInterface[] invertDataLinkInterface(DataLinkInterface[] nodes) {
@@ -2279,12 +2223,12 @@ public class NetworkElementFactory extends Object {
     /**
      * Returns all non-deleted nodes with an IP address like the rule given.
      */
-    public static List getNodeIdsWithIpLike(String iplike) throws SQLException {
+    public static List<Integer> getNodeIdsWithIpLike(String iplike) throws SQLException {
         if (iplike == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        List nodecont = new ArrayList();
+        List<Integer> nodecont = new ArrayList<Integer>();
         Connection conn = Vault.getDbConnection();
 
         try {

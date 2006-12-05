@@ -149,7 +149,7 @@
 
                 <tr>
                   <% if( intfIndex==0 && svcIndex == 0) { %>
-                    <td rowspan="<%=serviceCnt%>"><a name="node<%=nodeId%>"/><a HREF="element/node.jsp?node=<%=nodeId%>" title="General information about this node"><%=outage.getNodeLabel()%></a></td>
+                    <td rowspan="<%=serviceCnt%>"><a HREF="element/node.jsp?node=<%=nodeId%>" title="General information about this node"><%=outage.getNodeLabel()%></a></td>
                   <% } %>
 
                   <% if( svcIndex==0 ) { %>

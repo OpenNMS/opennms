@@ -40,8 +40,10 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -577,5 +579,15 @@ public abstract class Util extends Object {
         return proxy;
     }
 
+    /**
+     * An utility method to format a 'Date' into a string in the local specific
+     * DEFALUT DateFormat style for both the date and time. This is used by the
+     * webui and a change here should get all time display in the webui changed.
+     * 
+     * @see java.text.DateFormat
+     */
+    public static final String formatDateToUIString(Date date) {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
+    }
 
 }
