@@ -75,8 +75,6 @@
     
     int nodeId = 0;
 
-    String nodeLabel = "";     
-
     PrefabGraph[] graph_options = null;
 
     String parentResourceType;
@@ -87,7 +85,6 @@
     if( nodeIdString != null && !nodeIdString.equals("null")) {
         boolean includeNodeQueries = false;
         nodeId = Integer.parseInt(nodeIdString);
-        nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);
 	    if(intf.equals("")) {
             graph_options = this.model.getQueries(nodeId);
             resourceType = "node";
@@ -136,6 +133,7 @@
     }
 %>
 
+<%@page import="org.opennms.netmgt.config.KSC_PerformanceReportFactory"%>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance " />
@@ -186,7 +184,7 @@
             <td colspan="2">
                 <% if(graph_options.length > 0) { %>
                     <h3 align="center">Customized Report Graph Definition</h3> 
-                    <h3 align="center">Choose Graph Type & Timespan</h3> 
+                    <h3 align="center">Choose Graph Type &amp; Timespan</h3> 
                 <% } else { %>
                     <h3 align="left">No graph options available. Check that the
                     correct data is being collected and that appropriate reports
@@ -230,7 +228,7 @@
                                 <%  
                                     Calendar begin_time = Calendar.getInstance();
                                     Calendar end_time = Calendar.getInstance();
-                                    this.reportFactory.getBeginEndTime(sample_graph.getTimespan(), begin_time, end_time); 
+                                    KSC_PerformanceReportFactory.getBeginEndTime(sample_graph.getTimespan(), begin_time, end_time); 
                                     String start = Long.toString( begin_time.getTime().getTime() );
                                     String startPretty = new Date( Long.parseLong( start )).toString();
                                     String end = Long.toString( end_time.getTime().getTime() );
