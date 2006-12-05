@@ -46,6 +46,7 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
         try {
             jm.mailSend();
         } catch (JavaMailerException e) {
+            log.error("send: Error sending notification: ", e);
             return 1;
         }
         return 0;
