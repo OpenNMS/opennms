@@ -23,8 +23,6 @@ import org.opennms.netmgt.utils.JavaMailerException;
  */
 public class JavaMailNotificationStrategy implements NotificationStrategy {
 
-    Category log = null;
-
     /**
      * 
      */
@@ -38,17 +36,21 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
      */
     public int send(List arguments) {
 
-        log = ThreadCategory.getInstance(getClass());
-        log.debug("In the JavaMailNotification class.");
+        log().debug("In the JavaMailNotification class.");
 
         JavaMailer jm = buildMessage(arguments);
 
         try {
             jm.mailSend();
         } catch (JavaMailerException e) {
+            log().error("send: Error sending notification.", e);
             return 1;
         }
         return 0;
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -64,8 +66,8 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
         for (int i = 0; i < arguments.size(); i++) {
 
             Argument arg = (Argument) arguments.get(i);
-            log.debug("Current arg switch: " + i + " of " + arguments.size() + " is: " + arg.getSwitch());
-            log.debug("Current arg  value: " + i + " of " + arguments.size() + " is: " + arg.getValue());
+            log().debug("Current arg switch: " + i + " of " + arguments.size() + " is: " + arg.getSwitch());
+            log().debug("Current arg  value: " + i + " of " + arguments.size() + " is: " + arg.getValue());
 
             /*
              * Note: The recipient gets set by whichever of the two switches:
@@ -73,16 +75,16 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
              * notificationCommands.xml file
              */
             if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) {
-                log.debug("Found: PARAM_EMAIL");
+                log().debug("Found: PARAM_EMAIL");
                 jm.setTo(arg.getValue());
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) {
-                log.debug("Found: PARAM_PAGER_EMAIL");
+                log().debug("Found: PARAM_PAGER_EMAIL");
                 jm.setTo(arg.getValue());
             } else if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) {
-                log.debug("Found: PARAM_SUBJECT");
+                log().debug("Found: PARAM_SUBJECT");
                 jm.setSubject(arg.getValue());
             } else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
-                log.debug("Found: PARAM_TEXT_MSG");
+                log().debug("Found: PARAM_TEXT_MSG");
                 jm.setMessageText(arg.getValue());
             }
         }
