@@ -43,8 +43,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.Util,
+	import="org.opennms.web.Util,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"
