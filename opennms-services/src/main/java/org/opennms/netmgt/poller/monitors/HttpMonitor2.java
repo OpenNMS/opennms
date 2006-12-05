@@ -35,18 +35,21 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.ProtocolException;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -55,6 +58,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.pagesequence.Page;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -69,230 +77,251 @@ import org.opennms.netmgt.utils.ParameterMap;
 @Distributable
 public class HttpMonitor2 extends IPv4Monitor {
 
-    protected static final String DEFAULT_VERSION = "1.1";
-    private static final int DEFAULT_PORT = 80;
-    private static final String DEFAULT_URL = "/";
-    private static final String DEFAULT_TIMEOUT = "3000";
-    private static final String DEFAULT_VIRTUAL_HOST = null;
+
+    public static class HttpMonitorException extends RuntimeException {
+
+        private static final long serialVersionUID = 1346757238604080088L;
+
+        public HttpMonitorException(String message) {
+            super(message);
+        }
+
+        public HttpMonitorException(Throwable cause) {
+            super(cause);
+        }
+
+        public HttpMonitorException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+    }
+
+    private static final int DEFAULT_TIMEOUT = 3000;
     private static final int DEFAULT_RETRY = 0;
-    private static final String DEFAULT_METHOD = "GET";
-    private static final String DEFAULT_SCHEME = "http";
-    private static final String DEFAULT_USER_INFO = null;
-    private static final String DEFAULT_PATH = "/";
-    private static final String DEFAULT_QUERY = null;
-    private static final String DEFAULT_FRAGMENT = null;
-    private static final boolean DEFAULT_FORM_BASED_LOGIN = false;
-    private static final String DEFAULT_FORM_LOGIN_PATH = "/";
     
-    
-
-    public PollStatus poll(MonitoredService svc, Map parameters) {
-    	
-    	
-        HttpClient client = null;
-        HttpMethod method = null;
+    public static class HttpPageSequence {
+        PageSequence m_sequence;
+        List<HttpPage> m_pages;
         
-        try {
-            client = new HttpClient(buildParams(svc, parameters));
-            client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-
-            if (ParameterMap.getKeyedBoolean(parameters, "form-based-login", DEFAULT_FORM_BASED_LOGIN)) {
-                login(client, parameters);
-            }
-
-            method = buildHttpMethod(svc, parameters);
+        HttpPageSequence(PageSequence sequence) {
+            m_sequence = sequence;
             
-            //going to need this
-            HttpState state = client.getState();
-            client.executeMethod(method);
-        } catch (HttpException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
+            m_pages = new ArrayList<HttpPage>(m_sequence.getPageCount());
+            for(Page page : m_sequence.getPage()) {
+                m_pages.add(new HttpPage(this, page));
+            }
         }
         
-//        return PollStatus.get(serviceStatus, reason, responseTime);
-        return null;
-    }
-
-    void login(HttpClient client, Map<String, String> map) {
-        String formLoginPath = ParameterMap.getKeyedString(map, "login-form-cookie-path", DEFAULT_FORM_LOGIN_PATH);
-        
-        GetMethod authGet = new GetMethod(formLoginPath);
-        try {
-            client.executeMethod(authGet);
-        } catch (Exception e) {
-            throw new HttpMonitorException("problem processing from login", new RuntimeException(e));
-        } finally {
-            if (authGet != null) authGet.releaseConnection();
+        List<HttpPage> getPages() {
+            return m_pages;
         }
-        
-        String cookieSite = ParameterMap.getKeyedString(map, "login-form-cookie-site", client.getHostConfiguration().getHost());
-        String cookiePath = ParameterMap.getKeyedString(map, "login-form-cookie-path", "/");
-        int cookiePort = client.getHostConfiguration().getPort();
-        
-        CookieSpec cookiespec = CookiePolicy.getDefaultSpec();
-        Cookie[] initcookies = cookiespec.match(cookieSite, cookiePort, "/", false, client.getState().getCookies());
-        
-        
-        //FIXME: Come up with way to define form parameters as value pairs
-        
-        PostMethod authPost = new PostMethod(formLoginPath);
-//        NameValuePair[]valuePairs = new NameValuePair[7];
-        List<NameValuePair> valuePairs = new ArrayList<NameValuePair>();
-        String action = ParameterMap.getKeyedString(map, "login-form-action", "login");
-        valuePairs.add(new NameValuePair("action", action));
-        
-        String url = ParameterMap.getKeyedString(map, "login-form-path", "/index.html");
-        valuePairs.add(new NameValuePair("url", url));
-        
-        String userId = ParameterMap.getKeyedString(map, "login-form-user", "user");
-        valuePairs.add(new NameValuePair("userid", userId));
-        
-        String password = ParameterMap.getKeyedString(map, "login-form-password", "password");
-        valuePairs.add(new NameValuePair("password", password));
-        authPost.setRequestBody((NameValuePair[])valuePairs.toArray());
-        
-        String versionString = ParameterMap.getKeyedString(map, "login-form-httpVersion", "1.1");
-        authPost.getParams().setVersion(new HttpVersion(determineMajorVersion(versionString), determineMinorVersion(versionString)));
-        
-        //somethings to consider in configuration
-        authPost.setFollowRedirects(true);
-        
-    }
 
-
-    private HttpMethod buildHttpMethod(MonitoredService svc, Map parameters) {
-        HttpMethod method;
-        String methodString = determineMethod(parameters);
-        if ("GET".equals(methodString)) {
-            method = new GetMethod();
-        } else {
-            method = new PostMethod();
-        }
-        try {
-            method.setURI(buildUri(svc, parameters));
-        } catch (URIException e) {
-            throw new HttpMonitorException("Error creating URI", new RuntimeException(e));
-        }
-        return method;
-    }
-
-    private URI buildUri(MonitoredService svc, Map map) throws URIException {
-        String scheme;
-        String userInfo;
-        String host;
-        int port;
-        String path;
-        String query;
-        String fragment;
-        
-        scheme = ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME);
-        userInfo = ParameterMap.getKeyedString(map, "user-info", DEFAULT_USER_INFO);
-        host = svc.getIpAddr();
-        port = ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT);
-        path = ParameterMap.getKeyedString(map, "path", DEFAULT_PATH);
-        query = ParameterMap.getKeyedString(map, "query", DEFAULT_QUERY);
-        fragment = ParameterMap.getKeyedString(map, "fragment", DEFAULT_FRAGMENT);
-        return new URI(scheme, userInfo, host, port, path, query, fragment);
-    }
-
-    private String determineMethod(Map parameters) {
-        String method = ParameterMap.getKeyedString(parameters, "method", DEFAULT_METHOD);
-        if (isValidMethod(method)) {
-            return method;
-        } else {
-            throw new HttpMonitorException("Invalid method specified: ["+method+"]", new RuntimeException());
-        }
-    }
-
-    private boolean isValidMethod(String method) {
-        return ("GET".equals(method) || "POST".equals(method));
-    }
-
-    private HttpClientParams buildParams(MonitoredService svc, Map<String, String> parameters) {
-        HttpClientParams params = new HttpClientParams();
-        params.setVersion(computeVersion(parameters));
-        params.setSoTimeout(Integer.parseInt(ParameterMap.getKeyedString(parameters, "timeout", DEFAULT_TIMEOUT)));
-        params.setVirtualHost(ParameterMap.getKeyedString(parameters, "virtual-host", DEFAULT_VIRTUAL_HOST));
-        int retryCount = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        params.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(retryCount, false));
-        return params;
-    }
-
-    private HttpVersion computeVersion(Map<String, String> parameters) {
-        String versionString = determineVersion(parameters);
-        return new HttpVersion(determineMajorVersion(versionString), determineMinorVersion(versionString));
-    }
-
-    public int determineMinorVersion(String versionString) {
-        if (isValidVersion(versionString)) {
-            return Integer.parseInt(versionString.substring(3));
-        } else {
-            StringBuffer sb = new StringBuffer();
-            sb.append("Incorrect version specified: [");
-            sb.append(versionString);
-            sb.append("]");
-            throw new HttpMonitorException(sb.toString(), new IllegalArgumentException("Bad HTTP version paramenter: "+versionString));
+        private void execute(HttpClient client) {
+            for (HttpPage page : getPages()) {
+                page.execute(client);
+            }
         }
     }
     
-    public int determineMajorVersion(String versionString) {
-        if (isValidVersion(versionString)) {
-            return Integer.parseInt(versionString.substring(1, 1));
-        } else {
-            StringBuffer sb = new StringBuffer();
-            sb.append("Incorrect version specified: [");
-            sb.append(versionString);
-            sb.append("]");
-            throw new HttpMonitorException(sb.toString(), new IllegalArgumentException("Bad HTTP version paramenter: "+versionString));
+    public static class HttpResponseRange {
+        static Pattern rangePattern = Pattern.compile("([1-5][0-9][0-9])(?:-([1-5][0-9][0-9]))?");
+        int m_begin;
+        int m_end;
+        
+        HttpResponseRange(String rangeSpec) {
+            Matcher matcher = rangePattern.matcher(rangeSpec);
+            matcher.matches();
+            
+            String beginSpec = matcher.group(1);
+            String endSpec = matcher.group(2);
+
+            if (beginSpec == null) {
+                throw new IllegalArgumentException("Invalid range spec: "+rangeSpec);
+            }
+            
+            m_begin = Integer.parseInt(beginSpec);
+            
+            if (endSpec == null) {
+                m_end = m_begin;
+            } else {
+                m_end = Integer.parseInt(endSpec);
+            }
+            
         }
-    }
-
-    public String determineVersion(Map<String, String> parameters) {
-        String version = ParameterMap.getKeyedString(parameters, "version", DEFAULT_VERSION);
-        if (isValidVersion(version)) {
-            return version;
-        } else {
-            throw new HttpMonitorException("Incorrect version specified: ("+version+")", new IllegalArgumentException("Bad HTTP version paramenter: "+version));
+        
+        public boolean isIn(int responseCode) {
+            return (m_begin <= responseCode && responseCode <= m_end);
         }
-    }
-    
-    public boolean isValidVersion(String version) {
-        return ("1.0".equals(version) || "1.1".equals(version));
-    }
-
-
-    class HttpMonitorException extends RuntimeException {
-        private static final long serialVersionUID = -2453812259707223488L;
-        private String m_msg;
-        protected HttpMonitorException(String msg, RuntimeException e) {
-            m_msg = msg;
-        }
-
-        @Override
-        public String getMessage() {
-            StringBuffer sb = new StringBuffer();
-            sb.append(m_msg);
-            sb.append(": ");
-            sb.append(super.getMessage());
-            return sb.toString();
-        }
-
-        @Override
+        
         public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append(m_msg);
-            sb.append(": ");
-            sb.append(super.toString());
-            return sb.toString();
+            if (m_begin == m_end) {
+                return Integer.toString(m_begin);
+            } else {
+                return Integer.toString(m_begin)+'-'+Integer.toString(m_end);
+            }
         }
+        
         
     }
     
+    public static class HttpPage {
+        HttpPageSequence m_parent;
+        Page m_page;
+        HttpResponseRange m_range;
+        
+        HttpPage(HttpPageSequence parent, Page page) {
+            m_parent = parent;
+            m_page = page;
+            m_range = new HttpResponseRange(page.getResponseRange());
+        }
+
+        void execute(HttpClient client) {
+            try {
+                URI uri = getURI();
+                HttpMethod method = getMethod();
+                method.setURI(uri);
+                
+                int code = client.executeMethod(method);
+                
+                if (!m_range.isIn(code)) {
+                    throw new HttpMonitorException("response code out of range. Expected "+m_range+" but received "+code);
+                }
+                
+
+            } catch (URIException e) {
+                throw new IllegalArgumentException("unable to construct URL for page: "+e, e);
+            } catch (HttpException e) {
+                throw new HttpMonitorException("HTTP Error "+e, e);
+            } catch (IOException e) {
+                throw new HttpMonitorException("I/O Error "+e, e);
+            }
+        }
+
+        private URI getURI() throws URIException {
+            return new URI(getScheme(), getUserInfo(), getHost(), getPort(), getPath(), getQuery(), getFragment());
+        }
+
+        private String getFragment() {
+            return m_page.getFragment();
+        }
+
+        private String getQuery() {
+            return m_page.getQuery();
+        }
+
+        private String getPath() {
+            return m_page.getPath();
+        }
+
+        private int getPort() {
+            return m_page.getPort();
+        }
+
+        private String getHost() {
+            String host = m_page.getHost();
+            // FIXME: handle ipAddr
+            return host;
+        }
+
+        private String getUserInfo() {
+            return m_page.getUserInfo();
+        }
+
+        private String getScheme() {
+            return m_page.getScheme();
+        }
+
+        private HttpMethod getMethod() {
+            String method = m_page.getMethod();
+            return ("GET".equalsIgnoreCase(method) ? new GetMethod() : new PostMethod());
+        }
+    }
+
+    public static class HttpMonitor2Parameters {
+        
+        public static final String KEY = HttpMonitor2Parameters.class.getName();
+        
+        static synchronized HttpMonitor2Parameters get(Map paramterMap) {
+            HttpMonitor2Parameters parms = (HttpMonitor2Parameters)paramterMap.get(KEY);
+            if (parms == null) {
+                parms = new HttpMonitor2Parameters(paramterMap);
+                paramterMap.put(KEY, parms);
+            }
+            return parms;
+        }
+        
+        private Map m_parameterMap;
+        private HttpPageSequence m_pageSequence;
+
+        HttpMonitor2Parameters(Map parameterMap) {
+            m_parameterMap = parameterMap;
+            String pageSequence = getStringParm("page-sequence", null);
+            if (pageSequence == null) {
+                throw new IllegalArgumentException("page-sequence must be set in monitor parameters");
+            }
+            PageSequence sequence = parsePageSequence(pageSequence);
+            m_pageSequence = new HttpPageSequence(sequence);
+        }
+        
+        Map getParameterMap() {
+            return m_parameterMap;
+        }
+
+        HttpPageSequence getPageSequence() {
+            return m_pageSequence;
+        }
+
+        PageSequence parsePageSequence(String sequenceString) {
+            try {
+                return (PageSequence) Unmarshaller.unmarshal(PageSequence.class, new StringReader(sequenceString));
+            } catch (MarshalException e) {
+                throw new IllegalArgumentException("Unable to parse page-sequence for HttpMonitor: "+sequenceString, e);
+            } catch (ValidationException e) {
+                throw new IllegalArgumentException("Unable to parse page-sequence for HttpMonitor: "+sequenceString, e);
+            }
+        
+        }
+
+        private String getStringParm(String key, String deflt) {
+            return ParameterMap.getKeyedString(this.getParameterMap(), key, deflt);
+        }
+        
+        private int getIntParm(String key, int defValue) {
+            return ParameterMap.getKeyedInteger(getParameterMap()  , key, defValue);
+        }
+
+        HttpClientParams buildParams(MonitoredService svc) {
+            HttpClientParams params = new HttpClientParams();
+            params.setSoTimeout(getIntParm("timeout", HttpMonitor2.DEFAULT_TIMEOUT));
+            int retryCount = getIntParm("retry", HttpMonitor2.DEFAULT_RETRY);
+            params.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(retryCount, false));
+            params.setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            return params;
+        }
+    }
+    
+
+    public PollStatus poll(MonitoredService svc, Map parameterMap) {
+        
+        try {
+            HttpMonitor2Parameters parms = HttpMonitor2Parameters.get(parameterMap);
+            
+            HttpClient client = new HttpClient(parms.buildParams(svc));
+
+            long startTime = System.currentTimeMillis();
+            
+            parms.getPageSequence().execute(client);
+
+            long endTime = System.currentTimeMillis();
+            return PollStatus.available(endTime - startTime);
+
+        } catch (HttpMonitorException e) {
+            return PollStatus.unavailable(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log().error("Invalid parameters to monitor.", e);
+            return PollStatus.unavailable("Invalid parameter to monitor: "+e.getMessage()+". See log for details.");
+        }
+    }
 
 }
 
