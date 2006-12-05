@@ -204,8 +204,8 @@
               </td>
             <% } %>
             <td>
-              <input type="radio" name="status" value="on" <%=(status.equals("On") ? "checked" : "")%>> ON</input><br>
-              <input type="radio" name="status" value="off" <%=(status.equals("Off") ? "checked" : "")%>> OFF</input>
+              <input type="radio" name="status" value="on" <%=(status.equals("On") ? "checked" : "")%>/> ON<br/>
+              <input type="radio" name="status" value="off" <%=(status.equals("Off") ? "checked" : "")%>/> OFF
             </td>
             <td>
               <input type="submit" value="Update Status">
