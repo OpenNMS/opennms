@@ -35,7 +35,7 @@
       <tiles:getAsString name="title"/>
 </span>
 
-<span id="headerinfo">
+<div id="headerinfo">
 
 <div id="outer">
  <div id="middle">
@@ -52,7 +52,7 @@
   </div>
  </div>
 </div>
-</span>
+</div>
 
 <div class="spacer">
      &nbsp;

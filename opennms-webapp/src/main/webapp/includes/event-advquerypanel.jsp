@@ -42,13 +42,14 @@
 		org.opennms.web.event.*
 		"
 %>
+<%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
 <%!
     public static final DecimalFormat MINUTE_FORMAT = new DecimalFormat( "00" );
 %>
 <%
     //get the service names, in alpha order
-    Map serviceNameMap = new TreeMap(NetworkElementFactory.getServiceNameToIdMap());
-    Set serviceNameSet = serviceNameMap.keySet();
+    Map<String, Integer> serviceNameMap = new TreeMap<String, Integer>(NetworkElementFactory.getServiceNameToIdMap());
+    Set<String> serviceNameSet = serviceNameMap.keySet();
     Iterator serviceNameIterator = serviceNameSet.iterator();
 
     //get the severity names, in severity order
@@ -118,47 +119,47 @@
 
           <tr>
             <td valign="top">
-              <input type="checkbox" name="useaftertime" value="1">Events After:</input>
+              <input type="checkbox" name="useaftertime" value="1" />Events After:
             </td>
             <td valign="top">
-              <input type="checkbox" name="usebeforetime" value="1">Events Before:</input>
+              <input type="checkbox" name="usebeforetime" value="1"/>Events Before:
             </td>
           </tr>
           <tr>
             <td>
               <select name="afterhour" size="1">
                 <% for( int i = 1; i < 13; i++ ) { %>
-                  <option value="<%=i%>" <%=(nowHour==i) ? "selected" : ""%>>
-                    <%=i%>
-                  </option>
+                  <form:option value="<%=i%>" selected="<%= nowHour==i %>">
+                    <%= i %>
+                  </form:option>
                 <% } %>
               </select>
 
               <input type="text" name="afterminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
 
               <select name="afterampm" size="1">
-                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour != 12) ? "selected" : ""%>>AM</option>
-                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour == 12) ? "selected" : ""%>>Noon</option>
-                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour != 12) ? "selected" : ""%>>PM</option>
-                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour == 12) ? "selected" : ""%>>Midnight</option>
+                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour != 12)%>">AM</form:option>
+                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour == 12)%>">Noon</form:option>
+                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour != 12)%>">PM</form:option>
+                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour == 12)%>">Midnight</form:option>
               </select>
             </td>
             <td>
               <select name="beforehour" size="1">
                 <% for( int i = 1; i < 13; i++ ) { %>
-                  <option value="<%=i%>" <%=(nowHour==i) ? "selected=\"selected\"" : ""%>>
+                  <form:option value="<%=i%>" selected="<%=(nowHour==i)%>">
                     <%=i%>
-                  </option>
+                  </form:option>
                 <% } %>
               </select>
 
               <input type="text" name="beforeminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
 
               <select name="beforeampm" size="1">
-                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour != 12) ? "selected" : ""%>>AM</option>
-                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour == 12) ? "selected" : ""%>>Noon</option>
-                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour != 12) ? "selected" : ""%>>PM</option>
-                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour == 12) ? "selected" : ""%>>Midnight</option>
+                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour != 12) %>">AM</form:option>
+                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour == 12)%>">Noon</form:option>
+                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour != 12)%>">PM</form:option>
+                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour == 12)%>">Midnight</form:option>
               </select>
             </td>
           </tr>
@@ -166,9 +167,9 @@
             <td>
               <select name="aftermonth" size="1">
                 <% for( int i = 0; i < 12; i++ ) { %>
-                  <option value="<%=i%>" <%=(now.get(Calendar.MONTH)==i) ? "selected" : ""%>>
+                  <form:option value="<%=i%>" selected="<%=(now.get(Calendar.MONTH)==i)%>">
                     <%=months[i]%>
-                  </option>
+                  </form:option>
                 <% } %>
               </select>
 
@@ -178,9 +179,9 @@
             <td>
               <select name="beforemonth" size="1">
                 <% for( int i = 0; i < 12; i++ ) { %>
-                  <option value="<%=i%>" <%=(now.get(Calendar.MONTH)==i) ? "selected" : ""%>>
+                  <form:option value="<%=i%>" selected="<%=(now.get(Calendar.MONTH)==i)%>">
                     <%=months[i]%>
-                  </option>
+                  </form:option>
                 <% } %>
               </select>
 
