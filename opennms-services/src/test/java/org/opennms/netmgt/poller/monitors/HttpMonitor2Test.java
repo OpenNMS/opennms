@@ -95,7 +95,8 @@ public class HttpMonitor2Test extends TestCase {
 		super.tearDown();
 	}
     
-    public void xtestSimple() throws Exception {
+    // FIXME: test doesn't pass yet
+    public void XtestSimple() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
@@ -103,16 +104,19 @@ public class HttpMonitor2Test extends TestCase {
 				"</page-sequence>\n");
 		
 		
-		PollStatus status = m_monitor.poll(getHttpService("www.google.com"), m_params);
-		assertTrue(status.isAvailable());
-		
+        PollStatus googleStatus = m_monitor.poll(getHttpService("www.google.com"), m_params);
+        assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+        
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
 		assertTrue(notLikely.isUnavailable());
 
+        PollStatus yahooStatus = m_monitor.poll(getHttpService("www.yahoo.com"), m_params);
+        assertTrue(yahooStatus.isUnavailable());
+        
     }
 
-
-	public void xtestLogin() throws Exception {
+    // FIXME: test doesn't pass yet
+	public void XtestLogin() throws Exception {
     	
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +

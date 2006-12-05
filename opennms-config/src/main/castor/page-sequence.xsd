@@ -1,48 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
-            targetNamespace="http://xmlns.opennms.org/xsd/web-app-config" 
-            xmlns:this="http://xmlns.opennms.org/xsd/web-app-config">
+            targetNamespace="http://xmlns.opennms.org/xsd/page-sequence" 
+            xmlns:this="http://xmlns.opennms.org/xsd/page-sequence">
 
-<!-- We need better name for this element and config file, this what we came up with for now -->
-
-  <annotation>
-    <documentation>
-    
-      This configuration file will be use by both the HttpCollector (eventually) and the HttpMonitor
-      for handling complex monitoring and datacollection.  Most of this config has been stolen from 
-      the http-collection-config.xsd and will soon be merged.
-      
-      With this configuration, an HttpMonitor has been developed for handling complex monitoring
-      of web sites that may require form based logins, following redirects, eating cookies, etc.
-      
-    </documentation>
-  </annotation>
-  
-  <element name="web-applications">
-    <complexType>
-      <sequence>
-        <element ref="this:web-app" minOccurs="0" maxOccurs="unbounded" />
-      </sequence>
-    </complexType>
-  </element>
-  
-  <element name="web-app" >
-    <annotation>
-      <documentation>
-      
-        Use this container to define an application and the page sequences required to
-        effectively monitor its behavior.
-        
-      </documentation>
-    </annotation>
-    <complexType>
-      <sequence>
-        <element ref="this:page-sequence" minOccurs="0" maxOccurs="unbounded" />
-      </sequence>
-      <attribute name="name" />
-    </complexType>
-  </element>
-  
   <element name="page-sequence" >
     <annotation>
       <documentation>
@@ -56,7 +16,6 @@
       <sequence>
         <element ref="this:page" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="name" type="string" use="required" />
       <attribute name="force-logout" type="boolean" use="optional" default="true" />
     </complexType>
   </element>
@@ -120,4 +79,9 @@
     </restriction>
   </simpleType>
   
+  <simpleType name="response-range">
+    <restriction base="string">
+      <pattern value="[1-5][0-9][0-9](-[1-5][0-9][0-9])?" />
+    </restriction>
+  </simpleType>
 </schema>
