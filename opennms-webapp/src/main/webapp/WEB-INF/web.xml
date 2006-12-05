@@ -1436,7 +1436,7 @@
     <location>/errors/eventidnotfound.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.opennms.web.alarm.EventIdNotFoundException</exception-type>
+    <exception-type>org.opennms.web.alarm.AlarmIdNotFoundException</exception-type>
     <location>/errors/alarmidnotfound.jsp</location>
   </error-page>
   <error-page>
