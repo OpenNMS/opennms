@@ -43,18 +43,14 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.ProtocolException;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.cookie.CookieSpec;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
@@ -62,6 +58,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
@@ -78,22 +75,22 @@ import org.opennms.netmgt.utils.ParameterMap;
  * 
  */
 @Distributable
-public class HttpMonitor2 extends IPv4Monitor {
+public class PageSequenceMonitor extends IPv4Monitor {
 
 
-    public static class HttpMonitorException extends RuntimeException {
+    public static class PageSequenceMonitorException extends RuntimeException {
 
         private static final long serialVersionUID = 1346757238604080088L;
 
-        public HttpMonitorException(String message) {
+        public PageSequenceMonitorException(String message) {
             super(message);
         }
 
-        public HttpMonitorException(Throwable cause) {
+        public PageSequenceMonitorException(Throwable cause) {
             super(cause);
         }
 
-        public HttpMonitorException(String message, Throwable cause) {
+        public PageSequenceMonitorException(String message, Throwable cause) {
             super(message, cause);
         }
 
@@ -170,15 +167,18 @@ public class HttpMonitor2 extends IPv4Monitor {
     public static class HttpPage {
         private Page m_page;
         private HttpResponseRange m_range;
-		private Pattern m_pattern;
+		private Pattern m_successPattern;
+		private Pattern m_failurePattern;
 		
 		private NameValuePair[] m_parms;
+
         
         HttpPage(HttpPageSequence parent, Page page) {
 
             m_page = page;
             m_range = new HttpResponseRange(page.getResponseRange());
-            m_pattern = Pattern.compile(page.getMatches());
+            m_successPattern = (page.getSuccessMatch() == null ? null : Pattern.compile(page.getSuccessMatch()));
+            m_failurePattern = (page.getFailureMatch() == null ? null : Pattern.compile(page.getFailureMatch()));
             
             List<NameValuePair >parms = new ArrayList<NameValuePair>();
             for(Parameter parm : m_page.getParameter()) {
@@ -193,6 +193,15 @@ public class HttpMonitor2 extends IPv4Monitor {
                 URI uri = getURI(svc);
                 HttpMethod method = getMethod();
                 method.setURI(uri);
+
+                if (getVirtualHost() != null) {
+                	method.getParams().setVirtualHost(getVirtualHost());
+                }
+                
+                if (getUserAgent() != null) {
+                	method.addRequestHeader("User-Agent", getUserAgent());
+                }
+
                 if (m_parms.length > 0) {
                 	method.setQueryString(m_parms);
                 }
@@ -200,25 +209,44 @@ public class HttpMonitor2 extends IPv4Monitor {
                 int code = client.executeMethod(method);
                 
                 if (!getRange().contains(code)) {
-                    throw new HttpMonitorException("response code out of range for uri:"+uri+". Expected "+getRange()+" but received "+code);
+                    throw new PageSequenceMonitorException("response code out of range for uri:"+uri+". Expected "+getRange()+" but received "+code);
                 }
                 
-                Matcher matcher = getPattern().matcher(method.getResponseBodyAsString());
-                if (!matcher.find()) {
-                	throw new HttpMonitorException("failed to find '"+getPattern()+"' in page content at "+uri);
+                String responseString = method.getResponseBodyAsString();
+                
+                if (getFailurePattern() != null) {
+                	Matcher matcher = getFailurePattern().matcher(responseString);
+                	if (matcher.find()) {
+                		throw new PageSequenceMonitorException(getResolvedFailureMessage(matcher));
+                	}
+                }
+                
+                if (getSuccessPattern() != null) {
+                	Matcher matcher = getSuccessPattern().matcher(responseString);
+                	if (!matcher.find()) {
+                		throw new PageSequenceMonitorException("failed to find '"+getSuccessPattern()+"' in page content at "+uri);
+                	}
                 }
                 
 
             } catch (URIException e) {
                 throw new IllegalArgumentException("unable to construct URL for page: "+e, e);
             } catch (HttpException e) {
-                throw new HttpMonitorException("HTTP Error "+e, e);
+                throw new PageSequenceMonitorException("HTTP Error "+e, e);
             } catch (IOException e) {
-                throw new HttpMonitorException("I/O Error "+e, e);
+                throw new PageSequenceMonitorException("I/O Error "+e, e);
             }
         }
 
-        private URI getURI(MonitoredService svc) throws URIException {
+        private String getUserAgent() {
+        	return m_page.getUserAgent();
+		}
+
+		private String getVirtualHost() {
+        	return m_page.getVirtualHost();
+		}
+
+		private URI getURI(MonitoredService svc) throws URIException {
             return new URI(getScheme(), getUserInfo(), getHost(svc), getPort(), getPath(), getQuery(), getFragment());
         }
 
@@ -273,29 +301,31 @@ public class HttpMonitor2 extends IPv4Monitor {
         	return m_range;
         }
         
-        private Pattern getPattern() {
-        	return m_pattern;
+        private Pattern getSuccessPattern() {
+        	return m_successPattern;
+        }
+        
+        private Pattern getFailurePattern() {
+        	return m_failurePattern;
+        }
+        
+        private String getFailureMessage() {
+        	return m_page.getFailureMessage();
+        }
+        
+        private String getResolvedFailureMessage(Matcher matcher) {
+        	return PropertiesUtils.substitute(getFailureMessage(), new MatchTable(matcher));
         }
     }
     
-    public static class HttpFormParm {
-    	private Parameter m_parameter;
-    	
-    	HttpFormParm(Parameter parameter) {
-    		m_parameter = parameter;
-    	}
-    	
-    	
-    }
-
-    public static class HttpMonitor2Parameters {
+    public static class PageSequenceMonitorParameters {
         
-        public static final String KEY = HttpMonitor2Parameters.class.getName();
+        public static final String KEY = PageSequenceMonitorParameters.class.getName();
         
-        static synchronized HttpMonitor2Parameters get(Map paramterMap) {
-            HttpMonitor2Parameters parms = (HttpMonitor2Parameters)paramterMap.get(KEY);
+        static synchronized PageSequenceMonitorParameters get(Map paramterMap) {
+            PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters)paramterMap.get(KEY);
             if (parms == null) {
-                parms = new HttpMonitor2Parameters(paramterMap);
+                parms = new PageSequenceMonitorParameters(paramterMap);
                 paramterMap.put(KEY, parms);
             }
             return parms;
@@ -305,7 +335,7 @@ public class HttpMonitor2 extends IPv4Monitor {
         private HttpClientParams m_clientParams;
         private HttpPageSequence m_pageSequence;
 
-        HttpMonitor2Parameters(Map parameterMap) {
+        PageSequenceMonitorParameters(Map parameterMap) {
             m_parameterMap = parameterMap;
             String pageSequence = getStringParm("page-sequence", null);
             if (pageSequence == null) {
@@ -353,11 +383,11 @@ public class HttpMonitor2 extends IPv4Monitor {
         }
 
 		public int getRetries() {
-			return getIntParm("retry", HttpMonitor2.DEFAULT_RETRY);
+			return getIntParm("retry", PageSequenceMonitor.DEFAULT_RETRY);
 		}
 
 		public int getTimeout() {
-			return getIntParm("timeout", HttpMonitor2.DEFAULT_TIMEOUT);
+			return getIntParm("timeout", PageSequenceMonitor.DEFAULT_TIMEOUT);
 		}
 
         public HttpClientParams getClientParams() {
@@ -374,10 +404,11 @@ public class HttpMonitor2 extends IPv4Monitor {
 
     public PollStatus poll(MonitoredService svc, Map parameterMap) {
         
+    	HttpClient client = null;
         try {
-            HttpMonitor2Parameters parms = HttpMonitor2Parameters.get(parameterMap);
+            PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
             
-			HttpClient client = parms.createHttpClient();
+			client = parms.createHttpClient();
 
             long startTime = System.currentTimeMillis();
             
@@ -386,11 +417,13 @@ public class HttpMonitor2 extends IPv4Monitor {
             long endTime = System.currentTimeMillis();
             return PollStatus.available(endTime - startTime);
 
-        } catch (HttpMonitorException e) {
+        } catch (PageSequenceMonitorException e) {
             return PollStatus.unavailable(e.getMessage());
         } catch (IllegalArgumentException e) {
             log().error("Invalid parameters to monitor.", e);
             return PollStatus.unavailable("Invalid parameter to monitor: "+e.getMessage()+". See log for details.");
+        } finally {
+        	if (client != null) client.getHttpConnectionManager().closeIdleConnections(0);
         }
     }
 
