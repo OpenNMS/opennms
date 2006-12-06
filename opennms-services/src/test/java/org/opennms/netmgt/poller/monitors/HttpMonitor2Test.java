@@ -95,7 +95,6 @@ public class HttpMonitor2Test extends TestCase {
 		super.tearDown();
 	}
     
-    // FIXME: test doesn't pass yet
     public void testSimple() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
@@ -115,7 +114,6 @@ public class HttpMonitor2Test extends TestCase {
         
     }
 
-    // FIXME: test doesn't pass yet
 	public void testLogin() throws Exception {
     	
 		m_params.put("page-sequence", "" +
