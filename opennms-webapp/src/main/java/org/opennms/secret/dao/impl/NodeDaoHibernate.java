@@ -74,7 +74,7 @@ public class NodeDaoHibernate extends HibernateDaoSupport implements NodeDao {
      
     }
 
-    public Collection findAll() {
+    public Collection<Node> findAll() {
         // TODO Auto-generated method stub
         return null;
     }

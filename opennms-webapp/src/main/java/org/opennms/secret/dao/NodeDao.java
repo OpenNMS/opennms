@@ -14,6 +14,6 @@ public interface NodeDao {
 
     public abstract Collection getInterfaceCollection(Node node);
 
-    public abstract Collection findAll();
+    public abstract Collection<Node> findAll();
 
 }

@@ -36,19 +36,14 @@
 package org.opennms.secret.web;
 
 import java.awt.Color;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts.tiles.ComponentContext;
-import org.opennms.netmgt.config.rrd.Datasources;
-import org.opennms.netmgt.config.rrd.Def;
-import org.opennms.netmgt.config.rrd.Rrd_graph_def;
 import org.opennms.secret.model.DataSource;
 import org.opennms.secret.model.GraphDataElement;
 import org.opennms.secret.model.GraphDataLine;
@@ -75,7 +70,7 @@ public class GraphCartTileController extends ComponentControllerSupport {
 //        Rrd_graph_def graph = getGraph(request);
         GraphDefinition graphDef = getGraphDef(request);
 //        Datasources dataSources = getGraphDataSources(graph);
-        LinkedList dataSources = getGraphDataSources(graphDef);
+        LinkedList<GraphDataElement> dataSources = getGraphDataSources(graphDef);
         
         if (clearDataSources(request)) {
             dataSources = newDataSources(graphDef);
@@ -109,8 +104,8 @@ public class GraphCartTileController extends ComponentControllerSupport {
     }
     */
     
-    private LinkedList getGraphDataSources(GraphDefinition graphDef) {
-        LinkedList dataSources = graphDef.getGraphDataElements();
+    private LinkedList<GraphDataElement> getGraphDataSources(GraphDefinition graphDef) {
+        LinkedList<GraphDataElement> dataSources = graphDef.getGraphDataElements();
         if (dataSources == null) {
             dataSources = newDataSources(graphDef);
         }
@@ -118,8 +113,8 @@ public class GraphCartTileController extends ComponentControllerSupport {
     }
 
 
-    private LinkedList newDataSources(GraphDefinition graphDef) {
-        LinkedList dataSources = new LinkedList();
+    private LinkedList<GraphDataElement> newDataSources(GraphDefinition graphDef) {
+        LinkedList<GraphDataElement> dataSources = new LinkedList<GraphDataElement>();
         graphDef.setGraphDataElements(dataSources);
         
         return dataSources;
@@ -169,7 +164,7 @@ public class GraphCartTileController extends ComponentControllerSupport {
     }
     */
     
-    private void addDataSource(LinkedList dataSources, HttpSession session, String dataSourceId) {
+    private void addDataSource(LinkedList<GraphDataElement> dataSources, HttpSession session, String dataSourceId) {
         if (m_dataSourceService == null) {
             throw new IllegalStateException("setDataSourceService has never been called to initialize the DataSourceService provider");
         }
