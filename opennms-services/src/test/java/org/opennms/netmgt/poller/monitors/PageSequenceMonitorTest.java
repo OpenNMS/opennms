@@ -102,6 +102,20 @@ public class PageSequenceMonitorTest extends TestCase {
         
     }
 
+    public void testHttps() throws Exception {
+		m_params.put("page-sequence", "" +
+				"<?xml version=\"1.0\"?>" +
+				"<page-sequence>\n" + 
+				"  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll?RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"Register: Enter Information\" virtual-host=\"support.opennms.com\"/>\n" + 
+				"</page-sequence>\n");
+		
+		
+        PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
+        assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+        
+
+    }
+
 	public void testLogin() throws Exception {
     	
 		m_params.put("page-sequence", "" +
