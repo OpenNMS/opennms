@@ -16,7 +16,6 @@
       <sequence>
         <element ref="this:page" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="force-logout" type="boolean" use="optional" default="true" />
     </complexType>
   </element>
 
@@ -51,9 +50,10 @@
       <attribute name="path" type="string" use="required" />
       <attribute name="query" type="string" use="optional" />
       <attribute name="fragment" type="string" use="optional" />
-      <attribute name="matches" type="string" use="optional" default="(.*)" />
+      <attribute name="failureMatch" type="string" use="optional" />
+      <attribute name="failureMessage" type="string" use="optional" />
+      <attribute name="successMatch" type="string" use="optional" />
       <attribute name="response-range" type="string" use="optional" default="100-399" />
-      <attribute name="page-type" type="string" use="optional" default="normal" />
     </complexType>
   </element>
   
