@@ -96,7 +96,7 @@ public class HttpMonitor2Test extends TestCase {
 	}
     
     // FIXME: test doesn't pass yet
-    public void XtestSimple() throws Exception {
+    public void testSimple() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
@@ -116,7 +116,7 @@ public class HttpMonitor2Test extends TestCase {
     }
 
     // FIXME: test doesn't pass yet
-	public void XtestLogin() throws Exception {
+	public void testLogin() throws Exception {
     	
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
@@ -133,7 +133,7 @@ public class HttpMonitor2Test extends TestCase {
 		
 		PollStatus status = m_monitor.poll(getHttpService("demo.opennms.com"), m_params);
 		
-		assertTrue(status.isAvailable());
+		assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
 		
 	}
 	

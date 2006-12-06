@@ -39,6 +39,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,8 +62,10 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.opennms.netmgt.config.pagesequence.Parameter;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -116,9 +119,9 @@ public class HttpMonitor2 extends IPv4Monitor {
             return m_pages;
         }
 
-        private void execute(HttpClient client) {
+        private void execute(HttpClient client, MonitoredService svc) {
             for (HttpPage page : getPages()) {
-                page.execute(client);
+                page.execute(client, svc);
             }
         }
     }
@@ -149,7 +152,7 @@ public class HttpMonitor2 extends IPv4Monitor {
             
         }
         
-        public boolean isIn(int responseCode) {
+        public boolean contains(int responseCode) {
             return (m_begin <= responseCode && responseCode <= m_end);
         }
         
@@ -165,26 +168,44 @@ public class HttpMonitor2 extends IPv4Monitor {
     }
     
     public static class HttpPage {
-        HttpPageSequence m_parent;
-        Page m_page;
-        HttpResponseRange m_range;
+        private Page m_page;
+        private HttpResponseRange m_range;
+		private Pattern m_pattern;
+		
+		private NameValuePair[] m_parms;
         
         HttpPage(HttpPageSequence parent, Page page) {
-            m_parent = parent;
+
             m_page = page;
             m_range = new HttpResponseRange(page.getResponseRange());
+            m_pattern = Pattern.compile(page.getMatches());
+            
+            List<NameValuePair >parms = new ArrayList<NameValuePair>();
+            for(Parameter parm : m_page.getParameter()) {
+            	parms.add(new NameValuePair(parm.getKey(), parm.getValue()));
+            }
+            
+            m_parms = (NameValuePair[]) parms.toArray(new NameValuePair[parms.size()]);
         }
 
-        void execute(HttpClient client) {
+        void execute(HttpClient client, MonitoredService svc) {
             try {
-                URI uri = getURI();
+                URI uri = getURI(svc);
                 HttpMethod method = getMethod();
                 method.setURI(uri);
-                
+                if (m_parms.length > 0) {
+                	method.setQueryString(m_parms);
+                }
+
                 int code = client.executeMethod(method);
                 
-                if (!m_range.isIn(code)) {
-                    throw new HttpMonitorException("response code out of range. Expected "+m_range+" but received "+code);
+                if (!getRange().contains(code)) {
+                    throw new HttpMonitorException("response code out of range for uri:"+uri+". Expected "+getRange()+" but received "+code);
+                }
+                
+                Matcher matcher = getPattern().matcher(method.getResponseBodyAsString());
+                if (!matcher.find()) {
+                	throw new HttpMonitorException("failed to find '"+getPattern()+"' in page content at "+uri);
                 }
                 
 
@@ -197,8 +218,8 @@ public class HttpMonitor2 extends IPv4Monitor {
             }
         }
 
-        private URI getURI() throws URIException {
-            return new URI(getScheme(), getUserInfo(), getHost(), getPort(), getPath(), getQuery(), getFragment());
+        private URI getURI(MonitoredService svc) throws URIException {
+            return new URI(getScheme(), getUserInfo(), getHost(svc), getPort(), getPath(), getQuery(), getFragment());
         }
 
         private String getFragment() {
@@ -217,13 +238,18 @@ public class HttpMonitor2 extends IPv4Monitor {
             return m_page.getPort();
         }
 
-        private String getHost() {
-            String host = m_page.getHost();
-            // FIXME: handle ipAddr
-            return host;
+        private String getHost(MonitoredService svc) {
+            return PropertiesUtils.substitute(m_page.getHost(), getServiceProperties(svc));
+
         }
 
-        private String getUserInfo() {
+        private Properties getServiceProperties(MonitoredService svc) {
+        	Properties properties = new Properties();
+        	properties.put("ipaddr", svc.getIpAddr());
+        	return properties;
+		}
+
+		private String getUserInfo() {
             return m_page.getUserInfo();
         }
 
@@ -233,8 +259,33 @@ public class HttpMonitor2 extends IPv4Monitor {
 
         private HttpMethod getMethod() {
             String method = m_page.getMethod();
-            return ("GET".equalsIgnoreCase(method) ? new GetMethod() : new PostMethod());
+            return ("GET".equalsIgnoreCase(method) ? new GetMethod() : new PostMethod() {
+
+				@Override
+				public boolean getFollowRedirects() {
+					return true;
+				}
+            	
+            });
         }
+        
+        private HttpResponseRange getRange() {
+        	return m_range;
+        }
+        
+        private Pattern getPattern() {
+        	return m_pattern;
+        }
+    }
+    
+    public static class HttpFormParm {
+    	private Parameter m_parameter;
+    	
+    	HttpFormParm(Parameter parameter) {
+    		m_parameter = parameter;
+    	}
+    	
+    	
     }
 
     public static class HttpMonitor2Parameters {
@@ -251,6 +302,7 @@ public class HttpMonitor2 extends IPv4Monitor {
         }
         
         private Map m_parameterMap;
+        private HttpClientParams m_clientParams;
         private HttpPageSequence m_pageSequence;
 
         HttpMonitor2Parameters(Map parameterMap) {
@@ -261,6 +313,8 @@ public class HttpMonitor2 extends IPv4Monitor {
             }
             PageSequence sequence = parsePageSequence(pageSequence);
             m_pageSequence = new HttpPageSequence(sequence);
+            
+            createClientParams();
         }
         
         Map getParameterMap() {
@@ -290,14 +344,31 @@ public class HttpMonitor2 extends IPv4Monitor {
             return ParameterMap.getKeyedInteger(getParameterMap()  , key, defValue);
         }
 
-        HttpClientParams buildParams(MonitoredService svc) {
-            HttpClientParams params = new HttpClientParams();
-            params.setSoTimeout(getIntParm("timeout", HttpMonitor2.DEFAULT_TIMEOUT));
-            int retryCount = getIntParm("retry", HttpMonitor2.DEFAULT_RETRY);
-            params.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(retryCount, false));
-            params.setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-            return params;
+        private void createClientParams() {
+            m_clientParams = new HttpClientParams();
+			m_clientParams.setConnectionManagerTimeout(getTimeout());
+            m_clientParams.setSoTimeout(getTimeout());
+            m_clientParams.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(getRetries(), false));
+            m_clientParams.setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         }
+
+		public int getRetries() {
+			return getIntParm("retry", HttpMonitor2.DEFAULT_RETRY);
+		}
+
+		public int getTimeout() {
+			return getIntParm("timeout", HttpMonitor2.DEFAULT_TIMEOUT);
+		}
+
+        public HttpClientParams getClientParams() {
+        	return m_clientParams;
+        }
+
+		HttpClient createHttpClient() {
+			HttpClient client = new HttpClient(getClientParams());
+			client.getHttpConnectionManager().getParams().setConnectionTimeout(getTimeout());
+			return client;
+		}
     }
     
 
@@ -306,11 +377,11 @@ public class HttpMonitor2 extends IPv4Monitor {
         try {
             HttpMonitor2Parameters parms = HttpMonitor2Parameters.get(parameterMap);
             
-            HttpClient client = new HttpClient(parms.buildParams(svc));
+			HttpClient client = parms.createHttpClient();
 
             long startTime = System.currentTimeMillis();
             
-            parms.getPageSequence().execute(client);
+            parms.getPageSequence().execute(client, svc);
 
             long endTime = System.currentTimeMillis();
             return PollStatus.available(endTime - startTime);
