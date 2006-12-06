@@ -14,8 +14,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -55,11 +55,11 @@ public class Bootstrap {
      */
     public static ClassLoader loadClasses(String dirStr, boolean recursive)
             throws MalformedURLException {
-        LinkedList urls = new LinkedList();
+        LinkedList<URL> urls = new LinkedList<URL>();
 
         StringTokenizer toke = new StringTokenizer(dirStr, File.pathSeparator);
         while (toke.hasMoreTokens()) {
-            String token = (String) toke.nextToken();
+            String token = toke.nextToken();
             loadClasses(new File(token), recursive, urls);
         }
 
@@ -77,7 +77,7 @@ public class Bootstrap {
      */
     public static ClassLoader loadClasses(File dir, boolean recursive)
             throws MalformedURLException {
-        LinkedList urls = new LinkedList();
+        LinkedList<URL> urls = new LinkedList<URL>();
         loadClasses(dir, recursive, urls);
         return newClassLoader(urls);
     }
@@ -89,8 +89,8 @@ public class Bootstrap {
      *            List of URLs to add to the ClassLoader's search list.
      * @returns A new ClassLoader with the specified search list
      */
-    public static ClassLoader newClassLoader(LinkedList urls) {
-        URL[] urlsArray = (URL[]) urls.toArray(new URL[0]);
+    public static ClassLoader newClassLoader(LinkedList<URL> urls) {
+        URL[] urlsArray = urls.toArray(new URL[0]);
 
         return URLClassLoader.newInstance(urlsArray);
     }
@@ -107,7 +107,7 @@ public class Bootstrap {
      *            LinkedList to append found JARs onto
      */
     public static void loadClasses(File dir, boolean recursive,
-            LinkedList urls) throws MalformedURLException {
+            LinkedList<URL> urls) throws MalformedURLException {
         // Add the directory
         urls.add(dir.toURL());
 
@@ -115,8 +115,8 @@ public class Bootstrap {
             // Descend into sub-directories
             File[] dirlist = dir.listFiles(m_dirFilter);
             if (dirlist != null) {
-                for (int i = 0; i < dirlist.length; i++) {
-                    loadClasses(dirlist[i], recursive, urls);
+                for (File childDir : dirlist) {
+                    loadClasses(childDir, recursive, urls);
                 }
             }
         }
@@ -124,8 +124,8 @@ public class Bootstrap {
         // Add individual JAR files
         File[] children = dir.listFiles(m_jarFilter);
         if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                urls.add(children[i].toURL());
+            for (File childFile : children) {
+                urls.add(childFile.toURL());
             }
         }
     }
@@ -173,11 +173,11 @@ public class Bootstrap {
         Properties p = new Properties();
         p.load(is);
 
-        for (Iterator it = p.keySet().iterator(); it.hasNext();) {
-			String propertyName = (String) it.next();
-            String value = p.getProperty(propertyName);
+        for (Map.Entry entry : p.entrySet()) {
+            String propertyName = entry.getKey().toString();
+            Object value = entry.getValue();
             if (value != null) {
-                System.setProperty(propertyName, value);
+                System.setProperty(propertyName, value.toString());
             }
         }
     }
