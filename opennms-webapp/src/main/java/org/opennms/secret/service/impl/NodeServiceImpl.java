@@ -23,13 +23,13 @@ public class NodeServiceImpl implements NodeService {
 		m_nodeDao = nodeDao;
 	}
 
-    public Set findAll() {
-        return new HashSet(m_nodeDao.findAll());
+    public Set<Node> findAll() {
+        return new HashSet<Node>(m_nodeDao.findAll());
     }
 
-    public Set findWithMatchingLabel(String searchKey) {
+    public Set<Node> findWithMatchingLabel(String searchKey) {
         Collection nodes = m_nodeDao.findAll();
-        Set matching = new HashSet();
+        Set<Node> matching = new HashSet<Node>();
         for (Iterator it = nodes.iterator(); it.hasNext();) {
             Node node = (Node) it.next();
             if (node.getNodeLabel().startsWith(searchKey)) {

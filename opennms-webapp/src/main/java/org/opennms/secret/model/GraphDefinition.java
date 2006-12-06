@@ -36,7 +36,7 @@ public class GraphDefinition {
 		graphDataElements.remove(ds);
 	}
 	
-	public LinkedList getGraphDataElements() {
+	public LinkedList<GraphDataElement> getGraphDataElements() {
 		return graphDataElements;
 	}
 	

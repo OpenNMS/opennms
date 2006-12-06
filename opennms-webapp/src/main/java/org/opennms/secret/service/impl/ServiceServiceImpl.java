@@ -2,12 +2,9 @@ package org.opennms.secret.service.impl;
 
 import java.util.HashSet;
 
-import org.opennms.secret.dao.NodeInterfaceDao;
 import org.opennms.secret.dao.ServiceDao;
 import org.opennms.secret.model.InterfaceService;
-import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
-import org.opennms.secret.service.NodeInterfaceService;
 import org.opennms.secret.service.ServiceService;
 
 public class ServiceServiceImpl implements ServiceService {
@@ -19,8 +16,8 @@ public class ServiceServiceImpl implements ServiceService {
         m_serviceDao = serviceDao;
     }
     
-    public HashSet getServices(NodeInterface iface) {
-		HashSet services = new HashSet();
+    public HashSet<InterfaceService> getServices(NodeInterface iface) {
+		HashSet<InterfaceService> services = new HashSet<InterfaceService>();
 		for (int i = 0; i < 5; i++) {
 			InterfaceService service = new InterfaceService();
 			service.setId(new Long(i));
