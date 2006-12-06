@@ -15,7 +15,7 @@ public class NodeInterfaceServiceImpl implements NodeInterfaceService {
     }
     
     public HashSet getInterfaces(Node node) {
-		HashSet interfaces = new HashSet();
+		HashSet<NodeInterface> interfaces = new HashSet<NodeInterface>();
 		for (int i = 0; i < 5; i++) {
 			NodeInterface newInterface = new NodeInterface();
 			newInterface.setNodeId(new Long(i));

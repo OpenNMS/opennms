@@ -14,13 +14,13 @@ import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
 
 public class DataSourceDaoSimple implements DataSourceDao {
-    private HashMap m_dataSources = new HashMap();
+    private HashMap<String, DataSource> m_dataSources = new HashMap<String, DataSource>();
 
 	public void inititalize(Object obj) {
 	}
 
-	public List getDataSourcesByInterface(NodeInterface iface) {
-		List dataSources = new LinkedList();
+	public List<DataSource> getDataSourcesByInterface(NodeInterface iface) {
+		List<DataSource> dataSources = new LinkedList<DataSource>();
 		DataSource a = new DataSource();
 		a.setId ("interface-" + iface.getId() + "-performance-" + "ifInOctets");
 		a.setName ("In Octets");
@@ -84,8 +84,8 @@ public class DataSourceDaoSimple implements DataSourceDao {
 		return a;
 	}
 
-	public List getDataSourcesByNode(Node node) {
-		List dataSources = new LinkedList();
+	public List<DataSource> getDataSourcesByNode(Node node) {
+		List<DataSource> dataSources = new LinkedList<DataSource>();
 		DataSource a = new DataSource();
 		a.setId ("node-" + node.getNodeId() + "-performance-" + "rsUserProcessTime");
 		a.setName ("CPU User Process Time");

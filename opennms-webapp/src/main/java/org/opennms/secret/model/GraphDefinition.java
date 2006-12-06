@@ -18,11 +18,11 @@ public class GraphDefinition {
 	
 	String graphTitle; //name of graph
 	long startTime, endTime; // epoc time interval start and end
-	LinkedList graphDataElements; // data source objects for the graph 
+	LinkedList<GraphDataElement> graphDataElements; // data source objects for the graph 
 	                     // name of data, file, rrd dsname
 
 	public GraphDefinition(){
-		graphDataElements= new LinkedList();
+		graphDataElements= new LinkedList<GraphDataElement>();
 		setGraphTitle("");
 		setEndTime(System.currentTimeMillis());
 		setStartTime(getEndTime() - 86400000);
@@ -40,7 +40,7 @@ public class GraphDefinition {
 		return graphDataElements;
 	}
 	
-	public void setGraphDataElements(LinkedList graphDataElements) {
+	public void setGraphDataElements(LinkedList<GraphDataElement> graphDataElements) {
 		this.graphDataElements = graphDataElements;
 	}
 

@@ -67,9 +67,9 @@ public class ServiceDaoSimple implements ServiceDao {
 
     }
 
-    public Collection getServices(NodeInterface nodeInterface) {
+    public Collection<InterfaceService> getServices(NodeInterface nodeInterface) {
         
-        Collection services = new ArrayList();
+        Collection<InterfaceService> services = new ArrayList<InterfaceService>();
         for (int i = 0; i < 5; i++) {
             services.add(getService(new Long(i)));
         }

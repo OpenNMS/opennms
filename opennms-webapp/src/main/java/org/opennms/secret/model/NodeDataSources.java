@@ -1,7 +1,6 @@
 package org.opennms.secret.model;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class NodeDataSources {

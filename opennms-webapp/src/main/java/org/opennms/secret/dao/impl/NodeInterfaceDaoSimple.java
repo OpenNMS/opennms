@@ -70,8 +70,8 @@ public class NodeInterfaceDaoSimple implements NodeInterfaceDao {
         return null;
     }
     
-    public Collection getNodeInterfaces(Node node) {
-        Collection interfaces = new HashSet();
+    public Collection<NodeInterface> getNodeInterfaces(Node node) {
+        Collection<NodeInterface> interfaces = new HashSet<NodeInterface>();
         for (int i =1; i<LENGTH; i++ ) {
             interfaces.add(this.interfacearray[i]);
         }
