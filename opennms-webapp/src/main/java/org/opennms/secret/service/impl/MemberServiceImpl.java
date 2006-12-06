@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
 
     public Set findMatching(String searchKey) {
         List members = memberDAO.findAll();
-        Set matches = new HashSet();
+        Set<OGPMember> matches = new HashSet<OGPMember>();
         for (Iterator it = members.iterator(); it.hasNext();) {
             OGPMember member = (OGPMember) it.next();
             if (member.getFirstName().startsWith(searchKey) || member.getLastName().startsWith(searchKey)) {

@@ -93,8 +93,8 @@ public class NodeDaoSimple implements NodeDao {
         return Collections.EMPTY_SET;
     }
 
-    public Collection findAll() {
-        List list = new ArrayList(10);
+    public Collection<Node> findAll() {
+        List<Node> list = new ArrayList<Node>(10);
         for(int i = 0; i < 10; i++) {
             list.add(createDummyNode(new Long(i)));
         }
