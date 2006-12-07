@@ -219,10 +219,8 @@ final class SuspectEventProcessor implements Runnable {
             //
             // Get ifIndex
             //
-            int ifIndex = -1;
-            Integer snmpIfIndex = ifEntry.getIfIndex();
-            if (snmpIfIndex != null)
-                ifIndex = snmpIfIndex.intValue();
+            int ifIndex = ifEntry.getIfIndex().intValue();
+
 
             //
             // Get ALL IP Addresses for this ifIndex
@@ -233,13 +231,6 @@ final class SuspectEventProcessor implements Runnable {
             if (log.isDebugEnabled())
                 log.debug("getExistingNodeEntry: number of interfaces retrieved for ifIndex "
                         + ifIndex + " is: " + ipAddrs.size());
-            // 
-            // Get ifType for this interface
-            //
-            int ifType = -1;
-            Integer snmpIfType = ifEntry.getIfType();
-            if (snmpIfType != null)
-                ifType = snmpIfType.intValue();
 
             // Iterate over IP address list and add each to the sql buffer
             //
@@ -596,7 +587,7 @@ final class SuspectEventProcessor implements Runnable {
         Category log = ThreadCategory.getInstance(getClass());
 
         boolean addedSnmpInterfaceEntry =
-            addSubSnmpInterfaces(dbc, ifaddr, nodeId, collector);
+            addIfTableSnmpInterfaces(dbc, ifaddr, nodeId, collector);
         
         int ifIndex = getIfIndexForNewInterface(dbc, ifaddr, collector,
                                                 ipIfEntry);
@@ -878,7 +869,7 @@ final class SuspectEventProcessor implements Runnable {
         }
     }
     
-    private boolean addSubSnmpInterfaces(Connection dbc, InetAddress ifaddr,
+    private boolean addIfTableSnmpInterfaces(Connection dbc, InetAddress ifaddr,
             int nodeId, IfCollector collector)
             throws SQLException {
         if (!collector.hasSnmpCollection()) {
