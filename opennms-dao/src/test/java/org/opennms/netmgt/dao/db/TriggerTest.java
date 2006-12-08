@@ -14,11 +14,14 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
         executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
         
+        assertEquals("ipinterface.id", 1, jdbcTemplate.queryForInt("SELECT id FROM ipinterface"));
+        assertEquals("snmpinterface.id", 2, jdbcTemplate.queryForInt("SELECT id FROM snmpinterface"));
+        
         assertEquals("ifIndex", 0, jdbcTemplate.queryForInt("SELECT ifIndex FROM ipinterface"));
         executeSQL("UPDATE ipInterface SET ifIndex = 1 WHERE nodeID = 1 AND ipAddr = '1.2.3.4'");
         assertEquals("ifIndex", 1, jdbcTemplate.queryForInt("SELECT ifIndex FROM ipinterface"));
 
-        assertEquals("snmpInterfaceId", 1, jdbcTemplate.queryForInt("SELECT snmpInterfaceId FROM ipInterface WHERE nodeID = ?", 1));
+        assertEquals("snmpInterfaceId", 2, jdbcTemplate.queryForInt("SELECT snmpInterfaceId FROM ipInterface WHERE nodeID = ?", 1));
     }
     
     public void testSetIpInterfaceIfIndexLikeCapsdDoesBadIfIndex() throws Exception {
