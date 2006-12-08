@@ -14,7 +14,7 @@ BEGIN
   -- This usually happens when a record is being updated by old JDBC code (non-Hibernate DAOs) and has changed
   -- one or more of the composite key values, the snmpInterfaceId needs to be updated
   --
-  IF (NEW.snmpInterfaceId = OLD.snmpInterfaceId) AND (NEW.nodeId != OLD.nodeId OR NEW.ifIndex != OLD.ifIndex) 
+  IF (NEW.snmpInterfaceId = OLD.snmpInterfaceId OR (NEW.snmpInterfaceId IS NULL AND OLD.snmpInterfaceId IS NULL) AND (NEW.nodeId != OLD.nodeId OR NEW.ifIndex != OLD.ifIndex OR (NEW.ifIndex IS NULL AND OLD.ifIndex IS NOT NULL) OR (NEW.ifIndex IS NOT NULL AND OLD.ifIndex IS NULL)))
   THEN
      SELECT snmpif.id INTO NEW.snmpInterfaceId
        FROM snmpinterface snmpif
@@ -32,7 +32,9 @@ BEGIN
   -- This usually happens with the Hibernate DAOs decide to change the snmpinterfaceid represented
   -- by the ipinterface.
   --
-  ELSIF NEW.snmpInterfaceId != OLD.snmpInterfaceId
+  -- We don't match on the case where NEW.snmpInterfaceId IS NULL, because we use it in the WHERE clause.
+  --
+  ELSIF (NEW.snmpInterfaceId != OLD.snmpInterfaceId OR (NEW.snmpInterfaceId IS NOT NULL AND OLD.snmpInterfaceId IS NULL))
   THEN
      SELECT snmpif.nodeId, snmpif.snmpIfIndex INTO NEW.nodeId, NEW.ifIndex
        FROM snmpinterface snmpif
