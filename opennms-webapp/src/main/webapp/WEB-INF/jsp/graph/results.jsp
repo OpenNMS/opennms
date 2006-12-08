@@ -61,8 +61,8 @@
   <c:param name="breadcrumb" value="Results" />
 </c:import>
 
-<c:set var="topOffset">0</c:set>
-<c:set var="rightOffset">0</c:set>
+<c:set var="topOffset">3</c:set>
+<c:set var="rightOffset">-13</c:set>
 
 <c:if test="${fn:contains(header.user-agent, 'MSIE')}">
   <c:set var="topOffset">-13</c:set>
