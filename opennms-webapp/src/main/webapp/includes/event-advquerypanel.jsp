@@ -36,16 +36,15 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
+	buffer="1024kb"
 	import="java.util.*,
-		java.text.DecimalFormat,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.event.*
 		"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
 <%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
-<%!
-    public static final DecimalFormat MINUTE_FORMAT = new DecimalFormat( "00" );
-%>
 <%
     //get the service names, in alpha order
     Map<String, Integer> serviceNameMap = new TreeMap<String, Integer>(NetworkElementFactory.getServiceNameToIdMap());
@@ -56,12 +55,28 @@
     List severities = EventUtil.getSeverityList();
     Iterator severityIterator = severities.iterator();
 
-    //get the current time values
-    Calendar now = Calendar.getInstance();
-    int nowHour = now.get(Calendar.HOUR); //gets the hour as a value between 1-12
-    int nowMinute = now.get(Calendar.MINUTE);
-    int nowAmPm = now.get(Calendar.AM_PM);
+
 %>
+
+<jsp:useBean id="now" class="java.util.Date" />
+<c:set var="months" value="Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec" />
+<fmt:formatDate var="nowYear" value="${now}" pattern="yyyy" />
+<fmt:formatDate var="nowMonth" value="${now}" pattern="M" />
+<fmt:formatDate var="nowDate" value="${now}" pattern="d" />
+<fmt:formatDate var="nowHour" value="${now}" pattern="h" />
+<fmt:formatDate var="nowMinute" value="${now}" pattern="m" />
+<fmt:formatDate var="formattedNowMinute" value="${now}" pattern="mm" />
+<fmt:formatDate var="nowAmPm" value="${now}" pattern="a" />
+<c:set var="amPmText">
+  <c:choose>
+    <c:when test="${nowAmPm == 'AM' && nowHour == 12}">Noon</c:when>
+    <c:when test="${nowAmPm == 'AM' && nowHour != 12}">AM</c:when>
+    <c:when test="${nowAmPm == 'PM' && nowHour == 12}">Midnight</c:when>
+    <c:when test="${nowAmPm == 'PM' && nowHour != 12}">PM</c:when>
+  </c:choose>
+</c:set>
+
+
 
 <form action="event/query" method="get">
   <table width="100%" border="0" cellpadding="2" cellspacing="0">
@@ -128,65 +143,55 @@
           <tr>
             <td>
               <select name="afterhour" size="1">
-                <% for( int i = 1; i < 13; i++ ) { %>
-                  <form:option value="<%=i%>" selected="<%= nowHour==i %>">
-                    <%= i %>
-                  </form:option>
-                <% } %>
+                <c:forEach var="i" begin="1" end="12">
+                  <form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
+                </c:forEach>
               </select>
 
-              <input type="text" name="afterminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
+              <input type="text" name="afterminute" size="4" maxlength="2" value="${formattedNowMinute}" />
 
               <select name="afterampm" size="1">
-                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour != 12)%>">AM</form:option>
-                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour == 12)%>">Noon</form:option>
-                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour != 12)%>">PM</form:option>
-                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour == 12)%>">Midnight</form:option>
+                <c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
+                  <form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
+                </c:forEach>
               </select>
             </td>
             <td>
               <select name="beforehour" size="1">
-                <% for( int i = 1; i < 13; i++ ) { %>
-                  <form:option value="<%=i%>" selected="<%=(nowHour==i)%>">
-                    <%=i%>
-                  </form:option>
-                <% } %>
+                <c:forEach var="i" begin="1" end="12">
+                  <form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
+                </c:forEach>
               </select>
 
-              <input type="text" name="beforeminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
+              <input type="text" name="beforeminute" size="4" maxlength="2" value="${formattedNowMinute}" />
 
               <select name="beforeampm" size="1">
-                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour != 12) %>">AM</form:option>
-                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour == 12)%>">Noon</form:option>
-                <form:option value="pm" selected="<%=(nowAmPm == Calendar.PM && nowHour != 12)%>">PM</form:option>
-                <form:option value="am" selected="<%=(nowAmPm == Calendar.AM && nowHour == 12)%>">Midnight</form:option>
+                <c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
+                  <form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
+                </c:forEach>
               </select>
             </td>
           </tr>
           <tr>
             <td>
               <select name="aftermonth" size="1">
-                <% for( int i = 0; i < 12; i++ ) { %>
-                  <form:option value="<%=i%>" selected="<%=(now.get(Calendar.MONTH)==i)%>">
-                    <%=months[i]%>
-                  </form:option>
-                <% } %>
+                <c:forEach var="month" items="${months}" varStatus="status">
+                  <form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>                  
+                </c:forEach>
               </select>
 
-              <input type="text" name="afterdate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
-              <input type="text" name="afteryear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
+              <input type="text" name="afterdate" size="4" maxlength="2" value="${nowDate}" />
+              <input type="text" name="afteryear" size="6" maxlength="4" value="${nowYear}" />
             </td>
             <td>
               <select name="beforemonth" size="1">
-                <% for( int i = 0; i < 12; i++ ) { %>
-                  <form:option value="<%=i%>" selected="<%=(now.get(Calendar.MONTH)==i)%>">
-                    <%=months[i]%>
-                  </form:option>
-                <% } %>
+                <c:forEach var="month" items="${months}" varStatus="status">
+                  <form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>                  
+                </c:forEach>
               </select>
 
-              <input type="text" name="beforedate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
-              <input type="text" name="beforeyear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
+              <input type="text" name="beforedate" size="4" maxlength="2" value="${nowDate}" />
+              <input type="text" name="beforeyear" size="6" maxlength="4" value="${nowYear}" />
             </td>
           </tr>
 
@@ -237,56 +242,5 @@
   </table>
 </form>
 
-
-<%!
-    public static String getAmPm( int hour ) {
-        switch(hour) {
-            case 24:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                return "AM";
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-            case 23:
-                return "PM";
-            default:
-                throw new IllegalArgumentException("Can only take hours 1-24, " + hour + " is illegal");
-        }
-    }
-
-    //note these run from 0-11, this is because of java.util.Calendar!
-    public static String[] months = new String[] {
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-    };
-%>
 
 
