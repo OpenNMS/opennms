@@ -246,7 +246,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
             return;
         }
             
-        assertRegistered();
+        assertConfigured();
         if (m_backEnd.pollerCheckingIn(getMonitorId(), m_pollerConfiguration.getConfigurationTimestamp())) {
             initializePollState();
         }
