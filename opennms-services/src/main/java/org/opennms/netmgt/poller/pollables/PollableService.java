@@ -205,14 +205,11 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         if (getContext().isServiceUnresponsiveEnabled()) {
             if (isStatusChanged() && getStatus().equals(PollStatus.unresponsive())) {
                 getContext().sendEvent(createUnresponsiveEvent(date));
-                // FIXME: use equals here rather than ==
                 if (m_oldStatus.equals(PollStatus.up()))
                     resetStatusChanged();
             }
-            // FIXME: use equals here rather than ==
             else if (isStatusChanged() && m_oldStatus.equals(PollStatus.unresponsive())) {
                 getContext().sendEvent(createResponsiveEvent(date));
-                // FIXME: use equals here rather than ==
                 if (getStatus().equals(PollStatus.up()))
                     resetStatusChanged();
             }
