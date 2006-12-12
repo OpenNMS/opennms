@@ -120,6 +120,19 @@ div.TwoColRight {
 	position: relative;
 }
 
+div.TwoColLAdmin  {
+        width: 40%;
+        float: left;
+        position: relative;
+	margin-right: 2%;
+}
+
+div.TwoColRAdmin {
+        width: 58%;
+        float: left;
+        position: relative;
+}
+
 
 /* Widget Box Body */
 .widget-box
@@ -480,12 +493,14 @@ img {
 
 #contentleft {
 	width: 48%;
+	position: relative;
 	float: left;
 }
 
 #contentright {
 	width: 48%;
 	float: right;
+	position: relative;
 }
 
 #index-contentleft {

@@ -73,7 +73,7 @@
   The asset fields are (in order):
 </p>
 
-	<div style="width: 33%; float: left">
+	<div style="width: 33%; position: relative; float: left">
               <ol>
                 <li> NodeLabel (for display only)
                 <li> NodeId (database identifier, integer)
@@ -91,7 +91,7 @@
               </ol>
 	</div>
 
-	<div style="width: 33%; float: left">
+	<div style="width: 33%; position: relative; float: left">
               <ol start="14">
                 <li> Port
                 <li> Region
@@ -109,7 +109,7 @@
               </ol>
 	</div>
 
-	<div style="width: 33%; float: left">
+	<div style="width: 33%; position: relative; float: left">
               <ol start="27">
                 <li> VendorFax
                 <li> DateInstalled

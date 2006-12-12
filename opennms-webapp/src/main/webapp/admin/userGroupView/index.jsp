@@ -54,7 +54,7 @@
   <jsp:param name="breadcrumb" value="Users and Groups" />
 </jsp:include>
 
-<div style="width: 40%; float: left;">
+<div class="TwoColLAdmin" >
       <h3>Users and Groups</h3>
 
       <p>
@@ -73,7 +73,7 @@
       -->
 </div>
 
-<div style="width: 60%; float: left;">
+<div  class="TwoColRAdmin">
       <h3>Users</h3>
       <p>
         Add new <em>Users</em>, change user names and passwords, and edit notification information.
