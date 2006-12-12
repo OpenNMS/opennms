@@ -54,7 +54,7 @@
 
 <h3>Configure Notifications</h3>
 
-<div style="width: 40%; float: left;">
+<div class="TwoColLAdmin">
   <p>
     <a href="admin/notification/noticeWizard/eventNotices.jsp">Configure Event Notifications</a>
   </p>
@@ -68,7 +68,7 @@
   </p>
 </div>
 
-<div style="width: 60%; float: left;">
+<div class="TwoColRAdmin">
   <h3>Event Notifications</h3>
 
   <p>

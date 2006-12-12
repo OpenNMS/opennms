@@ -118,7 +118,7 @@
 
 <form method="post" name="snmpConfigForm">
 
-  <div style="width: 40%; float: left;">
+  <div class="TwoColLAdmin">
 
       <h3>Please enter an IP or a range of IPs and the read community string below</h3>
   	
@@ -161,7 +161,7 @@
        </table>
   </div>
 
-  <div style="width: 60%; float: left;">
+  <div class="TwoColRAdmin">
       <h3>Updating SNMP Community Names</h3>
 
       <p>In the boxes on the left, enter in a specific IP address and community string, 
