@@ -32,20 +32,19 @@
 package org.opennms.core.utils;
 
 import java.util.AbstractSet;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 
-public class JdbcSet extends AbstractSet {
+public class JdbcSet<E> extends AbstractSet<E> {
     
-    LinkedHashSet m_added = new LinkedHashSet();
-    LinkedHashSet m_entries = new LinkedHashSet();
-    LinkedHashSet m_removed = new LinkedHashSet();
+    LinkedHashSet<E> m_added = new LinkedHashSet<E>();
+    LinkedHashSet<E> m_entries = new LinkedHashSet<E>();
+    LinkedHashSet<E> m_removed = new LinkedHashSet<E>();
     
-    public JdbcSet(Collection c) {
+    public JdbcSet(Collection<E> c) {
         m_entries.addAll(c);
     }
     
@@ -53,19 +52,20 @@ public class JdbcSet extends AbstractSet {
     	
     }
     
-    protected void setElements(Collection c) {
+    protected void setElements(Collection<E> c) {
     	m_entries.addAll(c);
     }
     
-    class JdbcSetIterator extends  IteratorIterator {
+    public class JdbcSetIterator extends IteratorIterator<E> {
 
-        Object m_last;
+        private E m_last;
         
-        JdbcSetIterator(Iterator entriesIter, Iterator addedIter) {
-            super(Arrays.asList(new Object[] { entriesIter, addedIter }));
+        @SuppressWarnings("unchecked")
+        public JdbcSetIterator(Iterator<E> entriesIter, Iterator<E> addedIter) {
+            super(entriesIter, addedIter);
         }
 
-        public Object next() {
+        public E next() {
             m_last = super.next();
             return m_last;
         }
@@ -76,30 +76,32 @@ public class JdbcSet extends AbstractSet {
         }
         
     }
-
-    public Iterator iterator() {
+    
+    public Iterator<E> iterator() {
         return new JdbcSetIterator(m_entries.iterator(), m_added.iterator());
     }
 
     public int size() {
-        return m_added.size()+m_entries.size();
+        return m_added.size() + m_entries.size();
     }
 
-    public boolean add(Object o) {
-        if (contains(o)) return false;
+    public boolean add(E o) {
+        if (contains(o)) {
+            return false;
+        }
         m_added.add(o);
         return true;
     }
     
-    public Set getRemoved() {
+    public Set<E> getRemoved() {
         return m_removed;
     }
     
-    public Set getAdded() {
+    public Set<E> getAdded() {
         return m_added;
     }
     
-    public Set getRemaining() {
+    public Set<E> getRemaining() {
         return m_entries;
     }
     

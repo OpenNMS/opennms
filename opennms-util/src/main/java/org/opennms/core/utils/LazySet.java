@@ -36,75 +36,87 @@ import java.util.Iterator;
 import java.util.Set;
 
 
-public class LazySet extends JdbcSet {
+public class LazySet<E> extends JdbcSet<E> {
 	
-	public static interface Loader {
-		Set load();
+	public static interface Loader<E> {
+		Set<E> load();
 	}
 
-	private Loader m_loader;
+	private Loader<E> m_loader;
 	private boolean m_loaded = false;
 
-	public LazySet(Loader loader) {
+	public LazySet(Loader<E> loader) {
 		m_loader = loader;
 	}
 
-	public Iterator iterator() {
+        @Override
+	public Iterator<E> iterator() {
 		load();
 		return super.iterator();
 	}
 
+        @Override
 	public int size() {
 		load();
 		return super.size();
 	}
 
-	public boolean removeAll(Collection arg0) {
+        @Override
+	public boolean removeAll(Collection<?> arg0) {
 		load();
 		return super.removeAll(arg0);
 	}
 
-	public boolean addAll(Collection arg0) {
+        @Override
+	public boolean addAll(Collection<? extends E> arg0) {
 		load();
 		return super.addAll(arg0);
 	}
 
+        @Override
 	public void clear() {
 		load();
 		super.clear();
 	}
 
+        @Override
 	public boolean contains(Object o) {
 		load();
 		return super.contains(o);
 	}
 
-	public boolean containsAll(Collection arg0) {
+        @Override
+	public boolean containsAll(Collection<?> arg0) {
 		load();
 		return super.containsAll(arg0);
 	}
 
+        @Override
 	public boolean isEmpty() {
 		load();
 		return super.isEmpty();
 	}
 
+        @Override
 	public boolean remove(Object o) {
 		load();
 		return super.remove(o);
 	}
 
-	public boolean retainAll(Collection arg0) {
+        @Override
+	public boolean retainAll(Collection<?> arg0) {
 		load();
 		return super.retainAll(arg0);
 	}
 
+        @Override
 	public Object[] toArray() {
 		load();
 		return super.toArray();
 	}
 
-	public Object[] toArray(Object[] arg0) {
+        @Override
+	public <T> T[] toArray(T[] arg0) {
 		load();
 		return super.toArray(arg0);
 	}

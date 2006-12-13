@@ -32,32 +32,45 @@
 package org.opennms.core.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 
-public class IteratorIterator implements Iterator {
+public class IteratorIterator<T> implements Iterator<T> {
     
-    private Iterator m_iterIter;
-    private Iterator m_currentIter;
+    private Iterator<Iterator<T>> m_iterIter;
+    private Iterator<T> m_currentIter;
     
-    public IteratorIterator(List iterators) {
-        List iters = new ArrayList(iterators);
+    public IteratorIterator(Iterator<T>... iterators) {
+        /*
+         * We create an ArrayList to hold the list of iterators instead of
+         * just calling Arrays.asList(..) because we cannot call the remove()
+         * method on an Iterator that we get from Arrays.asList (it is not
+         * modifyable).
+         */ 
+        List<Iterator<T>> iters = new ArrayList<Iterator<T>>(Arrays.asList(iterators));
+        m_iterIter = iters.iterator();
+    }
+    
+    public IteratorIterator(List<Iterator<T>> iterators) {
+        List<Iterator<T>> iters = new ArrayList<Iterator<T>>(iterators);
         m_iterIter = iters.iterator();
     }
     
     public boolean hasNext() {
-        while((m_currentIter == null || !m_currentIter.hasNext()) && m_iterIter.hasNext()) {
-            m_currentIter = (Iterator)m_iterIter.next();
+        while ((m_currentIter == null || !m_currentIter.hasNext())
+                && m_iterIter.hasNext()) {
+            m_currentIter = m_iterIter.next();
             m_iterIter.remove();
         }
         
-        return (m_currentIter == null ? false: m_currentIter.hasNext());
+        return (m_currentIter == null ? false : m_currentIter.hasNext());
     }
     
-    public Object next() {
+    public T next() {
         if (m_currentIter == null) {
-            m_currentIter = (Iterator)m_iterIter.next();
+            m_currentIter = m_iterIter.next();
         }
         return m_currentIter.next();
     }
