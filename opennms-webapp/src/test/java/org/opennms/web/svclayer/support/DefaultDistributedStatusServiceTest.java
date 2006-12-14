@@ -16,10 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
-import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -32,7 +29,6 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.web.command.DistributedStatusDetailsCommand;
@@ -69,6 +65,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private HashSet<OnmsMonitoredService> m_applicationServices1;
 
     private HashSet<OnmsMonitoredService> m_applicationServices2;
+    
+    private static final SimpleDateFormat s_dbDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.mmm");
     
     public final static String IGNORE_MATCH = "**IGNORE*MATCH**";
         
@@ -344,43 +342,20 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         SimpleWebTable table =
             m_service.createStatusTable(command, errors);
 
-        assertEquals("Number of errors", 1, errors.getErrorCount());
-        assertEquals("Number of global errors", 1, errors.getGlobalErrorCount());
-        assertEquals("Number of field errors", 0, errors.getFieldErrorCount());
-        ObjectError e = (ObjectError) errors.getGlobalErrors().get(0);
+        Errors errorsOut = table.getErrors();
+        assertEquals("Number of errors", 1, errorsOut.getErrorCount());
+        assertEquals("Number of global errors", 1, errorsOut.getGlobalErrorCount());
+        assertEquals("Number of field errors", 0, errorsOut.getFieldErrorCount());
+        ObjectError e = (ObjectError) errorsOut.getGlobalErrors().get(0);
         assertEquals("Error code 0", "location.no-monitors", e.getCode());
         assertEquals("Error 0 argument count", 2, e.getArguments().length);
         assertEquals("Error argument 0.0", "Application 2", e.getArguments()[0]);
         assertEquals("Error argument 0.0", "Columbus", e.getArguments()[1]);
 
         verifyEverything();
-
-        /*
-        
-        
-        //System.out.print(table.toString());
-        
-        SimpleWebTable expectedTable = new SimpleWebTable();
-        expectedTable.setTitle("Distributed poller view for Application 2 from Columbus location");
-        
-        expectedTable.addColumn("Node", "simpleWebTableHeader");
-        expectedTable.addColumn("Monitor", "simpleWebTableHeader");
-        expectedTable.addColumn("Service", "simpleWebTableHeader");
-        expectedTable.addColumn("Status", "simpleWebTableHeader");
-        expectedTable.addColumn("Response Time", "simpleWebTableHeader");
-        
-        expectedTable.newRow();
-        expectedTable.addCell("Node 1", "Critical");
-        expectedTable.addCell("Node 1", "");
-        expectedTable.addCell("HTTPS", "");
-        expectedTable.addCell("Unknown", "bright");
-        expectedTable.addCell("", "");
-        
-        assertTableEquals(expectedTable, table);
-        */
     }
 
-    public void testCreateFacilityStatusTable() {
+    public void testCreateFacilityStatusTable() throws ParseException {
         for (int i = 0; i < 5; i++) {
             runTestCreateFacilityStatusTable();
         }
@@ -390,7 +365,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     /*
      * XXX need to check sorting
      */
-    public void runTestCreateFacilityStatusTable() {
+    public void runTestCreateFacilityStatusTable() throws ParseException {
         resetEverything();
         
         // No need to shuffle, since this is a list
@@ -408,6 +383,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
+        OnmsMonitoredService icmpService = findMonitoredService(m_services, m_ip, "ICMP");
         
         Collection<OnmsLocationSpecificStatus> mostRecentStatuses =
             new LinkedList<OnmsLocationSpecificStatus>();
@@ -422,9 +398,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
             new LinkedList<OnmsLocationSpecificStatus>();
         statusChanges.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
         statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statusChanges.add(createStatus(m_locationMonitor1_1, icmpService, PollStatus.down(), "20061010-06:00:00"));
 
-        Date startDate = new Date(2006 - 1900, 10 - 1, 12, 0, 0, 0);
-        Date endDate = new Date(2006 - 1900, 10 - 1, 13, 0, 0, 0);
+        Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
+        Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
 
         
         expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
@@ -472,15 +449,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("No data", "Indeterminate");
         expectedTable.addCell("No data", "Indeterminate");
         
-        /*
-        System.out.print("Expected: " + expectedTable.toString());
-        System.out.print("Actual: " + table.toString());
-        */
-
         assertTableEquals(expectedTable, table);
     }
     
-    public void testPercentageCalculation() {
+    public void testPercentageCalculation() throws ParseException {
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
@@ -490,8 +462,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         statuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
         statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061013-00:00:00"));
 
-        Date startDate = new Date(2006 - 1900, 10 - 1, 12, 0, 0, 0);
-        Date endDate = new Date(2006 - 1900, 10 - 1, 13, 0, 0, 0);
+        Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
+        Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
 
         replayEverything();
         String percentage =
@@ -704,7 +676,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         assertEquals("summary chosen location matches list", summary.getLocations().get(1), summary.getChosenLocation());
         assertEquals("summary chosen application matches list", summary.getApplications().get(0), summary.getChosenApplication());
     }
-    
+
     private OnmsLocationSpecificStatus createStatus(OnmsLocationMonitor locationMonitor,
             OnmsMonitoredService service, PollStatus status, String timestamp) {
         SimpleDateFormat f = new SimpleDateFormat("yyyyMMdd-HH:mm:ss");

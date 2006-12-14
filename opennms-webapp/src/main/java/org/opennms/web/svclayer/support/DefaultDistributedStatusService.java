@@ -44,7 +44,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      */
     public SimpleWebTable createStatusTable(DistributedStatusDetailsCommand command,
             Errors errors) {
-        SimpleWebTable table = new SimpleWebTable();
+        SimpleWebTable table = new SimpleWebTable(); 
         table.setErrors(errors);
         
         // Already had some validation errors, so don't bother doing anything 
@@ -216,10 +216,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
     }
 
-    /*
-     * XXX what do we do if any of the DAO calls return null, or do they
-     * throw DataAccessException?
-     */
     public SimpleWebTable createFacilityStatusTable(Date startDate,
             Date endDate) {
         SimpleWebTable table = new SimpleWebTable();
@@ -283,11 +279,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 Set<OnmsLocationSpecificStatus> selectedStatuses =
                     filterStatus(statusesPeriod, monitors, memberServices);
                 
-                String percentage;
                 if (selectedStatuses.size() > 0) {
-                    percentage =
+                    String percentage =
                         calculatePercentageUptime(memberServices,
-                                                  statusesPeriod,
+                                                  selectedStatuses,
                                                   startDate, endDate);
                     table.addCell(percentage, status,
                                   createHistoryPageUrl(locationDefinition,
