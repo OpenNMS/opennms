@@ -19,13 +19,13 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.PrefabGraph;
-import org.opennms.web.response.ResponseTimeModel;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class ResponseTimeGraphResourceType implements GraphResourceType {
-    private ResponseTimeModel m_model;
+    private PerformanceModel m_model;
 
-    public ResponseTimeGraphResourceType(ResponseTimeModel model) {
+    public ResponseTimeGraphResourceType(PerformanceModel model) {
         m_model = model;
     }
 
@@ -50,12 +50,14 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
     }
 
     public PrefabGraph getPrefabGraph(String name) {
-        return m_model.getQuery(getName(), name);
+        return m_model.getQuery(name);
     }
 
     public String getRelativePathForAttribute(String resourceParent,
             String resource, String attribute) {
         StringBuffer buffer = new StringBuffer();
+        buffer.append(PerformanceModel.RESPONSE_DIRECTORY);
+        buffer.append(File.separator);
         buffer.append(resource);
         buffer.append(File.separator);
         buffer.append(attribute);
@@ -87,7 +89,7 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
                 while (rs.next()) {
                     String ipAddr = rs.getString("ipaddr");
                     
-                    File iface = getInterfaceDirectory(ipAddr);
+                    File iface = getInterfaceDirectory(ipAddr, false);
                     
                     if (iface.isDirectory()) {
                         resources.add(createResource(ipAddr));
@@ -109,8 +111,15 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
         return DefaultGraphResource.sortIntoGraphResourceList(resources);
     }
 
-    private File getInterfaceDirectory(String ipAddr) {
-        return new File(getRrdDirectory(), ipAddr);
+    private File getInterfaceDirectory(String ipAddr, boolean verify) {
+        File response = new File(m_model.getRrdDirectory(verify), PerformanceModel.RESPONSE_DIRECTORY);
+        
+        File intfDir = new File(response, ipAddr);
+        if (verify && !intfDir.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No interface directory exists for " + ipAddr + ": " + intfDir);
+        }
+
+        return intfDir;
     }
     
     private DefaultGraphResource createResource(String intf) {
@@ -118,7 +127,7 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
         String resource = intf;
 
         Set<GraphAttribute> set =
-            new LazySet(new AttributeLoader(intf));
+            new LazySet<GraphAttribute>(new AttributeLoader(intf));
         return new DefaultGraphResource(resource, label, set);
     }
 
@@ -131,15 +140,11 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
         return getResourcesForNode(nodeId).size() > 0;
     }
 
-    public File getRrdDirectory() {
-        return m_model.getRrdDirectory();
-    }
-
     private Category log() {
         return ThreadCategory.getInstance();
     }
 
-    public class AttributeLoader implements LazySet.Loader {
+    public class AttributeLoader implements LazySet.Loader<GraphAttribute> {
         private String m_intf;
 
         public AttributeLoader(String intf) {
@@ -147,7 +152,7 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
         }
 
         public Set<GraphAttribute> load() {
-            File directory = getInterfaceDirectory(m_intf);
+            File directory = getInterfaceDirectory(m_intf, true);
             log().debug("lazy-loading attributes for resource \"" + m_intf
                         + "\" from directory " + directory);
             List<String> dataSources =
@@ -165,5 +170,9 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
             
             return attributes;
         }
+    }
+
+    public String getGraphType() {
+        return "response";
     }
 }

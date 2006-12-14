@@ -10,8 +10,6 @@ public class PrefabGraphType {
 
     private Map<String, PrefabGraph> m_reportMap;
 
-    private File m_rrdDirectory;
-
     private String m_defaultReport;
 
     private String m_name;
@@ -34,14 +32,6 @@ public class PrefabGraphType {
 
     public String getName() {
         return m_name;
-    }
-
-    public void setRrdDirectory(File rrdDirectory) {
-        m_rrdDirectory = rrdDirectory;
-    }
-
-    public File getRrdDirectory() {
-        return m_rrdDirectory;
     }
 
     public void setDefaultReport(String defaultReport) {

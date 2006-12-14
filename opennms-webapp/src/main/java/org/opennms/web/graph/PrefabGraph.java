@@ -32,7 +32,7 @@
 
 package org.opennms.web.graph;
 
-public class PrefabGraph extends Object implements Comparable {
+public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     private String m_name;
 
     private String m_title;
@@ -134,17 +134,11 @@ public class PrefabGraph extends Object implements Comparable {
         return m_graphHeight;
     }
 
-    public int compareTo(Object obj) {
-        if (obj == null) {
+    public int compareTo(PrefabGraph other) {
+        if (other == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        if (!(obj instanceof PrefabGraph)) {
-            throw new IllegalArgumentException("Can only compare to PrefabGraph objects.");
-        }
-
-        PrefabGraph otherGraph = (PrefabGraph) obj;
-
-        return getOrder() - otherGraph.getOrder();
+        return getOrder() - other.getOrder();
     }
 }

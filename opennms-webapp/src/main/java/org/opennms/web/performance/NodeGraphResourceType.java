@@ -36,25 +36,27 @@ public class NodeGraphResourceType implements GraphResourceType {
          *  PerformanceModel.getQueryableNodes().  For now, we just return true
          *  if the node directory exists.
          */
-        return m_performanceModel.getNodeDirectory(nodeId, false).isDirectory();
+        //return m_performanceModel.getNodeDirectory(nodeId, false).isDirectory();
+        return getResourceDirectory(nodeId, false).isDirectory();
+    }
+    
+    public File getResourceDirectory(int nodeId, boolean verify) {
+        File snmp = new File(m_performanceModel.getRrdDirectory(verify), PerformanceModel.SNMP_DIRECTORY);
+        
+        File node = new File(snmp, Integer.toString(nodeId));
+        if (verify && !node.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No node directory exists for node " + nodeId + ": " + node);
+        }
+        
+        return node;
     }
     
     public List<GraphResource> getResourcesForNode(int nodeId) {
         ArrayList<GraphResource> graphResources =
             new ArrayList<GraphResource>();
 
-        /*
-         * Verify that the node directory exists so we can throw a good
-         * error message if not.
-         */
-        try {
-            m_performanceModel.getNodeDirectory(nodeId, true);
-        } catch (DataAccessException e) {
-            throw new ObjectRetrievalFailureException("The '" + getName() + "' resource type does not exist on this node.  Nested exception is: " + e.getClass().getName() + ": " + e.getMessage(), e);
-        }
-        
         List<String> dataSources =
-            m_performanceModel.getDataSourceList(Integer.toString(nodeId));
+            m_performanceModel.getDataSourcesInDirectory(getResourceDirectory(nodeId, true));
         Set<GraphAttribute> attributes =
             new HashSet<GraphAttribute>(dataSources.size());
         
@@ -71,6 +73,8 @@ public class NodeGraphResourceType implements GraphResourceType {
 
     public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
         StringBuffer buffer = new StringBuffer();
+        buffer.append(PerformanceModel.SNMP_DIRECTORY);
+        buffer.append(File.separator);
         buffer.append(resourceParent);
         buffer.append(File.separator);
         buffer.append(attribute);
@@ -86,6 +90,7 @@ public class NodeGraphResourceType implements GraphResourceType {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public List<GraphResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
     }
@@ -103,8 +108,8 @@ public class NodeGraphResourceType implements GraphResourceType {
     public PrefabGraph getPrefabGraph(String name) {
         return m_performanceModel.getQuery(name);
     }
-    
-    public File getRrdDirectory() {
-        return m_performanceModel.getRrdDirectory();
+
+    public String getGraphType() {
+        return "performance";
     }
 }

@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
@@ -30,12 +32,12 @@ public class PropertiesGraphDao implements GraphDao {
         new PrefabGraphTypeCallback();
     private AdhocGraphTypeCallback m_adhocCallback =
         new AdhocGraphTypeCallback();
-    
-    public PropertiesGraphDao(String prefabConfigs, String adhocConfigs)
-            throws IOException {
-        initPrefab(makeInitMap(prefabConfigs));
-        initAdhoc(makeInitMap(adhocConfigs));
+
+    public PropertiesGraphDao(Map<String, File> prefabConfigs, Map<String, File> adhocConfigs) throws IOException {
+        initPrefab(prefabConfigs);
+        initAdhoc(adhocConfigs);
     }
+
     
     private void initPrefab(Map<String, File> configMap) throws IOException {
         for (Map.Entry<String, File> configEntry : configMap.entrySet()) {
@@ -48,35 +50,6 @@ public class PropertiesGraphDao implements GraphDao {
             loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
-
-    private Map<String, File> makeInitMap(String configs) {
-        Map<String, File> initMap = new HashMap<String, File>();
-        try {
-            String[] configEntries = configs.split(";");
-            for (String configEntry: configEntries) {
-                if ("".equals(configEntry)) {
-                    continue;
-                }
-                String[] entry = configEntry.split("=");
-                if (entry.length != 2) {
-                    throw new IllegalArgumentException("Incorrect number of "
-                                                       + "equals signs in "
-                                                       + "config list: \""
-                                                       + configs + "\"");
-                }
-                String type = entry[0];
-                String configFile = entry[1];
-                File file = new File(configFile);
-                initMap.put(type, file);
-            }
-        } catch (PatternSyntaxException e) {
-            throw new IllegalArgumentException("Could not parse config list: "
-                                               + "\"" + configs + "\"");
-        }
-        
-        return initMap;
-    }
-
 
     public PrefabGraphType findByName(String name) {
         return m_types.get(name).getObject();
@@ -107,8 +80,6 @@ public class PropertiesGraphDao implements GraphDao {
         PrefabGraphType t = new PrefabGraphType();
         t.setName(type);
         
-        t.setRrdDirectory(new File(getProperty(properties,
-                                               "command.input.dir")));
         t.setCommandPrefix(getProperty(properties, "command.prefix"));
         t.setOutputMimeType(getProperty(properties, "output.mime"));
 
@@ -310,49 +281,39 @@ public class PropertiesGraphDao implements GraphDao {
         }
     }
     
+    public List<PrefabGraph> getAllPrefabGraphs() {
+        LinkedList<PrefabGraph> graphs = new LinkedList<PrefabGraph>();
+        for (FileReloadContainer<PrefabGraphType> container : m_types.values()) {
+            graphs.addAll(container.getObject().getReportMap().values());
+        }
+        return graphs;
+    }
+    
+    public PrefabGraph getPrefabGraph(String name) {
+        for (FileReloadContainer<PrefabGraphType> container : m_types.values()) {
+            PrefabGraph graph = container.getObject().getQuery(name);
+            if (graph != null) {
+                return graph;
+            }
+        }
+        return null;
+    }
     
     private class AdhocGraphTypeCallback implements FileReloadCallback<AdhocGraphType> {
         public AdhocGraphType reload(AdhocGraphType object, File file) {
-            FileInputStream in;
+            FileInputStream in = null;
             try {
                 in = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
+                return createAdhocGraphType(object.getName(), in);
+            } catch (Exception e) {
                 log().error("Could not reload configuration file '"
                             + file.getAbsolutePath()
-                            + "' due to FileNotFoundException: " + e,
+                            + "' due to: " + e,
                             e);
                 return null;
+            } finally {
+                IOUtils.closeQuietly(in);
             }
-            
-            AdhocGraphType t;
-            try {
-                t = createAdhocGraphType(object.getName(), in);
-            } catch (IOException e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to IOException when reading from file: " + e,
-                            e);
-                return null;
-            } catch (DataAccessException e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to DataAccessException when reading from "
-                            + "file: " + e,
-                            e);
-                return null;
-            }
-            
-            try {
-                in.close();
-            } catch (IOException e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to IOException when closing file: " + e,
-                            e);
-                return null;
-            }
-            
-            return t;
         }
 
     }

@@ -24,15 +24,14 @@ import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.web.graph.AdhocGraphType;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.graph.GraphDao;
-import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.PrefabGraph;
 import org.opennms.web.graph.PrefabGraphType;
 import org.opennms.web.performance.GraphAttribute;
 import org.opennms.web.performance.GraphResource;
 import org.opennms.web.performance.GraphResourceType;
 import org.opennms.web.performance.PerformanceModel;
-import org.opennms.web.response.ResponseTimeModel;
 import org.opennms.web.svclayer.RrdGraphService;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
@@ -47,7 +46,6 @@ public class DefaultRrdGraphService implements RrdGraphService {
 
     private PerformanceModel m_performanceModel;
 
-    private ResponseTimeModel m_responseTimeModel;
     private RrdStrategy m_rrdStrategy;
 
     public InputStream getAdhocGraph(String parentResourceType, String parentResource,
@@ -92,13 +90,11 @@ public class DefaultRrdGraphService implements RrdGraphService {
         }
         
         AdhocGraphType t = m_prefabGraphDao.findAdhocByName("performance");
-        GraphModel model = findGraphModelByName(t.getName());
 
         GraphResourceType rt =
-            model.getResourceTypeByName(resourceType);
+            m_performanceModel.getResourceTypeByName(resourceType);
 
-        GraphResource r = findResource(model,
-                                       parentResourceType, parentResource,
+        GraphResource r = findResource(parentResourceType, parentResource,
                                        resourceType, resource);
         
         String command = createAdHocCommand(t,
@@ -113,14 +109,12 @@ public class DefaultRrdGraphService implements RrdGraphService {
                                   dataSourceTitles,
                                   styles);
         
-        return getInputStreamForCommand(rt, command);
+        return getInputStreamForCommand(command);
     }
 
-    private InputStream getInputStreamForCommand(GraphResourceType resourceType,
-            String command) {
-        File workDir = resourceType.getRrdDirectory();
-        
+    private InputStream getInputStreamForCommand(String command) {
         boolean debug = true;
+        File workDir = m_performanceModel.getRrdDirectory(true);
 
         InputStream tempIn = null;
         try {
@@ -191,16 +185,13 @@ public class DefaultRrdGraphService implements RrdGraphService {
                                                + "\" is not valid");
         }
         
-        GraphModel model = findGraphModelByName(t.getName());
-
         GraphResourceType rt =
-            model.getResourceTypeByName(resourceType);
+            m_performanceModel.getResourceTypeByName(resourceType);
         
-        GraphResource r = findResource(model,
-                                       parentResourceType, parentResource,
+        GraphResource r = findResource(parentResourceType, parentResource,
                                        resourceType, resource);
         
-        PrefabGraph prefabGraph = rt.getPrefabGraph(report);
+        PrefabGraph prefabGraph = m_performanceModel.getQuery(report);
         if (prefabGraph == null) {
             throw new ObjectRetrievalFailureException(PrefabGraph.class, report,
                                                       "Unknown report name '" + report + "'",
@@ -224,15 +215,12 @@ public class DefaultRrdGraphService implements RrdGraphService {
         String command = getCommandNonAdhoc(t, rt, report, graph, 
                                             relativePropertiesPath);
         
-        return getInputStreamForCommand(rt, command);
+        return getInputStreamForCommand(command);
     }
     
     private void assertPropertiesSet() {
         if (m_performanceModel == null) {
             throw new IllegalStateException("performanceModel property has not been set");
-        }
-        if (m_responseTimeModel == null) {
-            throw new IllegalStateException("responseTimeModel property has not been set");
         }
         if (m_prefabGraphDao == null) {
             throw new IllegalStateException("prefabGraphDao property has not been set");
@@ -242,18 +230,7 @@ public class DefaultRrdGraphService implements RrdGraphService {
         }
     }
     
-    private GraphModel findGraphModelByName(String name) {
-        if (name.equals("performance")) {
-            return m_performanceModel;
-        } else if (name.equals("response")) {
-            return m_responseTimeModel;
-        } else {
-            throw new IllegalArgumentException("graph model \"" + name
-                                               + "\" is not supported");
-        }
-    }
-    
-    private GraphResource findResource(GraphModel model,
+    private GraphResource findResource(
             String parentResourceType, String parentResource,
             String resourceType, String resource) {
         if ("node".equals(parentResourceType)) {
@@ -264,9 +241,9 @@ public class DefaultRrdGraphService implements RrdGraphService {
                 throw new IllegalArgumentException("Could not parse parentResource '"
                                                    + parentResource + "' as an integer node ID: " + e.getMessage(), e);
             }
-            return model.getResourceForNodeResourceResourceType(nodeId, resource, resourceType);
+            return m_performanceModel.getResourceForNodeResourceResourceType(nodeId, resource, resourceType);
         } else if ("domain".equals(parentResourceType)){
-            return model.getResourceForDomainResourceResourceType(parentResource, resource, resourceType);
+            return m_performanceModel.getResourceForDomainResourceResourceType(parentResource, resource, resourceType);
         } else {
             throw new IllegalArgumentException("parentResourceType '"
                                                + parentResourceType
@@ -367,7 +344,7 @@ public class DefaultRrdGraphService implements RrdGraphService {
                                      String relativePropertiesPath) {
         return createPrefabCommand(graph,
                                    type.getCommandPrefix(),
-                                   type.getRrdDirectory(),
+                                   m_performanceModel.getRrdDirectory(true),
                                    report,
                                    relativePropertiesPath);
     }
@@ -460,8 +437,15 @@ public class DefaultRrdGraphService implements RrdGraphService {
         
         String[] propertiesValues = prefabGraph.getPropertiesValues();
         if (propertiesValues != null && propertiesValues.length > 0) {
-            Properties properties = loadProperties(workDir,
-                                                   relativePropertiesPath);
+            Properties properties;
+            try {
+                properties = loadProperties(workDir,
+                                            relativePropertiesPath);
+            } catch (DataAccessException e) {
+                String message = "Could not load properties file but prefab graph has propertiesValues, so the properties file is required.  Chained exception: " + e;
+                log().warn(message, e);
+                throw new IllegalArgumentException(message, e);
+            }
 
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 translationMap.put(RE.simplePatternToFullRegularExpression("{" + entry.getKey() + "}"),
@@ -524,7 +508,7 @@ public class DefaultRrdGraphService implements RrdGraphService {
                 "loadProperties: Properties file does not exist: "
                 + file.getAbsolutePath();
             log().warn(message);
-            throw new DataAccessResourceFailureException(message);
+            //throw new DataAccessResourceFailureException(message);
         }
         
         FileInputStream fileInputStream = null;
@@ -576,14 +560,6 @@ public class DefaultRrdGraphService implements RrdGraphService {
 
     public void setPrefabGraphDao(GraphDao prefabGraphDao) {
         m_prefabGraphDao = prefabGraphDao;
-    }
-
-    public ResponseTimeModel getResponseTimeModel() {
-        return m_responseTimeModel;
-    }
-
-    public void setResponseTimeModel(ResponseTimeModel responseTimeModel) {
-        m_responseTimeModel = responseTimeModel;
     }
 
     private Category log() {

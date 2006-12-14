@@ -55,6 +55,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -67,7 +68,6 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.graph.GraphModelAbstract;
 import org.opennms.web.graph.PrefabGraph;
-import org.opennms.web.response.ResponseTimeModel;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -79,22 +79,14 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
 public class PerformanceModel extends GraphModelAbstract {
-    public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME =
-        File.separator + "etc" + File.separator + "snmp-graph.properties";
-
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 
-    public static final String NODE_GRAPH_TYPE = "node";
-
-    protected String defaultReport;
+    public static final String RESPONSE_DIRECTORY = "response";
+    public static final String SNMP_DIRECTORY = "snmp";
 
     private Map<String, GraphResourceType> m_resourceTypes;
 
-    private ResponseTimeModel m_responseTimeModel;
-
-    public PerformanceModel(ResponseTimeModel responseTimeModel)
-        throws IOException {
-        m_responseTimeModel = responseTimeModel;
+    public PerformanceModel() throws IOException {
         initResourceTypes();
     }
 
@@ -109,7 +101,7 @@ public class PerformanceModel extends GraphModelAbstract {
         resourceType = new InterfaceGraphResourceType(this);
         resourceTypes.put(resourceType.getName(), resourceType);
         
-        resourceType = new ResponseTimeGraphResourceType(m_responseTimeModel);
+        resourceType = new ResponseTimeGraphResourceType(this);
         resourceTypes.put(resourceType.getName(), resourceType);
         
         resourceType = new DistributedStatusGraphResourceType(this);
@@ -169,26 +161,6 @@ public class PerformanceModel extends GraphModelAbstract {
         return resourceTypes;
     }
 
-    public List<String> getDataSourceList(String nodeId, String intf,
-                                          boolean includeNodeQueries) {
-        if (nodeId == null || intf == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        File nodeDir = new File(getRrdDirectory(), nodeId);
-        File intfDir = new File(nodeDir, intf);
-
-	ArrayList<String> dataSources = new ArrayList<String>();
-
-        if (includeNodeQueries) {
-            dataSources.addAll(getDataSourceList(nodeId));
-        }
-
-	dataSources.addAll(getDataSourcesInDirectory(intfDir));
-
-	return dataSources;
-    }
-
     /**
      * Returns a list of data structures representing the nodes that have SNMP
      * performance data collected.
@@ -204,10 +176,12 @@ public class PerformanceModel extends GraphModelAbstract {
      * </p>
      */
     public QueryableNode[] getQueryableNodes() throws SQLException {
+        File snmp = new File(getRrdDirectory(), SNMP_DIRECTORY);
+
         // Get all of the numeric directory names in the RRD directory; these
         // are the nodeids of the nodes that have performance data
         File[] nodeDirs =
-	    getRrdDirectory().listFiles(RrdFileConstants.NODE_DIRECTORY_FILTER);
+	    snmp.listFiles(RrdFileConstants.NODE_DIRECTORY_FILTER);
 
         if (nodeDirs == null || nodeDirs.length == 0) {
 	    return new QueryableNode[0];
@@ -265,10 +239,12 @@ public class PerformanceModel extends GraphModelAbstract {
      */
     public String[] getQueryableDomains() {
         List<String> domainList = new LinkedList<String>();
+        
+        File snmp = new File(getRrdDirectory(), SNMP_DIRECTORY);
 
         // Get all of the non-numeric directory names in the RRD directory; these
         // are the names of the domains that have performance data
-        File[] domainDirs = getRrdDirectory().listFiles(RrdFileConstants.DOMAIN_DIRECTORY_FILTER);
+        File[] domainDirs = snmp.listFiles(RrdFileConstants.DOMAIN_DIRECTORY_FILTER);
 
         if (domainDirs != null && domainDirs.length > 0) {
 
@@ -295,16 +271,6 @@ public class PerformanceModel extends GraphModelAbstract {
         }
 
         return domains;
-    }
-
-    public File getRrdDirectory(boolean verify) {
-        File rrdDirectory = getRrdDirectory();
-        
-        if (verify && !rrdDirectory.isDirectory()) {
-            throw new ObjectRetrievalFailureException("RRD directory does not exist: " + rrdDirectory.getAbsolutePath(), rrdDirectory);
-        }
-        
-        return rrdDirectory;
     }
 
     public File getNodeDirectory(int nodeId, boolean verify) {
@@ -352,7 +318,8 @@ public class PerformanceModel extends GraphModelAbstract {
         }
 
         ArrayList<String> intfs = new ArrayList<String>();
-        File domainDir = new File(getRrdDirectory(), domain);
+        File snmp = new File(getRrdDirectory(), SNMP_DIRECTORY);
+        File domainDir = new File(snmp, domain);
 
         if (!domainDir.exists() || !domainDir.isDirectory()) {
             throw new IllegalArgumentException("No such directory: " + domainDir);
@@ -368,38 +335,6 @@ public class PerformanceModel extends GraphModelAbstract {
         }
 
         return intfs;
-    }
-
-    public boolean isQueryableNode(int nodeId) {
-        return isQueryableNode(String.valueOf(nodeId));
-    }
-
-    public boolean isQueryableNode(String nodeId) {
-        if (nodeId == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        File nodeDir = new File(getRrdDirectory(), nodeId);
-	return RrdFileConstants.isValidRRDNodeDir(nodeDir);
-    }
-
-    public boolean isQueryableInterface(int nodeId, String ifLabel) {
-        if (ifLabel == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-	File intfDir = new File(getRrdDirectory(),
-				String.valueOf(nodeId) + File.separator
-				+ ifLabel);
-	return RrdFileConstants.isValidRRDInterfaceDir(intfDir);
-    }
-
-    public boolean isQueryableInterface(String nodeId, String ifLabel) {
-        if (nodeId == null || ifLabel == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return isQueryableInterface(Integer.parseInt(nodeId), ifLabel);
     }
 
     public boolean encodeNodeIdInRRDParm() {
@@ -481,13 +416,29 @@ public class PerformanceModel extends GraphModelAbstract {
         return rt.getRelativePathForAttribute(resourceParent, resource, attribute);
     }
 
-    public ResponseTimeModel getResponseTimeModel() {
-        return m_responseTimeModel;
+    public PrefabGraph[] getPrefabGraphs(String parentResourceType,
+            String parentResource,
+            String resourceType,
+            String resource) {
+        GraphResource r;
+        
+        if ("node".equals(parentResourceType)) {
+            int nodeId;
+            try {
+                nodeId = Integer.parseInt(parentResource);
+            } catch (NumberFormatException e) {
+                throw new ObjectRetrievalFailureException("Parent resources of resource type node is not numeric: " + parentResource, parentResource);
+            }
+            r = getResourceForNodeResourceResourceType(nodeId, resource, resourceType);
+        } else if ("domain".equals(parentResourceType)) {
+            r = getResourceForDomainResourceResourceType(parentResource, resource, resourceType);
+        } else {
+            throw new ObjectRetrievalFailureException("Does not support parent resource type '" + parentResourceType + "'", parentResourceType);
+        }
+        
+        Set<GraphAttribute> attributes = r.getAttributes();
+        
+        PrefabGraph[] availablePrefabGraphs = getQueries();
+        return getQueriesByResourceTypeAttributes(resourceType, attributes, availablePrefabGraphs);
     }
-    
-    public PrefabGraph getQuery(String resourceType, String name) {
-        GraphResourceType rt = getResourceTypeByName(resourceType);
-        return rt.getPrefabGraph(name);
-    }
-
 }

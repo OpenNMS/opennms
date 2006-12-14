@@ -20,7 +20,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.PrefabGraph;
-import org.opennms.web.response.ResponseTimeModel;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -45,6 +44,10 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
     public String getRelativePathForAttribute(String resourceParent,
             String resource, String attribute) {
         StringBuffer buffer = new StringBuffer();
+        buffer.append(PerformanceModel.RESPONSE_DIRECTORY);
+        buffer.append(File.separator);
+        buffer.append(DISTRIBUTED_DIRECTORY);
+        buffer.append(File.separator);
         buffer.append(resource);
         buffer.append(File.separator);
         buffer.append(attribute);
@@ -205,23 +208,10 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
         return Integer.parseInt(dir.substring(index + 1));
     }
     
-    public File getRrdDirectory() {
-        return new File(m_performanceModel.getResponseTimeModel().getRrdDirectory(), DISTRIBUTED_DIRECTORY);
-    }
-    
-    public File getRrdDirectory(boolean verify) {
-        File rrdDirectory = getRrdDirectory();
-        
-        if (verify && !rrdDirectory.isDirectory()) {
-            throw new IllegalArgumentException("RRD directory does not exist: "
-                                               + rrdDirectory.getAbsolutePath());
-        }
-        
-        return rrdDirectory;
-    }
-    
     public File getInterfaceDirectory(int id, String ipAddr) {
-        File monitor = new File(getRrdDirectory(), Integer.toString(id));
+        File response = new File(m_performanceModel.getRrdDirectory(), PerformanceModel.RESPONSE_DIRECTORY);
+        File distributed = new File(response, DISTRIBUTED_DIRECTORY);
+        File monitor = new File(distributed, Integer.toString(id));
         return new File(monitor, ipAddr);
     }
 
@@ -231,7 +221,7 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
     }
     
     private File getLocationMonitorDirectory(String locationMonitorId, boolean verify) throws ObjectRetrievalFailureException {
-        File locationMonitorDirectory = new File(getRrdDirectory(verify), locationMonitorId);
+        File locationMonitorDirectory = new File(m_performanceModel.getRrdDirectory(verify), locationMonitorId);
 
         if (verify && !locationMonitorDirectory.isDirectory()) {
             throw new ObjectRetrievalFailureException(File.class, "No node directory exists for node " + locationMonitorId + ": " + locationMonitorDirectory);
@@ -242,13 +232,13 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
     
     public List<PrefabGraph> getAvailablePrefabGraphs(Set<GraphAttribute> attributes) {
         PrefabGraph[] graphs =
-            m_performanceModel.getResponseTimeModel().getQueriesByResourceTypeAttributes(null,
+            m_performanceModel.getQueriesByResourceTypeAttributes(null,
                                                                   attributes);
         return Arrays.asList(graphs);
     }
     
     public PrefabGraph getPrefabGraph(String name) {
-        return m_performanceModel.getResponseTimeModel().getQuery(name);
+        return m_performanceModel.getQuery(name);
     }
     
     private Category log() {
@@ -295,5 +285,9 @@ public class DistributedStatusGraphResourceType implements GraphResourceType {
     
     public GraphModel getModel() {
         return m_performanceModel;
+    }
+
+    public String getGraphType() {
+        return "response";
     }
 }

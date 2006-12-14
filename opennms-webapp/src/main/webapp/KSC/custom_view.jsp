@@ -39,17 +39,17 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="java.util.*,
-		java.io.*,
-		org.opennms.web.*,
+    contentType="text/html"
+    session="true"
+    import="java.util.*,
+        org.opennms.web.*,
         org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.graph.PrefabGraph,
-		org.opennms.web.graph.ResourceId,
-		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.netmgt.config.kscReports.*
-	"
+        org.opennms.web.graph.PrefabGraph,
+        org.opennms.web.graph.ResourceId,
+        org.opennms.web.element.NetworkElementFactory,
+        org.opennms.netmgt.config.kscReports.*,
+        org.opennms.netmgt.config.KSC_PerformanceReportFactory
+    "
 %>
 
 <%@ page extends="org.opennms.web.graph.KscJspBase" %>
@@ -78,7 +78,7 @@
     String override_timespan = request.getParameter("timespan");
     String override_graphtype = request.getParameter("graphtype");
     if ((override_timespan == null) || (override_timespan.equals("null"))) {
-            override_timespan = "none"; 
+        override_timespan = "none"; 
     }
     if ((override_graphtype == null) || (override_graphtype.equals("null"))) {
         override_graphtype = "none";
@@ -86,49 +86,52 @@
    
     // Load report to view 
     Report report = null;
-    if (report_type.equals("node")) {
+    if ("none".equals(report_type)) {
         report = buildNodeReport(report_index);
-    } else if (report_type.equals("domain")) {
+    } else if ("domain".equals(report_type)) {
         report = buildDomainReport(domain);
     } else { 
-        ReportsList reports_list = this.reportFactory.getConfiguration();
+        ReportsList reports_list = KSC_PerformanceReportFactory.getConfiguration();
         report = reports_list.getReport(report_index);
     } 
+    
     if (report == null) {
-        throw new ServletException ("Report does not exist");
+        throw new ServletException("Report does not exist");
     }
 
     // Define the possible graph options 
     Graph graph = null; 
-    PrefabGraph[] graph_options = null;
+    PrefabGraph[] graph_options = new PrefabGraph[0];
+    
     if (report.getGraphCount() > 0) {
         graph = report.getGraph(0); // get the first graph in the list
-	boolean isNode = false;
+        boolean isNode = false;
         boolean includeNodeQueries = false;
-        if(report_type.equals("custom")) {
+        
+        if ("custon".equals(report_type)) {
             includeNodeQueries = true;
         }
 
-        if(graph.getDomain() != null && !graph.getDomain().equals("null")) {
-            graph_options = this.model.getAllQueries (graph.getDomain(), includeNodeQueries, isNode);
-	    this.log("custom_view: Retrieving graph options for domain " + graph.getDomain());
-	}
-        else {
-	    isNode = true;
-            graph_options = this.model.getAllQueries (graph.getNodeId(), includeNodeQueries, isNode);
-	    this.log("custom_view: Retrieving graph options for node " + graph.getNodeId());
+        if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
+            graph_options = this.model.getAllQueries(graph.getDomain(), includeNodeQueries, isNode);
+            this.log("custom_view: Retrieving graph options for domain " + graph.getDomain());
+        } else {
+            isNode = true;
+            graph_options = this.model.getAllQueries(graph.getNodeId(), includeNodeQueries, isNode);
+            this.log("custom_view: Retrieving graph options for node " + graph.getNodeId());
         }
 
         // Get default graph type from last element of graph_options
+        if (("node".equals(report_type) || "domain".equals(report_type))
+             && "none".equals(override_graphtype) && graph_options.length > 0
+             && graph_options[graph_options.length - 1] != null) {
+            override_graphtype = graph_options[graph_options.length - 1].getName();
+            this.log("custom_view: setting default graph type to " + graph_options[graph_options.length - 1].getName());
+        }
 
-        if((report_type.equals("node") || report_type.equals("domain")) && override_graphtype.equals("none")) {
-	    override_graphtype = graph_options[graph_options.length - 1].getName();
-	    this.log("custom_view: setting default graph type to " + graph_options[graph_options.length - 1].getName());
-	}
-
-        if(graph_options.length > 1) {
+        if (graph_options.length > 1) {
             Arrays.sort(graph_options, 0, graph_options.length - 2);
-	}
+        }
     }
 %>
 
@@ -213,12 +216,15 @@
                        }
 
                        String display_graphtype = null;
-                       if (override_graphtype.equals("none")) {
+                       if ("none".equals(override_graphtype)) {
                            display_graphtype = current_graph.getGraphtype();
                        } else { 
                            display_graphtype = override_graphtype;
                        } 
                        PrefabGraph display_graph = (PrefabGraph) this.model.getQuery(display_graphtype);
+                       if (display_graph == null) {
+                           throw new IllegalArgumentException("display_graph is null for display_graphtype: " + display_graphtype);
+                       }
 
                        String resourceType;
                        String resourceTypeLabel = null;
@@ -248,20 +254,19 @@
                        
                 %>
             
-		    <% if ((i == 0) || (i%report_graphsperline == 0)) { %>
+            <% if ((i == 0) || (i%report_graphsperline == 0)) { %>
                     <tr>
-		    <% } %>
+            <% } %>
                         <td align="center">
-			    <table>
-			    <tr><td>
+                <table>
+                <tr><td>
                             <b> <%=current_graph.getTitle()%> <br/></b>
                             <%-- gather start/stop time information --%>
                             <%
                                 String display_timespan = null;
-                                if (override_timespan.equals("none")) {
+                                if ("none".equals(override_timespan)) {
                                     display_timespan = current_graph.getTimespan();
-                                } 
-                                else { 
+                                } else { 
                                     display_timespan = override_timespan;
                                 } 
                                 Calendar begin_time = Calendar.getInstance();
@@ -275,7 +280,7 @@
 
                             <b>From</b> <%=startPretty%> <br>
                             <b>To</b> <%=endPretty%>
-			    </td><td>
+                </td><td>
                                 <%= parentResourceTypeLabel %>:
                                 <% if (parentResourceLink != null) { %>
                                   <a href="<%= parentResourceLink %>"><%= parentResourceLabel %></a>
@@ -294,7 +299,7 @@
                                 <% } %>
                                 
                                 <a href="graph/results.htm?resourceId=<%= resourceIdEncoded %>&amp;reports=all&amp;start=<%=start%>&amp;end=<%=end%>">Detail</a>
-			            </td></tr></table>
+                        </td></tr></table>
                                     <br/>
                                     <a href="graph/results.htm?zoom=true&amp;resourceId=<%= resourceIdEncoded %>&amp;reports=<%=display_graph.getName()%>&amp;start=<%=start%>&amp;end=<%=end%>">
 
@@ -302,9 +307,9 @@
                             </a>
 
                         </td>
-		    <% if (((i+1)%report_graphsperline == 0) || (i+1) == graph_count){ %>
+            <% if (((i+1)%report_graphsperline == 0) || (i+1) == graph_count){ %>
                     </tr>
-		    <% } %>
+            <% } %>
                 <% }  //end for loop %> 
             </table>  
             </td> 
@@ -322,7 +327,7 @@
                             </td>
                             <td>
                                 <SELECT name="timespan">
-                                    <% if (override_timespan.equals("none")) { %>
+                                    <% if ("none".equals(override_timespan)) { %>
                                          <OPTION SELECTED>none 
                                     <% } else { %>                  
                                          <OPTION>none 
@@ -348,11 +353,11 @@
                             </td>
                             <td>
                                 <SELECT name="graphtype">
-				    <% if (override_graphtype.equals("none")) { %>
-				        <OPTION SELECTED>none
-				    <% } else { %>
-				        <OPTION>none
-				    <% } %>
+                    <% if ("none".equals(override_graphtype)) { %>
+                        <OPTION SELECTED>none
+                    <% } else { %>
+                        <OPTION>none
+                    <% } %>
                                     <% for (int i=0; i < graph_options.length - 1; i++) { %>
                                         <% if (graph_options[i].getName().equals(override_graphtype)) { %>
                                             <OPTION SELECTED> <%=graph_options[i].getName() %> 

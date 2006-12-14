@@ -3,8 +3,6 @@ package org.opennms.web.graph;
 import java.io.File;
 
 public class AdhocGraphType {
-    private PrefabGraph[] m_queries;
-
     private File m_rrdDirectory;
 
     private String m_name;

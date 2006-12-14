@@ -42,7 +42,8 @@
 	import="
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.config.kscReports.*,
-        org.opennms.web.acegisecurity.Authentication
+        org.opennms.web.acegisecurity.Authentication,
+        org.opennms.netmgt.config.KSC_PerformanceReportFactory
 	"
 %>
 
@@ -55,7 +56,7 @@
 
 <%
     int r_count=0;
-    ReportsList report_configuration = this.reportFactory.getConfiguration();  
+    ReportsList report_configuration = KSC_PerformanceReportFactory.getConfiguration();  
     Report[] report_array = null;
     try {
          if (report_configuration == null){

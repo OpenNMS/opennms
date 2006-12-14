@@ -1,11 +1,6 @@
 package org.opennms.web.performance;
 
-import java.io.File;
 import java.util.List;
-import java.util.Set;
-
-import org.opennms.web.graph.GraphModel;
-import org.opennms.web.graph.PrefabGraph;
 
 public interface GraphResourceType {
     /**
@@ -47,8 +42,8 @@ public interface GraphResourceType {
      * @param attribute the attribute on the specific resource
      * @return relative path
      */
-    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute);
-    
+    public String getRelativePathForAttribute(String resourceParent,
+            String resource, String attribute);
     
     /**
      * Checks whether this resource type is on a specific domain.  If possible,
@@ -66,20 +61,4 @@ public interface GraphResourceType {
      * @return list of resources
      */
     public List<GraphResource> getResourcesForDomain(String domain);
-
-    /**
-     * Gets a list of available prefabricated graph definitions given a
-     * set of attributes.
-     * 
-     * @param attributes set of attributes that are available for graphing
-     * @return list of prefabricated graphs that can be generated with the
-     *         provided attributes
-     */
-    public List<PrefabGraph> getAvailablePrefabGraphs(Set<GraphAttribute> attributes);
-    
-    public PrefabGraph getPrefabGraph(String name);
-    
-    public GraphModel getModel();
-
-    public File getRrdDirectory();
 }

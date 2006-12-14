@@ -39,6 +39,9 @@
 <%@ page language="java" contentType="text/html" session="true" %>
 <%@ page import="java.util.*,
 		org.opennms.web.*,
+		org.opennms.web.performance.GraphAttribute,
+		org.opennms.web.performance.GraphResource,
+		org.opennms.web.performance.GraphResourceType,
 		org.opennms.web.graph.PrefabGraph,
 		org.opennms.web.graph.ResourceId,
 		java.io.File,
@@ -82,29 +85,33 @@
     String resourceType;
     String resource;
 
-    if( nodeIdString != null && !nodeIdString.equals("null")) {
-        boolean includeNodeQueries = false;
+    if (nodeIdString != null && !nodeIdString.equals("null")) {
         nodeId = Integer.parseInt(nodeIdString);
-	    if(intf.equals("")) {
-            graph_options = this.model.getQueries(nodeId);
+        
+        parentResourceType = "node";
+        parentResource = nodeIdString;
+
+        if(intf.equals("")) {
             resourceType = "node";
             resource = "";
         } else {
-            graph_options = this.model.getQueries(nodeId, intf, includeNodeQueries);
             resourceType = "interface";
             resource = intf;
         }
-        parentResourceType = "node";
-        parentResource = nodeIdString;
     } else {
-        graph_options = this.model.getQueriesForDomain(domain, intf);
         nodeIdString = "null";
+        
         parentResourceType = "domain";
         parentResource = domain;
         resourceType = "interface";
         resource = intf;
     }
     
+    graph_options = this.model.getPrefabGraphs(parentResourceType,
+    	                                       parentResource,
+                                               resourceType,
+                                               resource);
+
     ResourceId resourceId =
         new ResourceId(parentResourceType, parentResource,
                        resourceType, resource);

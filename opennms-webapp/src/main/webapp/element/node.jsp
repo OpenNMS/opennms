@@ -76,7 +76,6 @@
     protected int dellServiceId;
     protected int snmpServiceId;
     protected PerformanceModel m_performanceModel;
-//    protected ResponseTimeModel rtModel;
 	protected AssetModel model = new AssetModel();
 
 	public static HashMap<Character, String> m_statusMap;
@@ -120,7 +119,6 @@
 
 	    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
-//		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
     }
     
     public static String getStatusString(char c) {
@@ -264,13 +262,6 @@
           <a href="https://<%=dellIp%>:1311">OpenManage</a>
 	  </li>
         <% } %>
-<%--
-        <% if(this.rtModel.isQueryableNode(nodeId)) { %>
-	  <li>
-          <a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
-	  </li>
-        <% } %>
-        --%>
         
         <% if (m_performanceModel.getResourceTypesForNode(nodeId).size() > 0) { %>
 	  <li>
