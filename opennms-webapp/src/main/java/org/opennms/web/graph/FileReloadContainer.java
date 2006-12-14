@@ -139,7 +139,12 @@ public class FileReloadContainer<T> {
             return;
         }
         
-        // Always update the timestamp, even if we have an error
+        /*
+         * Always update the timestamp, even if we have an error. 
+         * XXX What if someone is writing the file while we are reading it,
+         * we get an error, and the (correct) file is written completely
+         * within the same second, so lastModified doesn't get updated.
+         */
         m_lastModified = lastModified;
             
         T object;

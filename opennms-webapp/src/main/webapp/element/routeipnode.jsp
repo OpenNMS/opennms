@@ -59,8 +59,7 @@
 <%!
     protected int telnetServiceId;
     protected int httpServiceId;
-    protected PerformanceModel perfModel;
-    protected ResponseTimeModel rtModel;
+    protected PerformanceModel m_performanceModel;
 
 	public static HashMap<Character, String> statusMap;
 
@@ -85,8 +84,7 @@
         }
 
 	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		this.perfModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
-		this.rtModel = (ResponseTimeModel) m_webAppContext.getBean("responseTimeModel", ResponseTimeModel.class);
+		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
     }
     
     public String getStatusString( char c ) {
@@ -190,16 +188,19 @@
           <a href="http://<%=httpIp%>">HTTP</a>
         </li>
         <% } %>
-        <% if(this.rtModel.isQueryableNode(nodeId)) { %>
-		<li>
-			<a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
-		</li>
-        <% } %>        
-        <% if(this.perfModel.isQueryableNode(nodeId)) { %>
-        <li>
-          	<a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
-        </li>  	
-        <% } %>        
+        
+        
+        <% if (m_performanceModel.getResourceTypesForNode(nodeId).size() > 0) { %>
+          <li>
+            <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
+              <c:param name="parentResourceType" value="node"/>
+              <c:param name="parentResource" value="<%= Integer.toString(nodeId) %>"/>
+              <c:param name="reports" value="all"/>
+            </c:url>
+            <a href="${resourceGraphsUrl}">Resource Graphs</a>
+	      </li>
+        <% } %>
+        
         <li>
 	        <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>    
         </li>

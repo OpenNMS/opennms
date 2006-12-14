@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -19,7 +20,8 @@ import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.graph.PrefabGraph;
 
 public class PropertiesGraphDaoTest extends TestCase {
-
+    private static final HashMap<String, File> s_emptyMap = new HashMap<String, File>();
+    
     final static String s_prefab =
             "command.input.dir=foo\n"
             + "command.prefix=foo\n"
@@ -84,7 +86,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         m_graphs = PropertiesGraphDao.getPrefabGraphDefinitions(m_properties);
         */
         
-        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
         ByteArrayInputStream in = new ByteArrayInputStream(s_prefab.getBytes());
         dao.loadProperties("performance", in);
         
@@ -183,22 +185,22 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
 
     public void testLoadSnmpGraphProperties() throws FileNotFoundException, IOException {
-        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("snmp-graph.properties"));
     }
 
     public void testLoadSnmpAdhocGraphProperties() throws FileNotFoundException, IOException {
-        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("snmp-adhoc-graph.properties"));
     }
 
     public void testLoadResponseTimeGraphProperties() throws FileNotFoundException, IOException {
-        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-graph.properties"));
     }
 
     public void testLoadResponseTimeAdhocGraphProperties() throws FileNotFoundException, IOException {
-        PropertiesGraphDao dao = new PropertiesGraphDao("", "");
+        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-adhoc-graph.properties"));
     }
     
@@ -218,7 +220,9 @@ public class PropertiesGraphDaoTest extends TestCase {
             writer.write(noDiscards);
             writer.close();
             
-            PropertiesGraphDao dao = new PropertiesGraphDao("performance=" + f.getAbsolutePath(), "");
+            HashMap<String, File> perfConfig = new HashMap<String, File>();
+            perfConfig.put("performance", f);
+            PropertiesGraphDao dao = new PropertiesGraphDao(perfConfig, s_emptyMap);
             PrefabGraphType type = dao.findByName("performance");
             assertNotNull("could not get performance prefab graph type", type);
             
@@ -263,7 +267,9 @@ public class PropertiesGraphDaoTest extends TestCase {
             writer.write(s_prefab);
             writer.close();
 
-            PropertiesGraphDao dao = new PropertiesGraphDao("performance=" + f.getAbsolutePath(), "");
+            HashMap<String, File> perfConfig = new HashMap<String, File>();
+            perfConfig.put("performance", f);
+            PropertiesGraphDao dao = new PropertiesGraphDao(perfConfig, s_emptyMap);
             PrefabGraphType type = dao.findByName("performance");
             assertNotNull("could not get performance prefab graph type", type);
             
@@ -317,7 +323,9 @@ public class PropertiesGraphDaoTest extends TestCase {
             writer.write(cheesy);
             writer.close();
             
-            PropertiesGraphDao dao = new PropertiesGraphDao("", "performance=" + f.getAbsolutePath());
+            HashMap<String, File> adhocConfig = new HashMap<String, File>();
+            adhocConfig.put("performance", f);
+            PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, adhocConfig);
             AdhocGraphType type = dao.findAdhocByName("performance");
             assertNotNull("could not get performance adhoc graph type", type);
             assertEquals("image type isn't correct", "image/cheesy", type.getOutputMimeType());

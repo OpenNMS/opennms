@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.opennms.core.utils.LazySet;
@@ -15,6 +14,7 @@ import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.PrefabGraph;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class InterfaceGraphResourceType implements GraphResourceType {
 
@@ -33,22 +33,68 @@ public class InterfaceGraphResourceType implements GraphResourceType {
     }
     
     public boolean isResourceTypeOnNode(int nodeId) {
+        /*
         try {
             return m_performanceModel.getQueryableInterfacesForNode(nodeId).size() > 0;
         } catch (DataAccessException e) {
             return false;
         }
+        */
+        return isResourceTypeOnParentResource(Integer.toString(nodeId));
+    }
+    
+    private boolean isResourceTypeOnParentResource(String parentResource) {
+        File parent = getParentResourceDirectory(parentResource, false);
+        if (!parent.isDirectory()) {
+            return false;
+        }
+        
+        File[] intfFiles = parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER); 
+        return intfFiles.length > 0;
+    }
+    
+    private File getParentResourceDirectory(String parentResource, boolean verify) {
+        File snmp = new File(m_performanceModel.getRrdDirectory(verify), PerformanceModel.SNMP_DIRECTORY);
+        
+        File parent = new File(snmp, parentResource);
+        if (verify && !parent.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No parent resource directory exists for " + parentResource + ": " + parent);
+        }
+        
+        return parent;
+    }
+        
+    private File getResourceDirectory(String parentResource, String intf, boolean verify) {
+        File parent = getParentResourceDirectory(parentResource, verify);
+        
+        File intfDir = new File(parent, intf);
+        if (verify && !parent.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No interface directory exists for " + intf + ": " + intfDir);
+        }
+        
+        return intfDir;
     }
     
     public List<GraphResource> getResourcesForNode(int nodeId) {
         ArrayList<DefaultGraphResource> resources =
             new ArrayList<DefaultGraphResource>();
 
+        /*
         List<String> ifaces = 
             m_performanceModel.getQueryableInterfacesForNode(nodeId);
+
         for (String iface : ifaces) {
             DefaultGraphResource resource =
                 getResourceByNodeAndInterface(nodeId, iface);
+            resources.add(resource);
+        }
+            */
+        File parent = getParentResourceDirectory(Integer.toString(nodeId), true);
+        File[] intfDirs = parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+
+        for (File intfDir : intfDirs) {
+            DefaultGraphResource resource =
+                getResourceByNodeAndInterface(nodeId, intfDir.getName());
             resources.add(resource);
         }
         
@@ -69,24 +115,38 @@ public class InterfaceGraphResourceType implements GraphResourceType {
         }
 
         Set<GraphAttribute> set =
-            new LazySet(new AttributeLoader(nodeId, intf));
+            new LazySet<GraphAttribute>(new AttributeLoader(getResourceDirectory(Integer.toString(nodeId), intf, true)));
         return new DefaultGraphResource(intf, label, set);
     }
     
-    public class AttributeLoader implements LazySet.Loader {
+    /*
+    private File getResourceDirectory(String node, String intf, boolean verify) {
+        File snmp = new File(m_performanceModel.getRrdDirectory(verify), PerformanceModel.SNMP_DIRECTORY);
         
-        private int m_nodeId;
-        private String m_intf;
+        File nodeDir = new File(snmp, node);
+        if (verify && !nodeDir.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No node directory exists for " + node + ": " + nodeDir);
+        }
+        
+        File intfDir = new File(node, intf);
+        if (verify && !intfDir.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No interface directory exists for interface " + intf + " on " + node + ": " + intfDir);
+        }
+        
+        return intfDir;
+    }
+    */
+    
+    public class AttributeLoader implements LazySet.Loader<GraphAttribute> {
+        private File m_intfDir;
 
-        public AttributeLoader(int nodeId, String intf) {
-            m_nodeId = nodeId;
-            m_intf = intf;
+        public AttributeLoader(File intfDir) {
+            m_intfDir = intfDir;
         }
 
         public Set<GraphAttribute> load() {
             List<String> dataSources =
-                m_performanceModel.getDataSourceList(Integer.toString(m_nodeId), m_intf,
-                                                     false);
+                m_performanceModel.getDataSourcesInDirectory(m_intfDir);
             Set<GraphAttribute> attributes =
                 new HashSet<GraphAttribute>(dataSources.size());
             
@@ -101,6 +161,8 @@ public class InterfaceGraphResourceType implements GraphResourceType {
 
     public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
         StringBuffer buffer = new StringBuffer();
+        buffer.append(PerformanceModel.SNMP_DIRECTORY);
+        buffer.append(File.separator);
         buffer.append(resourceParent);
         buffer.append(File.separator);
         buffer.append(resource);
@@ -133,7 +195,7 @@ public class InterfaceGraphResourceType implements GraphResourceType {
 
     private GraphResource getResourceByDomainAndInterface(String domain, String intf) {
         Set<GraphAttribute> set =
-            new LazySet(new DomainAttributeLoader(domain, intf));
+            new LazySet<GraphAttribute>(new AttributeLoader(getResourceDirectory(domain, intf, true)));
         return new DefaultGraphResource(intf, intf, set);
     }
 
@@ -163,32 +225,6 @@ public class InterfaceGraphResourceType implements GraphResourceType {
         return graphList;
     }
 
-    public class DomainAttributeLoader implements LazySet.Loader {
-        
-        private String m_domain;
-        private String m_intf;
-
-        public DomainAttributeLoader(String domain, String intf) {
-            m_domain = domain;
-            m_intf = intf;
-        }
-
-        public Set<GraphAttribute> load() {
-            List<String> dataSources =
-                m_performanceModel.getDataSourceList(m_domain, m_intf,
-                                                     false);
-            Set<GraphAttribute> attributes =
-                new HashSet<GraphAttribute>(dataSources.size());
-            
-            for (String dataSource : dataSources) {
-                attributes.add(new RrdGraphAttribute(dataSource));
-            }
-            
-            return attributes;
-        }
-        
-    }
-
     public GraphModel getModel() {
         return m_performanceModel;
     }
@@ -196,8 +232,8 @@ public class InterfaceGraphResourceType implements GraphResourceType {
     public PrefabGraph getPrefabGraph(String name) {
         return m_performanceModel.getQuery(name);
     }
-    
-    public File getRrdDirectory() {
-        return m_performanceModel.getRrdDirectory();
+
+    public String getGraphType() {
+        return "performance";
     }
 }

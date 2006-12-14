@@ -14,6 +14,7 @@ import org.opennms.netmgt.collectd.StorageStrategy;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.PrefabGraph;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericIndexGraphResourceType implements GraphResourceType {
 
@@ -46,20 +47,26 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
          *  XXX this should be based on the code in
          *  PerformanceModel.getQueryableNodes().  For now, we just return true.
          */
-      return getResourceTypeDirectory(nodeId).isDirectory();
+      return getResourceTypeDirectory(nodeId, false).isDirectory();
 //    File resourceDirectory = new File(m_performanceModel.getNodeDirectory(nodeId, false), getName());
 //        return resourceDirectory.isDirectory();
 //        return false;
     }
     
-    private File getResourceTypeDirectory(int nodeId) {
-        return getResourceTypeDirectory(nodeId, false);
-    }
-    
     private File getResourceTypeDirectory(int nodeId, boolean verify) {
-        return new File(m_performanceModel.getNodeDirectory(nodeId, verify),
-                        getName());
+        File snmp = new File(m_performanceModel.getRrdDirectory(verify), PerformanceModel.SNMP_DIRECTORY);
+        
+        File node = new File(snmp, Integer.toString(nodeId));
+        if (verify && !node.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No node directory exists for node " + nodeId + ": " + node);
+        }
 
+        File generic = new File(node, getName());
+        if (verify && !generic.isDirectory()) {
+            throw new ObjectRetrievalFailureException(File.class, "No node directory exists for generic index " + getName() + ": " + generic);
+        }
+
+        return generic;
     }
     
     private File getResourceDirectory(int nodeId, String index) {
@@ -111,12 +118,12 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
 
 
         Set<GraphAttribute> set =
-            new LazySet(new AttributeLoader(nodeId, index));
+            new LazySet<GraphAttribute>(new AttributeLoader(nodeId, index));
         return new DefaultGraphResource(index, label, set);
     }
 
 
-    public class AttributeLoader implements LazySet.Loader {
+    public class AttributeLoader implements LazySet.Loader<GraphAttribute> {
     
         private int m_nodeId;
         private String m_index;
@@ -144,7 +151,7 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
     }
 
     public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
-        return m_storageStrategy.getRelativePathForAttribute(resourceParent, resource, attribute);
+        return m_storageStrategy.getRelativePathForAttribute(PerformanceModel.SNMP_DIRECTORY + File.separator + resourceParent, resource, attribute);
     }
     
     /**
@@ -156,6 +163,7 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
     }
     
 
+    @SuppressWarnings("unchecked")
     public List<GraphResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
     }
@@ -174,7 +182,7 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
         return m_performanceModel.getQuery(name);
     }
 
-    public File getRrdDirectory() {
-        return m_performanceModel.getRrdDirectory();
+    public String getGraphType() {
+        return "performance";
     }
 }

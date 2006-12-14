@@ -7,8 +7,6 @@ import java.util.Set;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.web.Util;
-import org.opennms.web.graph.GraphModel;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.PrefabGraph;
 import org.opennms.web.graph.RelativeTimePeriod;
@@ -18,15 +16,12 @@ import org.opennms.web.performance.GraphAttribute;
 import org.opennms.web.performance.GraphResource;
 import org.opennms.web.performance.GraphResourceType;
 import org.opennms.web.performance.PerformanceModel;
-import org.opennms.web.response.ResponseTimeModel;
 import org.opennms.web.svclayer.GraphResultsService;
 
 public class DefaultGraphResultsService implements GraphResultsService {
 
     private PerformanceModel m_performanceModel;
 
-    private ResponseTimeModel m_responseTimeModel;
-    
     private NodeDao m_nodeDao;
 
     private RelativeTimePeriod[] m_periods;
@@ -62,7 +57,7 @@ public class DefaultGraphResultsService implements GraphResultsService {
         return graphResults;
     }
     
-    public GraphResultSet createGraphResultSet(ResourceId r, String[] reports, GraphResults graphResults) {
+     public GraphResultSet createGraphResultSet(ResourceId r, String[] reports, GraphResults graphResults) {
         String parentResourceType = r.getParentResourceType();
         String parentResource = r.getParentResource();
         String resourceType = r.getResourceType();
@@ -71,7 +66,6 @@ public class DefaultGraphResultsService implements GraphResultsService {
         GraphResourceType rt = m_performanceModel.getResourceTypeByName(resourceType);
         
         GraphResource graphResource;
-        GraphModel model;
         
         GraphResultSet rs = graphResults.new GraphResultSet();
 
@@ -100,11 +94,7 @@ public class DefaultGraphResultsService implements GraphResultsService {
             rs.setParentResourceTypeLabel("Node");
             rs.setResourceTypeLabel(rt.getLabel());
             rs.setResourceLabel(graphResource.getLabel());
-
-            model = rt.getModel();
         } else if ("domain".equals(parentResourceType)) {
-            model = m_performanceModel;
-
             graphResource =
                 m_performanceModel.getResourceForDomainResourceResourceType(parentResource,
                                                                             resource,
@@ -123,9 +113,9 @@ public class DefaultGraphResultsService implements GraphResultsService {
         if (reports.length == 1 && "all".equals(reports[0])) {
             Set<GraphAttribute> attributes = graphResource.getAttributes();
 
-            List<PrefabGraph> queries =
-                rt.getAvailablePrefabGraphs(attributes);
-            List<String> queryNames = new ArrayList<String>(queries.size());
+            PrefabGraph[] queries =
+                m_performanceModel.getQueriesByResourceTypeAttributes(rt.getName(), attributes);
+            List<String> queryNames = new ArrayList<String>(queries.length);
             for (PrefabGraph query : queries) {
                 queryNames.add(query.getName());
             }
@@ -138,7 +128,7 @@ public class DefaultGraphResultsService implements GraphResultsService {
         rs.setResourceType(resourceType);
         rs.setResource(resource);
 
-        rs.initializeGraphs(model, reports);
+        rs.initializeGraphs(m_performanceModel, reports);
         
         return rs;
     }
@@ -149,14 +139,6 @@ public class DefaultGraphResultsService implements GraphResultsService {
 
     public void setPerformanceModel(PerformanceModel performanceModel) {
         m_performanceModel = performanceModel;
-    }
-
-    public ResponseTimeModel getResponseTimeModel() {
-        return m_responseTimeModel;
-    }
-
-    public void setResponseTimeModel(ResponseTimeModel responseTimeModel) {
-        m_responseTimeModel = responseTimeModel;
     }
 
     public NodeDao getNodeDao() {

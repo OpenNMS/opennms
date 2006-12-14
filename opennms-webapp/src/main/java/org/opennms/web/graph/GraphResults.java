@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.web.Util;
+import org.opennms.web.performance.PerformanceModel;
 
 public class GraphResults {
     //note these run from 0-11, this is because of java.util.Calendar!
@@ -235,12 +235,11 @@ public class GraphResults {
         /**
          * Convert the report names to graph objects.
          */
-        public void initializeGraphs(GraphModel model, String[] reports) {
+        public void initializeGraphs(PerformanceModel model, String[] reports) {
             m_graphs = new Graph[reports.length];
 
             for (int i=0; i < reports.length; i++) {
-                PrefabGraph prefabGraph = model.getQuery(m_resourceType,
-                                                         reports[i]);
+                PrefabGraph prefabGraph = model.getQuery(reports[i]);
 
                 if (prefabGraph == null) {
                     throw new IllegalArgumentException("Unknown report name: " +

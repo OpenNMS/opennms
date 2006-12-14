@@ -95,22 +95,22 @@
   <!--  Graphing beans -->
   <bean id="prefabGraphDao" class="org.opennms.web.graph.PropertiesGraphDao">
   	<constructor-arg>
-  	  <value>performance=${opennms.home}/etc/snmp-graph.properties;response=${opennms.home}/etc/response-graph.properties</value>
+  	  <map>
+  	    <entry key="performance" value="${opennms.home}/etc/snmp-graph.properties"/>
+  	    <entry key="response" value="${opennms.home}/etc/response-graph.properties"/>
+  	  </map>
     </constructor-arg>  	  
   	<constructor-arg>
-  	  <value>performance=${opennms.home}/etc/snmp-adhoc-graph.properties;response=${opennms.home}/etc/response-adhoc-graph.properties</value>
+  	  <map>
+  	    <entry key="performance" value="${opennms.home}/etc/snmp-adhoc-graph.properties"/>
+  	    <entry key="response" value="${opennms.home}/etc/response-adhoc-graph.properties"/>
+  	  </map>
     </constructor-arg>  	  
-  </bean>
-  
-  <bean id="responseTimeModel" class="org.opennms.web.response.ResponseTimeModel">
-  	<property name="prefabGraphDao" ref="prefabGraphDao"/>
   </bean>
   
   <bean id="performanceModel" class="org.opennms.web.performance.PerformanceModel">
-  	<constructor-arg>
-	  <ref bean="responseTimeModel"/>
-  	</constructor-arg>
   	<property name="prefabGraphDao" ref="prefabGraphDao"/>
+  	<property name="rrdDirectory" value="${rrd.base.dir}"/>
   </bean>
   
   <!-- Admin applications bean -->
@@ -152,13 +152,11 @@
   
   <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
     <property name="performanceModel" ref="performanceModel"/>
-    <property name="responseTimeModel" ref="responseTimeModel"/>
     <property name="nodeDao" ref="nodeDao"/>
   </bean>
   
   <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
     <property name="performanceModel" ref="performanceModel"/>
-    <property name="responseTimeModel" ref="responseTimeModel"/>
     <property name="prefabGraphDao" ref="prefabGraphDao"/>
     <property name="rrdStrategy" ref="rrdStrategy"/>
   </bean>

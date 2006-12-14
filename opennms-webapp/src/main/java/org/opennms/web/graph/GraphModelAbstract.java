@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 
 public abstract class GraphModelAbstract implements GraphModel {
     private GraphDao m_dao;
+    private File m_rrdDirectory;
     
     public void setPrefabGraphDao(GraphDao dao) {
         m_dao = dao;
@@ -40,39 +41,40 @@ public abstract class GraphModelAbstract implements GraphModel {
         return m_dao;
     }
     
-    private void assertDaoSet() {
+    private void assertPropertiesSet() {
         if (m_dao == null) {
             throw new IllegalStateException("prefabGraphDao has not been set");
         }
+        
+        if (m_rrdDirectory == null) {
+            throw new IllegalStateException("rrdDirectory has not been set");
+        }
     }
     
-    public PrefabGraphType getPrefabGraphType() {
-        assertDaoSet();
-        PrefabGraphType type = m_dao.findByName(getType());
-        if (type == null) {
-            throw new IllegalArgumentException("Cannot find PrefabGraphType for "
-                    + getType());
-        }
-        return type;
-    }
-
     public PrefabGraph[] getQueries() {
-        return getPrefabGraphType().getQueries();
+        return getPrefabGraphDao().getAllPrefabGraphs().toArray(new PrefabGraph[0]);
     }
     
     public PrefabGraph getQuery(String name) {
-        return getPrefabGraphType().getQuery(name);
+        return getPrefabGraphDao().getPrefabGraph(name);
+    }
+
+    public void setRrdDirectory(File rrdDirectory) {
+        m_rrdDirectory = rrdDirectory;
     }
 
     public File getRrdDirectory() {
-        return getPrefabGraphType().getRrdDirectory();
-    }
-
-    public String getDefaultReport() {
-        return getPrefabGraphType().getDefaultReport();
+        return m_rrdDirectory;
     }
     
-
+    public File getRrdDirectory(boolean verify) {
+        if (verify && !getRrdDirectory().isDirectory()) {
+            throw new ObjectRetrievalFailureException("RRD directory does not exist: " + getRrdDirectory().getAbsolutePath(), getRrdDirectory());
+        }
+        
+        return getRrdDirectory();
+    }
+    
     public PrefabGraph[] getQueriesByResourceTypeAttributes(String resourceType,
             Set<GraphAttribute> attributes) {
         return getQueriesByResourceTypeAttributes(resourceType, attributes,
@@ -269,21 +271,12 @@ public abstract class GraphModelAbstract implements GraphModel {
         // determine working default graph and copy to end of array. It will be pulled
         // off again by the calling method.
         for(int i = 0; i < queryCount.size(); i++ ) {
-            if(availQueries[i].getName().equals(getDefaultReport())) {
-                availQueries[queryCount.size()] = availQueries[i];
-                break;
-            }
             if(availQueries[i].getName().equals(mostFreqQuery)) {
                 availQueries[queryCount.size()] = availQueries[i];
             }
         }
-        if (log.isDebugEnabled() && queryCount.size() > 0) {
-            if(availQueries[queryCount.size()].getName().equals(getDefaultReport())) {
-                log.debug("Found default report " + getDefaultReport() + " in list of available queries");
-            } else {
-                log.debug("Default report " + getDefaultReport() + " not found in list of available queries. Using most frequent query " + mostFreqQuery + " as the default.");
-            }
-        }
+        
+        log.debug("Default report is no longer supported. Using most frequent query " + mostFreqQuery + " as the default.");
 
         return availQueries;
     }	
@@ -297,22 +290,6 @@ public abstract class GraphModelAbstract implements GraphModel {
 
     public String[] getDataSources(String nodeId) {
         List dataSourceList = getDataSourceList(String.valueOf(nodeId));
-        String[] dataSources = (String[])
-	    dataSourceList.toArray(new String[dataSourceList.size()]);
-
-        return dataSources;
-    }
-
-    public String[] getDataSources(int nodeId, String intf,
-				   boolean includeNodeQueries) {
-        return getDataSources(String.valueOf(nodeId), intf,
-			      includeNodeQueries);
-    }
-
-    public String[] getDataSources(String nodeId, String intf,
-				   boolean includeNodeQueries) {
-        List dataSourceList = getDataSourceList(String.valueOf(nodeId), intf,
-						includeNodeQueries);
         String[] dataSources = (String[])
 	    dataSourceList.toArray(new String[dataSourceList.size()]);
 
@@ -481,10 +458,6 @@ public abstract class GraphModelAbstract implements GraphModel {
 
         return Util.htmlify(descr.toString());
     }
-
-
-    public abstract List getDataSourceList(String nodeId, String intf,
-					   boolean includeNodeQueries);
 
     public List<String> getDataSourcesInDirectory(File directory) {
         int suffixLength = RrdFileConstants.getRrdSuffix().length();
