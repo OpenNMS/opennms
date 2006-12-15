@@ -980,11 +980,11 @@ public class NoticeFactory extends Object {
             break;
 
         case SortStyle._INTERFACE:
-            clause = " ORDER BY IPADDR ASC";
+            clause = " ORDER BY INTERFACEID ASC";
             break;
 
         case SortStyle._REVERSE_INTERFACE:
-            clause = " ORDER BY IPADDR DESC";
+            clause = " ORDER BY INTERFACEID DESC";
             break;
 
         case SortStyle._SERVICE:
