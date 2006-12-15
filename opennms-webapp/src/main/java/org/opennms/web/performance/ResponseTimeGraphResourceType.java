@@ -17,7 +17,7 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.graph.GraphModelFoo;
+import org.opennms.web.graph.GraphResourceDao;
 import org.opennms.web.graph.PrefabGraph;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -40,7 +40,7 @@ public class ResponseTimeGraphResourceType implements GraphResourceType {
         return "Response Time";
     }
 
-    public GraphModelFoo getModel() {
+    public GraphResourceDao getModel() {
         return m_model;
 
     }

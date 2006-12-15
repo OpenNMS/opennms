@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.opennms.core.utils.LazySet;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.graph.GraphModelFoo;
+import org.opennms.web.graph.GraphResourceDao;
 import org.opennms.web.graph.PrefabGraph;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
@@ -225,7 +225,7 @@ public class InterfaceGraphResourceType implements GraphResourceType {
         return graphList;
     }
 
-    public GraphModelFoo getModel() {
+    public GraphResourceDao getModel() {
         return m_performanceModel;
     }
     

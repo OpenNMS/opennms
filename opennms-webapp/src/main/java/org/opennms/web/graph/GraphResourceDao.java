@@ -29,7 +29,7 @@ import org.opennms.web.performance.GraphResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 
-public abstract class GraphModelFoo {
+public abstract class GraphResourceDao {
     private GraphDao m_dao;
     private File m_rrdDirectory;
     
