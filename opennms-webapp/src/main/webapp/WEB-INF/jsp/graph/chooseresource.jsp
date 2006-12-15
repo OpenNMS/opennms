@@ -69,7 +69,7 @@
           for (var i = 0; i < node.length; i++) {
               if (node[i].length != null) {
                   if (depth == 0) {
-                      alert("Max depth encountered while checking to see if something is selected... report this a bug");
+                      alert("Max depth encountered while checking to see if something is selected.  Please report this as a bug.");
                   } else if (recursiveIsSomethingSelected(node[i], depth - 1)) {
                       return true;
                   }
@@ -87,7 +87,7 @@
           if (isSomethingSelected(selectNode)) {
               formNode.submit();
           } else {
-              alert("Please check at least one " + itemName);
+              alert("Please select at least one " + itemName);
           }
       }
       
@@ -99,13 +99,31 @@
           for (var i = 0; i < node.length; i++) {
               if (node[i].length != null) {
                   if (depth == 0) {
-                      alert("Max depth encountered while setting item selection to " + selected + "... report this a bug");
+                      alert("Max depth encountered while setting item selection to " + selected + ".  Please report this as a bug.");
                   } else {
                       recursiveSelectAll(node[i], selected, depth - 1);
                   }
               } else {
                   node[i].selected = selected;
               }
+          }
+      }
+      
+      function selectIfOnlyOneResource(name) {
+          return recursiveSelectIfOnlyOneResource(document.getElementsByName(name), 5);
+      }
+
+      function recursiveSelectIfOnlyOneResource(node, depth) {
+          if (depth == 0) {
+              alert("Max depth encountered while checking resources.  Please report this as a bug.");
+              return false;
+          } else if (node.length == null) {
+              node.selected = true;
+              return true;
+          } else if (node.length != 1) {
+              return false;
+          } else {
+              return recursiveSelectIfOnlyOneResource(node[0], depth - 1);
           }
       }
   </script>
@@ -164,6 +182,10 @@
         <input type="button" value="Select All" onclick="selectAll('resourceId', true)" />
         <input type="button" value="Unselect All" onclick="selectAll('resourceId', false)" />
       </form>
+      
+      <script language="Javascript" type="text/javascript">
+          selectIfOnlyOneResource("resourceId");
+      </script>
       
 	</c:otherwise>
   </c:choose>
