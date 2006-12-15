@@ -66,7 +66,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.graph.GraphModelAbstract;
+import org.opennms.web.graph.GraphModelFoo;
 import org.opennms.web.graph.PrefabGraph;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -78,7 +78,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public class PerformanceModel extends GraphModelAbstract {
+public class PerformanceModel extends GraphModelFoo {
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 
     public static final String RESPONSE_DIRECTORY = "response";
