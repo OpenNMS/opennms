@@ -6,14 +6,14 @@
 	<c:forEach var="entry" items="${model.entries}">
 		<c:choose>
 			<c:when test="${entry.name == 'Help'}">
-			    <c:set var="li-class">class="last"</c:set>
+			    <c:set var="liClass">class="last"</c:set>
 			</c:when>
 			<c:otherwise>
-			    <c:set var="li-class"></c:set>
+			    <c:set var="liClass"></c:set>
 			</c:otherwise>
 		</c:choose>
 		
-		<li ${li-class}>
+		<li ${liClass}>
 		<c:choose>
 			<c:when test="${model.location == entry.locationMatch}">
 				<c:out value="${entry.name}" />
