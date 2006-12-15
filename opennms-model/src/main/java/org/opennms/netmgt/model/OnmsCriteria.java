@@ -12,6 +12,8 @@ public class OnmsCriteria {
     
     private DetachedCriteria m_criteria;
     private String m_entityName;
+    private Integer m_firstResult = null;
+    private Integer m_maxResults = null;
     
     public OnmsCriteria(String entityName) {
         this(entityName, DetachedCriteria.forEntityName(entityName));
@@ -90,5 +92,20 @@ public class OnmsCriteria {
         }
     }
     
+    public Integer getFirstResult() {
+    	return m_firstResult;
+    }
+    
+    public void setFirstResult(Integer offset) {
+    	m_firstResult = offset;
+    }
+    
+    public Integer getMaxResults() {
+    	return m_maxResults;
+    }
+    
+    public void setMaxResults(Integer limit) {
+    	m_maxResults = limit;
+    }
 
 }
