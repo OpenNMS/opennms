@@ -69,7 +69,9 @@
 
 	<table name="ifServices">
 		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
+		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
 		<column name="ipAddr" visable="false"/>
+		<column name="nodeID" visable="false"/>
 		<column name="id"/>
 		<column name="serviceID"/>
 		<column name="lastGood"/>
