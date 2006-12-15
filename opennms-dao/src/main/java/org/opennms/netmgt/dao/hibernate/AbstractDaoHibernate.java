@@ -37,7 +37,6 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.util.Assert;
 
 public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         HibernateDaoSupport implements OnmsDao<T, K> {
@@ -171,12 +169,21 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
     
 
     @SuppressWarnings("unchecked")
-    public List<T> findMatching(final OnmsCriteria onmsCriteria) {
-        onmsCriteria.resultsOfType(m_entityClass);
+    public List<T> findMatching(final OnmsCriteria onmsCrit) {
+        onmsCrit.resultsOfType(m_entityClass);
         HibernateCallback callback = new HibernateCallback() {
 
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                return onmsCriteria.getDetachedCriteria().getExecutableCriteria(session).list();
+                Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session);
+                if (onmsCrit.getFirstResult() != null) {
+                	attachedCrit.setFirstResult(onmsCrit.getFirstResult());
+                }
+                
+                if (onmsCrit.getMaxResults() != null) {
+                	attachedCrit.setMaxResults(onmsCrit.getMaxResults());
+                }
+                
+				return attachedCrit.list();
                 
             }
             
