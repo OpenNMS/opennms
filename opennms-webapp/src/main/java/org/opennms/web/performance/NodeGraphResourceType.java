@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.graph.GraphModel;
+import org.opennms.web.graph.GraphModelFoo;
 import org.opennms.web.graph.PrefabGraph;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -101,7 +101,7 @@ public class NodeGraphResourceType implements GraphResourceType {
         return Arrays.asList(graphs);
     }
     
-    public GraphModel getModel() {
+    public GraphModelFoo getModel() {
         return m_performanceModel;
     }
     

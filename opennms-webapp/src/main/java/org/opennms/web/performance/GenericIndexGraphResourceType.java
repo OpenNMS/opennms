@@ -12,7 +12,7 @@ import java.util.Set;
 import org.opennms.core.utils.LazySet;
 import org.opennms.netmgt.collectd.StorageStrategy;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.graph.GraphModel;
+import org.opennms.web.graph.GraphModelFoo;
 import org.opennms.web.graph.PrefabGraph;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -174,7 +174,7 @@ public class GenericIndexGraphResourceType implements GraphResourceType {
         return Arrays.asList(graphs);
     }
     
-    public GraphModel getModel() {
+    public GraphModelFoo getModel() {
         return m_performanceModel;
     }
     

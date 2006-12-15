@@ -29,7 +29,7 @@ import org.opennms.web.performance.GraphResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 
-public abstract class GraphModelAbstract implements GraphModel {
+public abstract class GraphModelFoo {
     private GraphDao m_dao;
     private File m_rrdDirectory;
     
@@ -484,12 +484,14 @@ public abstract class GraphModelAbstract implements GraphModel {
 
         return resourceType.getResourcesForNode(nodeId);
     }
-    
+
     public List<GraphResource> getResourcesForDomainResourceType(String domain, String resourceTypeName) {
         GraphResourceType resourceType = getResourceTypeByName(resourceTypeName);
 
         return resourceType.getResourcesForDomain(domain);
     }
+    
+    protected abstract GraphResourceType getResourceTypeByName(String resourceTypeName);
     
     public GraphResource getResourceForNodeResourceResourceType(int nodeId, String resourceName, String resourceTypeName) {
         List<GraphResource> resources = getResourcesForNodeResourceType(nodeId, resourceTypeName);
