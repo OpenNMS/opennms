@@ -61,24 +61,51 @@
 </jsp:include>
 
   <script language="Javascript" type="text/javascript" >
-      function validateRRD() {
-          var isChecked = false
-          for( i = 0; i < document.report.resource.length; i++ ) {
-              // make sure something is checked before proceeding
-              if (document.report.resource[i].selected) {
-                  isChecked=true;
+      function isSomethingSelected(node) {
+         return recursiveIsSomethingSelected(node, 5);
+      }
+      
+      function recursiveIsSomethingSelected(node, depth) {
+          for (var i = 0; i < node.length; i++) {
+              if (node[i].length != null) {
+                  if (depth == 0) {
+                      alert("Max depth encountered while checking to see if something is selected... report this a bug");
+                  } else if (recursiveIsSomethingSelected(node[i], depth - 1)) {
+                      return true;
+                  }
+              } else {
+                  if (node[i].selected) {
+                      return true;
+                  }
               }
           }
-  
-          if (!isChecked){
-              alert("Please check the resources that you would like to report on.");
-          }
-          return isChecked;
+          
+          return false;
       }
   
-      function submitForm() {
-          if (validateRRD()) {
-              document.report.submit();
+      function submitForm(selectNode, formNode, itemName) {
+          if (isSomethingSelected(selectNode)) {
+              formNode.submit();
+          } else {
+              alert("Please check at least one " + itemName);
+          }
+      }
+      
+      function selectAll(name, selected) {
+          recursiveSelectAll(document.getElementsByName(name), selected, 5);
+      }
+      
+      function recursiveSelectAll(node, selected, depth) {
+          for (var i = 0; i < node.length; i++) {
+              if (node[i].length != null) {
+                  if (depth == 0) {
+                      alert("Max depth encountered while setting item selection to " + selected + "... report this a bug");
+                  } else {
+                      recursiveSelectAll(node[i], selected, depth - 1);
+                  }
+              } else {
+                  node[i].selected = selected;
+              }
           }
       }
   </script>
@@ -106,8 +133,8 @@
       <form method="GET" name="report" action="${model.endUrl}">
         <%=Util.makeHiddenTags(request, new String[] { "parentResourceType", "parentResource", "endUrl"})%>
   
+        <c:set var="num" value="0"/>
         <c:forEach var="resourceType" items="${model.resourceTypes}">
-      
           <h3>${resourceType.key.label}</h3>
 
           <c:choose>
@@ -120,7 +147,7 @@
             </c:otherwise>
           </c:choose>
         
-          <select name="resourceId" size="${selectSize}" multiple>
+          <select name="resourceId" id="resource-select-${num}" size="${selectSize}" multiple>
             <c:forEach var="resource" items="${resourceType.value}">
               <option value="${resource.resourceId}">
                 ${resource.label}
@@ -128,12 +155,14 @@
             </c:forEach>
           </select>
         
+          <c:set var="num" value="${num + 1}"/>
         </c:forEach>
       
         <br/>
         <br/>
-<!--      <input type="button" value="Submit" onclick="submitForm()" /> -->
-        <input type="submit" value="Submit"/>
+        <input type="button" value="Submit" onclick="submitForm(document.report.resourceId, document.report, 'resource')" />
+        <input type="button" value="Select All" onclick="selectAll('resourceId', true)" />
+        <input type="button" value="Unselect All" onclick="selectAll('resourceId', false)" />
       </form>
       
 	</c:otherwise>
