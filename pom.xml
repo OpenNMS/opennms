@@ -112,6 +112,11 @@
         <artifactId>native-maven-plugin</artifactId>
         <version>1.0-alpha-1</version>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.3-SNAPSHOT</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -403,7 +408,7 @@ opennms.home = ${opennms.home}
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
     <mock.debug>false</mock.debug>
-    <mock.rundbtests>false</mock.rundbtests>
+    <mock.rundbtests>true</mock.rundbtests>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <install.version>${project.version}</install.version>
