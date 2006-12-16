@@ -614,18 +614,17 @@ class Persist {
      *                properties file.
      */
     protected void insertEvent(Header eventHeader, Event event) throws SQLException {
-        int eventID = -1;
-
         Category log = ThreadCategory.getInstance(EventWriter.class);
 
         // events next id from sequence
         //
         // Execute the statement to get the next event id
         //
-        eventID = getNextId();
+        int eventID = getNextId();
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("EventWriter: DBID: " + eventID);
+        }
 
         synchronized (event) {
             event.setDbid(eventID);

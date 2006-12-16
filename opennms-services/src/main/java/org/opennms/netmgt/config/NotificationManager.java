@@ -75,6 +75,7 @@ import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.springframework.util.Assert;
 
 /**
  * @author David Hustace <david@opennms.org>
@@ -105,8 +106,11 @@ public abstract class NotificationManager {
     public static final String PARAM_XMPP_ADDRESS = "-xmpp";
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     public static final String PARAM_NUM_PAGER_PIN = "-np";
+    
     NotifdConfigManager m_configManager;
     private DataSource m_dbConnectionFactory;
+    
+    
     /**
      * @param configIn
      * @throws MarshalException
@@ -177,93 +181,77 @@ public abstract class NotificationManager {
     protected NotifdConfigManager getConfigManager() {
         return m_configManager;
     }
+    
+    protected boolean nodeInterfaceServiceValid(Notification notif, Event event) {
+        Assert.notNull(notif, "notif argument must not be null");
+        Assert.notNull(event, "event argument must not be null");
+        Assert.notNull(notif.getRule(), "getRule() on notif argument must not return null");
         
-    private boolean nodeInterfaceServiceValid(Notification notif, Event event) {
-        boolean result = false;
-    
-        Connection connection = null;
-        try {
-    
-            // Get the Interface and Service from the Event
-    
-            long eventNode = event.getNodeid();
-            String eventIf = (String) event.getInterface();
-            String eventSrv = (String) event.getService();
-    
-            //TODO: This needs attention.  NodeDowns don't have a if or svc id
-            //making a terribly long process to generate a notification on 
-            //systems with lots nodes interfaces and services.  On a very fast
-            //system with 45k nodes, takes over 4 minutes to process the notification
-            //from the time the event is received.
-            if (eventNode == 0 && eventIf == null && eventSrv == null) {
-                return true;
+        /*
+         *  If the event doesn't have a nodeId, interface, or service,
+         *  return true since there is nothing on which to filter.
+         */
+        if (event.getNodeid() == 0 && event.getInterface() == null &&
+                event.getService() == null) {
+            return true;
+        }
+
+        StringBuffer constraints = new StringBuffer();
+        if (event.getNodeid() != 0) {
+            constraints.append(" & (nodeId == " + event.getNodeid() + ")");
+        }
+        
+        if (event.getInterface() != null
+                && !"0.0.0.0".equals(event.getInterface())) {
+            constraints.append(" & (ipAddr == '" + event.getInterface() + "')");
+            if (event.getService() != null) {
+                constraints.append(" & (serviceName == '" + event.getService() + "')");
             }
+        }
+        
+        String rule = "(" + notif.getRule() + constraints + ")";
+
+        Connection connection = null;
+        Statement stmt = null;
+        ResultSet rows = null;
+        
+        try {
+            String sql = getInterfaceFilter(rule) + " LIMIT 1";
     
-            // ThreadCategory.getInstance(getClass()).debug("Notification Event
-            // Interface: " + eventIf + " Service: " + eventSrv);
-    
-            // Get the Notification Rule
-    
-            String sql = getInterfaceFilter(notif.getRule());
-    
-            // ThreadCategory.getInstance(getClass()).debug("getSQL Returned SQL for Notification: " + notif.getName() + ": " + sql);
+            if (log().isDebugEnabled()) {
+                log().debug("getInterfaceFilter returned SQL for notification " + notif.getName() + " with computed rule \"" + rule + "\": " + sql);
+            }
     
             connection = getConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rows = stmt.executeQuery(sql);
-    
-            // Loop through the rows returned from the SQL query and return true
-            // if they match event
-    
-            while (rows.next()) {
-                String notifIf = rows.getString(1);
-                String notifSrv = rows.getString(2);
-                long notifNode = rows.getLong(3);
-    
-                // ThreadCategory.getInstance(getClass()).debug("Notification
-                // Notif Interface: " + notifIf + " Service: " + notifSrv);
-    
-                // if there is no If with the event, there can be no service,
-                // thus check only if the node matches
-                if (eventIf == null || eventIf.equals("0.0.0.0")) {
-                    if (eventNode == notifNode) {
-                        result = true;
-                        break;
-                    }
-                }
-                // If there is no Srv with the event, check and see if the If
-                // matches
-                else if (eventSrv == null) {
-                    if (eventIf.equals(notifIf)) {
-                        result = true;
-                        break;
-                    }
-                }
-                // Otherwise, insure that both the Srv and If match
-                else if (eventSrv.equals(notifSrv) && eventIf.equals(notifIf)) {
-                    result = true;
-                    break;
-                }
-            }
-    
-            try {
-                rows.close();
-            } catch (SQLException e) {
-            }
-    
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-            }
+            stmt = connection.createStatement();
+            rows = stmt.executeQuery(sql);
+            
+            /**
+             * We only want to check if zero or one rows were fetched, so just
+             * return the output from rows.next(); 
+             */
+            return rows.next();
         } catch (SQLException e) {
             log().error("Filter query threw exception: " + notif.getName() + ": " + notif.getRule(), e);
             return true;
         } catch (FilterParseException e) {
             log().error("Invalid filter rule for notification " + notif.getName() + ": " + notif.getRule(), e);
-    
-            // go ahead and send the notification
             return true;
         } finally {
+            if (rows != null) {
+                try {
+                    rows.close();
+                } catch (SQLException e) {
+                }
+            }
+
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                }
+            }
+            
             if (connection != null) {
                 try {
                     connection.close();
@@ -271,9 +259,9 @@ public abstract class NotificationManager {
                 }
             }
         }
-    
-        return result;
     }
+    
+    
     /**
      * @param rule
      * @return
