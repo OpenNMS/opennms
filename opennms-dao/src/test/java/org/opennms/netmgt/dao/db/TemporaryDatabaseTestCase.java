@@ -13,12 +13,16 @@ import junit.framework.TestCase;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 /**
- * For each unit test method, creates a temporary database before the unit
+ * <p>For each unit test method, creates a temporary database before the unit
  * test is run and destroys the database after each test (optionally leaving
  * around the test database, either always or on a test failure).  Tests do
- * not get run and the database isn't touched unless the system property
- * "mock.rundbtests" is set to "true".
- *  
+ * get run by default, but the system property "mock.rundbtests" can be set
+ * to "false" to disable this (and the database won't be touched).</p>
+ * 
+ * <p>If you get errors about not being able to delete a database because
+ * it is in use, make sure that your tests always close their database
+ * connections (even in case of failures).</p>
+ * 
  * @author djgregor
  */
 public class TemporaryDatabaseTestCase extends TestCase {
@@ -209,8 +213,13 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return m_throwable != null;
     }
     
+    /**
+     * Defaults to true.
+     * 
+     * @return w00t
+     */
     public static boolean isEnabled() {
-        String property = System.getProperty(RUN_PROPERTY);
+        String property = System.getProperty(RUN_PROPERTY, "true");
         return "true".equals(property);
     }
 
@@ -218,7 +227,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         System.out.println("Test '" + testMethodName
                            + "' disabled.  Set '"
                            + RUN_PROPERTY
-                           + "' property to 'true' to enable.");
+                           + "' property from 'false' to 'true' to enable.");
     }
 
     private void createTestDatabase() throws Exception {

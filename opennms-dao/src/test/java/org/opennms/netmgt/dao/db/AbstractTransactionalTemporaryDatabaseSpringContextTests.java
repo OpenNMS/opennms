@@ -23,6 +23,7 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
         assertNotNull("config locations list cannot be null", locations);
         
         LinkedList<String> newLocations = new LinkedList<String>();
+        newLocations.add("classpath:META-INF/opennms/applicationContext-AbstractTransactionalTemporaryDatabaseSpringContextTests-overridable.xml"); 
         newLocations.addAll(Arrays.asList(locations));
         newLocations.add("classpath:META-INF/opennms/applicationContext-AbstractTransactionalTemporaryDatabaseSpringContextTests.xml"); 
         return super.loadContextLocations((String[]) newLocations.toArray(new String[0]));
@@ -43,7 +44,7 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
         onSetUpInTransactionIfEnabled();
     }
     
-    protected void onSetUpInTransactionIfEnabled() {
+    protected void onSetUpInTransactionIfEnabled() throws Exception {
         // Empty by default
     }
     
@@ -81,7 +82,7 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
         }
     }
 
-	protected SimpleJdbcTemplate getJdbcTemplate() {
-		return new SimpleJdbcTemplate(jdbcTemplate);
-	}
+    protected SimpleJdbcTemplate getJdbcTemplate() {
+        return new SimpleJdbcTemplate(jdbcTemplate);
+    }
 }
