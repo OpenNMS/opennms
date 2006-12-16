@@ -167,8 +167,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
                     if (obj != null && obj instanceof Event) {
                         Event event = (Event) obj;
 
-                        if (log.isDebugEnabled())
-                            log.debug("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei());
+                        if (log.isInfoEnabled()) {
+                            log.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
+                        }
                         m_listener.onEvent(event);
 
                     }

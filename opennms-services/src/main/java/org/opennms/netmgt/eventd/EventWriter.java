@@ -143,8 +143,9 @@ final class EventWriter extends Persist {
                 throw e;
             }
 
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("EventWriter finished for : " + event.getUei());
+            }
         }
     }
 }
