@@ -39,7 +39,9 @@
 	</table>
 
 	<table name="ipInterface" key="primary">
-		<column name="nodeID" visable="false"/>
+        <join column="snmpInterfaceId" table="snmpInterface" table-column="id"/>
+        <column name="id" visable="false"/>
+        <column name="nodeID" visable="false"/>
 		<column name="ipAddr"/>
 		<column name="ipHostname"/>
 		<column name="isManaged"/>
@@ -48,8 +50,8 @@
 	</table>
 
 	<table name="snmpInterface">
-		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
-		<column name="nodeID" visable="false"/>
+        <column name="id" visable="false"/>
+        <column name="nodeID" visable="false"/>
 		<column name="ipAddr" visable="false"/>
 		<column name="snmpIpAdEntNetMask"/>
 		<column name="snmpPhysAddr"/>
@@ -68,11 +70,10 @@
 	</table>
 
 	<table name="ifServices">
-		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
-		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
-		<column name="ipAddr" visable="false"/>
+        <join column="ipInterfaceId" table="ipInterface" table-column="id"/>
+        <column name="id" visible="false"/>
+  		<column name="ipAddr" visable="false"/>
 		<column name="nodeID" visable="false"/>
-		<column name="id"/>
 		<column name="serviceID"/>
 		<column name="lastGood"/>
 		<column name="lastFail"/>
@@ -101,7 +102,7 @@
 
 	<table name="applications">
 		<join column="id" table="application_service_map" table-column="appId"/>
-		<column name="id" />
+		<column name="id" visible="false"/>
 		<column name="name" />
 	</table>
 
