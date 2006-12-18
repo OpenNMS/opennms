@@ -115,7 +115,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.3-SNAPSHOT</version>
+        <version>2.2</version>
       </plugin>
     </plugins>
   </pluginManagement>
