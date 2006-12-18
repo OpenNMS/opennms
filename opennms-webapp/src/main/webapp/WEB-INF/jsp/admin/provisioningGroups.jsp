@@ -78,7 +78,7 @@
 </c:forEach>
 <tr>
    <td></td>
-   <td colspan="7"><form action="${editUrl}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="submit" value="Add New Group"/></form></td>
+   <td colspan="7"><form action="${relativeRequestPath}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="submit" value="Add New Group"/></form></td>
 </tr>
 </table>
 
