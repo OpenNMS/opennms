@@ -32,6 +32,7 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.io.File;
 import java.io.FileReader;
 
 import org.opennms.netmgt.config.C3P0ConnectionFactory;
@@ -53,17 +54,15 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
     
     
     public DefaultSurveillanceServiceIntegrationTest() throws Exception {
-        System.setProperty("opennms.home", "src/test/opennms-home");
+    	File f = new File("src/test/opennms-home");
+		System.setProperty("opennms.home", f.getAbsolutePath());
 
-        SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
-        SiteStatusViewsFactory.setInstance(new SiteStatusViewsFactory("../opennms-daemon/src/main/filtered/etc/site-status-views.xml"));
-        /*
-         * Note: I'm using the opennms-database.xml file in target/classes/etc
-         * so that it has been filtered first.
-         */
-        CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));
-        ViewsDisplayFactory.setInstance(new ViewsDisplayFactory("../opennms-daemon/src/main/filtered/etc/viewsdisplay.xml"));
-
+		File rrdDir = new File("target/test/opennms-home/share/rrd");
+		if (!rrdDir.exists()) {
+			rrdDir.mkdirs();
+		}
+		System.setProperty("opennms.logs.dir", "src/test/opennms-home/logs");
+		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
     }
     
     
@@ -81,7 +80,6 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
         return new String[] {
                 "META-INF/opennms/applicationContext-dao.xml",
                 "org/opennms/web/svclayer/applicationContext-svclayer.xml",
-                "org/opennms/web/svclayer/applicationContext-svclayer-test.xml"
         };
     }
     
