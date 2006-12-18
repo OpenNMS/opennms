@@ -36,6 +36,7 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,13 +64,15 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
      *  for integration testing.
      */
     public DefaultSiteStatusServiceIntegrationTest() throws Exception {
-        System.setProperty("opennms.home", "src/test/opennms-home");
+    	File f = new File("src/test/opennms-home");
+		System.setProperty("opennms.home", f.getAbsolutePath());
 
-        SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
-        CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));
-        ViewsDisplayFactory.setInstance(new ViewsDisplayFactory("../opennms-daemon/src/main/filtered/etc/viewsdisplay.xml"));
-        
-        SiteStatusViewsFactory.setInstance(new SiteStatusViewsFactory("../opennms-daemon/src/main/filtered/etc/site-status-views.xml"));
+		File rrdDir = new File("target/test/opennms-home/share/rrd");
+		if (!rrdDir.exists()) {
+			rrdDir.mkdirs();
+		}
+		System.setProperty("opennms.logs.dir", "src/test/opennms-home/logs");
+		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
     }
     
     /**
@@ -86,7 +89,7 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         return new String[] {
                 "META-INF/opennms/applicationContext-dao.xml",
                 "org/opennms/web/svclayer/applicationContext-svclayer.xml",
-                "org/opennms/web/svclayer/applicationContext-svclayer-test.xml"
+                
         };
     }
     
