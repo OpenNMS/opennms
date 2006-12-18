@@ -5,38 +5,4 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  <bean id="dataCollectionConfigFactory"
-        class="org.opennms.netmgt.config.DataCollectionConfigFactory">
-    <constructor-arg>
-      <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.test.ConfigurationTestUtils.getReaderForConfigFile</value></property>
-	    <property name="arguments">
-          <list>
-            <value>datacollection-config.xml</value>
-          </list>
-        </property>
-	  </bean>
-    </constructor-arg>
-  </bean>
-
-  <bean id="init-datacollectionconfig-factory"
-        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.setInstance</value></property>
-	<property name="arguments">
-      <list>
-	    <ref local="dataCollectionConfigFactory"/>
-      </list>
-    </property>
-  </bean>
-    
-  <bean id="prefabGraphDao" class="org.opennms.web.graph.PropertiesGraphDao"
-	    depends-on="init-datacollectionconfig-factory">
-  	<constructor-arg>
-  	  <value>performance=../opennms-daemon/src/main/filtered/etc/snmp-graph.properties;response=../opennms-daemon/src/main/filtered/etc/response-graph.properties</value>
-    </constructor-arg>  	  
-  	<constructor-arg>
-  	  <value>performance=../opennms-daemon/src/main/filtered/etc/snmp-adhoc-graph.properties;response=../opennms-daemon/src/main/filtered/etc/response-adhoc-graph.properties</value>
-    </constructor-arg>  	  
-  </bean>
-
 </beans>
