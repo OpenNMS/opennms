@@ -239,7 +239,15 @@ public class NotificationsTestCase extends TestCase {
                 "        <destinationPath>OnCall</destinationPath>\n" + 
                 "        <text-message>Notification Test</text-message>\n" + 
                 "        <subject>notification test</subject>\n" + 
-                "    </notification>" +
+                "    </notification>\n" +
+                "    <notification name=\"noticeId Expansion Test\" status=\"on\">\n" + 
+                "        <uei>uei.opennms.org/test/noticeIdExpansion</uei>\n" + 
+                "        <description>Test for noticeId expansion</description>\n" + 
+                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+                "        <destinationPath>NoEscalate</destinationPath>\n" + 
+                "        <text-message>Notification '%noticeid%'</text-message>\n" + 
+                "        <subject>notification '%noticeid%'</subject>\n" + 
+                "    </notification>\n" +
                 "</notifications>\n" + 
                 "";
     public static final String GROUPS = "<?xml version=\"1.0\"?>\n" + 
