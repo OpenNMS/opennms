@@ -52,7 +52,6 @@
 		java.net.*,
 		org.opennms.netmgt.utils.IPSorter,
 		org.opennms.web.performance.*,
-		org.opennms.web.response.*,
 		org.springframework.web.context.WebApplicationContext,
 	    org.springframework.web.context.support.WebApplicationContextUtils
 	"

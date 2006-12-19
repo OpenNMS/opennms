@@ -56,7 +56,6 @@
 		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.*,
 		org.opennms.web.performance.*,
-		org.opennms.web.response.*,
 	    org.opennms.web.asset.Asset,
 	    org.opennms.web.asset.AssetModel,
 	    org.springframework.transaction.support.TransactionTemplate,
