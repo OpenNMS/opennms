@@ -108,6 +108,15 @@
         <version>1.0.1-SNAPSHOT</version>
       </plugin>
       <plugin>
+        <inherited>false</inherited>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <version>0.1-SNAPSHOT</version>
+        <configuration>
+          <fileName>${groovy.fileName}</fileName>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>native-maven-plugin</artifactId>
         <version>1.0-alpha-1</version>
