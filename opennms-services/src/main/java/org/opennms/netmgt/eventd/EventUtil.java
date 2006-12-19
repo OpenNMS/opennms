@@ -44,7 +44,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -57,7 +56,6 @@ import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -277,36 +275,19 @@ public final class EventUtil {
 	public static String getValueAsString(Value pvalue) {
 		if (pvalue == null)
 			return null;
+		
+		if (pvalue.getContent() == null)
+			return null;
 
 		String result = "";
 		String encoding = pvalue.getEncoding();
-		Object value = pvalue.getContent();
 		if (encoding.equals("text")) {
-			if (value instanceof String)
-				result = (String) value;
-			else if (value instanceof Number)
-				result = value.toString();
-            else if (value instanceof SnmpValue)
-                result = value.toString();
+			result = pvalue.getContent();
 		} else if (encoding.equals("base64")) {
-			if (value instanceof String)
-				result = new String(Base64.encodeBase64(((String) value)
-						.getBytes()));
-			else if (value instanceof Number) {
-				byte[] ibuf = null;
-				if (value instanceof BigInteger) {
-					ibuf = ((BigInteger) value).toByteArray();
-				} else {
-                    ibuf = BigInteger.valueOf(((Number) value).longValue()).toByteArray();
-                }
-				result = new String(Base64.encodeBase64(ibuf));
-			} else if (value instanceof SnmpValue) {
-                result = new String(Base64.encodeBase64(((SnmpValue) value).getBytes()));
-             }
+			result = new String(Base64.decodeBase64(pvalue.getContent().toCharArray()));
         }
-
-		return (result == null ? null : result.trim());
-
+		
+		return result.trim();
 	}
 
 	/**

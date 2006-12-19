@@ -274,18 +274,20 @@ class Snmp4JValue implements SnmpValue {
             return true;
         
         if (getType() == SnmpValue.SNMP_OCTET_STRING) {
-            byte[] bytes = getBytes();
-        
-            for(int i = 0; i > bytes.length; i++) {
-                byte b = bytes[i];
-                if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127)
-                    return false;
-            }
-            return true;
+            return allBytesDisplayable(getBytes());
         }
         
         return false;
     }
+
+	private boolean allBytesDisplayable(byte[] bytes) {
+		for(int i = 0; i < bytes.length; i++) {
+		    byte b = bytes[i];
+		    if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127)
+		        return false;
+		}
+		return true;
+	}
 
     public boolean isNull() {
         return getType() == SnmpValue.SNMP_NULL;

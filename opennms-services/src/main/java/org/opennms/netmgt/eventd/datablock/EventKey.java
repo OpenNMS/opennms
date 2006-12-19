@@ -441,7 +441,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
                 retParmVal = eventSnmpInfo.getCommunity();
             }
         } else if (event.getParms() != null && event.getParms().getParmCount() > 0) {
-            ArrayList eventparms = new ArrayList();
+            ArrayList<String> eventparms = new ArrayList<String>();
             org.opennms.netmgt.xml.event.Parms parms = event.getParms();
             Enumeration parmenum = parms.enumerateParm();
             while (parmenum.hasMoreElements()) {

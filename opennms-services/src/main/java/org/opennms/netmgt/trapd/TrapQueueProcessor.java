@@ -208,8 +208,8 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		
 		// send the event to eventd
 		m_eventMgr.sendNow(event);
-
-		log().debug("Trap successfully converted and sent to eventd");
+		
+		log().debug("Trap successfully converted and sent to eventd with UEI " + event.getUei());
 
 		if (!event.hasNodeid() && m_newSuspect) {
 			sendNewSuspectEvent(trapInterface);
