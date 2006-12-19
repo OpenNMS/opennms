@@ -7,21 +7,17 @@
   <views>
     <view name="default" >
       <rows>
-        <row-def label="LB/Router">
-          <category name="DEV_ROUTER"/>
-          <category name="DEV_LOADBAL"/>
+        <row-def label="Router">
+          <category name="Router"/>
         </row-def>
-        <row-def label="Access Controller">
-          <category name="DEV_AC"/>
+        <row-def label="Firewall">
+          <category name="Firewall"/>
         </row-def>
-        <row-def label="Switches">
-          <category name="DEV_AC"/>
+        <row-def label="Switch">
+          <category name="Switch"/>
         </row-def>
-        <row-def label="BCPC">
-          <category name="DEV_BCPC"/>
-        </row-def>
-        <row-def label="Access Points">
-          <category name="DEV_AC"/>
+        <row-def label="Web Server">
+          <category name="WebServer"/>
         </row-def>
       </rows>
     </view>

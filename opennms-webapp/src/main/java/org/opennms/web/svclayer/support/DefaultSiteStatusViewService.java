@@ -57,6 +57,7 @@ import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
 import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  * This service layer class creates a collection that represents the current
@@ -136,7 +137,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             OnmsCategory category = m_categoryDao.findByName(cat.getName());
             
             if (category == null) {
-                throw new IllegalArgumentException("Site status configured category not found: "+cat.getName());
+                throw new ObjectRetrievalFailureException(OnmsCategory.class, cat.getName(), "Unable to locate OnmsCategory named: "+cat.getName()+" as specified in the site status view configuration file", null);
             }
             
             categories.add(category);
@@ -285,8 +286,13 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         
         View view = m_siteStatusViewConfigDao.getView(statusViewName);
         RowDef rowDef = getRowDef(view, rowLabel);
+        Set<OnmsCategory> categories = null;
         
-        Set<OnmsCategory> categories = getCategoriesForRowDef(rowDef);
+        try {
+            categories = getCategoriesForRowDef(rowDef);
+        } catch (ObjectRetrievalFailureException e) {
+            throw e;
+        }
         
         return m_nodeDao.findAllByVarCharAssetColumnCategoryList(view.getColumnName(), statusSite, categories);
     }
