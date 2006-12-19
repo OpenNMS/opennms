@@ -683,9 +683,11 @@ public final class BroadcastEventProcessor implements EventListener {
         NotificationManager.addNotificationParams(paramMap, notification);
         
         // expand the event parameters for the messages
-        // call the notid expansion method before the event expansion because
+        // call the notif expansion method before the event expansion because
         // event expansion will
-        // throw away any expanion strings it doesn't recognize!
+        // throw away any expansion strings it doesn't recognize!
+
+        paramMap.put("noticeid", Integer.toString(noticeId));
         String textMessage = expandNotifParms((nullSafeTextMsg(notification)), paramMap);
         String numericMessage = expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
         String subjectLine = expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
@@ -696,7 +698,6 @@ public final class BroadcastEventProcessor implements EventListener {
         paramMap.put(NotificationManager.PARAM_NODE, event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
         paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
-        paramMap.put("noticeid", Integer.toString(noticeId));
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
 
