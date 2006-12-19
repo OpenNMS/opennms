@@ -97,7 +97,7 @@
 
 <h2>Node: <%=node_db.getLabel()%></h2>
 
-<div style="width: 40%; float: left;">
+<div class="TwoColLAdmin">
   <h3>Admin Options</h3>
 
   <p>
@@ -125,7 +125,7 @@
   </p>
 </div>
       
-<div style="width: 60%; float: left;">
+<div class="TwoColRAdmin">
 
   <h3>Option Descriptions</h3>
 
