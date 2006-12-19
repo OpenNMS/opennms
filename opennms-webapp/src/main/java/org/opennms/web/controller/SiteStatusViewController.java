@@ -40,8 +40,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
+import org.opennms.web.svclayer.SiteStatusViewError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  * Controller servlet for presenting aggregate (propogated) status of nodes
@@ -72,7 +74,14 @@ public class SiteStatusViewController extends AbstractController {
         String statusView = req.getParameter("statusView");
         String statusSite = req.getParameter("statusSite");
         String nodeId = req.getParameter("nodeid");
-        AggregateStatusView view = m_service.createAggregateStatusView(statusView);
+        AggregateStatusView view = null;
+        try {
+            view = m_service.createAggregateStatusView(statusView);
+        } catch (ObjectRetrievalFailureException e) {
+            SiteStatusViewError viewError = createSiteStatusViewError((String)e.getIdentifier(), e.getMessage());
+            return new ModelAndView("siteStatusError", "error", viewError);
+        }
+
         Collection<AggregateStatus> aggrStati;
         
         if (nodeId != null && Integer.parseInt(nodeId) > 0) {
@@ -88,6 +97,13 @@ public class SiteStatusViewController extends AbstractController {
         mav.addObject("view", view);
         mav.addObject("stati", aggrStati);
         return mav;
+    }
+
+    private SiteStatusViewError createSiteStatusViewError(String shortDescr, String longDescr) {
+        SiteStatusViewError viewError = new SiteStatusViewError();
+        viewError.setShortDescr(shortDescr);
+        viewError.setLongDescr(longDescr);
+        return viewError;
     }
 
 }
