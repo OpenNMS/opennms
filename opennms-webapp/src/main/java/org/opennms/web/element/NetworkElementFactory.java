@@ -2232,7 +2232,7 @@ public class NetworkElementFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(nodeid) FROM NODE,IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D'");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(node.nodeid) FROM NODE,IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D'");
             stmt.setString(1, iplike);
             ResultSet rs = stmt.executeQuery();
 
