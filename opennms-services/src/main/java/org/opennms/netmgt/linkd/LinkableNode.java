@@ -288,10 +288,10 @@ public class LinkableNode extends Object {
 	}
 
 	boolean hasMacAddress(String macAddress) {
-		List macs = new ArrayList();
+		Set<String> macs = new HashSet<String>();
 		Iterator ite = portMacs.values().iterator();
 		while (ite.hasNext()) {
-			macs = (List) ite.next();
+			macs = (Set<String>) ite.next();
 			if (macs.contains(macAddress))
 				return true;
 		}
@@ -314,7 +314,7 @@ public class LinkableNode extends Object {
 		Iterator ite = portMacs.keySet().iterator();
 		while (ite.hasNext()) {
 			Integer intePort = (Integer) ite.next();
-			List macs = (List) portMacs.get(intePort);
+			Set macs = (Set) portMacs.get(intePort);
 			if (macs.contains(macAddress)) {
 				return intePort.intValue();
 			}

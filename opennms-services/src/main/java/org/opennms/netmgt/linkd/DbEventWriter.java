@@ -16,12 +16,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.config.DataSourceFactory;
 
+import org.opennms.netmgt.linkd.SnmpCollection.Vlan;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTableEntry;
@@ -30,6 +33,7 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
+import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 
 /**
  * <P>
@@ -654,268 +658,355 @@ public class DbEventWriter implements Runnable {
 		}
 		// STARTS loop on vlans
 
-		if (m_snmpcoll.hasVlanTable()) {
-			
+		//TODO make the porting of the code from 1.2.5 EDA
+		
+		if (log.isDebugEnabled())
+			log.debug("store: saving SnmpVlanCollection in DB");
+		
+		ite = m_snmpcoll.getSnmpVlanCollections().entrySet().iterator();
+		
+		SnmpVlanCollection snmpVlanColl = null;
+		Vlan vlan = null;
+		while (ite.hasNext()) {
+			Entry<Vlan, SnmpVlanCollection> entry = (Entry<Vlan, SnmpVlanCollection>) ite.next();
+
+			snmpVlanColl = entry.getValue();
+			vlan = entry.getKey();
+			int vlanid = vlan.getVlanindex();
+			String vlanindex = Integer.toString(vlanid);
+			String vlanname = vlan.getVlanname();
 			if (log.isDebugEnabled())
 				log
-						.debug("store: saving SnmpVlanCollection in DB");
-			ite = m_snmpcoll.getSnmpVlanCollections()
-					.iterator();
-			while (ite.hasNext()) {
-				SnmpVlanCollection snmpVlanColl = (SnmpVlanCollection) ite
-						.next();
+						.debug("store: parsing VLAN "
+								+ vlanindex + " VLAN_NAME " + vlanname);
 
-				String vlanindex = snmpVlanColl.getVlanIndex();
-				int vlan = Integer.parseInt(vlanindex);
-				String vlanname = snmpVlanColl.getVlanName();
+			if (snmpVlanColl.hasDot1dBase()) {
 				if (log.isDebugEnabled())
 					log
-							.debug("store: parsing VLAN "
-									+ vlanindex + " VLAN_NAME " + vlanname);
+							.debug("store: saving Dot1dBaseGroup in stpnode table");
 
-				if (snmpVlanColl.hasDot1dBase()) {
-					if (log.isDebugEnabled())
-						log
-								.debug("store: saving Dot1dBaseGroup in stpnode table");
+				Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl.getDot1dBase();
+				String baseBridgeAddress = dod1db.getBridgeAddress();
+				int basenumports = dod1db.getNumberOfPorts();
+				int bridgetype = dod1db.getBridgeType();
+				
 
-					Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl.getDot1dBase();
-					String baseBridgeAddress = dod1db.getBridgeAddress();
-					int basenumports = dod1db.getNumberOfPorts();
-					int bridgetype = dod1db.getBridgeType();
-					
+				if (baseBridgeAddress == "000000000000") {
+					log.warn("store: base bridge address " + baseBridgeAddress
+							+ " is invalid for ipaddress " );
+				} else {
+					m_node.addBridgeIdentifier(baseBridgeAddress,vlanindex);
+					DbStpNodeEntry dbStpNodeEntry = DbStpNodeEntry.get(dbConn,
+						m_node.getNodeId(), vlanid);
+					if (dbStpNodeEntry == null) {
+						// Create a new entry
+						dbStpNodeEntry = DbStpNodeEntry.create(m_node
+							.getNodeId(), vlanid);
+					}
+					// update object
 
-					if (baseBridgeAddress == "000000000000") {
-						log.warn("store: base bridge address " + baseBridgeAddress
-								+ " is invalid for ipaddress " );
-					} else {
-						m_node.addBridgeIdentifier(baseBridgeAddress,vlanindex);
-						DbStpNodeEntry dbStpNodeEntry = DbStpNodeEntry.get(dbConn,
-							m_node.getNodeId(), vlan);
-						if (dbStpNodeEntry == null) {
+					dbStpNodeEntry.updateBaseBridgeAddress(baseBridgeAddress);
+					dbStpNodeEntry.updateBaseNumPorts(basenumports);
+					dbStpNodeEntry.updateBaseType(bridgetype);
+					dbStpNodeEntry.updateBaseVlanName(vlanname);
+				
+					if (snmpVlanColl.hasDot1dStp()) {
+						if (log.isDebugEnabled())
+							log
+								.debug("store: adding Dot1dStpGroup in stpnode table");
+
+						Dot1dStpGroup dod1stp = (Dot1dStpGroup) snmpVlanColl
+							.getDot1dStp();
+						int protospec = dod1stp.getStpProtocolSpecification();
+						int stppriority = dod1stp.getStpPriority();
+						String stpDesignatedRoot = dod1stp.getStpDesignatedRoot();
+						int stprootcost = dod1stp.getStpRootCost();
+						int stprootport = dod1stp.getStpRootPort();
+
+						if (stpDesignatedRoot != "0000000000000000") {
+							m_node.setVlanStpRoot(vlanindex,stpDesignatedRoot);
+						}
+						
+						dbStpNodeEntry.updateStpProtocolSpecification(protospec);
+						dbStpNodeEntry.updateStpPriority(stppriority);
+						dbStpNodeEntry.updateStpDesignatedRoot(stpDesignatedRoot);
+						dbStpNodeEntry.updateStpRootCost(stprootcost);
+						dbStpNodeEntry.updateStpRootPort(stprootport);
+					}
+				// store object in database
+					dbStpNodeEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+					dbStpNodeEntry.set_lastpolltime(now);
+
+					dbStpNodeEntry.store(dbConn);
+				
+					if (snmpVlanColl.hasDot1dBasePortTable()) {
+						Iterator sub_ite = snmpVlanColl.getDot1dBasePortTable()
+							.getEntries().iterator();
+						if (log.isDebugEnabled())
+							log
+								.debug("store: saving Dot1dBasePortTable in stpinterface table");
+						while (sub_ite.hasNext()) {
+							Dot1dBasePortTableEntry dot1dbaseptentry = (Dot1dBasePortTableEntry) sub_ite
+								.next();
+							Integer baseport = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_PORT);
+							Integer ifindex = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_IFINDEX);
+						
+							m_node.setIfIndexBridgePort(ifindex,baseport);
+						
+							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
+								.get(dbConn, m_node.getNodeId(),
+										baseport, vlanid);
+							if (dbStpIntEntry == null) {
 							// Create a new entry
-							dbStpNodeEntry = DbStpNodeEntry.create(m_node
-								.getNodeId(), vlan);
-						}
-						// update object
-
-						dbStpNodeEntry.updateBaseBridgeAddress(baseBridgeAddress);
-						dbStpNodeEntry.updateBaseNumPorts(basenumports);
-						dbStpNodeEntry.updateBaseType(bridgetype);
-						dbStpNodeEntry.updateBaseVlanName(vlanname);
-					
-						if (snmpVlanColl.hasDot1dStp()) {
-							if (log.isDebugEnabled())
-								log
-									.debug("store: adding Dot1dStpGroup in stpnode table");
-
-							Dot1dStpGroup dod1stp = (Dot1dStpGroup) snmpVlanColl
-								.getDot1dStp();
-							int protospec = dod1stp.getStpProtocolSpecification();
-							int stppriority = dod1stp.getStpPriority();
-							String stpDesignatedRoot = dod1stp.getStpDesignatedRoot();
-							int stprootcost = dod1stp.getStpRootCost();
-							int stprootport = dod1stp.getStpRootPort();
-
-							if (stpDesignatedRoot != "0000000000000000") {
-								m_node.setVlanStpRoot(vlanindex,stpDesignatedRoot);
+								dbStpIntEntry = DbStpInterfaceEntry.create(
+									m_node.getNodeId(), baseport, vlanid);
 							}
-							
-							dbStpNodeEntry.updateStpProtocolSpecification(protospec);
-							dbStpNodeEntry.updateStpPriority(stppriority);
-							dbStpNodeEntry.updateStpDesignatedRoot(stpDesignatedRoot);
-							dbStpNodeEntry.updateStpRootCost(stprootcost);
-							dbStpNodeEntry.updateStpRootPort(stprootport);
+							dbStpIntEntry.updateIfIndex(ifindex);
+
+							dbStpIntEntry
+								.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+							dbStpIntEntry.set_lastpolltime(now);
+
+							dbStpIntEntry.store(dbConn);
+
 						}
-					// store object in database
-						dbStpNodeEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
-						dbStpNodeEntry.set_lastpolltime(now);
+					}
 
-						dbStpNodeEntry.store(dbConn);
-					
-						if (snmpVlanColl.hasDot1dBasePortTable()) {
-							Iterator sub_ite = snmpVlanColl.getDot1dBasePortTable()
-								.getEntries().iterator();
-							if (log.isDebugEnabled())
+					if (snmpVlanColl.hasDot1dStpPortTable()) {
+						if (log.isDebugEnabled())
+							log
+								.debug(" store: adding Dot1dStpPortTable in stpinterface table");
+						Iterator sub_ite = snmpVlanColl.getDot1dStpPortTable()
+							.getEntries().iterator();
+						while (sub_ite.hasNext()) {
+							Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
+								.next();
+							int stpport = dot1dstpptentry.getInt32(Dot1dStpPortTableEntry.STP_PORT);
+							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
+								.get(dbConn, m_node.getNodeId(),
+										stpport, vlanid);
+							if (dbStpIntEntry == null) {
+							// Cannot create the object becouse must exists the dot1dbase
+							// object!!!!!
 								log
-									.debug("store: saving Dot1dBasePortTable in stpinterface table");
-							while (sub_ite.hasNext()) {
-								Dot1dBasePortTableEntry dot1dbaseptentry = (Dot1dBasePortTableEntry) sub_ite
-									.next();
-								Integer baseport = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_PORT);
-								Integer ifindex = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_IFINDEX);
-							
-								m_node.setIfIndexBridgePort(ifindex,baseport);
-							
-								DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
-									.get(dbConn, m_node.getNodeId(),
-											baseport, vlan);
-								if (dbStpIntEntry == null) {
-								// Create a new entry
-									dbStpIntEntry = DbStpInterfaceEntry.create(
-										m_node.getNodeId(), baseport, vlan);
-								}
-								dbStpIntEntry.updateIfIndex(ifindex);
+										.warn("store StpInterface: when storing STP info"
+												+ " for bridge node with nodeid "
+												+ m_node.getNodeId()
+												+ " bridgeport number "
+												+ stpport
+												+ " and vlan index "
+												+ vlanindex
+												+ " info not found in database, ERROR skipping.....");
+							} else {
 
-								dbStpIntEntry
-									.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+								int stpportstate = dot1dstpptentry
+									.getInt32(Dot1dStpPortTableEntry.STP_PORT_STATE);
+								int stpportpathcost = dot1dstpptentry
+									.getInt32(Dot1dStpPortTableEntry.STP_PORT_PATH_COST);
+								String stpPortDesignatedBridge = dot1dstpptentry
+									.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_BRIDGE);
+								String stpPortDesignatedRoot = dot1dstpptentry
+									.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_ROOT);
+								int stpportdesignatedcost = dot1dstpptentry
+									.getInt32(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_COST);
+								String stpPortDesignatedPort = dot1dstpptentry
+									.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_PORT);
+							
+
+								if (stpPortDesignatedBridge.equals("0000000000000000")) {
+									log.warn("storeSnmpCollection: designated bridge is invalid not adding to discoveryLink");
+								} else if (stpPortDesignatedPort.equals("0000")) {
+									log.warn("storeSnmpCollection: designated port is invalid not adding to discoveryLink");
+								} else {
+									BridgeStpInterface stpIface = new BridgeStpInterface(stpport,vlanindex);
+									stpIface.setStpPortDesignatedBridge(stpPortDesignatedBridge);
+									stpIface.setStpPortDesignatedPort(stpPortDesignatedPort);
+									m_node.addStpInterface(stpIface);
+								}
+							
+								dbStpIntEntry.updateStpPortState(stpportstate);
+								dbStpIntEntry.updateStpPortPathCost(stpportpathcost);
+								dbStpIntEntry.updateStpportDesignatedBridge(stpPortDesignatedBridge);
+								dbStpIntEntry.updateStpportDesignatedRoot(stpPortDesignatedRoot);
+								dbStpIntEntry.updateStpPortDesignatedCost(stpportdesignatedcost);
+								dbStpIntEntry.updateStpportDesignatedPort(stpPortDesignatedPort);
+								dbStpIntEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
 								dbStpIntEntry.set_lastpolltime(now);
 
 								dbStpIntEntry.store(dbConn);
 
 							}
 						}
-
-						if (snmpVlanColl.hasDot1dStpPortTable()) {
-							if (log.isDebugEnabled())
-								log
-									.debug(" store: adding Dot1dStpPortTable in stpinterface table");
-							Iterator sub_ite = snmpVlanColl.getDot1dStpPortTable()
-								.getEntries().iterator();
-							while (sub_ite.hasNext()) {
-								Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
-									.next();
-								int stpport = dot1dstpptentry.getInt32(Dot1dStpPortTableEntry.STP_PORT);
-								DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
-									.get(dbConn, m_node.getNodeId(),
-											stpport, vlan);
-								if (dbStpIntEntry == null) {
-								// Cannot create the object becouse must exists the dot1dbase
-								// object!!!!!
-									log
-											.warn("store StpInterface: when storing STP info"
-													+ " for bridge node with nodeid "
-													+ m_node.getNodeId()
-													+ " bridgeport number "
-													+ stpport
-													+ " and vlan index "
-													+ vlanindex
-													+ " info not found in database, ERROR skipping.....");
-								} else {
-
-									int stpportstate = dot1dstpptentry
-										.getInt32(Dot1dStpPortTableEntry.STP_PORT_STATE);
-									int stpportpathcost = dot1dstpptentry
-										.getInt32(Dot1dStpPortTableEntry.STP_PORT_PATH_COST);
-									String stpPortDesignatedBridge = dot1dstpptentry
-										.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_BRIDGE);
-									String stpPortDesignatedRoot = dot1dstpptentry
-										.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_ROOT);
-									int stpportdesignatedcost = dot1dstpptentry
-										.getInt32(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_COST);
-									String stpPortDesignatedPort = dot1dstpptentry
-										.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_PORT);
-								
-
-									if (stpPortDesignatedBridge.equals("0000000000000000")) {
-										log.warn("storeSnmpCollection: designated bridge is invalid not adding to discoveryLink");
-									} else if (stpPortDesignatedPort.equals("0000")) {
-										log.warn("storeSnmpCollection: designated port is invalid not adding to discoveryLink");
-									} else {
-										BridgeStpInterface stpIface = new BridgeStpInterface(stpport,vlanindex);
-										stpIface.setStpPortDesignatedBridge(stpPortDesignatedBridge);
-										stpIface.setStpPortDesignatedPort(stpPortDesignatedPort);
-										m_node.addStpInterface(stpIface);
-									}
-								
-									dbStpIntEntry.updateStpPortState(stpportstate);
-									dbStpIntEntry.updateStpPortPathCost(stpportpathcost);
-									dbStpIntEntry.updateStpportDesignatedBridge(stpPortDesignatedBridge);
-									dbStpIntEntry.updateStpportDesignatedRoot(stpPortDesignatedRoot);
-									dbStpIntEntry.updateStpPortDesignatedCost(stpportdesignatedcost);
-									dbStpIntEntry.updateStpportDesignatedPort(stpPortDesignatedPort);
-									dbStpIntEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
-									dbStpIntEntry.set_lastpolltime(now);
-
-									dbStpIntEntry.store(dbConn);
-
-								}
-							}
-						}
-					
-						if (snmpVlanColl.hasDot1dTpFdbTable()) {
-							if (log.isDebugEnabled())
-								log
-										.debug("store: parsing Dot1dTpFdbTable");
-
-							Iterator subite = snmpVlanColl.getDot1dFdbTable()
-								.getEntries().iterator();
-							while (subite.hasNext()) {
-								Dot1dTpFdbTableEntry dot1dfdbentry = (Dot1dTpFdbTableEntry) subite
-									.next();
-								String curMacAddress = dot1dfdbentry
-									.getHexString(Dot1dTpFdbTableEntry.FDB_ADDRESS);
-
-								int fdbport = dot1dfdbentry.getInt32(Dot1dTpFdbTableEntry.FDB_PORT);
-
-								if (fdbport == 0) {
-									if (log.isDebugEnabled())
-										log.debug("populateBridge: macaddress "
-											+ curMacAddress
-											+ " learned on invalid port "
-											+ fdbport + " . Skipping");
-									continue;
-								}
-
-								int curfdbstatus = dot1dfdbentry.getInt32(Dot1dTpFdbTableEntry.FDB_STATUS);
-
-								if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
-									m_node.addMacAddress(fdbport,
-										curMacAddress, vlanindex);
-									if (log.isDebugEnabled())
-										log
-											.debug("storeSnmpCollection: found learned mac address "
-													+ curMacAddress
-													+ " on bridge port "
-													+ fdbport
-													+ " for VLAN "
-													+ snmpVlanColl.getVlanIndex());
-								}
-
-								if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-									m_node.addBridgeIdentifier(curMacAddress);
-									if (log.isDebugEnabled())
-									log
-											.debug("storeSnmpCollection: found bridge identifier "
-													+ curMacAddress
-													+ " for VLAN "
-													+ snmpVlanColl.getVlanIndex()
-													+ " and bridge port "
-													+ fdbport);
-								}
-
-								if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
-									if (log.isDebugEnabled())
-										log.debug("storeSnmpCollection: macaddress "
-											+ curMacAddress
-											+ " has INVALID status on port "
-											+ fdbport + " . Skipping");
-									continue;
-								}
-
-								if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-									if (log.isDebugEnabled())
-										log.debug("storeSnmpCollection: macaddress "
-											+ curMacAddress
-											+ " has MGMT status on port "
-											+ fdbport + " . Skipping");
-									continue;
-								}
-
-								if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-									if (log.isDebugEnabled())
-										log.debug("storeSnmpCollection: macaddress "
-											+ curMacAddress
-											+ " has OTHER status on port "
-											+ fdbport + " . Skipping");
-									continue;
-								}
-
-							}
-						}
-						
-						//now adding bridge identifier mac addresses of switch from snmpinterface
-						setBridgeIdentifierFromSnmpInterface(dbConn);
 					}
+				
+					if (snmpVlanColl.hasDot1dTpFdbTable()) {
+						if (log.isDebugEnabled())
+							log
+									.debug("store: parsing Dot1dTpFdbTable");
+
+						Iterator subite = snmpVlanColl.getDot1dFdbTable()
+							.getEntries().iterator();
+						while (subite.hasNext()) {
+							Dot1dTpFdbTableEntry dot1dfdbentry = (Dot1dTpFdbTableEntry) subite
+								.next();
+							String curMacAddress = dot1dfdbentry
+								.getHexString(Dot1dTpFdbTableEntry.FDB_ADDRESS);
+
+							int fdbport = dot1dfdbentry.getInt32(Dot1dTpFdbTableEntry.FDB_PORT);
+
+							if (fdbport == 0) {
+								if (log.isDebugEnabled())
+									log.debug("populateBridge: macaddress "
+										+ curMacAddress
+										+ " learned on invalid port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+							int curfdbstatus = dot1dfdbentry.getInt32(Dot1dTpFdbTableEntry.FDB_STATUS);
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
+								m_node.addMacAddress(fdbport,
+									curMacAddress, vlanindex);
+								if (log.isDebugEnabled())
+									log
+										.debug("storeSnmpCollection: found learned mac address "
+												+ curMacAddress
+												+ " on bridge port "
+												+ fdbport
+												+ " for VLAN "
+												+ vlanindex);
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
+								m_node.addBridgeIdentifier(curMacAddress);
+								if (log.isDebugEnabled())
+								log
+										.debug("storeSnmpCollection: found bridge identifier "
+												+ curMacAddress
+												+ " for VLAN "
+												+ vlanindex
+												+ " and bridge port "
+												+ fdbport);
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
+								if (log.isDebugEnabled())
+									log.debug("storeSnmpCollection: macaddress "
+										+ curMacAddress
+										+ " has INVALID status on port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
+								if (log.isDebugEnabled())
+									log.debug("storeSnmpCollection: macaddress "
+										+ curMacAddress
+										+ " has MGMT status on port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
+								if (log.isDebugEnabled())
+									log.debug("storeSnmpCollection: macaddress "
+										+ curMacAddress
+										+ " has OTHER status on port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+						}
+					}
+
+					if (snmpVlanColl.hasQBridgeDot1dTpFdbTable()) {
+						if (log.isDebugEnabled())
+							log
+									.debug("store: parsing QBridgeDot1dTpFdbTable");
+
+						Iterator subite = snmpVlanColl.getQBridgeDot1dFdbTable()
+							.getEntries().iterator();
+						while (subite.hasNext()) {
+							QBridgeDot1dTpFdbTableEntry dot1dfdbentry = (QBridgeDot1dTpFdbTableEntry) subite
+								.next();
+							//TODO write some comments on this as soon as possible
+							
+//							String curMacAddress = dot1dfdbentry
+//								.getHexString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
+							String curMacAddress = dot1dfdbentry
+							.getDisplayString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
+
+							int fdbport = dot1dfdbentry.getInt32(QBridgeDot1dTpFdbTableEntry.FDB_PORT);
+
+							if (fdbport == 0) {
+								if (log.isDebugEnabled())
+									log.debug("populateBridge: macaddress "
+										+ curMacAddress
+										+ " learned on invalid port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+							int curfdbstatus = dot1dfdbentry.getInt32(QBridgeDot1dTpFdbTableEntry.FDB_STATUS);
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
+								m_node.addMacAddress(fdbport,
+									curMacAddress, vlanindex);
+								if (log.isDebugEnabled())
+									log
+										.debug("storeSnmpCollection: found learned mac address "
+												+ curMacAddress
+												+ " on bridge port "
+												+ fdbport
+												+ " for VLAN "
+												+ vlanindex);
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
+								m_node.addBridgeIdentifier(curMacAddress);
+								if (log.isDebugEnabled())
+								log
+										.debug("storeSnmpCollection: found bridge identifier "
+												+ curMacAddress
+												+ " for VLAN "
+												+ vlanindex
+												+ " and bridge port "
+												+ fdbport);
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
+								if (log.isDebugEnabled())
+									log.debug("storeSnmpCollection: macaddress "
+										+ curMacAddress
+										+ " has INVALID status on port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
+								if (log.isDebugEnabled())
+									log.debug("storeSnmpCollection: macaddress "
+										+ curMacAddress
+										+ " has MGMT status on port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
+								if (log.isDebugEnabled())
+									log.debug("storeSnmpCollection: macaddress "
+										+ curMacAddress
+										+ " has OTHER status on port "
+										+ fdbport + " . Skipping");
+								continue;
+							}
+
+						}
+					}
+
+					//now adding bridge identifier mac addresses of switch from snmpinterface
+					setBridgeIdentifierFromSnmpInterface(dbConn);
 				}
 			}
 		}
