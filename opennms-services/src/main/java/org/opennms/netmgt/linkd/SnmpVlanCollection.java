@@ -72,16 +72,6 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	private final InetAddress m_address;
 
 	/**
-	 * The vlan index used to collect the SNMP information
-	 */
-	public String m_vlan;
-
-	/**
-	 * The vlan name of vlan collection
-	 */
-	public String m_vlan_name;
-
-	/**
 	 * The Dot1DBridge.dot1dbase map
 	 */
 	public Dot1dBaseGroup m_dot1dbase;
@@ -107,6 +97,12 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	public Dot1dTpFdbTable m_dot1dtpFdbtable;
 
 	/**
+	 * The QbridgeDot1dTpFdb table List
+	 */
+	public QBridgeDot1dTpFdbTable m_qdot1dtpFdbtable;
+
+
+	/**
 	 * Constructs a new snmp collector for a node using the passed interface as
 	 * the collection point. The collection does not occur until the
 	 * <code>run</code> method is invoked.
@@ -119,7 +115,6 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		
 		m_agentConfig = agentConfig;
 		m_address = m_agentConfig.getAddress();
-		//if (m_agentConfig.getReadCommunity().indexOf("@") >= 0) m_vlan = m_agentConfig.getReadCommunity().split("@")[1];
 		m_dot1dbase = null;
 		m_dot1dbaseTable = null;
 		m_dot1dstp = null;
@@ -232,19 +227,26 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	}
 
 	/**
+	 * Returns true if the dot1DStpPortTable info was collected.
+	 */
+	boolean hasQBridgeDot1dTpFdbTable() {
+		return (m_qdot1dtpFdbtable!= null && !m_qdot1dtpFdbtable.failed());
+	}
+
+	/**
+	 * Returns the collected dot1stp.
+	 */
+	QBridgeDot1dTpFdbTable getQBridgeDot1dFdbTable() {
+		return m_qdot1dtpFdbtable;
+	}
+
+
+	/**
 	 * Returns the target address that the collection occured for.
 	 */
 
 	InetAddress getTarget() {
 		return m_address;
-	}
-
-	/**
-	 * Returns the vlan index.
-	 */
-
-	String getVlanIndex() {
-		return m_vlan;
 	}
 
 	/**
@@ -268,6 +270,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 			m_dot1dstp = new Dot1dStpGroup(m_address);
 			m_dot1dstptable = new Dot1dStpPortTable(m_address);
 			m_dot1dtpFdbtable = new Dot1dTpFdbTable(m_address);
+			
 	
 	        SnmpWalker walker = 
 	        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dBaseTable/dot1dStp/dot1dStpTable/dot1dTpFdbTable ", 
@@ -315,6 +318,38 @@ final class SnmpVlanCollection implements ReadyRunnable {
 				log
 						.info("run: failed to collect Dot1dTpFdbTable for "
 								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+			
+			//if not found macaddresses forwarding table find it in Qbridge
+			//ExtremeNetwork works.....
+			
+			if (m_dot1dtpFdbtable.getEntries().isEmpty()) {
+				
+				log
+				.info("run: Trying to collect QbridgeDot1dTpFdbTable for "
+						+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+				m_qdot1dtpFdbtable = new QBridgeDot1dTpFdbTable(m_address);
+		        walker = 
+		        	SnmpUtils.createWalker(m_agentConfig, "qBridgedot1dTpFdbTable ", 
+		        			new CollectionTracker[] { m_qdot1dtpFdbtable });
+
+		        walker.start();
+
+		        try {
+		            // wait a maximum of five minutes!
+		            //
+		            // FIXME: Why do we do this. If we are successfully processing responses shouldn't we keep going?
+		            walker.waitFor(300000);
+		        } catch (InterruptedException e) {
+					m_qdot1dtpFdbtable = null;
+
+		            log.warn("SnmpVlanCollection.run: collection interrupted", e);
+		            
+		        }
+			}
+			if (!this.hasQBridgeDot1dTpFdbTable())
+				log
+						.info("run: failed to collect QBridgeDot1dTpFdbTable for "
+								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
 
 	}
 
@@ -322,13 +357,4 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		return true;
 	}
 
-	public void setVlan(String m_vlan) {
-		this.m_vlan = m_vlan;
-	}
-	public String getVlanName() {
-		return m_vlan_name;
-	}
-	public void setVlanName(String m_vlan_name) {
-		this.m_vlan_name = m_vlan_name;
-	}
-	}
+}
