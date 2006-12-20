@@ -56,7 +56,6 @@
 				org.opennms.web.graph.ResourceId,
 				org.opennms.web.performance.*,
 				org.opennms.netmgt.utils.IfLabel,
-				org.opennms.web.response.*,
 				org.springframework.web.context.WebApplicationContext,
 	        	org.springframework.web.context.support.WebApplicationContextUtils
 		"
