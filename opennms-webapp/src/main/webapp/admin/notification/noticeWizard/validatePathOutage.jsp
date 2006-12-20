@@ -45,7 +45,7 @@
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.Util,
 		org.opennms.netmgt.filter.Filter,
-		org.opennms.netmgt.filter.FilterParseException,
+		org.opennms.netmgt.filter.FilterParseException
 	"
 %>
 
