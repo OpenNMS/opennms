@@ -6,7 +6,7 @@
 # The release number is set to 0 unless overridden
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix is equal to $OPENMS_HOME
-%{!?instprefix:%define instprefix /opt/OpenNMS}
+%{!?instprefix:%define instprefix /opt/opennms}
 # I think this is the directory where the package will be built
 %{!?packagedir:%define packagedir opennms-%version-%{releasenumber}}
 # This is where the OPENNMS_HOME variable will be set on the remote 
@@ -289,9 +289,9 @@ echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
 
-mkdir -p $RPM_BUILD_ROOT/opt/OpenNMS
+mkdir -p $RPM_BUILD_ROOT/opt/opennms
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{releasenumber}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT/opt/OpenNMS
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{releasenumber}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT/opt/opennms
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -406,6 +406,7 @@ else
 fi
 
 rm -f %{instprefix}/etc/configured
+ln -s %{instprefix}/bin/opennms %{initdir}/init.d/opennms
 
 echo ""
 echo " *** Installation complete.  You must still run the installer and"
