@@ -107,6 +107,10 @@ public final class GpPlugin extends AbstractPlugin {
      * @param regex
      *            The regular expression used to determine banner match
      * @param bannerResult
+     * @param hoption
+     *            The option string passed to the exec for the IP address (hostname)
+     * @param toption
+     *            The option string passed to the exec for the timeout
      * 
      * @return True if a connection is established with the script and the
      *         banner line returned by the script matches the regular expression
