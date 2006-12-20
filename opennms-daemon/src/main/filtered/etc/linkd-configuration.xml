@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <linkd-configuration auto-discovery="false" enable-vlan-discovery="true" threads="30" initial_sleep_time="600000" snmp_poll_interval="1800000" discovery_link_interval="300000">
   <vlans>
-	<vendor vendor_name="3Com" sysoidRootMask=".1.3.6.1.4.1.43.10.27.4.1" class-name="org.opennms.netmgt.linkd.snmp.ThreeComVlanPortTable">
-		   <specific>2.2</specific>
-		   <specific>2.4</specific>
-		   <specific>2.11</specific>
-	</vendor>
-	<vendor vendor_name="Nortel" sysoidRootMask=".1.3.6.1.4.1.45.3" class-name="org.opennms.netmgt.linkd.snmp.RapidCityVlanPortTable">
-		   <specific>61.1</specific>
+
+	<vendor vendor_name="3Com" sysoidRootMask=".1.3.6.1.4.1.43" class-name="org.opennms.netmgt.linkd.snmp.ThreeComVlanTable">
+    	<specific>1.9.13.3.1</specific>
+        <specific>10.27.4.1.2.2</specific>
+        <specific>10.27.4.1.2.4</specific>
+        <specific>10.27.4.1.2.11</specific>
+        <specific>1.16.4.3.5</specific>
+        <specific>1.16.4.3.6</specific>
 	</vendor>
 
-	<vendor vendor_name="Intel" sysoidRootMask=".1.3.6.1.4.1.343.5" class-name="org.opennms.netmgt.linkd.snmp.IntelVlanPortTable">
+    <vendor vendor_name="3Com3870" sysoidRootMask=".1.3.6.1.4.1.43.1" class-name="org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable">
+    	<specific>8.43</specific>
+    </vendor>
+
+	<vendor vendor_name="Nortel" sysoidRootMask=".1.3.6.1.4.1.45.3" class-name="org.opennms.netmgt.linkd.snmp.RapidCityVlanTable">
+		   <specific>61.1</specific>
+		   <specific>35.1</specific>
+		   <specific>53.1</specific>
+	</vendor>
+
+	<vendor vendor_name="Intel" sysoidRootMask=".1.3.6.1.4.1.343.5" class-name="org.opennms.netmgt.linkd.snmp.IntelVlanTable">
 		   <specific>1.5</specific>
 	</vendor>
-	<vendor vendor_name="HP Networks" sysoidRootMask=".1.3.6.1.4.1.11.2.3.7" class-name="org.opennms.netmgt.linkd.snmp.HpVlanPortTable">
+
+	<vendor vendor_name="HP Networks" sysoidRootMask=".1.3.6.1.4.1.11.2.3.7" class-name="org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable">
 		   <specific>11.1</specific>
 		   <specific>11.3</specific>
 		   <specific>11.13</specific>
@@ -29,7 +41,8 @@
 	    	     <end>11.11</end>
 	       </include-range>
 	</vendor>
-	<vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9" class-name="org.opennms.netmgt.linkd.snmp.CiscoVlanPortTable">
+	
+	<vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9" class-name="org.opennms.netmgt.linkd.snmp.CiscoVlanTable">
 		   <specific>1.217</specific>
 		   <specific>1.218</specific>
 		   <specific>1.221</specific>
@@ -40,7 +53,13 @@
 		   <specific>1.366</specific>
 		   <specific>1.367</specific>
 		   <specific>5.46</specific>
-		   
 	</vendor>
-  </vlans>
+	
+	<vendor vendor_name="Extreme Networks" sysoidRootMask=".1.3.6.1.4.1.1916" class-name="org.opennms.netmgt.linkd.snmp.ExtremeNetworkVlanTable">
+    	<specific>1.1</specific>
+        <specific>2.28</specific>
+        <specific>2.63</specific>
+    </vendor>
+		   
+</vlans>
 </linkd-configuration>
