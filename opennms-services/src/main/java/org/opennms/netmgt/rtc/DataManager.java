@@ -346,13 +346,14 @@ public class DataManager extends Object {
     			"               OR  o.ifRegainedService is null " +
     			"            )" +
     			"          ) " +
-                (query == null ? "" : "where "+query) +
+    			" where ifsvc.status='A' " +
+                (query == null ? "" : "and "+query) +
     			" order by " + 
     			"       ifsvc.nodeid, ifsvc.ipAddr, ifsvc.serviceid, o.ifLostService ";
     	
 		long window = (new Date()).getTime() - RTCManager.getRollingWindow();
 		Timestamp windowTS = new Timestamp(window);
-    	
+
     	RowCallbackHandler rowHandler = new RTCNodeProcessor();
 
     	Object[] sqlArgs = createArgs(windowTS, windowTS, args);
