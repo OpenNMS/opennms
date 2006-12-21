@@ -50,7 +50,7 @@ public class TrapdTest extends OpenNMSTestCase {
         pdu.setEnterprise(SnmpObjId.get(".1.3.6.1.4.1.5813"));
         pdu.setGeneric(1);
         pdu.setSpecific(0);
-        pdu.setTimeStamp(System.currentTimeMillis());
+        pdu.setTimeStamp(666L);
         pdu.setAgentAddress(localAddr);
         
 

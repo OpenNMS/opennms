@@ -43,6 +43,11 @@ public interface SnmpV1TrapBuilder extends SnmpTrapBuilder {
 
     void setSpecific(int specific);
 
+    /**
+     *  
+     * @param timeStamp
+     * A timestamp value, in TimeTicks (centiseconds), not to exceed 2^32-1
+     */
     void setTimeStamp(long timeStamp);
 
 }
