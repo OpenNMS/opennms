@@ -102,6 +102,7 @@ public class StateMachineManagerTest extends TestCase {
 
 		try {
 			byte[] temp = new byte[1024*1024*32];
+			temp[0] = 1;
 		} catch (OutOfMemoryError err) {
 			fail("Memory should have been freed up by BigListener");
 		}
