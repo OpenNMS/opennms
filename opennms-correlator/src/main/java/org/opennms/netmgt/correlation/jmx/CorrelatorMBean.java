@@ -1,12 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,16 +30,18 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.netmgt.correlation;
+package org.opennms.netmgt.correlation.jmx;
 
-import java.util.List;
+public interface CorrelatorMBean {
+    public void init();
 
-import org.opennms.netmgt.xml.event.Event;
+    public void start();
 
-public interface CorrelationEngine {
+    public void stop();
 
-	List<String> getInterestingEvents();
+    public int getStatus();
 
-	void correlate(Event e);
+    public String getStatusText();
 
+    public String status();
 }

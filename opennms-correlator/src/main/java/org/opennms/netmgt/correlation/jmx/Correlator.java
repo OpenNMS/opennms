@@ -1,12 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,16 +30,43 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.netmgt.correlation;
+package org.opennms.netmgt.correlation.jmx;
 
-import java.util.List;
+import org.springframework.beans.factory.access.BeanFactoryLocator;
+import org.springframework.beans.factory.access.BeanFactoryReference;
+import org.springframework.context.access.DefaultLocatorFactory;
 
-import org.opennms.netmgt.xml.event.Event;
 
-public interface CorrelationEngine {
+public class Correlator implements CorrelatorMBean {
 
-	List<String> getInterestingEvents();
+	public void init() {
+        getBean().init();
+    }
 
-	void correlate(Event e);
+	private org.opennms.netmgt.correlation.Correlator getBean() {
+		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
+        BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
+        org.opennms.netmgt.correlation.Correlator correlator = (org.opennms.netmgt.correlation.Correlator) bf.getFactory().getBean("correlator");
+		return correlator;
+	}
 
+    public void start() {
+        getBean().start();
+    }
+
+    public void stop() {
+        getBean().stop();
+    }
+
+    public int getStatus() {
+        return getBean().getStatus();
+    }
+
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 }

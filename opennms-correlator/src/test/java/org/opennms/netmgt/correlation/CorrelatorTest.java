@@ -74,6 +74,7 @@ public class CorrelatorTest extends TestCase {
 	}
 	
 	public void testRegisterForEvents() throws Exception {
+		
 		List<String> interestingEvents = Collections.singletonList("uei.opennms.org:/testEvent");
 		
 		expect(m_engine.getInterestingEvents()).andReturn(interestingEvents);
@@ -84,7 +85,6 @@ public class CorrelatorTest extends TestCase {
 		m_correlator.afterPropertiesSet();
 		
 		verifyMocks();
-
 		
 	}
 	
@@ -100,6 +100,7 @@ public class CorrelatorTest extends TestCase {
 	
 	private void verifyMocks() {
 		EasyMock.verify(mocks.toArray());
+		EasyMock.reset(mocks.toArray());
 	}
 	
 	

@@ -30,7 +30,6 @@
 
 package org.opennms.netmgt.correlation;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,8 +37,6 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Log;
 import org.springframework.util.Assert;
 
 public class Correlator extends AbstractServiceDaemon {
@@ -63,13 +60,7 @@ public class Correlator extends AbstractServiceDaemon {
 		}
 
 		public void onEvent(Event e) {
-			List<Event> correlatedEvents = m_engine.correlate(e);
-			Log log = new Log();
-			Events events = new Events();
-			log.setEvents(events);
-			events.setEvent(new ArrayList<Event>(correlatedEvents));
-			
-			m_eventIpcManager.sendNow(log);
+			m_engine.correlate(e);
 		}
 		
 	}
