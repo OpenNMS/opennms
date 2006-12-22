@@ -1,14 +1,12 @@
 package org.opennms.netmgt.correlation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class StateMachineManager {
 	
 	private Map<Integer, StateMachine> m_machines = new HashMap<Integer, StateMachine>();
-	private List<MachineLifetimeListener> m_listeners = new ArrayList<MachineLifetimeListener>();
+	private SoftReferenceList<MachineLifetimeListener> m_listeners = new SoftReferenceList<MachineLifetimeListener>();
 	
 	/**
 	 * Listeners add via this method are stored as references and will be garbage
@@ -49,10 +47,13 @@ public class StateMachineManager {
 		MachineLifetimeListener[] listeners = getListeners();
 		MachineLifetimeEvent e = null;
 		for (MachineLifetimeListener listener : listeners) {
-			if (e == null) {
-				e = new MachineLifetimeEvent(this, MachineLifetimeEvent.Type.MACHINE_CREATED, stateMachine);
+			// the listener may be null if it has been garbage collected
+			if (listener != null) {
+				if (e == null) {
+					e = new MachineLifetimeEvent(this, MachineLifetimeEvent.Type.MACHINE_CREATED, stateMachine);
+				}
+				listener.machineCreated(e);
 			}
-			listener.machineCreated(e);
 		}
 	}
 
@@ -60,10 +61,13 @@ public class StateMachineManager {
 		MachineLifetimeListener[] listeners = getListeners();
 		MachineLifetimeEvent e = null;
 		for (MachineLifetimeListener listener : listeners) {
-			if (e == null) {
-				e = new MachineLifetimeEvent(this, MachineLifetimeEvent.Type.MACHINE_COMPLETED, stateMachine);
+			// the listener may be null if it has been garbage collected
+			if (listener != null) {
+				if (e == null) {
+					e = new MachineLifetimeEvent(this, MachineLifetimeEvent.Type.MACHINE_COMPLETED, stateMachine);
+				}
+				listener.machineCompleted(e);
 			}
-			listener.machineCompleted(e);
 		}
 	}
 
