@@ -226,7 +226,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     public void visitResource(CollectionResource resource) {
-        log().info("Persiting data for resource "+resource);
+        log().info("Persisting data for resource "+resource);
         pushShouldPersist(resource);
     }
 
