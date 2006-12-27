@@ -55,11 +55,13 @@
 		    	  var fullscreen=vmf.fullscreen.value;
   		    	  var refresh=vmf.refresh.value;	
   		    	  var dimension=vmf.dimension.value;
-  		    	  
+			
+			  var scrollBarOffset=0;
+			  var marginOffset=50;  		    	  
 			  var width,height;
 			  if(dimension=="auto")
 				{
-				var scrollBarOffset=0;
+
 				if (navigator.appName=="Netscape") {
 					  scrollBarOffset=16;
 				}
@@ -67,7 +69,7 @@
 					  scrollBarOffset=20;
 				}
 				//available pixels - 200(=menu width) - scrollbar offset (depending on browser)
-                		var availWidth=screen.availWidth-200-scrollBarOffset;
+                		var availWidth=screen.availWidth-200-scrollBarOffset-marginOffset;
 				//var availHeight=screen.availableHeight;
 				if(availWidth>=1600){
 						width=1600;
