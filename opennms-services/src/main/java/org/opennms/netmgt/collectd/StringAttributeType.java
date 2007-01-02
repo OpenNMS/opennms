@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.config.MibObject;
+
 public class StringAttributeType extends AttributeType {
     
     public static boolean supportsType(String rawType) {

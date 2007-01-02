@@ -50,10 +50,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
-import org.opennms.netmgt.utils.IPSorter;
 
 /**
  * This class represents a singular instance that is used to check address to

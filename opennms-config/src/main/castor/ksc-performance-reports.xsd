@@ -45,11 +45,13 @@
     <complexType>
       <attribute name="title" type="string" use="required"/>
 
+      <attribute name="resourceId" type="string" use="optional"/>
+      
       <attribute name="nodeId" type="string" use="optional"/>
 
       <attribute name="domain" type="string" use="optional"/>
 
-      <attribute name="interfaceId" type="string" use="required"/>
+      <attribute name="interfaceId" type="string" use="optional"/>
 
       <attribute name="timespan" type="string" use="required"/>
 

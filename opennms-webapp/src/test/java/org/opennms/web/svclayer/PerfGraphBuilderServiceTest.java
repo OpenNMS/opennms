@@ -11,9 +11,9 @@ import java.util.LinkedList;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.AttributeDao;
+import org.opennms.netmgt.dao.AttributeSecretDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsSecretAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -23,12 +23,12 @@ public class PerfGraphBuilderServiceTest extends TestCase {
 	
 	DefaultPerfGraphBuilderService m_perfGraphBuilderService;
 	NodeDao m_mockNodeDao;
-	AttributeDao m_mockAttributeDao;
+	AttributeSecretDao m_mockAttributeDao;
 
 	protected void setUp() throws Exception {
 		
 		m_mockNodeDao = createMock(NodeDao.class);
-		m_mockAttributeDao = createMock(AttributeDao.class);
+		m_mockAttributeDao = createMock(AttributeSecretDao.class);
 		
 		m_perfGraphBuilderService = new DefaultPerfGraphBuilderService();
 		m_perfGraphBuilderService.setNodeDao(m_mockNodeDao);
@@ -43,17 +43,17 @@ public class PerfGraphBuilderServiceTest extends TestCase {
 	
 	class AttributeBuilder {
 
-		private Collection<OnmsAttribute> m_attributes;
+		private Collection<OnmsSecretAttribute> m_attributes;
 
 		public void addAttribute(String id, String label) {
 			if (m_attributes == null)
-				m_attributes = new LinkedList<OnmsAttribute>();
+				m_attributes = new LinkedList<OnmsSecretAttribute>();
 			
-			OnmsAttribute attr = new OnmsAttribute(id, label);
+			OnmsSecretAttribute attr = new OnmsSecretAttribute(id, label);
 			m_attributes.add(attr);
 		}
 
-		public Collection<OnmsAttribute> getAttributes() {
+		public Collection<OnmsSecretAttribute> getAttributes() {
 			return m_attributes;
 		}
 		
@@ -137,7 +137,7 @@ public class PerfGraphBuilderServiceTest extends TestCase {
 			for (String svcName : svcTypes) {
 				
 				OnmsMonitoredService svc = ifBuilder.addService(svcName);
-				OnmsAttribute attr = new OnmsAttribute("svc:192.168.1."+i+":"+svcName+":responseTime", "responseTime");
+				OnmsSecretAttribute attr = new OnmsSecretAttribute("svc:192.168.1."+i+":"+svcName+":responseTime", "responseTime");
 
 				//expect(m_mockAttributeDao.getResponseTimeAttributeForService(svc)).andReturn(attr);
 				//paletteBuilder.addItem("svc:192.168.1."+i+":"+svcName+":responseTime", svcName);

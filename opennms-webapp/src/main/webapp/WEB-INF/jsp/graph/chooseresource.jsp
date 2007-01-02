@@ -129,17 +129,17 @@
   </script>
 
   <h2>
-    ${model.parentResourceTypeLabel}: <a href="<c:url value='${model.parentResourceLink}'/>">${model.parentResourceLabel}</a>
+    ${model.resource.resourceType.label}: <a href="<c:url value='${model.resource.link}'/>">${model.resource.label}</a>
   </h2> 
 
   <c:choose>
-	<c:when test="${empty model.resourceTypes}">
+  <c:when test="${empty model.resourceTypes}">
       <p>
-	    No resources are available to graph for this ${model.parentResourceTypeLabel}
+      No resources are available to graph.
       </p>
-	</c:when>
-	
-	<c:otherwise>
+  </c:when>
+  
+  <c:otherwise>
       <h3>
         Choose resources to query
       </h3>
@@ -149,7 +149,7 @@
       </p>
 
       <form method="GET" name="report" action="${model.endUrl}">
-        <%=Util.makeHiddenTags(request, new String[] { "parentResourceType", "parentResource", "endUrl"})%>
+        <%=Util.makeHiddenTags(request, new String[] { "parentResourceId", "parentResourceType", "parentResource", "endUrl" })%>
   
         <c:set var="num" value="0"/>
         <c:forEach var="resourceType" items="${model.resourceTypes}">
@@ -167,7 +167,7 @@
         
           <select name="resourceId" id="resource-select-${num}" size="${selectSize}" multiple>
             <c:forEach var="resource" items="${resourceType.value}">
-              <option value="${resource.resourceId}">
+              <option value="${resource.id}">
                 ${resource.label}
               </option>
             </c:forEach>
@@ -187,7 +187,7 @@
           selectIfOnlyOneResource("resourceId");
       </script>
       
-	</c:otherwise>
+  </c:otherwise>
   </c:choose>
   
 <jsp:include page="/includes/footer.jsp" flush="false" />

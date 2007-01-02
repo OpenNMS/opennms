@@ -86,7 +86,7 @@
     
     <form action="${requestScope.relativeRequestPath}" method="get">
         <c:forEach var="resultSet" items="${results.graphResultSets}">
-          <input type="hidden" name="resourceId" value="${resultSet.resourceId}"/>
+          <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
         </c:forEach>
         <c:forEach var="report" items="${results.reports}">
           <input type="hidden" name="reports" value="${report}"/>
@@ -99,7 +99,15 @@
 
       <select name="startMonth" size="1">
         <c:forEach var="month" items="${results.monthMap}">
-          <option value="${month.key}" <c:if test="${month.key == results.startCalendar.month}">selected</c:if>>${month.value}</option>
+          <c:choose>
+            <c:when test="${month.key == results.startCalendar.month}">
+              <c:set var="selected" value="selected"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="selected" value=""/>
+            </c:otherwise>
+          </c:choose>
+          <option value="${month.key}" ${selected}>${month.value}</option>
         </c:forEach>
       </select>
 
@@ -108,7 +116,15 @@
 
       <select name="startHour" size="1">
         <c:forEach var="hour" items="${results.hourMap}">
-          <option value="${hour.key}" <c:if test="${hour.key == results.startCalendar.hourOfDay}">selected</c:if>>${hour.value}</option>
+          <c:choose>
+            <c:when test="${hour.key == results.startCalendar.hourOfDay}">
+              <c:set var="selected" value="selected"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="selected" value=""/>
+            </c:otherwise>
+          </c:choose>
+          <option value="${hour.key}" ${selected}>${hour.value}</option>
         </c:forEach>
       </select>          
 
@@ -118,7 +134,15 @@
 
       <select name="endMonth" size="1">
         <c:forEach var="month" items="${results.monthMap}">
-          <option value="${month.key}" <c:if test="${month.key == results.endCalendar.month}">selected</c:if>>${month.value}</option>
+          <c:choose>
+            <c:when test="${month.key == results.endCalendar.month}">
+              <c:set var="selected" value="selected"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="selected" value=""/>
+            </c:otherwise>
+          </c:choose>
+          <option value="${month.key}" ${selected}>${month.value}</option>
         </c:forEach>
       </select>
 
@@ -127,7 +151,15 @@
 
       <select name="endHour" size="1">
         <c:forEach var="hour" items="${results.hourMap}">
-          <option value="${hour.key}" <c:if test="${hour.key == results.endCalendar.hourOfDay}">selected</c:if>>${hour.value}</option>
+          <c:choose>
+            <c:when test="${hour.key == results.endCalendar.hourOfDay}">
+              <c:set var="selected" value="selected"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="selected" value=""/>
+            </c:otherwise>
+          </c:choose>
+          <option value="${hour.key}" ${selected}>${hour.value}</option>
         </c:forEach>
       </select>          
 
@@ -143,27 +175,29 @@
 
 
   <c:forEach var="resultSet" items="${results.graphResultSets}">
-	<h3>${resultSet.parentResourceTypeLabel}: <c:choose>
-      <c:when test="${!empty resultSet.parentResourceLink}">
-        <a href="<c:url value='${resultSet.parentResourceLink}'/>">${resultSet.parentResourceLabel}</a>
-      </c:when>
-      <c:otherwise>
-        ${resultSet.parentResourceLabel}
-      </c:otherwise>
-    </c:choose>
-	
-	<c:if test="${!empty resultSet.resource}">
-      <br />
-      ${resultSet.resourceTypeLabel}:
+    <h3>
+      ${resultSet.resource.parent.resourceType.label}:
       <c:choose>
-			<c:when test="${!empty resultSet.resourceLink}">
-				<a href="<c:url value='${resultSet.resourceLink}'/>">${resultSet.resourceLabel}</a>
-			</c:when>
-			<c:otherwise>
-          ${resultSet.resourceLabel}
+        <c:when test="${!empty resultSet.resource.parent.link}">
+          <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+        </c:when>
+        <c:otherwise>
+          ${resultSet.resource.parent.label}
+        </c:otherwise>
+      </c:choose>
+  
+      <c:if test="${!empty resultSet.resource}">
+        <br />
+        ${resultSet.resource.resourceType.label}:
+        <c:choose>
+          <c:when test="${!empty resultSet.resource.link}">
+            <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
+          </c:when>
+          <c:otherwise>
+            ${resultSet.resource.label}
           </c:otherwise>
-		</c:choose>
-	  </c:if>
+        </c:choose>
+      </c:if>
     </h3>
     
     
@@ -180,7 +214,7 @@
 	  </style>
 	  
 	  <c:url var="graphUrl" value="graph/graph.png">
-        <c:param name="resourceId" value="${resultSet.resourceId}"/>
+        <c:param name="resourceId" value="${resultSet.resource.id}"/>
         <c:param name="report" value="${resultSet.graphs[0].name}"/>
         <c:param name="start" value="${results.start.time}"/>
         <c:param name="end" value="${results.end.time}"/>
@@ -196,14 +230,14 @@
         <c:url var="zoomUrl" value="${requestScope.relativeRequestPath}">
           <c:param name="zoom" value="true"/>
           <c:param name="relativetime" value="custom"/>
-          <c:param name="resourceId" value="${resultSet.resourceId}"/>
+          <c:param name="resourceId" value="${resultSet.resource.id}"/>
           <c:param name="reports" value="${graph.name}"/>
           <c:param name="start" value="${results.start.time}"/>
           <c:param name="end" value="${results.end.time}"/>
 		</c:url>
 		
 		<c:url var="graphUrl" value="graph/graph.png">
-		  <c:param name="resourceId" value="${resultSet.resourceId}"/>
+		  <c:param name="resourceId" value="${resultSet.resource.id}"/>
           <c:param name="report" value="${graph.name}"/>
           <c:param name="start" value="${results.start.time}"/>
           <c:param name="end" value="${results.end.time}"/>
@@ -226,7 +260,7 @@
 
 <c:url var="relativeTimeReloadUrl" value="${requestScope.relativeRequestPath}">
   <c:forEach var="resultSet" items="${results.graphResultSets}">
-    <c:param name="resourceId" value="${resultSet.resourceId}"/>
+    <c:param name="resourceId" value="${resultSet.resource.id}"/>
   </c:forEach>
   <c:forEach var="report" items="${results.reports}">
     <c:param name="reports" value="${report}"/>
@@ -263,7 +297,7 @@
     <c:param name="zoom" value="true"/>
     <c:param name="relativetime" value="custom"/>
     <c:forEach var="resultSet" items="${results.graphResultSets}">
-      <c:param name="resourceId" value="${resultSet.resourceId}"/>
+      <c:param name="resourceId" value="${resultSet.resource.id}"/>
     </c:forEach>
     <c:param name="reports" value="${results.reports[0]}"/>
   </c:url>

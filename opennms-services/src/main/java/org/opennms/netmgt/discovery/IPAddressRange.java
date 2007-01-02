@@ -40,7 +40,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.opennms.netmgt.utils.IPSorter;
+import org.opennms.core.utils.IPSorter;
 
 /**
  * <P>

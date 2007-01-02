@@ -17,14 +17,14 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
 import org.opennms.netmgt.config.threshd.IncludeRange;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.filter.Filter;
-import org.opennms.netmgt.utils.IPSorter;
-import org.opennms.netmgt.utils.IpListFromUrl;
 
 /**
  * @author mhuot

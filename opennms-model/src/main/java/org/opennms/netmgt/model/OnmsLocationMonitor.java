@@ -89,7 +89,7 @@ public class OnmsLocationMonitor {
 
     //private OnmsMonitoringLocationDefinition m_locationDefinition;
 
-	private Map<String, String> m_details;
+    private Map<String, String> m_details;
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -156,15 +156,15 @@ public class OnmsLocationMonitor {
     }
 
     @CollectionOfElements
-    @JoinTable(name="location_Monitor_details", joinColumns = @JoinColumn(name="locationMonitorId"))
+    @JoinTable(name="location_monitor_details", joinColumns = @JoinColumn(name="locationMonitorId"))
     @MapKey(columns=@Column(name="property"))
     @Column(name="propertyValue", nullable=false)
-	public Map<String, String> getDetails() {
-		return m_details;
-	}
+    public Map<String, String> getDetails() {
+        return m_details;
+    }
 
-	public void setDetails(Map<String, String> pollerDetails) {
-		m_details = pollerDetails;
-	}
+    public void setDetails(Map<String, String> pollerDetails) {
+        m_details = pollerDetails;
+    }
     
 }

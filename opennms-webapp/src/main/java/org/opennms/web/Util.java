@@ -41,7 +41,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -195,58 +194,6 @@ public abstract class Util extends Object {
         return (hostname);
     }
 
-    /**
-     * Method used to convert an integer bits-per-second value and a more
-     * commonly recognized abbreviation for network interface speeds. Feel free
-     * to expand it as necessary to accomodate different values.
-     * 
-     * @param ifSpeed
-     *            The bits-per-second value to be converted into a string
-     *            description
-     * @return A string representation of the speed (&quot;100 Mbps&quot; for
-     *         example)
-     */
-    public static String getHumanReadableIfSpeed(long ifSpeed) {
-        /*
-         * Always print at least one digit after the decimal point,
-         * and at most three digits after the decimal point.
-         */
-        DecimalFormat oneDigitAfterDecimal = new DecimalFormat("0.0##");
-        // Print no digits after the decimal point (heh, nor a decimal point)
-        DecimalFormat noDigitsAfterDecimal = new DecimalFormat("0");
-        
-        DecimalFormat formatter;
-        double displaySpeed;
-        String units;
-        
-        if (ifSpeed >= 1000000000L) {
-            formatter = oneDigitAfterDecimal;
-            displaySpeed = ((double) ifSpeed) / 1000000000;
-            units = "Gbps";
-        } else if (ifSpeed >= 1000000L) {
-            if ((ifSpeed % 1000000L) == 0) {
-                formatter = noDigitsAfterDecimal;
-            } else {
-                formatter = oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000000;
-            units = "Mbps";
-        } else if (ifSpeed >= 1000L) {
-            if ((ifSpeed % 1000L) == 0) {
-                formatter = noDigitsAfterDecimal;
-            } else {
-                formatter = oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000;
-            units = "kbps";
-        } else {
-            formatter = noDigitsAfterDecimal;
-            displaySpeed = (double) ifSpeed;
-            units = "bps";
-        }
-        
-        return formatter.format(displaySpeed) + " " + units;
-    }
 
     /**
      * Creates hidden tags for all the parameters given in the request.

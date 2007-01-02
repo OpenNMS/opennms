@@ -58,6 +58,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
@@ -77,8 +79,6 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.utils.IPSorter;
-import org.opennms.netmgt.utils.IpListFromUrl;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 
 /**

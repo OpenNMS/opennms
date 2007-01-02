@@ -60,6 +60,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.capsd.DbIfServiceEntry;
@@ -73,7 +74,6 @@ import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.capsd.SmbAuth;
 import org.opennms.netmgt.config.capsd.SmbConfig;
 import org.opennms.netmgt.config.common.Range;
-import org.opennms.netmgt.utils.IPSorter;
 
 public abstract class CapsdConfigManager implements CapsdConfig {
 

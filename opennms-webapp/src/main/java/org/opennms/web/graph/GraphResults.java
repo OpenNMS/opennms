@@ -1,6 +1,5 @@
 package org.opennms.web.graph;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -9,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.web.performance.PerformanceModel;
+import org.opennms.netmgt.model.OnmsResource;
 
 public class GraphResults {
     //note these run from 0-11, this is because of java.util.Calendar!
@@ -42,6 +41,7 @@ public class GraphResults {
     private List<GraphResultSet> m_graphResultSets =
         new LinkedList<GraphResultSet>();
     
+    // FIXME: this is very US-centric; can we have it use the system locale?
     static {
         s_monthMap = new LinkedHashMap<Integer, String>();
         for (int i = 0; i < s_months.length; i++) {
@@ -129,138 +129,37 @@ public class GraphResults {
         return m_graphResultSets;
     }
     
+    public String[] getReports() {
+        return m_reports;
+    }
+
+    public void setReports(String[] reports) {
+        m_reports = reports;
+    }
+
     public class GraphResultSet {
-        private Graph[] m_graphs;
+        private List<Graph> m_graphs = null;
         
-        private String m_parentResourceType;
-        private String m_parentResourceTypeLabel;
-        private String m_parentResource;
-        private String m_parentResourceLabel;
-        private String m_parentResourceLink;
-        private String m_resourceType;
-        private String m_resourceTypeLabel;
-        private String m_resource = null;
-        private String m_resourceLabel;
-        private String m_resourceLink;
+        private OnmsResource m_resource;
         
-
-        public void setResourceType(String resourceType) {
-            m_resourceType = resourceType;
+        public GraphResultSet() {
         }
         
-        public String getResourceType() {
-            return m_resourceType;
-        }
-
-        public void setResourceTypeLabel(String resourceTypeLabel) {
-            m_resourceTypeLabel = resourceTypeLabel;
-        }
-        
-        public String getResourceTypeLabel() {
-            return m_resourceTypeLabel;
-        }
-
-        public String getParentResourceType() {
-            return m_parentResourceType;
-        }
-
-        public void setParentResourceType(String parentResourceType) {
-            m_parentResourceType = parentResourceType;
-        }
-
-        public String getParentResource() {
-            return m_parentResource;
-        }
-
-        public void setParentResource(String parentResource) {
-            m_parentResource = parentResource;
-        }
-
-        public String getParentResourceTypeLabel() {
-            return m_parentResourceTypeLabel;
-        }
-
-        public void setParentResourceTypeLabel(String parentResourceTypeLabel) {
-            m_parentResourceTypeLabel = parentResourceTypeLabel;
-        }
-
-        public String getResourceLink() {
-            return m_resourceLink;
-        }
-
-        public void setResourceLink(String resourceLink) {
-            m_resourceLink = resourceLink;
-        }
-
-        public String getParentResourceLink() {
-            return m_parentResourceLink;
-        }
-
-        public void setParentResourceLink(String parentResourceLink) {
-            m_parentResourceLink = parentResourceLink;
-        }
-
-        public String getParentResourceLabel() {
-            return m_parentResourceLabel;
-        }
-
-        public void setParentResourceLabel(String parentResourceLabel) {
-            m_parentResourceLabel = parentResourceLabel;
-        }
-
-        public void setResource(String resource) {
+        public void setResource(OnmsResource resource) {
             m_resource = resource;
         }
-
-        public String getResource() {
+        
+        public OnmsResource getResource() {
             return m_resource;
         }
 
-        public void setResourceLabel(String resourceLabel) {
-            m_resourceLabel = resourceLabel;
-        }
-
-        public String getResourceLabel() {
-            return m_resourceLabel;
-        }
-        
-        public String getResourceId() {
-            ResourceId r = new ResourceId(m_parentResourceType,
-                                          m_parentResource,
-                                          m_resourceType,
-                                          m_resource);
-            return r.getResourceId();
-        }
-
-        /**
-         * Convert the report names to graph objects.
-         */
-        public void initializeGraphs(PerformanceModel model, String[] reports) {
-            m_graphs = new Graph[reports.length];
-
-            for (int i=0; i < reports.length; i++) {
-                PrefabGraph prefabGraph = model.getQuery(reports[i]);
-
-                if (prefabGraph == null) {
-                    throw new IllegalArgumentException("Unknown report name: " +
-                                                       reports[i]);
-                }
-
-                m_graphs[i] = new Graph(prefabGraph, m_parentResourceType, m_parentResource, m_resourceType, m_resource,
-                                        m_start, m_end);
-            }
-
-            /*
-             * Sort the graphs by their order in the properties file.
-             * PrefabGraph implements the Comparable interface.
-             */
-            Arrays.sort(m_graphs);
-        }
-
-        public Graph[] getGraphs() {
+        public List<Graph> getGraphs() {
             return m_graphs;
         }
 
+        public void setGraphs(List<Graph> graphs) {
+            m_graphs = graphs;
+        }
     }
 
     public class BeanFriendlyCalendar extends GregorianCalendar {
@@ -289,13 +188,5 @@ public class GraphResults {
         public int getHourOfDay() {
             return get(Calendar.HOUR_OF_DAY); 
         }
-    }
-
-    public String[] getReports() {
-        return m_reports;
-    }
-
-    public void setReports(String[] reports) {
-        m_reports = reports;
     }
 }

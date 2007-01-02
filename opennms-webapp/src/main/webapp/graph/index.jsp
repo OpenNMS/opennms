@@ -42,27 +42,26 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.Util,
-		org.opennms.web.performance.*,
-		org.opennms.web.ServletInitializer,
+	import="
+        org.opennms.web.svclayer.ResourceService,
 		org.springframework.web.context.WebApplicationContext,
       	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
-    public PerformanceModel model = null;
+    public ResourceService m_resourceService;
 
     public void init() throws ServletException { 
 	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		this.model = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+	    m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
     }
 %>
 
 <%
-    PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
-    String[] domains = this.model.getQueryableDomains();
+    pageContext.setAttribute("nodeResources", m_resourceService.findNodeResources());
+    pageContext.setAttribute("domainResources", m_resourceService.findDomainResources());
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -196,9 +195,9 @@
     <input type="hidden" name="parentResourceType" value="node" />
 
     <select name="parentResource" size="10">
-      <% for( int i=0; i < nodes.length; i++ ) { %>
-        <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
-      <% } %>
+      <c:forEach var="resource" items="${nodeResources}">
+        <option value="${resource.name}">${resource.label}</option>
+      </c:forEach>
     </select>
 
     <br/>
@@ -217,9 +216,9 @@
     <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
     <input type="hidden" name="parentResourceType" value="node"/>
     <select name="parentResource" size="10">
-      <% for( int i=0; i < nodes.length; i++ ) { %>
-        <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
-      <% } %>
+      <c:forEach var="resource" items="${nodeResources}">
+        <option value="${resource.name}">${resource.label}</option>
+      </c:forEach>
     </select>
 
     <br/>
@@ -230,50 +229,53 @@
 </div>
 
 <div style="width: 30%; float: left;">
-<% if (domains.length > 0) { %>
-  <h3>Standard Domain<br>Performance Reports</h3>
+  <c:choose>
+    <c:when test="${empty domainResources}">
+      <!--  No domain resources -->
+    </c:when>
+    
+    <c:otherwise>
+      <h3>Standard Domain<br>Performance Reports</h3>
 
-  <p>
-    Choose a domain for a standard performance report.
-  </p>
+      <p>Choose a domain for a standard performance report.</p>
 
-  <form method="get" name="choose_domain" action="graph/chooseresource.htm">
-    <input type="hidden" name="reports" value="all" />
-    <input type="hidden" name="parentResourceType" value="domain" />
+      <form method="get" name="choose_domain" action="graph/chooseresource.htm">
+        <input type="hidden" name="reports" value="all" />
+        <input type="hidden" name="parentResourceType" value="domain" />
 
-    <select name="parentResource" size="10">
-      <% for( int i=0; i < domains.length; i++ ) { %>
-        <option value="<%=domains[i]%>"><%=domains[i]%></option>
-      <% } %>
-    </select>
+        <select name="parentResource" size="10">
+          <c:forEach var="resource" items="${domainResources}">
+            <option value="${resource.name}">${resource.label}</option>
+          </c:forEach>
+        </select>
 
-    <br/>
-    <br/>
+        <br/>
+        <br/>
 
-    <input type="button" value="Start" onclick="submitDomainForm()"/>
-  </form>
+        <input type="button" value="Start" onclick="submitDomainForm()"/>
+      </form>
 
-  <h3>Custom Domain<br>Performance Reports</h3>
+      <h3>Custom Domain<br>Performance Reports</h3>
 
-  <p>
-    Choose a domain for a custom performance report.
-  </p>
+      <p>Choose a domain for a custom performance report.</p>
 
-  <form method="get" name="choose_domain_adhoc" action="graph/chooseresource.htm">
-    <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
-    <input type="hidden" name="parentResourceType" value="domain"/>
-    <select name="parentResource" size="10">
-      <% for( int i=0; i < domains.length; i++ ) { %>
-        <option value="<%=domains[i]%>"><%=domains[i]%></option>
-      <% } %>
-    </select>
+      <form method="get" name="choose_domain_adhoc" action="graph/chooseresource.htm">
+        <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
+        <input type="hidden" name="parentResourceType" value="domain"/>
 
-    <br/>
-    <br/>
+        <select name="parentResource" size="10">
+          <c:forEach var="resource" items="${domainResources}">
+            <option value="${resource.name}">${resource.label}</option>
+          </c:forEach>
+        </select>
 
-    <input type="button" value="Start" onclick="submitDomainFormAdhoc()"/>
-  </form>
-<% } %>
+        <br/>
+        <br/>
+
+        <input type="button" value="Start" onclick="submitDomainFormAdhoc()"/>
+      </form>
+    </c:otherwise>
+  </c:choose>
 </div>
 
 <div style="width: 40%; float: right;">

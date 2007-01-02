@@ -68,7 +68,7 @@
 		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
 		<hr />
 		<!-- KSC Reports box -->    
-		<jsp:include page="/includes/ksc-box.jsp" flush="false" />
+		<jsp:include page="/KSC/include-box.htm" flush="false" />
 		<hr />
 		<%--
 		<!-- security box -->    

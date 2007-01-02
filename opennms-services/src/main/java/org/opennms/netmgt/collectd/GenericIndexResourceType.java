@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.springframework.orm.ObjectRetrievalFailureException;
 

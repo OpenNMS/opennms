@@ -44,7 +44,6 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.*,
-		org.opennms.web.graph.ResourceId,
 		java.util.*
 	"
 %>

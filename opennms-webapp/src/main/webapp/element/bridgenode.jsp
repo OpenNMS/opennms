@@ -47,17 +47,19 @@
 				org.opennms.web.element.*,
 				java.util.*,
 				java.net.*,
-				org.opennms.netmgt.utils.IPSorter,
-				org.opennms.web.performance.*,
-				org.springframework.web.context.WebApplicationContext,
-	        	org.springframework.web.context.support.WebApplicationContextUtils
-		"
+                org.opennms.core.utils.IPSorter,
+                org.opennms.web.svclayer.ResourceService,
+                org.springframework.web.context.WebApplicationContext,
+                org.springframework.web.context.support.WebApplicationContextUtils
+        "
 %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
     protected int telnetServiceId;
     protected int httpServiceId;
-    protected PerformanceModel m_performanceModel;
+    private ResourceService m_resourceService;
     
 	public static HashMap<Character, String> statusMap;
 
@@ -82,8 +84,8 @@
             throw new ServletException( "Could not determine the HTTP service ID", e );
         }
 
-	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+        WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
         
 	public String getStatusString( char c ) {
@@ -111,15 +113,15 @@
     String telnetIp = null;
     Service[] telnetServices = NetworkElementFactory.getServicesOnNode(nodeId, this.telnetServiceId);
     
-    if( telnetServices != null && telnetServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
-        for( int i=0; i < telnetServices.length; i++ ) {
-            ips.add(InetAddress.getByName(telnetServices[i].getIpAddress()));
+    if (telnetServices != null && telnetServices.length > 0) {
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
+        for (Service service : telnetServices) {
+            ips.add(InetAddress.getByName(service.getIpAddress()));
         }
         
         InetAddress lowest = IPSorter.getLowestInetAddress(ips);
         
-        if( lowest != null ) {
+        if (lowest != null) {
             telnetIp = lowest.getHostAddress();
         }
     }    
@@ -128,40 +130,32 @@
     String httpIp = null;
     Service[] httpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.httpServiceId);
 
-    if( httpServices != null && httpServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
-        for( int i=0; i < httpServices.length; i++ ) {
-            ips.add(InetAddress.getByName(httpServices[i].getIpAddress()));
+    if (httpServices != null && httpServices.length > 0) {
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
+        for (Service service : httpServices) {
+            ips.add(InetAddress.getByName(service.getIpAddress()));
         }
 
         InetAddress lowest = IPSorter.getLowestInetAddress(ips);
 
-        if( lowest != null ) {
+        if (lowest != null) {
             httpIp = lowest.getHostAddress();
         }
     }
 
     boolean isRouteIP = NetworkElementFactory.isRouteInfoNode(nodeId);
-
 %>
 
-<html>
-<head>
-  <title><%=node_db.getLabel()%> | Node | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
-</head>
+<% pageContext.setAttribute("nodeId", nodeId); %>
+<% pageContext.setAttribute("nodeLabel", node_db.getLabel()); %>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
-<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-<% String breadcrumb3 = "Bridge Info"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Node" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="headTitle" value="${nodeLabel}" />
+  <jsp:param name="headTitle" value="Bridge Node Info" />
+  <jsp:param name="title" value="Bridge Node Info" />
+  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${nodeId}'>Node</a>" />
+  <jsp:param name="breadcrumb" value="Bridge Info" />
 </jsp:include>
 
      <h2>Node: <%=node_db.getLabel()%></h2>
@@ -188,7 +182,7 @@
         </li>
         <% } %>
         
-        <% if (m_performanceModel.getResourceTypesForNode(nodeId).size() > 0) { %>
+        <% if (m_resourceService.findNodeChildResources(nodeId).size() > 0) { %>
           <li>
             <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
               <c:param name="parentResourceType" value="node"/>
@@ -234,7 +228,6 @@
 
 
 
-	
             <jsp:include page="/includes/nodeSTPint-box.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
 			</jsp:include>		
@@ -242,6 +235,3 @@
 
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

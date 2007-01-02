@@ -50,31 +50,20 @@
 		java.util.*,
 		java.net.*,
       	org.opennms.netmgt.dao.CategoryDao,
-	    org.opennms.netmgt.dao.NodeDao,
-		org.opennms.netmgt.utils.IPSorter,
-		org.opennms.web.Util,
-		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.event.*,
-		org.opennms.web.performance.*,
-	    org.opennms.web.asset.Asset,
-	    org.opennms.web.asset.AssetModel,
-	    org.springframework.transaction.support.TransactionTemplate,
-		org.springframework.web.context.WebApplicationContext,
-      	org.springframework.web.context.support.WebApplicationContextUtils
-	"
+	    org.opennms.netmgt.dao.NodeDao,org.opennms.core.utils.IPSorter,org.opennms.web.Util,org.opennms.web.acegisecurity.Authentication,org.opennms.web.event.*,org.opennms.web.svclayer.ResourceService,org.opennms.web.asset.Asset,org.opennms.web.asset.AssetModel,org.springframework.transaction.support.TransactionTemplate,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
 <%!
 
-	private WebApplicationContext m_webAppContext;
+    private WebApplicationContext m_webAppContext;
 
     protected int telnetServiceId;
     protected int httpServiceId;
     protected int dellServiceId;
     protected int snmpServiceId;
-    protected PerformanceModel m_performanceModel;
+    private ResourceService m_resourceService;
 	protected AssetModel model = new AssetModel();
 
 	public static HashMap<Character, String> m_statusMap;
@@ -117,14 +106,12 @@
         }
 
 	    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
+		m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
     }
     
     public static String getStatusString(char c) {
         return m_statusMap.get(new Character(c));
-    }
-
-%>
+    }%>
 
 <%
     String nodeIdString = request.getParameter( "node" );
@@ -262,7 +249,7 @@
 	  </li>
         <% } %>
         
-        <% if (m_performanceModel.getResourceTypesForNode(nodeId).size() > 0) { %>
+        <% if (m_resourceService.findNodeChildResources(nodeId).size() > 0) { %>
 	  <li>
         <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
           <c:param name="parentResourceType" value="node"/>
