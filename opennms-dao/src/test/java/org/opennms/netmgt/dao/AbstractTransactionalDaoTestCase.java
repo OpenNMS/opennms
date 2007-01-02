@@ -31,7 +31,7 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private LocationMonitorDaoHibernate m_locationMonitorDao;
     
     private OnmsNode m_node1;
-	private boolean m_populate = true;
+    private boolean m_populate = true;
     
     public AbstractTransactionalDaoTestCase() {
         System.setProperty("opennms.home", "../opennms-daemon/src/main/filtered");
@@ -50,8 +50,8 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     }
     
     private void populateDatabase() {
-    	if (!m_populate ) {
-    		return;
+    	if (!m_populate) {
+    	    return;
     	}
     	
         //OnmsDistPoller distPoller = dao.load("localhost");
@@ -69,6 +69,7 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
         m_node1 = builder.addNode("node1").setForeignSource("imported:").setForeignId("1").getNode();
+        assertNotNull("newly built node 1 should not be null", m_node1);
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
@@ -315,20 +316,20 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     public OnmsNode getNode1() {
         return m_node1;
     }
-    
+
     public LocationMonitorDaoHibernate getLocationMonitorDao() {
-		return m_locationMonitorDao;
-	}
+        return m_locationMonitorDao;
+    }
 
-	public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
-		m_locationMonitorDao = locationMonitorDao;
-	}
+    public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
+        m_locationMonitorDao = locationMonitorDao;
+    }
 
-	public boolean isPopulate() {
-		return m_populate;
-	}
+    public boolean isPopulate() {
+        return m_populate;
+    }
 
-	public void setPopulate(boolean populate) {
-		m_populate = populate;
-	}
+    public void setPopulate(boolean populate) {
+        m_populate = populate;
+    }
 }
