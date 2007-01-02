@@ -45,31 +45,30 @@ import org.opennms.netmgt.model.OnmsNode;
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
 
     public IpInterfaceDaoHibernate() {
-		super(OnmsIpInterface.class);
-	}
+        super(OnmsIpInterface.class);
+    }
 
-	public OnmsIpInterface get(OnmsNode node, String ipAddress) {
-		return findUnique("from OnmsIpInterface as ipIf where ipIf.node = ? and ipIf.ipAddress = ?", node, ipAddress);
-	}
+    public OnmsIpInterface get(OnmsNode node, String ipAddress) {
+        return findUnique("from OnmsIpInterface as ipIf where ipIf.node = ? and ipIf.ipAddress = ?", node, ipAddress);
+    }
 
     public Collection<OnmsIpInterface> findByIpAddress(String ipAddress) {
         return find("from OnmsIpInterface ipIf where ipIf.ipAddress = ?", ipAddress);
     }
 
-	public Collection<OnmsIpInterface> findByServiceType(String svcName) {
-		return find("select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredServices as monSvc where monSvc.serviceType.name = ?", svcName);
-	}
-	
-	public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
-		return find("select distinct ipIf " +
-				"from OnmsIpInterface as ipIf " +
-				"left join fetch ipIf.node as node " +
-				"left join fetch node.assetRecord " +
-				"left join fetch ipIf.node.snmpInterfaces as snmpIf " +
-				"left join fetch snmpIf.ipInterfaces " +
-				"join ipIf.monitoredServices as monSvc " +
-				"where monSvc.serviceType.name = ?", svcName);
-	}
+    public Collection<OnmsIpInterface> findByServiceType(String svcName) {
+        return find("select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredServices as monSvc where monSvc.serviceType.name = ?", svcName);
+    }
 
+    public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
+        return find("select distinct ipIf " +
+                    "from OnmsIpInterface as ipIf " +
+                    "left join fetch ipIf.node as node " +
+                    "left join fetch node.assetRecord " +
+                    "left join fetch ipIf.node.snmpInterfaces as snmpIf " +
+                    "left join fetch snmpIf.ipInterfaces " +
+                    "join ipIf.monitoredServices as monSvc " +
+                    "where monSvc.serviceType.name = ?", svcName);
+    }
 
 }
