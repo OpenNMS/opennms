@@ -41,6 +41,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,6 +56,8 @@ import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfigur
 import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.model.LocationMonitorIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -332,12 +335,30 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     			")",
     			timestamp); 
     }
+    
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate) {
-
     	return findObjects(OnmsLocationSpecificStatus.class,
     			"from OnmsLocationSpecificStatus as status " +
     			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ?",
     			startDate, endDate
     			);
     }
+
+    public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(int nodeId) {
+        List l = getHibernateTemplate().find(
+                        "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
+                        "where status.monitoredService.ipInterface.node.id = ?",
+                        nodeId
+                        );
+        
+        HashSet<LocationMonitorIpInterface> ret = new HashSet<LocationMonitorIpInterface>();
+        for (Object o : l) {
+            OnmsLocationMonitor mon = (OnmsLocationMonitor) ((Object[]) o)[0];
+            OnmsIpInterface ip = (OnmsIpInterface) ((Object[]) o)[1];
+            ret.add(new LocationMonitorIpInterface(mon, ip));
+        }
+        
+        return ret;
+    }
+    
 }
