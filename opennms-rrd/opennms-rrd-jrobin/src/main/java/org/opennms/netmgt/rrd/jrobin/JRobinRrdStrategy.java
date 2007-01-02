@@ -378,6 +378,25 @@ public class JRobinRrdStrategy implements RrdStrategy {
                         throw new IllegalArgumentException("--upper-limit must be followed by a number");
                     }
                 
+                } else if (arg.startsWith("--font=")) {
+                    // Don't do anything
+                } else if (arg.equals("--font")) {
+                    if (i + 1 < commandArray.length) {
+                        // Don't do anything other than skip the option
+                        ++i;
+                    } else {
+                        throw new IllegalArgumentException("--font must be followed by an argument");
+                    }
+                } else if (arg.startsWith("--imgformat=")) {
+                    // Don't do anything
+                } else if (arg.equals("--imgformat")) {
+                    if (i + 1 < commandArray.length) {
+                        // Don't do anything other than skip the option
+                        ++i;
+                    } else {
+                        throw new IllegalArgumentException("--imgformat must be followed by an argument");
+                    }
+                
                 } else if (arg.equals("--rigid")) {
                     rigid = true;
                 
