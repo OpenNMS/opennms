@@ -1,40 +1,40 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2006 Aug 15: Formatting. - dj@opennms.org
-//
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
+
+//This file is part of the OpenNMS(R) Application.
+
+//OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+//OpenNMS(R) is a derivative work, containing both original code, included code and modified
+//code that was published under the GNU General Public License. Copyrights for modified 
+//and included code are below.
+
+//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+
+//Modifications:
+
+//2006 Aug 15: Formatting. - dj@opennms.org
+
+//Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation; either version 2 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.                                                            
+
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+//For more information contact: 
+//OpenNMS Licensing       <license@opennms.org>
+//http://www.opennms.org/
+//http://www.opennms.com/
+
+//Tab Size = 8
+
 
 package org.opennms.netmgt.collectd;
 
@@ -57,16 +57,16 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class IfInfo extends DbCollectionResource {
-	
-	OnmsSnmpInterface m_snmpIface;
+
+    private OnmsSnmpInterface m_snmpIface;
     private SNMPCollectorEntry m_entry;
-	
-	public IfInfo(ResourceType def, CollectionAgent agent, OnmsSnmpInterface snmpIface) {
+
+    public IfInfo(ResourceType def, CollectionAgent agent, OnmsSnmpInterface snmpIface) {
         super(def, agent);
-    	m_snmpIface = snmpIface;
+        m_snmpIface = snmpIface;
     }
 
-	public int getIndex() {
+    public int getIndex() {
         return m_snmpIface.getIfIndex().intValue();
     }
 
@@ -85,7 +85,7 @@ final class IfInfo extends DbCollectionResource {
     public void setEntry(SNMPCollectorEntry ifEntry) {
         m_entry = ifEntry;
     }
-    
+
     protected SNMPCollectorEntry getEntry() {
         return m_entry;
     }
@@ -99,11 +99,11 @@ final class IfInfo extends DbCollectionResource {
      **/
 
     String getNewIfAlias() {
-    	// FIXME: This should not be null
-    	if (getEntry() == null) {
-    		return getCurrentIfAlias();
-    	}
-    	return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
+        // FIXME: This should not be null
+        if (getEntry() == null) {
+            return getCurrentIfAlias();
+        }
+        return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
     }
 
     String getCurrentIfAlias() {
@@ -125,40 +125,40 @@ final class IfInfo extends DbCollectionResource {
     String getAliasDir(String ifAlias, String ifAliasComment) {
         if (ifAlias != null) {
             if (ifAliasComment != null) {
-        		int si = ifAlias.indexOf(ifAliasComment);
-        		if (si > -1) {
-        			ifAlias = ifAlias.substring(0, si).trim();
-        		}
-        	}
-        	if (ifAlias != null) {
-        		ifAlias = AlphaNumeric.parseAndReplaceExcept(ifAlias,
-        				SnmpCollector.nonAnRepl, SnmpCollector.AnReplEx);
-        	}
+                int si = ifAlias.indexOf(ifAliasComment);
+                if (si > -1) {
+                    ifAlias = ifAlias.substring(0, si).trim();
+                }
+            }
+            if (ifAlias != null) {
+                ifAlias = AlphaNumeric.parseAndReplaceExcept(ifAlias,
+                                                             SnmpCollector.nonAnRepl, SnmpCollector.AnReplEx);
+            }
         }
-        
+
         logAlias(ifAlias);
-    
+
         return ifAlias;
     }
 
     void logForceRescan(String ifAlias) {
-        
+
         if (log().isDebugEnabled()) {
-        	log().debug("Forcing rescan.  IfAlias " + ifAlias
-        					+ " for index " + getIndex()
-        					+ " does not match DB value: "
-                            + getCurrentIfAlias());
+            log().debug("Forcing rescan.  IfAlias " + ifAlias
+                        + " for index " + getIndex()
+                        + " does not match DB value: "
+                        + getCurrentIfAlias());
         }
     }
 
     boolean isScheduledForCollection() {
         log().debug(this+".isSnmpPrimary = "+getCollType());
         log().debug("minCollType = "+getCollection().getMinimumCollectionType());
-        
+
         boolean isScheduled = !getCollType().isLessThan(getCollection().getMinimumCollectionType());
         log().debug(getCollType()+" >= "+getCollection().getMinimumCollectionType()+" = "+isScheduled);
         return isScheduled;
-        
+
     }
 
     private OnmsSnmpCollection getCollection() {
@@ -177,14 +177,15 @@ final class IfInfo extends DbCollectionResource {
     }
 
     boolean shouldStore(ServiceParameters serviceParameters) {
-        if (serviceParameters.getStoreByNodeID().equals("normal"))
+        if (serviceParameters.getStoreByNodeID().equals("normal")) {
             return isScheduledForCollection();
-        else
+        } else {
             return serviceParameters.getStoreByNodeID().equals("true");
+        }
     }
 
     public boolean shouldPersist(ServiceParameters serviceParameters) {
-        
+
         boolean shdprsist = shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getCurrentIfAlias()));
         log().debug("shouldPersist = " + shdprsist);
         return shdprsist;
