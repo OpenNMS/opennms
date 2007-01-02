@@ -144,7 +144,7 @@ public class CollectionSpecification {
             sb.append(getServiceName());
             sb.append(" parameter: ");
             sb.append(p.getKey());
-            sb.append(" of value");
+            sb.append(" of value ");
             sb.append(p.getValue());
             log().debug(sb.toString());
             m.put(p.getKey(), p.getValue());
