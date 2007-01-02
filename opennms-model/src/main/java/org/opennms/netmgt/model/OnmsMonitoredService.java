@@ -1,34 +1,34 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
-//
+
+//This file is part of the OpenNMS(R) Application.
+
+//OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+//OpenNMS(R) is a derivative work, containing both original code, included code and modified
+//code that was published under the GNU General Public License. Copyrights for modified 
+//and included code are below.
+
+//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+
+//Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation; either version 2 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+//For more information contact:
+//OpenNMS Licensing       <license@opennms.org>
+//http://www.opennms.org/
+//http://www.opennms.com/
+
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
@@ -60,13 +60,13 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="ifServices")
 public class OnmsMonitoredService extends OnmsEntity implements Serializable,
-        Comparable<OnmsMonitoredService> {
+Comparable<OnmsMonitoredService> {
 
     /**
      * 
      */
     private static final long serialVersionUID = -7106081378757872886L;
-    
+
     private Integer m_id;
 
     private Date m_lastGood;
@@ -84,7 +84,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
     private OnmsServiceType m_serviceType;
 
     private OnmsIpInterface m_ipInterface;
-    
+
     /*
      * This is a set only because we want it to be lazy
      * and we need a better query language (i.e. HQL)
@@ -102,14 +102,14 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
 
     public OnmsMonitoredService() {
     }
-    
+
     public OnmsMonitoredService(OnmsIpInterface ipIf, OnmsServiceType serviceType) {
         m_ipInterface = ipIf;
         m_ipInterface.getMonitoredServices().add(this);
         m_serviceType = serviceType;
-        
+
     }
-    
+
     /**
      * Unique identifier for ifServivce.
      */
@@ -119,21 +119,21 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
     public Integer getId() {
         return m_id;
     }
-    
+
     public void setId(Integer id) {
         m_id = id;
     }
-    
+
     @Transient
     public String getIpAddress() {
         return m_ipInterface.getIpAddress();
     }
-    
+
     @Transient
     public Integer getIfIndex() {
         return m_ipInterface.getIfIndex();
     }
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastGood")
     public Date getLastGood() {
@@ -189,13 +189,13 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
     public void setNotify(String notify) {
         m_notify = notify;
     }
-    
+
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="ipInterfaceId")
     public OnmsIpInterface getIpInterface() {
         return m_ipInterface;
     }
-    
+
     public void setIpInterface(OnmsIpInterface ipInterface) {
         m_ipInterface = ipInterface;
     }
@@ -204,7 +204,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
     }
-    
+
     @ManyToOne(optional=false)
     @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
@@ -217,41 +217,41 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("ipAddr", getIpAddress())
-            .append("ifindex", getIfIndex())
-            .append("lastgood", getLastGood())
-            .append("lastfail", getLastFail())
-            .append("qualifier", getQualifier())
-            .append("status", getStatus())
-            .append("source", getSource())
-            .append("notify", getNotify())
-            .toString();
+        .append("ipAddr", getIpAddress())
+        .append("ifindex", getIfIndex())
+        .append("lastgood", getLastGood())
+        .append("lastfail", getLastFail())
+        .append("qualifier", getQualifier())
+        .append("status", getStatus())
+        .append("source", getSource())
+        .append("notify", getNotify())
+        .toString();
     }
 
     @Transient
     public Integer getServiceId() {
         return getServiceType().getId();
     }
-    
-    
 
-	public void visit(EntityVisitor visitor) {
-		visitor.visitMonitoredService(this);
-		visitor.visitMonitoredServiceComplete(this);
-	}
 
-	@Transient
-	public String getServiceName() {
-		return getServiceType().getName();
-	}
 
-	@Transient
+    public void visit(EntityVisitor visitor) {
+        visitor.visitMonitoredService(this);
+        visitor.visitMonitoredServiceComplete(this);
+    }
+
+    @Transient
+    public String getServiceName() {
+        return getServiceType().getName();
+    }
+
+    @Transient
     public boolean isDown() {
         boolean down = true;
         if (getStatus() != "A" || m_currentOutages.isEmpty()) {
             return !down;
         }
-        
+
         return down;
     }
 
@@ -264,18 +264,18 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
     public void setCurrentOutages(Set<OnmsOutage> currentOutages) {
         m_currentOutages = currentOutages;
     }
-    
-//    @ManyToMany(mappedBy="memberServices")
+
+//  @ManyToMany(mappedBy="memberServices")
     @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-                name="application_service_map",
-                joinColumns={@JoinColumn(name="ifserviceid")},
-                inverseJoinColumns={@JoinColumn(name="appid")}
+               name="application_service_map",
+               joinColumns={@JoinColumn(name="ifserviceid")},
+               inverseJoinColumns={@JoinColumn(name="appid")}
     )
     public Set<OnmsApplication> getApplications() {
         return m_applications;
     }
-    
+
     public void setApplications(Set<OnmsApplication> applications) {
         m_applications = applications;
     }
@@ -290,12 +290,12 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable,
 
     public int compareTo(OnmsMonitoredService o) {
         int diff;
-        
+
         diff = getIpInterface().getNode().getLabel().compareToIgnoreCase(o.getIpInterface().getNode().getLabel());
         if (diff != 0) {
             return diff;
         }
-        
+
         diff = getIpAddress().compareToIgnoreCase(o.getIpAddress());
         if (diff != 0) {
             return diff;

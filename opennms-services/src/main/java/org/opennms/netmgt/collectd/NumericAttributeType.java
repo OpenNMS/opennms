@@ -38,6 +38,7 @@ package org.opennms.netmgt.collectd;
 
 
 import org.apache.log4j.Priority;
+import org.opennms.netmgt.config.MibObject;
 
 public class NumericAttributeType extends AttributeType {
     

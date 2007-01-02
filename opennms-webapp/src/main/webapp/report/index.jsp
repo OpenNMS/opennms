@@ -45,10 +45,6 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.categories.*,
-		java.util.*
-	"
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -63,7 +59,7 @@
     <div class="boxWrapper">
       <ul class="plain">
         <li><a href="graph/index.jsp">Resource Graphs</a></li>
-        <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domain</a></li>
+        <li><a href="KSC/index.htm">KSC Performance, Nodes, Domain</a></li>
         <li><a href="availability/index.jsp">Availability</a></li>
       </ul>
     </div>

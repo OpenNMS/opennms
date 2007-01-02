@@ -54,18 +54,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -94,6 +100,11 @@ public final class Collectd extends AbstractServiceDaemon implements
      * Log4j category
      */
     private final static String LOG4J_CATEGORY = "OpenNMS.Collectd";
+    
+    /**
+     * Instantiated service collectors specified in config file
+     */
+    private Map<String,ServiceCollector> m_collectors = new HashMap<String,ServiceCollector>(4);
 
     /**
      * List of all CollectableService objects.
@@ -146,8 +157,9 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
     protected void onInit() {
-        // Set the category prefix
         log().debug("init: Initializing collection daemon");
+        
+        instantiateCollectors();
 
         getScheduler().schedule(0, ifScheduler());
 
@@ -280,7 +292,7 @@ public final class Collectd extends AbstractServiceDaemon implements
 
             public Object doInTransaction(TransactionStatus status) {
                 // Loop through collectors and schedule for each one present
-                for (Iterator it = getCollectorConfigDao().getCollectorNames().iterator(); it.hasNext();) {
+                for (Iterator it = getCollectorNames().iterator(); it.hasNext();) {
                     scheduleInterfacesWithService((String) it.next());
                 }
                 return null;
@@ -333,7 +345,7 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
-        Collection matchingSpecs = getCollectorConfigDao().getSpecificationsForInterface(iface, svcName);
+        Collection matchingSpecs = getSpecificationsForInterface(iface, svcName);
         StringBuffer sb;
         
         if (log().isDebugEnabled()) {
@@ -415,8 +427,8 @@ public final class Collectd extends AbstractServiceDaemon implements
                 sb.append('/');
                 sb.append(svcName);
                 sb.append(", reason: ");
-                sb.append(rE.getMessage());
-                log().warn(sb.toString());
+                sb.append(rE);
+                log().warn(sb.toString(), rE);
             } catch (Throwable t) {
                 sb = new StringBuffer();
                 sb.append("scheduleInterface: Uncaught exception, failed to schedule interface ");
@@ -425,9 +437,63 @@ public final class Collectd extends AbstractServiceDaemon implements
                 sb.append(svcName);
                 sb.append(". ");
                 sb.append(t);
-                log().error(sb.toString());
+                log().error(sb.toString(), t);
             }
         } // end while more packages exist
+    }
+
+    public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
+        Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
+
+        CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
+
+        /*
+         * Compare interface/service pair against each collectd package
+         * For each match, create new SnmpCollector object and
+         * schedule it for collection
+         */
+        CollectdConfig config = cCfgFactory.getCollectdConfig();
+        for (Iterator it = config.getPackages().iterator(); it.hasNext();) {
+            CollectdPackage wpkg = (CollectdPackage) it.next();
+
+            /*
+             * Make certain the the current service is in the package
+             * and enabled!
+             */
+            if (!wpkg.serviceInPackageAndEnabled(svcName)) {
+                if (log().isDebugEnabled()) {
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("getSpecificationsForInterface: address/service: ");
+                    sb.append(iface);
+                    sb.append("/");
+                    sb.append(svcName);
+                    sb.append(" not scheduled, service is not enabled or does not exist in package: ");
+                    sb.append(wpkg.getName());
+                    log().debug(sb.toString());
+                }
+                continue;
+            }
+
+            // Is the interface in the package?
+            if (!wpkg.interfaceInPackage(iface.getIpAddress())) {
+                if (log().isDebugEnabled()) {
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("getSpecificationsForInterface: address/service: ");
+                    sb.append(iface);
+                    sb.append("/");
+                    sb.append(svcName);
+                    sb.append(" not scheduled, interface does not belong to package: ");
+                    sb.append(wpkg.getName());
+                    log().debug(sb.toString());
+                }
+                continue;
+            }
+
+            Collection outageCalendars = new LinkedList();
+
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, outageCalendars, getServiceCollector(svcName)));
+        }
+        return matchingPkgs;
     }
 
     /**
@@ -1222,4 +1288,51 @@ public final class Collectd extends AbstractServiceDaemon implements
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
+    
+
+    public void setServiceCollector(String svcName, ServiceCollector collector) {
+        m_collectors.put(svcName, collector);
+    }
+
+    public ServiceCollector getServiceCollector(String svcName) {
+        return m_collectors.get(svcName);
+    }
+
+    public Set<String> getCollectorNames() {
+        return m_collectors.keySet();
+    }
+
+    private void instantiateCollectors() {
+        log().debug("instantiateCollectors: Loading collectors");
+
+        /*
+         * Load up an instance of each collector from the config
+         * so that the event processor will have them for
+         * new incomming events to create collectable service objects.
+         */
+        Collection<Collector> collectors = getCollectorConfigDao().getCollectors();
+        for (Collector collector : collectors) {
+            String svcName = collector.getService();
+            try {
+                if (log().isDebugEnabled()) {
+                    log().debug("instantiateCollectors: Loading collector " 
+                                + svcName + ", classname "
+                                + collector.getClassName());
+                }
+                Class cc = Class.forName(collector.getClassName());
+                ServiceCollector sc = (ServiceCollector) cc.newInstance();
+
+                // Attempt to initialize the service collector
+                Map properties = null; // properties not currently used
+                sc.initialize(properties);
+
+                setServiceCollector(svcName, sc);
+            } catch (Throwable t) {
+                log().warn("instantiateCollectors: Failed to load collector "
+                           + collector.getClassName() + " for service "
+                           + svcName, t);
+            }
+        }
+    }
+
 }

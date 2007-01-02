@@ -3,32 +3,37 @@ package org.opennms.web.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.support.ChooseResourceModel;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 
-public class ChooseResourceController extends AbstractController {
+public class ChooseResourceController extends AbstractController implements InitializingBean {
     private ChooseResourceService m_chooseResourceService;
     private String m_defaultEndUrl;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        assertPropertiesSet();
-        
-        String[] requiredParameters = new String[] { "parentResourceType", "parentResource" };
+        String[] requiredParameters = new String[] { "parentResourceId or", "parentResourceType and parentResource" };
 
-        String resourceType = request.getParameter("parentResourceType");
-        String resource = request.getParameter("parentResource");
         String endUrl = request.getParameter("endUrl");
-        
-        if (request.getParameter("parentResourceType") == null) {
-            throw new MissingParameterException("parentResourceType", requiredParameters);
-        }
-        if (request.getParameter("parentResource") == null) {
-            throw new MissingParameterException("parentResource", requiredParameters);
+
+        String resourceId = request.getParameter("parentResourceId");
+        if (resourceId == null) {
+            String resourceType = request.getParameter("parentResourceType");
+            String resource = request.getParameter("parentResource");
+            if (request.getParameter("parentResourceType") == null) {
+                throw new MissingParameterException("parentResourceType", requiredParameters);
+            }
+            if (request.getParameter("parentResource") == null) {
+                throw new MissingParameterException("parentResource", requiredParameters);
+            }
+            
+            resourceId = OnmsResource.createResourceId(resourceType, resource);
         }
         
         if (endUrl == null || "".equals(endUrl)) {
@@ -36,8 +41,7 @@ public class ChooseResourceController extends AbstractController {
         }
 
         ChooseResourceModel model = 
-            m_chooseResourceService.findChildResources(resourceType,
-                                                       resource,
+            m_chooseResourceService.findChildResources(resourceId,
                                                        endUrl);
         
         return new ModelAndView("/graph/chooseresource",
@@ -45,7 +49,7 @@ public class ChooseResourceController extends AbstractController {
                                 model);
     }
     
-    private void assertPropertiesSet() {
+    public void afterPropertiesSet() {
         if (m_chooseResourceService == null) {
             throw new IllegalStateException("chooseResourceService property not set");
         }

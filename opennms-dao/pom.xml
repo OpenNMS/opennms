@@ -53,6 +53,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
@@ -81,6 +86,10 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
@@ -106,6 +115,10 @@
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>

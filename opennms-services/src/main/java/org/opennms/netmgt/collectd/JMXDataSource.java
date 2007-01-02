@@ -44,6 +44,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpValue;

@@ -2,41 +2,24 @@ package org.opennms.web.graph;
 
 import java.util.Date;
 
-public class Graph implements Comparable {
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.PrefabGraph;
+
+public class Graph implements Comparable<Graph> {
     private PrefabGraph m_graph = null;
-    private String m_parentResourceType = null;
-    private String m_parentResource = null;
-    private String m_resource = null;
+    private OnmsResource m_resource;
     private Date m_start = null;
     private Date m_end = null;
-    private String m_resourceType;
-
-    public Graph(PrefabGraph graph, String parentResourceType,
-            String parentResource, String resourceType,
-            String resource, Date start, Date end) {
-	m_graph = graph;
-        m_parentResourceType = parentResourceType;
-        m_parentResource = parentResource;
-        m_resourceType = resourceType;
-        m_resource = resource;
-	m_start = start;
-	m_end = end;
-    }
-
-
-    public String getParentResourceType() {
-        return m_parentResourceType;
-    }
-
-    public String getParentResource() {
-        return m_parentResource;
-    }
     
-    public String getResourceType() {
-        return m_resourceType;
+    public Graph(PrefabGraph graph, OnmsResource resource,
+            Date start, Date end) {
+        m_graph = graph;
+        m_resource = resource;
+        m_start = start;
+        m_end = end;
     }
 
-    public String getResource() {
+    public OnmsResource getResource() {
         return m_resource;
     }
 
@@ -52,18 +35,12 @@ public class Graph implements Comparable {
         return m_graph.getName();
     }
 
-    public int compareTo(Object obj) {
-        if (obj == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
+    public int compareTo(Graph other) {
+        if (other == null) {
+            return -1;
         }
 
-        if (!(obj instanceof Graph)) {
-            throw new IllegalArgumentException("Can only compare to Graph objects.");
-        }
-
-        Graph otherGraph = (Graph) obj;
-
-	return m_graph.compareTo(otherGraph.m_graph);
+        return m_graph.compareTo(other.m_graph);
     }
 
     public String getGraphWidth() {

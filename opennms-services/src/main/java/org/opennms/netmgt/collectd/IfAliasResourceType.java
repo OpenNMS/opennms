@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 public class IfAliasResourceType extends ResourceType {

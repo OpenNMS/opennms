@@ -7,15 +7,14 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.Util;
 import org.opennms.web.graph.RelativeTimePeriod;
-import org.opennms.web.graph.ResourceId;
 
 public class DistributedStatusHistoryModel {
     private List<OnmsMonitoringLocationDefinition> m_locations;
@@ -145,13 +144,11 @@ public class DistributedStatusHistoryModel {
         String resourceString = getChosenMonitor().getId()
             + "/" + service.getIpAddress();
 
-        ResourceId r = new ResourceId("node",
-                                      Integer.toString(nodeId),
-                                      "distributedStatus",
-                                      resourceString); 
+        String resourceId = OnmsResource.createResourceId("node", Integer.toString(nodeId),
+                                                          "distributedStatus", resourceString);
         return "graph/graph.png"
             + "?report=" + service.getServiceName().toLowerCase()
-            + "&resourceId=" + Util.encode(r.getResourceId())
+            + "&resourceId=" + Util.encode(resourceId)
             + "&start=" + times[0]
             + "&end=" + times[1];
     }

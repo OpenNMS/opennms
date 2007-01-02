@@ -48,23 +48,13 @@
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
 				org.opennms.netmgt.config.PollerConfig,
-				java.util.*,
-				org.opennms.web.Util,
-                org.opennms.web.acegisecurity.Authentication,
-				org.opennms.web.element.*,
-				org.opennms.web.event.*,
-				org.opennms.web.graph.ResourceId,
-				org.opennms.web.performance.*,
-				org.opennms.netmgt.utils.IfLabel,
-				org.springframework.web.context.WebApplicationContext,
-	        	org.springframework.web.context.support.WebApplicationContextUtils
-		"
+				java.util.*,org.opennms.netmgt.model.OnmsResource,org.opennms.web.Util,org.opennms.web.acegisecurity.Authentication,org.opennms.web.element.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.web.svclayer.ResourceService,org.opennms.netmgt.utils.IfLabel,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 
-<%!
-    protected int telnetServiceId;
+<%!protected int telnetServiceId;
     protected int httpServiceId;
-    protected PerformanceModel m_performanceModel;
+    private WebApplicationContext m_webAppContext;
+    private ResourceService m_resourceService;
     
     public void init() throws ServletException {
         try {
@@ -81,10 +71,9 @@
             throw new ServletException( "Could not determine the HTTP service ID", e );
         }
 
-	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_performanceModel = (PerformanceModel) m_webAppContext.getBean("performanceModel", PerformanceModel.class);
-    }
-%>
+	    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
+    }%>
 
 <%
     Interface intf_db = ElementUtil.getInterfaceByParams(request);
@@ -121,10 +110,11 @@
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
-
 %>
 
-<% String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
+<%
+String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
+%>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Interface" />
   <jsp:param name="headTitle" value="<%= ipAddr %>" />
@@ -134,7 +124,9 @@
   <jsp:param name="breadcrumb" value="Interface" />
 </jsp:include>
 
-<% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+<%
+if (request.isUserInRole( Authentication.ADMIN_ROLE )) {
+%>
 
 <script type="text/javascript" >
 function doDelete() {
@@ -145,17 +137,23 @@ function doDelete() {
      return false;
 }
 </script>
-<% } %>
+<%
+}
+%>
 
 
       <h2>Interface: <%=intf_db.getIpAddress()%> <%=intf_db.getIpAddress().equals(intf_db.getHostname()) ? "" : "(" + intf_db.getHostname() + ")"%></h2>
 
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+        <%
+        if (request.isUserInRole( Authentication.ADMIN_ROLE )) {
+        %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
       <input type="hidden" name="ifindex" value="<%=(ifindexString == null ? "" : ifindexString)%>"/>
       <input type="hidden" name="intf" value="<%=ipAddr%>"/>
-      <% } %>
+      <%
+      }
+      %>
 
       <div id="linkbar">
       <ul>
@@ -163,47 +161,46 @@ function doDelete() {
         <a href="<%=eventUrl%>">View Events</a>
 	</li>
 
-        <% if( telnetIp != null ) { %>
+        <%
+        if( telnetIp != null ) {
+        %>
 	  <li>
           <a href="telnet://<%=telnetIp%>">Telnet</a>
 	  </li>
-        <% } %>
+        <%
+        }
+        %>
         
-        <% if( httpIp != null ) { %>
+        <%
+                if( httpIp != null ) {
+                %>
 	  <li>
           <a href="http://<%=httpIp%>">HTTP</a>
 	  </li>
-        <% } %>
+        <%
+        }
+        %>
 
       <%
-      
-        Collection<GraphResourceType> resourceTypes =
-            m_performanceModel.getResourceTypesForNode(nodeId);
-        String ifLabel;
-        if (ifindexString != null) {
-            ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString);
-        } else {
-            ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
-        }
-        for (GraphResourceType resourceType : resourceTypes) {
-            List<GraphResource> resources =
-                resourceType.getResourcesForNode(nodeId);
-            for (GraphResource resource : resources) {
-                if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
-                    ResourceId resourceId =
-                        new ResourceId("node", Integer.toString(nodeId),
-                                       resourceType.getName(),
-                                       resource.getName());
-                    out.println("<li>");
-                    out.println("<a href=\"graph/results.htm?reports=all"
-                                + "&amp;resourceId="
-                                + Util.encode(resourceId.getResourceId())
-                                + "\">" + resourceType.getLabel()
-                                + " Graphs</a>");
-                    out.println("</li>");
-                }
-            }
-        }
+                          String ifLabel;
+                          if (ifindexString != null) {
+                              ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString);
+                          } else {
+                              ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
+                          }
+
+                          List<OnmsResource> resources = m_resourceService.findNodeChildResources(nodeId);
+                          for (OnmsResource resource : resources) {
+                              if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
+                                  out.println("<li>");
+                                  out.println("<a href=\"graph/results.htm?reports=all"
+                                              + "&amp;resourceId="
+                                              + Util.encode(resource.getId())
+                                              + "\">" + Util.htmlify(resource.getResourceType().getLabel())
+                                              + " Graphs</a>");
+                                  out.println("</li>");
+                              }
+                          }
       %>
         
         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
@@ -373,8 +370,7 @@ function doDelete() {
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
 
-<%!
-  //from the book _SNMP, SNMPv2, SNMPv3, and RMON 1 and 2_  (3rd Ed)
+<%!//from the book _SNMP, SNMPv2, SNMPv3, and RMON 1 and 2_  (3rd Ed)
   //by William Stallings, pages 128-129
   public static final String[] IFTYPES = new String[] {
     "&nbsp;",                     //0 (not supported)
@@ -628,6 +624,4 @@ function doDelete() {
           return true;
       
       return false;
-  }
-  
-%>
+  }%>

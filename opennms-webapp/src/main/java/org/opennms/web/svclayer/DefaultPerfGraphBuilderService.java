@@ -3,9 +3,9 @@ package org.opennms.web.svclayer;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.opennms.netmgt.dao.AttributeDao;
+import org.opennms.netmgt.dao.AttributeSecretDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsSecretAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.secret.model.GraphDefinition;
@@ -13,7 +13,7 @@ import org.opennms.secret.model.GraphDefinition;
 public class DefaultPerfGraphBuilderService implements PerfGraphBuilderService {
 
 	private NodeDao m_nodeDao;
-	private AttributeDao m_attributeDao;
+	private AttributeSecretDao m_attributeDao;
 
 	public GraphDefinition createGraphDefinition() {
 		return new GraphDefinition();
@@ -46,9 +46,9 @@ public class DefaultPerfGraphBuilderService implements PerfGraphBuilderService {
 		return paletteBuilder.getPalette();
 	}
 
-	private void populateCategory(PaletteBuilder paletteBuilder, Collection<OnmsAttribute> attributes) {
+	private void populateCategory(PaletteBuilder paletteBuilder, Collection<OnmsSecretAttribute> attributes) {
 		if (attributes == null) return;
-		for (OnmsAttribute attribute : attributes) {
+		for (OnmsSecretAttribute attribute : attributes) {
 			paletteBuilder.addItem(attribute.getId(), attribute.getLabel());
 		}
 	}
@@ -72,7 +72,7 @@ public class DefaultPerfGraphBuilderService implements PerfGraphBuilderService {
 		m_nodeDao = nodeDao;
 	}
 
-	public void setAttributeDao(AttributeDao attributeDao) {
+	public void setAttributeDao(AttributeSecretDao attributeDao) {
 		m_attributeDao = attributeDao;
 	}
 

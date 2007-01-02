@@ -1,0 +1,128 @@
+package org.opennms.web.controller.ksc;
+
+import java.util.Calendar;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.web.MissingParameterException;
+import org.opennms.web.graph.KscResultSet;
+import org.opennms.web.svclayer.KscReportService;
+import org.opennms.web.svclayer.ResourceService;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+public class CustomGraphEditDetailsController extends AbstractController implements InitializingBean {
+    
+    private KSC_PerformanceReportFactory m_kscReportFactory;
+    private KscReportService m_kscReportService;
+    private ResourceService m_resourceService;
+
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String resourceId = request.getParameter("resourceId");
+        if (resourceId == null) {
+            throw new MissingParameterException("resourceId");
+        }
+        
+        //optional parameter graphtype
+        String prefabReportName = request.getParameter("graphtype");
+        
+        Report report = getKscReportFactory().getWorkingReport(); 
+        org.opennms.netmgt.config.kscReports.Graph sample_graph = getKscReportFactory().getWorkingGraph(); 
+        if (sample_graph == null) {
+            throw new IllegalArgumentException("Invalid working graph argument -- null pointer. Possibly missing prefab report in snmp-graph.properties?");
+        }
+
+        // Set the resourceId in the working graph in case it changed
+        sample_graph.setResourceId(resourceId);
+        
+        OnmsResource resource = getKscReportService().getResourceFromGraph(sample_graph);
+        PrefabGraph[] graph_options = getResourceService().findPrefabGraphsForResource(resource);
+
+        PrefabGraph display_graph = null;
+        if (graph_options.length > 0) {
+            if (prefabReportName == null) {
+                display_graph = graph_options[0];
+            } else {
+                display_graph = getPrefabGraphFromList(graph_options, sample_graph.getGraphtype());
+            }
+        }
+        
+        Calendar begin_time = Calendar.getInstance();
+        Calendar end_time = Calendar.getInstance();
+        KSC_PerformanceReportFactory.getBeginEndTime(sample_graph.getTimespan(), begin_time, end_time);
+        
+        KscResultSet resultSet = new KscResultSet(sample_graph.getTitle(), begin_time.getTime(), end_time.getTime(), resource, display_graph);
+        
+        ModelAndView modelAndView = new ModelAndView("KSC/customGraphEditDetails");
+        
+        modelAndView.addObject("resultSet", resultSet);
+        
+        modelAndView.addObject("prefabGraphs", graph_options);
+        
+        modelAndView.addObject("timeSpans", getKscReportService().getTimeSpans(false));
+        modelAndView.addObject("timeSpan", sample_graph.getTimespan());
+        
+        int graph_index = getKscReportFactory().getWorkingGraphIndex(); 
+        int max_graphs = report.getGraphCount();
+        if (graph_index == -1) {
+            graph_index = max_graphs++;
+        }
+        modelAndView.addObject("graphIndex", graph_index);
+        modelAndView.addObject("maxGraphIndex", max_graphs);
+        
+        return modelAndView;
+    }
+    
+    public PrefabGraph getPrefabGraphFromList(PrefabGraph[] graphs, String name) {
+        for (PrefabGraph graph : graphs) {
+            if (graph.getName().equals(name)) {
+                return graph;
+            }
+        }
+        return null;
+    }
+
+    public ResourceService getResourceService() {
+        return m_resourceService;
+    }
+
+    public void setResourceService(ResourceService resourceService) {
+        m_resourceService = resourceService;
+    }
+
+    public KSC_PerformanceReportFactory getKscReportFactory() {
+        return m_kscReportFactory;
+    }
+
+    public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
+        m_kscReportFactory = kscReportFactory;
+    }
+
+    public KscReportService getKscReportService() {
+        return m_kscReportService;
+    }
+
+    public void setKscReportService(KscReportService kscReportService) {
+        m_kscReportService = kscReportService;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        if (m_resourceService == null) {
+            throw new IllegalStateException("property resourceService must be set");
+        }
+        if (m_kscReportService == null) {
+            throw new IllegalStateException("property kscReportService must be set");
+        }
+        if (m_kscReportFactory == null) {
+            throw new IllegalStateException("property kscReportFactory must be set");
+        }
+    }
+
+}

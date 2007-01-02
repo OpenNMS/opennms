@@ -1,26 +1,27 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
+import org.opennms.netmgt.dao.GraphDao;
+import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.web.graph.Graph;
 import org.opennms.web.graph.GraphResults;
-import org.opennms.web.graph.PrefabGraph;
 import org.opennms.web.graph.RelativeTimePeriod;
-import org.opennms.web.graph.ResourceId;
 import org.opennms.web.graph.GraphResults.GraphResultSet;
-import org.opennms.web.performance.GraphAttribute;
-import org.opennms.web.performance.GraphResource;
-import org.opennms.web.performance.GraphResourceType;
-import org.opennms.web.performance.PerformanceModel;
 import org.opennms.web.svclayer.GraphResultsService;
+import org.springframework.beans.factory.InitializingBean;
 
-public class DefaultGraphResultsService implements GraphResultsService {
+public class DefaultGraphResultsService implements GraphResultsService, InitializingBean {
 
-    private PerformanceModel m_performanceModel;
+    private ResourceDao m_resourceDao;
+    
+    private GraphDao m_graphDao;
 
     private NodeDao m_nodeDao;
 
@@ -31,10 +32,10 @@ public class DefaultGraphResultsService implements GraphResultsService {
         m_periods = RelativeTimePeriod.getDefaultPeriods();
     }
 
-    public GraphResults findResults(ResourceId[] resources,
+    public GraphResults findResults(String[] resourceIds,
             String[] reports, long start, long end, String relativeTime) {
-        if (resources == null) {
-            throw new IllegalArgumentException("resources argument cannot be null");
+        if (resourceIds == null) {
+            throw new IllegalArgumentException("resourceIds argument cannot be null");
         }
         if (reports == null) {
             throw new IllegalArgumentException("reports argument cannot be null");
@@ -50,71 +51,20 @@ public class DefaultGraphResultsService implements GraphResultsService {
         graphResults.setRelativeTimePeriods(m_periods);
         graphResults.setReports(reports);
 
-        for (ResourceId resource : resources) {
-            graphResults.addGraphResultSet(createGraphResultSet(resource, reports, graphResults));
+        for (String resourceId : resourceIds) {
+            graphResults.addGraphResultSet(createGraphResultSet(resourceId, reports, graphResults));
         }
         
         return graphResults;
     }
     
-     public GraphResultSet createGraphResultSet(ResourceId r, String[] reports, GraphResults graphResults) {
-        String parentResourceType = r.getParentResourceType();
-        String parentResource = r.getParentResource();
-        String resourceType = r.getResourceType();
-        String resource = r.getResource();
-        
-        GraphResourceType rt = m_performanceModel.getResourceTypeByName(resourceType);
-        
-        GraphResource graphResource;
-        
+    public GraphResultSet createGraphResultSet(String resourceId, String[] reports, GraphResults graphResults) {
+        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
         GraphResultSet rs = graphResults.new GraphResultSet();
-
-        if ("node".equals(parentResourceType)) {
-            int nodeId;
-            try {
-                nodeId = Integer.parseInt(parentResource);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Could not parse parentResource parameter "
-                                                   + "into an integer for a node", e);
-            }
-
-            OnmsNode n = m_nodeDao.get(nodeId);
-            if (n == null) {
-                throw new IllegalArgumentException("could find node with a "
-                                                   + "nodeId of " + nodeId);
-            }
-            rs.setParentResourceLink("element/node.jsp?node=" + nodeId);
-            rs.setParentResourceLabel(n.getLabel());
-
-
-            graphResource =
-                m_performanceModel.getResourceForNodeResourceResourceType(nodeId,
-                                                                          resource,
-                                                                          resourceType);
-            rs.setParentResourceTypeLabel("Node");
-            rs.setResourceTypeLabel(rt.getLabel());
-            rs.setResourceLabel(graphResource.getLabel());
-        } else if ("domain".equals(parentResourceType)) {
-            graphResource =
-                m_performanceModel.getResourceForDomainResourceResourceType(parentResource,
-                                                                            resource,
-                                                                            resourceType);
-
-            rs.setParentResourceTypeLabel("Domain");
-            rs.setParentResourceLabel(parentResource);
-            rs.setResourceTypeLabel("Interface");
-            rs.setResourceLabel(resource);
-        } else {
-            throw new IllegalArgumentException("parentResourceType of '"
-                                               + parentResourceType
-                                               + "' is not supported.");
-        }
-
+        rs.setResource(resource);
+        
         if (reports.length == 1 && "all".equals(reports[0])) {
-            Set<GraphAttribute> attributes = graphResource.getAttributes();
-
-            PrefabGraph[] queries =
-                m_performanceModel.getQueriesByResourceTypeAttributes(rt.getName(), attributes);
+            PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
             List<String> queryNames = new ArrayList<String>(queries.length);
             for (PrefabGraph query : queries) {
                 queryNames.add(query.getName());
@@ -122,23 +72,43 @@ public class DefaultGraphResultsService implements GraphResultsService {
 
             reports = queryNames.toArray(new String[queryNames.size()]);
         }
-        
-        rs.setParentResourceType(parentResourceType);
-        rs.setParentResource(parentResource);
-        rs.setResourceType(resourceType);
-        rs.setResource(resource);
 
-        rs.initializeGraphs(m_performanceModel, reports);
+        List<Graph> graphs = new ArrayList<Graph>(reports.length);
+
+        for (String report : reports) {
+            PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
+            graphs.add(new Graph(prefabGraph, resource, graphResults.getStart(), graphResults.getEnd()));
+        }
+
+        /*
+         * Sort the graphs by their order in the properties file.
+         * PrefabGraph implements the Comparable interface.
+         */
+        Collections.sort(graphs);
+
+        rs.setGraphs(graphs);
         
         return rs;
     }
 
-    public PerformanceModel getPerformanceModel() {
-        return m_performanceModel;
+    public void afterPropertiesSet() {
+        if (m_nodeDao == null) {
+            throw new IllegalStateException("nodeDao property has not been set");
+        }
+        if (m_resourceDao == null) {
+            throw new IllegalStateException("resourceDao property has not been set");
+        }
+        if (m_graphDao == null) {
+            throw new IllegalStateException("graphDao property has not been set");
+        }
     }
 
-    public void setPerformanceModel(PerformanceModel performanceModel) {
-        m_performanceModel = performanceModel;
+    public ResourceDao getResourceDao() {
+        return m_resourceDao;
+    }
+
+    public void setResourceDao(ResourceDao resourceDao) {
+        m_resourceDao = resourceDao;
     }
 
     public NodeDao getNodeDao() {
@@ -147,5 +117,13 @@ public class DefaultGraphResultsService implements GraphResultsService {
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+
+    public GraphDao getGraphDao() {
+        return m_graphDao;
+    }
+
+    public void setGraphDao(GraphDao graphDao) {
+        m_graphDao = graphDao;
     }
 }

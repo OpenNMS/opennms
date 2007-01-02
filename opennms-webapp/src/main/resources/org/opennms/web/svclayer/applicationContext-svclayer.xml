@@ -18,7 +18,7 @@
     
   </bean>
 
-<!-- Site Status beans -->
+  <!-- Site Status beans -->
   <bean id="siteStatusViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSiteStatusViewConfigDao" />
   <bean id="siteStatusViewService" class="org.opennms.web.svclayer.support.DefaultSiteStatusViewService" >
   	<property name="nodeDao" ref="nodeDao" />
@@ -27,24 +27,18 @@
   </bean>
 
 
-<!-- Suppress Outage Service beans -->
+  <!-- Suppress Outage Service beans -->
   <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
     <property name="dao" ref="outageDao" />
   </bean>
 
+  <bean id="outageTable" class="org.opennms.web.svclayer.outage.OutageTable"/>
 
-  <bean id="outageTable" class="org.opennms.web.svclayer.outage.OutageTable">
-
-  </bean>
-
-
-
-<!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
+  <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao" />
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao" />
   
-
-<!-- Demand Poll Service beans -->
+  <!-- Demand Poll Service beans -->
   <bean id="eventProxy" class="org.opennms.netmgt.utils.TcpEventProxy">
     <!-- <constructor-arg index="1" type="String" value="127.0.0.1" />
       <constructor-arg index="2" type="int" value="5817" /> -->
@@ -61,7 +55,7 @@
   </bean>
 
 
-<!-- Daemon Status Service beans -->   
+  <!-- Daemon Status Service beans -->
   <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
     <property name="locateExistingServerIfPossible" value="true"/>
   </bean>
@@ -93,7 +87,7 @@
   </bean>
   
   <!--  Graphing beans -->
-  <bean id="prefabGraphDao" class="org.opennms.web.graph.PropertiesGraphDao">
+  <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
   	<constructor-arg>
   	  <map>
   	    <entry key="performance" value="${opennms.home}/etc/snmp-graph.properties"/>
@@ -108,8 +102,27 @@
     </constructor-arg>  	  
   </bean>
   
-  <bean id="performanceModel" class="org.opennms.web.performance.PerformanceModel">
-  	<property name="prefabGraphDao" ref="prefabGraphDao"/>
+  <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="collectdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="collectdConfig-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="dataCollectionConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dataCollectionConfig-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
+    <property name="nodeDao" ref="nodeDao"/>
+    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+    <property name="collectdConfig" ref="collectdConfig"/>
+    <property name="dataCollectionConfig" ref="dataCollectionConfig"/>
   	<property name="rrdDirectory" value="${rrd.base.dir}"/>
   </bean>
   
@@ -137,9 +150,13 @@
   </bean>
 
   <!-- Graphing -->
+  <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
+    <property name="resourceDao" ref="resourceDao"/>
+    <property name="graphDao" ref="graphDao"/>
+  </bean>
+  
   <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
-    <property name="performanceModel" ref="performanceModel"/>
-    <property name="nodeDao" ref="nodeDao"/>
+    <property name="resourceDao" ref="resourceDao"/>
   </bean>
 
   <bean id="rrdStrategy-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -151,14 +168,29 @@
   </bean>
   
   <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
-    <property name="performanceModel" ref="performanceModel"/>
+    <property name="resourceDao" ref="resourceDao"/>
+    <property name="graphDao" ref="graphDao"/>
     <property name="nodeDao" ref="nodeDao"/>
   </bean>
   
   <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
-    <property name="performanceModel" ref="performanceModel"/>
-    <property name="prefabGraphDao" ref="prefabGraphDao"/>
+    <property name="resourceDao" ref="resourceDao"/>
+    <property name="graphDao" ref="graphDao"/>
     <property name="rrdStrategy" ref="rrdStrategy"/>
+  </bean>
+  
+
+  <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
+  </bean>
+
+  <bean id="kscReportFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="kscReportFactory-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="kscReportService" class="org.opennms.web.svclayer.support.DefaultKscReportService">
+    <property name="resourceService" ref="resourceService"/>
+    <property name="kscReportFactory" ref="kscReportFactory"/>
   </bean>
   
 </beans>

@@ -32,16 +32,20 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
 public interface CollectorConfigDao {
 
-    public abstract Set getCollectorNames();
+//    public abstract Set getCollectorNames();
     
     public abstract int getSchedulerThreads();
 
-	public abstract Collection getSpecificationsForInterface(OnmsIpInterface iface, String svcName);
+//    public abstract Collection getSpecificationsForInterface(OnmsIpInterface iface, String svcName);
+
+    public abstract Collection<Collector> getCollectors();
     
 }

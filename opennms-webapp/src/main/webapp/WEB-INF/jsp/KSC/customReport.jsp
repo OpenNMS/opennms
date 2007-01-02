@@ -1,0 +1,253 @@
+<%--
+
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2003 Feb 07: Fixed URLEncoder issues.
+// 2002 Nov 26: Fixed breadcrumbs issue.
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+--%>
+
+<%@page language="java"
+  contentType="text/html"
+  session="true"
+%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="headTitle" value="KSC" />
+  <jsp:param name="location" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="Custom Report" />
+</jsp:include>
+
+
+<%-- A script to Save the file --%>
+<script language="Javascript" type="text/javascript">
+    function saveReport()
+    {
+        document.customize_form.action.value = "Save"; 
+        document.customize_form.submit();
+    }
+ 
+    function addNewGraph()
+    {
+        document.customize_form.action.value = "AddGraph"; 
+        document.customize_form.submit();
+    }
+ 
+    function modifyGraph(graph_index)
+    {
+        document.customize_form.action.value = "ModGraph"; 
+        document.customize_form.graph_index.value = graph_index; 
+        document.customize_form.submit();
+    }
+ 
+    function deleteGraph(graph_index)
+    {
+        document.customize_form.action.value = "DelGraph";
+        document.customize_form.graph_index.value = graph_index; 
+        document.customize_form.submit();
+    }
+ 
+    function cancelReport()
+    {
+        var fer_sure = confirm("Do you really want to cancel configuration changes?");
+        if (fer_sure==true) {
+            setLocation("index.jsp");
+        }
+    }
+    
+</script>
+
+
+<h3 align="center">Customized Report Configuration</h3>
+
+    <form name="customize_form" method="get" action="KSC/formProcReport.htm">
+        <input type=hidden name="action" value="none">
+        <input type=hidden name="graph_index" value="-1">
+
+    <table width="100%" align="center">
+        <tr align = "center">
+            <td>
+                <table align="center">
+                   <tr>
+                        <td>
+                            Title: 
+                        </td>
+                        <td>
+                            <input type="text" name="report_title" value="${title}" size="80" maxlength="80">
+                        </td>
+                    </tr>
+                </table>
+            </td> 
+        </tr>
+        <tr>
+            <td>
+ 
+
+            <table width="100%" border="2">
+              <c:if test="${fn:length(resultSets) > 0}">
+                <c:forEach var="graphNum" begin="0" end="${fn:length(resultSets) - 1}">
+                  <c:set var="resultSet" value="${resultSets[graphNum]}"/>
+                    <tr>
+                        <td>
+                            <input type="button" value="Modify" onclick="modifyGraph(${graphNum})">
+                            <br/>
+                            <input type="button" value="Delete" onclick="deleteGraph(${graphNum})">
+                        </td>
+                        <td align="right">
+                            ${resultSet.title}
+                              <br/>
+                              <c:if test="${!empty resultSet.resource.parent}">
+                                ${resultSet.resource.parent.resourceType.label}:
+                                <c:choose>
+                                  <c:when test="${!empty resultSet.resource.parent.link}">
+                                    <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+                                  </c:when>
+                                  <c:otherwise>
+                                    ${resultSet.resource.parent.label}
+                                  </c:otherwise>
+                                </c:choose>
+                                <br />
+                              </c:if>
+                          
+                              ${resultSet.resource.resourceType.label}:
+                              <c:choose>
+                                <c:when test="${!empty resultSet.resource.link}">
+                                  <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
+                                </c:when>
+                                <c:otherwise>
+                                  ${resultSet.resource.label}
+                                </c:otherwise>
+                              </c:choose>
+
+                            <br/>
+                            <br/>
+                            From: ${resultSet.start}
+                            <br/>
+                            To: ${resultSet.end}
+                        </td>
+              
+                        <td align="left">
+                          <c:url var="graphUrl" value="graph/graph.png">
+                            <c:param name="resourceId" value="${resultSet.resource.id}"/>
+                            <c:param name="report" value="${resultSet.prefabGraph.name}"/>
+                            <c:param name="start" value="${resultSet.start.time}"/>
+                            <c:param name="end" value="${resultSet.end.time}"/>
+                            <c:param name="zoom" value="true"/>
+                          </c:url>
+                        
+                          <img src="${graphUrl}"/>
+                        </td>
+                    </tr>
+                  </c:forEach>
+                </c:if>
+            </table>  
+
+
+            </td> 
+        </tr>
+        <tr>
+            <td> 
+                <input type="button" value="Add New Graph" onclick="addNewGraph()" alt="Add a new graph to the Report"><br>
+            </td> 
+        </tr>
+        <tr>
+            <td>
+                <table align="center">
+                     <tr>
+                         <td>
+                             <c:choose>
+                               <c:when test="${showTimeSpan}">
+                                 <c:set var="checked" value="checked"/>
+                               </c:when>
+                               
+                               <c:otherwise>
+                                 <c:set var="checked" value=""/>
+                               </c:otherwise>
+                             </c:choose>
+                             <input type="checkbox" name="show_timespan" ${checked} />
+                         </td>
+                         <td>
+                             Show Timespan Button (allows global manipulation of report timespan)
+                         </td>
+                     </tr>
+                     <tr>
+                         <td>
+                             <c:choose>
+                               <c:when test="${showGraphType}">
+                                 <c:set var="checked" value="checked"/>
+                               </c:when>
+                               
+                               <c:otherwise>
+                                 <c:set var="checked" value=""/>
+                               </c:otherwise>
+                             </c:choose>
+                             <input type="checkbox" name="show_graphtype" ${checked} />
+                         </td>
+                         <td>
+                             Show Graphtype Button (allows global manipulation of report prefabricated graph type)
+                         </td>
+                     </tr>
+                </table> 
+            </td> 
+        </tr>
+        <tr>
+            <td> 
+                <table align="center">
+                    <tr>
+                        <td>
+                            <input type="button" value="Save" onclick="saveReport()" alt="Save the Report to File"><br>
+                        </td>
+                        <td>
+                            <input type="button" value="Cancel" onclick="cancelReport()" alt="Cancel the report configuration"><br>
+                        </td>
+                    </tr>
+                </table>
+            </td> 
+        </tr>
+        <tr>
+            <td>
+              Please make sure to save the added graph with the report, as the first save only adds it to the the present view.
+            </td>
+        </tr>
+
+    </table>
+
+    </form>
+
+<jsp:include page="/includes/footer.jsp" flush="false"/>

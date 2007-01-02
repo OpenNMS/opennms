@@ -1,34 +1,34 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
-//
+
+//This file is part of the OpenNMS(R) Application.
+
+//OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+//OpenNMS(R) is a derivative work, containing both original code, included code and modified
+//code that was published under the GNU General Public License. Copyrights for modified 
+//and included code are below.
+
+//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+
+//Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation; either version 2 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+//For more information contact:
+//OpenNMS Licensing       <license@opennms.org>
+//http://www.opennms.org/
+//http://www.opennms.com/
+
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
@@ -60,110 +60,110 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="ipInterface")
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
-	
-	
-	@Embeddable
-	public static class CollectionType implements Comparable, Serializable {
-		private static final long serialVersionUID = 3684486716941692804L;
-		private static final char[] s_order = {'N', 'C', 'S', 'P' };
-		char m_collType;
-		
-		private CollectionType() {
-		}
-		
-		public CollectionType(char collType) {
-			m_collType = collType;
-		}
-		
-		@Column(name="isSnmpPrimary")
-		public char getCharCode() {
-			return m_collType;
-		}
-		
-		public void setCharCode(char collType) {
-			m_collType = collType;
-		}
-		
-		public int compareTo(Object o) {
-			CollectionType collType = (CollectionType)o;
-			return getIndex(m_collType) - getIndex(collType.m_collType);
-		}
-		
-		private static int getIndex(char code) {
-			for (int i = 0; i < s_order.length; i++) {
-				if (s_order[i] == code) return i;
-			}
-			throw new IllegalArgumentException("illegal collType code '"+code+"'");
-		}
-		
-		public boolean equals(Object o) {
-			if (o instanceof CollectionType) {
-				return m_collType == ((CollectionType)o).m_collType;
-			}
-			return false;
-		}
-		
-		public int hashCode() {
-			return toString().hashCode();
-		}
-		
-		public String toString() {
-			return String.valueOf(m_collType);
-		}
-        
+
+
+    @Embeddable
+    public static class CollectionType implements Comparable, Serializable {
+        private static final long serialVersionUID = 3684486716941692804L;
+        private static final char[] s_order = {'N', 'C', 'S', 'P' };
+        char m_collType;
+
+        private CollectionType() {
+        }
+
+        public CollectionType(char collType) {
+            m_collType = collType;
+        }
+
+        @Column(name="isSnmpPrimary")
+        public char getCharCode() {
+            return m_collType;
+        }
+
+        public void setCharCode(char collType) {
+            m_collType = collType;
+        }
+
+        public int compareTo(Object o) {
+            CollectionType collType = (CollectionType)o;
+            return getIndex(m_collType) - getIndex(collType.m_collType);
+        }
+
+        private static int getIndex(char code) {
+            for (int i = 0; i < s_order.length; i++) {
+                if (s_order[i] == code) return i;
+            }
+            throw new IllegalArgumentException("illegal collType code '"+code+"'");
+        }
+
+        public boolean equals(Object o) {
+            if (o instanceof CollectionType) {
+                return m_collType == ((CollectionType)o).m_collType;
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public String toString() {
+            return String.valueOf(m_collType);
+        }
+
         public boolean isLessThan(CollectionType collType) {
             return compareTo(collType) < 0;
         }
-        
+
         public boolean isGreaterThan(CollectionType collType) {
             return compareTo(collType) > 0;
         }
-		
-		public CollectionType max(CollectionType collType) {
+
+        public CollectionType max(CollectionType collType) {
             return this.isLessThan(collType) ? collType : this;
-		}
+        }
 
-		public CollectionType min(CollectionType collType) {
+        public CollectionType min(CollectionType collType) {
             return this.isLessThan(collType) ? this : collType;
- 		}
+        }
 
-		public static CollectionType get(char code) {
-			switch (code) {
-			case 'P': return PRIMARY;
-			case 'S': return SECONDARY;
-			case 'C': return COLLECT;
-			case 'N': return NO_COLLECT;
-			default:
-				throw new IllegalArgumentException("Cannot create collType from code "+code);
-			}
-		}
-		
-		public static CollectionType get(String code) {
-			if (code == null)
-				return NO_COLLECT;
-			code = code.trim();
-			if (code.length() < 1)
-				return NO_COLLECT;
-			else if (code.length() > 1)
-				throw new IllegalArgumentException("Cannot convert string "+code+" to a collType");
-			else
-				return get(code.charAt(0));
-		}
-		
-		public static CollectionType PRIMARY = new CollectionType('P');
-		public static CollectionType SECONDARY = new CollectionType('S');
-		public static CollectionType COLLECT = new CollectionType('C');
-		public static CollectionType NO_COLLECT = new CollectionType('N');
-		
-		
-	}
+        public static CollectionType get(char code) {
+            switch (code) {
+            case 'P': return PRIMARY;
+            case 'S': return SECONDARY;
+            case 'C': return COLLECT;
+            case 'N': return NO_COLLECT;
+            default:
+                throw new IllegalArgumentException("Cannot create collType from code "+code);
+            }
+        }
+
+        public static CollectionType get(String code) {
+            if (code == null)
+                return NO_COLLECT;
+            code = code.trim();
+            if (code.length() < 1)
+                return NO_COLLECT;
+            else if (code.length() > 1)
+                throw new IllegalArgumentException("Cannot convert string "+code+" to a collType");
+            else
+                return get(code.charAt(0));
+        }
+
+        public static CollectionType PRIMARY = new CollectionType('P');
+        public static CollectionType SECONDARY = new CollectionType('S');
+        public static CollectionType COLLECT = new CollectionType('C');
+        public static CollectionType NO_COLLECT = new CollectionType('N');
+
+
+    }
 
     private static final long serialVersionUID = 7750043250236397014L;
-    
+
     private Integer m_id;
 
     private String m_ipAddress;
-    
+
     private String m_ipHostName;
 
     private String m_isManaged;
@@ -175,21 +175,21 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     private CollectionType m_isSnmpPrimary = CollectionType.NO_COLLECT;
 
     private OnmsNode m_node;
-    
+
     private Set<OnmsMonitoredService> m_monitoredServices = new HashSet<OnmsMonitoredService>();
 
-	private OnmsSnmpInterface m_snmpInterface;
-    
+    private OnmsSnmpInterface m_snmpInterface;
+
     public OnmsIpInterface() {
     }
-    
+
     /** minimal constructor */
     public OnmsIpInterface(String ipAddr, OnmsNode node) {
-        this.m_ipAddress = ipAddr;
-        this.m_node = node;
+        m_ipAddress = ipAddr;
+        m_node = node;
         node.getIpInterfaces().add(this);
     }
-    
+
     /**
      * Unique identifier for ipInterface.
      */
@@ -205,16 +205,16 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
 
-    
+
     @Column(name="ipAddr", length=16)
     public String getIpAddress() {
-        return this.m_ipAddress;
+        return m_ipAddress;
     }
 
     public void setIpAddress(String ipaddr) {
-        this.m_ipAddress = ipaddr;
+        m_ipAddress = ipaddr;
     }
-    
+
     //@Column(name="ifIndex")
     @Transient
     public Integer getIfIndex() {
@@ -222,7 +222,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             return null;
         }
         return m_snmpInterface.getIfIndex();
-        //return this.m_ifIndex;
+        //return m_ifIndex;
     }
 
     public void setIfIndex(Integer ifindex) {
@@ -230,135 +230,135 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             throw new IllegalStateException("Cannot set ifIndex if snmpInterface relation isn't setup");
         }
         m_snmpInterface.setIfIndex(ifindex);
-        //this.m_ifIndex = ifindex;
+        //m_ifIndex = ifindex;
     }
 
     @Column(name="ipHostName", length=256)
     public String getIpHostName() {
-        return this.m_ipHostName;
+        return m_ipHostName;
     }
 
     public void setIpHostName(String iphostname) {
-        this.m_ipHostName = iphostname;
+        m_ipHostName = iphostname;
     }
 
     @Column(name="isManaged", length=1)
     public String getIsManaged() {
-        return this.m_isManaged;
+        return m_isManaged;
     }
 
     public void setIsManaged(String ismanaged) {
-        this.m_isManaged = ismanaged;
+        m_isManaged = ismanaged;
     }
 
     @Column(name="ipStatus")
     public Integer getIpStatus() {
-        return this.m_ipStatus;
+        return m_ipStatus;
     }
 
     public void setIpStatus(Integer ipstatus) {
-        this.m_ipStatus = ipstatus;
+        m_ipStatus = ipstatus;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ipLastCapsdPoll")
     public Date getIpLastCapsdPoll() {
-        return this.m_ipLastCapsdPoll;
+        return m_ipLastCapsdPoll;
     }
 
     public void setIpLastCapsdPoll(Date iplastcapsdpoll) {
-        this.m_ipLastCapsdPoll = iplastcapsdpoll;
+        m_ipLastCapsdPoll = iplastcapsdpoll;
     }
 
     @Column(name="isSnmpPrimary", length=1)
     public CollectionType getIsSnmpPrimary() {
-        return this.m_isSnmpPrimary;
+        return m_isSnmpPrimary;
     }
 
     public void setIsSnmpPrimary(CollectionType issnmpprimary) {
-        this.m_isSnmpPrimary = issnmpprimary;
+        m_isSnmpPrimary = issnmpprimary;
     }
 
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
-        return this.m_node;
+        return m_node;
     }
 
     public void setNode(org.opennms.netmgt.model.OnmsNode node) {
-        this.m_node = node;
+        m_node = node;
     }
-    
+
     /** 
      * The services on this node
      */
     @OneToMany(mappedBy="ipInterface")
     @org.hibernate.annotations.Cascade( {
-         org.hibernate.annotations.CascadeType.ALL,
-         org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<OnmsMonitoredService> getMonitoredServices() {
+        org.hibernate.annotations.CascadeType.ALL,
+        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+        public Set<OnmsMonitoredService> getMonitoredServices() {
         return m_monitoredServices ;
     }
 
     public void setMonitoredServices(Set<OnmsMonitoredService> ifServices) {
         m_monitoredServices = ifServices;
     }
-    
-    
+
+
     /**
      * The SnmpInterface associated with this interface if any
      */
     @ManyToOne(optional=true, fetch=FetchType.LAZY)
     @JoinColumn(name="snmpInterfaceId")
     public OnmsSnmpInterface getSnmpInterface() {
-    	return m_snmpInterface;
+        return m_snmpInterface;
     }
-    
-    
+
+
     public void setSnmpInterface(OnmsSnmpInterface snmpInterface) {
-    	m_snmpInterface = snmpInterface;
+        m_snmpInterface = snmpInterface;
     }
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("ipaddr", getIpAddress())
-            .append("ifindex", getIfIndex())
-            .append("iphostname", getIpHostName())
-            .append("ismanaged", getIsManaged())
-            .append("ipstatus", getIpStatus())
-            .append("iplastcapsdpoll", getIpLastCapsdPoll())
-            .append("issnmpprimary", getIsSnmpPrimary())
-            .toString();
+        .append("ipaddr", getIpAddress())
+        .append("ifindex", getIfIndex())
+        .append("iphostname", getIpHostName())
+        .append("ismanaged", getIsManaged())
+        .append("ipstatus", getIpStatus())
+        .append("iplastcapsdpoll", getIpLastCapsdPoll())
+        .append("issnmpprimary", getIsSnmpPrimary())
+        .toString();
     }
 
-	public void visit(EntityVisitor visitor) {
-		visitor.visitIpInterface(this);
-		
-		for (Iterator it = getMonitoredServices().iterator(); it.hasNext();) {
-			OnmsMonitoredService monSvc = (OnmsMonitoredService) it.next();
-			monSvc.visit(visitor);
-		}
-		
-		visitor.visitIpInterfaceComplete(this);
-	}
+    public void visit(EntityVisitor visitor) {
+        visitor.visitIpInterface(this);
 
-	@Transient
-	public InetAddress getInetAddress() {
-		String ipAddr = getIpAddress();
-		if (ipAddr == null) return null;
-		
-		InetAddress addr = null;
-		try {
-			String hostName = getIpHostName() == null ? ipAddr : getIpHostName();
-			addr = InetAddress.getByName(ipAddr);
-			addr = InetAddress.getByAddress(hostName, addr.getAddress());
-		} catch (UnknownHostException e) {
-			// this can't happen here
-		}
-		return addr;
-	}
+        for (Iterator it = getMonitoredServices().iterator(); it.hasNext();) {
+            OnmsMonitoredService monSvc = (OnmsMonitoredService) it.next();
+            monSvc.visit(visitor);
+        }
 
-	@Transient
+        visitor.visitIpInterfaceComplete(this);
+    }
+
+    @Transient
+    public InetAddress getInetAddress() {
+        String ipAddr = getIpAddress();
+        if (ipAddr == null) return null;
+
+        InetAddress addr = null;
+        try {
+            String hostName = getIpHostName() == null ? ipAddr : getIpHostName();
+            addr = InetAddress.getByName(ipAddr);
+            addr = InetAddress.getByAddress(hostName, addr.getAddress());
+        } catch (UnknownHostException e) {
+            // this can't happen here
+        }
+        return addr;
+    }
+
+    @Transient
     public boolean isDown() {
         boolean down = true;
         for (Iterator it = m_monitoredServices.iterator(); it.hasNext();) {

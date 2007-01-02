@@ -46,26 +46,23 @@
         contentType="text/html"
         session="true"
         import="
-        java.util.List,
-        org.opennms.netmgt.dao.NodeDao,
-        org.opennms.netmgt.model.OnmsNode,
-        org.opennms.web.Util,
-		org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils"
+        org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
-    public NodeDao m_nodeDao = null;
+
+    public ResourceService m_resourceService;
 
 
 	public void init() throws ServletException {
 	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", NodeDao.class);
+        m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
     }
 %>
 
 <%
-    List<OnmsNode> nodes = m_nodeDao.findAll();
+    pageContext.setAttribute("resources", m_resourceService.findNodeResources());
 %>
 
 <script type="text/javascript">
@@ -111,7 +108,12 @@
 <h3><a href="graph/index.jsp">Resource Graphs</a></h3>
 <div class="boxWrapper">
 
-<%  if( nodes != null && nodes.size() > 0 ) { %>
+  <c:choose>
+    <c:when test="${empty resources}">
+      <p>No nodes are in the database or no nodes have RRD data</p>
+    </c:when>
+  
+    <c:otherwise>
       <form method="get" name="chooseResourceBoxForm" action="graph/chooseresource.htm" >
         <input type="hidden" name="parentResourceType" value="node" />
         <input type="hidden" name="reports" value="all"/>
@@ -120,19 +122,18 @@
       </form>
       
       <form name="chooseResourceBoxNodeList">
-              <select style="width: 100%;" name="parentResource" onchange="goChooseResourceBoxChange();">
-                <option value="">-- Choose a node --</option>
-                <% for (OnmsNode node : nodes) { %>
-                  <option value="<%=node.getId()%>"><%=Util.htmlify(node.getLabel())%></option>
-                <% } %>
-              </select>
+        <select style="width: 100%;" name="parentResource" onchange="goChooseResourceBoxChange();">
+          <option value="">-- Choose a node --</option>
+          <c:forEach var="resource" items="${resources}">
+            <option value="${resource.name}">${resource.label}</option>
+          </c:forEach>
+        </select>
       </form>
       
       <script type="text/javascript">
         resetChooseResourceBoxSelected();
       </script>
-      
-<% } else { %>
-      <p>No nodes are in the database</p>
-<% }  %>
+  
+    </c:otherwise>
+  </c:choose>
 </div>

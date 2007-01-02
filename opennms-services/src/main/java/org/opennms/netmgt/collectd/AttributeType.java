@@ -43,6 +43,7 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;

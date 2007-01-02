@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.collectd.SnmpCollector;
 import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;

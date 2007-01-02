@@ -1,0 +1,413 @@
+package org.opennms.netmgt.dao.support;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.opennms.core.utils.IntSet;
+import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.ObjectRetrievalFailureException;
+
+/**
+ * Encapsulates all SNMP performance reporting for the web user interface.
+ * 
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ */
+public class DefaultResourceDao implements ResourceDao, InitializingBean {
+    public static final String INTERFACE_GRAPH_TYPE = "interface";
+
+    public static final String RESPONSE_DIRECTORY = "response";
+    public static final String SNMP_DIRECTORY = "snmp";
+
+    private NodeDao m_nodeDao;
+    private LocationMonitorDao m_locationMonitorDao;
+    private File m_rrdDirectory;
+    private CollectdConfigFactory m_collectdConfig;
+    private DataCollectionConfig m_dataCollectionConfig;
+
+    private Map<String, OnmsResourceType> m_resourceTypes;
+    private NodeResourceType m_nodeResourceType;
+    private DomainResourceType m_domainResourceType;
+    
+    public DefaultResourceDao() {
+    }
+
+    public void setRrdDirectory(File rrdDirectory) {
+        m_rrdDirectory = rrdDirectory;
+    }
+
+    public File getRrdDirectory() {
+        return m_rrdDirectory;
+    }
+    
+    public File getRrdDirectory(boolean verify) {
+        if (verify && !getRrdDirectory().isDirectory()) {
+            throw new ObjectRetrievalFailureException("RRD directory does not exist: " + getRrdDirectory().getAbsolutePath(), getRrdDirectory());
+        }
+        
+        return getRrdDirectory();
+    }
+
+    public DataCollectionConfig getDataCollectionConfig() {
+        return m_dataCollectionConfig;
+    }
+
+    public void setDataCollectionConfig(DataCollectionConfig dataCollectionConfig) {
+        m_dataCollectionConfig = dataCollectionConfig;
+    }
+    
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+    
+    public CollectdConfigFactory getCollectdConfig() {
+        return m_collectdConfig;
+    }
+
+    public void setCollectdConfig(CollectdConfigFactory collectdConfig) {
+        m_collectdConfig = collectdConfig;
+    }
+    
+    public LocationMonitorDao getLocationMonitorDao() {
+        return m_locationMonitorDao;
+    }
+    
+    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
+        m_locationMonitorDao = locationMonitorDao;
+    }
+
+    public void afterPropertiesSet() throws IOException {
+        if (m_rrdDirectory == null) {
+            throw new IllegalStateException("rrdDirectory property has not been set");
+        }
+        
+        if (m_collectdConfig == null) {
+            throw new IllegalStateException("collectdConfig property has not been set");
+        }
+        
+        if (m_dataCollectionConfig == null) {
+            throw new IllegalStateException("dataCollectionConfig property has not been set");
+        }
+
+        if (m_nodeDao == null) {
+            throw new IllegalStateException("nodeDao property has not been set");
+        }
+        
+        if (m_locationMonitorDao == null) {
+            throw new IllegalStateException("locationMonitorDao property has not been set");
+        }
+
+        initResourceTypes();
+    }
+    
+
+    private void initResourceTypes() throws IOException {
+        Map<String, OnmsResourceType> resourceTypes;
+        resourceTypes = new LinkedHashMap<String, OnmsResourceType>();
+        OnmsResourceType resourceType;
+        
+        resourceType = new NodeSnmpResourceType(this);
+        resourceTypes.put(resourceType.getName(), resourceType);
+        
+        resourceType = new InterfaceSnmpResourceType(this, m_nodeDao);
+        resourceTypes.put(resourceType.getName(), resourceType);
+        
+        resourceType = new ResponseTimeResourceType(this, m_nodeDao);
+        resourceTypes.put(resourceType.getName(), resourceType);
+        
+        resourceType = new DistributedStatusResourceType(this, m_locationMonitorDao);
+        resourceTypes.put(resourceType.getName(), resourceType);
+        
+        resourceTypes.putAll(getGenericIndexResourceTypes());
+        
+        m_nodeResourceType = new NodeResourceType(this);
+        resourceTypes.put(m_nodeResourceType.getName(), m_nodeResourceType);
+        
+        m_domainResourceType = new DomainResourceType(this);
+        resourceTypes.put(m_domainResourceType.getName(), m_domainResourceType);
+
+        m_resourceTypes = resourceTypes;
+    }
+
+    private Map<String, GenericIndexResourceType> getGenericIndexResourceTypes() {
+        Map<String, GenericIndexResourceType> resourceTypes;
+        resourceTypes = new LinkedHashMap<String, GenericIndexResourceType>();
+
+        Map<String, org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
+            m_dataCollectionConfig.getConfiguredResourceTypes();
+        for (org.opennms.netmgt.config.datacollection.ResourceType resourceType : configuredResourceTypes.values()) {
+            String className = resourceType.getStorageStrategy().getClazz();
+            Class cinst;
+            try {
+                cinst = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new ObjectRetrievalFailureException(StorageStrategy.class,
+                                                          className,
+                                                          "Could not load class",
+                                                          e);
+            }
+            StorageStrategy storageStrategy;
+            try {
+                storageStrategy = (StorageStrategy) cinst.newInstance();
+            } catch (InstantiationException e) {
+                throw new ObjectRetrievalFailureException(StorageStrategy.class,
+                                                          className,
+                                                          "Could not instantiate",
+                                                          e);
+            } catch (IllegalAccessException e) {
+                throw new ObjectRetrievalFailureException(StorageStrategy.class,
+                                                          className,
+                                                          "Could not instantiate",
+                                                          e);
+            }
+            
+            storageStrategy.setResourceTypeName(resourceType.getName());
+            
+            GenericIndexResourceType genericIndexResourceType =
+                new GenericIndexResourceType(this,
+                                                  resourceType.getName(),
+                                                  resourceType.getLabel(),
+                                                  storageStrategy);
+            resourceTypes.put(genericIndexResourceType.getName(), genericIndexResourceType);
+        }
+        return resourceTypes;
+    }
+    
+    public Collection<OnmsResourceType> getResourceTypes() {
+        return m_resourceTypes.values();
+    }
+    
+    public OnmsResource getResourceById(String id) {
+        OnmsResource resource = null;
+
+        Pattern p = Pattern.compile("([^\\[]+)\\[([^\\]]*)\\](?:\\.|$)");
+        Matcher m = p.matcher(id);
+        StringBuffer sb = new StringBuffer();
+        
+        while (m.find()) {
+            String resourceTypeName = DefaultResourceDao.decode(m.group(1));
+            String resourceName = DefaultResourceDao.decode(m.group(2));
+
+            if (resource == null) {
+                resource = getTopLevelResource(resourceTypeName, resourceName);
+            } else {
+                resource = getChildResource(resource, resourceTypeName, resourceName);
+            }
+            m.appendReplacement(sb, "");
+        }
+        
+        m.appendTail(sb);
+        
+        if (sb.length() > 0) {
+            throw new IllegalArgumentException("resource ID '" + id
+                                               + "' does not match pattern '"
+                                               + p.toString() + "' at '"
+                                               + sb + "'");
+        }
+        
+        return resource;
+    }
+    
+    protected OnmsResource getTopLevelResource(String resourceType, String resource) {
+        if ("node".equals(resourceType)) {
+            return getNodeEntityResource(resource);
+        } else if ("domain".equals(resourceType)) {
+            return getDomainEntityResource(resource);
+        } else {
+            throw new ObjectRetrievalFailureException("Top-level resource type of '" + resourceType + "' is unknown", resourceType);
+        }
+    }
+    
+    protected OnmsResource getChildResource(OnmsResource parentResource, String resourceType, String resource) {
+        for (OnmsResource r : parentResource.getChildResources()) {
+            if (resourceType.equals(r.getResourceType().getName())
+                    && resource.equals(r.getName())) {
+                return r;
+            }
+        }
+        
+        throw new ObjectRetrievalFailureException(OnmsResource.class, resourceType + "/" + resource, "Could not find child resource '" + resource + "' with resource type '" + resourceType + "' on resource '" + resource + "'", null);
+    }
+    
+    /**
+     * Returns a list of resources for a node.
+     */
+    public List<OnmsResource> findNodeResources() {
+        List<OnmsResource> resources = new LinkedList<OnmsResource>();
+
+        IntSet snmpNodes = findSnmpNodeDirectories(); 
+        Set<String> responseTimeInterfaces =
+            findChildrenMatchingFilter(new File(getRrdDirectory(), RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+
+        List<OnmsNode> nodes = m_nodeDao.findAll();
+        IntSet nodesFound = new IntSet();
+        for (OnmsNode node : nodes) {
+            if (nodesFound.contains(node.getId())) {
+                continue;
+            }
+
+            boolean found = false;
+            if (snmpNodes.contains(node.getId())) {
+                found = true;
+            } else if (responseTimeInterfaces.size() > 0) {
+                for (OnmsIpInterface ip : node.getIpInterfaces()) {
+                    if (responseTimeInterfaces.contains(ip.getIpAddress())) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (found) {
+                resources.add(m_nodeResourceType.createChildResource(node));
+                nodesFound.add(node.getId());
+            }
+        }
+
+        return resources;
+    }
+    
+    /**
+     * Returns a list of resources for domains.
+     */
+    public List<OnmsResource> findDomainResources() {
+        List<OnmsResource> resources = new LinkedList<OnmsResource>();
+        
+        File snmp = new File(getRrdDirectory(), SNMP_DIRECTORY);
+
+        // Get all of the non-numeric directory names in the RRD directory; these
+        // are the names of the domains that have performance data
+        File[] domainDirs = snmp.listFiles(RrdFileConstants.DOMAIN_DIRECTORY_FILTER);
+
+        if (domainDirs != null && domainDirs.length > 0) {
+            for (File domainDir : domainDirs) {
+                if (m_collectdConfig.domainExists(domainDir.getName())
+                        || m_collectdConfig.packageExists(domainDir.getName())) {
+                    resources.add(m_domainResourceType.createChildResource(domainDir.getName()));
+                }
+            }
+        }
+        
+        return resources;
+    }
+    
+    protected OnmsResource getNodeEntityResource(String resource) {
+        int nodeId;
+        try {
+            nodeId = Integer.parseInt(resource);
+        } catch (NumberFormatException e) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, resource, "Top-level resource of resource type node is not numeric: " + resource, null);
+        }
+        
+        OnmsNode node = m_nodeDao.get(nodeId);
+        if (node == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, resource, "Top-level resource of resource type node could not be found: " + resource, null);
+        }
+
+        // FIXME check that we actually have data for this resource
+        
+        return m_nodeResourceType.createChildResource(node);
+    }
+
+    protected OnmsResource getDomainEntityResource(String domain) {
+        if (!m_collectdConfig.domainExists(domain)
+                && !m_collectdConfig.packageExists(domain)) {
+            throw new ObjectRetrievalFailureException(OnmsResource.class, domain, "Domain not found as a configured domain or package in collectd configuration", null);
+        }
+        
+        File directory = new File(getRrdDirectory(), SNMP_DIRECTORY);
+        File domainDir = new File(directory, domain);
+        if (!domainDir.isDirectory()) {
+            throw new ObjectRetrievalFailureException(OnmsResource.class, domain, "Domain not found due to domain RRD directory not existing or not a directory: " + domainDir.getAbsolutePath(), null);
+        }
+        
+        if (!RrdFileConstants.DOMAIN_DIRECTORY_FILTER.accept(domainDir)) {
+            throw new ObjectRetrievalFailureException(OnmsResource.class, domain, "Domain not found due to domain RRD directory not matching the domain directory filter: " + domainDir.getAbsolutePath(), null);
+        }
+
+        return m_domainResourceType.createChildResource(domain);
+    }
+
+    private IntSet findSnmpNodeDirectories() {
+        IntSet nodes = new IntSet();
+        
+        File directory = new File(getRrdDirectory(), SNMP_DIRECTORY);
+        File[] nodeDirs = directory.listFiles(RrdFileConstants.NODE_DIRECTORY_FILTER);
+
+        if (nodeDirs == null || nodeDirs.length == 0) {
+            return nodes;
+        }
+
+        for (File nodeDir : nodeDirs) {
+            try {
+                int nodeId = Integer.parseInt(nodeDir.getName());
+                nodes.add(nodeId);
+            } catch (NumberFormatException e) {
+                // skip... don't add
+            }
+        }
+        
+        return nodes;
+    }
+
+    private Set<String> findChildrenMatchingFilter(File directory, FileFilter filter) {
+        Set<String> children = new HashSet<String>();
+        
+        File[] nodeDirs = directory.listFiles(filter);
+
+        if (nodeDirs == null || nodeDirs.length == 0) {
+            return children;
+        }
+
+        for (File nodeDir : nodeDirs) {
+            children.add(nodeDir.getName());
+        }
+        
+        return children;
+    }
+
+    /**
+     * Encapsulate the deprecated decode method to fix it in one place.
+     * 
+     * @param string
+     *            string to be decoded
+     * @return decoded string
+     */
+    public static String decode(String string) {
+        try {
+            return URLDecoder.decode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 should *never* throw this
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+
+}

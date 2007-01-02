@@ -9,7 +9,6 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
-import org.opennms.web.graph.ResourceId;
 import org.opennms.web.svclayer.GraphResultsService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -136,13 +135,8 @@ public class GraphResultsController extends AbstractController {
             endLong = times[1];
         }
         
-        ResourceId[] resources = new ResourceId[resourceIds.length];
-        for (int i = 0; i < resourceIds.length; i++) {
-            resources[i] = ResourceId.parseResourceId(resourceIds[i]);
-        }
-
         GraphResults model =
-            m_graphResultsService.findResults(resources,
+            m_graphResultsService.findResults(resourceIds,
                                               reports, startLong,
                                               endLong, relativeTime);
 

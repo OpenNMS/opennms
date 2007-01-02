@@ -1,20 +1,12 @@
 package org.opennms.web.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.StreamUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.graph.ResourceId;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -38,7 +30,7 @@ public class RrdGraphController extends AbstractController {
             }
         }
 
-        String resourceIdString = request.getParameter("resourceId");
+        String resourceId = request.getParameter("resourceId");
         String start = request.getParameter("start");
         String end = request.getParameter("end");
         
@@ -56,12 +48,6 @@ public class RrdGraphController extends AbstractController {
             throw new IllegalArgumentException("Could not parse end '"
                                                + end + "' as an integer time: " + e.getMessage(), e);
         }
-        
-        ResourceId resourceId = ResourceId.parseResourceId(resourceIdString);
-        String parentResourceType = resourceId.getParentResourceType();
-        String parentResource = resourceId.getParentResource();
-        String resourceType = resourceId.getResourceType();
-        String resource = resourceId.getResource();
         
         InputStream tempIn;
         if ("true".equals(request.getParameter("adhoc"))) {
@@ -88,10 +74,7 @@ public class RrdGraphController extends AbstractController {
             String[] dataSourceTitles = request.getParameterValues("dstitle");
             String[] styles = request.getParameterValues("style");
             
-            tempIn = m_rrdGraphService.getAdhocGraph(parentResourceType,
-                                                     parentResource,
-                                                     resourceType,
-                                                     resource,
+            tempIn = m_rrdGraphService.getAdhocGraph(resourceId,
                                                      title,
                                                      dataSources,
                                                      aggregateFunctions,
@@ -105,9 +88,8 @@ public class RrdGraphController extends AbstractController {
                 throw new MissingParameterException("report");
             }
             
-            tempIn = m_rrdGraphService.getPrefabGraph(
-                    parentResourceType, parentResource,
-                    resourceType, resource, report, startTime, endTime);
+            tempIn = m_rrdGraphService.getPrefabGraph(resourceId,
+                                                      report, startTime, endTime);
         }
 
         response.setContentType("image/png");
