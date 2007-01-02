@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -73,5 +74,7 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
      * determined).
      */
     Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate);
+
+    Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(int nodeId);
     
 }
