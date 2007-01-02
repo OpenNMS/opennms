@@ -953,6 +953,11 @@ opennms.home = ${opennms.home}
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-jrobin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-services</artifactId>
         <version>${project.version}</version>
       </dependency>
