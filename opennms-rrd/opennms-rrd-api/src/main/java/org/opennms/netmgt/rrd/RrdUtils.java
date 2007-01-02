@@ -82,8 +82,9 @@ public class RrdUtils {
     private static String m_rrdExtension = RrdConfig.getProperty("org.opennms.rrd.fileExtension", null);
 
     public static RrdStrategy getStrategy() {
-        if (m_rrdStrategy == null)
+        if (m_rrdStrategy == null) {
             throw new IllegalStateException("RrdUtils not initiailzed");
+        }
         return m_rrdStrategy;
     }
     
@@ -184,8 +185,9 @@ public class RrdUtils {
 
         String completePath = directory + File.separator + fileName;
 
-        if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("createRRD: rrd path and file name to create: " + completePath);
+        }
 
 
         try {
@@ -244,7 +246,7 @@ public class RrdUtils {
 
         String updateVal = Long.toString(time) + ":" + val;
 
-            log().info("updateRRD:updating RRD file: " + rrdFile + " with value: " + updateVal);
+        log().info("updateRRD:updating RRD file: " + rrdFile + " with value: " + updateVal);
 
         Object rrd = null;
         try {
@@ -255,15 +257,17 @@ public class RrdUtils {
             throw new org.opennms.netmgt.rrd.RrdException("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);
         } finally {
             try {
-                if (rrd != null)
+                if (rrd != null) {
                     getStrategy().closeFile(rrd);
+                }
             } catch (Exception e) {
                 throw new org.opennms.netmgt.rrd.RrdException("Exception closing rrdDb", e);
             }
         }
 
-        if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("updateRRD: RRD update command completed.");
+        }
     }
 
     /**
@@ -331,10 +335,11 @@ public class RrdUtils {
         return getStrategy().createGraph(command, workDir);
     }
 
-	public static String getExtension() {
-        if (m_rrdExtension == null)
+    public static String getExtension() {
+        if (m_rrdExtension == null) {
             return getStrategy().getDefaultFileExtension();
-		return m_rrdExtension;
-	}
+        }
+        return m_rrdExtension;
+    }
 
 }
