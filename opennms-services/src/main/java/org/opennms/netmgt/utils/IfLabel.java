@@ -84,12 +84,12 @@ public class IfLabel extends Object {
      * @throws SQLException
      *             if error occurs accessing the database.
      */
-    public static Map getInterfaceInfoFromIfLabel(Connection conn, int nodeId, String ifLabel) throws SQLException {
+    public static Map<String, String> getInterfaceInfoFromIfLabel(Connection conn, int nodeId, String ifLabel) throws SQLException {
         if (ifLabel == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Map info = new HashMap();
+        Map<String, String> info = new HashMap<String, String>();
         String desc = ifLabel;
         String mac = null;
 
@@ -113,7 +113,13 @@ public class IfLabel extends Object {
             // If the description portion of ifLabel matches an entry
             // in the snmpinterface table...
 
-            // String snmpifdesc = rs.getString("snmpifdescr");
+            /*
+             * When Cisco Express Forwarding (CEF) or some ATM encapsulations
+             * (AAL5) are used on Cisco routers, an additional entry might be 
+             * in the ifTable for these sub-interfaces, but there is no
+             * performance data available for collection.  This check excludes
+             * ifTable entries where ifDescr contains "-cef".  See bug #803.
+             */
             if (rs.getString("snmpifdescr") != null) {
                 if (Pattern.matches(".*-cef.*", rs.getString("snmpifdescr")))
                     continue;
@@ -154,7 +160,7 @@ public class IfLabel extends Object {
      * @param nodeId
      *            Node id
      * @param ifLabel
-     *            Interface label of format: <description>- <macAddr>
+     *            Interface label of format: <description>-<macAddr>
      * 
      * @return Map of SNMP info keyed by 'snmpInterface' table column names for
      *         the interface specified by nodeId and ifLabel args.
@@ -162,10 +168,10 @@ public class IfLabel extends Object {
      * @throws SQLException
      *             if error occurs accessing the database.
      */
-    public static Map getInterfaceInfoFromIfLabel(int nodeId, String ifLabel) throws SQLException {
+    public static Map<String, String> getInterfaceInfoFromIfLabel(int nodeId, String ifLabel) throws SQLException {
         Connection conn = Vault.getDbConnection();
 
-        Map info = null;
+        Map<String, String> info = null;
         try {
             info = getInterfaceInfoFromIfLabel(conn, nodeId, ifLabel);
         } finally {
@@ -179,7 +185,7 @@ public class IfLabel extends Object {
 
     /** Get the interface labels for each interface on a given node. */
     public static String[] getIfLabels(int nodeId) throws SQLException {
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
         Connection conn = Vault.getDbConnection();
 
         try {
@@ -202,7 +208,7 @@ public class IfLabel extends Object {
             Vault.releaseDbConnection(conn);
         }
 
-        String[] labels = (String[]) list.toArray(new String[list.size()]);
+        String[] labels = list.toArray(new String[list.size()]);
 
         return labels;
     }
