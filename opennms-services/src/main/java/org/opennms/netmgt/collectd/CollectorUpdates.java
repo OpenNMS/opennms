@@ -35,6 +35,8 @@ package org.opennms.netmgt.collectd;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.model.OnmsIpInterface;
+
 /**
  * The CollectorUpdates class encapsulates changes to a SnmpCollector which is
  * actively being collected by the collectd scheduler. When associated with a
@@ -76,7 +78,7 @@ final class CollectorUpdates {
     /**
      * Set to true if the interface has been marked for re-initialization.
      */
-    private boolean m_reinitFlag;
+    private OnmsIpInterface m_reinitFlag = null;
 
     /**
      * Set to true if the interface has been marked for reparenting.
@@ -92,6 +94,8 @@ final class CollectorUpdates {
      * New nodeId for reparenting
      */
     private String m_reparentNewNodeId;
+    
+    private OnmsIpInterface m_newIface = null;
 
     /**
      * Constructor.
@@ -104,10 +108,11 @@ final class CollectorUpdates {
         m_hasUpdates = false;
         m_properties = null;
         m_deletionFlag = false;
-        m_reinitFlag = false;
+        m_reinitFlag = null;
         m_reparentFlag = false;
         m_reparentOldNodeId = null;
         m_reparentNewNodeId = null;
+        m_newIface = null;
     }
 
     /**
@@ -143,18 +148,20 @@ final class CollectorUpdates {
     /**
      * Set the reinit flag.
      */
-    void markForReinitialization() {
-        m_reinitFlag = true;
+    void markForReinitialization(OnmsIpInterface iface) {
+        m_reinitFlag = iface;
         m_hasUpdates = true;
     }
 
     /**
      * Set the reparent flag.
+     * @param iface 
      */
-    void markForReparenting(String oldNodeId, String newNodeId) {
+    void markForReparenting(String oldNodeId, String newNodeId, OnmsIpInterface iface) {
         m_reparentFlag = true;
         m_reparentOldNodeId = oldNodeId;
         m_reparentNewNodeId = newNodeId;
+        m_newIface = iface;
         m_hasUpdates = true;
     }
 
@@ -164,6 +171,10 @@ final class CollectorUpdates {
 
     String getReparentNewNodeId() {
         return m_reparentNewNodeId;
+    }
+    
+    OnmsIpInterface getUpdatedInterface() {
+    	return m_newIface;
     }
 
     /**
@@ -183,7 +194,7 @@ final class CollectorUpdates {
     /**
      * Returns the state of the reinit flag.
      */
-    boolean isReinitializationFlagSet() {
+    OnmsIpInterface isReinitializationNeeded() {
         return m_reinitFlag;
     }
 

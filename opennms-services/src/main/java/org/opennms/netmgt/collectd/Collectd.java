@@ -327,8 +327,7 @@ public final class Collectd extends AbstractServiceDaemon implements
     private void scheduleInterface(int nodeId, String ipAddress,
             String svcName, boolean existing) {
         
-        OnmsNode node = m_nodeDao.getHierarchy(nodeId);
-        OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
+        OnmsIpInterface iface = getIpInterface(nodeId, ipAddress);
         if (iface == null) {
             log().error("Unable to find interface with address "+ipAddress+" on node "+nodeId);
             return;
@@ -343,6 +342,12 @@ public final class Collectd extends AbstractServiceDaemon implements
         scheduleInterface(iface, svc.getServiceType().getName(),
                           existing);
     }
+
+	private OnmsIpInterface getIpInterface(int nodeId, String ipAddress) {
+		OnmsNode node = m_nodeDao.getHierarchy(nodeId);
+        OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
+		return iface;
+	}
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
         Collection matchingSpecs = getSpecificationsForInterface(iface, svcName);
@@ -881,6 +886,7 @@ public final class Collectd extends AbstractServiceDaemon implements
         // SnmpMonitor.NodeInfo attribute to reflect the new nodeId. All
         // subsequent collections will then be updating the appropriate RRDs.
         //
+        OnmsIpInterface iface = null;
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
             Iterator iter = getCollectableServices().iterator();
@@ -899,9 +905,12 @@ public final class Collectd extends AbstractServiceDaemon implements
                         // with
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
+                        if (iface == null) {
+                        	iface = getIpInterface((int) event.getNodeid(), event.getInterface());
+                        }
 
                         // Now set the reparenting flag
-                        updates.markForReparenting(oldNodeIdStr, newNodeIdStr);
+                        updates.markForReparenting(oldNodeIdStr, newNodeIdStr, iface);
                         if (log.isDebugEnabled())
                             log.debug("interfaceReparentedHandler: marking "
                                     + event.getInterface()
@@ -1151,6 +1160,7 @@ public final class Collectd extends AbstractServiceDaemon implements
         // updates map and mark any which have the same interface
         // address for reinitialization
         //
+        OnmsIpInterface iface = null;
         synchronized (getCollectableServices()) {
             Iterator iter = getCollectableServices().iterator();
             while (iter.hasNext()) {
@@ -1164,13 +1174,16 @@ public final class Collectd extends AbstractServiceDaemon implements
                             + event.getInterface());
                 if (addr.getHostAddress().equals(event.getInterface())) {
                     synchronized (cSvc) {
+                    	if (iface == null) {
+                    		iface = getIpInterface((int) event.getNodeid(), event.getInterface());
+                    	}
                         // Got a match! Retrieve the CollectorUpdates object
                         // associated
                         // with this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
 
                         // Now set the reinitialization flag
-                        updates.markForReinitialization();
+                        updates.markForReinitialization(iface);
                         if (log.isDebugEnabled())
                             log.debug("reinitializePrimarySnmpInterfaceHandler: marking "
                                     + event.getInterface()
