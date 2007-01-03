@@ -347,9 +347,10 @@ final class CollectableService implements ReadyRunnable {
                 return ABORT_COLLECTION;
             }
 
-            // Update: reinitialization flag
+            OnmsIpInterface newIface = m_updates.isReinitializationNeeded();
+			// Update: reinitialization flag
             //
-            if (m_updates.isReinitializationFlagSet()) {
+            if (newIface != null) {
                 // Reinitialization flag is set, call initialize() to
                 // reinit the collector for this interface
                 //
@@ -357,7 +358,7 @@ final class CollectableService implements ReadyRunnable {
                     log().debug("ReinitializationFlag set for " + getHostAddress());
 
                 try {
-                    reinitialize();
+                    reinitialize(newIface);
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing SNMP collector for " + getHostAddress());
                 } catch (RuntimeException rE) {
@@ -464,7 +465,7 @@ final class CollectableService implements ReadyRunnable {
                 try {
                     if (log().isDebugEnabled())
                         log().debug("Reinitializing SNMP collector for " + getHostAddress());
-                    reinitialize();
+                    reinitialize(m_updates.getUpdatedInterface());
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing SNMP collector for " + getHostAddress());
                 } catch (RuntimeException rE) {
@@ -486,8 +487,9 @@ final class CollectableService implements ReadyRunnable {
     	return ThreadCategory.getInstance(getClass());
     }
 
-	private void reinitialize() {
+	private void reinitialize(OnmsIpInterface newIface) {
 		m_spec.release(m_agent);
+		m_agent = new CollectionAgent(newIface);
 		m_spec.initialize(m_agent);
 	}
 
