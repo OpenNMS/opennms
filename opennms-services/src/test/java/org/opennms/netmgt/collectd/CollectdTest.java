@@ -1,34 +1,34 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
-//
+
+//This file is part of the OpenNMS(R) Application.
+
+//OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+//OpenNMS(R) is a derivative work, containing both original code, included code and modified
+//code that was published under the GNU General Public License. Copyrights for modified 
+//and included code are below.
+
+//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+
+//Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation; either version 2 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+//For more information contact:
+//OpenNMS Licensing       <license@opennms.org>
+//http://www.opennms.org/
+//http://www.opennms.com/
+
 
 package org.opennms.netmgt.collectd;
 
@@ -43,6 +43,7 @@ import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -63,36 +64,36 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 public class CollectdTest extends MockObjectTestCase {
-	
-	private Collectd m_collectd;
-	
-	private Mock m_eventIpcManager;
-	private Mock m_collectorConfigDao;
-	private Mock m_ipIfDao;
-	private Mock m_monSvcDao;
-	private Mock m_collector;
-	
-	private MockScheduler m_scheduler;
-	private CollectionSpecification m_spec;
+
+    private Collectd m_collectd;
+
+    private Mock m_eventIpcManager;
+    private Mock m_collectorConfigDao;
+    private Mock m_ipIfDao;
+    private Mock m_monSvcDao;
+    private Mock m_collector;
+
+    private MockScheduler m_scheduler;
+    private CollectionSpecification m_spec;
 
 
-	protected void setUp() throws Exception {
-		
-		MockLogAppender.setupLogging();
-        
+    protected void setUp() throws Exception {
+
+        MockLogAppender.setupLogging();
+
         // Test setup
-		
-		m_eventIpcManager = mock(EventIpcManager.class);
-		m_collectorConfigDao = mock(CollectorConfigDao.class);
-		m_ipIfDao = mock(IpInterfaceDao.class);
-		m_monSvcDao = mock(MonitoredServiceDao.class);
-		
-		m_collector = mock(ServiceCollector.class);
 
-		m_scheduler = new MockScheduler();
-		
-		m_eventIpcManager.stubs();
-		
+        m_eventIpcManager = mock(EventIpcManager.class);
+        m_collectorConfigDao = mock(CollectorConfigDao.class);
+        m_ipIfDao = mock(IpInterfaceDao.class);
+        m_monSvcDao = mock(MonitoredServiceDao.class);
+
+        m_collector = mock(ServiceCollector.class);
+
+        m_scheduler = new MockScheduler();
+
+        m_eventIpcManager.stubs();
+
         MockNetwork m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
         m_network.addNode(1, "Router");
@@ -113,10 +114,10 @@ public class CollectdTest extends MockObjectTestCase {
         m_network.addInterface("192.168.1.5");
         m_network.addService("SMTP");
         m_network.addService("HTTP");
-        
+
         MockDatabase m_db = new MockDatabase();
         m_db.populate(m_network);
-        
+
         DataSourceFactory.setInstance(m_db);
 
         Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
@@ -124,162 +125,185 @@ public class CollectdTest extends MockObjectTestCase {
         DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(r);
         r.close();
         DatabaseSchemaConfigFactory.setInstance(dscf);
-		
-		Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
-		InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
+
+        Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
+        InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
         pollOutagesRdr.close();
 
-		
-		m_collectd = new Collectd();
-		m_collectd.setEventIpcManager(getEventIpcManager());
-		m_collectd.setCollectorConfigDao(getCollectorConfigDao());
-		m_collectd.setIpInterfaceDao(getIpInterfaceDao());
-		m_collectd.setMonitoredServiceDao(getMonitoredServiceDao());
-		m_collectd.setScheduler(m_scheduler);
-		
-		Package pkg = new Package();
-		pkg.setName("pkg");
-		Filter filter = new Filter();
-		filter.setContent("IPADDR IPLIKE *.*.*.*");
-		pkg.setFilter(filter);
-		Service svc = new Service();
-		pkg.addService(svc);
-		svc.setName("SNMP");
-		Parameter parm = new Parameter();
-		parm.setKey("parm1");
-		parm.setValue("value1");
-		svc.addParameter(parm);
-		
-		CollectdPackage wpkg = new CollectdPackage(pkg, "localhost", false);
-		
-		m_spec = new CollectionSpecification(wpkg, "SNMP", null, getCollector());
-	}
-	
-	private ServiceCollector getCollector() {
-		return (ServiceCollector)m_collector.proxy();
-	}
 
-	private MonitoredServiceDao getMonitoredServiceDao() {
-		return (MonitoredServiceDao)m_monSvcDao.proxy();
-	}
+        m_collectd = new Collectd();
+        m_collectd.setEventIpcManager(getEventIpcManager());
+        m_collectd.setCollectorConfigDao(getCollectorConfigDao());
+        m_collectd.setIpInterfaceDao(getIpInterfaceDao());
+        m_collectd.setMonitoredServiceDao(getMonitoredServiceDao());
+        m_collectd.setScheduler(m_scheduler);
 
-	private IpInterfaceDao getIpInterfaceDao() {
-		return (IpInterfaceDao)m_ipIfDao.proxy();
-	}
+        Package pkg = new Package();
+        pkg.setName("pkg");
+        Filter filter = new Filter();
+        filter.setContent("IPADDR IPLIKE *.*.*.*");
+        pkg.setFilter(filter);
+        Service svc = new Service();
+        pkg.addService(svc);
+        svc.setName("SNMP");
+        Parameter parm = new Parameter();
+        parm.setKey("parm1");
+        parm.setValue("value1");
+        svc.addParameter(parm);
 
-	private CollectorConfigDao getCollectorConfigDao() {
-		return (CollectorConfigDao)m_collectorConfigDao.proxy();
-	}
+        CollectdPackage wpkg = new CollectdPackage(pkg, "localhost", false);
 
-	private EventIpcManager getEventIpcManager() {
-		return (EventIpcManager)m_eventIpcManager.proxy();
-	}
-	
-	private CollectionSpecification getCollectionSpecification() {
-		return m_spec;
-	}
-	
-	private OnmsIpInterface getInterface() {
-		OnmsNode node = new OnmsNode();
-		node.setId(new Integer(1));
-		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
-		return iface;
-	}
+        m_spec = new CollectionSpecification(wpkg, "SNMP", null, getCollector());
+    }
 
-	protected void tearDown() throws Exception {
-		// TODO Auto-generated method stub
-		super.tearDown();
-	}
+    private ServiceCollector getCollector() {
+        return (ServiceCollector)m_collector.proxy();
+    }
 
-	public void testCreate() {
-		
-		Mock m_scheduler = mock(Scheduler.class);
-		m_collectd.setScheduler((Scheduler)m_scheduler.proxy());
-		
-		m_scheduler.expects(once()).method("schedule").with(eq(0L), ANYTHING);
-		m_collectd.init();
-		
-		m_scheduler.expects(once()).method("start");
-		m_collectd.start();
+    private MonitoredServiceDao getMonitoredServiceDao() {
+        return (MonitoredServiceDao)m_monSvcDao.proxy();
+    }
 
-		m_scheduler.expects(once()).method("stop");
-		m_collectd.stop();
-	}
-	
-	public void FIXMEtestScheduling() {
-		FIXMEtestNoMatchingSpecs();
-	}
+    private IpInterfaceDao getIpInterfaceDao() {
+        return (IpInterfaceDao)m_ipIfDao.proxy();
+    }
 
-	public void FIXMEtestNoMatchingSpecs() {
-		m_collectd.init();
-		m_collectd.start();
-		
-		String svcName = "SNMP";
-		OnmsIpInterface iface = getInterface();
-		List specs = Collections.EMPTY_LIST;
+    private CollectorConfigDao getCollectorConfigDao() {
+        return (CollectorConfigDao)m_collectorConfigDao.proxy();
+    }
 
-		setupCollector(svcName);
-		setupInterface(iface);
-		setupSpecs(iface, svcName, specs);
+    private EventIpcManager getEventIpcManager() {
+        return (EventIpcManager)m_eventIpcManager.proxy();
+    }
 
-		m_scheduler.next();
-		
-		assertEquals(0, m_scheduler.getEntryCount());
-		
-		m_collectd.stop();
-		
-	}
+    private CollectionSpecification getCollectionSpecification() {
+        return m_spec;
+    }
 
-	public void FIXMEtestOneMatchingSpec() {
-		m_collectd.init();
-		m_collectd.start();
-		
-		String svcName = "SNMP";
-		OnmsIpInterface iface = getInterface();
-		List specs = Collections.singletonList(getCollectionSpecification());
+    private OnmsIpInterface getInterface() {
+        OnmsNode node = new OnmsNode();
+        node.setId(new Integer(1));
+        OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
+        return iface;
+    }
 
-		setupCollector(svcName);
-		setupInterface(iface);
-		setupSpecs(iface, svcName, specs);
-		
-		m_collector.expects(once()).method("initialize").with(isA(CollectionAgent.class), isA(Map.class));
+    protected void tearDown() throws Exception {
+        // TODO Auto-generated method stub
+        super.tearDown();
+    }
 
-		m_scheduler.next();
-		
-		assertEquals(1, m_scheduler.getEntryCount());
-		
-		//public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters);
-		m_collector.expects(once()).method("collect").with(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class));
-		
-		m_scheduler.next();
-		
-		m_collectd.stop();
-		
-	}
+    public void testCreate() {
+        String svcName = "SNMP";
+        
+        setupCollector(svcName);
 
-	private void setupSpecs(OnmsIpInterface iface, String svcName, List specs) {
-		m_collectorConfigDao.expects(once()).method("getSpecificationsForInterface").
-			with(same(iface), eq(svcName)).
-			will(returnValue(specs));
-	}
+        Mock m_scheduler = mock(Scheduler.class);
+        m_collectd.setScheduler((Scheduler)m_scheduler.proxy());
 
-	private void setupInterface(OnmsIpInterface iface) {
-		m_ipIfDao.expects(once()).method("findByServiceType").
-			with(eq("SNMP")).
-			will(returnValue(Collections.singleton(iface)));
-	}
+        m_scheduler.expects(once()).method("schedule").with(eq(0L), ANYTHING);
+        m_collectd.init();
 
-	private void setupCollector(String svcName) {
-		m_collectorConfigDao.expects(once()).method("getCollectorNames").
-			will(returnValue(Collections.singleton(svcName)));
-	}
+        m_scheduler.expects(once()).method("start");
+        m_collectd.start();
 
-	public void runTest() throws Throwable {
-		super.runTest();
-		MockLogAppender.assertNoWarningsOrGreater();
-		
-		
-	}
+        m_scheduler.expects(once()).method("stop");
+        m_collectd.stop();
+    }
+
+    public void FIXMEtestScheduling() {
+        FIXMEtestNoMatchingSpecs();
+    }
+
+    public void FIXMEtestNoMatchingSpecs() {
+        m_collectd.init();
+        m_collectd.start();
+
+        String svcName = "SNMP";
+        OnmsIpInterface iface = getInterface();
+        List specs = Collections.EMPTY_LIST;
+
+        setupCollector(svcName);
+        setupInterface(iface);
+        setupSpecs(iface, svcName, specs);
+
+        m_scheduler.next();
+
+        assertEquals(0, m_scheduler.getEntryCount());
+
+        m_collectd.stop();
+
+    }
+
+    public void FIXMEtestOneMatchingSpec() {
+        m_collectd.init();
+        m_collectd.start();
+
+        String svcName = "SNMP";
+        OnmsIpInterface iface = getInterface();
+        List specs = Collections.singletonList(getCollectionSpecification());
+
+        setupCollector(svcName);
+        setupInterface(iface);
+        setupSpecs(iface, svcName, specs);
+
+        m_collector.expects(once()).method("initialize").with(isA(CollectionAgent.class), isA(Map.class));
+
+        m_scheduler.next();
+
+        assertEquals(1, m_scheduler.getEntryCount());
+
+        //public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters);
+        m_collector.expects(once()).method("collect").with(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class));
+
+        m_scheduler.next();
+
+        m_collectd.stop();
+
+    }
+
+    private void setupSpecs(OnmsIpInterface iface, String svcName, List specs) {
+        m_collectorConfigDao.expects(once()).method("getSpecificationsForInterface").
+        with(same(iface), eq(svcName)).
+        will(returnValue(specs));
+    }
+
+    private void setupInterface(OnmsIpInterface iface) {
+        m_ipIfDao.expects(once()).method("findByServiceType").
+        with(eq("SNMP")).
+        will(returnValue(Collections.singleton(iface)));
+    }
+
+    private void setupCollector(String svcName) {
+        Collector collector = new Collector();
+        collector.setService(svcName);
+        collector.setClassName(MockServiceCollector.class.getName());
+        
+        m_collectorConfigDao.expects(once()).method("getCollectors").
+        will(returnValue(Collections.singleton(collector)));
+    }
+
+    public void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNoWarningsOrGreater();
+    }
+    
+    public static class MockServiceCollector implements ServiceCollector {
+        public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+            return 0;
+        }
+
+        public void initialize(Map parameters) {
+        }
+
+        public void initialize(CollectionAgent agent, Map parameters) {
+        }
+
+        public void release() {
+        }
+
+        public void release(CollectionAgent agent) {
+        }
+    }
 
 }
