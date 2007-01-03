@@ -222,6 +222,7 @@ public class AvailabilityReportTest extends TestCase {
 		assertEquals(3, m_db.countRows("select * from ifservices"));
 //		assertEquals(3, m_db.countRows("select * from outages"));
 		assertEquals(1, m_db.countRows("select * from ipinterface where ipaddr = '192.168.100.1'"));
+		assertEquals("Check IPLIKE - incorrect number of interfaces returned",3, m_db.countRows("select * from ipinterface where iplike(ipaddr,'192.168.100.*')"));
 	}
 	
 	public void testBuiltClassicReport () {
