@@ -78,7 +78,6 @@
     }
 </script>
 
-<h2>${title}</h2>
 
 <c:choose>
   <c:when test="${fn:length(resultSets) <= 0}">
@@ -87,17 +86,15 @@
   </c:when>
 
   <c:otherwise>
+    <h3>Custom View: ${title}</h3>
+    <div class="boxWrapper">
     <form name="view_form" method="get" action="KSC/formProcView.htm">
       <input type=hidden name="type" value="${reportType}" >
       <input type=hidden name="action" value="none">
       <input type=hidden name="domain" value="${domain}">
       <input type=hidden name="report" value="${report}">
 
-      <table width="100%" align="center">
-
-        <tr>
-          <td>
-            <table>
+            <table class="normal" align="center">
               <c:set var="graphNum" value="0"/>
 
               <%-- Loop over each row in the table --%>
@@ -109,7 +106,7 @@
                     <c:if test="${graphNum < fn:length(resultSets)}">
                       <c:set var="resultSet" value="${resultSets[graphNum]}"/>
                       
-                      <td align="center">
+                      <td class="normal" align="center">
                         <table>
                           <tr>
                             <th>
@@ -153,8 +150,6 @@
                             </th>
                           </tr>
                         </table>
-                        
-                        <br/>
   
                         <c:url var="zoomUrl" value="graph/results.htm">
                           <c:param name="resourceId" value="${resultSet.resource.id}"/>
@@ -184,20 +179,16 @@
                 </tr>
               </c:forEach>
             </table>  
-          </td> 
-        </tr>
 
 
-        <tr>
-          <td>
-            <table align="center">
+            <table class="normal">
               <!-- Select Timespan Input --> 
               <c:if test="${!empty timeSpan}">
                 <tr>
-                  <td>
+                  <td class="normal">
                     Override Graph Timespan
                   </td>
-                  <td>
+                  <td class="normal">
                     <select name="timespan">
                       <c:forEach var="option" items="${timeSpans}">
                         <c:choose>
@@ -221,10 +212,10 @@
               <!-- Select Graph Type --> 
               <c:if test="${!empty graphType}">
                 <tr>
-                  <td>
+                  <td class="normal">
                     Override Graph Type
                   </td>
-                  <td>
+                  <td class="normal">
                     <select name="graphtype">
                       <c:forEach var="option" items="${graphTypes}">
                         <c:choose>
@@ -245,37 +236,20 @@
                 </tr>
               </c:if>
             </table>
-  
-          </td> 
-        </tr>
-        
-        <tr>
-          <td> 
-            <table align="center">
-              <tr>
-                <td>
-                  <input type="button" value="Exit Report Viewer" onclick="exitReport()"><br>
-                </td>
+
+            <p>
+              <input type="button" value="Exit Report Viewer" onclick="exitReport()">
+              <c:if test="${!empty timeSpan || !empty graphType}">
+                <input type="button" value="Update Report View" onclick="updateReport()">
+              </c:if>
                 
-                <td>
-                  <c:if test="${!empty timeSpan || !empty graphType}">
-                    <input type="button" value="Update Report View" onclick="updateReport()"><br>
-                  </c:if>
-                </td>
-                
-                <c:if test="${showCustomizeButton}">
-                  <td>
-                    <input type="button" value="Customize This Report" onclick="customizeReport()"><br>
-                  </td>
-                </c:if>
-              </tr>
-            </table>
-          </td> 
-        </tr>
-  
-      </table>
+              <c:if test="${showCustomizeButton}">
+                <input type="button" value="Customize This Report" onclick="customizeReport()">
+              </c:if>
+            <p>
 
     </form>
+    </div>
 
   </c:otherwise>
 </c:choose>

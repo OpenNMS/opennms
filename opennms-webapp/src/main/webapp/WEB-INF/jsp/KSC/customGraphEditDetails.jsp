@@ -59,6 +59,12 @@
         document.customize_graph.action.value="Save";
         document.customize_graph.submit();
     }
+
+    function chooseResource()
+    {
+        document.customize_graph.action.value="ChooseResource";
+        document.customize_graph.submit();
+    }
         
     function updateGraph()
     {
@@ -77,54 +83,31 @@
   
 </script>
 
+<h2>Customized Report Graph Definition</h2>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
-    <form name="customize_graph" method="get" action="KSC/formProcGraph.htm" >
-      <input type="hidden" name="action" value="none" />
-
-      <table width="100%" cellspacing="2" cellpadding="2" border="0">
-        <tr>
-            <td colspan="2">
-              <c:choose>
-                <c:when test="${fn:length(prefabGraphs) > 0}">
-                  <h3 align="center">Customized Report Graph Definition</h3> 
-                  <h3 align="center">Choose Graph Type &amp; Timespan</h3> 
-                </c:when>
+  <c:choose>
+    <c:when test="${fn:length(prefabGraphs) == 0}">
+      <h3>No graph options available</h3>
+      <div class="boxWrapper">
+        <p>
+          No graph options are available.
+          This resource might not have any data that can be graphed with
+          prefabricated graphs.
+          Try selecting another resource.
+          You can also check that the correct data is being collected and
+          that appropriate reports are defined.  
+        </p>
+      </div>
+    </c:when>
                 
-                <c:otherwise>
-                  <h3 align="left">
-                    No graph options available. Check that the
-                    correct data is being collected and that appropriate reports
-                    are defined.
-                  </h3>
-                </c:otherwise>
-              </c:choose>
-            </td>
-        </tr>
-
-        <c:if test="${fn:length(prefabGraphs) > 0}">
-            <tr>
-                 <td>
-
-                    <table width="100%" border="2">
+    <c:otherwise>
+      <h3>Sample graph</h3>
+      <div class="boxWrapper">
+                    <table class="normal">
                         <tr>
-                            <td>
-                                <h3 align="center">Sample Graph Text</h3> 
-                            </td>
-                            <td>
-                                <h3 align="center">Sample Graph Image</h3> 
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="right">
-                                Title: &nbsp; <input type="text" name="title" value="${resultSet.title}" size="40" maxlength="40"/>
+                            <td class="normal" align="right">
+                                ${resultSet.title}
                                 <br/>
-                                <h3>
                                   <c:if test="${!empty resultSet.resource.parent}">
                                     ${resultSet.resource.parent.resourceType.label}:
                                     <c:choose>
@@ -147,14 +130,14 @@
                                       ${resultSet.resource.label}
                                     </c:otherwise>
                                   </c:choose>
-                                </h3>
 
+                                <br/>
                                 <b>From</b> ${resultSet.start}
                                 <br/>
                                 <b>To</b> ${resultSet.end}
                             </td>
               
-                            <td align="left">
+                            <td class="normal" align="left">
                               <c:url var="graphUrl" value="graph/graph.png">
                                 <c:param name="resourceId" value="${resultSet.resource.id}"/>
                                 <c:param name="report" value="${resultSet.prefabGraph.name}"/>
@@ -167,19 +150,28 @@
                             </td>
                         </tr>
                     </table>
+      </div>
 
-              </td>
-            </tr>
+      <h3>Choose graph options</h3>
+      <div class="boxWrapper">
 
-            <tr>
-                <td>
-                    <table align="center">
-                        <!-- Select Timespan Input -->  
+      <form name="customize_graph" method="get" action="KSC/formProcGraph.htm" >
+        <input type="hidden" name="action" value="none" />
+
+                    <table class="normal">
                         <tr>
-                            <td>
-                                Graph Timespan
+                          <td class="normal">
+                            Title
+                          </td>
+                          <td class="normal">
+                            <input type="text" name="title" value="${resultSet.title}" size="40" maxlength="40"/>
+                          </td>
+                        </tr>
+                        <tr>
+                            <td class="normal">
+                              Timespan
                             </td>
-                            <td>
+                            <td class="normal">
                                 <select name="timespan">
                                   <c:forEach var="option" items="${timeSpans}">
                                     <c:choose>
@@ -198,11 +190,10 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <!-- Select Graphtype Input -->  
-                                Graph Type  
+                            <td class="normal">
+                                Prefabricated Report
                             </td>
-                            <td>
+                            <td class="normal">
                                 <select name="graphtype">
                                   <c:forEach var="prefabGraph" items="${prefabGraphs}">
                                     <c:choose>
@@ -217,15 +208,15 @@
                                     <option value="${prefabGraph.name}" ${selected}>${prefabGraph.name}</option>
                                   </c:forEach>
                                 </select>  
-                                (This selects the prefabricated graph type definition to use) 
+                                (This selects the prefabricated graph report to use) 
                             </td>
                         </tr>
                         <tr>
-                            <td>
+                            <td class="normal">
                                 <!-- Select Graph Index -->  
                                 Graph Index  
                             </td>
-                            <td>
+                            <td class="normal">
                                 <select name="graphindex">
                                   <c:forEach var="index" begin="1" end="${maxGraphIndex}">
                                     <c:choose>
@@ -244,33 +235,15 @@
                             </td>
                         </tr>
                     </table>
-                </td>
-            </tr>
 
-            <tr>
-                <td>
-                    <table align="center">
-                        <tr>
-                            <td>
-                                <input type="button" value="Cancel" onclick="cancelGraph()" alt="Cancel the graph configuration"/>
-                            </td>
-                            <td>
-                                <input type="button" value="Refresh Sample View" onclick="updateGraph()" alt="Update changes to sample graph"/>
-                            </td>
-                            <td>
-                                <input type="button" value="Save" onclick="saveGraph()" alt="Save the graph configuration"/>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </c:if>
-      </table>
-    </form>
-    </td>
+                    <input type="button" value="Cancel edits to this graph" onclick="cancelGraph()" alt="Cancel this graph configuration"/>
+                    <input type="button" value="Refresh sample view" onclick="updateGraph()" alt="Update changes to sample graph"/>
+                    <input type="button" value="Choose different resource" onclick="chooseResource()" alt="Choose a different resource to graph"/>
+                    <input type="button" value="Done with edits to this graph" onclick="saveGraph()" alt="Done with this graph configuration"/>
+      </form>
+      </div>
 
-    <td> &nbsp; </td>
-  </tr>
-</table>
-                                         
+    </c:otherwise>
+  </c:choose>
+
 <jsp:include page="/includes/footer.jsp" flush="false" />

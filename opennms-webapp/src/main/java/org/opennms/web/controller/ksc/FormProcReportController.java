@@ -65,18 +65,14 @@ public class FormProcReportController extends AbstractController implements Init
             return new ModelAndView("redirect:/KSC/index.htm");
         } else if (action.equals("DelGraph")) {
             return new ModelAndView("redirect:/KSC/customReport.htm");
-        } else if (action.equals("AddGraph") || action.equals("ModGraph")) {
-            ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customGraphChooseParentResource.htm");
-            
-            if (!action.equals("AddGraph")) {
-                Graph graph = getKscReportFactory().getWorkingGraph();
-                OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
-                modelAndView.addObject("selectedResourceId", resource.getId());
-            }
-            
-            return modelAndView;
+        } else if (action.equals("AddGraph")) {
+            return new ModelAndView("redirect:/KSC/customGraphChooseParentResource.htm");
+        } else if (action.equals("ModGraph")) {
+            Graph graph = getKscReportFactory().getWorkingGraph();
+            OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
+            return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", "resourceId", resource.getId());
         } else {
-            throw new IllegalArgumentException("parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, or Update");
+            throw new IllegalArgumentException("parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, Update, AddGraph, or DelGraph");
         }
     }
     
