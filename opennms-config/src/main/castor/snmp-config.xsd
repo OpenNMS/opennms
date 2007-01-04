@@ -90,13 +90,12 @@
         </annotation>
       </attribute>
 
-      <attribute name="max-request-size" type="integer" use="optional" default="65535">
+      <attribute name="max-request-size" type="this:pdu-size-limit" use="optional" default="65535">
         <annotation>
-          <documentation>(SNMP4J specific) Specifies the maximum number of variables that may be
+          <documentation>(SNMP4J specific) Specifies the maximum number of bytes that may be
           encoded into an individual SNMP PDU request by Collectd. Provides a
-          means to limit the size of outgoing PDU requests. Value of 0
-          indicates no limit on number of PDUs which can be encoded into a
-          single PDU.</documentation>
+          means to limit the size of outgoing PDU requests. Default is 65535, must be 
+          at least 484.</documentation>
         </annotation>
       </attribute>
 
@@ -351,5 +350,12 @@
         <pattern value="^[0-9]{1,3}((,|-)[0-9]{1,3})*\.[0-9]{1,3}((,|-)[0-9]{1,3})*\.[0-9]{1,3}((,|-)[0-9]{1,3})*\.[0-9]{1,3}((,|-)[0-9]{1,3})*$"/>
       </restriction>
     </simpleType>
+    
   </element>
+  <simpleType name="pdu-size-limit">
+    <restriction base="int">
+      <fractionDigits value="0"/>
+        <minInclusive value="484"/>
+    </restriction>
+  </simpleType>
 </schema>
