@@ -1079,7 +1079,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception(
-                                    "Error changing table 'snmpinterface'.  Nested exception: The 'nodeId' column in the 'snmpInterface' table should never be null, but the entry for this row does have a null 'nodeId'column.  It needs to be removed or udpated to reflect a valid 'nodeId' value."));
+                                    "Error changing table 'snmpinterface'.  Nested exception: The 'nodeId' column in the 'snmpInterface' table should never be null, but the entry for this row does have a null 'nodeId' column.  It needs to be removed or udpated to reflect a valid 'nodeId' value."));
         try {
             getInstallerDb().createTables();
         } catch (Throwable t) {
@@ -1131,7 +1131,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception(
-                                    "Error changing table 'ipinterface'.  Nested exception: The 'ipAddr' column in the 'ipInterface' table should never be null, but the entry for this row does have a null 'ipAddr'column.  It needs to be removed or udpated to reflect a valid 'ipAddr' value."));
+                                    "Error changing table 'ipinterface'.  Nested exception: The 'ipAddr' column in the 'ipInterface' table should never be null, but the entry for this row does have a null 'ipAddr' column.  It needs to be removed or udpated to reflect a valid 'ipAddr' value."));
         try {
             getInstallerDb().createTables();
         } catch (Throwable t) {

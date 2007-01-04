@@ -2464,7 +2464,7 @@ public class InstallerDb {
                                                + "' table should never be "
                                                + "null, but the entry for this "
                                                + "row does have a null '"
-                                               + m_column + "'column.  "
+                                               + m_column + "' column.  "
                                                + "It needs to be "
                                                + "removed or udpated to "
                                                + "reflect a valid '"
