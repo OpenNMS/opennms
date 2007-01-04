@@ -1343,7 +1343,7 @@ public final class Collectd extends AbstractServiceDaemon implements
             } catch (Throwable t) {
                 log().warn("instantiateCollectors: Failed to load collector "
                            + collector.getClassName() + " for service "
-                           + svcName, t);
+                           + svcName + ": " + t, t);
             }
         }
     }
