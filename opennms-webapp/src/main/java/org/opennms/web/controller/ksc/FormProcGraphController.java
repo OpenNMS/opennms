@@ -49,8 +49,13 @@ public class FormProcGraphController extends AbstractController implements Initi
             modelAndView.addObject("resourceId", resource.getId());
             modelAndView.addObject("graphtype", graph.getGraphtype());
             return modelAndView;
+        } else if (action.equals("ChooseResource")) {
+            ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customGraphChooseResource.htm");
+            modelAndView.addObject("resourceId", resource.getId());
+            modelAndView.addObject("selectedResourceId", resource.getId());
+            return modelAndView;
         } else {
-            throw new IllegalArgumentException("parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, or Update");
+            throw new IllegalArgumentException("parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, Update, or ChooseResource");
         }
     }
 

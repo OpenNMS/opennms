@@ -3,7 +3,9 @@ package org.opennms.web.controller.ksc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -79,18 +81,30 @@ public class CustomViewController extends AbstractController implements Initiali
         }
       
         // Define the possible graph options 
-        Graph graph = null;
         PrefabGraph[] graph_options = new PrefabGraph[0];
       
         if (report.getGraphCount() > 0) {
-            graph = report.getGraph(0); // get the first graph in the list
-            OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
-      
+            Set<PrefabGraph> prefabGraphs = new HashSet<PrefabGraph>();
+            
+            for (int i = 0; i < report.getGraphCount(); i++) {
+                Graph graph = report.getGraph(i);
+                OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
+                prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
+            }
+            
+            graph_options = prefabGraphs.toArray(new PrefabGraph[prefabGraphs.size()]);
+
+            if (graph_options.length > 1) {
+                Arrays.sort(graph_options);
+            }
+
+            /*
             if ("custom".equals(report_type) && "node".equals(resource.getResourceType().getName())) {
                 graph_options = getResourceService().findPrefabGraphsForChildResources(resource.getParent(), "nodeSnmp", "interfaceSnmp");
             } else {
                 graph_options = getResourceService().findPrefabGraphsForChildResources(resource.getParent(), "interfaceSnmp");
             }
+            */
       
             // Get default graph type from first element of graph_options
             if (("node".equals(report_type) || "domain".equals(report_type))
@@ -102,10 +116,12 @@ public class CustomViewController extends AbstractController implements Initiali
                                 + override_graphtype);
                 }
             }
-      
+
+            /*
             if (graph_options.length > 1) {
                 Arrays.sort(graph_options);
             }
+            */
         }
         
         ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());

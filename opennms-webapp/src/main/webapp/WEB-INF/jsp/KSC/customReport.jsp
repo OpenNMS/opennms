@@ -94,32 +94,18 @@
 </script>
 
 
-<h3 align="center">Customized Report Configuration</h3>
-
+<h3>Customized Report Configuration</h3>
+<div class="boxWrapper">
     <form name="customize_form" method="get" action="KSC/formProcReport.htm">
         <input type=hidden name="action" value="none">
         <input type=hidden name="graph_index" value="-1">
 
-    <table width="100%" align="center">
-        <tr align = "center">
-            <td>
-                <table align="center">
-                   <tr>
-                        <td>
-                            Title: 
-                        </td>
-                        <td>
-                            <input type="text" name="report_title" value="${title}" size="80" maxlength="80">
-                        </td>
-                    </tr>
-                </table>
-            </td> 
-        </tr>
-        <tr>
-            <td>
- 
+        <p>
+          Title: 
+          <input type="text" name="report_title" value="${title}" size="80" maxlength="80"/>
+        </p>
 
-            <table width="100%" border="2">
+            <table class="normal" width="100%" border="2">
               <c:if test="${fn:length(resultSets) > 0}">
                 <c:forEach var="graphNum" begin="0" end="${fn:length(resultSets) - 1}">
                   <c:set var="resultSet" value="${resultSets[graphNum]}"/>
@@ -178,19 +164,14 @@
                 </c:if>
             </table>  
 
+        <p>
+            <input type="button" value="Add New Graph" onclick="addNewGraph()" alt="Add a new graph to the Report"/>
+        </p>
 
-            </td> 
-        </tr>
-        <tr>
-            <td> 
-                <input type="button" value="Add New Graph" onclick="addNewGraph()" alt="Add a new graph to the Report"><br>
-            </td> 
-        </tr>
-        <tr>
-            <td>
-                <table align="center">
+        <p>
+                <table class="normal">
                      <tr>
-                         <td>
+                         <td class="normal">
                              <c:choose>
                                <c:when test="${showTimeSpan}">
                                  <c:set var="checked" value="checked"/>
@@ -202,12 +183,12 @@
                              </c:choose>
                              <input type="checkbox" name="show_timespan" ${checked} />
                          </td>
-                         <td>
+                         <td class="normal">
                              Show Timespan Button (allows global manipulation of report timespan)
                          </td>
                      </tr>
                      <tr>
-                         <td>
+                         <td class="normal">
                              <c:choose>
                                <c:when test="${showGraphType}">
                                  <c:set var="checked" value="checked"/>
@@ -219,35 +200,25 @@
                              </c:choose>
                              <input type="checkbox" name="show_graphtype" ${checked} />
                          </td>
-                         <td>
+                         <td class="normal">
                              Show Graphtype Button (allows global manipulation of report prefabricated graph type)
                          </td>
                      </tr>
                 </table> 
-            </td> 
-        </tr>
-        <tr>
-            <td> 
-                <table align="center">
-                    <tr>
-                        <td>
-                            <input type="button" value="Save" onclick="saveReport()" alt="Save the Report to File"><br>
-                        </td>
-                        <td>
-                            <input type="button" value="Cancel" onclick="cancelReport()" alt="Cancel the report configuration"><br>
-                        </td>
-                    </tr>
-                </table>
-            </td> 
-        </tr>
-        <tr>
-            <td>
-              Please make sure to save the added graph with the report, as the first save only adds it to the the present view.
-            </td>
-        </tr>
+        </p>
 
-    </table>
+        <p>
+                <input type="button" value="Save" onclick="saveReport()" alt="Save the Report to File"/>
+                <input type="button" value="Cancel" onclick="cancelReport()" alt="Cancel the report configuration"/>
+        </p>
+
+      <p>
+              If you make any changes, please make sure to save the report
+              when you are done.  Changes will only be saved by using the
+              "Save" button on this page.
+      </p>
 
     </form>
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
