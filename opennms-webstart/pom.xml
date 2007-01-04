@@ -16,8 +16,9 @@
         <artifactId>webstart-maven-plugin</artifactId>
         <executions>
            <execution>
+              <phase>package</phase>
               <goals>
-                 <goal>jnlp</goal>
+                 <goal>jnlp-inline</goal>
               </goals>
            </execution>
         </executions>
