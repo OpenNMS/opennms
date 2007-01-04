@@ -27,10 +27,16 @@ body {
 	font-family: "Lucida Grande", Verdana, sans-serif;
 }
 p, td, th, li {
-	font-size:70%;
+	font-size: 70%;
 	line-height: 1.5em;
 }
 li li {
+	font-size: 100%;
+}
+td td {
+	font-size: 100%;
+}
+td th {
 	font-size: 100%;
 }
 p {
@@ -61,6 +67,10 @@ h2 {
 	margin: 0;
 	font-size: 80%;
 }
+p h2, td h2 {
+	/* 70% * 114% = 80% */
+	font-size: 114%;
+}
 h3 {
 	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
@@ -74,6 +84,9 @@ h3 {
 	font-size: 70%;
 	padding: 6px;
 } 
+p h3, td h3 {
+	font-size: 100%;
+}
 h3 a {
 	color: #FFF;
 }
