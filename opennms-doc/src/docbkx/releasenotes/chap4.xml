@@ -19,53 +19,17 @@
     <para>The following Linux distributions and other unix-like systems are
     supported out-of-the-box with native installation packages.</para>
 
-    <bridgehead>Red Hat Linux 7.x, Red Hat Linux 8, Red Hat Linux 9, Red Hat
-    Enterprise Linux 3 and Red Hat Enterprise Linux 4</bridgehead>
-
-    <para>PostgreSQL 7.2 and later has shipped with Red Hat Linux since
-    version 7.3. Be sure to follow the above instructions.</para>
+    <bridgehead>Red Hat Enterprise Linux 3 and Red Hat Enterprise Linux
+    4</bridgehead>
 
     <bridgehead>CentOS 3 and CentOS 4</bridgehead>
 
-    <formalpara>
-      <title>Fedora Core 1, Fedora Core 2, Fedora Core 3 and Fedora Core 4
-      (including x86).</title>
+    <bridgehead>Fedora Core 4, Fedora Core 5 and Fedora Core 6 (including 64
+    bit).</bridgehead>
 
-      <para>OpenNMS is known to build and run on these distributions.</para>
-    </formalpara>
+    <bridgehead>Solaris 10 on x86 and SPARC</bridgehead>
 
-    <formalpara>
-      <title>Debian Woody, Sarge and Sid</title>
-
-      <para>Debian packages should be available on ftp.opennms.org, and at the
-      following apt-repository:<programlisting>deb http://debian.opennms.org/apt debian/opennms stable</programlisting></para>
-    </formalpara>
-
-    <para>Special Tomcat 4.1 packages were created, since only 4.0 is
-    supported in stable. For instructions see this <ulink
-    url="http://opennms.netstatz.com/Debian_ONMS_HOWTO.html#toc2">How-To</ulink>
-    written by Ian MacDonald.</para>
-
-    <formalpara>
-      <title>Solaris 8 and Solaris 9 on x86 and SPARC</title>
-
-      <para>Packages are available at ftp.opennms.org for Solaris 8 and
-      Solaris 9 running on SPARC and Solaris 9 running on x86.</para>
-    </formalpara>
-
-    <formalpara>
-      <title>Mandrake 8, Mandrake 9 and Mandrake 10</title>
-
-      <para>Please note that while we build packages for Mandrake 8.x, we do
-      not do any formal testing on it. Packages are provided as a
-      convenience.</para>
-    </formalpara>
-
-    <formalpara>
-      <title>SuSE 8 and SuSE 9</title>
-
-      <para>OpenNMS is known to build and run on SuSE.</para>
-    </formalpara>
+    <bridgehead>SuSE 9 and SuSE 10</bridgehead>
 
     <formalpara>
       <title>MacOSX 10.3 and 10.4</title>
@@ -88,28 +52,44 @@
   </section>
 
   <section id="chap4sect2">
-    <title>Unsupported</title>
+    <title>Officially Unsupported</title>
 
-    <para>The following UNIX systems are unsupported, but have been known to
-    work.</para>
+    <para>OpenNMS 1.3.2 requires Java 5 (a 1.5 JDK), Tomcat 5.5, RRDTool 1.2
+    and PostgreSQL 7.4. Any operating system that can support these
+    dependencies should be able to run OpenNMS. However, since a lot of the
+    older distributions do not support packages for these applications it will
+    be much harder to get them installed, and so they are not officially
+    supported.</para>
+
+    <para>A number of distributions that used to be supported are still able
+    to run OpenNMS but are not officially supported:</para>
 
     <formalpara>
-      <title>Debian Woody on SPARC</title>
+      <title>Debian</title>
 
-      <para>OpenNMS is known to run on Debian on SPARC</para>
+      <para>With 1.3.2 OpenNMS uses maven to build, and this causes problems
+      with Debian packaging. It is hoped that Debian packages should become
+      available in the near future.</para>
     </formalpara>
 
     <formalpara>
-      <title>Red Hat 6.2</title>
+      <title>Mandrake</title>
 
-      <para>No special cases known.</para>
+      <para>OpenNMS should run on Mandrake, and official Mandriva support is
+      expected for OpenNMS 2.0.</para>
     </formalpara>
 
     <formalpara>
-      <title>Solaris 7</title>
+      <title>Gentoo</title>
 
-      <para>There have been reports of OpenNMS building and running on Solaris
-      on the discuss list.</para>
+      <para>Information on Gentoo support can be found at <ulink
+      url="http://gentoo.opennms.org">http://gentoo.opennms.org</ulink>.</para>
     </formalpara>
+
+    <bridgehead>Red Hat 7, Red Hat 8 and Red Hat 9</bridgehead>
+
+    <bridgehead>SuSE 8</bridgehead>
+
+    <bridgehead>Solaris 8 and Solaris 9</bridgehead>
   </section>
 </chapter>
