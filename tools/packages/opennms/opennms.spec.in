@@ -83,6 +83,22 @@
 %define platform_match  true
 %endif
 
+%if "%{platform}" == "linux-fedora-5"
+%define initdir         /etc
+%define psql_service    postgresql
+%define requires        postgresql-server >= 7.2
+%define release_pkg     %{releasenumber}_fc5
+%define platform_match  true
+%endif
+
+%if "%{platform}" == "linux-fedora-6"
+%define initdir         /etc
+%define psql_service    postgresql
+%define requires        postgresql-server >= 7.2
+%define release_pkg     %{releasenumber}_fc6
+%define platform_match  true
+%endif
+
 %if "%{platform}" == "linux-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
@@ -184,6 +200,14 @@
 %define psql_service	postgresql
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2
 %define release_pkg     %{releasenumber}_suse9
+%define platform_match	true
+%endif
+
+%if "%{platform}" == "linux-suse-10"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define release_pkg     %{releasenumber}_suse10
 %define platform_match	true
 %endif
 
