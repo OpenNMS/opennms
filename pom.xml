@@ -105,7 +105,14 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>castor</groupId>
+            <artifactId>castor</artifactId>
+            <version>0.9.6</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <inherited>false</inherited>
