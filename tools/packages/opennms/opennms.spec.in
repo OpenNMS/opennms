@@ -38,7 +38,7 @@
 %if "%{platform}" == "linux-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{rreleasenumber}_centos3
 %define platform_match	true
 %endif
@@ -46,7 +46,7 @@
 %if "%{platform}" == "linux-centos-4"
 %define initdir         /etc
 %define psql_service    rhdb
-%define requires        postgresql-server >= 7.2
+%define requires        postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_centos4
 %define platform_match  true
 %endif
@@ -54,7 +54,7 @@
 %if "%{platform}" == "linux-fedora-1"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_fc1
 %define platform_match	true
 %endif
@@ -62,7 +62,7 @@
 %if "%{platform}" == "linux-fedora-2"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_fc2
 %define platform_match	true
 %endif
@@ -70,7 +70,7 @@
 %if "%{platform}" == "linux-fedora-3"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_fc3
 %define platform_match	true
 %endif
@@ -78,7 +78,7 @@
 %if "%{platform}" == "linux-fedora-4"
 %define initdir         /etc
 %define psql_service    postgresql
-%define requires        postgresql-server >= 7.2
+%define requires        postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_fc4
 %define platform_match  true
 %endif
@@ -102,7 +102,7 @@
 %if "%{platform}" == "linux-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_mdk7
 %define platform_match	true
 %endif
@@ -110,7 +110,7 @@
 %if "%{platform}" == "linux-mandrake-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_mdk8
 %define platform_match	true
 %endif
@@ -118,7 +118,7 @@
 %if "%{platform}" == "linux-mandrake-90"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_mdk90
 %define platform_match	true
 %endif
@@ -126,7 +126,7 @@
 %if "%{platform}" == "linux-mandrake-92"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2
+%define requires	postgresql-server >= 7.3, postgresql-pl >= 7.3
 %define release_pkg     %{releasenumber}_mdk92
 %define platform_match	true
 %endif
@@ -134,7 +134,7 @@
 %if "%{platform}" == "linux-mandrake-10"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2
+%define requires	postgresql-server >= 7.3, postgresql-pl >= 7.3
 %define release_pkg     %{releasenumber}_mdk10
 %define platform_match	true
 %endif
@@ -142,7 +142,7 @@
 %if "%{platform}" == "linux-redhat-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires        postgresql-server >= 7.2
+%define requires        postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_rhl7
 %define platform_match	true
 %endif
@@ -150,7 +150,7 @@
 %if "%{platform}" == "linux-redhat-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_rhl8
 %define platform_match	true
 %endif
@@ -158,7 +158,7 @@
 %if "%{platform}" == "linux-redhat-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_rhl9
 %define platform_match	true
 %endif
@@ -166,7 +166,7 @@
 %if "%{platform}" == "linux-rhel-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_rhel3
 %define platform_match	true
 %endif
@@ -174,7 +174,7 @@
 %if "%{platform}" == "linux-rhel-4"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_rhel4
 %define platform_match	true
 %endif
@@ -182,7 +182,7 @@
 %if "%{platform}" == "linux-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
-%define requires        postgres >= 7.2
+%define requires        postgres >= 7.3
 %define release_pkg     %{releasenumber}_suse7
 %define platform_match	true
 %endif
@@ -190,7 +190,7 @@
 %if "%{platform}" == "linux-suse-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define requires	postgresql >= 7.3, postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_suse8
 %define platform_match	true
 %endif
@@ -198,7 +198,7 @@
 %if "%{platform}" == "linux-suse-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define requires	postgresql >= 7.3, postgresql-server >= 7.3
 %define release_pkg     %{releasenumber}_suse9
 %define platform_match	true
 %endif
@@ -291,7 +291,7 @@ rm -rf $RPM_BUILD_ROOT
 %install
 #
 # This next bit is to keep gprintify.py on Mandriva/Mandrake from screwing
-# up the "echo" statements in the opennms.sh init script.  See:
+# up the "echo" statements in the opennms init script.  See:
 #	http://qa.mandriva.com/twiki/bin/view/Main/InitscriptHowto?skin=print
 #
 DONT_GPRINTIFY="yes, please do not"
@@ -365,6 +365,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,," | \
     grep -v '/WEB-INF/web\.xml$' | \
+    grep -v '/WEB-INF/configuration\.properties$' | \
     sort > %{_tmppath}/files.webapp
 find $RPM_BUILD_ROOT%{webappsdir} -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -401,6 +402,7 @@ rm -rf $RPM_BUILD_ROOT
 %files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
 %config %{servletdir}/WEB-INF/web.xml
+%config %{servletdir}/WEB-INF/configuration.properties
 
 
 %post
@@ -438,6 +440,13 @@ echo " *** make a few other changes before you start OpenNMS.  See the"
 echo " *** install guide and release notes for details."
 
 %changelog
+* Fri Jan 05 2007 DJ Gregor <dj@opennms.org>
+- Change the postgresql versions to 7.3.  The installer will not work
+  with anything earlier than 7.3.
+- Add WEB-INF/configuration.properties in the webapp as a configuration
+  file.
+- Fix up a comment to reflect the current name of the opennms startup script.
+
 * Thu Jan 20 2005 DJ Gregor <dj@opennms.org>
 - Remove much of the automatic bits that were performed at
   install time.
