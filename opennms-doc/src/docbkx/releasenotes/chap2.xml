@@ -4,83 +4,42 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-  <para>OpenNMS 1.2.5 is the most recent production, or "stable", release. It
-  is the sixth release in the stable branch of OpenNMS. Changes to the stable
-  branch are limited to bug fixes and simple improvements. The 1.3 tree is a
-  development, or "unstable" tree, where most new features are implemented,
-  but without the testing that goes into 1.2. When 1.3 is mature enough, it
-  will become OpenNMS 1.4, the next stable version.</para>
+  <para>OpenNMS 1.3.2 represents a major upgrade to the OpenNMS application.
+  It is the first release of the code that will become OpenNMS 2.0, and there
+  is not part of the system that hasn't been touched. For that reason, it is
+  not recommended that this release be used in a production environment. There
+  is also no easy way to upgrade from the 1.2 branch to 1.3.2 as a number of
+  XML configuration files in the OpenNMS <filename>etc</filename> directory
+  will need to be changed.</para>
+
+  <para>The 1.3 branch is known as "unstable". This doesn't reflect on the
+  robustness of the code. Rather, unstable referes to the fact that the code
+  is changing rapidly, and the way things worked under 1.2 may be different,
+  at times radically different, than they work now. </para>
+
+  <para>That aside, please try out 1.3.2 as it does represent the next
+  generation of OpenNMS.</para>
 
   <section>
-    <title>Changes in OpenNMS 1.2.5</title>
+    <title>Changes in OpenNMS 1.3.2</title>
 
     <section>
       <title>New Features</title>
 
-      <bridgehead>Simplify building on 32bit/64bit architectures</bridgehead>
+      <para>In an attempt to get the release out as fast as possible, we've
+      decided to track new features on the OpenNMS wiki:</para>
 
-      <para>Some new options were added to <filename>build.xml</filename> to
-      simplify support of specifying the target architecture for which the C
-      files are compiled. They are <varname>build.jni.compiler.arg</varname>
-      for JNI code and <varname>build.postgresql.compiler.arg</varname> for
-      the PostgreSQL iplike module. You would use something like "-m32" or
-      "-m64" to force compilation of 32 bit or 64 bit binaries. Note that the
-      options may differ for your platform and/or version of GCC. See your GCC
-      man page for details. Thanks to Jonathan Sartin who submitted a patch.
-      Bug 1331.</para>
-
-      <bridgehead>Support for building on FreeBSD</bridgehead>
-
-      <para>Some bugs have been fixed, and OpenNMS can now compile and run on
-      FreeBSD. Thanks to Dennis Berger and Brent Verner for supplying patches
-      (bug 1315). You should be able to compile for FreeBSD with the following
-      build.properties file, assuming that you have used the ports tree to
-      install RRDTool and PostgreSQL:</para>
-
-      <programlisting>build.postgresql.include.dir=/usr/local/include/postgresql/server
-build.postgresql.include2.dir=/usr/local/include
-build.rrdtool.include.dir=/usr/local/include
-build.rrdtool.lib.dir=/usr/local/lib
-build.rrdtool.bin=/usr/local/bin/rrdtool</programlisting>
-
-      <bridgehead>XMPP Group Notifications</bridgehead>
-
-      <para>Added the ability to notifiy groups (chat rooms) via XMPP. A shout
-      out to Jonathan Sartin for this work.</para>
+      <para><ulink
+      url="http://opennms.org/index.php/OpenNMS_1.3#New_Features">http://opennms.org/index.php/OpenNMS_1.3#New_Features</ulink></para>
     </section>
 
     <section>
       <title>Bug Fixes</title>
 
-      <bridgehead>Fixed Possible Poller Deadlock</bridgehead>
+      <para>The same goes for bugs:</para>
 
-      <para>Addressed a possible poller problem that would cause outages that
-      would never clear. This was fixed in 1.3.0 and backported to
-      1.2.5.</para>
-
-      <bridgehead>SNMP Data Collection Improvements</bridgehead>
-
-      <para>Made some changes to make SNMP data collection faster as well as
-      to improve startup time on systems with a large amount of data
-      collection.</para>
-
-      <para>A number of small bug fixes have been added:</para>
-
-      <itemizedlist>
-        <listitem>
-          <para>Fixed a number of documentation mistakes pointed out by Austin
-          Tuan. Thank you very much, Austin! Bug 1303.</para>
-        </listitem>
-
-        <listitem>
-          <para>Some minor bugs in the JavaMailer have been fixed.</para>
-        </listitem>
-
-        <listitem>
-          <para>Added come configutation for Symbol, Netscreen, Novell and
-          AirDefense events.</para>
-        </listitem>
-      </itemizedlist>
+      <para><ulink
+      url="http://opennms.org/index.php/OpenNMS_1.3#Known_Issues">http://opennms.org/index.php/OpenNMS_1.3#Known_Issues</ulink></para>
     </section>
   </section>
 
