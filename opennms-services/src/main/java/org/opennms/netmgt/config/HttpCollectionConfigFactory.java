@@ -161,8 +161,10 @@ public class HttpCollectionConfigFactory {
         List<HttpCollection> collections = m_config.getHttpCollectionCollection();
         HttpCollection collection = null;
         for (HttpCollection coll : collections) {
-            if (coll.getName().equalsIgnoreCase(collectionName)) collection = coll;
-            break;
+            if (coll.getName().equalsIgnoreCase(collectionName)) {
+                collection = coll;
+                break;
+            }
         }
         if (collection == null) {
             throw new IllegalArgumentException("getHttpCollection: collection name: "
