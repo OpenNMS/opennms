@@ -82,17 +82,23 @@
 <c:choose>
   <c:when test="${fn:length(resultSets) <= 0}">
     <h3>No graphs defined</h3>
-    <p>There are no graphs defined for this report.</p>
+    <div class="boxWrapper">
+      <p>There are no graphs defined for this report.</p>
+    </div>
   </c:when>
 
   <c:otherwise>
     <h3>Custom View: ${title}</h3>
     <div class="boxWrapper">
     <form name="view_form" method="get" action="KSC/formProcView.htm">
-      <input type=hidden name="type" value="${reportType}" >
-      <input type=hidden name="action" value="none">
-      <input type=hidden name="domain" value="${domain}">
-      <input type=hidden name="report" value="${report}">
+      <input type="hidden" name="type" value="${reportType}" >
+      <input type="hidden" name="action" value="none">
+      <c:if test="${!empty report}">
+        <input type="hidden" name="report" value="${report}">
+      </c:if>
+      <c:if test="${!empty domain}">
+        <input type="hidden" name="domain" value="${domain}">
+      </c:if>
 
             <table class="normal" align="center">
               <c:set var="graphNum" value="0"/>
