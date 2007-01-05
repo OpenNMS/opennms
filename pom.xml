@@ -503,7 +503,7 @@ opennms.home = ${opennms.home}
       </build>
     </profile>
     <profile>
-      <id>Mac OS X</id>
+      <id>macosx</id>
       
       <activation>
         <property>
@@ -850,7 +850,7 @@ opennms.home = ${opennms.home}
     <!-- FreeBSD -->
 <!--
     <profile>
-      <id>FreeBSD Ports</id>
+      <id>freebsd-ports</id>
       <activation>
         .... don't know how to activate this ....
       </activation>
