@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.3.2-SNAPSHOT</version>
+    <version>1.3.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>groovy-tools</artifactId>
@@ -11,13 +11,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <version>1.3.2-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
-      <version>1.3.2-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
