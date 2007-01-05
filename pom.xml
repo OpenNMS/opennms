@@ -132,6 +132,15 @@
   </pluginManagement>
    <plugins>
      <plugin>
+       <inherited>false</inherited>
+       <artifactId>maven-release-plugin</artifactId>
+       <configuration>
+          <preparationGoals>clean install</preparationGoals>
+          <arguments>-Droot.dir=${basedir} -Dmaven.test.skip=true</arguments>
+          <tagBase>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags</tagBase>
+       </configuration>
+     </plugin>
+     <plugin>
         <inherited>false</inherited>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
