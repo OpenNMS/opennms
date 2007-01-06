@@ -10,7 +10,7 @@
 
 # TODO: Pass these as parameters
 
-VERSION=1.3.2
+VERSION=1.3.3
 RELEASE=0
 PLATFORM=linux-centos-4
 

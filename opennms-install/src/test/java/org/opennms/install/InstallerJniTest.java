@@ -48,7 +48,7 @@ public class InstallerJniTest extends TestCase {
     }
     
     public void XXXtestPingLocalhost() throws IOException {
-        System.setProperty("opennms.library.jicmp", "/Users/dgregor/opennms/trunk/opennms/target/opennms-1.3.2-SNAPSHOT/lib/libjicmp.jnilib");
+        System.setProperty("opennms.library.jicmp", "/Users/dgregor/opennms/trunk/opennms/target/opennms-1.3.3-SNAPSHOT/lib/libjicmp.jnilib");
         m_installer.pingLocalhost();
     }
 }
