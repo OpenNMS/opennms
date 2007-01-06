@@ -135,7 +135,7 @@
        <artifactId>maven-release-plugin</artifactId>
        <configuration>
           <preparationGoals>clean install</preparationGoals>
-          <arguments>-Droot.dir=${basedir} -Dmaven.test.skip=true</arguments>
+          <arguments>-Droot.dir=${basedir}</arguments>
           <tagBase>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags</tagBase>
        </configuration>
      </plugin>
