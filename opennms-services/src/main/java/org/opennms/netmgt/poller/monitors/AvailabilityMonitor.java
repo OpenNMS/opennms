@@ -69,8 +69,10 @@ public class AvailabilityMonitor extends IPv4Monitor {
                 long begin = System.currentTimeMillis();
                 reachable = svc.getAddress().isReachable(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
                 long end = System.currentTimeMillis();
-                responseTime =  end - begin;
-                if (reachable) break;
+                if (reachable) {
+                    responseTime = end - begin;
+                    break;
+                }
             }
             reason = (reachable ? null : "Unreachable");
             serviceStatus = (reachable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);
