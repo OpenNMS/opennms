@@ -14,11 +14,12 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
+        <version>1.0-alpha-1</version>
         <executions>
            <execution>
               <phase>package</phase>
               <goals>
-                 <goal>jnlp-inline</goal>
+                 <goal>jnlp</goal>
               </goals>
            </execution>
         </executions>
@@ -28,6 +29,7 @@
            <!-- JNLP generation -->
            <jnlp>
              <outputFile>app.jnlp</outputFile> <!-- defaults to launch.jnlp -->
+             <inputTemplate>src/main/jnlp/template.vm</inputTemplate>
 
              <!-- used to automatically identify the jar containing the main class. -->
              <!-- this is perhaps going to change -->
