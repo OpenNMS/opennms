@@ -48,7 +48,7 @@
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
 				org.opennms.netmgt.config.PollerConfig,
-				java.util.*,org.opennms.netmgt.model.OnmsResource,org.opennms.web.Util,org.opennms.web.acegisecurity.Authentication,org.opennms.web.element.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.web.svclayer.ResourceService,org.opennms.netmgt.utils.IfLabel,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
+				java.util.*,org.opennms.netmgt.model.OnmsResource,org.opennms.web.Util,org.opennms.web.acegisecurity.Authentication,org.opennms.web.element.*,org.opennms.web.event.*,org.opennms.web.svclayer.ResourceService,org.opennms.netmgt.utils.IfLabel,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 
 <%!protected int telnetServiceId;

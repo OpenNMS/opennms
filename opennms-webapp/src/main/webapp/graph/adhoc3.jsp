@@ -42,9 +42,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.performance.*,
-		java.util.*,org.opennms.web.*
-	"
+	import="java.util.*,org.opennms.web.*"
 %>
 
 <%  
