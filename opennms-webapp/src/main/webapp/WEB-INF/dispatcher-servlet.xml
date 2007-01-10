@@ -47,6 +47,11 @@
   	<property name="adminCategoryService" ref="adminCategoryService"/>
   </bean>
 
+  <bean name="/admin/groups/list.htm"
+  		class="org.opennms.web.controller.admin.group.GroupListController">
+  	<property name="groupManager" ref="groupManager"/>
+  </bean>
+
   <bean name="/aggregateStatus.htm"
 		class="org.opennms.web.controller.SiteStatusViewController">
     <property name="service" ref="siteStatusViewService" />
