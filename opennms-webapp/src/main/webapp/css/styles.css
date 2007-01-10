@@ -39,6 +39,12 @@ td td {
 td th {
 	font-size: 100%;
 }
+tr.even td {
+	background-color: #fff;
+}
+tr.odd td {
+	background-color: #fff;
+}
 p {
 	margin: 0 0 7px 0;
 }
@@ -580,6 +586,9 @@ p.key img {
 }
 
 /* Status Colouring */
+tr.divider td {
+	border-top-width: 2px;
+}
 td.divider {
 	border-top-width: 2px;
 }

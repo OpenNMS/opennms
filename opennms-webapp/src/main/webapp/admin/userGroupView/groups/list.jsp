@@ -48,20 +48,24 @@
 	"
 %>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%!
+    private GroupManager m_groupFactory = null;
+
+    public void init() throws ServletException {
+    	try {
+            GroupFactory.init();
+            m_groupFactory = GroupFactory.getInstance();
+    	} catch (Exception e) {
+    		throw new ServletException(e);
+    	}
+    }
+%>
+
 <%
-	GroupManager groupFactory = null;
-	Map groups = null;
-	
-  	try
-  	{
-		GroupFactory.init();
-		groupFactory = GroupFactory.getInstance();
-      		groups = groupFactory.getGroups();
-	}
-	catch(Exception e)
-	{
-	  	throw new ServletException("GroupFactory:initializer " + e.getMessage());
-	}
+	Map<String, Group> groups = m_groupFactory.getGroups();
+    pageContext.setAttribute("groups", groups.values());
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -118,11 +122,6 @@
 
 <h3>Group Configuration</h3>
 
-<p>
-  Click on the <i>Group Name</i> link to view detailed information about
-  a group.
-</p>
-
 <form method="post" name="allGroups">
   <input type="hidden" name="redirect"/>
   <input type="hidden" name="groupName"/>
@@ -131,41 +130,47 @@
   <%-- XXX why is this disabled?
        <a href="javascript:addNewGroup()"> <img src="images/add1.gif" alt="Add new group"> Add new group</a> --%>
 
-  <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+  <table>
 
-         <tr bgcolor="#999999">
-          <td width="5%"><b>Delete</b></td>
-          <td width="5%"><b>Modify</b></td>
-          <td width="5%"><b>Rename</b></td>
-          <td width="5%"><b>Group Name</b></td>
+         <tr>
+          <th>Delete</th>
+          <th>Modify</th>
+          <th>Rename</th>
+          <th>Group Name</th>
+          <th>Comments</th>
         </tr>
-        <% Iterator i = groups.keySet().iterator();
-           int row = 0;
-           while(i.hasNext())
-           {
-              Group curGroup = (Group)groups.get(i.next());
-         %>
-         <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
-          <td width="5%" rowspan="2" align="center">
-            <img src="images/trash.gif" alt="Cannot delete <%=curGroup.getName()%> group">
+         <c:forEach var="group" varStatus="groupStatus" items="${groups}">
+         <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" >
+          <td width="5%" align="center">
+            <img src="images/trash.gif" alt="Cannot delete ${group.name} group">
           </td>
-          <td width="5%" rowspan="2" align="center">
-            <a href="javascript:modifyGroup('<%=curGroup.getName()%>')"><img src="images/modify.gif"></a>
+          <td width="5%" align="center">
+            <a href="javascript:modifyGroup('${group.name}')"><img src="images/modify.gif"></a>
           </td>
-          <td width="5%" rowspan="2" align="center">
-                <input type="button" name="rename" value="Rename" onclick="alert('Sorry, the <%=curGroup.getName()%> group cannot be renamed.')">
+          <td width="5%" align="center">
+                <input type="button" name="rename" value="Rename" onclick="alert('Sorry, the ${group.name} group cannot be renamed.')">
           </td>
-          <td width="5%">
-            <a href="javascript:detailGroup('<%=curGroup.getName()%>')"><%=curGroup.getName()%></a>
-          </td></tr>
-          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
-            <td width="100%" colspan="1">
-              <%= (curGroup.getComments()!=null && !curGroup.getComments().equals("") ? curGroup.getComments() : "No Comments") %>
+          <td>
+            <a href="javascript:detailGroup('${group.name}')">${group.name}</a>
+          </td>
+            <td>
+              <c:choose>
+                <c:when test="${!empty group.comments}">
+                  ${group.comments}
+                </c:when>
+                
+                <c:otherwise>
+                  No Comments
+                </c:otherwise>
+              </c:choose>
             </td>
           </tr>
-         <% row++;
-            } %>
+        </c:forEach>
      </table>
 </form>
+<p>
+  Click on the <i>Group Name</i> link to view detailed information about
+  a group.
+</p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
