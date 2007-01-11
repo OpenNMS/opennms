@@ -140,6 +140,10 @@
       <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
+      <groupId>alt.dev.jmta</groupId>
+      <artifactId>jmta</artifactId>
+    </dependency>
+    <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-dom</artifactId>
     </dependency>
