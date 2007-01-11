@@ -34,13 +34,6 @@ package org.opennms.web.webtests;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringBufferInputStream;
-import java.util.Arrays;
-import java.util.List;
-
-import net.sourceforge.jwebunit.ExpectedCell;
-import net.sourceforge.jwebunit.ExpectedRow;
-import net.sourceforge.jwebunit.ExpectedTable;
-import net.sourceforge.jwebunit.WebTestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -237,8 +230,8 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
     
     String config_xml = 
             "<EventdConfiguration\n" + 
-            "   TCPPort=\"5817\"\n" + 
-            "   UDPPort=\"5817\"\n" + 
+            "   TCPPort=\"15817\"\n" + 
+            "   UDPPort=\"15817\"\n" + 
             "   receivers=\"5\"\n" + 
             "   getNextEventID=\"SELECT nextval(\'eventsNxtId\')\"\n" + 
             "   getNextAlarmID=\"SELECT nextval(\'alarmsNxtId\')\"\n" + 
