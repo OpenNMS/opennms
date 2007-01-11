@@ -188,8 +188,12 @@ public class CustomViewController extends AbstractController implements Initiali
         ModelAndView modelAndView = new ModelAndView("KSC/customView");
 
         modelAndView.addObject("reportType", report_type);
-        modelAndView.addObject("domain", domain);
-        modelAndView.addObject("report", r_index);
+        if (report != null) {
+            modelAndView.addObject("report", r_index);
+        }
+        if (domain != null) {
+            modelAndView.addObject("domain", domain);
+        }
         
         modelAndView.addObject("title", report.getTitle());
         modelAndView.addObject("resultSets", resultSets);

@@ -31,6 +31,14 @@
 //
 package org.opennms.web.svclayer;
 
+import org.opennms.web.command.LocationMonitorDetailsCommand;
+import org.opennms.web.svclayer.support.LocationMonitorDetailsModel;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindException;
+
+@Transactional(readOnly = true)
 public interface DistributedPollerService {
     SimpleWebTable createStatusTable();
+
+    LocationMonitorDetailsModel getLocationMonitorDetails(LocationMonitorDetailsCommand cmd, BindException errors);
 }
