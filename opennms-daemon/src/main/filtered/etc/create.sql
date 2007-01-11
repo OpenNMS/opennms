@@ -1277,6 +1277,13 @@ CREATE TABLE location_specific_status_changes (
     CONSTRAINT ifservices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
+create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
+create index location_specific_status_changes_locationmonitorid on location_specific_status_changes(locationmonitorid);
+create index location_specific_status_changes_locationmonitorid_ifserviceid on location_specific_status_changes(locationmonitorid, ifserviceid);
+create index location_specific_status_changes_locationmonitorid_loc_if_time on location_specific_status_changes(locationmonitorid, ifserviceid, statustime);
+create index location_specific_status_changes_statustime on location_specific_status_changes(statustime);
+
+
 
 
 --########################################################################
