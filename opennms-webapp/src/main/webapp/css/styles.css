@@ -104,6 +104,15 @@ ul.plain {
 ul.plain li { 
 	line-height:1.6em;
 }
+ul.error {
+	list-style-type: none;
+	margin:0;
+	padding:0px;
+}
+ul.error li { 
+	line-height:1.6em;
+	color: #F00;
+}
 div.boxWrapper {
 	background-color: #FFF;
 	border: 1px solid #999;
