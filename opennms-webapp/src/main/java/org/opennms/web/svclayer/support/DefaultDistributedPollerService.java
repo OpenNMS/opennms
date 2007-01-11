@@ -69,13 +69,13 @@ public class DefaultDistributedPollerService implements
         SimpleWebTable table = new SimpleWebTable();
         table.setTitle("distributed.pollerStatus.title");
         
-        table.addColumn("distributed.area", "");
-        table.addColumn("distributed.definitionName", "");
-        table.addColumn("distributed.id", "");
-        table.addColumn("distributed.hostName", "");
-        table.addColumn("distributed.ipAddress", "");
-        table.addColumn("distributed.status", "");
-        table.addColumn("distributed.lastCheckInTime", "");
+        table.addColumn("distributed.area");
+        table.addColumn("distributed.definitionName");
+        table.addColumn("distributed.id");
+        table.addColumn("distributed.hostName");
+        table.addColumn("distributed.ipAddress");
+        table.addColumn("distributed.status");
+        table.addColumn("distributed.lastCheckInTime");
         
         for (OnmsLocationMonitor monitor : monitors) {
             String area = "";
@@ -96,17 +96,31 @@ public class DefaultDistributedPollerService implements
                 hostAddress = "";
             }
             
+            /*
+             * We check for null here because the DB column could be null if
+             * the location monitor registered but has never started (or checked in?).
+             * 
+             * Also, we wrap the Date that we get from getLastCheckInTime() in
+             * a java.util.Date because the class that we get from getLastCheckInTime()
+             * has a different format when we call toString().
+             *  
+             * TODO: Come up with a better way to format dates in all of the webapp
+             */
+            String date = (monitor.getLastCheckInTime() != null)
+                ? new Date(monitor.getLastCheckInTime().getTime()).toString()
+                : "Never";
+            	
+                        
             table.newRow();
             table.addCell(area, style);
-            table.addCell(monitor.getDefinitionName(), "");
+            table.addCell(monitor.getDefinitionName());
             table.addCell(monitor.getId(), "", "distributed/locationMonitorDetails.htm"
                           + "?monitorId="
                           + Util.encode(monitor.getId().toString()));
-            table.addCell(hostName, "");
-            table.addCell(hostAddress, "");
+            table.addCell(hostName);
+            table.addCell(hostAddress);
             table.addCell(monitor.getStatus(), "divider bright");
-            table.addCell(new Date(monitor.getLastCheckInTime().getTime()),
-                          "");
+            table.addCell(date);
         }
 
         return table;
