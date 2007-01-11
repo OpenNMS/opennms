@@ -220,8 +220,8 @@ public class MainPageWebTest extends OpenNMSWebTestCase {
     
     String config_xml = 
         "<EventdConfiguration\n" + 
-        "   TCPPort=\"5817\"\n" + 
-        "   UDPPort=\"5817\"\n" + 
+        "   TCPPort=\"15817\"\n" + 
+        "   UDPPort=\"15817\"\n" + 
         "   receivers=\"5\"\n" + 
         "   getNextEventID=\"SELECT nextval(\'eventsNxtId\')\"\n" + 
         "   getNextAlarmID=\"SELECT nextval(\'alarmsNxtId\')\"\n" + 
