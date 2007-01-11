@@ -102,6 +102,11 @@
   <pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
         <version>1.0</version>
@@ -491,20 +496,6 @@ opennms.home = ${opennms.home}
   </properties>
 
   <profiles>
-    <profile>
-      <id>eclipse-snapshot</id>
-      <build>
-       <pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-eclipse-plugin</artifactId>
-            <version>2.3-SNAPSHOT</version>
-          </plugin>
-        </plugins>
-       </pluginManagement>
-      </build>
-    </profile>
     <profile>
       <id>macosx</id>
       
