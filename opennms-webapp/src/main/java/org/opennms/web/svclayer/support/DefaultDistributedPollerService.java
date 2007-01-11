@@ -31,22 +31,31 @@
 //
 package org.opennms.web.svclayer.support;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.web.Util;
+import org.opennms.web.command.LocationMonitorDetailsCommand;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.SimpleWebTable;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.validation.BindException;
 
 public class DefaultDistributedPollerService implements
         DistributedPollerService {
     
+    private static final String HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.hostAddress";
+
+    private static final String HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.hostName";
+
     private LocationMonitorDao m_locationMonitorDao;
     
     private OnmsLocationMonitorAreaNameComparator m_comparator =
@@ -58,13 +67,15 @@ public class DefaultDistributedPollerService implements
         Collections.sort(monitors, m_comparator);
         
         SimpleWebTable table = new SimpleWebTable();
-        table.setTitle("Distributed Poller Status");
+        table.setTitle("distributed.pollerStatus.title");
         
-        table.addColumn("Area", "");
-        table.addColumn("Definition Name", "");
-        table.addColumn("ID", "");
-        table.addColumn("Status", "");
-        table.addColumn("Last Check-in Time", "");
+        table.addColumn("distributed.area", "");
+        table.addColumn("distributed.definitionName", "");
+        table.addColumn("distributed.id", "");
+        table.addColumn("distributed.hostName", "");
+        table.addColumn("distributed.ipAddress", "");
+        table.addColumn("distributed.status", "");
+        table.addColumn("distributed.lastCheckInTime", "");
         
         for (OnmsLocationMonitor monitor : monitors) {
             String area = "";
@@ -75,14 +86,24 @@ public class DefaultDistributedPollerService implements
                         
             String style = getStyleForStatus(monitor.getStatus());
           
+            String hostName = monitor.getDetails().get(HOST_NAME_KEY);
+            String hostAddress = monitor.getDetails().get(HOST_ADDRESS_KEY);
+            
+            if (hostName == null) {
+                hostName = "";
+            }
+            if (hostAddress == null) {
+                hostAddress = "";
+            }
+            
             table.newRow();
             table.addCell(area, style);
             table.addCell(monitor.getDefinitionName(), "");
-            table.addCell(monitor.getId(), "", "distributedStatusHistory.htm"
-                          + "?location="
-                          + Util.encode(monitor.getDefinitionName())
-                          + "&monitorId="
+            table.addCell(monitor.getId(), "", "distributed/locationMonitorDetails.htm"
+                          + "?monitorId="
                           + Util.encode(monitor.getId().toString()));
+            table.addCell(hostName, "");
+            table.addCell(hostAddress, "");
             table.addCell(monitor.getStatus(), "divider bright");
             table.addCell(new Date(monitor.getLastCheckInTime().getTime()),
                           "");
@@ -160,6 +181,61 @@ public class DefaultDistributedPollerService implements
             
             return o1.getId().compareTo(o2.getId());
         }
+    }
+
+    public LocationMonitorDetailsModel getLocationMonitorDetails(LocationMonitorDetailsCommand cmd, BindException errors) {
+        LocationMonitorDetailsModel model = new LocationMonitorDetailsModel();
+        model.setErrors(errors);
+        
+        if (errors.getErrorCount() > 0) {
+            return model;
+        }
+        
+        OnmsLocationMonitor monitor = m_locationMonitorDao.get(cmd.getMonitorId());
+        
+        model.setTitle(new DefaultMessageSourceResolvable("distributed.locationMonitorDetails.title"));
+        
+        String area = "";
+        OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
+        if (def != null && def.getArea() != null) {
+            area = def.getArea();
+        }
+                    
+        String hostName = monitor.getDetails().get(HOST_NAME_KEY);
+        String hostAddress = monitor.getDetails().get(HOST_ADDRESS_KEY);
+        
+        if (hostName == null) {
+            hostName = "";
+        }
+        if (hostAddress == null) {
+            hostAddress = "";
+        }
+        
+        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.area"), new DefaultMessageSourceResolvable(null, area));
+        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.definitionName"), new DefaultMessageSourceResolvable(null, monitor.getDefinitionName()));
+        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.id"), new DefaultMessageSourceResolvable(null, monitor.getId().toString()));
+        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.hostName"), new DefaultMessageSourceResolvable(null, hostName));
+        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.ipAddress"), new DefaultMessageSourceResolvable(null, hostAddress));
+        // Localize the status
+        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.status"), new DefaultMessageSourceResolvable("distributed.status." + monitor.getStatus().toString()));
+        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.lastCheckInTime"), new DefaultMessageSourceResolvable(null, new Date(monitor.getLastCheckInTime().getTime()).toString()));
+        
+        model.setAdditionalDetailsTitle(new DefaultMessageSourceResolvable("distributed.locationMonitorDetails.additionalTitle"));
+        List<Entry<String, String>> details = new ArrayList<Entry<String, String>>(monitor.getDetails().entrySet());
+        Collections.sort(details, new Comparator<Entry<String, String>>() {
+            public int compare(Entry<String, String> one, Entry<String, String> two) {
+                return one.getKey().compareToIgnoreCase(two.getKey());
+            }
+            
+        });
+        for (Entry<String, String> detail : details) {
+            if (!detail.getKey().equals(HOST_NAME_KEY) && !detail.getKey().equals(HOST_ADDRESS_KEY)) {
+                // Localize the key, and default to the key name
+                model.addAdditionalDetail(new DefaultMessageSourceResolvable(new String[] { "distributed.detail." + detail.getKey() }, detail.getKey()), new DefaultMessageSourceResolvable(null, detail.getValue()));
+            }
+        }
+
+        return model;
     }
 
 }

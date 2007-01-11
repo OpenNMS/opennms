@@ -40,7 +40,8 @@
 	contentType="text/html"
 %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Distributed Poller Status" />
@@ -50,18 +51,18 @@
   <jsp:param name="breadcrumb" value="Distributed Poller Status" />
 </jsp:include>
 
-<h3><c:out value="${webTable.title}" /></h3>
+<h3><spring:message code="${webTable.title}"/></h3>
 
 <table>
   <tr>
     <c:forEach items="${webTable.columnHeaders}" var="headerCell">
-      <th class="<c:out value='${headerCell.styleClass}'/>">
+      <th class="${headerCell.styleClass}">
         <c:choose>
           <c:when test="${! empty headerCell.link}">
-            <a href="<c:out value='${headerCell.link}'/>"><c:out value="${headerCell.content}"/></a>
+            <a href="${headerCell.link}"><spring:message code="${headerCell.content}"/></a>
           </c:when>
           <c:otherwise>
-            <c:out value="${headerCell.content}"/>
+            <spring:message code="${headerCell.content}"/>
           </c:otherwise>
         </c:choose>
       </th>
@@ -69,15 +70,15 @@
   </tr>
   
   <c:forEach items="${webTable.rows}" var="row">
-    <tr class="<c:out value='${row[0].styleClass}'/>">
+    <tr class="${row[0].styleClass}">
       <c:forEach items="${row}" var="cell">
-        <td class="<c:out value='${cell.styleClass}'/> divider">
+        <td class="${cell.styleClass} divider">
           <c:choose>
             <c:when test="${! empty cell.link}">
-	            <a href="<c:out value='${cell.link}'/>"><c:out value="${cell.content}"/></a>
+              <a href="${cell.link}">${cell.content}</a>
             </c:when>
             <c:otherwise>
- 				 <c:out value="${cell.content}"/>
+              ${cell.content}
             </c:otherwise>
           </c:choose>
         </td>

@@ -26,5 +26,92 @@
      Application "{0}" not found.
    </entry>
    
+   <entry key="distributed.pollerStatus.title">
+     Distributed Poller Status
+   </entry>
+   
+   <entry key="distributed.locationMonitorDetails.title">
+     Location Monitor Details
+   </entry>
+   
+   <entry key="distributed.locationMonitorDetails.additionalTitle">
+     Additional Details
+   </entry>
+   
+   <entry key="distributed.area">
+     Area
+   </entry>
+   
+   <entry key="distributed.definitionName">
+     Definition Name
+   </entry>
+   
+   <entry key="distributed.id">
+     ID
+   </entry>
+   
+   <entry key="distributed.hostName">
+     Hostname
+   </entry>
+   
+   <entry key="distributed.ipAddress">
+     IP Address
+   </entry>
+   
+   <entry key="distributed.status">
+     Status
+   </entry>
+   
+   <entry key="distributed.status.NEW">
+     New
+   </entry>
+   
+   <entry key="distributed.status.REGISTERED">
+     Registered
+   </entry>
+   
+   <entry key="distributed.status.STARTED">
+     Started
+   </entry>
+   
+   <entry key="distributed.status.STOPPED">
+     Stopped
+   </entry>
+   
+   <entry key="distributed.status.UNRESPONSIVE">
+     Unresponsive
+   </entry>
+   
+   <entry key="distributed.status.DELETED">
+     Deleted
+   </entry>
+   
+   <entry key="distributed.lastCheckInTime">
+     Last Check-in Time
+   </entry>
+   
+   <entry key="monitorId.notSpecified">
+     Location monitor ID not specified or a type mismatch occurred (should be passed as an integer with "{0}" parameter).
+   </entry>
+   
+   <entry key="monitorId.notFound">
+     Location monitor ID "{1}" not found.
+   </entry>
+   
+   <entry key="distributed.detail.os.arch">
+     OS Architecture
+   </entry>
+   
+   <entry key="distributed.detail.os.name">
+     OS Name
+   </entry>
+   
+   <entry key="distributed.detail.os.version">
+     OS Version
+   </entry>
+   
+   <entry key="typeMismatch">
+     Type mismatch for parameter "{0}".
+   </entry>
    
  </properties>

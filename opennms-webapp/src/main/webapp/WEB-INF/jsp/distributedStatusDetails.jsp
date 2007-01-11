@@ -11,58 +11,56 @@
 </jsp:include>
 
 <c:choose>
-<c:when test="${webTable.errors.errorCount > 0}">
-<h3><spring:message code="error"/></h3>
-<p>
-  <font color="red">
-    <ul class="plain">
-      <c:forEach var="err" items="${webTable.errors.allErrors}">
-        <li><spring:message code="${err.code}" arguments="${err.arguments}"/></li>
-      </c:forEach>
-    </ul>
-  </font>
-</p>
-</c:when>
-
-<c:otherwise>
-<h3><c:out value="${webTable.title}" /></h3>
-
-<table>
-
-  <tr>
-  <c:forEach items="${webTable.columnHeaders}" var="headerCell">
-    <th class="<c:out value='${headerCell.styleClass}'/>">
-      <c:choose>
-        <c:when test="${! empty headerCell.link}">
-          <a href="<c:out value='${headerCell.link}'/>"><c:out value="${headerCell.content}"/></a>
-        </c:when>
-        <c:otherwise>
-          <c:out value="${headerCell.content}"/>
-        </c:otherwise>
-      </c:choose>
-    </th>
-  </c:forEach>
-  </tr>
+  <c:when test="${webTable.errors.errorCount > 0}">
+    <h3><spring:message code="error"/></h3>
+    <div class="boxWrapper">
+      <ul class="error">
+        <c:forEach var="err" items="${webTable.errors.allErrors}">
+          <li><spring:message code="${err.code}" arguments="${err.arguments}"/></li>
+        </c:forEach>
+      </ul>
+    </div>
+  </c:when>
   
-  <c:forEach items="${webTable.rows}" var="row">
-    <tr class="<c:out value='${row[0].styleClass}'/>">
-      <c:forEach items="${row}" var="cell">
-        <td class="<c:out value='${cell.styleClass}'/> divider">
-          <c:choose>
-            <c:when test="${! empty cell.link}">
-	            <a href="<c:out value='${cell.link}'/>"><c:out value="${cell.content}"/></a>
-            </c:when>
-            <c:otherwise>
- 				 <c:out value="${cell.content}"/>
-            </c:otherwise>
-          </c:choose>
-        </td>
+  <c:otherwise>
+    <h3>${webTable.title}</h3>
+    
+    <table>
+    
+      <tr>
+        <c:forEach items="${webTable.columnHeaders}" var="headerCell">
+          <th class="${headerCell.styleClass}">
+            <c:choose>
+              <c:when test="${! empty headerCell.link}">
+                <a href="${headerCell.link}">${headerCell.content}</a>
+              </c:when>
+              <c:otherwise>
+                ${headerCell.content}
+              </c:otherwise>
+            </c:choose>
+          </th>
+        </c:forEach>
+      </tr>
+      
+      <c:forEach items="${webTable.rows}" var="row">
+        <tr class="${row[0].styleClass}">
+          <c:forEach items="${row}" var="cell">
+            <td class="${cell.styleClass} divider">
+              <c:choose>
+                <c:when test="${! empty cell.link}">
+                  <a href="${cell.link}">${cell.content}</a>
+                </c:when>
+                <c:otherwise>
+                  ${cell.content}
+                </c:otherwise>
+              </c:choose>
+            </td>
+          </c:forEach>
+        </tr>
       </c:forEach>
-    </tr>
-  </c:forEach>
-</table>
-
-</c:otherwise>
+    </table>
+  
+  </c:otherwise>
 </c:choose>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

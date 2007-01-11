@@ -36,10 +36,11 @@ import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.web.command.DistributedStatusDetailsCommand;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class DistributedStatusDetailsValidator implements Validator {
+public class DistributedStatusDetailsValidator implements Validator, InitializingBean {
     
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
@@ -49,8 +50,6 @@ public class DistributedStatusDetailsValidator implements Validator {
     }
 
     public void validate(Object obj, Errors errors) {
-        assertPropertiesSet();
-
         DistributedStatusDetailsCommand cmd = (DistributedStatusDetailsCommand) obj;
         
         if (cmd.getLocation() == null) {
@@ -82,7 +81,7 @@ public class DistributedStatusDetailsValidator implements Validator {
         }
     }
 
-    private void assertPropertiesSet() {
+    public void afterPropertiesSet() {
         if (m_applicationDao == null) {
             throw new IllegalStateException("applicationDao property not set");
         }
