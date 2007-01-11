@@ -308,5 +308,11 @@
       <groupId>org.acegisecurity</groupId>
       <artifactId>acegi-security</artifactId>
     </dependency>
+    <!-- this is a runtime depdency we need at install time -->
+    <dependency>
+      <groupId>alt.dev.jmta</groupId>
+      <artifactId>jmta</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 </project>
