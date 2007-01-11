@@ -33,14 +33,9 @@
 package org.opennms.web.svclayer;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.Collection;
 import java.util.Date;
 
-import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.SiteStatusViewsFactory;
-import org.opennms.netmgt.config.SurveillanceViewsFactory;
-import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
