@@ -63,6 +63,7 @@ drop table element cascade;
 drop table map cascade;
 drop table location_monitors cascade;
 drop table location_specific_status_changes cascade;
+drop table vlan cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -170,6 +171,11 @@ create sequence demandPollNxtId minvalue 1;
 --#          sequence, column, table
 --# install: pollResultNxtId id   pollResults
 create sequence pollResultNxtId minvalue 1;
+
+--# Sequence for the mapID column in the map table
+--#          sequence,   column, table
+--# install: mapNxtId mapid map
+create sequence mapNxtId minvalue 1;
 
 
 --########################################################################
@@ -1285,7 +1291,6 @@ create index location_specific_status_changes_statustime on location_specific_st
 
 
 
-
 --########################################################################
 --# applications table - Contains list of applications for services
 --#
@@ -1337,16 +1342,22 @@ insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dp
 --#
 --# next are Italian Adventures 2 specific tables
 --# author rssntn67@yahoo.it
+--#
 --# 10/08/04
 --# creato il file e le tabelle
 --# rev. rssntn67@yahoo.it
+--#
 --# 18/08/04 
 --# eliminato createtime dalle tabelle
 --# sufficiente il createtime della tabella node
+--#
 --# 11/07/05
 --# modificata la tabella stpnode aggiunto campo vlanname
 --# definita primary key
 --# per la tabella atinterface, 
+--# Modified: 2007-01-09
+--# Note: Added vlan table, Modified Stpnode Table
+--#
 --#
 --########################################################################
 
@@ -1393,6 +1404,51 @@ create table atinterface (
 create index atinterface_nodeid_idx on atinterface USING HASH(nodeid) ;
 create index atinterface_node_ipaddr_idx on atinterface(nodeid,ipaddr);
 create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
+
+--########################################################################
+--#
+--# vlan table  --   This table maintains a record of generic vlan table
+--#					
+--# This table provides the following information:
+--#
+--#  nodeid   	              : Unique integer identifier of the node
+--#  vlanid                   : The vlan identifier to be referred to in a unique fashion.
+--#  vlanname                 : the name the vlan 
+--#  vlantype           	  : Indicates what type of vlan is this:
+--#						        '1' ethernet
+--#						        '2' FDDI
+--#						        '3' TokenRing
+--#                             '4' FDDINet
+--#                             '5' TRNet
+--#                             '6' Deprecated
+--#  vlanstatus               : An indication of what is the Vlan Status: 
+--#						        '1' operational
+--#						        '2' suspendid
+--#						        '3' mtuTooBigForDevice
+--#						        '4' mtuTooBigForTrunk
+--#  status            : Flag indicating the status of the entry.
+--#                      'A' - Active
+--#                      'N' - Not Active
+--#                      'D' - Deleted
+--#                      'K' - Unknown
+--#  lastPollTime             : The last time when this information was retrived
+--#
+--########################################################################
+
+create table vlan (
+    nodeid		 integer not null,
+    vlanid	     integer not null,
+    vlanname     varchar(64) not null,
+    vlantype     integer,
+    vlanstatus   integer,
+    status		 char(1) not null,
+    lastPollTime timestamp not null,
+    constraint pk_vlan primary key (nodeid,vlanid),
+	constraint fk_ia_nodeID8 foreign key (nodeid) references node on delete cascade
+);
+
+create index vlan_vlanname_idx on vlan(vlanname);
+
 
 --########################################################################
 --#
@@ -1457,9 +1513,6 @@ create table stpnode (
 	constraint fk_ia_nodeID2 foreign key (nodeid) references node on delete cascade
 );
 
-
-#not required because primary key creates the same index
-#create index stpnode_nodeIdBaseVlan_idx on stpnode(nodeid,basevlan);
 create index stpnode_nodeid_idx on stpnode(nodeid);
 create index stpnode_baseBridgeAddress_idx on stpnode(baseBridgeAddress);
 create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
@@ -1528,10 +1581,6 @@ create table stpinterface (
 	constraint fk_ia_nodeID3 foreign key (nodeid) references node on delete cascade
 );
 
-
-
-#not required because primary key creates the same index
-#create index stpinterface_node_bridgeport_stpvlan on stpinterface(nodeid,bridgeport,stpvlan);
 create index stpinterface_node_ifindex_idx on stpinterface(nodeid,ifindex);
 create index stpinterface_node_idx on stpinterface(nodeid);
 create index stpinterface_stpvlan_idx on stpinterface(stpvlan);
@@ -1619,9 +1668,6 @@ create table iprouteinterface (
 	constraint fk_ia_nodeID4 foreign key (nodeid) references node on delete cascade
 );
 
-
-#not required because primary key creates the same index
-#create index iprouteinterface_node_routedest_idx on iprouteinterface(nodeid,routedest);
 create index iprouteinterface_nodeid_idx on iprouteinterface(nodeid);
 create index iprouteinterface_node_ifdex_idx on iprouteinterface(nodeid,routeifindex);
 create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
@@ -1661,10 +1707,7 @@ create table datalinkinterface (
 	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid)
 );
 
-
 create index dlint_node_idx on datalinkinterface(nodeid);
-#not required because primary key creates the same index
-#create index dlint_node_ifindex_idx on datalinkinterface(nodeid,ifindex);
 create index dlint_nodeparent_idx on datalinkinterface(nodeparentid);
 create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,parentifindex);
 
@@ -1784,11 +1827,6 @@ create index element_mapid_elementid on element(mapId,elementId);
 --# These don't work with installer
 
 --#alter table element add constraint elementid check (elementid <> 0);
-
---# Sequence for the eventID column in the events table
---#          sequence,   column, table
---# install: mapNxtId mapid map
-create sequence mapNxtId minvalue 1;
 
 --########################################################################
 --#
