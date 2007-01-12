@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import java.net.InetAddress;
+
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 
@@ -145,5 +147,25 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 	{
 		super(ms_elemList);
 	}
+
+	public int getIpNetToMediaIfIndex(){
+		Integer val = getInt32(IpNetToMediaTableEntry.INTM_INDEX);
+		if (val == null) return -1;
+		return val;
+	}
 	
+	public String getIpNetToMediaPhysAddress(){
+		return getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+	}
+	
+	public InetAddress getIpNetToMediaNetAddress(){
+		return getIPAddress(IpNetToMediaTableEntry.INTM_NETADDR);
+	}
+	
+	public int getIpNetToMediatype(){
+		Integer val = getInt32(IpNetToMediaTableEntry.INTM_TYPE);
+		if (val == null) return -1;
+		return val;
+	}
+
 }   

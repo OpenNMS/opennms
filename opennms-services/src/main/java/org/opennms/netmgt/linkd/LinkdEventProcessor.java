@@ -40,20 +40,22 @@
 
 package org.opennms.netmgt.linkd;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+
 import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
+
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 
 /**
@@ -162,12 +164,12 @@ final class LinkdEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleNodeDeleted(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
+    private void handleNodeDeleted(Event event) throws InsufficientInformationException {
  
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler if it's an SNMP node
-        getLinkd().unscheduleNode((int)event.getNodeid());
+        getLinkd().deleteNode((int)event.getNodeid());
         // set to status = D in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface,stpnode, stpinterface
     }
@@ -177,11 +179,11 @@ final class LinkdEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleNodeGainedService(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
+    private void handleNodeGainedService(Event event) throws InsufficientInformationException {
  
         EventUtils.checkNodeId(event);
 
-        getLinkd().scheduleNode((int)event.getNodeid());
+        getLinkd().scheduleNodeCollection((int)event.getNodeid());
     }
 
     /**
@@ -189,12 +191,12 @@ final class LinkdEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleNodeLostService(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
+    private void handleNodeLostService(Event event) throws InsufficientInformationException {
         
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
-        getLinkd().suspendNode((int)event.getNodeid());
+        getLinkd().suspendNodeCollection((int)event.getNodeid());
         // set to status = N in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface,
     }
@@ -204,11 +206,11 @@ final class LinkdEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleRegainedService(Event event) throws InsufficientInformationException, UnknownHostException, Throwable {
+    private void handleRegainedService(Event event) throws InsufficientInformationException {
         
         EventUtils.checkNodeId(event);
 
-        getLinkd().wakeUpNode((int)event.getNodeid());
+        getLinkd().wakeUpNodeCollection((int)event.getNodeid());
     }
 
     /**
@@ -324,9 +326,6 @@ final class LinkdEventProcessor implements EventListener {
         } catch (InsufficientInformationException ex) {
             log.info("onEvent: insufficient information in event, discarding it: " + ex.getMessage());
             notifyEventError(event, "Invalid parameters: ", ex);
-        } catch (UnknownHostException ex) {
-            log.error("onEvent: operation failed for event: " + event.getUei() + ", exception: " + ex.getMessage());
-            notifyEventError(event, "processing failed: ", ex);
         } catch (Throwable t) {
             log.error("onEvent: operation failed for event: " + event.getUei() + ", exception: " + t.getMessage());
         }

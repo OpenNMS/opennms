@@ -47,12 +47,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 import org.opennms.netmgt.linkd.SnmpCollection.Vlan;
@@ -65,6 +65,7 @@ import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
+import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 
 /**
  * <P>
@@ -84,9 +85,6 @@ import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 
 public class DbEventWriter implements Runnable {
 
-//  FIXME: change all getInt32 calls to not autobox the result into an int
-//  FIXME: send routedest 0.0.0.0 to discoverylink  
-	
 	static final char ACTION_UPTODATE = 'N';
 
 	static final char ACTION_DELETE = 'D';
@@ -135,6 +133,12 @@ public class DbEventWriter implements Runnable {
 	 */
 	private static final int SNMP_DOT1D_FDB_STATUS_MGMT = 5;
 
+	/**
+	 * the int that indicated cdp address type
+	 * 
+	 */
+	
+	private static final int CDP_ADDRESS_TYPE_IP_ADDRESS = 1;
 	LinkableNode m_node;
 	
 	SnmpCollection m_snmpcoll;
@@ -178,6 +182,12 @@ public class DbEventWriter implements Runnable {
 	private static final String SQL_GET_SNMPPHYSADDR_SNMPINTERFACE = "SELECT snmpphysaddr FROM snmpinterface WHERE nodeid = ? AND  snmpphysaddr <> ''";
 
 	private char action = ACTION_STORE;
+	
+	/**
+	 * A boolean used to decide if performs autodiscovery
+	 */
+
+	private boolean autoDiscovery = false;
 
 	/**
 	 * @param m_snmpcoll
@@ -187,7 +197,7 @@ public class DbEventWriter implements Runnable {
 
 		super();
 		this.m_nodeId = nodeid;
-		this.m_node = new LinkableNode(nodeid,m_snmpcoll.getSnmpIpPrimary().getHostAddress());
+		this.m_node = new LinkableNode(nodeid,m_snmpcoll.getTarget().getHostAddress());
 		this.m_snmpcoll = m_snmpcoll;
 
 	}
@@ -250,7 +260,7 @@ public class DbEventWriter implements Runnable {
 			} catch (Exception e) {
 				log
 						.fatal(
-								"Unknown error while syncing node object with database information.",
+								"Unknown error while closing database connection.",
 								e);
 			}
 		}
@@ -409,47 +419,48 @@ public class DbEventWriter implements Runnable {
 			UnknownHostException {
 
 		Category log = ThreadCategory.getInstance(getClass());
-		Iterator ite = null;
+//		Iterator ite = null;
 
 		int nodeid = m_node.getNodeId();
 
 		if (m_snmpcoll.hasIpNetToMediaTable()) {
-			ite = m_snmpcoll.getIpNetToMediaTable()
-					.getEntries().iterator();
+			Iterator ite1 = m_snmpcoll.getIpNetToMediaTable().getEntries().iterator();
 			if (log.isDebugEnabled())
 				log
 						.debug("store: saving IpNetToMediaTable to atinterface table in DB");
 			// the AtInterfaces used by LinkableNode where to save info
 			java.util.List<AtInterface> atInterfaces = new java.util.ArrayList<AtInterface>();
-			while (ite.hasNext()) {
+			while (ite1.hasNext()) {
 
-				IpNetToMediaTableEntry ent = (IpNetToMediaTableEntry) ite
+				IpNetToMediaTableEntry ent = (IpNetToMediaTableEntry) ite1
 						.next();
 				
-				int ifindex = ent
-						.getInt32(IpNetToMediaTableEntry.INTM_INDEX);
+				int ifindex = ent.getIpNetToMediaIfIndex();
 				
-				InetAddress ipaddress = ent
-						.getIPAddress(IpNetToMediaTableEntry.INTM_NETADDR);
+				if ( ifindex < 0 ) {
+					log.warn("store: invalid ifindex " + ifindex);
+					continue;
+				}
+				
+				InetAddress ipaddress = ent.getIpNetToMediaNetAddress();
 
-				if (ipaddress.isLoopbackAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) {
-					log.warn("store: invalid ip " + ipaddress.getHostAddress());
+				if (ipaddress == null || ipaddress.isLoopbackAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) {
+					log.warn("store: ipNetToMedia invalid ip " + ipaddress.getHostAddress());
 					continue;
 				}
 
-				String physAddr = ent
-						.getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
+				String physAddr = ent.getIpNetToMediaPhysAddress();
 				
-				if (physAddr.equals("000000000000") || physAddr.equalsIgnoreCase("ffffffffffff")) {
-					log.warn("store: invalid mac address " + physAddr
+				if ( physAddr == null || physAddr.equals("000000000000") || physAddr.equalsIgnoreCase("ffffffffffff")) {
+					log.warn("store: ipNetToMedia invalid mac address " + physAddr
 							+ " for ip " + ipaddress.getHostAddress());
 					continue;
 				}
 
 
 				if (log.isDebugEnabled())
-					log.debug("store: trying save info for ipaddr " + ipaddress.getHostName()
-							+ " mac address " + physAddr + " found on ifindex "
+					log.debug("store: trying save ipNetToMedia info: ipaddr " + ipaddress.getHostName()
+							+ " mac address " + physAddr + " ifindex "
 							+ ifindex);
 
 				// get an At interface but without setting mac address
@@ -468,14 +479,14 @@ public class DbEventWriter implements Runnable {
 				// Save in DB
 				DbAtInterfaceEntry atInterfaceEntry = DbAtInterfaceEntry.get(
 						dbConn, at.getNodeId(), ipaddress.getHostAddress());
+				
 				if (atInterfaceEntry == null) {
 					atInterfaceEntry = DbAtInterfaceEntry.create(at.getNodeId(),
 							ipaddress.getHostAddress());
 				}
+
 				// update object
-
 				atInterfaceEntry.updateAtPhysAddr(physAddr);
-
 				atInterfaceEntry.updateSourceNodeId(nodeid);
 				atInterfaceEntry.updateIfIndex(ifindex);
 				atInterfaceEntry.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
@@ -493,54 +504,63 @@ public class DbEventWriter implements Runnable {
 				log
 						.debug("store: saving CdpCacheTable into SnmpLinkableNode");
 			java.util.List<CdpInterface> cdpInterfaces = new java.util.ArrayList<CdpInterface>();
-			ite = m_snmpcoll.getCdpCacheTable()
+			Iterator ite2 = m_snmpcoll.getCdpCacheTable()
 					.getEntries().iterator();
-			while (ite.hasNext()) {
-				CdpCacheTableEntry cdpEntry = (CdpCacheTableEntry) ite.next();
-				int cdpAddrType = cdpEntry.getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
+			while (ite2.hasNext()) {
+				CdpCacheTableEntry cdpEntry = (CdpCacheTableEntry) ite2.next();
+				int cdpAddrType = cdpEntry.getCdpCacheAddressType();
 
-				if (cdpAddrType != 1)
+				if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
+					log.warn(" cdp Address Type not valid " + cdpAddrType);
 					continue;
-				String cdptargetipaddress = cdpEntry.getHexString(CdpCacheTableEntry.CDP_ADDRESS);
-				if (log.isDebugEnabled())	log.debug(" cdp ip address octet string is " + cdptargetipaddress);
+				}
 
-				long ipAddr = Long.parseLong(cdptargetipaddress, 16);
-				byte[] bytes = new byte[4];
-				bytes[3] = (byte) (ipAddr & 0xff);
-				bytes[2] = (byte) ((ipAddr >> 8) & 0xff);
-				bytes[1] = (byte) ((ipAddr >> 16) & 0xff);
-				bytes[0] = (byte) ((ipAddr >> 24) & 0xff);
-				                         
-				InetAddress cdpTargetIpAddr = InetAddress.getByAddress(bytes);
-				if (log.isDebugEnabled())	log.debug(" cdp ip address after parsing is " + cdpTargetIpAddr.getHostAddress());
+				InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheAddress();
 				
-				int cdpIfIndex = cdpEntry.getInt32(CdpCacheTableEntry.CDP_IFINDEX);
-				if (log.isDebugEnabled())	log.debug(" cdp ifindex is " + cdpIfIndex);
+				if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddr.getHostAddress().equals("0.0.0.0")) {
+					log.warn(" cdp Ip Address is not valid " + cdpTargetIpAddr);
+					continue;
+				}
+				
+				if (log.isDebugEnabled())	log.debug(" cdp ip address found " + cdpTargetIpAddr.getHostAddress());
+				
+				int cdpIfIndex = cdpEntry.getCdpCacheIfIndex();
+				
+				if (cdpIfIndex < 0 ) {
+					log.warn(" cdpIfIndex not valid " + cdpIfIndex);
+					continue;
+				}
 
-				String cdpTargetDevicePort = cdpEntry.getDisplayString(CdpCacheTableEntry.CDP_DEVICEPORT);
-				if (log.isDebugEnabled())	log.debug(" cdp Target device port name is " + cdpTargetDevicePort);
+				if (log.isDebugEnabled())	log.debug(" cdp ifindex found " + cdpIfIndex);
 
+				String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
+				
+				if (cdpTargetDevicePort == null ) {
+					log.warn(" cdpTargetDevicePort null. Skipping. " );
+					continue;
+				}
 
-				CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
+				if (log.isDebugEnabled())	log.debug(" cdp Target device port name found " + cdpTargetDevicePort);
 
 				int targetCdpNodeId = getNodeidFromIp(dbConn, cdpTargetIpAddr);
 
-				cdpIface.setCdpTargetNodeId(targetCdpNodeId);
-				cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
-				
-				int cdpTargetIfindex = getIfIndexByName(
-						dbConn, targetCdpNodeId, cdpTargetDevicePort);
-
-				if (targetCdpNodeId == -1 || cdpTargetIfindex == -1) {
+				if (targetCdpNodeId == -1 ) {
 					log.warn("No nodeid found: cdp interface not added to Linkable Snmp Node. Skipping");
 					sendNewSuspectEvent(cdpTargetIpAddr);
 					continue;
-				} else  {
-
-					cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
-					cdpInterfaces.add(cdpIface);
 				}
 
+				int cdpTargetIfindex = getIfIndexByName(
+						dbConn, targetCdpNodeId, cdpTargetDevicePort);
+
+				if (log.isDebugEnabled()) log.debug("No valid if target index found: " + cdpTargetIfindex + "cdp interface not added to Linkable Snmp Node. Skipping");
+				
+				CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
+				cdpIface.setCdpTargetNodeId(targetCdpNodeId);
+				cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
+				cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
+				
+				cdpInterfaces.add(cdpIface);
 			}
 			m_node.setCdpInterfaces(cdpInterfaces);
 		}
@@ -548,17 +568,17 @@ public class DbEventWriter implements Runnable {
 		if (m_snmpcoll.hasRouteTable()) {
 			java.util.List<RouterInterface> routeInterfaces = new java.util.ArrayList<RouterInterface>();
 			
-			ite = m_snmpcoll.getIpRouteTable().getEntries()
+			Iterator ite3 = m_snmpcoll.getIpRouteTable().getEntries()
 					.iterator();
 			if (log.isDebugEnabled())
 				log
 						.debug("store: saving ipRouteTable to iprouteinterface table in DB");
-			while (ite.hasNext()) {
-				IpRouteTableEntry ent = (IpRouteTableEntry) ite.next();
+			while (ite3.hasNext()) {
+				IpRouteTableEntry ent = (IpRouteTableEntry) ite3.next();
 
 				Integer ifindex = ent.getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
 
-				if (ifindex == null) {
+				if (ifindex == null || ifindex < 0) {
 					log.warn("store: Not valid ifindex" + ifindex 
 							+ " Skipping...");
 					continue;
@@ -581,6 +601,7 @@ public class DbEventWriter implements Runnable {
 						log.info("storeSnmpCollection: loopbackaddress found skipping.");
 					continue;
 				}
+				
 				if (nexthop.getHostAddress().equals("0.0.0.0")) {
 					if (log.isInfoEnabled()) 
 						log.info("storeSnmpCollection: broadcast address found skipping.");
@@ -602,18 +623,20 @@ public class DbEventWriter implements Runnable {
 				Integer routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
 
 				/**
-				 *  TODO remeber that now nexthop 0.0.0.0 is not 
+				 *  FIXME: send routedest 0.0.0.0 to discoverylink  
+				 *  remeber that now nexthop 0.0.0.0 is not 
 				 *  parsed, anyway we should analize this case in link discovery
 				 *  so here is the place where you can have this info saved for
 				 * now is discarded. See DiscoveryLink for more details......
 				 * 
 				**/
 				
-				// info used for Discovery Link
-				// the routeiface constructor set nodeid, ifindex, netmask for nexthop address
+				// the routerinterface constructor set nodeid, ifindex, netmask for nexthop address
+				// try to find on snmpinterface table
 				RouterInterface routeIface = getNodeidMaskFromIp(dbConn,nexthop);
 
-				// if target node is not snmp node always try to save info
+				// if target node is not snmp node always try to find info
+				// on ipinterface table
 				if (routeIface == null) {
 					routeIface = getNodeFromIp(dbConn, nexthop);
 				}
@@ -642,9 +665,7 @@ public class DbEventWriter implements Runnable {
 						routeIface.setSnmpiftype(snmpiftype);
 						routeIface.setIfindex(ifindex);
 						routeIface.setMetric(routemetric1);
-
 						routeIface.setNextHop(nexthop);
-							
 						routeInterfaces.add(routeIface);
 						
 					}
@@ -687,29 +708,84 @@ public class DbEventWriter implements Runnable {
 			}
 			m_node.setRouteInterfaces(routeInterfaces);
 		}
-		// STARTS loop on vlans
 
-		//TODO make the porting of the code from 1.2.5 EDA
-		
 		if (log.isDebugEnabled())
-			log.debug("store: saving SnmpVlanCollection in DB");
+			log.debug("store: saving VlanTable in DB");
+
+		if (m_snmpcoll.hasVlanTable()) {
+						
+			Iterator ite3 = m_snmpcoll.getVlanTable().getEntries()
+					.iterator();
+			if (log.isDebugEnabled())
+				log
+						.debug("store: saving Snmp Vlan Table to vlan table in DB");
+			while (ite3.hasNext()) {
+				SnmpTableEntry ent = (SnmpTableEntry) ite3.next();
+
+				Integer vlanindex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
+
+				if (vlanindex == null || vlanindex < 0) {
+					log.warn("store: Not valid vlan ifindex" + vlanindex 
+							+ " Skipping...");
+					continue;
+				}
+				
+				String vlanName = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
+				if (vlanName == null ) {
+					log.warn("store: Null vlan name. forcing to default...");
+					vlanName = "default";
+				}
+
+				Integer vlantype = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
+				Integer vlanstatus = ent.getInt32(VlanCollectorEntry.VLAN_STATUS);
+				
+				// always save info to DB
+				DbVlanEntry vlanEntry = DbVlanEntry
+						.get(dbConn, nodeid, vlanindex);
+				if (vlanEntry == null) {
+					// Create a new entry
+					vlanEntry = DbVlanEntry.create(
+							m_node.getNodeId(), vlanindex);
+				}
+				
+				vlanEntry.updateVlanName(vlanName);
+                //okay to autobox these since were checking for null
+				if (vlantype != null)
+					vlanEntry.updateVlanType(vlantype);
+				if (vlanstatus != null)
+					vlanEntry.updateVlanStatus(vlanstatus);
+				vlanEntry
+						.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
+				vlanEntry.set_lastpolltime(now);
+
+				// store object in database
+				vlanEntry.store(dbConn);
+			}
+		}
+
+		if (log.isDebugEnabled())
+			log.debug("store: saving SnmpVlanCollection's in DB");
 		
-		ite = m_snmpcoll.getSnmpVlanCollections().entrySet().iterator();
+		Iterator<Entry<Vlan,SnmpVlanCollection>> ite4 = m_snmpcoll.getSnmpVlanCollections().entrySet().iterator();
 		
 		SnmpVlanCollection snmpVlanColl = null;
 		Vlan vlan = null;
-		while (ite.hasNext()) {
-			Entry<Vlan, SnmpVlanCollection> entry = (Entry<Vlan, SnmpVlanCollection>) ite.next();
+		while (ite4.hasNext()) {
+			
+			Entry<Vlan,SnmpVlanCollection> entry = ite4.next();
 
-			snmpVlanColl = entry.getValue();
 			vlan = entry.getKey();
+
+			
 			int vlanid = vlan.getVlanindex();
-			String vlanindex = Integer.toString(vlanid);
 			String vlanname = vlan.getVlanname();
+			String vlanindex = Integer.toString(vlanid);
 			if (log.isDebugEnabled())
 				log
 						.debug("store: parsing VLAN "
 								+ vlanindex + " VLAN_NAME " + vlanname);
+
+			snmpVlanColl = entry.getValue();
 
 			if (snmpVlanColl.hasDot1dBase()) {
 				if (log.isDebugEnabled())
@@ -717,16 +793,17 @@ public class DbEventWriter implements Runnable {
 							.debug("store: saving Dot1dBaseGroup in stpnode table");
 
 				Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl.getDot1dBase();
-				String baseBridgeAddress = dod1db.getBridgeAddress();
-				int basenumports = dod1db.getNumberOfPorts();
-				int bridgetype = dod1db.getBridgeType();
 				
-
-				if (baseBridgeAddress == "000000000000") {
-					log.warn("store: base bridge address " + baseBridgeAddress
-							+ " is invalid for ipaddress " );
+				String baseBridgeAddress = dod1db.getBridgeAddress();
+				if (baseBridgeAddress == null || baseBridgeAddress == "000000000000") {
+					log.warn("store: invalid base bridge address " + baseBridgeAddress);
 				} else {
 					m_node.addBridgeIdentifier(baseBridgeAddress,vlanindex);
+					int basenumports = dod1db.getNumberOfPorts();
+
+					
+					int bridgetype = dod1db.getBridgeType();
+					
 					DbStpNodeEntry dbStpNodeEntry = DbStpNodeEntry.get(dbConn,
 						m_node.getNodeId(), vlanid);
 					if (dbStpNodeEntry == null) {
@@ -750,11 +827,14 @@ public class DbEventWriter implements Runnable {
 							.getDot1dStp();
 						int protospec = dod1stp.getStpProtocolSpecification();
 						int stppriority = dod1stp.getStpPriority();
-						String stpDesignatedRoot = dod1stp.getStpDesignatedRoot();
 						int stprootcost = dod1stp.getStpRootCost();
 						int stprootport = dod1stp.getStpRootPort();
+						String stpDesignatedRoot = dod1stp.getStpDesignatedRoot();
 
-						if (stpDesignatedRoot != "0000000000000000") {
+						if (stpDesignatedRoot == null || stpDesignatedRoot == "0000000000000000") {
+							if (log.isDebugEnabled()) log.debug("store: Dot1dStpGroup found stpDesignatedRoot " + stpDesignatedRoot + " not adding to Linkable node");
+							stpDesignatedRoot = "0000000000000000";
+						} else {
 							m_node.setVlanStpRoot(vlanindex,stpDesignatedRoot);
 						}
 						
@@ -764,12 +844,15 @@ public class DbEventWriter implements Runnable {
 						dbStpNodeEntry.updateStpRootCost(stprootcost);
 						dbStpNodeEntry.updateStpRootPort(stprootport);
 					}
-				// store object in database
+					// store object in database
 					dbStpNodeEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
 					dbStpNodeEntry.set_lastpolltime(now);
-
 					dbStpNodeEntry.store(dbConn);
 				
+					// FIXME implement vlan table.....
+					// so you can store vlan tables properly
+					// depending on vlan collection entry set
+					
 					if (snmpVlanColl.hasDot1dBasePortTable()) {
 						Iterator sub_ite = snmpVlanColl.getDot1dBasePortTable()
 							.getEntries().iterator();
@@ -779,8 +862,14 @@ public class DbEventWriter implements Runnable {
 						while (sub_ite.hasNext()) {
 							Dot1dBasePortTableEntry dot1dbaseptentry = (Dot1dBasePortTableEntry) sub_ite
 								.next();
-							Integer baseport = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_PORT);
-							Integer ifindex = dot1dbaseptentry.getInt32(Dot1dBasePortTableEntry.BASE_IFINDEX);
+							
+							int baseport = dot1dbaseptentry.getBaseBridgePort();
+							int ifindex = dot1dbaseptentry.getBaseBridgePortIfindex();
+							
+							if (baseport == -1 || ifindex == -1 ) {
+								log.warn("store: Dot1dBasePortTable invalid baseport or ifindex " + baseport + " / " + ifindex);
+								continue;
+							}
 						
 							m_node.setIfIndexBridgePort(ifindex,baseport);
 						
@@ -792,14 +881,11 @@ public class DbEventWriter implements Runnable {
 								dbStpIntEntry = DbStpInterfaceEntry.create(
 									m_node.getNodeId(), baseport, vlanid);
 							}
+							
 							dbStpIntEntry.updateIfIndex(ifindex);
-
-							dbStpIntEntry
-								.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+							dbStpIntEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
 							dbStpIntEntry.set_lastpolltime(now);
-
 							dbStpIntEntry.store(dbConn);
-
 						}
 					}
 
@@ -812,7 +898,13 @@ public class DbEventWriter implements Runnable {
 						while (sub_ite.hasNext()) {
 							Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
 								.next();
-							int stpport = dot1dstpptentry.getInt32(Dot1dStpPortTableEntry.STP_PORT);
+							int stpport = dot1dstpptentry.getDot1dStpPort();
+							
+							if (stpport == -1 ) {
+								log.warn("store: Dot1dStpPortTable found invalid stp port. Skipping");
+								continue;
+							}
+							
 							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
 								.get(dbConn, m_node.getNodeId(),
 										stpport, vlanid);
@@ -820,46 +912,35 @@ public class DbEventWriter implements Runnable {
 							// Cannot create the object becouse must exists the dot1dbase
 							// object!!!!!
 								log
-										.warn("store StpInterface: when storing STP info"
+										.warn("store: StpInterface not found in database when storing STP info"
 												+ " for bridge node with nodeid "
 												+ m_node.getNodeId()
 												+ " bridgeport number "
 												+ stpport
 												+ " and vlan index "
 												+ vlanindex
-												+ " info not found in database, ERROR skipping.....");
+												+ " skipping.");
 							} else {
-
-								int stpportstate = dot1dstpptentry
-									.getInt32(Dot1dStpPortTableEntry.STP_PORT_STATE);
-								int stpportpathcost = dot1dstpptentry
-									.getInt32(Dot1dStpPortTableEntry.STP_PORT_PATH_COST);
-								String stpPortDesignatedBridge = dot1dstpptentry
-									.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_BRIDGE);
-								String stpPortDesignatedRoot = dot1dstpptentry
-									.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_ROOT);
-								int stpportdesignatedcost = dot1dstpptentry
-									.getInt32(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_COST);
-								String stpPortDesignatedPort = dot1dstpptentry
-									.getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_PORT);
-							
+								
+								String stpPortDesignatedBridge = dot1dstpptentry.getDot1dStpPortDesignatedBridge();
+								String stpPortDesignatedPort = dot1dstpptentry.getDot1dStpPortDesignatedPort();
 
 								if (stpPortDesignatedBridge.equals("0000000000000000")) {
-									log.warn("storeSnmpCollection: designated bridge is invalid not adding to discoveryLink");
+									log.warn("store: "+ stpPortDesignatedBridge + " designated bridge is invalid not adding to discoveryLink");
 								} else if (stpPortDesignatedPort.equals("0000")) {
-									log.warn("storeSnmpCollection: designated port is invalid not adding to discoveryLink");
+									log.warn("store: " + stpPortDesignatedPort + " designated port is invalid not adding to discoveryLink");
 								} else {
 									BridgeStpInterface stpIface = new BridgeStpInterface(stpport,vlanindex);
 									stpIface.setStpPortDesignatedBridge(stpPortDesignatedBridge);
 									stpIface.setStpPortDesignatedPort(stpPortDesignatedPort);
 									m_node.addStpInterface(stpIface);
 								}
-							
-								dbStpIntEntry.updateStpPortState(stpportstate);
-								dbStpIntEntry.updateStpPortPathCost(stpportpathcost);
+
+								dbStpIntEntry.updateStpPortState(dot1dstpptentry.getDot1dStpPortState());
+								dbStpIntEntry.updateStpPortPathCost(dot1dstpptentry.getDot1dStpPortPathCost());
 								dbStpIntEntry.updateStpportDesignatedBridge(stpPortDesignatedBridge);
-								dbStpIntEntry.updateStpportDesignatedRoot(stpPortDesignatedRoot);
-								dbStpIntEntry.updateStpPortDesignatedCost(stpportdesignatedcost);
+								dbStpIntEntry.updateStpportDesignatedRoot(dot1dstpptentry.getDot1dStpPortDesignatedRoot());
+								dbStpIntEntry.updateStpPortDesignatedCost(dot1dstpptentry.getDot1dStpPortDesignatedCost());
 								dbStpIntEntry.updateStpportDesignatedPort(stpPortDesignatedPort);
 								dbStpIntEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
 								dbStpIntEntry.set_lastpolltime(now);
@@ -880,74 +961,57 @@ public class DbEventWriter implements Runnable {
 						while (subite.hasNext()) {
 							Dot1dTpFdbTableEntry dot1dfdbentry = (Dot1dTpFdbTableEntry) subite
 								.next();
-							String curMacAddress = dot1dfdbentry
-								.getHexString(Dot1dTpFdbTableEntry.FDB_ADDRESS);
+							String curMacAddress = dot1dfdbentry.getDot1dTpFdbAddress();
+							
+							if (curMacAddress == null || curMacAddress.equals("000000000000")) {
+									log.warn("store: Dot1dTpFdbTable invalid macaddress "
+										+ curMacAddress + " Skipping.");
+								continue;
+							}
 
-							int fdbport = dot1dfdbentry.getInt32(Dot1dTpFdbTableEntry.FDB_PORT);
+							if (log.isDebugEnabled())
+								log.debug("store: Dot1dTpFdbTable found macaddress "
+									+ curMacAddress);
 
-							if (fdbport == 0) {
+							int fdbport = dot1dfdbentry.getDot1dTpFdbPort();
+
+							if (fdbport == 0 || fdbport == -1 ) {
 								if (log.isDebugEnabled())
-									log.debug("populateBridge: macaddress "
-										+ curMacAddress
-										+ " learned on invalid port "
+									log.debug("store: Dot1dTpFdbTable mac learned on invalid port "
 										+ fdbport + " . Skipping");
 								continue;
 							}
 
-							int curfdbstatus = dot1dfdbentry.getInt32(Dot1dTpFdbTableEntry.FDB_STATUS);
+							if (log.isDebugEnabled())
+								log
+									.debug("store: Dot1dTpFdbTable mac address found "
+											+ " on bridge port "
+											+ fdbport);
+
+							int curfdbstatus = dot1dfdbentry.getDot1dTpFdbStatus();
 
 							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
 								m_node.addMacAddress(fdbport,
 									curMacAddress, vlanindex);
 								if (log.isDebugEnabled())
-									log
-										.debug("storeSnmpCollection: found learned mac address "
-												+ curMacAddress
-												+ " on bridge port "
-												+ fdbport
-												+ " for VLAN "
-												+ vlanindex);
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
+									log.debug("store: Dot1dTpFdbTable found learned status"
+												+ " on bridge port ");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
 								m_node.addBridgeIdentifier(curMacAddress);
 								if (log.isDebugEnabled())
-								log
-										.debug("storeSnmpCollection: found bridge identifier "
-												+ curMacAddress
-												+ " for VLAN "
-												+ vlanindex
-												+ " and bridge port "
-												+ fdbport);
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
+									log.debug("store: Dot1dTpFdbTable mac is bridge identifier");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
 								if (log.isDebugEnabled())
-									log.debug("storeSnmpCollection: macaddress "
-										+ curMacAddress
-										+ " has INVALID status on port "
-										+ fdbport + " . Skipping");
-								continue;
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
+									log.debug("store: Dot1dTpFdbTable found INVALID status. Skipping");
+							} else	if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
 								if (log.isDebugEnabled())
-									log.debug("storeSnmpCollection: macaddress "
-										+ curMacAddress
-										+ " has MGMT status on port "
-										+ fdbport + " . Skipping");
-								continue;
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
+									log.debug("store: Dot1dTpFdbTable found MGMT status. Skipping");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
 								if (log.isDebugEnabled())
-									log.debug("storeSnmpCollection: macaddress "
-										+ curMacAddress
-										+ " has OTHER status on port "
-										+ fdbport + " . Skipping");
-								continue;
+									log.debug("store: Dot1dTpFdbTable found OTHER status. Skipping");
+							} else if (curfdbstatus == -1) {
+								log.warn("store: Dot1dTpFdbTable null status found. Skipping");
 							}
-
 						}
 					}
 
@@ -961,78 +1025,58 @@ public class DbEventWriter implements Runnable {
 						while (subite.hasNext()) {
 							QBridgeDot1dTpFdbTableEntry dot1dfdbentry = (QBridgeDot1dTpFdbTableEntry) subite
 								.next();
-							//TODO write some comments on this as soon as possible
-							
-//							String curMacAddress = dot1dfdbentry
-//								.getHexString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
-							String curMacAddress = dot1dfdbentry
-							.getDisplayString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
 
-							int fdbport = dot1dfdbentry.getInt32(QBridgeDot1dTpFdbTableEntry.FDB_PORT);
+							String curMacAddress = dot1dfdbentry.getQBridgeDot1dTpFdbAddress();
 
-							if (fdbport == 0) {
+							if (curMacAddress == null || curMacAddress.equals("000000000000")) {
+								log.warn("store: QBridgeDot1dTpFdbTable invalid macaddress "
+									+ curMacAddress + " Skipping.");
+								continue;
+							}
+
+							if (log.isDebugEnabled())
+								log.debug("store: Dot1dTpFdbTable found macaddress "
+									+ curMacAddress);
+
+							int fdbport = dot1dfdbentry.getQBridgeDot1dTpFdbPort();
+
+							if (fdbport == 0 || fdbport == -1 ) {
 								if (log.isDebugEnabled())
-									log.debug("populateBridge: macaddress "
-										+ curMacAddress
-										+ " learned on invalid port "
+									log.debug("store: QBridgeDot1dTpFdbTable mac learned on invalid port "
 										+ fdbport + " . Skipping");
 								continue;
 							}
 
-							int curfdbstatus = dot1dfdbentry.getInt32(QBridgeDot1dTpFdbTableEntry.FDB_STATUS);
+							if (log.isDebugEnabled())
+								log
+									.debug("store: QBridgeDot1dTpFdbTable mac address found "
+											+ " on bridge port "
+											+ fdbport);
+
+							int curfdbstatus = dot1dfdbentry.getQBridgeDot1dTpFdbStatus();
 
 							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
 								m_node.addMacAddress(fdbport,
 									curMacAddress, vlanindex);
 								if (log.isDebugEnabled())
-									log
-										.debug("storeSnmpCollection: found learned mac address "
-												+ curMacAddress
-												+ " on bridge port "
-												+ fdbport
-												+ " for VLAN "
-												+ vlanindex);
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
+									log.debug("store: QBridgeDot1dTpFdbTable found learned status"
+												+ " on bridge port ");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
 								m_node.addBridgeIdentifier(curMacAddress);
 								if (log.isDebugEnabled())
-								log
-										.debug("storeSnmpCollection: found bridge identifier "
-												+ curMacAddress
-												+ " for VLAN "
-												+ vlanindex
-												+ " and bridge port "
-												+ fdbport);
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
+									log.debug("store: QBridgeDot1dTpFdbTable mac is bridge identifier");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
 								if (log.isDebugEnabled())
-									log.debug("storeSnmpCollection: macaddress "
-										+ curMacAddress
-										+ " has INVALID status on port "
-										+ fdbport + " . Skipping");
-								continue;
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
+									log.debug("store: QBridgeDot1dTpFdbTable found INVALID status. Skipping");
+							} else	if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
 								if (log.isDebugEnabled())
-									log.debug("storeSnmpCollection: macaddress "
-										+ curMacAddress
-										+ " has MGMT status on port "
-										+ fdbport + " . Skipping");
-								continue;
-							}
-
-							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
+									log.debug("store: QBridgeDot1dTpFdbTable found MGMT status. Skipping");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
 								if (log.isDebugEnabled())
-									log.debug("storeSnmpCollection: macaddress "
-										+ curMacAddress
-										+ " has OTHER status on port "
-										+ fdbport + " . Skipping");
-								continue;
+									log.debug("store: QBridgeDot1dTpFdbTable found OTHER status. Skipping");
+							} else if (curfdbstatus == -1) {
+								log.warn("store: QBridgeDot1dTpFdbTable null status found. Skipping");
 							}
-
 						}
 					}
 
@@ -1491,8 +1535,10 @@ public class DbEventWriter implements Runnable {
 		return m_node;
 	}
 	
+	
+	
 	private void sendNewSuspectEvent(InetAddress ipaddress) {
-		if (m_snmpcoll.isAutoDiscoveryEnabled()) { 
+		if (isAutoDiscovery()) { 
 			Category log = ThreadCategory.getInstance(getClass());
 			if (log.isDebugEnabled())
 				log.debug("sendNewSuspectEvent:  found ip address to send :" + ipaddress);
@@ -1503,9 +1549,18 @@ public class DbEventWriter implements Runnable {
 			} else {
 					if (log.isDebugEnabled())
 						log.debug("sendNewSuspectEvent: sending event for valid ip address");
-					Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), m_snmpcoll.getSnmpIpPrimary().getHostAddress());
+					Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), m_snmpcoll.getTarget().getHostAddress());
 			}
 		}
 
 	}
+
+	public boolean isAutoDiscovery() {
+		return autoDiscovery;
+	}
+
+	public void setAutoDiscovery(boolean autoDiscovery) {
+		this.autoDiscovery = autoDiscovery;
+	}
+	
 }

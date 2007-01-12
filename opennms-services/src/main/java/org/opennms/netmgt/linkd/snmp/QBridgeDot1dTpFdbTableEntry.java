@@ -73,7 +73,7 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 
 	public final static String FDB_STATUS = "dot1dTpFdbStatus";
 
-	private boolean hasFdbAddress = false;
+	private boolean hasFdbAddressFromBase = false;
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -164,7 +164,8 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 
 	@Override
 	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-		if (!hasFdbAddress) {
+		super.storeResult(base, inst, val);
+		if (!new SnmpObjId(FDB_ADDRESS_OID).isPrefixOf(base) && !hasFdbAddressFromBase) {
 			int[] identifiers = inst.getIds();
 			String mac = "";
 			for (int i = identifiers.length-6; i<identifiers.length; i++) if (identifiers[i] >= 16 )
@@ -173,9 +174,24 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 				mac+= "0"+Integer.toHexString(identifiers[i]);
 			super.storeResult(new SnmpObjId(FDB_ADDRESS_OID), inst, 
 						SnmpUtils.getValueFactory().getOctetString(mac.getBytes()));
-			hasFdbAddress = true;
+			hasFdbAddressFromBase = true;
 		}
-		super.storeResult(base, inst, val);
+	}
+	
+	public String getQBridgeDot1dTpFdbAddress() {
+		if (hasFdbAddressFromBase) return getDisplayString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
+		return getHexString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
 	}
 
+	public int getQBridgeDot1dTpFdbPort() {
+		Integer val = getInt32(QBridgeDot1dTpFdbTableEntry.FDB_PORT);
+		if (val == null) return -1;
+		return val;
+	}
+
+	public int getQBridgeDot1dTpFdbStatus() {
+		Integer val = getInt32(QBridgeDot1dTpFdbTableEntry.FDB_STATUS);
+		if (val == null) return -1;
+		return val;
+	}
 }

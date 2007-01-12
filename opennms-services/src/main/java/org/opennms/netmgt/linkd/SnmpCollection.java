@@ -39,9 +39,10 @@ package org.opennms.netmgt.linkd;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
@@ -136,11 +138,6 @@ public final class SnmpCollection implements ReadyRunnable {
 	private boolean m_collectVlanTable = false;
 
 	/**
-	 * A boolean used to decide if performs autodiscovery
-	 */
-	private boolean m_auto_discovery = true;
-
-	/**
 	 * The ipnettomedia table information
 	 */
 	public IpNetToMediaTable m_ipNetToMedia;
@@ -223,25 +220,6 @@ public final class SnmpCollection implements ReadyRunnable {
 		m_snmpVlanCollection.clear();
 	}
 
-	public static void main(String[] a) throws UnknownHostException {
-		// String localhost = "127.0.0.1";
-		String localhost = "10.3.2.216";
-		InetAddress ip = InetAddress.getByName(localhost);
-		SnmpAgentConfig peer = new SnmpAgentConfig(ip);
-		SnmpCollection snmpCollector = new SnmpCollection(peer);
-		snmpCollector.run();
-		java.util.Iterator itr = snmpCollector.getVlanTable().iterator();
-		System.out.println("number of vlan entities = "
-				+ snmpCollector.m_vlanTable.getEntries().size());
-		while (itr.hasNext()) {
-			SnmpTableEntry ent = (SnmpTableEntry) itr.next();
-			System.out.println("Vlan found: Vlan Index = "
-					+ ent.getInt32(VlanCollectorEntry.VLAN_INDEX)
-					+ " Vlan name = "
-					+ ent.getDisplayString(VlanCollectorEntry.VLAN_NAME));
-		}
-	}
-
 	/**
 	 * Returns true if any part of the collection failed.
 	 */
@@ -303,8 +281,8 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * Returns the collected VLAN table.
 	 */
-	List getVlanTable() {
-		return m_vlanTable.getEntries();
+	SnmpTable getVlanTable() {
+		return m_vlanTable;
 	}
 
 	/**
@@ -313,7 +291,7 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	public String getVlanName(int m_vlan) {
 		if (this.hasVlanTable()) {
-			java.util.Iterator itr = this.getVlanTable().iterator();
+			java.util.Iterator itr = this.getVlanTable().getEntries().iterator();
 			while (itr.hasNext()) {
 				SnmpTableEntry ent = (SnmpTableEntry) itr.next();
 				int vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
@@ -331,7 +309,7 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	public int getVlanIndex(String m_vlanname) {
 		if (this.hasVlanTable()) {
-			java.util.Iterator itr = this.getVlanTable().iterator();
+			java.util.Iterator itr = this.getVlanTable().getEntries().iterator();
 			while (itr.hasNext()) {
 				SnmpTableEntry ent = (SnmpTableEntry) itr.next();
 				String vlanName = ent
@@ -346,14 +324,6 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	Map<Vlan, SnmpVlanCollection> getSnmpVlanCollections() {
 		return m_snmpVlanCollection;
-	}
-
-	/**
-	 * Returns the target address that the collection occured for.
-	 */
-
-	public InetAddress getTarget() {
-		return m_address;
 	}
 
 	/**
@@ -503,7 +473,7 @@ public final class SnmpCollection implements ReadyRunnable {
 				} else {
 					if (log.isDebugEnabled())
 						log.debug("SnmpCollection.run: start collection for "
-								+ getVlanTable().size() + " VLAN entries ");
+								+ getVlanTable().getEntries().size() + " VLAN entries ");
 
 					java.util.Iterator itr = m_vlanTable.getEntries().iterator();
 					while (itr.hasNext()) {
@@ -680,14 +650,14 @@ public final class SnmpCollection implements ReadyRunnable {
 		this.suspendCollection = false;
 	}
 
-	public void unschedule() throws UnknownHostException, Throwable {
+	public void unschedule() {
 		if (m_scheduler == null)
 			throw new IllegalStateException(
 					"rescedule: Cannot schedule a service whose scheduler is set to null");
 		if (runned) {
-			m_scheduler.unschedule(getTarget(), poll_interval);
+			m_scheduler.unschedule(this,poll_interval);
 		} else {
-			m_scheduler.unschedule(getTarget(), poll_interval
+			m_scheduler.unschedule(this, poll_interval
 					+ initial_sleep_time);
 		}
 	}
@@ -707,9 +677,10 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
 	/**
-	 * @return Returns the m_address.
+	 * Returns the target address that the collection occured for.
 	 */
-	public InetAddress getSnmpIpPrimary() {
+
+	public InetAddress getTarget() {
 		return m_address;
 	}
 
@@ -727,13 +698,34 @@ public final class SnmpCollection implements ReadyRunnable {
 	public boolean collectVlanTable() {
 		return m_collectVlanTable;
 	}
-
-	public boolean isAutoDiscoveryEnabled() {
-		return m_auto_discovery;
+	
+	public String getReadCommunity() {
+		return m_agentConfig.getReadCommunity();
+	}
+	
+	public SnmpAgentConfig getPeer() {
+		return m_agentConfig;
 	}
 
-	public void setAutoDiscovery(boolean m_auto_discovery) {
-		this.m_auto_discovery = m_auto_discovery;
+	public int getPort() {
+		return m_agentConfig.getPort();
+	}
+	
+	public boolean equals(ReadyRunnable run) {
+		if (run instanceof SnmpCollection) {
+			SnmpCollection c = (SnmpCollection) run;
+			if ( c.getTarget().equals(m_address)
+					&& c.getPort() == getPort()
+					&& c.getReadCommunity().equals(getReadCommunity())) return true;
+		}
+		return false;
+	}
+	
+	public String getInfo() {
+		return "Ready Runnable(s) SnmpCollection with ip/port/community "
+		+ getTarget()
+		+ "/" + getPort()
+		+ "/" + getReadCommunity();
 	}
 
 }

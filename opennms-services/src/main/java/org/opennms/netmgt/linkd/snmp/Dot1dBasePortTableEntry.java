@@ -166,5 +166,34 @@ public final class Dot1dBasePortTableEntry extends SnmpTableEntry {
 	public Dot1dBasePortTableEntry() {
 		super(bridgePort_elemList);
 	}
+	
+	public int getBaseBridgePort() {
+		Integer basePort = getInt32(Dot1dBasePortTableEntry.BASE_PORT);
+		if (basePort == null) return -1;
+		return basePort;
+	}
 
+	public int getBaseBridgePortIfindex() {
+		Integer basePort = getInt32(Dot1dBasePortTableEntry.BASE_IFINDEX);
+		if (basePort == null) return -1;
+		return basePort;
+	}
+	
+	public String getBasePortCircuit() {
+		return getObjectID(Dot1dBasePortTableEntry.BASE_PORT_CIRCUIT);
+	}
+	
+
+	public int getBasePortDelayExceededDiscards() {
+		Integer  delayExceededDiscards =getInt32(Dot1dBasePortTableEntry.BASE_DELAY_EX_DIS);
+		if (delayExceededDiscards == null) return -1;
+		return delayExceededDiscards;
+	}
+
+	public int getBasePortMtuExceededDiscards() {
+		Integer mtuExceededDiscards = getInt32(Dot1dBasePortTableEntry.BASE_MTU_EX_DIS);
+		if (mtuExceededDiscards == null) return -1;
+		return mtuExceededDiscards;
+		
+	}
 }
