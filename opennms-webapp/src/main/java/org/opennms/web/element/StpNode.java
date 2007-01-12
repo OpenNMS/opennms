@@ -24,6 +24,9 @@
 
 package org.opennms.web.element;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class StpNode
 {
@@ -41,6 +44,32 @@ public class StpNode
         String  m_lastPollTime;
         char    m_status;
         int 	m_stprootnodeid;
+
+	    private static final String[] BRIDGE_BASE_TYPE = new String[] {
+		    "&nbsp;",           //0 (not supported)
+		    "UnKnown",          //1
+		    "Trasparent-Only",  //2
+		    "Sourceroute-Only", //3
+		    "Src"               //4
+		    };
+
+		    private static final String[] STP_PROTO_TYPE = new String[] {
+		    "&nbsp;",           //0 (not supported)
+		    "UnKnown",          //1
+		    "DEC Lan Bridge",  //2
+		    "IEEE 802.1d", //3
+		 };
+
+
+        private static final Map<Character, String>     statusMap = new HashMap<Character, String>();
+      	
+        static {
+            statusMap.put( new Character('A'), "Active" );
+            statusMap.put( new Character(' '), "Unknown" );
+            statusMap.put( new Character('D'), "Deleted" );
+            statusMap.put( new Character('N'), "Not Active" );
+        }
+
         /* package-protected so only the NetworkElementFactory can instantiate */
         StpNode()
         {
@@ -109,6 +138,9 @@ public class StpNode
 			return m_basetype;
 		}
 
+		public String getBaseType() {
+			return BRIDGE_BASE_TYPE[m_basetype];
+		}
 		/**
 		 * @return
 		 */
@@ -158,6 +190,10 @@ public class StpNode
 			return m_stpprotocolspecification;
 		}
 
+		public String getStpProtocolSpecification() {
+			return STP_PROTO_TYPE[m_stpprotocolspecification];
+		}
+
 		/**
 		 * @return
 		 */
@@ -185,5 +221,27 @@ public class StpNode
 		public String getBaseVlanName() {
 			return m_basevlanname;
 		}
+		
+	    public String getStatusString() {
+	        return( (String)statusMap.get( new Character(m_status) ));
+	    }
+
+	    public String getVlanColorIdentifier() {
+	        int red = 128;
+	        int green = 128;
+	        int blue = 128;
+	        int redoffset = 47;
+	        int greenoffset = 29;
+	        int blueoffset = 23;
+	        if (m_basevlan == 0) return "";
+	        if (m_basevlan == 1) return "#FFFFFF";
+	        red = (red + m_basevlan * redoffset)%255;
+	        green = (green + m_basevlan * greenoffset)%255;
+	        blue = (blue + m_basevlan * blueoffset)%255;
+	        if (red < 64) red = red+64;
+	        if (green < 64) green = green+64;
+	        if (blue < 64) blue = blue+64;
+	        return "#"+Integer.toHexString(red)+Integer.toHexString(green)+Integer.toHexString(blue);
+	    }
 
 }

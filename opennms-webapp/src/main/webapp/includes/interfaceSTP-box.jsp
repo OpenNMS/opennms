@@ -34,14 +34,9 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*" %>
 
 <%
-    statusMap = new HashMap();
-  	statusMap.put( new Character('A'), "Active" );
-    statusMap.put( new Character(' '), "Unknown" );
-    statusMap.put( new Character('D'), "Deleted" );
-    statusMap.put( new Character('N'), "Not Active" );
     
     Interface intf = ElementUtil.getInterfaceByParams(request);
 
@@ -61,12 +56,12 @@
         <% for (int i=0; i < stpifs.length;i++) { %>
 	<tr>
         <td class="standard">VlanIdentifier</td>			  
-		<td class="standard" bgcolor="<%=getVlanColorIdentifier(stpifs[i].get_stpvlan())%>"><%=stpifs[i].get_stpvlan()%>
+		<td class="standard" bgcolor="<%=stpifs[i].getVlanColorIdentifier()%>"><%=stpifs[i].get_stpvlan()%>
 		</td>			  
 	</tr>
 	<tr>
         <td  class="standard">STP Port Status</td>
-        <td  class="standard"><%=STP_PORT_STATUS[stpifs[i].get_stpportstate()]%></td>
+        <td  class="standard"><%=stpifs[i].getStpPortState()%></td>
 	</tr>
 	<tr>
         <td  class="standard">Path Cost</td>
@@ -102,7 +97,7 @@
 	</tr>
 	<tr>
         <td  class="standard">Information Status</td>
-        <td><%=getStatusString(stpifs[i].get_status())%></td>
+        <td><%=stpifs[i].getStatusString()%></td>
 	</tr>
 	<tr>
         <td  class="standard">Last Poll Time</td>
@@ -113,39 +108,3 @@
                      
 </table>      
 
-<%!
-    public static HashMap statusMap;
-
-     public String getVlanColorIdentifier( int i ) {
-        int red = 128;
-        int green = 128;
-        int blue = 128;
-        int redoffset = 47;
-        int greenoffset = 29;
-        int blueoffset = 23;
-        if (i == 0) return "";
-        if (i == 1) return "#FFFFFF";
-        red = (red + i * redoffset)%255;
-        green = (green + i * greenoffset)%255;
-        blue = (blue + i * blueoffset)%255;
-        if (red < 64) red = red+64;
-        if (green < 64) green = green+64;
-        if (blue < 64) blue = blue+64;
-        return "#"+Integer.toHexString(red)+Integer.toHexString(green)+Integer.toHexString(blue);
-    }
-    
-    public String getStatusString( char c ) {
-        return( (String)statusMap.get( new Character(c) ));
-    }
-
-  public static final String[] STP_PORT_STATUS = new String[] {
-    "&nbsp;",     //0 (not supported)
-    "Disables",   //1
-    "Blocking",   //2
-    "Listening",  //3
-    "Learning",   //4
-    "Forwarding", //5
-    "Broken",     //6
-  };
-
-%>

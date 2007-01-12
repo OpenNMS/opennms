@@ -24,6 +24,8 @@
 
 package org.opennms.web.element;
 
+import java.util.HashMap;
+import java.util.Map;
 
 public class StpInterface
 {
@@ -42,6 +44,27 @@ public class StpInterface
         char    m_status;
         int		m_stprootnodeid;
         int		m_stpbridgenodeid;
+
+        public static final String[] STP_PORT_STATUS = new String[] {
+            "&nbsp;",     //0 (not supported)
+            "Disables",   //1
+            "Blocking",   //2
+            "Listening",  //3
+            "Learning",   //4
+            "Forwarding", //5
+            "Broken",     //6
+          };
+
+        private static final Map<Character, String>     statusMap = new HashMap<Character, String>();
+      	
+        static {
+            statusMap.put( new Character('A'), "Active" );
+            statusMap.put( new Character(' '), "Unknown" );
+            statusMap.put( new Character('D'), "Deleted" );
+            statusMap.put( new Character('N'), "Not Active" );
+        }
+
+
         /* package-protected so only the NetworkElementFactory can instantiate */
         StpInterface()
         {
@@ -166,6 +189,11 @@ public class StpInterface
 			return m_stpportstate;
 		}
 
+		public String getStpPortState() {
+			return STP_PORT_STATUS[m_stpportstate];
+			
+		}
+			
 		/**
 		 * @return
 		 */
@@ -197,4 +225,27 @@ public class StpInterface
 		public void set_ipaddr(String m_ipaddr) {
 			this.m_ipaddr = m_ipaddr;
 		}
+		
+	    public String getStatusString() {
+	        return( (String)statusMap.get( new Character(m_status) ));
+	    }
+
+	    public String getVlanColorIdentifier() {
+	        int red = 128;
+	        int green = 128;
+	        int blue = 128;
+	        int redoffset = 47;
+	        int greenoffset = 29;
+	        int blueoffset = 23;
+	        if (m_stpvlan == 0) return "";
+	        if (m_stpvlan == 1) return "#FFFFFF";
+	        red = (red + m_stpvlan * redoffset)%255;
+	        green = (green + m_stpvlan * greenoffset)%255;
+	        blue = (blue + m_stpvlan * blueoffset)%255;
+	        if (red < 64) red = red+64;
+	        if (green < 64) green = green+64;
+	        if (blue < 64) blue = blue+64;
+	        return "#"+Integer.toHexString(red)+Integer.toHexString(green)+Integer.toHexString(blue);
+	    }
+
 }
