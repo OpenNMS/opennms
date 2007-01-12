@@ -289,9 +289,9 @@ public class LinkableNode extends Object {
 
 	boolean hasMacAddress(String macAddress) {
 		Set<String> macs = new HashSet<String>();
-		Iterator ite = portMacs.values().iterator();
+		Iterator<Set<String>> ite = portMacs.values().iterator();
 		while (ite.hasNext()) {
-			macs = (Set<String>) ite.next();
+			macs = ite.next();
 			if (macs.contains(macAddress))
 				return true;
 		}

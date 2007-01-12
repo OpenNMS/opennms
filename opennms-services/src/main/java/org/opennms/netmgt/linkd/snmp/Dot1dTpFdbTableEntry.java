@@ -168,4 +168,21 @@ public final class Dot1dTpFdbTableEntry extends SnmpTableEntry {
 	public Dot1dTpFdbTableEntry() {
 		super(ms_elemList);
 	}
+	
+	public String getDot1dTpFdbAddress() {
+		return getHexString(Dot1dTpFdbTableEntry.FDB_ADDRESS);
+	}
+
+	public int getDot1dTpFdbPort() {
+		Integer val = getInt32(Dot1dTpFdbTableEntry.FDB_PORT);
+		if (val == null) return -1;
+		return val;
+	}
+
+	public int getDot1dTpFdbStatus() {
+		Integer val = getInt32(Dot1dTpFdbTableEntry.FDB_STATUS);
+		if (val == null) return -1;
+		return val;
+	}
+	
 }

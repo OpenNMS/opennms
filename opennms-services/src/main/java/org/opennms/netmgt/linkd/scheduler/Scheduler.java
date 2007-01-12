@@ -10,7 +10,7 @@
 //
 // Modifications:
 //
-// 2003 Jan 31: Cleaned up some unused imports.
+// 2007 Jan 3 Introduced a new ReadyRunnuble Interface and refactored Methods
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -36,9 +36,8 @@
 
 package org.opennms.netmgt.linkd.scheduler;
 
+
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -287,7 +286,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		}
 
 		try {
-			((FifoQueue) m_queues.get(key)).add(runnable);
+			(m_queues.get(key)).add(runnable);
 			if (m_scheduled++ == 0) {
 				if (log.isDebugEnabled())
 					log
@@ -323,6 +322,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @throws java.lang.RuntimeException
 	 *             Thrown if an error occurs adding the element to the queue.
 	 */
+
 	public synchronized void schedule(long interval,
 			final ReadyRunnable runnable) {
 
@@ -331,23 +331,19 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			public boolean isReady() {
 				return getCurrentTime() >= timeToRun && runnable.isReady();
 			}
-
-			public boolean isSnmpCollection() {
-				return runnable.isSnmpCollection();
-			}
-
-			public boolean isDiscoveryLink() {
-				return runnable.isDiscoveryLink();
-			}
-
-			public InetAddress getTarget() throws UnknownHostException {
-				return runnable.getTarget();
+			
+			public String getInfo() {
+				return runnable.getInfo();
 			}
 
 			public void run() {
 				runnable.run();
 			}
 
+			public void schedule() {
+				runnable.schedule();
+			}
+			
 			public void suspend() {
 				runnable.suspend();
 			}
@@ -360,7 +356,11 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 				return runnable.isSuspended();
 			}
 			
-			public void unschedule() throws UnknownHostException, Throwable {
+			public boolean equals(ReadyRunnable r) {
+				return runnable.equals(r);
+			}
+			
+			public void unschedule() {
 				runnable.unschedule();
 			}
 
@@ -372,29 +372,67 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		schedule(timeKeeper, interval);
 	}
 
-	public synchronized void unschedule(InetAddress ipAddr)
-			throws UnknownHostException {
+	/**
+	 * This method is used to unschedule a ready runnable in the system. 
+	 * The runnuble is removed from all queue interval where is found.
+	 * 
+	 * @param runnable
+	 *            The element to remove from queue intervals.
+	 * 
+	 */
+
+	public synchronized void unschedule(ReadyRunnable runnable) {
 		Category log = ThreadCategory.getInstance(getClass());
-
-		if (log.isDebugEnabled()) {
-			log.debug("unschedule: Removing Ready Runnable(s) with ip "
-					+ ipAddr.getHostAddress());
-		}
-
+		
+		if (log.isDebugEnabled()) 
+				log.debug("unschedule: Removing all " + runnable.getInfo());
+		
 		boolean done = false;
 		synchronized(m_queues) {
-		  Iterator iter = m_queues.keySet().iterator();
+		  Iterator<Long> iter = m_queues.keySet().iterator();
 		  while (iter.hasNext() && !done) {
-
-			Long key = (Long) iter.next();
-			PeekableFifoQueue in = (PeekableFifoQueue) m_queues.get(key);
-			
-			if (in.isEmpty()) {
-				continue;
+		
+			Long key = iter.next();
+			unschedule(runnable, key.longValue());
 			}
+		}
+	}
+
+	/**
+	 * This method is used to unschedule a ready runnable in the system. The
+	 * interval is used as the key for determining which queue to remove the
+	 * runnable.
+	 * 
+	 * @param interval
+	 *            The queue to add the runnable to.
+	 * @param runnable
+	 *            The element to remove.
+	 * 
+	 */
+
+	public synchronized void unschedule(ReadyRunnable runnable, long interval) {
+		Category log = ThreadCategory.getInstance(getClass());
+		
+		if (log.isDebugEnabled()) {
+			log.debug("unschedule: Removing " + runnable.getInfo() + " at interval " + interval);
+		}
+		Long key = new Long(interval);
+		synchronized(m_queues) {
+			if (!m_queues.containsKey(key)) {
+				if (log.isDebugEnabled())
+					log.debug("unschedule: interval queue did not exist, exit");
+				return;
+			}
+			
+			PeekableFifoQueue in = m_queues.get(key);
+			if (in.isEmpty()) {
+				if (log.isDebugEnabled())
+					log.debug("unschedule: interval queue is empty, exit");
+				return;
+			}
+			
 			ReadyRunnable readyRun = null;
 			int maxLoops = in.size();
-
 			boolean first = true;
 			do {
 				try {
@@ -403,202 +441,85 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 						maxLoops++;
 					}
 					first = false;
-					if (readyRun != null && readyRun.getTarget().equals(ipAddr)) {
+					if (readyRun != null && readyRun.equals(runnable)) {
 						if (log.isDebugEnabled()) {
 							log
-									.debug("unschedule: removing found ready runnable "
-											+ readyRun + " at interval " + key);
+									.debug("unschedule: removing found "
+											+ readyRun.getInfo());
 						}
-
+			
 						// Pop the interface/readyRunnable from the
 						// queue for execution.
 						//
 						m_scheduled--;
-						done = true;
 					} else {
 						in.add(readyRun);
 					}
 				} catch (InterruptedException ie) {
 					if (log.isInfoEnabled())
 						log.info(
-								"unschedule: failed to remove ready runnable instance "
-										+ ipAddr.getHostAddress()
+								"unschedule: failed to remove instance "
+										+ runnable.getInfo()
 										+ " from scheduler", ie);
 					Thread.currentThread().interrupt();
 				} catch (FifoQueueException ex) {
 					if (log.isInfoEnabled())
 						log.info(
-								"unschedule: failed to remove ready runnable instance "
-										+ ipAddr.getHostName()
-										+ " from scheduler", ex);
+								"unschedule: failed to remove instance "
+								+ runnable.getInfo()
+								+ " from scheduler", ex);
 					throw new UndeclaredThrowableException(ex);
 				}
 			} while ( --maxLoops > 0) ; 
-		  }
 		}
 	}
 
-	public synchronized void unschedule(InetAddress ipAddr, long interval)
-			throws UnknownHostException {
+	/**
+	 * This method is used to get a ready runnable in the system.
+	 * 
+	 * @param runnable
+	 *            The element to get from queues interval.
+	 * 
+	 */
+	public synchronized ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
 		Category log = ThreadCategory.getInstance(getClass());
 
 		if (log.isDebugEnabled()) {
-			log.debug("unschedule: Removing Ready Runnable(s) with ip "
-					+ ipAddr.getHostAddress() + " at interval " + interval);
-		}
-		Long key = new Long(interval);
-		synchronized(m_queues) {
-		if (!m_queues.containsKey(key)) {
-			if (log.isDebugEnabled())
-				log.debug("unschedule: interval queue did not exist, exit");
-			return;
-		}
-
-		PeekableFifoQueue in = (PeekableFifoQueue) m_queues.get(key);
-		if (in.isEmpty()) {
-			if (log.isDebugEnabled())
-				log.debug("unschedule: interval queue is empty, exit");
-			return;
-		}
-		
-		ReadyRunnable readyRun = null;
-		int maxLoops = in.size();
-		boolean first = true;
-		do {
-			try {
-				readyRun = (ReadyRunnable) in.remove();
-				if (in.size() == maxLoops && first) {
-					maxLoops++;
-				}
-				first = false;
-				if (readyRun != null && readyRun.getTarget().equals(ipAddr)) {
-					if (log.isDebugEnabled()) {
-						log
-								.debug("unschedule: removing found ready runnable "
-										+ readyRun);
-					}
-
-					// Pop the interface/readyRunnable from the
-					// queue for execution.
-					//
-					m_scheduled--;
-				} else {
-					in.add(readyRun);
-				}
-			} catch (InterruptedException ie) {
-				if (log.isInfoEnabled())
-					log.info(
-							"unschedule: failed to remove ready runnable instance "
-									+ ipAddr.getHostAddress()
-									+ " from scheduler", ie);
-				Thread.currentThread().interrupt();
-			} catch (FifoQueueException ex) {
-				if (log.isInfoEnabled())
-					log.info(
-							"unschedule: failed to remove ready runnable instance "
-									+ ipAddr.getHostName()
-									+ " from scheduler", ex);
-				throw new UndeclaredThrowableException(ex);
-			}
-		} while ( --maxLoops > 0) ; 
-		}
-	}
-
-	public synchronized ReadyRunnable getReadyRunnable(InetAddress ipAddr) {
-		Category log = ThreadCategory.getInstance(getClass());
-
-		if (log.isDebugEnabled()) {
-			log.debug("getReadyRunnable: Retriving Ready Runnable for Ip "
-					+ ipAddr.getHostAddress());
+			log.debug("getReadyRunnable: Retriving "
+					+ runnable.getInfo());
 		}
 
 		ReadyRunnable rr = null;
-		boolean done = false;
 		synchronized (m_queues) {
 			// get an iterator so that we can cycle
 			// through the queue elements.
 			//
-			Iterator iter = m_queues.keySet().iterator();
-			while (iter.hasNext() && !done) {
-				// Peak for Runnable objects until
-				// there are no more ready runnables
-				//
-				// Also, only go through each queue once!
-				// if we didn't add a count then it would
-				// be possible to starve other queues.
-				//
-				Long key = (Long) iter.next();
-				PeekableFifoQueue in = (PeekableFifoQueue) m_queues.get(key);
-				if (in.isEmpty()) {
-					continue;
-				}
-
-				int maxLoops = in.size();
-				ReadyRunnable readyRun = null;
-				boolean first = true;
-				do {
-					try {
-						readyRun = (ReadyRunnable) in.remove();
-						if (in.size() == maxLoops && first) {
-							maxLoops++;
-						}
-						first = false;
-						if (readyRun != null
-								&& readyRun.getTarget().equals(ipAddr)) {
-							if (log.isDebugEnabled()) {
-								log
-										.debug("getReadyRunnable: found ready runnable "
-												+ readyRun);
-							}
-							rr = readyRun;
-							done = true;
-						}
-						in.add(readyRun);
-					} catch (InterruptedException ie) {
-						if (log.isInfoEnabled())
-							log.info(
-									"getReadyRunnable: failed to get ready runnable instance "
-											+ ipAddr.getHostAddress()
-											+ " from scheduler", ie);
-						Thread.currentThread().interrupt();
-					} catch (FifoQueueException ex) {
-						if (log.isInfoEnabled())
-							log.info(
-									"getReadyRunnable: failed to get ready runnable instance "
-											+ ipAddr.getHostAddress()
-											+ " from scheduler", ex);
-						throw new UndeclaredThrowableException(ex);
-					} catch (UnknownHostException he) {
-						if (log.isInfoEnabled())
-							log.info(
-									"getReadyRunnable: failed to get ready runnable instance "
-											+ ipAddr.getHostAddress()
-											+ " from scheduler", he);
-						throw new UndeclaredThrowableException(he);
-					}
-
-				} while (--maxLoops > 0) ;
+			Iterator<Long> iter = m_queues.keySet().iterator();
+			while (iter.hasNext() && rr==null) {
+				Long interval = iter.next();
+				rr = getReadyRunnable(runnable, interval.longValue());
 			}
 		}
 
 		if (rr == null) {
 		if (log.isInfoEnabled())
-			log.info("getReadyRunnable: ready runnable instance "
-					+ ipAddr.getHostAddress() + " not found on scheduler");
+			log.info("getReadyRunnable: instance "
+					+ runnable.getInfo() + " not found on scheduler");
 		}
 		return rr;
 	}
-
-	public synchronized ReadyRunnable getReadyRunnable(InetAddress ipAddr,
+	
+	public synchronized ReadyRunnable getReadyRunnable(ReadyRunnable runnable,
 			long interval) {
 		Category log = ThreadCategory.getInstance(getClass());
 
 		if (log.isDebugEnabled()) {
-			log.debug("getReadyRunnable: Retriving Ready Runnable for Ip "
-					+ ipAddr.getHostAddress() + " at interval " + interval);
+			log.debug("getReadyRunnable: Retriving "
+					+ runnable.getInfo() + " at interval " + interval);
 		}
 
 		Long key = new Long(interval);
+		
 		if (!m_queues.containsKey(key)) {
 			if (log.isDebugEnabled())
 				log.debug("getReadyRunnable: interval queue did not exist, exit");
@@ -607,12 +528,12 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 		ReadyRunnable rr = null;
 		synchronized (m_queues) {
-			PeekableFifoQueue in = (PeekableFifoQueue) m_queues.get(key);
+			PeekableFifoQueue in = m_queues.get(key);
 			if (in.isEmpty()) {
 				if (log.isDebugEnabled())
 					log
 							.debug("getReadyRunnable: queue is Empty");
-				return rr;
+				return null;
 			}
 			
 			int maxLoops = in.size();
@@ -626,7 +547,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 					}
 					first = false;
 					if (readyRun != null
-							&& readyRun.getTarget().equals(ipAddr)) {
+							&& readyRun.equals(runnable)) {
 						if (log.isDebugEnabled()) {
 							log
 									.debug("getReadyRunnable: found ready runnable "
@@ -638,33 +559,26 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 				} catch (InterruptedException ie) {
 					if (log.isInfoEnabled())
 						log.info(
-								"getReadyRunnable: failed to get ready runnable instance "
-										+ ipAddr.getHostAddress()
+								"getReadyRunnable: failed to get instance "
+										+ readyRun.getInfo()
 										+ " from scheduler", ie);
 					Thread.currentThread().interrupt();
 				} catch (FifoQueueException ex) {
 					if (log.isInfoEnabled())
 						log.info(
-								"getReadyRunnable: failed to get ready runnable instance "
-										+ ipAddr.getHostAddress()
+								"getReadyRunnable: failed to get instance "
+										+ readyRun.getInfo()
 										+ " from scheduler", ex);
 					throw new UndeclaredThrowableException(ex);
-				} catch (UnknownHostException he) {
-					if (log.isInfoEnabled())
-						log.info(
-								"getReadyRunnable: failed to get ready runnable instance "
-										+ ipAddr.getHostAddress()
-										+ " from scheduler", he);
-					throw new UndeclaredThrowableException(he);
-				}
+				} 
 
 			} while (--maxLoops > 0) ;
 		}
 
 		if (rr == null) {
 		if (log.isInfoEnabled())
-			log.info("getReadyRunnable: ready runnable instance "
-					+ ipAddr.getHostAddress() + " not found on scheduler");
+			log.info("getReadyRunnable: instance "
+					+ runnable.getInfo() + " not found on scheduler");
 		}
 		return rr;
 	}
@@ -851,7 +765,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 					// be possible to starve other queues.
 					//
 					Long key = (Long) iter.next();
-					PeekableFifoQueue in = (PeekableFifoQueue) m_queues.get(key);
+					PeekableFifoQueue in = m_queues.get(key);
 					if (in.isEmpty()) {
 						continue;
 					}
@@ -863,7 +777,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 							if (readyRun != null && readyRun.isReady()) {
 								if (log.isDebugEnabled()) {
 									log.debug("run: found ready runnable "
-											+ readyRun.getTarget().getHostAddress());
+											+ readyRun.getInfo());
 								}
 
 								// Pop the interface/readyRunnable from the
@@ -879,8 +793,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 							return; // jump all the way out
 						} catch (FifoQueueException qe) {
 							throw new UndeclaredThrowableException(qe);
-						} catch (UnknownHostException he) {
-							throw new UndeclaredThrowableException(he);							
 						}
 					} while (readyRun != null && readyRun.isReady()
 							&& --maxLoops > 0);

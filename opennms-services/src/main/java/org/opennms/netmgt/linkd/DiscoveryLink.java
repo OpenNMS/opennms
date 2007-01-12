@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -1259,18 +1258,6 @@ final class DiscoveryLink implements ReadyRunnable {
 		return (MacToNodeLink[]) maclinks.toArray(new MacToNodeLink[0]);
 	}
 
-	public boolean isSnmpCollection() {
-		return false;
-	}
-
-	public boolean isDiscoveryLink() {
-		return true;
-	}
-
-	public InetAddress getTarget() throws UnknownHostException {
-		return InetAddress.getLocalHost();
-	}
-
 	/**
 	 * @return Returns the suspendCollection.
 	 */
@@ -1296,14 +1283,14 @@ final class DiscoveryLink implements ReadyRunnable {
 		this.suspendCollection = false;
 	}
 
-	public void unschedule() throws UnknownHostException, Throwable {
+	public void unschedule() {
 		if (m_scheduler == null)
 			throw new IllegalStateException(
 					"rescedule: Cannot schedule a service whose scheduler is set to null");
 		if (isRunned) {
-			m_scheduler.unschedule(getTarget(), snmp_poll_interval);
+			m_scheduler.unschedule(this, snmp_poll_interval);
 		} else {
-			m_scheduler.unschedule(getTarget(), snmp_poll_interval
+			m_scheduler.unschedule(this, snmp_poll_interval
 					+ initial_sleep_time + discovery_interval);
 		}
 	}
@@ -1328,8 +1315,8 @@ final class DiscoveryLink implements ReadyRunnable {
 			m_bridge.put(new Integer(node1.getNodeId()), node1);
 			
 			Set<String> macs = node1.getMacAddressesOnBridgePort(bridgeport);
-			
-			macs.removeAll(nodeToMac.get(nodeid2));
+			Set<String> macsonnode2 = nodeToMac.get(nodeid2);
+			if (macsonnode2 != null ) macs.removeAll(macsonnode2);
 			addLinks(macs,node1.getNodeId(),ifindex1,log);
 			
 			
@@ -1457,5 +1444,15 @@ final class DiscoveryLink implements ReadyRunnable {
 			}
 		}
 	}
+	
+	public boolean equals(ReadyRunnable r) {
+		return (r instanceof DiscoveryLink);
+	}
+	
+	public String getInfo() {
+		return " Ready Runnable Discovery Link ";
+	}
+
+
 
 }

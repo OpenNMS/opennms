@@ -34,10 +34,10 @@ package org.opennms.netmgt.linkd;
 import java.beans.PropertyVetoException;
 import java.io.*;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -83,7 +83,14 @@ public class Linkd implements PausableFiber {
 	 */
 
 	private HashMap<String,LinkableNode> snmpprimaryip2nodes;
+
+	/**
+	 * HashMap that contains SnmpCollection by nodeid.
+	 */
+
+	private HashMap<Integer,SnmpCollection> nodeid2snmpcollection;
 	
+
 	/**
 	 * Event Manager To Send Events
 	 */
@@ -113,13 +120,13 @@ public class Linkd implements PausableFiber {
 	 * boolean operator that tells if to do auto discovery
 	 */
 
-	private static boolean m_auto_discovery = true;
+	private static boolean m_auto_discovery = false;
 
 	/**
 	 * the list of ipaddress for which new suspect event is sent
 	 */
 
-	private List<String> ipaddressNewSuspenctevents= null;
+	private List<String> newSuspenctEventsIpAddr= null;
 	
 	private Linkd() {
 		m_scheduler = null;
@@ -175,6 +182,7 @@ public class Linkd implements PausableFiber {
 
 		snmpprimaryip2nodes = new HashMap<String,LinkableNode>();
 
+		nodeid2snmpcollection = new HashMap<Integer,SnmpCollection>();
 		
 		// Initialize the SNMP Peer Factory
 		//
@@ -254,7 +262,7 @@ public class Linkd implements PausableFiber {
 		}
 
 		java.sql.Connection dbConn = null;
-		SnmpCollection[] snmpcolls = null;
+
 		try {
 			dbConn = DataSourceFactory.getInstance().getConnection();
 			if (log.isDebugEnabled()) {
@@ -263,7 +271,7 @@ public class Linkd implements PausableFiber {
 			}
 			snmpprimaryip2nodes = LinkdConfigFactory.getInstance()
 						.getLinkableNodes(dbConn);
-			snmpcolls = (SnmpCollection[]) LinkdConfigFactory.getInstance().getSnmpColls(dbConn).values().toArray(new SnmpCollection[0]);
+			nodeid2snmpcollection = LinkdConfigFactory.getInstance().getSnmpColls(dbConn);
 			LinkdConfigFactory.getInstance().updateDeletedNodes(dbConn);
 		} catch (SQLException sqlE) {
 			log
@@ -313,29 +321,29 @@ public class Linkd implements PausableFiber {
 
 		SnmpCollection snmpCollector = null;
 
-		if (snmpcolls.length != 0) {
-			for (int i = 0; i < snmpcolls.length; i++) {
-				snmpCollector = snmpcolls[i];
-				snmpCollector.setAutoDiscovery(m_auto_discovery);
-				log.debug("init: scheduling Snmp Collection for ip "
-						+ snmpCollector.getSnmpIpPrimary().getHostAddress());
-				synchronized (snmpCollector) {
-					if (snmpCollector.getScheduler() == null) {
-						snmpCollector.setScheduler(m_scheduler);
-					}
-					snmpCollector.setPollInterval(m_snmp_poll_interval);
-					snmpCollector.setInitialSleepTime(m_initial_sleep_time);
-					m_initial_sleep_time = m_initial_sleep_time	+ 5000;
+		Iterator<SnmpCollection> ite = nodeid2snmpcollection.values().iterator();
+		while (ite.hasNext()) {
+			snmpCollector = ite.next();
+			log.debug("init: scheduling Snmp Collection for ip "
+					+ snmpCollector.getTarget().getHostAddress());
+			synchronized (snmpCollector) {
+				if (snmpCollector.getScheduler() == null) {
+					snmpCollector.setScheduler(m_scheduler);
 				}
-				snmpCollector.schedule();
+				snmpCollector.setPollInterval(m_snmp_poll_interval);
+				snmpCollector.setInitialSleepTime(m_initial_sleep_time);
+				m_initial_sleep_time = m_initial_sleep_time	+ 30000;
 			}
+				snmpCollector.schedule();
+		}
 			// Schedule the discovery link on nodes
 			//
+		if (!nodeid2snmpcollection.isEmpty()) {
 			DiscoveryLink discoveryLink = new DiscoveryLink();
 			if (log.isDebugEnabled())
 				log
 						.debug("init: scheduling Discovery Link");
-
+	
 			synchronized (discoveryLink) {
 				if (discoveryLink.getScheduler() == null) {
 					discoveryLink.setScheduler(m_scheduler);
@@ -357,8 +365,8 @@ public class Linkd implements PausableFiber {
 		}
 
 		// initialize the ipaddrsentevents
-		ipaddressNewSuspenctevents = new ArrayList<String>();
-		ipaddressNewSuspenctevents.add("127.0.0.1");
+		newSuspenctEventsIpAddr = new ArrayList<String>();
+		newSuspenctEventsIpAddr.add("127.0.0.1");
 
 		// Create an event receiver.
 		//
@@ -475,37 +483,41 @@ public class Linkd implements PausableFiber {
 		}
 	}
 
-	void scheduleNode(int nid) throws UnknownHostException, Throwable {
+	void scheduleNodeCollection(int nid) {
 
 		Category log = ThreadCategory.getInstance();
 		java.sql.Connection dbConn = null;
-		
 		SnmpCollection coll = null;
+		boolean scheduleSnmpCollection = true;
 		
+		// First of all get SnmpCollection
 		try {
 			dbConn = DataSourceFactory.getInstance().getConnection();
 			if (log.isDebugEnabled()) {
-				log.debug("scheduleNode: Loading node " + nid
+				log.debug("scheduleNodeCollection: Loading node " + nid
 						+ " from database");
 			}
 			try {
 				coll = LinkdConfigFactory.getInstance().getSnmpCollection(
 						dbConn, nid);
+				if (coll == null) {
+					log.warn("scheduleNodeCollection: Failed to get Linkable node from LinkdConfigFactory. Exiting");
+					return;
+				}
 			} catch (UnknownHostException h) {
-					log
-							.warn("scheduleNode: Failed to get Linkable node from LinkdConfigFactory"
+					log.warn("scheduleNodeCollection: Failed to get Linkable node from LinkdConfigFactory"
 									+ h);
 			}
 		} catch (SQLException sqlE) {
 			log
 					.fatal(
-							"scheduleNode: SQL Exception while syncing node object with database information.",
+							"scheduleNodeCollection: SQL Exception while syncing node object with database information.",
 							sqlE);
 			throw new UndeclaredThrowableException(sqlE);
 		} catch (Throwable t) {
 			log
 					.fatal(
-							"scheduleNode: Unknown error while syncing node object with database information.",
+							"scheduleNodeCollection: Unknown error while syncing node object with database information.",
 							t);
 			throw new UndeclaredThrowableException(t);
 		} finally {
@@ -516,328 +528,185 @@ public class Linkd implements PausableFiber {
 			} catch (SQLException e) {
 				log
 						.error(
-								"scheduleNode: SQL Exception while syncing node object with database information.",
+								"scheduleNodeCollection: SQL Exception while syncing node object with database information.",
 								e);
 			}
 		}
 
-		InetAddress ipAddr = coll.getSnmpIpPrimary();
-		String ip = ipAddr.getHostAddress();
-		LinkableNode node = new LinkableNode(nid,ip);
-
-		// work on snmpprimary
-		synchronized (snmpprimaryip2nodes) {
-			if (snmpprimaryip2nodes.containsKey(ip)) {
-				if (log.isDebugEnabled()) log.debug("Node collection exists: skipping schedule, performing DB cleaning");
-				LinkableNode oldNode = (LinkableNode) snmpprimaryip2nodes
-						.get(ip);
-
-				// first of all set status to D on linkd tables for old node if
-				// different from new
-				if (node.getNodeId() != oldNode.getNodeId()) {
-					DbEventWriter dbwriter = new DbEventWriter(oldNode.getNodeId(),
-							DbEventWriter.ACTION_DELETE);
-					dbwriter.run();
-				}
+		// you have to test if an old collection for this node exists 
+		if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
+			SnmpCollection oldColl = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
+			if (oldColl.equals(coll)) {
+				scheduleSnmpCollection = false;
+				coll = oldColl;
 			} else {
-				if (log.isDebugEnabled()) log.debug("Node collection does not exists: scheduling");
-				synchronized (coll) {
-					if (coll.getScheduler() == null) {
-						coll.setScheduler(m_scheduler);
-					}
-					coll.setPollInterval(m_snmp_poll_interval);
-					coll.setInitialSleepTime(0);
-					coll.setAutoDiscovery(m_auto_discovery);
-					coll.schedule();
+				// the new collection is change
+				// first of all unschedule
+				// second remove from hash
+				oldColl.unschedule();
+				synchronized (snmpprimaryip2nodes) {
+					snmpprimaryip2nodes.remove(getLinkableNodeKey(nid));
 				}
-			}	
-			snmpprimaryip2nodes.put(ip, node);
+			}
+		}
+			
+		// this means that same snmpcollection exists
+		if (scheduleSnmpCollection && snmpprimaryip2nodes.containsKey(coll.getTarget().getHostAddress())) {
+			// this means that collection is the same but nodes should be different
+			scheduleSnmpCollection = false;
+			
+			LinkableNode oldNode = (LinkableNode) snmpprimaryip2nodes
+					.get(coll.getTarget().getHostAddress());
+
+			// first of all set status to D on linkd tables for old node if
+			// different from new
+			if (nid != oldNode.getNodeId()) {
+				DbEventWriter dbwriter = new DbEventWriter(oldNode.getNodeId(),
+						DbEventWriter.ACTION_DELETE);
+				dbwriter.run();
+				nodeid2snmpcollection.remove(new Integer(oldNode.getNodeId()));
+			} else {
+				coll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
+			}
+		}
+		
+		LinkableNode node = new LinkableNode(nid,coll.getTarget().getHostAddress());
+		
+		synchronized (nodeid2snmpcollection) {
+			snmpprimaryip2nodes.put(coll.getTarget().getHostAddress(), node);
+		}
+		
+		synchronized (snmpprimaryip2nodes) {
+			nodeid2snmpcollection.put(new Integer(nid), coll);
 		}
 
-		if (!scheduledDiscoveryLink) {
-			DiscoveryLink discoveryLink = new DiscoveryLink();
-
-			if (log.isDebugEnabled())
-				log
-						.debug("scheduleNode: scheduling Discovery Link");
-			synchronized (discoveryLink) {
-				if (discoveryLink.getScheduler() == null) {
-					discoveryLink.setScheduler(m_scheduler);
+		
+		// schedule collection if
+		if (scheduleSnmpCollection) {
+			synchronized (coll) {
+				if (coll.getScheduler() == null) {
+					coll.setScheduler(m_scheduler);
 				}
-				discoveryLink.setSnmpPollInterval(m_snmp_poll_interval);
-				discoveryLink.setDiscoveryInterval(m_discovery_link_interval);
-				discoveryLink.setInitialSleepTime(0);
+				coll.setPollInterval(m_snmp_poll_interval);
+				coll.setInitialSleepTime(0);
+				coll.schedule();
 			}
-			discoveryLink.schedule();
-			scheduledDiscoveryLink = true;
+			
+			if (!scheduledDiscoveryLink) {
+				DiscoveryLink discoveryLink = new DiscoveryLink();
+	
+				if (log.isDebugEnabled())
+					log
+							.debug("scheduleNodeCollection: scheduling Discovery Link");
+				synchronized (discoveryLink) {
+					if (discoveryLink.getScheduler() == null) {
+						discoveryLink.setScheduler(m_scheduler);
+					}
+					discoveryLink.setSnmpPollInterval(m_snmp_poll_interval);
+					discoveryLink.setDiscoveryInterval(m_discovery_link_interval);
+					discoveryLink.setInitialSleepTime(0);
+				}
+				discoveryLink.schedule();
+				scheduledDiscoveryLink = true;
+			}
 		}
 
 	}
 
-	void wakeUpNode(int nid) throws UnknownHostException, Throwable {
+	void wakeUpNodeCollection(int nid) {
 
-		Category log = ThreadCategory.getInstance();
-		java.sql.Connection dbConn = null;
-		InetAddress ipAddr = null;
-		
-		try {
-			dbConn = DataSourceFactory.getInstance().getConnection();
-			if (log.isDebugEnabled()) {
-				log.debug("wakeUpNode: Loading node " + nid
-						+ " from database");
+		SnmpCollection snmpcoll = null;
+		synchronized (nodeid2snmpcollection) {
+			if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
+				snmpcoll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
 			}
-			try {
-				ipAddr = LinkdConfigFactory.getInstance().getSnmpPrimaryIp(
-						dbConn, nid);
-			} catch (UnknownHostException h) {
-					log
-							.warn("wakeUpNode: Failed to get Linkable node from LinkdConfigFactory"
-									+ h);
-			}
-		} catch (SQLException sqlE) {
-			log
-					.fatal(
-							"wakeUpNode: SQL Exception while syncing node object with database information.",
-							sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		} catch (Throwable t) {
-			log
-					.fatal(
-							"wakeUpNode: Unknown error while syncing node object with database information.",
-							t);
-			throw new UndeclaredThrowableException(t);
-		} finally {
-			try {
-				if (dbConn != null) {
-					dbConn.close();
-				}
-			} catch (SQLException e) {
-				log
-						.error(
-								"wakeUpNode: SQL Exception while syncing node object with database information.",
-								e);
-			}
-		}
-
-		String ip = ipAddr.getHostAddress();
-		LinkableNode node = new LinkableNode(nid,ip);
-
-		// work on snmpprimary
-		synchronized (snmpprimaryip2nodes) {
-			if (snmpprimaryip2nodes.containsKey(ip)) {
-				LinkableNode oldNode = (LinkableNode) snmpprimaryip2nodes
-						.get(ip);
-
-				// first of all set status to D on linkd tables for old node if
-				// different from new
-				if (node.getNodeId() != oldNode.getNodeId()) {
-					DbEventWriter dbwriter = new DbEventWriter(oldNode.getNodeId(),
-							DbEventWriter.ACTION_DELETE);
-					dbwriter.run();
-				}
-			}
-			snmpprimaryip2nodes.put(ip, node);
 		}
 
 		// work on snmpcollection
-		ReadyRunnable rr = m_scheduler.getReadyRunnable(ipAddr);
+		ReadyRunnable rr = m_scheduler.getReadyRunnable(snmpcoll);
 
 		if (rr == null) {
-			scheduleNode(nid);
+			scheduleNodeCollection(nid);
 		} else {
 			rr.wakeUp();
+			nodeid2snmpcollection.put(new Integer(nid), (SnmpCollection)rr);
 		}
 	}
 
-	void unscheduleNode(int nid) throws UnknownHostException, Throwable {
+	void deleteNode(int nid) {
 
 		Category log = ThreadCategory.getInstance();
-		boolean passed = false;
+
+		SnmpCollection collection = null;
 		if (log.isDebugEnabled())
-			log.debug("unscheduleNode: deleting snmp collection for node "
+			log.debug("deleteNode: deleting LinkableNode for node "
 					+ nid);
+		
+		if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
+			collection = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
+		} else log.warn("deleteNode: no snmp collection found for node " + nid);
+			
+		String nodekey = getLinkableNodeKey(nid);
 
-		InetAddress ipAddr = null;
-		synchronized (snmpprimaryip2nodes) {
-			Iterator it = snmpprimaryip2nodes.values().iterator();
-			while (it.hasNext()) {
-				LinkableNode node = (LinkableNode) it.next();
-				if (node.getNodeId() == nid) {
-					snmpprimaryip2nodes.remove(node.getSnmpPrimaryIpAddr());
-					if (log.isDebugEnabled())
-						log
-								.debug("unscheduleNode: removed linkable node from snmp collection for node "
-										+ nid);
-					ipAddr = InetAddress.getByName(node.getSnmpPrimaryIpAddr());
-					passed = true;
-					break;
-				}
-			}
-		}
-
-		if (!passed) {
-			if (log.isDebugEnabled())
-				log
-						.debug("unscheduleNode: linkable node not found on snmp collection for node "
-								+ nid);
-			java.sql.Connection dbConn = null;
-
-			try {
-				dbConn = DataSourceFactory.getInstance()
-						.getConnection();
-				if (log.isDebugEnabled()) {
-					log.debug("unscheduleNode: Loading node " + nid
-							+ " from database");
-				}
-				try {
-					ipAddr = LinkdConfigFactory.getInstance().getSnmpPrimaryIp(
-							dbConn, nid);
-				} catch (UnknownHostException h) {
-						log
-								.warn("unscheduleNode: Failed to get Linkable node from LinkdConfigFactory"
-										+ h);
-				}
-			} catch (SQLException sqlE) {
-				log
-						.fatal(
-								"unscheduleNode: SQL Exception while syncing node object with database information.",
-								sqlE);
-				throw new UndeclaredThrowableException(sqlE);
-			} catch (Throwable t) {
-				log
-						.fatal(
-								"unscheduleNode: Unknown error while syncing node object with database information.",
-								t);
-				throw new UndeclaredThrowableException(t);
-			} finally {
-				try {
-					if (dbConn != null) {
-						dbConn.close();
-					}
-				} catch (SQLException e) {
-					log
-							.error(
-									"unscheduleNode: SQL Exception while syncing node object with database information.",
-									e);
-				}
-			}
-		}
-
-		// test if ipaddress is null
-		// get readyrunnuble and operate on it
-		if (ipAddr != null) {
-			ReadyRunnable rr = m_scheduler.getReadyRunnable(ipAddr);
-			if (rr != null) {
-				rr.unschedule();
-			} else {
-				if (log.isInfoEnabled())
-					log
-							.info("unscheduleNode: Failed to get Ready Runnable for ipaddress " + ipAddr.getHostAddress() 
-									+ " with nodeid "
-									+ nid);
-				
+		//test if collectionkey is the same
+		if (nodekey != null) {
+			if (log.isInfoEnabled())
+				log.info("deleteNode: removing linkable node for nodeid " + nid + " key " + nodekey);
+			synchronized (snmpprimaryip2nodes) {
+				snmpprimaryip2nodes.remove(nodekey);
 			}
 		} else {
-				log
-						.warn("unscheduleNode: Failed to get ipaddress for node "
-								+ nid);
+			if (log.isInfoEnabled())
+				log.info("deleteNode: no linkable node found for nodeid " + nid);
+		}
+
+		if (collection != null) {
+			// a nodeid with the same collection exists so
+			// verify that rr exists if not add
+			// else do nothing
+			ReadyRunnable rr = m_scheduler.getReadyRunnable(collection);
+			if (rr == null) {
+				log.warn("deleteNode: Failed to get " + collection.getInfo() 
+										+ " with nodeid "
+										+ nid);
+			} else {
+				rr.unschedule();
+			}
 		}
 
 		DbEventWriter dbwriter = new DbEventWriter(nid, DbEventWriter.ACTION_DELETE);
 		dbwriter.run();
+
 	}
 
-	void suspendNode(int nid) throws UnknownHostException, Throwable {
+	void suspendNodeCollection(int nid) {
 		
-		Category log = ThreadCategory.getInstance();
-		boolean passed = false;
-
-		if (log.isDebugEnabled())
-			log.debug("suspendNode: suspend snmp collection for node " + nid);
-		
-		InetAddress ipAddr = null;
-		synchronized (snmpprimaryip2nodes) {
-			Iterator it = snmpprimaryip2nodes.values().iterator();
-			while (it.hasNext()) {
-				LinkableNode node = (LinkableNode) it.next();
-				if (node.getNodeId() == nid) {
-					snmpprimaryip2nodes.remove(node.getSnmpPrimaryIpAddr());
-					if (log.isDebugEnabled())
-						log.debug("suspendNode: removed linkable node from snmp collection for node " + nid);
-					ipAddr = InetAddress.getByName(node.getSnmpPrimaryIpAddr());
-					passed = true;
-					break;
-				}
-			}
-		}
-		
-		if (!passed) {
-			if (log.isDebugEnabled())
-				log.debug("suspendNode: linkable node not found on snmp collection for node " + nid);
-			java.sql.Connection dbConn = null;
-			
-			try {
-				dbConn = DataSourceFactory.getInstance().getConnection();
-				if (log.isDebugEnabled()) {
-					log.debug("suspendNode: Loading node " + nid
-							+ " from database");
-				}
-				try {
-					ipAddr = LinkdConfigFactory.getInstance().getSnmpPrimaryIp(
-							dbConn, nid);
-				} catch (UnknownHostException h) {
-						log
-								.warn("suspendNode: Failed to get Linkable node from LinkdConfigFactory"
-										+ h);
-				}
-			} catch (SQLException sqlE) {
-				log
-						.fatal(
-								"suspendNode: SQL Exception while syncing node object with database information.",
-								sqlE);
-				throw new UndeclaredThrowableException(sqlE);
-			} catch (Throwable t) {
-				log
-						.fatal(
-								"suspendNode: Unknown error while syncing node object with database information.",
-								t);
-				throw new UndeclaredThrowableException(t);
-			} finally {
-				try {
-					if (dbConn != null) {
-						dbConn.close();
-					}
-				} catch (SQLException e) {
-					log
-							.error(
-									"suspendNode: SQL Exception while syncing node object with database information.",
-									e);
-				}
+		SnmpCollection snmpcoll = null;
+		synchronized (nodeid2snmpcollection) {
+			if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
+				snmpcoll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
 			}
 		}
 
-		// test if ipaddress is null
-		// get readyrunnuble and operate on it
-		if (ipAddr != null) {
-			ReadyRunnable rr = m_scheduler.getReadyRunnable(ipAddr);
-			if (rr != null) {
-				rr.suspend();
-			} else {
-				if (log.isInfoEnabled())
-					log
-							.info("suspendNode: Failed to get Ready Runnable for ipaddress " + ipAddr.getHostAddress() 
-									+ " with nodeid "
-									+ nid);
+		// work on snmpcollection
+		ReadyRunnable rr = m_scheduler.getReadyRunnable(snmpcoll);
+
+		if (rr == null) {
+			scheduleNodeCollection(nid);
+			synchronized (nodeid2snmpcollection) {
+				if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
+					snmpcoll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
+				}
 			}
-		} else {
-				log
-						.warn("suspendNode: Failed to get ipaddress for node "
-								+ nid);
-		}
+			rr = m_scheduler.getReadyRunnable(snmpcoll);
+		} 
+		
+		if (rr != null) rr.suspend();
+		nodeid2snmpcollection.put(new Integer(nid), (SnmpCollection)rr);
+		
 		DbEventWriter dbwriter = new DbEventWriter(nid, DbEventWriter.ACTION_UPTODATE);
 		dbwriter.run();
 	}
-
 
 	/**
 	 * Method that updates info in hash snmpprimaryip2nodes and also save info
@@ -856,6 +725,7 @@ public class Linkd implements PausableFiber {
 				LinkableNode node = (LinkableNode) snmpprimaryip2nodes.get(snmpcoll
 						.getTarget().getHostAddress());
 				DbEventWriter dbwriter = new DbEventWriter(node.getNodeId(), snmpcoll);
+				dbwriter.setAutoDiscovery(m_auto_discovery);
 				dbwriter.run();
 				node = dbwriter.getLinkableNode();
 				snmpprimaryip2nodes.put(snmpcoll.getTarget().getHostAddress(),
@@ -891,7 +761,7 @@ public class Linkd implements PausableFiber {
 		// construct event with 'linkd' as source
 		
 		// first of all verify that ipaddress has been not sent
-		if (!ipaddressNewSuspenctevents.contains(ipInterface)) {
+		if (!newSuspenctEventsIpAddr.contains(ipInterface)) {
 			
 			Event event = new Event();
 			event.setSource("linkd");
@@ -903,12 +773,24 @@ public class Linkd implements PausableFiber {
 			// send the event to eventd
 			m_eventMgr.sendNow(event);
 			
-			ipaddressNewSuspenctevents.add(ipInterface);
+			newSuspenctEventsIpAddr.add(ipInterface);
 		}
 	}
 
 	EventIpcManager getIpcManager() {
 		return m_eventMgr;
 	}
+
+	private String getLinkableNodeKey(int nid) {
+		synchronized (snmpprimaryip2nodes) {
+			Iterator<Entry<String, LinkableNode>> it = snmpprimaryip2nodes.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<String, LinkableNode> entry = it.next();
+				if ( entry.getValue().getNodeId() == nid ) return entry.getKey();
+			}
+		}
+		return null;
+	}
+
 
 }

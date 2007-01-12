@@ -210,4 +210,60 @@ public final class Dot1dStpPortTableEntry extends SnmpTableEntry {
 	public Dot1dStpPortTableEntry() {
 		super(stpport_elemList);
 	}
+	
+	public int getDot1dStpPort() {
+		Integer dot1dStpPort = getInt32(Dot1dStpPortTableEntry.STP_PORT);
+		if (dot1dStpPort == null) return -1;
+		return dot1dStpPort;
+	}
+
+	public int getDot1dStpPortPriority() {
+		Integer dot1dStpPortPriority = getInt32(Dot1dStpPortTableEntry.STP_PORT_PRIORITY);
+		if (dot1dStpPortPriority == null) return -1;
+		return dot1dStpPortPriority;
+	}
+	
+	public int getDot1dStpPortState() {
+		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_STATE);
+		if (val == null) return -1;
+		return val;
+	}
+	
+	public int getDot1dStpPortEnable() {
+		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_ENABLE);
+		if (val == null) return -1;
+		return val;
+	}
+
+	public int getDot1dStpPortPathCost() {
+		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_PATH_COST);
+		if (val == null) return -1;
+		return val;
+	}
+
+	public String getDot1dStpPortDesignatedRoot() {
+		return getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_ROOT);
+	}
+
+	public int getDot1dStpPortDesignatedCost() {
+		Integer val =  getInt32(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_COST);
+		if (val == null) return -1;
+		return val;
+	}
+
+	public String getDot1dStpPortDesignatedBridge() {
+		return getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_BRIDGE);
+	}
+
+	public String getDot1dStpPortDesignatedPort() {
+		return getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_PORT);
+		
+	}
+
+	public int getDot1dStpPortForwardTransitions() {
+		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_FORW_TRANS);
+		if (val == null) return -1;
+		return val;
+	}
+
 }

@@ -32,13 +32,11 @@
 
 package org.opennms.netmgt.linkd.scheduler;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
  * This interface extends the {@link java.lang.Runnable runnable}interface and
  * provides a method to determine if the runnable is ready to start.
  * 
+ * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org">OpenNMS.org </a>
  * 
@@ -50,23 +48,19 @@ public interface ReadyRunnable extends Runnable {
      */
     public boolean isReady();
 
-    /**
-     * Returns true if the runnable is SnmpCollection.
-     * 
-     */
-    
-    public boolean isSnmpCollection();
-
-    public boolean isDiscoveryLink();
-    
-    public InetAddress getTarget() throws UnknownHostException;
-    
     public void suspend();
     
     public boolean isSuspended();
     
     public void wakeUp();
     
-    public void unschedule() throws UnknownHostException, Throwable;
+    public void unschedule();
+    
+    public void schedule();
+        
+    public boolean equals(ReadyRunnable runnable);
+
+    public String getInfo();
+
     
 }

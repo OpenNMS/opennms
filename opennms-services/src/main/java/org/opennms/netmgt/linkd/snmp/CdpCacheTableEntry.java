@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import java.net.InetAddress;
+
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -398,6 +400,61 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 			hasIfIndex = true;
 		}
 		super.storeResult(base, inst, val);
+	}
+	
+	public int getCdpCacheIfIndex() {
+		Integer val = getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
+		if (val == null) return -1;
+		return val;
+	}
+	
+	public int getCdpCacheDeviceIndex() {
+		Integer val = getInt32(CdpCacheTableEntry.CDP_DEVICEINDEX);
+		if (val == null) return -1;
+		return val;
+	}
+
+	public int getCdpCacheAddressType() {
+		Integer val = getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
+		if (val == null) return -1;
+		return val;
+	}
+	
+	public InetAddress getCdpCacheAddress() {
+		return getIpAddressByHexString(getHexString(CdpCacheTableEntry.CDP_ADDRESS));
+	}
+
+	public String getCdpCacheVersion() {
+		return getHexString(CdpCacheTableEntry.CDP_VERSION);
+	}
+	
+	public String getCdpCacheDeviceId() {
+		return getHexString(CdpCacheTableEntry.CDP_DEVICEID);
+	}
+	
+	public String getCdpCacheDevicePort() {
+		return 	getDisplayString(CdpCacheTableEntry.CDP_DEVICEPORT);
+	}
+
+	public String getCdpPlatform() {
+		return 	getDisplayString(CdpCacheTableEntry.CDP_PLATFORM);
+	}
+
+	private InetAddress getIpAddressByHexString(String ipaddrhexstrng) {
+
+		long ipAddr = Long.parseLong(ipaddrhexstrng, 16);
+		byte[] bytes = new byte[4];
+		bytes[3] = (byte) (ipAddr & 0xff);
+		bytes[2] = (byte) ((ipAddr >> 8) & 0xff);
+		bytes[1] = (byte) ((ipAddr >> 16) & 0xff);
+		bytes[0] = (byte) ((ipAddr >> 24) & 0xff);
+
+		try {
+			return InetAddress.getByAddress(bytes);
+		} catch (Exception e) {
+			return null;
+		}
+		
 	}
 
 

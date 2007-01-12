@@ -90,7 +90,7 @@ public class LinkdConfigFactory {
 	 * SnmpCollection
 	 *  
 	 */
-	private static HashMap<String,SnmpCollection> snmpprimaryip2colls;
+	private static HashMap<Integer,SnmpCollection> nodeid2colls;
 
 	/**
 	 * The HashMap that associates the OIDS masks to class name
@@ -154,7 +154,7 @@ public class LinkdConfigFactory {
 			ClassNotFoundException {
 
 		snmpprimaryip2nodes = new HashMap<String,LinkableNode>();
-		snmpprimaryip2colls = new HashMap<String,SnmpCollection>();
+		nodeid2colls = new HashMap<Integer,SnmpCollection>();
 		oidMask2className = new HashMap<String,String>();
 
 		File cfgFile = ConfigFileConstants
@@ -311,11 +311,11 @@ public class LinkdConfigFactory {
 		return vlandiscovery;
 	}
 
-	public HashMap<String,SnmpCollection> getSnmpColls(Connection dbConn) throws SQLException,
+	public HashMap<Integer,SnmpCollection> getSnmpColls(Connection dbConn) throws SQLException,
 			UnknownHostException {
 		if (!hashLoaded)
 			getNodesInfo(dbConn);
-		return snmpprimaryip2colls;
+		return nodeid2colls;
 	}
 
 	public HashMap<String,LinkableNode> getLinkableNodes(Connection dbConn) throws SQLException,
@@ -443,7 +443,7 @@ public class LinkdConfigFactory {
 		Category log = ThreadCategory.getInstance(LinkdConfigFactory.class);
 
 		snmpprimaryip2nodes.clear();
-		snmpprimaryip2colls.clear();
+		nodeid2colls.clear();
 
 		try {
 			if (!classNameLoaded)
@@ -491,7 +491,7 @@ public class LinkdConfigFactory {
 							.error("getNodesInfo: Failed to load vlan classes from linkd configuration file "
 									+ t);
 			}
-			snmpprimaryip2colls.put(ipaddr, coll);
+			nodeid2colls.put(new Integer(nodeid), coll);
 
 		}
 
