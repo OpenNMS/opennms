@@ -47,7 +47,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 abstract public class SnmpTable  extends AggregateTracker {
     
-    private Map m_results = new TreeMap();
+    private Map<SnmpInstId,SnmpTableEntry> m_results = new TreeMap<SnmpInstId,SnmpTableEntry>();
     private InetAddress m_address;
     private String m_tableName;
 
@@ -58,7 +58,7 @@ abstract public class SnmpTable  extends AggregateTracker {
     }
     
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        SnmpTableEntry entry = (SnmpTableEntry)m_results.get(inst);
+        SnmpTableEntry entry = m_results.get(inst);
         if (entry == null) {
             entry = createTableEntry(base, inst, val);
             m_results.put(inst, entry);
