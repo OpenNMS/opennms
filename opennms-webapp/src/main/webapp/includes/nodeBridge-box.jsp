@@ -34,16 +34,10 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*" %>
 
 
 <%
-    statusMap = new HashMap();
-  	statusMap.put( new Character('A'), "Active" );
-    statusMap.put( new Character(' '), "Unknown" );
-    statusMap.put( new Character('D'), "Deleted" );
-    statusMap.put( new Character('N'), "Not Active" );
-
     //required parameter node
     String nodeIdString = request.getParameter("node");
 
@@ -90,14 +84,14 @@
               </tr>
              </thead>
               <% for (int i=0; i < stpnodes.length;i++) { %>
-			  <tr bgcolor="<%=getVlanColorIdentifier(stpnodes[i].get_basevlan())%>">
+			  <tr bgcolor="<%=stpnodes[i].getVlanColorIdentifier()%>">
                 <td><%=stpnodes[i].get_basevlan()%></td>			  
                 <td><%=stpnodes[i].getBaseVlanName()%></td>			  
                 <td><%=stpnodes[i].get_basebridgeaddress()%></td>
-                <td><%=BRIDGE_BASE_TYPE[stpnodes[i].get_basetype()]%></td>
-                <td><%=STP_PROTO_TYPE[stpnodes[i].get_stpprotocolspecification()]%></td>
+                <td><%=stpnodes[i].getBaseType()%></td>
+                <td><%=stpnodes[i].getStpProtocolSpecification()%></td>
                 <td><%=stpnodes[i].get_basenumports()%></td>
-                <td><%=getStatusString(stpnodes[i].get_status())%></td>
+                <td><%=stpnodes[i].getStatusString()%></td>
 				<% if (stpnodes[i].get_stprootnodeid() != 0) { 
 					   	Node node = NetworkElementFactory.getNode(stpnodes[i].get_stprootnodeid());
 				%>
@@ -114,46 +108,3 @@
        <% } %>
                      
 </table>      
-
-<%!
-    public static HashMap statusMap;
-
-    
-    public String getStatusString( char c ) {
-        return( (String)statusMap.get( new Character(c) ));
-    }
-
-     public String getVlanColorIdentifier( int i ) {
-        int red = 128;
-        int green = 128;
-        int blue = 128;
-        int redoffset = 47;
-        int greenoffset = 29;
-        int blueoffset = 23;
-        if (i == 0) return "";
-        if (i == 1) return "#FFFFFF";
-        red = (red + i * redoffset)%255;
-        green = (green + i * greenoffset)%255;
-        blue = (blue + i * blueoffset)%255;
-        if (red < 64) red = red+64;
-        if (green < 64) green = green+64;
-        if (blue < 64) blue = blue+64;
-        return "#"+Integer.toHexString(red)+Integer.toHexString(green)+Integer.toHexString(blue);
-    }
-
-  public static final String[] BRIDGE_BASE_TYPE = new String[] {
-    "&nbsp;",           //0 (not supported)
-    "UnKnown",          //1
-    "Trasparent-Only",  //2
-    "Sourceroute-Only", //3
-    "Src"               //4
-  };
-
-  public static final String[] STP_PROTO_TYPE = new String[] {
-    "&nbsp;",           //0 (not supported)
-    "UnKnown",          //1
-    "DEC Lan Bridge",  //2
-    "IEEE 802.1d", //3
-  };
-
-%>
