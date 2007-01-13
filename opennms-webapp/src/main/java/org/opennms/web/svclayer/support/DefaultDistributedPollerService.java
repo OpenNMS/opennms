@@ -128,9 +128,6 @@ public class DefaultDistributedPollerService implements
 
     private String getStyleForStatus(MonitorStatus status) {
         switch (status) {
-        case NEW:
-            return "Warning";
-            
         case REGISTERED:
             return "Warning";
                 
@@ -140,7 +137,7 @@ public class DefaultDistributedPollerService implements
         case STOPPED:
             return "Minor";
                 
-        case UNRESPONSIVE:
+        case DISCONNECTED:
             return "Indeterminate";
                 
         default:
