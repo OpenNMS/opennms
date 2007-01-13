@@ -49,6 +49,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
 import org.opennms.netmgt.poller.remote.PollService;
@@ -278,7 +279,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd,  InitializingBean,
         }
             
         assertConfigured();
-        if (m_backEnd.pollerCheckingIn(getMonitorId(), m_pollerConfiguration.getConfigurationTimestamp())) {
+        if (m_backEnd.pollerCheckingIn(getMonitorId(), m_pollerConfiguration.getConfigurationTimestamp()) == MonitorStatus.CONFIG_CHANGED) {
             initializePollState();
         }
     }

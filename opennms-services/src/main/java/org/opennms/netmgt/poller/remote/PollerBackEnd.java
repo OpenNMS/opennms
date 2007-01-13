@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,7 +98,7 @@ public interface PollerBackEnd {
      * @param currentConfigurationVersion the version of the configuration that the location monitor is currently using
      * @return true if the configuration should be updated.
      */
-    public abstract boolean pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion);
+    public abstract MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion);
     
     /**
      * Gets the poller configuration assigned to this monitoring location
@@ -120,5 +121,5 @@ public interface PollerBackEnd {
 
     public abstract void configurationUpdated();
 
-    public abstract void checkforUnresponsiveMonitors();
+    public abstract void checkForDisconnectedMonitors();
 }

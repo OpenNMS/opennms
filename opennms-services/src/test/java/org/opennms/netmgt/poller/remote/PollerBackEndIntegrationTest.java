@@ -119,7 +119,7 @@ public class PollerBackEndIntegrationTest extends
         
     }
     
-    public void testPollerUnresponsive() throws Exception {
+    public void testPollerDisconnected() throws Exception {
 
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
@@ -130,15 +130,15 @@ public class PollerBackEndIntegrationTest extends
         
         Thread.sleep(1500);
 
-        m_backEnd.checkforUnresponsiveMonitors();
+        m_backEnd.checkForDisconnectedMonitors();
 
         assertEquals("STARTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
 
         Thread.sleep(2000);
         
-        m_backEnd.checkforUnresponsiveMonitors();
+        m_backEnd.checkForDisconnectedMonitors();
         
-        assertEquals("UNRESPONSIVE", queryForString("select status from location_monitors where id = ?", locationMonitorId));
+        assertEquals("DISCONNECTED", queryForString("select status from location_monitors where id = ?", locationMonitorId));
         
     }
     
