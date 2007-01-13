@@ -1312,7 +1312,7 @@
       This event is sent by the remote location monitor server side API when
       a remote location monitor is created. 
     </descr>
-    <uei>uei.opennms.org/remote/locationMontiorRegistered</uei>
+    <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>
     <event-label>A remote location monitor has registered</event-label>
     <logmsg dest='logndisplay'>
       A remote location monitor has registered.
