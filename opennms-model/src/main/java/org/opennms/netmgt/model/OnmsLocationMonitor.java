@@ -55,6 +55,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -65,11 +66,16 @@ import org.hibernate.annotations.MapKey;
 public class OnmsLocationMonitor {
     
     public static enum MonitorStatus {
+    	/** @deprecated */
         NEW,
         REGISTERED,
         STARTED,
         STOPPED,
+        /** @deprecated */
         UNRESPONSIVE,
+        DISCONNECTED,
+        PAUSED,
+        CONFIG_CHANGED, 
         DELETED
     }
 
@@ -77,7 +83,7 @@ public class OnmsLocationMonitor {
 
     //private String m_name;
     
-    private MonitorStatus m_status = MonitorStatus.NEW;
+    private MonitorStatus m_status = MonitorStatus.REGISTERED;
     
     private Date m_lastCheckInTime;
 
@@ -102,25 +108,6 @@ public class OnmsLocationMonitor {
         m_id = id;
     }
 
-//    @Column(name = "name", length = 63, nullable = false)
-//    public String getName() {
-//        return m_name;
-//    }
-//
-//    public void setName(String label) {
-//        m_name = label;
-//    }
-
-//    @Transient
-//    public OnmsMonitoringLocationDefinition getLocationDefinition() {
-//        return m_locationDefinition;
-//    }
-
-//    public void setLocationDefinition(
-//            OnmsMonitoringLocationDefinition locationDefinition) {
-//        m_locationDefinition = locationDefinition;
-//    }
-
     @Column(name = "definitionName", length = 31, nullable = false)
     public String getDefinitionName() {
         return m_definitionName;
@@ -131,13 +118,24 @@ public class OnmsLocationMonitor {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length=13, nullable=false)
+    @Column(name = "status", length=31, nullable=false)
     public MonitorStatus getStatus() {
-        return m_status;
+        return normalize(m_status);
     }
 
     public void setStatus(MonitorStatus status) {
-        m_status = status;
+    	m_status = normalize(status);
+    }
+    
+    private MonitorStatus normalize(MonitorStatus status) {
+    	switch(status) {
+    	case UNRESPONSIVE:
+    		return MonitorStatus.DISCONNECTED;
+    	case NEW:
+    		return MonitorStatus.REGISTERED;
+    	default:
+    		return status;
+    	}
     }
     
     @Temporal(TemporalType.TIMESTAMP)
@@ -166,5 +164,13 @@ public class OnmsLocationMonitor {
     public void setDetails(Map<String, String> pollerDetails) {
         m_details = pollerDetails;
     }
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this)
+			.append("id", m_id)
+			.append("status", m_status)
+			.toString();
+	}
     
 }

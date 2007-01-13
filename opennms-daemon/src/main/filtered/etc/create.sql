@@ -1234,7 +1234,7 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 
 CREATE TABLE location_monitors (
     id INTEGER,
-    status VARCHAR(13) NOT NULL,
+    status VARCHAR(31) NOT NULL,
     lastCheckInTime timestamp without time zone,
     definitionName VARCHAR(31) NOT NULL,
     
