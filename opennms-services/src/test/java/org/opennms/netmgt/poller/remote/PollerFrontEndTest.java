@@ -94,13 +94,27 @@ public class PollerFrontEndTest extends TestCase {
 		
 	}
 	
-    public void testRegisterNewMonitor() throws Exception {
+    public void testAfterPropertiesSet() throws Exception {
+    	Integer monitorId = null;
+        
+		expect(m_settings.getMonitorId()).andReturn(monitorId);
+		
+		replayMocks();
+		
+		m_frontEnd.afterPropertiesSet();
+		
+		verifyMocks();
+    }
+	
+	public void testRegisterNewMonitor() throws Exception {
+    	
+    	Integer monitorId = null;
         
         // once in afterPropertiesSet
-		expect(m_settings.getMonitorId()).andReturn(null);
+		expect(m_settings.getMonitorId()).andReturn(monitorId);
         
         // once in isRegistered
-        expect(m_settings.getMonitorId()).andReturn(null);
+        expect(m_settings.getMonitorId()).andReturn(monitorId);
         
         // register a new monitor and save the id
         expect(m_backEnd.registerLocationMonitor("OAK")).andReturn(1);
