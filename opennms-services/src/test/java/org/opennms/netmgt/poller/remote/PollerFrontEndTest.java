@@ -35,6 +35,8 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 
+import static org.springframework.util.ObjectUtils.nullSafeEquals;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -93,20 +95,30 @@ public class PollerFrontEndTest extends TestCase {
 
 		public void appendTo(StringBuffer buffer) {
 			buffer.append(m_expected);
+			buffer.append(" property=");
+			buffer.append(m_expected.getPropertyName());
+			buffer.append(", oldValue=");
+			buffer.append(m_expected.getOldValue());
+			buffer.append(", newValue=");
+			buffer.append(m_expected.getNewValue());
+			
 		}
 
 		public boolean matches(Object argument) {
 			PropertyChangeEvent actual = (PropertyChangeEvent) argument;
+			if (m_expected == actual) return true;
+			
 			if (m_expected == null) {
 				return actual == null;
 			}
 
 			return (m_expected.getSource() == actual.getSource()
-					&& m_expected.getPropertyName().equals(
-							actual.getPropertyName())
-					&& m_expected.getOldValue().equals(actual.getOldValue()) && m_expected
-					.getNewValue().equals(actual.getNewValue()));
+					&& m_expected.getPropertyName().equals(actual.getPropertyName())
+					&& nullSafeEquals(m_expected.getOldValue(), actual.getOldValue()) 
+					&& nullSafeEquals(m_expected.getNewValue(), actual.getNewValue()));
 		}
+		
+		
 
 	}
 
@@ -118,8 +130,9 @@ public class PollerFrontEndTest extends TestCase {
 
 	private List m_mocks = new ArrayList();
 
-	private ServicePollStateChangedListener m_polledServiceListener;
+	private DemoPollerConfiguration m_oldPollerConfiguration;
 
+	private ServicePollStateChangedListener m_polledServiceListener;
 	private DemoPollerConfiguration m_pollerConfiguration;
 
 	private PollService m_pollService;
@@ -128,7 +141,11 @@ public class PollerFrontEndTest extends TestCase {
 
 	private PropertyChangeListener m_registrationListener;
 
+	private PollStatus m_serviceStatus;
+
 	private PollerSettings m_settings;
+	
+	private boolean m_started;
 
 	public void testAfterPropertiesSetWhenNotRegistered() throws Exception {
 		testAfterPropertiesSetWithRegisteredId(null);
@@ -140,11 +157,11 @@ public class PollerFrontEndTest extends TestCase {
 
 	public void testAlreadyRegistered() throws Exception {
 
-		setRegisteredId(1);
+		setRegistered();
 		
 		anticipateAfterPropertiesSet();
 		
-		anticapteIsRegistered();
+		anticipateIsRegistered();
 
 		replayMocks();
 
@@ -154,40 +171,26 @@ public class PollerFrontEndTest extends TestCase {
 
 		verifyMocks();
 	}
-	
+
 	public void testConfigCheck() throws Exception {
-
-		expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
-
-		anticipateNewConfig(pollConfig());
-
-		expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
-
-		expect(
-				m_backEnd.pollerCheckingIn(1, m_pollerConfiguration
-						.getConfigurationTimestamp())).andReturn(
-				MonitorStatus.CONFIG_CHANGED);
-
-		DemoPollerConfiguration newPollerConfiguration = new DemoPollerConfiguration();
-		anticipateNewConfig(newPollerConfiguration);
-
-		PropertyChangeEvent e = new PropertyChangeEvent(m_frontEnd,
-				"configuration", m_pollerConfiguration
-						.getConfigurationTimestamp(), newPollerConfiguration
-						.getConfigurationTimestamp());
-		m_configChangeListener.configurationChanged(eq(e));
-
+		
+		setRegistered();
+		
+		anticipateAfterPropertiesSet();
+		
+		setPollConfig(new DemoPollerConfiguration());
+		
+		anticipateCheckConfig();
+		
 		replayMocks();
 
 		m_frontEnd.afterPropertiesSet();
-
-		m_frontEnd.addConfigurationChangedListener(m_configChangeListener);
 
 		m_frontEnd.checkConfig();
 
 		verifyMocks();
 	}
-
+	
 	public void testDetails() {
 		Map<String, String> details = m_frontEnd.getDetails();
 		assertPropertyEquals("os.name", details);
@@ -208,7 +211,7 @@ public class PollerFrontEndTest extends TestCase {
 		
 		anticipateAfterPropertiesSet();
 		
-		anticapteIsRegistered();
+		anticipateIsRegistered();
 
 		replayMocks();
 
@@ -220,34 +223,23 @@ public class PollerFrontEndTest extends TestCase {
 	}
 
 	public void testPoll() throws Exception {
-
-		expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
-
-		anticipateNewConfig(pollConfig());
-
-		expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
-
-		PollStatus up = PollStatus.available(1234);
-		expect(m_pollService.poll(m_pollerConfiguration.getFirstService()))
-				.andReturn(up);
-
-		m_backEnd.reportResult(1, m_pollerConfiguration.getFirstId(), up);
-
-		ServicePollStateChangedEvent e = new ServicePollStateChangedEvent(
-				m_pollerConfiguration.getFirstService(), 0);
-		m_polledServiceListener.pollStateChange(eq(e));
-		expectLastCall().atLeastOnce();
+		
+		setRegistered();
+		
+		anticipateAfterPropertiesSet();
+		
+		anticipatePollService();
+		
+		anticipateGetServicePollState();
 
 		replayMocks();
 
 		m_frontEnd.afterPropertiesSet();
 
-		m_frontEnd.addServicePollStateChangedListener(m_polledServiceListener);
-
-		m_frontEnd.pollService(m_pollerConfiguration.getFirstId());
+		m_frontEnd.pollService(pollConfig().getFirstId());
 
 		ServicePollState pollState = m_frontEnd
-				.getServicePollState(m_pollerConfiguration.getFirstId());
+				.getServicePollState(pollConfig().getFirstId());
 
 		verifyMocks();
 
@@ -258,31 +250,17 @@ public class PollerFrontEndTest extends TestCase {
 
 	public void testRegisterNewMonitor() throws Exception {
 
-		Integer monitorId = null;
-
 		anticipateAfterPropertiesSet();
 
-		anticapteIsRegistered();
-
-		// register a new monitor and save the id
-		expect(m_backEnd.registerLocationMonitor("OAK")).andReturn(1);
-		m_settings.setMonitorId(1);
-		PropertyChangeEvent registrationEvent = new PropertyChangeEvent(
-				m_frontEnd, "registered", false, true);
-		m_registrationListener.propertyChange(eq(registrationEvent));
-
-		// another call to isRegistered;
-		expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
-
-		anticipateNewConfig(pollConfig());
-
-		expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
+		anticipateIsRegistered();
+		
+		anticiapateRegister();
+		
+		anticipateIsRegistered();
 
 		replayMocks();
 
 		m_frontEnd.afterPropertiesSet();
-
-		m_frontEnd.addPropertyChangeListener(m_registrationListener);
 
 		assertFalse(m_frontEnd.isRegistered());
 
@@ -297,18 +275,27 @@ public class PollerFrontEndTest extends TestCase {
 	public void testSetInitialPollTime() throws Exception {
 
 		Date start = new Date(1200000000000L);
+		
+		setRegistered();
+		
+		anticipateAfterPropertiesSet();
 
-		expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+		int polledServiceId = pollConfig().getFirstId();
 
-		anticipateNewConfig(pollConfig());
+		anticipateSetInitialPollTime();
 
-		expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
+		anticipateGetServicePollState();
+
+//		expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
+//
+//		anticipateNewConfig(pollConfig());
+//
+//		expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
 
 		replayMocks();
 
 		m_frontEnd.afterPropertiesSet();
 
-		int polledServiceId = m_pollerConfiguration.getFirstId();
 
 		m_frontEnd.setInitialPollTime(polledServiceId, start);
 
@@ -319,14 +306,12 @@ public class PollerFrontEndTest extends TestCase {
 	}
 
 	public void testStop() throws Exception {
+		
+		setRegistered();
 
-		expect(m_settings.getMonitorId()).andReturn(1).atLeastOnce();
-
-		anticipateNewConfig(pollConfig());
-
-		expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
-
-		m_backEnd.pollerStopping(1);
+		anticipateAfterPropertiesSet();
+		
+		anticipateStop();
 
 		replayMocks();
 
@@ -351,40 +336,124 @@ public class PollerFrontEndTest extends TestCase {
 		m_polledServiceListener = createMock(ServicePollStateChangedListener.class);
 		m_configChangeListener = createMock(ConfigurationChangedListener.class);
 
-		m_pollerConfiguration = new DemoPollerConfiguration();
+		setPollConfig(new DemoPollerConfiguration());
+		m_oldPollerConfiguration = null;
 
 		m_frontEnd = new DefaultPollerFrontEnd();
 		m_frontEnd.setPollerBackEnd(m_backEnd);
 		m_frontEnd.setPollerSettings(m_settings);
 		m_frontEnd.setPollService(m_pollService);
+		
+		m_frontEnd.addConfigurationChangedListener(m_configChangeListener);
+		m_frontEnd.addPropertyChangeListener(m_registrationListener);
+		m_frontEnd.addServicePollStateChangedListener(m_polledServiceListener);
+		
+		m_serviceStatus = PollStatus.available(1234L);
 
 	}
 
-	private void anticapteIsRegistered() {
-		anticipateGetMonitorId();
+	private void anticiapateRegister() {
+
+		anticipateRegisterLocationMonitor();
+		
+		anticipateInitializePollState();
+		
+		anticipateFireRegistered();
+
 	}
 
 	private void anticipateAfterPropertiesSet() {
-		anticapteIsRegistered();
+		anticipateIsRegistered();
 
 		if (getRegisteredId() == null)
 			return;
 
-		anticipateStart(getRegisteredId());
+		anticipateInitializePollState();
+
+	}
+
+	private void anticipateAssertConfigured() {
+		anticipateAssertRegistered();
+	}
+
+	private void anticipateAssertRegistered() {
+		anticipateIsRegistered();
+	}
+
+	private void anticipateCheckConfig() {
+		anticipateIsRegistered();
+		anticipateAssertConfigured();
+		
+		anticipateGetMonitorId();
+		
+		anticipatePollerCheckingIn();
+		
+		anticipateInitializePollState();
+	}
+
+	private void anticipateDoPoll() {
+		anticipateAssertRegistered();
+		anticipateGetPolledService();
+		
+		expect(m_pollService.poll(pollConfig().getFirstService())).andReturn(m_serviceStatus);
+		
+	}
+
+	private void anticipateFireConfigurationChangeEvent() {
+		PropertyChangeEvent e = new PropertyChangeEvent(m_frontEnd,
+				"configuration", 
+				(oldConfig() == null ? null :oldConfig().getConfigurationTimestamp()), 
+				(pollConfig() == null ? null : pollConfig().getConfigurationTimestamp()));
+		m_configChangeListener.configurationChanged(eq(e));
+	}
+
+	private void anticipateFirePropertyChangeEvent(String property, Object oldValue, Object newValue) {
+		PropertyChangeEvent e= new PropertyChangeEvent(m_frontEnd, property, oldValue, newValue);
+		m_registrationListener.propertyChange(eq(e));
+	}
+
+	private void anticipateFireRegistered() {
+		anticipateFirePropertyChangeEvent("registered", false, true);
+	}
+
+	private void anticipateFireServicePollStateChanged() {
+		ServicePollStateChangedEvent e = new ServicePollStateChangedEvent(pollConfig().getFirstService(), 0);
+		m_polledServiceListener.pollStateChange(eq(e));
+	}
+	
+	private void anticipateGetConfiguration() {
+		expect(m_backEnd.getPollerConfiguration(1)).andReturn(pollConfig());
+	}
+	
+	private void anticipateGetMonitorId() {
+		expect(m_settings.getMonitorId()).andReturn(getRegisteredId());
+	}
+	
+	private void anticipateGetPolledService() {
+		anticipateAssertRegistered();
+		anticipateGetServicePollState();
+	}
+
+	private void anticipateGetServicePollState() {
+		anticipateAssertRegistered();
+	}
+
+	private void anticipateInitializePollState() {
+		anticipateStart();
 
 		anticipatePollServiceSetMonitorLocators();
 
 		anticipateGetMonitorId();
 
-		expect(m_backEnd.getPollerConfiguration(1)).andReturn(pollConfig());
-
-		m_pollService.initialize(isA(PolledService.class));
-		expectLastCall().times(pollConfig().getPolledServices().length);
-
+		anticipateGetConfiguration();
+		
+		anticipateFireConfigurationChangeEvent();
+		
+		anticipatePolledServicesInitialized();
 	}
 
-	private void anticipateGetMonitorId() {
-		expect(m_settings.getMonitorId()).andReturn(getRegisteredId());
+	private void anticipateIsRegistered() {
+		anticipateGetMonitorId();
 	}
 
 	private void anticipateNewConfig(DemoPollerConfiguration pollConfig) {
@@ -394,6 +463,32 @@ public class PollerFrontEndTest extends TestCase {
 		expectLastCall().times(pollConfig.getPolledServices().length);
 
 		expect(m_backEnd.getPollerConfiguration(1)).andReturn(pollConfig);
+	}
+
+	private void anticipatePolledServicesInitialized() {
+		m_pollService.initialize(isA(PolledService.class));
+		expectLastCall().times(pollConfig().getPolledServices().length);
+	}
+
+	private void anticipatePollerCheckingIn() {
+		expect(m_backEnd.pollerCheckingIn(1, oldConfig().getConfigurationTimestamp())).andReturn(MonitorStatus.CONFIG_CHANGED);
+	}
+
+	private void anticipatePollerStopping() {
+		m_backEnd.pollerStopping(getRegisteredId());
+	}
+
+	private void anticipatePollService() {
+		anticipateAssertRegistered();
+		
+		anticipateDoPoll();
+		
+		anticipateUpdateServicePollState();
+		
+		anticipateGetMonitorId();
+		
+		anticipateReportResult();
+		
 	}
 
 	private void anticipatePollServiceSetMonitorLocators() {
@@ -407,18 +502,50 @@ public class PollerFrontEndTest extends TestCase {
 		m_pollService.setServiceMonitorLocators(locators);
 	}
 
-	private void anticipateStart(Integer monitorId) {
-		anticapteIsRegistered();
+	private void anticipateRegisterLocationMonitor() {
+		setRegistered();
+		expect(m_backEnd.registerLocationMonitor("OAK")).andReturn(getRegisteredId());
+		m_settings.setMonitorId(getRegisteredId());
+	}
 
-		if (monitorId == null) {
+	private void anticipateReportResult() {
+		m_backEnd.reportResult(getRegisteredId(), pollConfig().getFirstId(), m_serviceStatus);
+	}
+
+
+	private void anticipateSetInitialPollTime() {
+		anticipateAssertRegistered();
+		anticipateGetServicePollState();
+		anticipateFireServicePollStateChanged();
+	}
+
+	private void anticipateStart() {
+		if (m_started) return;
+		
+		anticipateIsRegistered();
+
+		if (getRegisteredId() == null) {
 			return;
 		}
 
 		anticipateGetMonitorId();
 
-		expect(m_backEnd.pollerStarting(monitorId, getPollerDetails()))
+		expect(m_backEnd.pollerStarting(getRegisteredId(), getPollerDetails()))
 				.andReturn(true);
+		
+		m_started = true;
 
+	}
+
+	private void anticipateStop() {
+		anticipateGetMonitorId();
+		anticipatePollerStopping();
+	}
+
+	private void anticipateUpdateServicePollState() {
+		anticipateAssertRegistered();
+		anticipateGetServicePollState();
+		anticipateFireServicePollStateChanged();
 	}
 
 	private void assertPropertyEquals(String propertyName,
@@ -460,12 +587,25 @@ public class PollerFrontEndTest extends TestCase {
 		return m_registeredId;
 	}
 
+	private DemoPollerConfiguration oldConfig() {
+		return m_oldPollerConfiguration;
+	}
+
 	private DemoPollerConfiguration pollConfig() {
 		return m_pollerConfiguration;
 	}
-
+	
 	private void replayMocks() {
 		EasyMock.replay(m_mocks.toArray());
+	}
+	
+	private void setPollConfig(DemoPollerConfiguration pollerConfiguration) {
+		m_oldPollerConfiguration = pollConfig();
+		m_pollerConfiguration = pollerConfiguration;
+	}
+
+	private void setRegistered() {
+		setRegisteredId(1);
 	}
 
 	private void setRegisteredId(Integer registeredId) {
@@ -484,15 +624,15 @@ public class PollerFrontEndTest extends TestCase {
 		verifyMocks();
 	}
 
-	private void testIsRegistered(Integer monitorId,
-			boolean expectedIsRegistered) {
+	private void testIsRegistered(Integer monitorId, boolean expectedIsRegistered) {
 		setRegisteredId(monitorId);
 
-		anticapteIsRegistered();
+		anticipateIsRegistered();
 
 		replayMocks();
 
-		assertEquals("Unexpected value for isRegistered", expectedIsRegistered,
+		assertEquals("Unexpected value for isRegistered", 
+				expectedIsRegistered,
 				m_frontEnd.isRegistered());
 
 		verifyMocks();
