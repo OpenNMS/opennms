@@ -417,8 +417,20 @@ public class PollerBackEndTest extends TestCase {
     }
 	
 	public void testGetPollerConfigurationForDeletedMonitor() {
-		fail("test this");
+		 expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(null);
+		 
+		 replayMocks();
+		 
+		 PollerConfiguration config = m_backEnd.getPollerConfiguration(m_locationMonitor.getId());
+
+		 verifyMocks();
+		 
+		 assertNotNull(config);
+		 assertTrue(m_startTime.after(config.getConfigurationTimestamp()));
+		 assertNotNull(config.getPolledServices());
+		 assertEquals(0, config.getPolledServices().length);
 	}
+	
     
     public void testGetServiceMonitorLocators() {
         
@@ -465,7 +477,7 @@ public class PollerBackEndTest extends TestCase {
     }
 	
 	public void testPollerCheckingInFromConfigChanged() {
-		fail("test this");
+		verifyPollerCheckingIn(MonitorStatus.CONFIG_CHANGED, MonitorStatus.STARTED, MonitorStatus.CONFIG_CHANGED);
 	}
     
 	public void testPollerStarting() {
