@@ -341,6 +341,25 @@ public class PollerFrontEndTest extends TestCase {
 		verifyMocks();
 	}
 
+	@Override
+	protected void setUp() throws Exception {
+
+		m_backEnd = createMock(PollerBackEnd.class);
+		m_settings = createMock(PollerSettings.class);
+		m_pollService = createMock(PollService.class);
+		m_registrationListener = createMock(PropertyChangeListener.class);
+		m_polledServiceListener = createMock(ServicePollStateChangedListener.class);
+		m_configChangeListener = createMock(ConfigurationChangedListener.class);
+
+		m_pollerConfiguration = new DemoPollerConfiguration();
+
+		m_frontEnd = new DefaultPollerFrontEnd();
+		m_frontEnd.setPollerBackEnd(m_backEnd);
+		m_frontEnd.setPollerSettings(m_settings);
+		m_frontEnd.setPollService(m_pollService);
+
+	}
+
 	private void anticapteIsRegistered() {
 		anticipateGetMonitorId();
 	}
@@ -482,25 +501,6 @@ public class PollerFrontEndTest extends TestCase {
 	private void verifyMocks() {
 		EasyMock.verify(m_mocks.toArray());
 		EasyMock.reset(m_mocks.toArray());
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-
-		m_backEnd = createMock(PollerBackEnd.class);
-		m_settings = createMock(PollerSettings.class);
-		m_pollService = createMock(PollService.class);
-		m_registrationListener = createMock(PropertyChangeListener.class);
-		m_polledServiceListener = createMock(ServicePollStateChangedListener.class);
-		m_configChangeListener = createMock(ConfigurationChangedListener.class);
-
-		m_pollerConfiguration = new DemoPollerConfiguration();
-
-		m_frontEnd = new DefaultPollerFrontEnd();
-		m_frontEnd.setPollerBackEnd(m_backEnd);
-		m_frontEnd.setPollerSettings(m_settings);
-		m_frontEnd.setPollService(m_pollService);
-
 	}
 
 }
