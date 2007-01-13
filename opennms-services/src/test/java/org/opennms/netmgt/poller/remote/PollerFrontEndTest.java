@@ -52,6 +52,7 @@ import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.opennms.netmgt.config.DefaultServiceMonitorLocator;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.monitors.HttpMonitor;
@@ -235,7 +236,7 @@ public class PollerFrontEndTest extends TestCase {
         expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
 
         
-        expect(m_backEnd.pollerCheckingIn(1, m_pollerConfiguration.getConfigurationTimestamp())).andReturn(true);
+        expect(m_backEnd.pollerCheckingIn(1, m_pollerConfiguration.getConfigurationTimestamp())).andReturn(MonitorStatus.CONFIG_CHANGED);
         
         DemoPollerConfiguration newPollerConfiguration = new DemoPollerConfiguration();
         anticipateNewConfig(newPollerConfiguration);

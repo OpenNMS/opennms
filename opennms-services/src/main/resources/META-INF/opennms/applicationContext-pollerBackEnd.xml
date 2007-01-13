@@ -28,12 +28,12 @@
 	  <property name="pollerConfig" ref="pollerConfig" />
 	  <property name="timeKeeper" ref="timeKeeper" />
 	  <property name="eventIpcManager" ref="eventIpcManager"/>
-	  <property name="unresponsiveTimeout" value="600000"/>
+	  <property name="disconnectedTimeout" value="600000"/>
 	</bean>
 	
 	<bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 	  <property name="targetObject" ref="pollerBackEnd" />
-	  <property name="targetMethod" value="checkforUnresponsiveMonitors" />
+	  <property name="targetMethod" value="checkForDisconnectedMonitors" />
 	</bean>
 
 	<bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">

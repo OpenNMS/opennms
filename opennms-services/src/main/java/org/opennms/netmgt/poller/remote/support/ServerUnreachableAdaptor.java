@@ -38,9 +38,9 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.springframework.remoting.RemoteLookupFailureException;
@@ -50,24 +50,12 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     private PollerBackEnd m_remoteBackEnd;
     private boolean m_serverUnresponsive = false;
     
-    private static class EmptyPollerConfiguration implements PollerConfiguration {
-
-        public Date getConfigurationTimestamp() {
-            return new Date(0);
-        }
-
-        public PolledService[] getPolledServices() {
-            return new PolledService[0];
-        }
-        
-    }
-    
     public void setRemoteBackEnd(PollerBackEnd remoteBackEnd) {
         m_remoteBackEnd = remoteBackEnd;
     }
 
 
-    public void checkforUnresponsiveMonitors() {
+    public void checkForDisconnectedMonitors() {
         // this is a server side only method
     }
 
@@ -87,16 +75,16 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         return m_remoteBackEnd.getPollerConfiguration(locationMonitorId);
     }
 
-    public boolean pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
+    public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
         // if we check in and get a remote exception then we switch to the EmptyConfiguration
         try {
-            boolean result = m_remoteBackEnd.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
+            MonitorStatus result = m_remoteBackEnd.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
             m_serverUnresponsive = false;
             return result;
         } catch (RemoteLookupFailureException e) {
             // we have failed to check in properly with the server
             m_serverUnresponsive = true;
-            return true;
+            return MonitorStatus.DISCONNECTED;
         }
     }
 

@@ -117,7 +117,7 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
         
         Thread.sleep(10000);
         
-        assertEquals(0, getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='UNRESPONSIVE' and id=?", monitorId));
+        assertEquals(0, getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId));
         
         m_frontEnd.stop();
         assertTrue("Could not found any pollResults", 0 < getJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
