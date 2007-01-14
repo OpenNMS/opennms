@@ -149,7 +149,7 @@
         <li><a href="admin/categories.htm">Manage Node Categories</a></li>
         <li><a href="admin/applications.htm">Manage Applications</a></li>
         <li><a href="admin/provisioningGroups.htm">Manage Provisioning Groups</a></li>
-        <li><a href="distributedPollerStatus.htm">Distributed poller status</a></li>
+        <li><a href="distributed/locationMonitorList.htm">Manage Location Monitors</a></li>
       </ul>
       <!-- security link -->
     </div>

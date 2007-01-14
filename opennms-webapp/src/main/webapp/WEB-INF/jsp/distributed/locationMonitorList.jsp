@@ -41,6 +41,7 @@
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -51,40 +52,47 @@
   <jsp:param name="breadcrumb" value="Distributed Poller Status" />
 </jsp:include>
 
-<h3><spring:message code="${webTable.title}"/></h3>
-
+<h3><spring:message code="distributed.pollerStatus.title"/></h3>
 <table>
   <tr>
-    <c:forEach items="${webTable.columnHeaders}" var="headerCell">
-      <th class="${headerCell.styleClass}">
+    <th><spring:message code="distributed.area"/></th>
+    <th><spring:message code="distributed.definitionName"/></th>
+    <th><spring:message code="distributed.id"/></th>
+    <th><spring:message code="distributed.hostName"/></th>
+    <th><spring:message code="distributed.ipAddress"/></th>
+    <th><spring:message code="distributed.status"/></th>
+    <th><spring:message code="distributed.lastCheckInTime"/></th>
+  </tr>
+
+  <c:forEach items="${model.locationMonitors}" var="monitor">
+    <spring:message var="statusClass" code="distributed.status.style.${monitor.status}" text="distributed.status.style._DEFAULT"/>
+    <tr class="${statusClass}">
+      <td class="divider">${monitor.area}</td>
+      <td class="divider">${monitor.definitionName}</td>
+      <td class="divider">
+        <c:url var="detailsUrl" value="distributed/locationMonitorDetails.htm">
+          <c:param name="monitorId" value="${monitor.id}"/>
+        </c:url> 
+        <a href="${detailsUrl}">${monitor.id}</a>
+      </td>
+      <td class="divider">${monitor.hostName}</td>
+      <td class="divider">${monitor.ipAddress}</td>
+      <td class="divider bright"><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
+      <td class="divider">
         <c:choose>
-          <c:when test="${! empty headerCell.link}">
-            <a href="${headerCell.link}"><spring:message code="${headerCell.content}"/></a>
+          <c:when test="${!empty monitor.lastCheckInTime}">
+            <fmt:formatDate value="${monitor.lastCheckInTime}" type="date" dateStyle="short"/>
+            <fmt:formatDate value="${monitor.lastCheckInTime}" type="time" dateStyle="short"/>
           </c:when>
+          
           <c:otherwise>
-            <spring:message code="${headerCell.content}"/>
+            Never
           </c:otherwise>
         </c:choose>
-      </th>
-    </c:forEach>
-  </tr>
-  
-  <c:forEach items="${webTable.rows}" var="row">
-    <tr class="${row[0].styleClass}">
-      <c:forEach items="${row}" var="cell">
-        <td class="${cell.styleClass} divider">
-          <c:choose>
-            <c:when test="${! empty cell.link}">
-              <a href="${cell.link}">${cell.content}</a>
-            </c:when>
-            <c:otherwise>
-              ${cell.content}
-            </c:otherwise>
-          </c:choose>
-        </td>
-      </c:forEach>
-    </tr>
+      </td>
+    </tr> 
   </c:forEach>
 </table>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

@@ -2,22 +2,22 @@ package org.opennms.web.validator;
 
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.web.command.LocationMonitorDetailsCommand;
+import org.opennms.web.command.LocationMonitorIdCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class LocationMonitorDetailsValidator implements Validator, InitializingBean {
+public class LocationMonitorIdValidator implements Validator, InitializingBean {
     private LocationMonitorDao m_locationMonitorDao;
 
     public boolean supports(Class clazz) {
-        return clazz.equals(LocationMonitorDetailsCommand.class);
+        return clazz.equals(LocationMonitorIdCommand.class);
     }
 
     public void validate(Object obj, Errors errors) {
-        LocationMonitorDetailsCommand cmd = (LocationMonitorDetailsCommand) obj;
+        LocationMonitorIdCommand cmd = (LocationMonitorIdCommand) obj;
         
         if (cmd.getMonitorId() == null) {
             errors.rejectValue("monitorId", "monitorId.notSpecified",

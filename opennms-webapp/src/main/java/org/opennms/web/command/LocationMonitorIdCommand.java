@@ -1,6 +1,6 @@
 package org.opennms.web.command;
 
-public class LocationMonitorDetailsCommand {
+public class LocationMonitorIdCommand {
     private Integer m_monitorId;
     
     public Integer getMonitorId() {

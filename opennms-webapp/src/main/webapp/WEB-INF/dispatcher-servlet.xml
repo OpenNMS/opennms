@@ -144,21 +144,48 @@
 			  ref="distributedStatusService" />
   </bean>
   
-  <bean name="/distributedPollerStatus.htm"
-		class="org.opennms.web.controller.DistributedPollerStatusController">
+  <bean name="/distributed/locationMonitorList.htm"
+		class="org.opennms.web.controller.distributed.LocationMonitorListController">
 	<property name="distributedPollerService"
 			  ref="distributedPollerService" />
   </bean>
 
-  <bean id="locationMonitorDetailsValidator" class="org.opennms.web.validator.LocationMonitorDetailsValidator">
+  <bean id="locationMonitorIdValidator" class="org.opennms.web.validator.LocationMonitorIdValidator">
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
   </bean>
   
   <bean name="/distributed/locationMonitorDetails.htm" class="org.opennms.web.controller.distributed.LocationMonitorDetailsController">
     <property name="commandName"><value>command</value></property>
-    <property name="commandClass"><value>org.opennms.web.command.LocationMonitorDetailsCommand</value></property>
-    <property name="validator" ref="locationMonitorDetailsValidator"/>
+    <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>
+    <property name="validator" ref="locationMonitorIdValidator"/>
     <property name="successView"><value>distributed/locationMonitorDetails</value></property>
+    <property name="distributedPollerService" ref="distributedPollerService" />
+  </bean>
+  
+  <bean name="/admin/distributed/locationMonitorPause.htm" class="org.opennms.web.controller.distributed.LocationMonitorPauseController">
+    <property name="commandName"><value>command</value></property>
+    <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>
+    <property name="validator" ref="locationMonitorIdValidator"/>
+    <property name="successView"><value>redirect:/distributed/locationMonitorList.htm</value></property>
+    <property name="errorView"><value>distributed/error</value></property>
+    <property name="distributedPollerService" ref="distributedPollerService" />
+  </bean>
+  
+  <bean name="/admin/distributed/locationMonitorResume.htm" class="org.opennms.web.controller.distributed.LocationMonitorResumeController">
+    <property name="commandName"><value>command</value></property>
+    <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>
+    <property name="validator" ref="locationMonitorIdValidator"/>
+    <property name="successView"><value>redirect:/distributed/locationMonitorList.htm</value></property>
+    <property name="errorView"><value>distributed/error</value></property>
+    <property name="distributedPollerService" ref="distributedPollerService" />
+  </bean>
+  
+  <bean name="/admin/distributed/locationMonitorDelete.htm" class="org.opennms.web.controller.distributed.LocationMonitorDeleteController">
+    <property name="commandName"><value>command</value></property>
+    <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>
+    <property name="validator" ref="locationMonitorIdValidator"/>
+    <property name="successView"><value>redirect:/distributed/locationMonitorList.htm</value></property>
+    <property name="errorView"><value>distributed/error</value></property>
     <property name="distributedPollerService" ref="distributedPollerService" />
   </bean>
 
