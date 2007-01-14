@@ -79,6 +79,7 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.ThrowableAnticipator;
 import org.quartz.Scheduler;
 
 public class PollerBackEndTest extends TestCase {
@@ -505,6 +506,14 @@ public class PollerBackEndTest extends TestCase {
 
         verifyMocks();
     }
+    
+    public void testPollerStoppingWithBadLocationMonitorId() {
+        expect(m_locMonDao.get(1)).andReturn(null);
+        
+        replayMocks();
+        m_backEnd.pollerStopping(1);
+        verifyMocks();
+    }
 
     public void testRegisterLocationMonitor() {
 
@@ -530,6 +539,37 @@ public class PollerBackEndTest extends TestCase {
 
         assertEquals(1, locationMonitorId);
 
+    }
+    
+    public void testReportResultWithBadLocationMonitorId() {
+        expect(m_locMonDao.get(1)).andReturn(null);
+        
+        replayMocks();
+        m_backEnd.reportResult(1, 1, PollStatus.up());
+        verifyMocks();
+    }
+
+    public void testReportResultWithBadServiceId() {
+        expect(m_locMonDao.get(1)).andReturn(new OnmsLocationMonitor());
+        expect(m_monSvcDao.get(1)).andReturn(null);
+        
+        replayMocks();
+        m_backEnd.reportResult(1, 1, PollStatus.up());
+        verifyMocks();
+    }
+    
+    public void testReportResultWithNullPollResult() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("pollResult argument cannot be null"));
+
+        replayMocks();
+        try {
+            m_backEnd.reportResult(1, 1, null);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+        verifyMocks();
     }
 
     public void testStatusChangeFromDownToUp() {

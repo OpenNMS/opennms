@@ -284,6 +284,11 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
 
     public void pollerStopping(int locationMonitorId) {
         OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+        if (mon == null) {
+            log().info("pollerStopping was called for location monitor ID " + locationMonitorId + " which does not exist");
+            return;
+        }
+        
         mon.setStatus(MonitorStatus.STOPPED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
@@ -321,9 +326,22 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     }
     
     public void reportResult(int locationMonitorID, int serviceId, PollStatus pollResult) {
+        if (pollResult == null) {
+            throw new IllegalArgumentException("pollResult argument cannot be null");
+        }
         
         OnmsLocationMonitor locationMonitor = m_locMonDao.get(locationMonitorID);
+        if (locationMonitor == null) {
+            log().info("reportResult was called for location monitor ID " + locationMonitorID + " which does not exist");
+            return;
+        }
+        
         OnmsMonitoredService monSvc = m_monSvcDao.get(serviceId);
+        if (monSvc == null) {
+            log().info("reportResult was called for service " + serviceId + " which does not exist on location monitor ID " + locationMonitorID);
+            return;
+        }
+        
         OnmsLocationSpecificStatus newStatus = new OnmsLocationSpecificStatus(locationMonitor, monSvc, pollResult);
         
         if (newStatus.getPollResult().getResponseTime() >= 0) {
