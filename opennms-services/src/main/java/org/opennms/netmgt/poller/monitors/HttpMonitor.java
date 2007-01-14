@@ -123,8 +123,9 @@ public class HttpMonitor extends IPv4Monitor {
         //
         // Get interface address from NetworkInterface
         //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
-                throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        }
 
 
         String cmd = buildCommand(iface, parameters);
@@ -166,7 +167,9 @@ public class HttpMonitor extends IPv4Monitor {
                     BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String line = lineRdr.readLine();
                     responseTime = System.currentTimeMillis() - sentTime;
-                    if (line == null) continue;
+                    if (line == null) {
+                        continue;
+                    }
 
                     if (log().isDebugEnabled()) {
                         log().debug("poll: response= " + line);
@@ -204,11 +207,14 @@ public class HttpMonitor extends IPv4Monitor {
                         do {
                             line = lineRdr.readLine();
                             
-                            if (isVerbose(parameters))
+                            if (isVerbose(parameters)) {
                                 log().debug("\theader: "+line);
+                            }
 
                         } while (line != null && line.length() != 0);
-                        if (line == null) continue;
+                        if (line == null) {
+                            continue;
+                        }
 
                         // Now lets rip through the Entity-Body (i.e., content) looking
                         // for the required text.
@@ -218,15 +224,20 @@ public class HttpMonitor extends IPv4Monitor {
                         do {
                             line = lineRdr.readLine();
                             
-                            if (isVerbose(parameters))
+                            if (isVerbose(parameters)) {
                                 log().debug("\tbody: "+line);
+                            }
                             
                             if (line != null) {
                                 if (getResponseText(parameters).charAt(0) == '~') {
-                                    if (line.matches(getResponseText(parameters).substring(1))) bResponseTextFound = true;
+                                    if (line.matches(getResponseText(parameters).substring(1))) {
+                                        bResponseTextFound = true;
+                                    }
                                 } else {
                                     int responseIndex = line.indexOf(getResponseText(parameters));
-                                    if (responseIndex != -1) bResponseTextFound = true;
+                                    if (responseIndex != -1) {
+                                        bResponseTextFound = true;
+                                    }
                                 }
                             } else {
                                 nullCount++;
@@ -242,8 +253,7 @@ public class HttpMonitor extends IPv4Monitor {
                         }
                     }
                 } catch (NoRouteToHostException e) {
-                    e.fillInStackTrace();
-                    log().info("checkStatus: No route to host exception for address " + getIpv4Addr(iface), e);
+                    log().warn("checkStatus: No route to host exception for address " + getIpv4Addr(iface) + ": " + e.getMessage());
                     portIndex = getPorts(parameters).length; // Will cause outer for(;;) to terminate
                     reason = "No route to host exception";
                     break; // Break out of inner for(;;)
@@ -253,20 +263,20 @@ public class HttpMonitor extends IPv4Monitor {
                     reason = "HTTP connection timeout";
                 } catch (ConnectException e) {
                     // Connection Refused. Continue to retry.
-                    //
-                    e.fillInStackTrace();
-                    log().warn("Connection exception for " + getIpv4Addr(iface) + ":" + getPorts(parameters)[portIndex] + ":"+ e.getMessage(), e);
-                    reason = "HTTP connection exception on port: "+getPorts(parameters)[portIndex]+" : "+e.getMessage();
+                    log().warn("Connection exception for " + getIpv4Addr(iface) + ":" + getPorts(parameters)[portIndex] + ":"+ e.getMessage());
+                    reason = "HTTP connection exception on port: "+getPorts(parameters)[portIndex]+": "+e.getMessage();
                 } catch (IOException e) {
                     // Ignore
                     //
                     e.fillInStackTrace();
                     log().warn("IOException while polling address " + getIpv4Addr(iface), e);
-                    reason = "IOException while polling address: "+getIpv4Addr(iface)+":"+e.getMessage();
+                    reason = "IOException while polling address: "+getIpv4Addr(iface)+": "+e.getMessage();
                 } finally {
                     try {
                         // Close the socket
-                        if (socket != null) socket.close();
+                        if (socket != null) {
+                            socket.close();
+                        }
                     } catch (IOException e) {
                         e.fillInStackTrace();
                         log().warn("Error closing socket connection", e);
@@ -287,10 +297,11 @@ public class HttpMonitor extends IPv4Monitor {
             //
             StringBuffer testedPorts = new StringBuffer();
             for (int i = 0; i < getPorts(parameters).length; i++) {
-                if (i == 0)
+                if (i == 0) {
                     testedPorts.append(getPorts(parameters)[0]);
-                else
+                } else {
                     testedPorts.append(',').append(getPorts(parameters)[i]);
+                }
             }
 
             // Add to parameter map
@@ -367,8 +378,9 @@ public class HttpMonitor extends IPv4Monitor {
 
     private String getUserAgent(Map parameters) {
         String agent = ParameterMap.getKeyedString(parameters, "user-agent", null);
-        if (agent == null || "".equals(agent))
+        if (agent == null || "".equals(agent)) {
             return "OpenNMS HttpMonitor";
+        }
         return agent;
     }
 
@@ -378,8 +390,9 @@ public class HttpMonitor extends IPv4Monitor {
             return new String(Base64.encodeBase64(credentials.getBytes()));
         } else {
             String user = ParameterMap.getKeyedString(parameters, "user", null);
-            if (user == null || "".equals(user))
+            if (user == null || "".equals(user)) {
                 return null;
+            }
             
             String passwd = ParameterMap.getKeyedString(parameters, "password", "");
             
@@ -406,8 +419,9 @@ public class HttpMonitor extends IPv4Monitor {
             //try deprecated parameter
             virtualHost = ParameterMap.getKeyedString(parameters, "host name", null);
         }
-        if (virtualHost == null || "".equals(virtualHost))
+        if (virtualHost == null || "".equals(virtualHost)) {
             return null;
+        }
         return virtualHost;
     }
 
@@ -441,8 +455,9 @@ public class HttpMonitor extends IPv4Monitor {
     }
 
     private String getDefaultResponseRange(String url) {
-        if (url == null || url.equals(DEFAULT_URL))
+        if (url == null || url.equals(DEFAULT_URL)) {
             return "100-499";
+        }
         return "100-399";
     }
 
