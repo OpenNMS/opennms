@@ -29,25 +29,24 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.controller;
+package org.opennms.web.controller.distributed;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.svclayer.DistributedPollerService;
-import org.opennms.web.svclayer.SimpleWebTable;
+import org.opennms.web.svclayer.LocationMonitorListModel;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-public class DistributedPollerStatusController extends AbstractController {
+public class LocationMonitorListController extends AbstractController implements InitializingBean {
     private DistributedPollerService m_distributedPollerService;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SimpleWebTable webTable =
-            m_distributedPollerService.createStatusTable();
-        return new ModelAndView("distributedPollerStatus",
-                                "webTable", webTable);
+        LocationMonitorListModel model = m_distributedPollerService.getLocationMonitorList();
+        return new ModelAndView("distributed/locationMonitorList", "model", model);
     }
 
     public DistributedPollerService getDistributedPollerService() {
@@ -57,6 +56,12 @@ public class DistributedPollerStatusController extends AbstractController {
     public void setDistributedPollerService(
             DistributedPollerService distributedPollerService) {
         m_distributedPollerService = distributedPollerService;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        if (m_distributedPollerService == null) {
+            throw new IllegalStateException("distributedPollerService property has not been set");
+        }
     }
 
 }

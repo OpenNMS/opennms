@@ -31,118 +31,40 @@
 //
 package org.opennms.web.svclayer.support;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.web.Util;
-import org.opennms.web.command.LocationMonitorDetailsCommand;
+import org.opennms.web.command.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.DistributedPollerService;
-import org.opennms.web.svclayer.SimpleWebTable;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.opennms.web.svclayer.LocationMonitorListModel;
+import org.opennms.web.svclayer.LocationMonitorListModel.LocationMonitorModel;
 import org.springframework.validation.BindException;
+import org.springframework.validation.ObjectError;
 
 public class DefaultDistributedPollerService implements
         DistributedPollerService {
-    
-    private static final String HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.hostAddress";
-
-    private static final String HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.hostName";
-
     private LocationMonitorDao m_locationMonitorDao;
     
     private OnmsLocationMonitorAreaNameComparator m_comparator =
         new OnmsLocationMonitorAreaNameComparator();
 
-    public SimpleWebTable createStatusTable() {
+    public LocationMonitorListModel getLocationMonitorList() {
         List<OnmsLocationMonitor> monitors = m_locationMonitorDao.findAll();
         
         Collections.sort(monitors, m_comparator);
         
-        SimpleWebTable table = new SimpleWebTable();
-        table.setTitle("distributed.pollerStatus.title");
-        
-        table.addColumn("distributed.area");
-        table.addColumn("distributed.definitionName");
-        table.addColumn("distributed.id");
-        table.addColumn("distributed.hostName");
-        table.addColumn("distributed.ipAddress");
-        table.addColumn("distributed.status");
-        table.addColumn("distributed.lastCheckInTime");
-        
+        LocationMonitorListModel model = new LocationMonitorListModel();
         for (OnmsLocationMonitor monitor : monitors) {
-            String area = "";
             OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
-            if (def != null && def.getArea() != null) {
-                area = def.getArea();
-            }
-                        
-            String style = getStyleForStatus(monitor.getStatus());
-          
-            String hostName = monitor.getDetails().get(HOST_NAME_KEY);
-            String hostAddress = monitor.getDetails().get(HOST_ADDRESS_KEY);
-            
-            if (hostName == null) {
-                hostName = "";
-            }
-            if (hostAddress == null) {
-                hostAddress = "";
-            }
-            
-            /*
-             * We check for null here because the DB column could be null if
-             * the location monitor registered but has never started (or checked in?).
-             * 
-             * Also, we wrap the Date that we get from getLastCheckInTime() in
-             * a java.util.Date because the class that we get from getLastCheckInTime()
-             * has a different format when we call toString().
-             *  
-             * TODO: Come up with a better way to format dates in all of the webapp
-             */
-            String date = (monitor.getLastCheckInTime() != null)
-                ? new Date(monitor.getLastCheckInTime().getTime()).toString()
-                : "Never";
-            	
-                        
-            table.newRow();
-            table.addCell(area, style);
-            table.addCell(monitor.getDefinitionName());
-            table.addCell(monitor.getId(), "", "distributed/locationMonitorDetails.htm"
-                          + "?monitorId="
-                          + Util.encode(monitor.getId().toString()));
-            table.addCell(hostName);
-            table.addCell(hostAddress);
-            table.addCell(monitor.getStatus(), "divider bright");
-            table.addCell(date);
+            model.addLocationMonitor(new LocationMonitorModel(monitor, def));
         }
-
-        return table;
-    }
-
-    private String getStyleForStatus(MonitorStatus status) {
-        switch (status) {
-        case REGISTERED:
-            return "Warning";
-                
-        case STARTED:
-            return "Normal";
-            
-        case STOPPED:
-            return "Minor";
-                
-        case DISCONNECTED:
-            return "Indeterminate";
-                
-        default:
-            return "Indeterminate";
-        }
+        
+        return model;
     }
 
     public LocationMonitorDao getLocationMonitorDao() {
@@ -194,59 +116,87 @@ public class DefaultDistributedPollerService implements
         }
     }
 
-    public LocationMonitorDetailsModel getLocationMonitorDetails(LocationMonitorDetailsCommand cmd, BindException errors) {
-        LocationMonitorDetailsModel model = new LocationMonitorDetailsModel();
+    public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand cmd, BindException errors) {
+        LocationMonitorListModel model = new LocationMonitorListModel();
         model.setErrors(errors);
         
         if (errors.getErrorCount() > 0) {
             return model;
         }
         
-        OnmsLocationMonitor monitor = m_locationMonitorDao.get(cmd.getMonitorId());
-        
-        model.setTitle(new DefaultMessageSourceResolvable("distributed.locationMonitorDetails.title"));
-        
-        String area = "";
+        OnmsLocationMonitor monitor = m_locationMonitorDao.load(cmd.getMonitorId());
         OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
-        if (def != null && def.getArea() != null) {
-            area = def.getArea();
-        }
-                    
-        String hostName = monitor.getDetails().get(HOST_NAME_KEY);
-        String hostAddress = monitor.getDetails().get(HOST_ADDRESS_KEY);
-        
-        if (hostName == null) {
-            hostName = "";
-        }
-        if (hostAddress == null) {
-            hostAddress = "";
-        }
-        
-        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.area"), new DefaultMessageSourceResolvable(null, area));
-        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.definitionName"), new DefaultMessageSourceResolvable(null, monitor.getDefinitionName()));
-        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.id"), new DefaultMessageSourceResolvable(null, monitor.getId().toString()));
-        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.hostName"), new DefaultMessageSourceResolvable(null, hostName));
-        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.ipAddress"), new DefaultMessageSourceResolvable(null, hostAddress));
-        // Localize the status
-        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.status"), new DefaultMessageSourceResolvable("distributed.status." + monitor.getStatus().toString()));
-        model.addMainDetail(new DefaultMessageSourceResolvable("distributed.lastCheckInTime"), new DefaultMessageSourceResolvable(null, new Date(monitor.getLastCheckInTime().getTime()).toString()));
-        
-        model.setAdditionalDetailsTitle(new DefaultMessageSourceResolvable("distributed.locationMonitorDetails.additionalTitle"));
-        List<Entry<String, String>> details = new ArrayList<Entry<String, String>>(monitor.getDetails().entrySet());
-        Collections.sort(details, new Comparator<Entry<String, String>>() {
-            public int compare(Entry<String, String> one, Entry<String, String> two) {
-                return one.getKey().compareToIgnoreCase(two.getKey());
-            }
-            
-        });
-        for (Entry<String, String> detail : details) {
-            if (!detail.getKey().equals(HOST_NAME_KEY) && !detail.getKey().equals(HOST_ADDRESS_KEY)) {
-                // Localize the key, and default to the key name
-                model.addAdditionalDetail(new DefaultMessageSourceResolvable(new String[] { "distributed.detail." + detail.getKey() }, detail.getKey()), new DefaultMessageSourceResolvable(null, detail.getValue()));
-            }
-        }
+        model.addLocationMonitor(new LocationMonitorModel(monitor, def));
 
         return model;
+    }
+
+    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
+        if (command == null) {
+            throw new IllegalStateException("command argument cannot be null");
+        }
+        if (errors == null) {
+            throw new IllegalStateException("errors argument cannot be null");
+        }
+        
+        if (errors.hasErrors()) {
+            return;
+        }
+        
+        OnmsLocationMonitor monitor = m_locationMonitorDao.load(command.getMonitorId());
+        
+        if (monitor.getStatus() == MonitorStatus.PAUSED) {
+            errors.addError(new ObjectError(MonitorStatus.class.getName(),
+                                            new String[] { "distributed.locationMonitor.alreadyPaused" },
+                                            new Object[] { command.getMonitorId() },
+                                            "Location monitor " + command.getMonitorId() + " is already paused."));
+            return;
+        }
+        
+        monitor.setStatus(MonitorStatus.PAUSED);
+        m_locationMonitorDao.update(monitor);
+    }
+
+    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
+        if (command == null) {
+            throw new IllegalStateException("command argument cannot be null");
+        }
+        if (errors == null) {
+            throw new IllegalStateException("errors argument cannot be null");
+        }
+        
+        if (errors.hasErrors()) {
+            return;
+        }
+        
+        OnmsLocationMonitor monitor = m_locationMonitorDao.load(command.getMonitorId());
+        
+        if (monitor.getStatus() != MonitorStatus.PAUSED) {
+            errors.addError(new ObjectError(MonitorStatus.class.getName(),
+                                            new String[] { "distributed.locationMonitor.notPaused" },
+                                            new Object[] { command.getMonitorId() },
+                                            "Location monitor " + command.getMonitorId() + " is not paused."));
+            return;
+        }
+        
+        monitor.setStatus(MonitorStatus.STARTED);
+        m_locationMonitorDao.update(monitor);
+    }
+
+    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
+        if (command == null) {
+            throw new IllegalStateException("command argument cannot be null");
+        }
+        if (errors == null) {
+            throw new IllegalStateException("errors argument cannot be null");
+        }
+        
+        if (errors.hasErrors()) {
+            return;
+        }
+        
+        OnmsLocationMonitor monitor = m_locationMonitorDao.load(command.getMonitorId());
+        m_locationMonitorDao.delete(monitor);
     }
 
 }

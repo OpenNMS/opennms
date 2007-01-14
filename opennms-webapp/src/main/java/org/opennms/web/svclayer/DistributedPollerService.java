@@ -31,14 +31,22 @@
 //
 package org.opennms.web.svclayer;
 
-import org.opennms.web.command.LocationMonitorDetailsCommand;
-import org.opennms.web.svclayer.support.LocationMonitorDetailsModel;
+import org.opennms.web.command.LocationMonitorIdCommand;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
 
 @Transactional(readOnly = true)
 public interface DistributedPollerService {
-    SimpleWebTable createStatusTable();
+    public LocationMonitorListModel getLocationMonitorList();
 
-    LocationMonitorDetailsModel getLocationMonitorDetails(LocationMonitorDetailsCommand cmd, BindException errors);
+    public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand command, BindException errors);
+
+    @Transactional(readOnly = false)
+    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindException errors);
+    
+    @Transactional(readOnly = false)
+    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindException errors);
+    
+    @Transactional(readOnly = false)
+    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindException errors);
 }

@@ -62,28 +62,47 @@
      Status
    </entry>
    
-   <entry key="distributed.status.REGISTERED">
+   <entry key="distributed.status.value.REGISTERED">
      Registered
    </entry>
    
-   <entry key="distributed.status.STARTED">
+   <entry key="distributed.status.value.STARTED">
      Started
    </entry>
    
-   <entry key="distributed.status.STOPPED">
+   <entry key="distributed.status.value.STOPPED">
      Stopped
    </entry>
    
-   <entry key="distributed.status.DISCONNECTED">
+   <entry key="distributed.status.value.DISCONNECTED">
      Disconnected
    </entry>
    
-   <entry key="distributed.status.PAUSED">
+   <entry key="distributed.status.value.PAUSED">
      Paused
    </entry>
    
-   <entry key="distributed.status.CONFIG_CHANGED">
+   <entry key="distributed.status.value.CONFIG_CHANGED">
      Configuration Changed
+   </entry>
+
+   <entry key="distributed.status.style.REGISTERED">
+     Warning
+   </entry>
+   <entry key="distributed.status.style.STARTED">
+     Normal
+   </entry>
+   <entry key="distributed.status.style.STOPPED">
+     Minor
+   </entry>
+   <entry key="distributed.status.style.DISCONNECTED">
+     Indeterminate
+   </entry>
+   <entry key="distributed.status.style.PAUSED">
+     Minor
+   </entry>
+   <entry key="distributed.status.style._DEFAULT">
+     Indeterminate
    </entry>
    
    <entry key="distributed.lastCheckInTime">
