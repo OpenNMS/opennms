@@ -32,6 +32,8 @@
 package org.opennms.netmgt.dao.db;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.PrintStream;
 
 public class PopulatedTemporaryDatabaseTestCase extends
@@ -40,6 +42,8 @@ public class PopulatedTemporaryDatabaseTestCase extends
     private InstallerDb m_installerDb;
     
     private ByteArrayOutputStream m_outputStream;
+
+    private boolean m_setupIpLike = false;
     
     protected void setUp() throws Exception {
         super.setUp();
@@ -73,9 +77,46 @@ public class PopulatedTemporaryDatabaseTestCase extends
         m_installerDb.updatePlPgsql();
         m_installerDb.addStoredProcedures();
         
+        if (m_setupIpLike) {
+            m_installerDb.setPgIpLikeLocation(findIpLikeLibrary().getAbsolutePath());
+            m_installerDb.updateIplike();
+        }
+
         m_installerDb.createTables();
 
         m_installerDb.closeConnection();
+    }
+
+    private File findIpLikeLibrary() {
+        File topTargetDir = new File("../target");
+        assertTrue("top-level target directory exists at ../target", topTargetDir.exists());
+        
+        File[] distDirs = topTargetDir.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                if (file.getName().matches("opennms-\\d.*") && file.isDirectory()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        assertEquals("expecting exactly one opennms distribution directory", 1, distDirs.length);
+        
+        File libDir = new File(distDirs[0], "lib");
+        assertTrue("lib directory exists", libDir.isDirectory());
+
+        File[] iplikeFiles = libDir.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                if (file.getName().matches("iplike\\..*") && file.isFile()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        assertEquals("expecting exactly one iplike file", 1, iplikeFiles.length);
+        
+        return iplikeFiles[0];
     }
 
     public ByteArrayOutputStream getOutputStream() {
@@ -85,5 +126,9 @@ public class PopulatedTemporaryDatabaseTestCase extends
     public void resetOutputStream() {
         m_outputStream = new ByteArrayOutputStream();
         m_installerDb.setOutputStream(new PrintStream(m_outputStream));
+    }
+    
+    public void setSetupIpLike(boolean setupIpLike) {
+        m_setupIpLike = setupIpLike;
     }
 }
