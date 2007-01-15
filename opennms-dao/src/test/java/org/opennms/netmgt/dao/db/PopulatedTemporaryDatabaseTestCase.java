@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.PrintStream;
 
+import org.springframework.util.StringUtils;
+
 public class PopulatedTemporaryDatabaseTestCase extends
         TemporaryDatabaseTestCase {
     
@@ -87,9 +89,9 @@ public class PopulatedTemporaryDatabaseTestCase extends
         m_installerDb.closeConnection();
     }
 
-    private File findIpLikeLibrary() {
+    protected File findIpLikeLibrary() {
         File topTargetDir = new File("../target");
-        assertTrue("top-level target directory exists at ../target", topTargetDir.exists());
+        assertTrue("top-level target directory exists at ../target: " + topTargetDir.getAbsolutePath(), topTargetDir.exists());
         
         File[] distDirs = topTargetDir.listFiles(new FileFilter() {
             public boolean accept(File file) {
@@ -100,10 +102,10 @@ public class PopulatedTemporaryDatabaseTestCase extends
                 }
             }
         });
-        assertEquals("expecting exactly one opennms distribution directory", 1, distDirs.length);
+        assertEquals("expecting exactly one opennms distribution directory in " + topTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(distDirs, ", "), 1, distDirs.length);
         
         File libDir = new File(distDirs[0], "lib");
-        assertTrue("lib directory exists", libDir.isDirectory());
+        assertTrue("lib directory exists: " + libDir.getAbsolutePath(), libDir.isDirectory());
 
         File[] iplikeFiles = libDir.listFiles(new FileFilter() {
             public boolean accept(File file) {
@@ -114,7 +116,7 @@ public class PopulatedTemporaryDatabaseTestCase extends
                 }
             }
         });
-        assertEquals("expecting exactly one iplike file", 1, iplikeFiles.length);
+        assertEquals("expecting exactly one iplike file in " + libDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(iplikeFiles, ", "), 1, iplikeFiles.length);
         
         return iplikeFiles[0];
     }
@@ -130,5 +132,9 @@ public class PopulatedTemporaryDatabaseTestCase extends
     
     public void setSetupIpLike(boolean setupIpLike) {
         m_setupIpLike = setupIpLike;
+    }
+    
+    protected InstallerDb getInstallerDb() {
+        return m_installerDb;
     }
 }

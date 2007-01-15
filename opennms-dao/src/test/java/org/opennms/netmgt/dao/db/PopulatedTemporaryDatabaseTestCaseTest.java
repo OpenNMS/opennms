@@ -55,4 +55,10 @@ public class PopulatedTemporaryDatabaseTestCaseTest extends
     public void testExecuteSQLFromGetJdbcTemplate() {
         getJdbcTemplate().queryForObject("SELECT now()", Date.class);
     }
+    
+    public void testUpdateIplike() throws Exception {
+        getInstallerDb().setPgIpLikeLocation(findIpLikeLibrary().getAbsolutePath());
+        getInstallerDb().updateIplike();
+        getInstallerDb().closeConnection();
+    }
 }
