@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -220,7 +221,7 @@ public class NetworkElementFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT * FROM NODE, IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND IPINTERFACE.ISMANAGED != 'D' AND NODETYPE != 'D' ORDER BY NODELABEL");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT node.* FROM NODE, IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND IPINTERFACE.ISMANAGED != 'D' AND node.NODETYPE != 'D' ORDER BY node.NODELABEL");
             stmt.setString(1, iplike);
             ResultSet rs = stmt.executeQuery();
 
@@ -875,11 +876,10 @@ public class NetworkElementFactory extends Object {
      */
     protected static Node[] rs2Nodes(ResultSet rs) throws SQLException {
         if (rs == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
+            throw new IllegalArgumentException("rs parameter cannot be null");
         }
 
-        List<Node> nodes = new ArrayList<Node>();
-        Object element = null;
+        List<Node> nodes = new LinkedList<Node>();
 
         while (rs.next()) {
             Node node = new Node();
@@ -887,19 +887,19 @@ public class NetworkElementFactory extends Object {
             node.m_nodeId = rs.getInt("nodeId");
             node.m_dpname = rs.getString("dpName");
 
-            element = rs.getTimestamp("nodeCreateTime");
-            if (element != null)
-                node.m_nodeCreateTime = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+            Timestamp timestamp = rs.getTimestamp("nodeCreateTime");
+            if (timestamp != null) {
+                node.m_nodeCreateTime = Util.formatDateToUIString(new Date((timestamp).getTime()));
+            }
             
-
-            element = new Integer(rs.getInt("nodeParentID"));
-            if (element != null) {
-                node.m_nodeParent = ((Integer) element).intValue();
+            Integer nodeParentID = rs.getInt("nodeParentID");
+            if (nodeParentID != null) {
+                node.m_nodeParent = nodeParentID.intValue();
             }
 
-            element = rs.getString("nodeType");
-            if (element != null) {
-                node.m_nodeType = ((String) element).charAt(0);
+            String nodeType = rs.getString("nodeType");
+            if (nodeType != null) {
+                node.m_nodeType = nodeType.charAt(0);
             }
 
             node.m_nodeSysId = rs.getString("nodeSysOID");
@@ -913,8 +913,7 @@ public class NetworkElementFactory extends Object {
             nodes.add(node);
         }
         
-        return (Node[]) nodes.toArray(new Node[nodes.size()]);
-
+        return nodes.toArray(new Node[nodes.size()]);
     }
 
     /**
