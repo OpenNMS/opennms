@@ -90,35 +90,58 @@ public class PopulatedTemporaryDatabaseTestCase extends
     }
 
     protected File findIpLikeLibrary() {
-        File topTargetDir = new File("../target");
-        assertTrue("top-level target directory exists at ../target: " + topTargetDir.getAbsolutePath(), topTargetDir.exists());
+        File topDir = new File("..");
+        assertTrue("top-level build directory exists at ..: " + topDir.getAbsolutePath(), topDir.exists());
         
-        File[] distDirs = topTargetDir.listFiles(new FileFilter() {
+        File topDirPomXml = new File(topDir, "pom.xml");
+        assertTrue("top-level build directory exists at ../pom.xml: " + topDirPomXml.getAbsolutePath(), topDirPomXml.exists());
+        
+        File ipLikeDir = new File(topDir, "opennms-iplike");
+        assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
+        
+        File[] ipLikePlatformDirs = ipLikeDir.listFiles(new FileFilter() {
             public boolean accept(File file) {
-                if (file.getName().matches("opennms-\\d.*") && file.isDirectory()) {
+                if (file.getName().matches("opennms-iplike-.*") && file.isDirectory()) {
                     return true;
                 } else {
                     return false;
                 }
             }
         });
-        assertEquals("expecting exactly one opennms distribution directory in " + topTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(distDirs, ", "), 1, distDirs.length);
-        
-        File libDir = new File(distDirs[0], "lib");
-        assertTrue("lib directory exists: " + libDir.getAbsolutePath(), libDir.isDirectory());
+        assertTrue("expecting at least one opennms iplike platform directory in " + ipLikeDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikePlatformDirs.length > 0);
 
-        File[] iplikeFiles = libDir.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                if (file.getName().matches("iplike\\..*") && file.isFile()) {
-                    return true;
-                } else {
-                    return false;
-                }
+        File ipLikeFile = null;
+        for (File ipLikePlatformDir : ipLikePlatformDirs) {
+            assertTrue("iplike platform directory does not exist but was listed in directory listing: " + ipLikePlatformDir.getAbsolutePath(), ipLikePlatformDir.exists());
+            
+            File ipLikeTargetDir = new File(ipLikePlatformDir, "target");
+            if (!ipLikeTargetDir.exists() || !ipLikeTargetDir.isDirectory()) {
+                // Skip this one
+                continue;
             }
-        });
-        assertEquals("expecting exactly one iplike file in " + libDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(iplikeFiles, ", "), 1, iplikeFiles.length);
+          
+            File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    if (file.isFile()
+                        && (file.getName().matches("opennms-iplike-.*\\.so")
+                            || file.getName().matches("opennms-iplike-.*\\.dylib"))) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            assertFalse("expecting zero or one iplike file in " + ipLikeTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikeFiles, ", "), ipLikeFiles.length > 1);
+            
+            if (ipLikeFiles.length == 1) {
+                ipLikeFile = ipLikeFiles[0];
+            }
+            
+        }
         
-        return iplikeFiles[0];
+        assertNotNull("Could not find iplike shared object in a target directory in any of these directories: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikeFile);
+        
+        return ipLikeFile;
     }
 
     public ByteArrayOutputStream getOutputStream() {
