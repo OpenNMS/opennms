@@ -796,6 +796,7 @@ opennms.home = ${opennms.home}
       </activation>
 
       <properties>
+        <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
 	<build.rrd.include.dir>/usr/local/rrdtool-1.0.49/include</build.rrd.include.dir>
 	<build.rrd.lib.dir>/usr/local/rrdtool-1.0.49/lib</build.rrd.lib.dir>
       </properties>
