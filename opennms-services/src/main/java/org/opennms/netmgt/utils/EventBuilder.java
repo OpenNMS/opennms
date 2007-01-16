@@ -55,7 +55,14 @@ public class EventBuilder {
         setSource(source);
     }
 
-    public Event getEvent() {
+    public EventBuilder(Event event) {
+    	m_event = event;
+	    Date date = new Date();
+	    setTime(date);
+	    setCreationTime(date);
+	}
+
+	public Event getEvent() {
         return m_event;
     }
     
