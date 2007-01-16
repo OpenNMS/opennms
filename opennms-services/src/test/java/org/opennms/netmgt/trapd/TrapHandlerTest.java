@@ -259,7 +259,7 @@ public class TrapHandlerTest extends TestCase {
 			"  <uei>uei.opennms.org/vendor/cisco/bsnAPNoiseProfileUpdatedToPass</uei>\n" +
 			"  <event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPNoiseProfileUpdatedToPass</event-label>\n" +
 			"  <descr>\n" +
-			"   &lt;p&gt;When Noise Profile state changes from FAIL tp PASS, notification\n" +
+			"   &lt;p&gt;When Noise Profile state changes from FAIL to PASS, notification\n" +
 			"   will be sent with Dot3 MAC address of Airespace AP and slot ID\n" +
 			"   of Airespace AP IF. This trap sending can be enable/disable using\n" +
 			"   bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;\n" +
@@ -385,6 +385,7 @@ public class TrapHandlerTest extends TestCase {
 
 
 	// FIXME: these exist to provide testing for the new Textual Convention feature
+	// See EventConfDataTest for the other part of this testing
 	public void FIXMEtestV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
 	throws Exception {
 		SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
@@ -410,7 +411,7 @@ public class TrapHandlerTest extends TestCase {
 
 		// XXX: this is a problem.. putting the bytes into a string and taking them
 		// back out.. does not produce the same results
-		String decoded = new String(decodeBytes);
+		String decoded = new String(macAddr);
 		byte[] roundTripMacAddr = decoded.getBytes();
 		
 		assertByteArrayEquals(macAddr, roundTripMacAddr);
