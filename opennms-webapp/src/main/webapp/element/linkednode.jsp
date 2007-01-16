@@ -404,10 +404,10 @@
 		<thead>
 			<tr>
 				<th style="font-size:70%" width="35%">Linked Node</th>
-				<th width="35%">Interface</th> 
-				<th width="15%">If Status (Adm/Op)</th>
+				<th style="font-size:70%" width="35%">Interface</th> 
+				<th style="font-size:70%" width="15%">If Status (Adm/Op)</th>
 			
-				<th>
+				<th style="font-size:70%">
 				<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
 					Set Admin Status
 				<% } else { %>
