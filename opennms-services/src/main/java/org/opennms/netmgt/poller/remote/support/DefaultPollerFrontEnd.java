@@ -128,6 +128,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     private class Paused extends RunningState {
 
         @Override
+        protected void onConfigChanged() {
+            doLoadConfig();
+        }
+
+        @Override
         public boolean isPaused() {
             return true;
         }
@@ -332,7 +337,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     }
 
     public void doResume() {
-        // do I need to do anything here?
+        doLoadConfig();
     }
 
     public void doPause() {

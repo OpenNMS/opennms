@@ -487,6 +487,7 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipateDoResume() {
+        anticipateDoLoadConfig();
         anticipateFirePropertyChangeEvent("paused", true, false);
     }
 
