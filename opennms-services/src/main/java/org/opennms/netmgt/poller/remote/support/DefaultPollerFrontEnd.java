@@ -1,4 +1,3 @@
-
 //This file is part of the OpenNMS(R) Application.
 
 //OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
@@ -46,6 +45,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
+import org.hibernate.event.def.OnLockVisitor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -67,35 +67,254 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
-DisposableBean {
+        DisposableBean {
+
+    private class Disconnected extends RunningState {
+
+        @Override
+        public void stop() {
+            // don't call do stop as we are disconnected from the server
+            setState(new Initial());
+        }
+
+        @Override
+        protected void onPaused() {
+            doPause();
+            setState(new Paused());
+        }
+
+        @Override
+        protected void onStarted() {
+            doLoadConfig();
+            setState(new Started());
+        }
+
+    }
+
+    private class Initial extends State {
+        @Override
+        public void initialize() {
+            Integer monitorId = doInitialize();
+            if (monitorId == null) {
+                setState(new Registering());
+            }
+            else if (doPollerStart()) {
+                setState(new Started());
+            } else {
+                // the poller has been deleted
+                doDelete();
+            }
+        }
+        
+        @Override
+        public boolean isRegistered() {
+            return false;
+        }
+
+    }
+
+    private class Paused extends RunningState {
+
+        @Override
+        protected void onDisconnected() {
+            doDisconnected();
+            setState(new Disconnected());
+        }
+
+        @Override
+        protected void onStarted() {
+            doLoadConfig();
+            setState(new Started());
+        }
+
+    }
+
+    private class Registering extends State {
+        @Override
+        public boolean isRegistered() {
+            return false;
+        }
+
+        @Override
+        public void register(String location) {
+            doRegister(location);
+            setState(new Started());
+        }
+    }
+
+    private class RunningState extends State {
+        @Override
+        public void pollService(Integer serviceId) {
+            /* most running states do nothing here */
+        }
+
+        @Override
+        public void checkIn() {
+            MonitorStatus status = doCheckIn();
+            switch (status) {
+            case CONFIG_CHANGED:
+                onConfigChanged();
+                break;
+            case DELETED:
+                onDeleted();
+                break;
+            case DISCONNECTED:
+                onDisconnected();
+                break;
+            case PAUSED:
+                onPaused();
+                break;
+            case STARTED:
+                onStarted();
+                break;
+
+            }
+        }
+        
+        @Override
+        public boolean isStarted() {
+            return true;
+        }
+
+        @Override
+        public void stop() {
+            doStop();
+            setState(new Initial());
+        }
+
+        protected void onConfigChanged() {
+            /* do nothing be default */
+        }
+
+        protected void onDeleted() {
+            doDelete();
+            setState(new Initial());
+        }
+
+        protected void onDisconnected() {
+            /* do nothing be default */
+        }
+
+        protected void onPaused() {
+            /* do nothing be default */
+        }
+
+        protected void onStarted() {
+            /* do nothing be default */
+        }
+
+    }
+
+    private class Started extends RunningState {
+
+        @Override
+        public void pollService(Integer polledServiceId) {
+            doPollService(polledServiceId);
+        }
+
+        @Override
+        protected void onConfigChanged() {
+            doLoadConfig();
+        }
+
+        @Override
+        protected void onDisconnected() {
+            doDisconnected();
+            setState(new Disconnected());
+        }
+
+        @Override
+        protected void onPaused() {
+            doPause();
+            setState(new Paused());
+        }
+        
+
+
+    }
+
+    private abstract class State {
+        public void checkIn() {
+            /*
+             * a pollerCheckingIn in any state that doesn't respond just does
+             * nothing
+             */
+        }
+
+        public IllegalStateException illegalState(String msg) {
+            return new IllegalStateException(msg + " State: " + this);
+        }
+
+        public void initialize() {
+            throw illegalState("initialized called on invalid state.");
+        }
+
+        public boolean isInitialized() {
+            return true;
+        }
+
+        public boolean isRegistered() {
+            return true;
+        }
+        
+        public boolean isStarted() {
+            return false;
+        }
+
+        public void pollService(Integer serviceId) {
+            throw illegalState("Cannot poll from this state.");
+        }
+        
+        public void register(String location) {
+            throw illegalState("Cannot register from this state.");
+        }
+
+        public void stop() {
+            /* do nothing here by default as the actual exit is managed by the external program */
+        }
+
+        public String toString() {
+            return getClass().getSimpleName();
+        }
+    }
+    
+
+
+    // state variables
+    private boolean m_started;
+
+    private State m_state = new Initial();
 
     // injected dependencies
     private PollerBackEnd m_backEnd;
 
-    private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<ConfigurationChangedListener>();
-
-    // state variables
-    private boolean m_initialized;
-
-    // current configuration
-    private PollerConfiguration m_pollerConfiguration;
-
     private PollerSettings m_pollerSettings;
 
     private PollService m_pollService;
-
-    // current state of polled services
-    private Map<Integer, ServicePollState> m_pollState = new LinkedHashMap<Integer, ServicePollState>();
 
     // listeners
     private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
 
     private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<ServicePollStateChangedListener>();
 
-    private boolean m_started;
+    private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<ConfigurationChangedListener>();
+
+    // current configuration
+    private PollerConfiguration m_pollerConfiguration;
+
+    // current state of polled services
+    private Map<Integer, ServicePollState> m_pollState = new LinkedHashMap<Integer, ServicePollState>();
 
     public void addConfigurationChangedListener(ConfigurationChangedListener l) {
         m_configChangeListeners.addFirst(l);
+    }
+
+    public void doPause() {
+        throw new UnsupportedOperationException("DefaultPollerFrontEnd.doPause not yet implemented.");
+    }
+
+    public void doDisconnected() {
+        throw new UnsupportedOperationException("DefaultPollerFrontEnd.doDisconnected not yet implemented.");
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -108,34 +327,68 @@ DisposableBean {
     }
 
     public void afterPropertiesSet() throws Exception {
-        assertNotNull(m_backEnd, "pollerBackEnd");
-        assertNotNull(m_pollService, "pollService");
-        assertNotNull(m_pollerSettings, "pollerSettings");
-        m_initialized = true;
-
-        if (isRegistered()) {
-            initializePollState();
-        }
-
+        m_state.initialize();
     }
 
     public void checkConfig() {
-        if (!isRegistered()) {
-            // no reason to check if we aren't registerd
-            return;
-        }
-
-        assertConfigured();
-        if (m_backEnd.pollerCheckingIn(getMonitorId(), m_pollerConfiguration
-                                       .getConfigurationTimestamp()) == MonitorStatus.CONFIG_CHANGED) {
-            initializePollState();
-        }
+        m_state.checkIn();
     }
 
     public void destroy() throws Exception {
-        if (isRegistered()) {
-            stop();
-        }
+        stop();
+    }
+
+    public MonitorStatus doCheckIn() {
+        return m_backEnd.pollerCheckingIn(getMonitorId(), getCurrentConfigTimestamp());
+    }
+
+    public void doDelete() {
+        setMonitorId(null);        
+    }
+
+    public Integer doInitialize() {
+        assertNotNull(m_backEnd, "pollerBackEnd");
+        assertNotNull(m_pollService, "pollService");
+        assertNotNull(m_pollerSettings, "pollerSettings");
+        
+        return getMonitorId();
+    }
+
+    public boolean doPollerStart() {
+        
+        if (!m_backEnd.pollerStarting(getMonitorId(), getDetails())) {
+            // the monitor has been deleted on the server
+            return false;
+        } 
+
+        doLoadConfig();
+        
+        return true;
+
+    }
+
+    public void doPollService(Integer polledServiceId) {
+        PollStatus result = doPoll(polledServiceId);
+        if (result == null)
+            return;
+
+        updateServicePollState(polledServiceId, result);
+
+        m_backEnd.reportResult(getMonitorId(), polledServiceId, result);
+    }
+
+    public void doRegister(String location) {
+
+        int monitorId = m_backEnd.registerLocationMonitor(location);
+        setMonitorId(monitorId);
+        
+        doPollerStart();
+        
+        firePropertyChange("registered", false, true);
+    }
+
+    public void doStop() {
+        m_backEnd.pollerStopping(getMonitorId());
     }
 
     public Map<String, String> getDetails() {
@@ -152,9 +405,9 @@ DisposableBean {
         try {
             InetAddress us = InetAddress.getLocalHost();
             details.put("org.opennms.netmgt.poller.remote.hostAddress", us
-                        .getHostAddress());
+                    .getHostAddress());
             details.put("org.opennms.netmgt.poller.remote.hostName", us
-                        .getHostName());
+                    .getHostName());
         } catch (UnknownHostException e) {
             // do nothing
         }
@@ -162,11 +415,12 @@ DisposableBean {
         return details;
     }
 
-    public int getMonitorId() {
+    public Integer getMonitorId() {
         return m_pollerSettings.getMonitorId();
     }
 
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
+        assertInitialized();
         return m_backEnd.getMonitoringLocations();
     }
 
@@ -175,7 +429,6 @@ DisposableBean {
     }
 
     public Collection<PolledService> getPolledServices() {
-        assertRegistered();
         return Arrays.asList(m_pollerConfiguration.getPolledServices());
     }
 
@@ -186,43 +439,28 @@ DisposableBean {
     }
 
     public ServicePollState getServicePollState(int polledServiceId) {
-        assertRegistered();
         synchronized (m_pollState) {
             return m_pollState.get(polledServiceId);
         }
     }
 
     public boolean isRegistered() {
-        return m_pollerSettings.getMonitorId() != null;
+        return m_state.isRegistered();
     }
 
     public boolean isStarted() {
-        return m_started;
+        return m_state.isStarted();
     }
 
     public void pollService(Integer polledServiceId) {
-        assertRegistered();
-
-        PollStatus result = doPoll(polledServiceId);
-        if (result == null)
-            return;
-
-        updateServicePollState(polledServiceId, result);
-
-        m_backEnd.reportResult(getMonitorId(), polledServiceId, result);
-
+        m_state.pollService(polledServiceId);
     }
 
     public void register(String monitoringLocation) {
-        assertInitialized();
-        int monitorId = m_backEnd.registerLocationMonitor(monitoringLocation);
-        m_pollerSettings.setMonitorId(monitorId);
-        initializePollState();
-        firePropertyChange("registered", false, true);
+        m_state.register(monitoringLocation);
     }
 
-    public void removeConfigurationChangedListener(
-            ConfigurationChangedListener l) {
+    public void removeConfigurationChangedListener(ConfigurationChangedListener l) {
         m_configChangeListeners.remove(l);
     }
 
@@ -230,17 +468,19 @@ DisposableBean {
         m_propertyChangeListeners.remove(l);
     }
 
-    public void removeServicePollStateChangedListener(
-            ServicePollStateChangedListener l) {
+    public void removeServicePollStateChangedListener(ServicePollStateChangedListener l) {
         m_servicePollStateChangedListeners.remove(l);
     }
 
     public void setInitialPollTime(Integer polledServiceId, Date initialPollTime) {
-        assertRegistered();
         ServicePollState pollState = getServicePollState(polledServiceId);
         pollState.setInitialPollTime(initialPollTime);
         fireServicePollStateChanged(pollState.getPolledService(), pollState
-                                    .getIndex());
+                .getIndex());
+    }
+
+    public void setMonitorId(Integer monitorId) {
+        m_pollerSettings.setMonitorId(monitorId);
     }
 
     public void setPollerBackEnd(PollerBackEnd backEnd) {
@@ -256,34 +496,46 @@ DisposableBean {
     }
 
     public void stop() {
-        m_backEnd.pollerStopping(getMonitorId());
-        m_started = false;
-    }
-
-    private void assertConfigured() {
-        assertRegistered();
-        Assert.notNull(m_pollerConfiguration,
-        "The poller has not been configured");
+        m_state.stop();
     }
 
     private void assertInitialized() {
-        Assert.isTrue(m_initialized, "afterProperties set has not been called");
+        Assert.isTrue(isInitialized(),
+                "afterProperties set has not been called");
     }
 
     private void assertNotNull(Object propertyValue, String propertyName) {
         Assert.state(propertyValue != null, propertyName
-                     + " must be set for instances of " + Poller.class);
+                + " must be set for instances of " + Poller.class);
     }
 
     private void assertRegistered() {
-        assertInitialized();
-        Assert
-        .state(isRegistered(),
-        "The poller must be registered before we can poll or get its configuration");
+        Assert.state(isRegistered(),
+                        "The poller must be registered before we can poll or get its configuration");
+    }
+
+    private void doLoadConfig() {
+        Date oldTime = getCurrentConfigTimestamp();
+
+        m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
+
+        m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
+
+        synchronized (m_pollState) {
+
+            int i = 0;
+            m_pollState.clear();
+            for (PolledService service : getPolledServices()) {
+                m_pollService.initialize(service);
+                m_pollState.put(service.getServiceId(), new ServicePollState(
+                        service, i++));
+            }
+        }
+
+        fireConfigurationChange(oldTime, getCurrentConfigTimestamp());
     }
 
     private PollStatus doPoll(Integer polledServiceId) {
-        assertRegistered();
 
         PolledService polledService = getPolledService(polledServiceId);
         if (polledService == null) {
@@ -295,7 +547,7 @@ DisposableBean {
 
     private void fireConfigurationChange(Date oldTime, Date newTime) {
         PropertyChangeEvent e = new PropertyChangeEvent(this, "configuration",
-                                                        oldTime, newTime);
+                oldTime, newTime);
         for (ConfigurationChangedListener l : m_configChangeListeners) {
             l.configurationChanged(e);
         }
@@ -304,82 +556,47 @@ DisposableBean {
     private void firePropertyChange(String propertyName, Object oldValue,
             Object newValue) {
         PropertyChangeEvent e = new PropertyChangeEvent(this, propertyName,
-                                                        oldValue, newValue);
+                oldValue, newValue);
 
         for (PropertyChangeListener l : m_propertyChangeListeners) {
             l.propertyChange(e);
         }
     }
 
-    private void fireServicePollStateChanged(PolledService polledService,
-            int index) {
+    private void fireServicePollStateChanged(PolledService polledService, int index) {
         ServicePollStateChangedEvent e = new ServicePollStateChangedEvent(
-                                                                          polledService, index);
+                polledService, index);
 
         for (ServicePollStateChangedListener l : m_servicePollStateChangedListeners) {
             l.pollStateChange(e);
         }
     }
 
-    private PolledService getPolledService(Integer polledServiceId) {
-        assertRegistered();
-        ServicePollState servicePollState = getServicePollState(polledServiceId);
-        return (servicePollState == null ? null : servicePollState
-            .getPolledService());
+    private Date getCurrentConfigTimestamp() {
+        return (m_pollerConfiguration == null ? null : m_pollerConfiguration.getConfigurationTimestamp());
     }
 
-    private void initializePollState() {
-        Date oldTime = (m_pollerConfiguration == null ? null
-            : m_pollerConfiguration.getConfigurationTimestamp());
+    private PolledService getPolledService(Integer polledServiceId) {
+        ServicePollState servicePollState = getServicePollState(polledServiceId);
+        return (servicePollState == null ? null : servicePollState.getPolledService());
+    }
 
-        if (!isStarted()) {
-            start();
-        }
-
-        m_pollService.setServiceMonitorLocators(m_backEnd
-                                                .getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
-
-        m_pollerConfiguration = m_backEnd
-        .getPollerConfiguration(getMonitorId());
-
-        synchronized (m_pollState) {
-
-            int i = 0;
-            m_pollState.clear();
-            for (PolledService service : m_pollerConfiguration
-                    .getPolledServices()) {
-                m_pollService.initialize(service);
-                m_pollState.put(service.getServiceId(), new ServicePollState(
-                                                                             service, i++));
-            }
-        }
-
-        fireConfigurationChange(oldTime, m_pollerConfiguration
-                                .getConfigurationTimestamp());
+    private boolean isInitialized() {
+        return m_state.isInitialized();
     }
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
-    private void start() {
-        assertRegistered();
-        if (!m_backEnd.pollerStarting(getMonitorId(), getDetails())) {
-            m_pollerSettings.setMonitorId(null);
-            throw new IllegalStateException(
-            "Monitor no longers exists on server.  You need to reregister");
-        }
-        m_started = true;
+    private void setState(State newState) {
+        m_state = newState;
     }
 
-    private void updateServicePollState(Integer polledServiceId,
-            PollStatus result) {
-        assertRegistered();
-
+    private void updateServicePollState(Integer polledServiceId, PollStatus result) {
         ServicePollState pollState = getServicePollState(polledServiceId);
         pollState.setLastPoll(result);
-        fireServicePollStateChanged(pollState.getPolledService(), pollState
-                                    .getIndex());
+        fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
     }
 
 }

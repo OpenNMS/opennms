@@ -161,8 +161,6 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateAfterPropertiesSet();
 
-        anticipateIsRegistered();
-
         replayMocks();
 
         m_frontEnd.afterPropertiesSet();
@@ -197,21 +195,24 @@ public class PollerFrontEndTest extends TestCase {
         assertPropertyEquals("os.version", details);
     }
 
-    public void testIsRegistered() {
+    public void testIsRegistered() throws Exception {
+        setRegistered();
 
-        // test in the unregistered state
-        testIsRegistered(null, false);
+        anticipateAfterPropertiesSet();
 
-        // test in the registered state
-        testIsRegistered(1, true);
+        replayMocks();
+
+        m_frontEnd.afterPropertiesSet();
+
+        assertTrue(m_frontEnd.isRegistered());
+
+        verifyMocks();
     }
 
     public void testNotYetRegistered() throws Exception {
         setRegisteredId(null);
 
         anticipateAfterPropertiesSet();
-
-        anticipateIsRegistered();
 
         replayMocks();
 
@@ -252,11 +253,7 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateAfterPropertiesSet();
 
-        anticipateIsRegistered();
-
         anticiapateRegister();
-
-        anticipateIsRegistered();
 
         replayMocks();
 
@@ -355,44 +352,54 @@ public class PollerFrontEndTest extends TestCase {
     private void anticiapateRegister() {
 
         anticipateRegisterLocationMonitor();
-
-        anticipateInitializePollState();
+        
+        anticipateDoPollerStart();
 
         anticipateFireRegistered();
 
     }
 
     private void anticipateAfterPropertiesSet() {
-        anticipateIsRegistered();
+        anticipateGetMonitorId();
 
         if (getRegisteredId() == null)
             return;
 
-        anticipateInitializePollState();
+        anticipateDoPollerStart();
+        
 
     }
 
-    private void anticipateAssertConfigured() {
-        anticipateAssertRegistered();
+    private void anticipateDoPollerStart() {
+        anticipateGetMonitorId();
+        anticipatePollerStarting();
+        anticipateDoLoadConfig();
     }
 
-    private void anticipateAssertRegistered() {
-        anticipateIsRegistered();
+    private void anticipateDoLoadConfig() {
+        anticipatePollServiceSetMonitorLocators();
+        anticipateGetMonitorId();
+        anticipateGetConfiguration();
+        anticipatePolledServicesInitialized();
+        anticipateFireConfigurationChangeEvent();
+    }
+
+    private void anticipatePollerStarting() {
+        expect(m_backEnd.pollerStarting(getRegisteredId(), getPollerDetails()))
+        .andReturn(true);
     }
 
     private void anticipateCheckConfig() {
-        anticipateIsRegistered();
-        anticipateAssertConfigured();
+        anticipateDoCheckIn();
+    }
 
+    private void anticipateDoCheckIn() {
         anticipateGetMonitorId();
-
         anticipatePollerCheckingIn();
-
-        anticipateInitializePollState();
+        anticipateDoLoadConfig();
     }
 
     private void anticipateDoPoll() {
-        anticipateAssertRegistered();
         anticipateGetPolledService();
 
         expect(m_pollService.poll(pollConfig().getFirstService())).andReturn(m_serviceStatus);
@@ -430,12 +437,10 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipateGetPolledService() {
-        anticipateAssertRegistered();
         anticipateGetServicePollState();
     }
 
     private void anticipateGetServicePollState() {
-        anticipateAssertRegistered();
     }
 
     private void anticipateInitializePollState() {
@@ -452,19 +457,6 @@ public class PollerFrontEndTest extends TestCase {
         anticipatePolledServicesInitialized();
     }
 
-    private void anticipateIsRegistered() {
-        anticipateGetMonitorId();
-    }
-
-    private void anticipateNewConfig(DemoPollerConfiguration pollConfig) {
-        anticipatePollServiceSetMonitorLocators();
-
-        m_pollService.initialize(isA(PolledService.class));
-        expectLastCall().times(pollConfig.getPolledServices().length);
-
-        expect(m_backEnd.getPollerConfiguration(1)).andReturn(pollConfig);
-    }
-
     private void anticipatePolledServicesInitialized() {
         m_pollService.initialize(isA(PolledService.class));
         expectLastCall().times(pollConfig().getPolledServices().length);
@@ -479,8 +471,6 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipatePollService() {
-        anticipateAssertRegistered();
-
         anticipateDoPoll();
 
         anticipateUpdateServicePollState();
@@ -514,7 +504,6 @@ public class PollerFrontEndTest extends TestCase {
 
 
     private void anticipateSetInitialPollTime() {
-        anticipateAssertRegistered();
         anticipateGetServicePollState();
         anticipateFireServicePollStateChanged();
     }
@@ -522,16 +511,12 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateStart() {
         if (m_started) return;
 
-        anticipateIsRegistered();
-
         if (getRegisteredId() == null) {
             return;
         }
 
         anticipateGetMonitorId();
 
-        expect(m_backEnd.pollerStarting(getRegisteredId(), getPollerDetails()))
-        .andReturn(true);
 
         m_started = true;
 
@@ -543,7 +528,6 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipateUpdateServicePollState() {
-        anticipateAssertRegistered();
         anticipateGetServicePollState();
         anticipateFireServicePollStateChanged();
     }
@@ -620,20 +604,6 @@ public class PollerFrontEndTest extends TestCase {
         replayMocks();
 
         m_frontEnd.afterPropertiesSet();
-
-        verifyMocks();
-    }
-
-    private void testIsRegistered(Integer monitorId, boolean expectedIsRegistered) {
-        setRegisteredId(monitorId);
-
-        anticipateIsRegistered();
-
-        replayMocks();
-
-        assertEquals("Unexpected value for isRegistered", 
-                     expectedIsRegistered,
-                     m_frontEnd.isRegistered());
 
         verifyMocks();
     }
