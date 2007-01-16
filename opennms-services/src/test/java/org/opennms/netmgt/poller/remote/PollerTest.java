@@ -66,8 +66,9 @@ public class PollerTest extends TestCase {
         Poller poller = new Poller();
 
         pollerFrontEnd.addConfigurationChangedListener(poller);
+        pollerFrontEnd.addPropertyChangeListener(poller);
 		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
-        expect(pollerFrontEnd.isRegistered()).andReturn(true);
+        expect(pollerFrontEnd.isStarted()).andReturn(true);
 		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
 		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
 		
