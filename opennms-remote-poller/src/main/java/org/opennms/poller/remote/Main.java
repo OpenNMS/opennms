@@ -32,6 +32,8 @@
 
 package org.opennms.poller.remote;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
@@ -109,6 +111,17 @@ public class Main {
         
         m_context = new ClassPathXmlApplicationContext(configs);
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
+        
+        m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent e) {
+                if ("started".equals(e.getPropertyName()) && Boolean.FALSE.equals(e.getNewValue())) {
+                    // when the state of the machine goes to not started then we need to exit
+                    System.exit(1);
+                }
+            }
+            
+        });
     }
 		
     private void usage() {

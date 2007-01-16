@@ -40,7 +40,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -133,11 +132,11 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	}
 
 	public void pollCompleted(String pollId, PollStatus pollStatus) {
-		System.err.println(new Date()+": Complete Poll for "+pollId+" status = "+pollStatus);
+		log().info("Complete Poll for "+pollId+" status = "+pollStatus);
 	}
 
 	public void pollStarted(String pollId) {
-		System.err.println(new Date()+": Begin Poll for "+pollId);
+		log().info("Begin Poll for "+pollId);
 		
 	}
 
@@ -158,9 +157,14 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
                     unschedulePolls();
                 } else if ("disconnected".equals(evt.getPropertyName())) {
                     unschedulePolls();
+                }
+            } else {
+                if ("paused".equals(evt.getPropertyName()) ) {
+                    schedulePolls();
+                } else if ("disconnected".equals(evt.getPropertyName())) {
+                    schedulePolls();
                 } else if ("started".equals(evt.getPropertyName())) {
                     unschedulePolls();
-                    schedulePolls();
                 }
             }
         } catch (Exception ex) {
