@@ -79,13 +79,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         @Override
         public void stop() {
             // don't call do stop as we are disconnected from the server
-            setState(new Initial());
+            setState(new Registering());
         }
         
         @Override
         protected void onConfigChanged() {
             doLoadConfig();
-            setState(new Started());
+            setState(new Running());
         }
 
         @Override
@@ -97,12 +97,12 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         @Override
         protected void onStarted() {
             doLoadConfig();
-            setState(new Started());
+            setState(new Running());
         }
 
     }
 
-    private class Initial extends State {
+    public class Initial extends State {
         @Override
         public void initialize() {
             Integer monitorId = doInitialize();
@@ -110,10 +110,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
                 setState(new Registering());
             }
             else if (doPollerStart()) {
-                setState(new Started());
+                setState(new Running());
             } else {
                 // the poller has been deleted
                 doDelete();
+                setState(new Registering());
             }
         }
         
@@ -140,7 +141,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         @Override
         protected void onStarted() {
             doResume();
-            setState(new Started());
+            setState(new Running());
         }
 
     }
@@ -154,7 +155,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         @Override
         public void register(String location) {
             doRegister(location);
-            setState(new Started());
+            setState(new Running());
         }
     }
 
@@ -195,7 +196,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         @Override
         public void stop() {
             doStop();
-            setState(new Initial());
+            setState(new Registering());
         }
 
         protected void onConfigChanged() {
@@ -204,7 +205,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
         protected void onDeleted() {
             doDelete();
-            setState(new Initial());
+            setState(new Registering());
         }
 
         protected void onDisconnected() {
@@ -221,7 +222,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
     }
 
-    private class Started extends RunningState {
+    public class Running extends RunningState {
 
         @Override
         public void pollService(Integer polledServiceId) {
@@ -468,6 +469,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         }
     }
 
+    public String getStatus() {
+        return m_state.toString();
+    }
+    
     public boolean isRegistered() {
         return m_state.isRegistered();
     }
@@ -627,7 +632,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         boolean registered = isRegistered();
         boolean paused = isPaused();
         boolean disconnected = isDisconnected();
-        System.err.println("Changing state from "+m_state+" to "+newState);
         m_state = newState;
         firePropertyChange("started", started, isStarted());
         firePropertyChange("registered", registered, isRegistered());

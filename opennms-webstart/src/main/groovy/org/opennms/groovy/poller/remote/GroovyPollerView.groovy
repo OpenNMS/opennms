@@ -31,6 +31,7 @@ class GroovyPollerView implements InitializingBean {
    def m_cardPanel;
    def m_monLocation;
    def m_idLabel;
+   def m_statusLabel;
    SimpleDateFormat m_dateFormat;
    
    public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
@@ -68,7 +69,10 @@ class GroovyPollerView implements InitializingBean {
 		            }
 		        }
 		        panel(constraints:STATUS, layout:new BorderLayout()) {
-		            m_idLabel = label(constraints:BorderLayout.NORTH, text:'Monitor: '+m_frontEnd.getMonitorName())
+		            panel(constraints:BorderLayout.NORTH, layout:new BorderLayout()) {
+		            	m_idLabel = label(constraints:BorderLayout.WEST, text:'Monitor: '+m_frontEnd.getMonitorName())
+		            	m_statusLabel = label(constraints:BorderLayout.EAST, text:m_frontEnd.getStatus())
+		            }
 		    	    scrollPane(constraints:BorderLayout.CENTER, viewportView:m_table)
 		        }
 		    }
@@ -83,7 +87,7 @@ class GroovyPollerView implements InitializingBean {
 		updateCurrentPanel();
 		
 		m_frontEnd.pollStateChange = { updateTable() }
-		m_frontEnd.propertyChange = { updateCurrentPanel(); m_idLabel.text = m_frontEnd.getMonitorName() }
+		m_frontEnd.propertyChange = { updateCurrentPanel(); m_idLabel.text = 'Monitor: '+m_frontEnd.getMonitorName(); m_statusLabel.text = m_frontEnd.getStatus() }
 		m_frontEnd.configurationChanged = { updateTableModel(); m_idLabel.text = m_frontEnd.getMonitorName() }
 
 		frame.show()	
@@ -101,7 +105,7 @@ class GroovyPollerView implements InitializingBean {
    }
    
    private void updateCurrentPanel() {
-		SwingUtilities.invokeLater({ setCurrentPanel(m_frontEnd.registered ? STATUS : REGISTRATION) });
+		SwingUtilities.invokeLater({ setCurrentPanel(m_frontEnd.started ? STATUS : REGISTRATION) });
    }
    
    private void setCurrentPanel(String panelName) {
