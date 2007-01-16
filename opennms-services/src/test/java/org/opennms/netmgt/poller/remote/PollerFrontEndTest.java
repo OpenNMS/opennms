@@ -34,7 +34,6 @@ package org.opennms.netmgt.poller.remote;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
-
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 import java.beans.PropertyChangeEvent;
@@ -147,6 +146,9 @@ public class PollerFrontEndTest extends TestCase {
 
     private boolean m_started;
 
+    private MonitorStatus m_oldStatus = MonitorStatus.STARTED;
+    private MonitorStatus m_monitorStatus = MonitorStatus.CONFIG_CHANGED;
+
     public void testAfterPropertiesSetWhenNotRegistered() throws Exception {
         testAfterPropertiesSetWithRegisteredId(null);
     }
@@ -175,8 +177,6 @@ public class PollerFrontEndTest extends TestCase {
         setRegistered();
 
         anticipateAfterPropertiesSet();
-
-        setPollConfig(new DemoPollerConfiguration());
 
         anticipateCheckConfig();
 
@@ -322,6 +322,59 @@ public class PollerFrontEndTest extends TestCase {
 
         verifyMocks();
     }
+    
+    public void testPause() throws Exception {
+        setRegistered();
+        
+        anticipateAfterPropertiesSet();
+        
+        setMonitorStatus(MonitorStatus.PAUSED);
+        
+        anticipateCheckConfig();
+        
+        setMonitorStatus(MonitorStatus.STARTED);
+        
+        anticipateCheckConfig();
+        
+        replayMocks();
+        
+        m_frontEnd.afterPropertiesSet();
+        
+        m_frontEnd.checkConfig();
+        
+        m_frontEnd.checkConfig();
+        
+        verifyMocks();
+    }
+    
+    public void testDisconnect() throws Exception {
+        setRegistered();
+        
+        anticipateAfterPropertiesSet();
+        
+        setMonitorStatus(MonitorStatus.DISCONNECTED);
+        
+        anticipateCheckConfig();
+        
+        setMonitorStatus(MonitorStatus.STARTED);
+        
+        anticipateCheckConfig();
+        
+        replayMocks();
+        
+        m_frontEnd.afterPropertiesSet();
+        
+        m_frontEnd.checkConfig();
+        
+        m_frontEnd.checkConfig();
+        
+        verifyMocks();
+    }
+
+    private void setMonitorStatus(MonitorStatus status) {
+        m_oldStatus = m_monitorStatus;
+        m_monitorStatus = status;
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -337,7 +390,13 @@ public class PollerFrontEndTest extends TestCase {
         m_oldPollerConfiguration = null;
 
         m_frontEnd = new DefaultPollerFrontEnd();
+        
+//        ServerUnreachableAdaptor adaptor = new ServerUnreachableAdaptor();
+//        adaptor.setRemoteBackEnd(m_backEnd);
+//        m_frontEnd.setPollerBackEnd(adaptor);
+        
         m_frontEnd.setPollerBackEnd(m_backEnd);
+        
         m_frontEnd.setPollerSettings(m_settings);
         m_frontEnd.setPollService(m_pollService);
 
@@ -354,8 +413,6 @@ public class PollerFrontEndTest extends TestCase {
         anticipateRegisterLocationMonitor();
         
         anticipateDoPollerStart();
-
-        anticipateFireRegistered();
 
     }
 
@@ -374,6 +431,9 @@ public class PollerFrontEndTest extends TestCase {
         anticipateGetMonitorId();
         anticipatePollerStarting();
         anticipateDoLoadConfig();
+        anticipateFirePropertyChangeEvent("registered", false, true);
+        anticipateFirePropertyChangeEvent("started", false, true);
+        
     }
 
     private void anticipateDoLoadConfig() {
@@ -396,7 +456,42 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateDoCheckIn() {
         anticipateGetMonitorId();
         anticipatePollerCheckingIn();
+        switch(m_monitorStatus) {
+        case CONFIG_CHANGED:
+            anticipateDoLoadConfig();
+            break;
+        case PAUSED:
+            anticipateDoPause();
+            break;
+        case DISCONNECTED:
+            anticipateDoDisconnect();
+            break;
+        case STARTED:
+            if (m_oldStatus == MonitorStatus.PAUSED) {
+                anticipateDoResume();
+            } else if (m_oldStatus == MonitorStatus.DISCONNECTED) {
+                anticipateReconnect();
+            }
+            break;
+        }
+    }
+
+    private void anticipateReconnect() {
         anticipateDoLoadConfig();
+        anticipateFirePropertyChangeEvent("disconnected", true, false);
+    }
+
+    private void anticipateDoDisconnect() {
+        anticipateDoLoadConfig();
+        anticipateFirePropertyChangeEvent("disconnected", false, true);
+    }
+
+    private void anticipateDoResume() {
+        anticipateFirePropertyChangeEvent("paused", true, false);
+    }
+
+    private void anticipateDoPause() {
+        anticipateFirePropertyChangeEvent("paused", false, true);
     }
 
     private void anticipateDoPoll() {
@@ -409,7 +504,7 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateFireConfigurationChangeEvent() {
         PropertyChangeEvent e = new PropertyChangeEvent(m_frontEnd,
                                                         "configuration", 
-                                                        (oldConfig() == null ? null :oldConfig().getConfigurationTimestamp()), 
+                                                        (oldConfig() == null ? null : oldConfig().getConfigurationTimestamp()), 
                                                         (pollConfig() == null ? null : pollConfig().getConfigurationTimestamp()));
         m_configChangeListener.configurationChanged(eq(e));
     }
@@ -417,10 +512,6 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateFirePropertyChangeEvent(String property, Object oldValue, Object newValue) {
         PropertyChangeEvent e= new PropertyChangeEvent(m_frontEnd, property, oldValue, newValue);
         m_registrationListener.propertyChange(eq(e));
-    }
-
-    private void anticipateFireRegistered() {
-        anticipateFirePropertyChangeEvent("registered", false, true);
     }
 
     private void anticipateFireServicePollStateChanged() {
@@ -443,27 +534,33 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateGetServicePollState() {
     }
 
-    private void anticipateInitializePollState() {
-        anticipateStart();
-
-        anticipatePollServiceSetMonitorLocators();
-
-        anticipateGetMonitorId();
-
-        anticipateGetConfiguration();
-
-        anticipateFireConfigurationChangeEvent();
-
-        anticipatePolledServicesInitialized();
-    }
-
     private void anticipatePolledServicesInitialized() {
         m_pollService.initialize(isA(PolledService.class));
         expectLastCall().times(pollConfig().getPolledServices().length);
     }
 
     private void anticipatePollerCheckingIn() {
-        expect(m_backEnd.pollerCheckingIn(1, oldConfig().getConfigurationTimestamp())).andReturn(MonitorStatus.CONFIG_CHANGED);
+        
+        Date oldTimestamp = pollConfig().getConfigurationTimestamp();
+        switch(m_monitorStatus) {
+        case CONFIG_CHANGED:
+            setPollConfig(new DemoPollerConfiguration());
+            break;
+        case DISCONNECTED:
+            setPollConfig(new DemoPollerConfiguration(new Date(0)));
+            break;
+        case STARTED:
+            if (m_oldStatus != MonitorStatus.STARTED) {
+                setPollConfig(new DemoPollerConfiguration());
+            }
+        }
+        
+        expect(m_backEnd.pollerCheckingIn(1, oldTimestamp)).andReturn(m_monitorStatus);
+
+    }
+
+    private Date getOldConfigurationTimestamp() {
+        return (oldConfig() == null ? null : oldConfig().getConfigurationTimestamp());
     }
 
     private void anticipatePollerStopping() {
@@ -478,7 +575,6 @@ public class PollerFrontEndTest extends TestCase {
         anticipateGetMonitorId();
 
         anticipateReportResult();
-
     }
 
     private void anticipatePollServiceSetMonitorLocators() {
@@ -525,6 +621,8 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateStop() {
         anticipateGetMonitorId();
         anticipatePollerStopping();
+        anticipateFirePropertyChangeEvent("registered", true, false);
+        anticipateFirePropertyChangeEvent("started", true, false);
     }
 
     private void anticipateUpdateServicePollState() {
@@ -551,7 +649,7 @@ public class PollerFrontEndTest extends TestCase {
         return null;
 
     }
-
+    
     private ServicePollStateChangedEvent eq(ServicePollStateChangedEvent e) {
         EasyMock.reportMatcher(new PolledServiceChangeEventEquals(e));
         return null;

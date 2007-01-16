@@ -44,10 +44,12 @@ import org.opennms.netmgt.model.OnmsServiceType;
 
 public class DemoPollerConfiguration implements PollerConfiguration {
     
-    Date m_timestamp = new Date();
+    Date m_timestamp;
     PolledService[] m_polledServices;
     
-    DemoPollerConfiguration() {
+    DemoPollerConfiguration(Date timestamp) {
+        m_timestamp = timestamp;
+        
         OnmsServiceType http = new OnmsServiceType("HTTP");
         
         List<PolledService> polledServices = new ArrayList<PolledService>();
@@ -65,6 +67,10 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         
         m_polledServices = (PolledService[]) polledServices.toArray(new PolledService[polledServices.size()]);
         
+    }
+    
+    DemoPollerConfiguration() {
+        this(new Date());
     }
 	
     public Date getConfigurationTimestamp() {
@@ -87,7 +93,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
     public PolledService getFirstService() {
         return m_polledServices[0];
     }
-    
-    
+
+  
 
 }
