@@ -48,6 +48,7 @@ import org.springframework.remoting.RemoteLookupFailureException;
 
 public class ServerUnreachableAdaptor implements PollerBackEnd {
     
+    private String m_monitorName;
     private PollerBackEnd m_remoteBackEnd;
     private boolean m_serverUnresponsive = false;
     
@@ -98,6 +99,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         try {
             
             boolean pollerStarting = m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
+            m_monitorName = m_remoteBackEnd.getMonitorName(locationMonitorId);
             m_serverUnresponsive = false;
             return pollerStarting;
             
@@ -138,7 +140,11 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
 
     public String getMonitorName(int locationMonitorId) {
-        return m_remoteBackEnd.getMonitorName(locationMonitorId);
+        try {
+            return m_remoteBackEnd.getMonitorName(locationMonitorId);
+        } catch (RemoteLookupFailureException e) {
+            return (m_monitorName == null ? ""+locationMonitorId : m_monitorName);
+        }
     }
 
 
