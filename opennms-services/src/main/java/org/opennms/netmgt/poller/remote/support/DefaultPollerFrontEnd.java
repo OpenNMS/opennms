@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
-import org.hibernate.event.def.OnLockVisitor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -65,6 +64,7 @@ import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         DisposableBean {
@@ -72,9 +72,20 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     private class Disconnected extends RunningState {
 
         @Override
+        public boolean isDisconnected() {
+            return true;
+        }
+
+        @Override
         public void stop() {
             // don't call do stop as we are disconnected from the server
             setState(new Initial());
+        }
+        
+        @Override
+        protected void onConfigChanged() {
+            doLoadConfig();
+            setState(new Started());
         }
 
         @Override
@@ -116,6 +127,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     private class Paused extends RunningState {
 
         @Override
+        public boolean isPaused() {
+            return true;
+        }
+
+        @Override
         protected void onDisconnected() {
             doDisconnected();
             setState(new Disconnected());
@@ -123,7 +139,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
         @Override
         protected void onStarted() {
-            doLoadConfig();
+            doResume();
             setState(new Started());
         }
 
@@ -260,6 +276,14 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         public boolean isStarted() {
             return false;
         }
+        
+        public boolean isPaused() {
+            return false;
+        }
+        
+        public boolean isDisconnected() {
+            return false;
+        }
 
         public void pollService(Integer serviceId) {
             throw illegalState("Cannot poll from this state.");
@@ -279,9 +303,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     }
     
 
-
-    // state variables
-    private boolean m_started;
 
     private State m_state = new Initial();
 
@@ -309,12 +330,16 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         m_configChangeListeners.addFirst(l);
     }
 
+    public void doResume() {
+        // do I need to do anything here?
+    }
+
     public void doPause() {
-        throw new UnsupportedOperationException("DefaultPollerFrontEnd.doPause not yet implemented.");
+        // do I need to do anything here?
     }
 
     public void doDisconnected() {
-        throw new UnsupportedOperationException("DefaultPollerFrontEnd.doDisconnected not yet implemented.");
+        doLoadConfig();
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -384,7 +409,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         
         doPollerStart();
         
-        firePropertyChange("registered", false, true);
     }
 
     public void doStop() {
@@ -555,12 +579,21 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
     private void firePropertyChange(String propertyName, Object oldValue,
             Object newValue) {
+        if (nullSafeEquals(oldValue, newValue)) {
+            // no change no event
+            return;
+            
+        }
         PropertyChangeEvent e = new PropertyChangeEvent(this, propertyName,
                 oldValue, newValue);
 
         for (PropertyChangeListener l : m_propertyChangeListeners) {
             l.propertyChange(e);
         }
+    }
+
+    private boolean nullSafeEquals(Object oldValue, Object newValue) {
+        return (oldValue == newValue ? true : ObjectUtils.nullSafeEquals(oldValue, newValue));
     }
 
     private void fireServicePollStateChanged(PolledService polledService, int index) {
@@ -590,7 +623,24 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     }
 
     private void setState(State newState) {
+        boolean started = isStarted();
+        boolean registered = isRegistered();
+        boolean paused = isPaused();
+        boolean disconnected = isDisconnected();
         m_state = newState;
+        firePropertyChange("started", started, isStarted());
+        firePropertyChange("registered", registered, isRegistered());
+        firePropertyChange("paused", paused, isPaused());
+        firePropertyChange("disconnected", disconnected, isDisconnected());
+        
+    }
+
+    private boolean isDisconnected() {
+        return m_state.isDisconnected();
+    }
+
+    private boolean isPaused() {
+        return m_state.isPaused();
     }
 
     private void updateServicePollState(Integer polledServiceId, PollStatus result) {

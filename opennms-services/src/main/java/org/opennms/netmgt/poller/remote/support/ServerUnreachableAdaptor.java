@@ -89,7 +89,16 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
     public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
-        return m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
+        try {
+            
+            boolean pollerStarting = m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
+            m_serverUnresponsive = false;
+            return pollerStarting;
+            
+        } catch (RemoteLookupFailureException e) {
+            m_serverUnresponsive = true;
+            return true;
+        }
     }
 
     public void pollerStopping(int locationMonitorId) {
@@ -102,8 +111,9 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
     public void reportResult(int locationMonitorID, int serviceId, PollStatus status) {
-        if (!m_serverUnresponsive)
+        if (!m_serverUnresponsive) {
             m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
+        }
     }
 
 

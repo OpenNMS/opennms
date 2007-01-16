@@ -32,6 +32,7 @@
 package org.opennms.netmgt.poller.remote;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 
@@ -44,7 +45,7 @@ import org.quartz.Trigger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class Poller implements InitializingBean, PollObserver, ConfigurationChangedListener {
+public class Poller implements InitializingBean, PollObserver, ConfigurationChangedListener, PropertyChangeListener {
 	
 	private PollerFrontEnd m_pollerFrontEnd;
 	private Scheduler m_scheduler;
@@ -68,8 +69,9 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 		assertNotNull(m_pollerFrontEnd, "pollerFrontEnd");
         
         m_pollerFrontEnd.addConfigurationChangedListener(this);
+        m_pollerFrontEnd.addPropertyChangeListener(this);
 		
-        if (m_pollerFrontEnd.isRegistered()) {
+        if (m_pollerFrontEnd.isStarted()) {
             schedulePolls();
         } else {
             log().debug("Poller not yet registered");
@@ -143,6 +145,24 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
         try {
             unschedulePolls();
             schedulePolls();
+        } catch (Exception ex) {
+            log().fatal("Unable to schedule polls!", ex);
+            throw new RuntimeException("Unable to schedule polls!");
+        }
+    }
+
+    public void propertyChange(PropertyChangeEvent evt) {
+        try {
+            if (Boolean.TRUE.equals(evt.getNewValue())) {
+                if ("paused".equals(evt.getPropertyName())) {
+                    unschedulePolls();
+                } else if ("disconnected".equals(evt.getPropertyName())) {
+                    unschedulePolls();
+                } else if ("started".equals(evt.getPropertyName())) {
+                    unschedulePolls();
+                    schedulePolls();
+                }
+            }
         } catch (Exception ex) {
             log().fatal("Unable to schedule polls!", ex);
             throw new RuntimeException("Unable to schedule polls!");
