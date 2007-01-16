@@ -32,6 +32,7 @@
 package org.opennms.netmgt.poller.remote.support;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +73,12 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         if (m_serverUnresponsive) {
             return new EmptyPollerConfiguration();
         }
-        return m_remoteBackEnd.getPollerConfiguration(locationMonitorId);
+        try {
+            return m_remoteBackEnd.getPollerConfiguration(locationMonitorId);
+        } catch (RemoteLookupFailureException e) {
+            m_serverUnresponsive = true;
+            return new EmptyPollerConfiguration();
+        }
     }
 
     public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
@@ -112,13 +118,22 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
     public void reportResult(int locationMonitorID, int serviceId, PollStatus status) {
         if (!m_serverUnresponsive) {
-            m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
+            try {
+                m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
+            } catch (RemoteLookupFailureException e) {
+                m_serverUnresponsive = true;
+            }
         }
     }
 
 
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
-        return m_remoteBackEnd.getServiceMonitorLocators(context);
+        try {
+            return m_remoteBackEnd.getServiceMonitorLocators(context);
+        } catch (RemoteLookupFailureException e) {
+            m_serverUnresponsive = true;
+            return Collections.EMPTY_LIST;
+        }
     }
 
 

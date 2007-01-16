@@ -542,7 +542,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         Date oldTime = getCurrentConfigTimestamp();
 
         m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
-
+        
         m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
 
         synchronized (m_pollState) {
@@ -627,6 +627,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         boolean registered = isRegistered();
         boolean paused = isPaused();
         boolean disconnected = isDisconnected();
+        System.err.println("Changing state from "+m_state+" to "+newState);
         m_state = newState;
         firePropertyChange("started", started, isStarted());
         firePropertyChange("registered", registered, isRegistered());
