@@ -3,15 +3,26 @@
 function setContextMenuForElement(evt, elem){
 	var elemType = elem.getType();
 	if(elemType==NODE_TYPE){
+		
 		var pingLink = "response/ping.jsp?node="+elem.getNodeId();
 		var id =elem.getNodeId(); 
-		var tracerouteLink = "response/traceroute.jsp?node=";
+		var label = elem.getLabel();
 		var str = "<menu id='ContextMenu' xmlns='http://foo' >"+
-				" <header>OpenNMS IA Context Menu</header> "+
-				" <item onactivate='openPing("+id+");' action='Ping'>Ping</item>"+
-				" <item onactivate='openTraceroute("+id+");' action='Traceroute'>Traceroute</item>"+
-			     "</menu>";
-			   
+				" <header>OpenNMS IA Context Menu</header> ";
+		if(contextMenuEnabled){
+			for(index in CM_COMMANDS){
+				if(CM_COMMANDS[index]=="-"){
+					str+="<separator />";
+				}else{
+					var link = CM_LINKS[index];
+					var params = CM_PARAMS[index];				
+					link = link.replace("ELEMENT_ID",""+id);
+					link = link.replace("ELEMENT_LABEL",label);
+					str+=" <item onactivate='openLink(\""+link+"\",\""+params+"\");' action='"+CM_COMMANDS[index]+"'>"+CM_COMMANDS[index]+"</item>";
+				}
+			}
+		}
+		str+="</menu>";
 		var newMenuRoot = parseXML(str, mapContextMenu).firstChild;
 		mapContextMenu.replaceChild( newMenuRoot, mapContextMenu.firstChild );
 	}
@@ -20,13 +31,11 @@ function setContextMenuForElement(evt, elem){
 	}
 }
 
-function openPing(id){
-	open(baseContext+'response/ping.jsp?node='+id, '', 'toolbar,width=300,height=300, left=0, top=0, scrollbars=1, resizable=1');	
+
+function openLink( link, params){
+	open(baseContext+link, '', params);	
 }
 
-function openTraceroute(id){
-	open(baseContext+'response/traceroute.jsp?node='+id, '', 'toolbar,width=300,height=300, left=0, top=0, scrollbars=1, resizable=1');	
-}
 //funtion for disabling context menu.
 function disableContextMenu(evt){
 	evt.preventDefault();

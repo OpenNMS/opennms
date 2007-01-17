@@ -41,16 +41,23 @@
    String fullscreen = request.getParameter("fullscreen");
    String refresh = request.getParameter("refresh");
    String dimension = request.getParameter("dimension");
+   String mapsFactory = request.getParameter("mapsFactory");
    String mapToOpen = request.getParameter("mapToOpen");
    String[] dim = dimension.split("x");
    int mapwidth=Integer.parseInt(dim[0]);
    int mapheight=Integer.parseInt(dim[1]);
    HttpSession sess = request.getSession(true);
+   sess.setAttribute("mapsFactoryLabel",mapsFactory);
    sess.setAttribute("refreshTime",refresh);
-   if(mapToOpen==null || mapToOpen.equals(""))
-	   sess.removeAttribute("mapToOpen");
-   else sess.setAttribute("mapToOpen",new Integer(mapToOpen));
+   if(mapToOpen==null)
+   	sess.setAttribute("mapToOpen",/*new Integer(1)*/ null);
+   else sess.setAttribute("mapToOpen",new Integer(Integer.parseInt(mapToOpen)));
 %>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Map.Entry"%>
+<%@page import="java.util.List"%>
+<%@page import="org.opennms.web.map.config.ContextMenu.CMEntry"%>
 <html>
 <head>
   <title>Map | OpenNMS Web Console</title>
@@ -75,7 +82,7 @@
 	var baseContext = '<%=org.opennms.web.Util.calculateUrlBase( request )%>';
 
 
-
+	var mapsFactory= '<%=mapsFactory%>';
 
 	//interval for refreshing nodes attributes (availability, status...): 2 minutes is the default value
 	var refreshNodesIntervalInSec=120; 
@@ -95,9 +102,54 @@
 	var AVAIL_COLOR = new Array();
 	var AVAIL_MIN = new Array();
 	var AVAIL_FLASH= new Array();
+	
+	var CM_COMMANDS = new Array();
+	var CM_LINKS = new Array();
+	var CM_PARAMS = new Array();
 <%
 	MapPropertiesFactory.init();
 	MapPropertiesFactory mpf = MapPropertiesFactory.getInstance();
+	MapsFactory mapsFact = null;
+	if(mapsFactory==null){
+		mapsFact = mpf.getDefaultFactory();
+	}else{
+		mapsFact = mpf.getMapsFactory(mapsFactory);
+		if(mapsFact==null){
+			throw new ServletException("The maps factory doesn't exists.");
+		}
+	}
+	boolean reload = false;
+	boolean contextMenu = true;
+	boolean doubleClick = true;
+	reload = mapsFact.isReload();
+	contextMenu = mapsFact.isContextMenu();
+	doubleClick = mapsFact.isDoubleClick();
+	if(contextMenu){
+		ContextMenu contMenu =	mapsFact.getContMenu();
+		if(contMenu!=null){
+			List cmEntries = contMenu.getEntries();
+			Iterator it = cmEntries.iterator();
+			int countEntries=0;
+			while(it.hasNext()){
+				ContextMenu.CMEntry entry = (ContextMenu.CMEntry)it.next();
+				String command = entry.command;
+				String link = entry.link;
+				String params = entry.params;
+				%>
+				CM_COMMANDS[<%=countEntries%>]='<%=command%>';
+				CM_LINKS[<%=countEntries%>]='<%=link%>';
+				CM_PARAMS[<%=countEntries%>]='<%=params%>';
+				<%
+				countEntries++;
+			}
+		}
+	}
+	
+	%>
+		var reloadMap = <%=reload%>;
+		var contextMenuEnabled = <%=contextMenu%>;
+		var doubleClickEnabled = <%=doubleClick%>;				
+	<%
 	Status[] statuses = mpf.getOrderedStatuses();
 	for(int i=0; i<statuses.length;i++){
 		Status status=statuses[i];
@@ -134,6 +186,7 @@
 	var ADDRANGE_ACTION = "AddRange";
 	var ADDMAPS_ACTION = "AddMaps";
 	var REFRESH_ACTION = "Refresh";
+	var RELOAD_ACTION = "Reload";
 	var ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
 	var ADDMAPS_WITH_NEIG_ACTION = "AddMapsWithNeig";
 	var ADDNODES_NEIG_ACTION = "AddNodesNeig";
@@ -174,9 +227,11 @@
 	//the map object to work on.
 	var map;
 	
+	var refreshingMapElems=false;
 	var deletingMapElem=false;
 	var addingMapElemNeighbors=false;
 	var settingMapElemIcon=false;
+	var appInited = false;
 	var nodesLoaded = false;
 	var mapsLoaded = false;
 	
@@ -194,7 +249,7 @@
 	var mapHistoryIndex = 0;
  	
  	// if true the current user is admin.
- 	var isUserAdmin = <%=request.isUserInRole( Authentication.ADMIN_ROLE )%>;
+ 	var isUserAdmin = false;
  	
 	// int containing the number of loading at the moment
 	var loading=0;

@@ -177,7 +177,7 @@ function getSemaphoreFlash(severity, avail){
 function InitApplication(){
 	loading++;
 	assertLoading();
-	postURL ( "InitMapsApplication?action="+INIT_ACTION, null, handleInitResponse, "text/xml", null );	
+	postURL ( "InitMapsApplication?action="+INIT_ACTION+"&mapsFactory="+mapsFactory, null, handleInitResponse, "text/xml", null );	
 }
 
 function handleInitResponse(data) {
@@ -195,8 +195,18 @@ function handleInitResponse(data) {
 		}
 		var splitStr = str.split("&");
 		refreshNodesIntervalInSec=parseInt(splitStr[0])*60;
-		var mapToOpen = splitStr[1];
+		isUserAdmin = splitStr[1];
+		var mapToOpen = splitStr[2];
 		refreshNodesIntervalInSec=parseInt(str)*60;
+
+		if(mapToOpen==undefined && isUserAdmin=="false") {
+				alert('Warning: you have to specify a map to view.');
+				loading--;	
+				assertLoading();				
+				hideAll();
+			    disableMenu();
+				return;
+		}
 
 		if(mapToOpen!=undefined){
 			if(isUserAdmin=="false"){
@@ -207,6 +217,7 @@ function handleInitResponse(data) {
 		}
 		loading--;	
 		assertLoading();
+		appInited = true;
 		//start the refresh nodes countdown
 		startRefreshNodesTime();		
 	} else {
@@ -219,7 +230,7 @@ function handleInitResponse(data) {
 function LoadMaps(){
 	loading++;
 	assertLoading();
-	postURL ( "LoadMaps?action="+LOADMAPS_ACTION, null, handleLoadMapsResponse, "text/xml", null );
+	postURL ( "LoadMaps?action="+LOADMAPS_ACTION+"&mapsFactory="+mapsFactory, null, handleLoadMapsResponse, "text/xml", null );
 }
 
 function handleLoadMapsResponse(data) {
@@ -272,7 +283,7 @@ function handleLoadMapsResponse(data) {
 function LoadNodes(){
 	loading++;
 	assertLoading();
-	postURL ( "LoadNodes?action="+LOADNODES_ACTION, null, handleLoadNodesResponse, "text/xml", null );
+	postURL ( "LoadNodes?action="+LOADNODES_ACTION+"&mapsFactory="+mapsFactory, null, handleLoadNodesResponse, "text/xml", null );
 	
 }
 
@@ -347,7 +358,7 @@ function addMapElement(){
 }
 
 function addRangeOfNodes(){
-	var range = menuSvgDocument.getElementById("RangeText").firstChild.nodeValue;
+	var range = menuSvgDocument.getElementById("NodeRangeBoxText").firstChild.nodeValue;
 	if(!isValidRange(range)){
 		alert('Range not valid!');
 		return;
@@ -422,14 +433,17 @@ function getElemInfo(elemMap)
 {
 	loading++;
 	assertLoading();
-	var ACTION = "";
+	var ACTION = LOAD_NODES_INFO_ACTION;
 	var id = -1;
+	var type = "";
+			
 	if (elemMap.isMap()) {
-		//do nothing...
+		id = elemMap.getMapId();
+		type=MAP_TYPE;
 	}
 	if (elemMap.isNode()) {
-		ACTION = LOAD_NODES_INFO_ACTION;
 		id = elemMap.getNodeId();
+		type=NODE_TYPE;
 	}
 	postURL ( "LoadInfos?action="+ACTION+"&elem="+id, null, handleLoadInfosResponse, "text/xml", null );
 }
@@ -510,13 +524,13 @@ function handleLoadInfosResponse(data) {
 	if(tiText!=null){ // if TopInfoText svg node exists, continue to write element infos.
 		var infos ="";	
 		var st = str.split("+");
-		for(var k=2;k<st.length;k++){
+		for(var k=1;k<st.length;k++){
 			var nodeToken = st[k];
 			infos+="<tspan x=\"3\" dy=\"15\" font-size=\"9\">"+nodeToken+"</tspan>";		
 		}
-		var nodeToken = st[1];
-		var labelText = menuSvgDocument.getElementById("TopInfoLabelText");
-		labelText.firstChild.nodeValue+=" ("+nodeToken+")";
+	//	var nodeToken = st[1];
+	//	var labelText = menuSvgDocument.getElementById("TopInfoLabelText");
+	//	labelText.firstChild.nodeValue+=" ("+nodeToken+")";
 		tiText.appendChild(parseXML(infos,menuSvgDocument));
 	}
 	loading--;
@@ -768,23 +782,24 @@ function newMap(){
 }
 
 function openMap(mapId){ 
-	if(selectedMapInList!=0 || (mapId!=undefined && (typeof mapId)!="object")){
-		if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
-		 if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
-			return;
-		}	
-		map.clear();
-		hideMapInfo();
-		loading++;
-		assertLoading();
-		disableMenu();
-		var mapIdToOpen = mapId;
-		if(mapIdToOpen==undefined || (typeof mapIdToOpen)=="object")
-			mapIdToOpen = mapSortAss[selectedMapInList].id;
-		//alert("OpenMap: mapIdToOpen="+mapIdToOpen);
-		postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapIdToOpen+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
+	if(!refreshingMapElems){
+		if(selectedMapInList!=0 || (mapId!=undefined && (typeof mapId)!="object")){
+			if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
+			 if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
+				return;
+			}	
+			map.clear();
+			hideMapInfo();
+			loading++;
+			assertLoading();
+			disableMenu();
+			var mapIdToOpen = mapId;
+			if(mapIdToOpen==undefined || (typeof mapIdToOpen)=="object")
+				mapIdToOpen = mapSortAss[selectedMapInList].id;
+			//alert("OpenMap: mapIdToOpen="+mapIdToOpen);
+			postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapIdToOpen+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
+		}
 	}
-	
 }
 
 function handleLoadingMap(data) {
@@ -1142,21 +1157,27 @@ function handleSaveResponse(data) {
 		
 }
 
-var lastRenameMapNameValue="";
+
 function renameMap(){
-	var renameNode =menuSvgDocument.getElementById("RenameMapText");
-	if(renameNode!=null && trimAll(lastRenameMapNameValue)!=""){
-		clearMapInfo();
-		currentMapName=lastRenameMapNameValue;
-		viewMapInfo();
-		clearTopInfo();
-		clearDownInfo();
-		var childNode = menuSvgDocument.getElementById("DownInfoText");
-		if (childNode)
-			menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-			menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map renamed."+
-		"</text>",menuSvgDocument));		
-	}else{
+	var renameNode =menuSvgDocument.getElementById("RenameMapBoxText");
+	var isValid=false;
+	if(renameNode!=null){
+		var newMapName = renameNode.firstChild.nodeValue;
+		if(trimAll(newMapName)!=""){
+			isValid=true;
+			clearMapInfo();
+			currentMapName=newMapName;
+			viewMapInfo();
+			clearTopInfo();
+			clearDownInfo();
+			var childNode = menuSvgDocument.getElementById("DownInfoText");
+			if (childNode)
+				menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
+				menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map renamed."+
+			"</text>",menuSvgDocument));		
+		}
+	}
+	if(!isValid){
 		clearDownInfo();
 		var childNode = menuSvgDocument.getElementById("DownInfoText");
 		if (childNode)
@@ -1166,6 +1187,7 @@ function renameMap(){
 	}
 }
 
+/*
 function testMapNameLength(evt){
 	try{
 		var keycode = evt.getKeyCode();
@@ -1187,6 +1209,8 @@ function testMapNameLength(evt){
 	//do nothing for the moment
 	}
 }
+*/
+
 
 function deleteMap(){
 	if(currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
@@ -1350,17 +1374,28 @@ function RefreshNodes(){
 	resetFlags();
 	menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'inline');
 	var elems="";
-	if(map!=undefined && map.mapElementSize>0){
-	//alert("loading nodes");
-		postURL ( "ModifyMap?action="+REFRESH_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
-	}else{
-		menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
-		enableMenu();
-		startRefreshNodesTime();
+	if(map!=undefined){
+		if(reloadMap){
+			refreshingMapElems=true;
+			postURL ( "ModifyMap?action="+RELOAD_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
+			return;
+		}else{
+			if(map.mapElementSize>0){
+				refreshingMapElems=true;
+				postURL ( "ModifyMap?action="+REFRESH_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
+			}else{
+				menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
+				enableMenu();
+				startRefreshNodesTime();
+			}
+			return;
+		}
 	}
+	menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
+	enableMenu();
+	startRefreshNodesTime();			
 }
 
-var count=0;
 
 function handleRefreshNodesResponse(data) {
 	var saved=true;
@@ -1370,15 +1405,28 @@ function handleRefreshNodesResponse(data) {
 	var str = '';
 	if(data.success) {
 		str = data.content;
-		var tmpStr=str.substring(0,REFRESH_ACTION.length+2);
-		if(tmpStr==REFRESH_ACTION+"OK"){
-			str=str.substring(REFRESH_ACTION.length+2,str.length);
-		} else {
-    	    	alert('Refresh failed!');
-		menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
-		enableMenu();
-		startRefreshNodesTime();
-		return;
+		if(reloadMap){
+			var tmpStr=str.substring(0,RELOAD_ACTION.length+2);
+			if(tmpStr==RELOAD_ACTION+"OK"){
+				str=str.substring(RELOAD_ACTION.length+2,str.length);
+			} else {
+	    	    		alert('Refresh failed!');
+				menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
+				enableMenu();
+				startRefreshNodesTime();
+				return;
+			}
+		}else{
+			var tmpStr=str.substring(0,REFRESH_ACTION.length+2);
+			if(tmpStr==REFRESH_ACTION+"OK"){
+				str=str.substring(REFRESH_ACTION.length+2,str.length);
+			} else {
+				alert('Refresh failed!');
+				menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
+				enableMenu();
+				startRefreshNodesTime();
+				return;
+			}
 		}
 	} else {
         alert('Refresh failed!');
@@ -1391,7 +1439,8 @@ function handleRefreshNodesResponse(data) {
 	var st = str.split("&");
 	map.clearLinks();
 	//alert("links cleared!");
-			
+	if(reloadMap)
+		map.clear();
 
 	for(var k=1;k<st.length;k++){
 		var nodeToken = st[k];
@@ -1418,7 +1467,7 @@ function handleRefreshNodesResponse(data) {
 		//MapElement
 		if (nodeST.length > 2) {
 
-			var id,iconName=DEFAULT_ICON,labelText="",avail=100,status=0,severity=0;
+			var id,iconName=DEFAULT_ICON,labelText="",avail=100,status=0,severity=0,posx=0,posy=0;
 			
 			while(counter< nodeST.length){
 				var tmp = nodeST[counter];
@@ -1457,19 +1506,34 @@ function handleRefreshNodesResponse(data) {
 					if(tmp!="null")
 						severity=tmp;
 					}
-					
+				if(reloadMap){
+					if(counter==6)
+						{
+						if(tmp!="null")
+							posx=tmp;
+						}
+					if(counter==7)
+						{
+						if(tmp!="null")
+							posy=tmp;
+						}
+				}
 				//alert(counter);	
 				counter++;
 			}
 			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
 			//alert("add element " + id);
-			var mapElem = map.mapElements[id];
-			var deleted = map.deleteMapElement(id);
-			var x = mapElem.x;
-			var y = mapElem.y;
-			if (deleted){
-				map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+			if(reloadMap){
+				map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, posx, posy, mapElemDimension, status, avail,severity));
+			}else{
+				var mapElem = map.mapElements[id];
+				var x=mapElem.x;
+				var y=mapElem.y;
+				var deleted = map.deleteMapElement(id);
+				if (deleted){
+					map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+				}
 			}
 			
 		}

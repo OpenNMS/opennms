@@ -5,6 +5,8 @@
 
 <svg  onload="load(evt);" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg-20000303-stylable" enableZoomAndPanControls="false">
 	<script type="text/ecmascript" xlink:href="selectionBox/mapApp.js" />
+	<script type="text/ecmascript" xlink:href="selectionBox/textbox.js" />
+	<script type="text/ecmascript" xlink:href="selectionBox/timer.js" />
 	<script type="text/ecmascript"><![CDATA[
 		 var svgNS = "http://www.w3.org/2000/svg";
 		 var xlinkNS = "http://www.w3.org/1999/xlink";
@@ -131,39 +133,48 @@
 		//alert(mapSvgDocument+"map in menu");
 	    
 		// load MAPS and NODES from the server.
-		LoadMaps();
-		LoadNodes();
-
+		//LoadMaps();
+		//LoadNodes();
+		
+		doLoadMapsAndNodes();
 		savedMapString = getMapString();
 		
 		}
 		
+		function doLoadMapsAndNodes(){
+			if(appInited){
+				LoadMaps();
+				LoadNodes();
+			}else{
+			    setTimeout('doLoadMapsAndNodes()',1000);
+			}
+		}		
 		
 		function decreaseMapElemDim(){
 			switch (mapElemDimension){
-					case 30:{
-							 mapElemDimension=25;
-							 break;
-							 }
-					case 25:{
-							 mapElemDimension=20;
-							 break;
-							 }					
-					case 20:{
-							 mapElemDimension=15;
-							 break;
-							 }
-					case 15:{
-							 mapElemDimension=10;
-							 break;
-							 }
-					case 10:{
-							 mapElemDimension=6;
-							 break;
-							 }
-					case 6:{
-							 return false;
-							 }							
+				case 30:{
+					 mapElemDimension=25;
+					 break;
+					 }
+				case 25:{
+					 mapElemDimension=20;
+					 break;
+					 }					
+				case 20:{
+					 mapElemDimension=15;
+					 break;
+					 }
+				case 15:{
+					 mapElemDimension=10;
+					 break;
+					 }
+				case 10:{
+					 mapElemDimension=6;
+					 break;
+					 }
+				case 6:{
+					 return false;
+					 }							
 			}
 			return true;
 		} 		
@@ -172,6 +183,7 @@
 	<script type="text/ecmascript" xlink:href="Point2D.js"/>
 	<script type="text/ecmascript" xlink:href="SVGElement.js"/>
 	<!-- script added for the menu-->
+	<script type="text/ecmascript"  xlink:href="contextMenu.js"/>
 	<script type="text/ecmascript" xlink:href="MapEventProcessor.js"/>
 	<script type="text/ecmascript" xlink:href="Link.js"/>
 	<script type="text/ecmascript" xlink:href="Semaphore.js"/>
