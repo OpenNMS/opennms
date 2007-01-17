@@ -54,17 +54,13 @@ final public class VLink {
 	}
 
 	public boolean equals(Object otherLink) {
+		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;
-		if (((this.elem1.getId() == link.getFirst().getId())
-				&& this.elem1.getType().equals(link.getFirst().getType())
-				&& (this.elem2.getId() == link.getSecond().getId()) && this.elem2
-				.getType().equals(link.getSecond().getType()))
-				|| (this.elem1.getId() == link.getSecond().getId()
-						&& this.elem1.getType().equals(
-								link.getSecond().getType())
-						&& this.elem2.getId() == link.getFirst().getId() && (this.elem2
-						.getType().equals(link.getFirst().getType()))))
-			return true;
+		if (
+		 (this.elem1.hasSameIdentifier(link.getFirst()) && this.elem2.hasSameIdentifier(link.getSecond()))
+			||
+		(this.elem2.hasSameIdentifier(link.getFirst()) && this.elem1.hasSameIdentifier(link.getSecond()))
+		) return true;
 		return false;
 	}
 
