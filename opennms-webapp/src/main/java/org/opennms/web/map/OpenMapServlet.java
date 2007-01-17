@@ -47,9 +47,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.acegisecurity.Authentication;
+import org.opennms.web.map.dataaccess.MapMenu;
 import org.opennms.web.map.view.*;
 
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author mmigliore
@@ -59,9 +63,6 @@ import java.text.SimpleDateFormat;
  * 
  */
 public class OpenMapServlet extends HttpServlet {
-	
-	static final long serialVersionUID = 2006102300; 
-	
 	Category log;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -79,6 +80,10 @@ public class OpenMapServlet extends HttpServlet {
 			strToSend = action+"OK";
 			HttpSession session = request.getSession(false);
 			if (session != null) {
+				Manager m = null;
+				m = (Manager) session.getAttribute("manager");
+				log.debug("Got manager from session: "+m);
+				strToSend = action + "OK";
 				String lastModTime = "";
 				String createTime = "";
 				float widthFactor = 1;
@@ -90,30 +95,48 @@ public class OpenMapServlet extends HttpServlet {
 						.getParameter("MapHeight"));
 				log.debug("Current mapWidth=" + mapWidth
 						+ " and MapHeight=" + mapHeight);
-				Manager m = new Manager();
-				m.startSession();
 				
 				VMap map = null;
 				
 				if (action.equals(MapsConstants.OPENMAP_ACTION)) {
 					SimpleDateFormat formatter = new SimpleDateFormat(
 					"HH.mm.ss dd/MM/yy");
-
-					map = m.getMap(mapId);
-					int oldMapWidth = map.getWidth();
-					int oldMapHeight = map.getHeight();
-					widthFactor = (float) mapWidth / oldMapWidth;
-					heightFactor = (float) mapHeight / oldMapHeight;
-					log.debug("Old saved mapWidth=" + oldMapWidth
-							+ " and MapHeight=" + oldMapHeight);
-					log.debug("widthFactor=" + widthFactor);
-					log.debug("heightFactor=" + heightFactor);
-					if (map.getCreateTime() != null)
-						createTime = formatter.format(map.getCreateTime());
-					if (map.getLastModifiedTime() != null)
-						lastModTime = formatter.format(map
-								.getLastModifiedTime());
-					strToSend += map.getId() + "+" + map.getBackground();
+					String user = request.getRemoteUser();
+					String role = null;
+					if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+						role=Authentication.ADMIN_ROLE;
+					}else if (request.isUserInRole(Authentication.USER_ROLE)) {
+						role=Authentication.USER_ROLE;
+					}					
+					List<MapMenu> visibleMaps = m.getVisibleMapsMenu(user, role);
+					Iterator<MapMenu> it = visibleMaps.iterator();
+					boolean found=false;
+					while(it.hasNext()){
+						MapMenu mapMenu = it.next();
+						if(mapMenu.getId()==mapId){
+							found=true;
+						}
+					}
+					if(found){
+						map = m.getMap(mapId,true);
+						int oldMapWidth = map.getWidth();
+						int oldMapHeight = map.getHeight();
+						widthFactor = (float) mapWidth / oldMapWidth;
+						heightFactor = (float) mapHeight / oldMapHeight;
+						log.debug("Old saved mapWidth=" + oldMapWidth
+								+ " and MapHeight=" + oldMapHeight);
+						log.debug("widthFactor=" + widthFactor);
+						log.debug("heightFactor=" + heightFactor);
+						log.debug("Setting new width and height to the session map");
+						map.setHeight(mapHeight);
+						map.setWidth(mapWidth);
+						if (map.getCreateTime() != null)
+							createTime = formatter.format(map.getCreateTime());
+						if (map.getLastModifiedTime() != null)
+							lastModTime = formatter.format(map
+									.getLastModifiedTime());
+						strToSend += map.getId() + "+" + map.getBackground();
+					}
 				}else{
 					strToSend=MapsConstants.OPENMAP_ACTION+"Failed";
 				}
@@ -148,6 +171,9 @@ public class OpenMapServlet extends HttpServlet {
 									+ links[i].getSecond().getType();
 						}
 					}
+				} else {
+					strToSend=MapsConstants.OPENMAP_ACTION + "Failed";
+					log.error("Map with id "+mapId+" not visible for user "+request.getRemoteUser());
 				}
 
 				m.endSession();

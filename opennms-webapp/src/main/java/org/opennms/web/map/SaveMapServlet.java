@@ -50,7 +50,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.map.db.Element;
+import org.opennms.web.map.dataaccess.Element;
 import org.opennms.web.map.view.*;
 
 import java.text.SimpleDateFormat;
@@ -103,7 +103,7 @@ public class SaveMapServlet extends HttpServlet {
 				+ " the query received is '" + query + "'");
 		try {
 			if (action.equals(MapsConstants.SAVEMAP_ACTION)) {
-				Manager m = new Manager();
+				Manager m = (Manager)session.getAttribute("manager");
 				m.startSession();
 				if ((packetStr == null && totalPacketsStr == null)
 						|| (packetStr.equals("1"))) {

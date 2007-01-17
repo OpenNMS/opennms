@@ -42,6 +42,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -51,19 +52,18 @@ import org.opennms.web.map.view.*;
  * @author mmigliore
  *
  * This servlet is called for 
- * deleting a map from Database
+ * deleting a map 
  */
 public class DeleteMapServlet extends HttpServlet
 {
 
-    static final long serialVersionUID = 2006102700;
-	
+ 
     Category log;
     
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
     {
       
-    	ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+      ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
       log = ThreadCategory.getInstance(this.getClass());
       
       BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
@@ -78,7 +78,12 @@ public class DeleteMapServlet extends HttpServlet
       
       try{
     	if(action.equals(MapsConstants.DELETEMAP_ACTION)){
-	      	Manager m = new Manager();
+			HttpSession session = request.getSession(false);
+			Manager m = null;
+			if(session!=null){
+				m = (Manager) session.getAttribute("manager");
+				log.debug("Got manager from session: "+m);
+			}
 	      	m.startSession();
 	      	m.deleteMap(mapId);
 	      	m.endSession();

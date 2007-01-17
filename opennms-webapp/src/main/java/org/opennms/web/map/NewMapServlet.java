@@ -90,7 +90,7 @@ public class NewMapServlet extends HttpServlet {
 						.getParameter("MapHeight"));
 				log.debug("Current mapWidth=" + mapWidth
 						+ " and MapHeight=" + mapHeight);
-				Manager m = new Manager();
+				Manager m = (Manager)session.getAttribute("manager");
 				m.startSession();
 				
 				VMap map = null;

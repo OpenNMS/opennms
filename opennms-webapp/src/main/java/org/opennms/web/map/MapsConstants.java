@@ -70,6 +70,8 @@ public final class MapsConstants {
 	public static final String ADDMAPS_ACTION = "AddMaps";
 
 	public static final String REFRESH_ACTION = "Refresh";
+	
+	public static final String RELOAD_ACTION = "Reload";
 
 	public static final String ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
 
