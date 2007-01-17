@@ -353,6 +353,12 @@ public class PropertiesGraphDao implements GraphDao {
     
     public PrefabGraph[] getPrefabGraphsForResource(OnmsResource resource) {
         Set<OnmsAttribute> attributes = resource.getAttributes();
+        // Check if there are no attriutes to graph
+        if (attributes.size() == 0) {
+            log().debug("returning empty graph list for resource " + resource + " because its attribute list is empty");
+            return new PrefabGraph[0];
+        }
+        
         String resourceType = resource.getResourceType().getName();
         
         List<PrefabGraph> returnList = new LinkedList<PrefabGraph>();
