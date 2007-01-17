@@ -853,7 +853,12 @@
   <servlet>
      <servlet-name>CloseMap</servlet-name>
     <servlet-class>org.opennms.web.map.CloseMapServlet</servlet-class>
-  </servlet>   
+  </servlet> 
+  
+  <servlet>
+    <servlet-name>CommandLine</servlet-name>
+    <servlet-class>org.opennms.web.map.CommandLineServlet</servlet-class>
+  </servlet>  
   
   <servlet>
   	<servlet-name>purdyChart</servlet-name>
@@ -947,6 +952,11 @@
   <servlet-mapping>
     <servlet-name>NewMap</servlet-name>
     <url-pattern>/map/NewMap</url-pattern>
+  </servlet-mapping>  
+  
+  <servlet-mapping>
+    <servlet-name>CommandLine</servlet-name>
+    <url-pattern>/map/CommandLine</url-pattern>
   </servlet-mapping>  
 
   <!-- desktop graph servlet mapping -->
