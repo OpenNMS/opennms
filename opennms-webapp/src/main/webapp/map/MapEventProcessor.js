@@ -37,7 +37,7 @@ function onClickMapElement(evt)
 	if(mapElement.isNode())
 		getElemInfo(mapElement);
 	
-	//setContextMenuForElement(evt, mapElement);
+	setContextMenuForElement(evt, mapElement);
 
 	if (evt.getDetail() == 2)
 	{
@@ -50,19 +50,22 @@ function onClickMapElement(evt)
 	
 		if(mapElement.isMap())
 		{
-			if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
-				if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
-			 		return;
+			if(!refreshingMapElems){
+				if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
+					if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
+				 		return;
+				}
+				map.clear();
+				hideMapInfo();
+				clearTopInfo();
+				clearDownInfo();
+				loading++;
+				assertLoading();
+				disableMenu();
+				postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapElement.getMapId()+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );			
 			}
-			map.clear();
-			hideMapInfo();
-			clearTopInfo();
-			clearDownInfo();
-			loading++;
-			assertLoading();
-			disableMenu();
-			postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapElement.getMapId()+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );			
 		}
+			
 	}
 }
 
@@ -79,7 +82,7 @@ function onMouseDownOnMapElement(evt)
 
 		
 		var mapElement = map.mapElements[evt.getTarget().parentNode.getAttribute("id")];		
-		//setContextMenuForElement(evt, mapElement);
+		setContextMenuForElement(evt, mapElement);
 
 		var matrix;
 		// track the origin
@@ -205,7 +208,7 @@ function onMouseDownOnMap(evt)
 		
 	}
 	
-	//disableContextMenu(evt);
+	disableContextMenu(evt);
 	
 	// remove node information
 	clearTopInfo();
@@ -249,7 +252,7 @@ function resetDraggableObject(){
 function onMouseDownOnLink(evt)
 {
 	
-	//disableContextMenu(evt);
+	disableContextMenu(evt);
 	resetSelectedObjects();
 	if ((typeof map) == "object")
 	{
@@ -360,7 +363,7 @@ function onMouseUp(evt)
 	var mapsvgRoot = mapSvgDocument.documentElement;
 	var zoom = mapsvgRoot.getCurrentScale();
 	var pan = mapsvgRoot.getCurrentTranslate();
-	//disableContextMenu(evt);
+	disableContextMenu(evt);
 	removeSelectionRect();
 	//reset the selection rectangle
 

@@ -1,34 +1,4 @@
-/* Copyright 2000 Adobe Systems. You may copy, modify, and distribute
-*  this file, if you include this notice & do not charge for the distribution.
-*  This file is provided "AS-IS" without warranties of any kind, including any
-*  implied warranties.
-*
-*  Author:  Glen H. Gersten
-*
-*
-*  This script will perform various manipulations on SVG elements including:
-*  fill color changes, stroke width changes, stroke color changes,
-*  showing hidden elements, and hiding visible elements.  Additionally, this script
-*  has a "toggle" function to perform switches between visible and hidden states.
-*
-*  To use these functions, this script will need to be sourced into the base document.
-*
-*  To source this file into an SVG document, use syntax similar to the following:
-*	<script xlink:href="events.js" language="JavaScript"></script>
-*
-*  To source this file into an HTML document, use syntax similar to the following:
-*	<script src="events.js" language="JavaScript"></script>
-*
-*
-*  To actually use the functions, you must do the following in the SVG:
-*	1. Make sure the element being manipulated has been assigned an id.
-*	2. Add event handlers such as onmouseover, onmouseout, or onclick to
-*	    the element which will trigger the change.
-*	3. Make sure the right arguments are supplied to the function.
-*
-*  An example of how to change the color of a rectangle called "box" would be:
-*	onmouseover="elemColor(evt, 'box', '#336699')"
-*/
+
 
 
 //////////////////////////////
@@ -248,19 +218,25 @@ function setMenuOpenFlag(evt, subMenuName){
 
 function addLegend() {
 
+
+	
+	var legendSVG = menuSvgDocument.getElementById("legend");
+	
+	var legendHeight=legendSVG.getAttribute("height");
+	
 	var x = 1;
 	var y = 15;
 
 	var cx = 10;
-	var cy = 30;
+	var cy = 23;
 	var cr = 5;
 	var dx = 0;
-	var dy = 13;
-
+	var dy = 2*cr+1;
+	var fontsize=dy-1;
 	var ddx = 10;
 	var ddy = 3;
 	
-	var legendSVG = menuSvgDocument.getElementById("legend");
+	var legendSpace = legendHeight-y-2*fontsize;
 	
 	if (legendSVG.firstChild != undefined) {
 		legendSVG.removeChild(legendSVG.firstChild);
@@ -275,7 +251,19 @@ function addLegend() {
 	var contentText = menuSvgDocument.createTextNode("Severity View");
 	
 	if ( colorSemaphoreBy == "A") {
-		contentText = menuSvgDocument.createTextNode("Availability View")
+		contentText = menuSvgDocument.createTextNode("Availability View");
+		var countElem = 0;
+		for(var index in AVAIL_MIN) {
+			if(AVAIL_MIN[index]!=undefined){
+				countElem++;
+			}
+		}
+		var newcr = parseInt((legendSpace/countElem)/2); //divided by 2 because is r of a circle
+		if(newcr<=cr){
+			cr=newcr;
+			dy = 2*cr+1;
+			fontsize=dy-1;
+		}
 		for(var index in AVAIL_MIN) {
 
 			var item = menuSvgDocument.createElementNS(svgNS,"circle");
@@ -287,6 +275,7 @@ function addLegend() {
 			legendGroup.appendChild(item);
 
 			var textel = menuSvgDocument.createElementNS(svgNS,"text");
+			textel.setAttributeNS(null,"font-size",fontsize);
 			textel.setAttributeNS(null,"x", cx+ddx);
 			textel.setAttributeNS(null,"y",cy+ddy);
 			var label = "";
@@ -302,7 +291,20 @@ function addLegend() {
 			cy = cy+dy;
 		}
 	} else if (colorSemaphoreBy == "T") {
-		contentText = menuSvgDocument.createTextNode("Status View")
+		contentText = menuSvgDocument.createTextNode("Status View");
+		var countElem = 0;
+		for(var index in STATUSES_UEI) {
+			if(STATUSES_UEI[index]!=undefined){
+				countElem++;
+			}
+		}
+		var newcr = parseInt((legendSpace/countElem)/2); //divided by 2 because is r of a circle
+		if(newcr<=cr){
+			cr=newcr;
+			dy = 2*cr+1;
+			fontsize=dy-1;
+		}
+		
 		for(var index in STATUSES_UEI) {
 
 			var item = menuSvgDocument.createElementNS(svgNS,"circle");
@@ -314,6 +316,7 @@ function addLegend() {
 			legendGroup.appendChild(item);
 
 			var textel = menuSvgDocument.createElementNS(svgNS,"text");
+			textel.setAttributeNS(null,"font-size",fontsize);
 			textel.setAttributeNS(null,"x", cx+ddx);
 			textel.setAttributeNS(null,"y",cy+ddy);
 			var labelText = menuSvgDocument.createTextNode(STATUSES_TEXT[index]);
@@ -323,6 +326,19 @@ function addLegend() {
 			cy = cy+dy;
 		}
 	} else {
+	
+		var countElem = 0;
+		for(var index in SEVERITIES_LABEL) {
+			if(SEVERITIES_LABEL[index]!=undefined){
+				countElem++;
+			}
+		}
+		var newcr = parseInt((legendSpace/countElem)/2); //divided by 2 because is r of a circle
+		if(newcr<=cr){
+			cr=newcr;
+			dy = 2*cr+1;
+			fontsize=dy-1;
+		}	
 		for(var index in SEVERITIES_LABEL) {
 
 			var item = menuSvgDocument.createElementNS(svgNS,"circle");
@@ -334,6 +350,7 @@ function addLegend() {
 			legendGroup.appendChild(item);
 
 			var textel = menuSvgDocument.createElementNS(svgNS,"text");
+			textel.setAttributeNS(null,"font-size",10);
 			textel.setAttributeNS(null,"x", cx+ddx);
 			textel.setAttributeNS(null,"y",cy+ddy);
 			var labelText = menuSvgDocument.createTextNode(SEVERITIES_LABEL[index]);
@@ -654,11 +671,21 @@ function addRenameMapBox(){
 	if(currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
-		lastRenameMapNameValue=currentMapName;
+		//lastRenameMapNameValue=currentMapName;
 		var topInfoNode = menuSvgDocument.getElementById("TopInfo");
 		var renameInfoBox = menuSvgDocument.createElementNS(svgNS,"g");
 		renameInfoBox.setAttributeNS(null,"id", "RenameMapBox");
-		var box = menuSvgDocument.createElementNS(svgNS,"rect");
+		
+		//first a few styling parameters:
+		var textStyles = {"font-family":"Arial,Helvetica","font-size":12,"fill":"dimgray"};
+		var boxStyles = {"fill":"white","stroke":"dimgray","stroke-width":1.5};
+		var cursorStyles = {"stroke":"black","stroke-width":1.5};
+		var selBoxStyles = {"fill":"blue","opacity":0.5};
+		textbox1 = new textbox("RenameMapBox",renameInfoBox,currentMapName,32,3,20,150,22,textStyles,boxStyles,cursorStyles,selBoxStyles,"[a-zA-Z0-9 ]",undefined);
+		
+
+		
+		/*var box = menuSvgDocument.createElementNS(svgNS,"rect");
 		box.setAttributeNS(null,"x", 3);
 		box.setAttributeNS(null,"y", 22);
 		box.setAttributeNS(null,"width", 150);
@@ -666,6 +693,7 @@ function addRenameMapBox(){
 		box.setAttributeNS(null,"style","fill:white;stroke:black;stroke-width:1;stroke-opacity:0.4");
 		renameInfoBox.appendChild(box);
 		renameInfoBox.appendChild(parseXML("<text id=\"RenameMapText\"  onkeyup=\"testMapNameLength(evt);\"  x=\"5\" y=\"35\" editable=\"true\">" +lastRenameMapNameValue+"</text>",menuSvgDocument) );		
+		*/
 		var groupCB = menuSvgDocument.createElementNS(svgNS,"g");
 		groupCB.setAttributeNS(null,"id", "renameButton");
 		var cb = menuSvgDocument.createElementNS(svgNS,"rect");
@@ -683,11 +711,11 @@ function addRenameMapBox(){
 		groupCB.appendChild(cb);
 		groupCB.appendChild(cbText);
 		var cb2 = menuSvgDocument.createElementNS(svgNS,"rect");
-		cb2.setAttributeNS(null,"x", 105);
-		cb2.setAttributeNS(null,"y", 4);
-		cb2.setAttributeNS(null,"width", 48);
-		cb2.setAttributeNS(null,"height", 15);
-		cb2.setAttributeNS(null,"style","fill:blue;fill-opacity:0");
+		cb2.setAttributeNS(null,"x", 104);
+		cb2.setAttributeNS(null,"y", 3);
+		cb2.setAttributeNS(null,"width", 49);
+		cb2.setAttributeNS(null,"height", 16);
+		cb2.setAttributeNS(null,"style","fill:blue;fill-opacity:0;cursor:pointer");
 		groupCB.appendChild(cb2);
 		groupCB.addEventListener("click", renameMap, false);
 		renameInfoBox.appendChild(groupCB);
@@ -702,11 +730,21 @@ function addRangeBox(){
 	if(currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
-		lastRangeValue="*.*.*.*";
+
 		var topInfoNode = menuSvgDocument.getElementById("TopInfo");
 		var rangeBox = menuSvgDocument.createElementNS(svgNS,"g");
 		rangeBox.setAttributeNS(null,"id", "NodeRangeBox");
-		var box = menuSvgDocument.createElementNS(svgNS,"rect");
+		
+		//first a few styling parameters:
+		var textStyles = {"font-family":"Arial,Helvetica","font-size":12,"fill":"dimgray"};
+		var boxStyles = {"fill":"white","stroke":"dimgray","stroke-width":1.5};
+		var cursorStyles = {"stroke":"black","stroke-width":1.5};
+		var selBoxStyles = {"fill":"blue","opacity":0.5};
+		textbox1 = new textbox("NodeRangeBox",rangeBox,"*.*.*.*",32,3,20,150,22,textStyles,boxStyles,cursorStyles,selBoxStyles,"[^a-zA-Z ]",undefined);
+				
+
+		
+		/*var box = menuSvgDocument.createElementNS(svgNS,"rect");
 		box.setAttributeNS(null,"x", 3);
 		box.setAttributeNS(null,"y", 20);
 		box.setAttributeNS(null,"width", 160);
@@ -714,16 +752,19 @@ function addRangeBox(){
 		box.setAttributeNS(null,"style","fill:white;stroke:black;stroke-width:1;stroke-opacity:0.4");
 		rangeBox.appendChild(box);
 		rangeBox.appendChild(parseXML("<text id=\"RangeText\"   x=\"5\" y=\"35\" onkeyup=\"testRangeLength(evt);\"  editable=\"true\" font-stretch=\"condensed\">"+lastRangeValue+"</text>",menuSvgDocument) );		
+		*/
+		
+		
 		var groupCB = menuSvgDocument.createElementNS(svgNS,"g");
 		groupCB.setAttributeNS(null,"id", "addRangeButton");
 		var cb = menuSvgDocument.createElementNS(svgNS,"rect");
-		cb.setAttributeNS(null,"x", 135);
+		cb.setAttributeNS(null,"x", 125);
 		cb.setAttributeNS(null,"y", 4);
 		cb.setAttributeNS(null,"width", 28);
 		cb.setAttributeNS(null,"height", 15);
 		cb.setAttributeNS(null,"style","fill:blue;stroke:pink;stroke-width:1;fill-opacity:0.5;stroke-opacity:0.9");
 		var cbText = menuSvgDocument.createElementNS(svgNS,"text");
-		cbText.setAttributeNS(null,"x", 138);
+		cbText.setAttributeNS(null,"x", 128);
 		cbText.setAttributeNS(null,"y", 16);
 		cbText.setAttributeNS(null,"style","fill:white");
 		var contentText = menuSvgDocument.createTextNode("Add");		
@@ -731,11 +772,11 @@ function addRangeBox(){
 		groupCB.appendChild(cb);
 		groupCB.appendChild(cbText);
 		var cb2 = menuSvgDocument.createElementNS(svgNS,"rect");
-		cb2.setAttributeNS(null,"x", 135);
-		cb2.setAttributeNS(null,"y", 4);
-		cb2.setAttributeNS(null,"width", 28);
-		cb2.setAttributeNS(null,"height", 15);
-		cb2.setAttributeNS(null,"style","fill:blue;fill-opacity:0");
+		cb2.setAttributeNS(null,"x", 124);
+		cb2.setAttributeNS(null,"y", 3);
+		cb2.setAttributeNS(null,"width", 29);
+		cb2.setAttributeNS(null,"height", 16);
+		cb2.setAttributeNS(null,"style","fill:blue;fill-opacity:0;cursor:pointer");
 		groupCB.appendChild(cb2);
 		groupCB.addEventListener("click", addRangeOfNodes, false);
 		rangeBox.appendChild(groupCB);
@@ -755,8 +796,8 @@ function addRangeBox(){
         }
 }
 
-lastRangeValue="";
 
+/*
 function testRangeLength(evt){
 	try{
 		var key = evt.getKeyCode();
@@ -774,6 +815,8 @@ function testRangeLength(evt){
 	//do nothing for the moment
 	}
 }
+*/
+
 
 function deleteMapElementMenu()
 {

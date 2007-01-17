@@ -2,9 +2,13 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
 "http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
 <svg  onload="load(evt);"  xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg-20000303-stylable" enableZoomAndPanControls="false">
+  <defs>
+     <menu id='ContextMenu' xmlns='http://foo' />
+  </defs>
  	<script type="text/ecmascript" xlink:href="Point2D.js"/>
  	<script type="text/ecmascript" xlink:href="SVGElement.js"/>
  	<!--script type="text/ecmascript" xlink:href="Debug.js"/-->
+ 	<script type="text/ecmascript"  xlink:href="contextMenu.js"/>
  	<script type="text/ecmascript" xlink:href="MapEventProcessor.js"/>
  	<script type="text/ecmascript" xlink:href="Link.js"/>
  	<script type="text/ecmascript" xlink:href="Semaphore.js"/>
@@ -27,29 +31,32 @@
 		//into the page that contains the visualization of the maps applications
 		mapSvgDocument=htmldocument.embeds[0].getSVGDocument();
 		menuSvgDocument=htmldocument.embeds[1].getSVGDocument();
+		mapContextMenu = contextMenu;
 		map = new Map("#"+DEFAULT_BG_COLOR, "", "Background", htmldocument.embeds[0].width, htmldocument.embeds[0].height, 0, 0);
 		var node = mapSvgDocument.getElementById("Application");
 		node.appendChild(map.getSvgNode());
 		node = map.getSvgNode();
-		doInitApplication();
+		//doInitApplication();
+		InitApplication();
 		}
 	]]></script>
 	
 	<script type="text/ecmascript"><![CDATA[
-	
+	/*
 	function doInitApplication(){
 		if(nodesLoaded && mapsLoaded){
 			InitApplication();
 		}else{
 		    setTimeout('doInitApplication()',1000);
 		}
-	}
+	}*/
 	
 	var begin;
 	var actual;
 	var reloadseconds=0;
 	var secondsSinceBegin=0; 
 	function startRefreshNodesTime() { 
+		refreshingMapElems=false;
 		begin=(new Date()).getTime();
 		countdown(); 
 	} 

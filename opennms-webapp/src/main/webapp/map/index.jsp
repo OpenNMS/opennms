@@ -34,7 +34,7 @@
 
 --%> 
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.map.db.MapMenu,org.opennms.web.map.view.*, org.opennms.web.acegisecurity.Authentication"%>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.map.dataaccess.MapMenu,org.opennms.web.map.view.*, org.opennms.web.acegisecurity.Authentication"%>
 
 
 <% String breadcrumb1 = java.net.URLEncoder.encode("Map"); %>
@@ -142,7 +142,7 @@
 	    <select name="mapToOpen">
 		  <option value="" selected></option>
 		<%
-		MapMenu[] maps = null;
+			MapMenu[] maps = null;
 			Manager m = new Manager();
 			
 			try{
@@ -151,12 +151,13 @@
 				throw new ServletException(e);
 				//do nothing, this exception is managed later
 			}
-			for(int k=0; k<maps.length; k++){
-				%>		  
-				  <option value="<%=maps[k].getId()%>"><%=maps[k].getName()%></option>
-				<%
-			} 
-      		
+			if(maps!=null){
+				for(int k=0; k<maps.length; k++){
+					%>		  
+					  <option value="<%=maps[k].getId()%>"><%=maps[k].getName()%></option>
+					<%
+				} 
+			}
 			
             %>
             </select>

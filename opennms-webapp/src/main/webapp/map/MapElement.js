@@ -146,6 +146,10 @@ MapElement.prototype.move = function(x, y)
 	this.svgNode.setAttribute("transform", "translate(" + this.x + "," + this.y + ")");
 }
 
+MapElement.prototype.getLabel = function()
+{
+return this.label.text;
+}
 MapElement.prototype.getInfo = function()
 {
 
@@ -171,7 +175,7 @@ MapElement.prototype.getInfo = function()
 		statusColor='black';		
 
 	var str= "<text id=\"TopInfoText\" x=\"3\" y=\"20\">Map Element info" +
-			"<tspan x=\"3\" dy=\"20\" font-size=\"9\" id=\"TopInfoLabelText\">Label: " + this.label.text + "</tspan>";
+			"<tspan x=\"3\" dy=\"20\" font-size=\"9\" id=\"TopInfoLabelText\">" + this.label.text + "</tspan>";
 
 	if(this.isMap()){
 		str+="<tspan x=\"3\" dy=\"15\" font-size=\"9\">Id: "+ this.getMapId() + "  (Map)</tspan>";		
