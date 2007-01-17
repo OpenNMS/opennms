@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.opennms.web.map.dataaccess.Map;
+import org.opennms.web.map.db.Map;
 
 /**
  * @author micmas

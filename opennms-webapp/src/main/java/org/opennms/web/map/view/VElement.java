@@ -38,7 +38,7 @@
 package org.opennms.web.map.view;
 
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.dataaccess.Element;
+import org.opennms.web.map.db.Element;
 
 /**
  * @author micmas

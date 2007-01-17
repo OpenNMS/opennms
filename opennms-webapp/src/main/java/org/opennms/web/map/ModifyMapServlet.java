@@ -52,7 +52,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.map.dataaccess.MapMenu;
+import org.opennms.web.map.db.MapMenu;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VLink;

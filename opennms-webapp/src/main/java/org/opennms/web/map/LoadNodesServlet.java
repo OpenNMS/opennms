@@ -49,7 +49,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.map.dataaccess.ElementInfo;
+import org.opennms.web.map.db.ElementInfo;
 import org.opennms.web.map.view.Manager;
 
 /**
