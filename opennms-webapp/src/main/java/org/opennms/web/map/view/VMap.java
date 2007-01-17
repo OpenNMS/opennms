@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.opennms.web.map.db.Map;
+import org.opennms.web.map.dataaccess.Map;
 
 /**
  * @author micmas
@@ -95,6 +95,25 @@ final public class VMap extends Map {
         addElements(map.getCloneAllElements());
     }
     
+    /**
+     * Copy constructor: create a VMap with all properties and elements of the input VMap without 
+     * time informations (create time, lastmodifiedtime) and id that will be automatically setted.   
+     * @param map
+     */
+    public VMap(Map map){
+        super();
+        setAccessMode(map.getAccessMode());
+        setBackground(map.getBackground());
+        setName(map.getName());
+        setOffsetX(map.getOffsetX());
+        setOffsetY(map.getOffsetY());
+        setOwner(map.getOwner());
+        setScale(map.getScale());
+        setType(map.getType());
+        setWidth(map.getWidth());
+        setHeight(map.getHeight());
+        setUserLastModifies(map.getUserLastModifies());
+    }
     /**
      * @param id
      * @param name

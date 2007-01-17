@@ -38,7 +38,7 @@
 package org.opennms.web.map.view;
 
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.db.Element;
+import org.opennms.web.map.dataaccess.Element;
 
 /**
  * @author micmas
@@ -48,37 +48,7 @@ import org.opennms.web.map.db.Element;
  */
 public class VElement extends Element {
 
-	// static info for status
-	/*public static final int NODE_UNDEF_STATUS = 0;
-	
-	public static final int NODE_DOWN_STATUS = 1;
-
-	public static final int INTERFACE_DOWN_STATUS = 2;
-
-	public static final int INTERFACE_LINK_DOWN_STATUS = 3;
-	
-	public static final int SERVICE_DOWN_STATUS = 4;
-
-	public static final int NODE_UP_STATUS = 5;
-
-	private static final int LOWER_STATUS = 0;
-	private static final int UPPER_STATUS = 4;
-
-	// static info for severity
-	public static final int UNDEFINED_SEVERITY = 0;
-	
-	public static final int CRITICAL_SEVERITY = 1;
-
-	public static final int MAJOR_SEVERITY = 2;
-
-	public static final int WARN_SEVERITY = 3;
-
-	public static final int NORMAL_SEVERITY = 4;
-
-	private static final int LOWER_SEVERITY = 0;
-	private static final int UPPER_SEVERITY = 4;*/
-
-	// boolean that represents if this is a childnode useful to avoid loops  
+	// boolean that represents if this is a childnode mandatory to avoid loops  
 	protected boolean isChild = false;
     
     // this is to define the status of the element
@@ -89,18 +59,20 @@ public class VElement extends Element {
 
 	// this represents the global information elements
 	protected double rtc = 0;
+	
+	
 
     /**
      * 
      */
-    protected VElement() {
+	public VElement() {
         super();
     }
 
     /**
      * @param e
      */
-    VElement(Element e) throws MapsException {
+    public VElement(Element e) throws MapsException {
         super(e);
     }
 
@@ -113,13 +85,13 @@ public class VElement extends Element {
      * @param x
      * @param y
      */
-    protected VElement(int mapId, int id, String type, String iconName,String label,
+    public VElement(int mapId, int id, String type, String iconName,String label,
             int x, int y) throws MapsException {
         super(mapId, id, type, label, iconName, x, y);
         isChild = true;
     }    
 
-    protected VElement(int mapId, int id, String type, String label, String iconName) throws MapsException {
+    public VElement(int mapId, int id, String type, String label, String iconName) throws MapsException {
         super(mapId, id, type, label, iconName, 0, 0);
         isChild = true;
     }    
@@ -154,6 +126,9 @@ public class VElement extends Element {
         return isChild;
     }
     
+    public boolean equals(Object other){
+    	return equalsIgnorePosition((VElement)other);
+    }
     /**
      * @param elem
      * @return
@@ -173,6 +148,11 @@ public class VElement extends Element {
 			this.severity == elem.getSeverity() && this.getLabel().equals( elem.getLabel())) return true;
     	return false;
     }
+    
+    public boolean hasSameIdentifier(VElement elem) {
+    	if (this.getId() == elem.getId() && this.type.equals( elem.getType() )) return true;
+        	return false;
+    }
 
     public void setMapId(int mapId) {
         super.setMapId(mapId);
@@ -184,4 +164,6 @@ public class VElement extends Element {
     		return getMapId();
     	throw new VElementNotChildException();
     }
+    
+    
 }
