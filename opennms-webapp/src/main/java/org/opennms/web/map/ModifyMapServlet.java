@@ -50,10 +50,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.element.DataLinkInterface;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.element.Node;
-import org.opennms.web.map.db.Factory;
+import org.opennms.web.map.dataaccess.MapMenu;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VLink;
@@ -89,14 +88,17 @@ public class ModifyMapServlet extends HttpServlet {
 		String strToSend = "";
 		try {
 			HttpSession session = request.getSession(false);
+			Manager m = null;
+			if(session!=null){
+				m = (Manager) session.getAttribute("manager");
+				log.debug("Got manager from session: "+m);
+			}
 			String refreshTime = (String)session.getAttribute("refreshTime");
 			int refreshtime = 300; 
 			if (refreshTime != null) {
 				refreshtime = Integer.parseInt(refreshTime)*60;
 			}
-			Manager m = new Manager();
 			m.startSession();
-			//Factory.createDbConnection();
 			VMap map = null;
 			List velems = new ArrayList();
 //			List links = new ArrayList();
@@ -164,12 +166,16 @@ public class ModifyMapServlet extends HttpServlet {
 							}
 							VElement curVElem = m.newElement(map.getId(),
 									elemId, TYPE);
+							//set real-time data to -1 to force refresh always
+							curVElem.setSeverity(-1);
+							curVElem.setStatus(-1);
+							curVElem.setRtc(-1);
 							velems.add(curVElem);
 						} // end for
 						
 						log.debug("After Checking map contains elems");
 						log.debug("Before RefreshElements");
-						velems = m.refreshElements((VElement[]) velems.toArray(new VElement[0]),false);
+						velems = m.refreshElements((VElement[]) velems.toArray(new VElement[0]));
 						log.debug("After RefreshElements");
 						log.debug("Before getting/adding links");
 						//List vElemLinks = m.getLinks(map.getAllElements());
@@ -246,18 +252,17 @@ public class ModifyMapServlet extends HttpServlet {
 
 					if (action.equals(MapsConstants.REFRESH_ACTION)) {
 						actionfound = true;
-
 						// First refresh Element objects
-						velems = m.refreshElements(map.getAllElements(),true);
+						VElement[] velements=(VElement[]) m.refreshElements(map.getAllElements()).toArray(new VElement[0]);
 						//checks for only changed velements 
-						if (velems != null) {
-							Iterator ite = velems.iterator();
-							while (ite.hasNext()) {
-								VElement ve = (VElement) ite.next();
+						if (velements != null) {
+							for(int k=0; k<velements.length;k++){
+								VElement ve = velements[k];
 								strToSend += "&" + ve.getId() + ve.getType() + "+"
 										+ ve.getIcon() + "+" + ve.getLabel();
 								strToSend += "+" + ve.getRtc() + "+"
 										+ ve.getStatus() + "+" + ve.getSeverity();
+								map.addElement(ve);
 							}
 						}
 
@@ -271,14 +276,14 @@ public class ModifyMapServlet extends HttpServlet {
 						// more work on client
 						
 						// We are waiting to attempt to mapd
-						//map.removeAllLinks();
+						map.removeAllLinks();
 
 						// get all links on map
 						//List links = null;
 						List links = m.getLinks(map.getAllElements());
 
 						// add links to map
-						//map.addLinks((VLink[]) links.toArray(new VLink[0]));
+						map.addLinks((VLink[]) links.toArray(new VLink[0]));
 
 						// write to client
 						if (links != null) {
@@ -293,7 +298,56 @@ public class ModifyMapServlet extends HttpServlet {
 						} 
 						
 					} 
+					
+					if (action.equals(MapsConstants.RELOAD_ACTION)) {
+						actionfound = true;
+						// First refresh Element objects
+						map = m.reloadMap(map);
+						VElement[] velements=map.getAllElements();
+						
+						//checks for only changed velements 
+						if (velements != null) {
+							for(int k=0; k<velements.length;k++){
+								VElement ve = velements[k];
+								strToSend += "&" + ve.getId() + ve.getType() + "+"
+										+ ve.getIcon() + "+" + ve.getLabel();
+								strToSend += "+" + ve.getRtc() + "+"
+										+ ve.getStatus() + "+" + ve.getSeverity()+ "+" + ve.getX()+ "+" + ve.getY();
+							}
+						}
 
+						// Second Refresh Link Object on Map
+						// Now is done using a very simple way
+						// but really it's slow
+						// the alternativ is anyway to analize all 
+						// links, 1 against other.
+						// So with this solution more traffic
+						// less stress on server
+						// more work on client
+						
+						// We are waiting to attempt to mapd
+						map.removeAllLinks();
+
+						// get all links on map
+						//List links = null;
+						List links = m.getLinks(velements);
+
+						// add links to map
+						map.addLinks((VLink[]) links.toArray(new VLink[0]));
+
+						// write to client
+						if (links != null) {
+							Iterator ite = links.iterator();
+							while (ite.hasNext()) {
+								VLink vl = (VLink) ite.next();
+									strToSend += "&" + vl.getFirst().getId()
+									+ vl.getFirst().getType() + "+"
+									+ vl.getSecond().getId()
+									+ vl.getSecond().getType();
+							}
+						} 
+						
+					}
 					if (action.equals(MapsConstants.CLEAR_ACTION)) {
 						actionfound = true;
 						map.removeAllLinks();
@@ -313,10 +367,14 @@ public class ModifyMapServlet extends HttpServlet {
 				throw new Exception("HttpSession not initialized");
 			}
 			m.endSession();
-			//Factory.releaseDbConnection();
+			
 		} catch (Exception e) {
 			strToSend = action + "Failed";
 			log.error("Exception catch " + e);
+			StackTraceElement[] ste = e.getStackTrace();
+			for(int k=0; k<ste.length; k++){
+				log.error(ste[k].toString());
+			}
 		} finally {
 			bw.write(strToSend);
 			bw.close();
@@ -329,18 +387,4 @@ public class ModifyMapServlet extends HttpServlet {
 		doPost(request, response);
 	}
 
-	private String nodeToString(Node node) throws Exception {
-		String strToSend = node.getNodeId() + "+" + node.getLabel() + "+";
-		DataLinkInterface[] links = NetworkElementFactory
-				.getDataLinksOnNode(node.getNodeId());
-		if (links != null) {
-			for (int i = 0; i < links.length; i++) {
-				DataLinkInterface dli = links[i];
-				int id = dli.get_nodeparentid();
-				strToSend += id + "+";
-
-			}
-		}
-		return strToSend;
-	}
 }

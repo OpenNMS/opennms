@@ -45,11 +45,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.element.Node;
+import org.opennms.web.map.dataaccess.ElementInfo;
+import org.opennms.web.map.view.Manager;
 
 /**
  * @author mmigliore
@@ -68,28 +69,31 @@ public class LoadNodesServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream()));
+		HttpSession session = request.getSession(false);
+		Manager m = (Manager)session.getAttribute("manager");
+
 		String strToSend = action + "OK";
 		log.info("Loading nodes");
-
-		Node[] onmsNodes = null;
-
+		ElementInfo[] nodeInfos = null;
 		try {
 			if (action.equals(MapsConstants.LOADNODES_ACTION)) {
-				onmsNodes = NetworkElementFactory.getAllNodes();
-				for (int i = 0; i < onmsNodes.length; i++) {
-					Node n = onmsNodes[i];
+				nodeInfos = m.getAllElementInfo();
+				if(nodeInfos!=null){
+					for (int i = 0; i < nodeInfos.length; i++) {
+						ElementInfo n = nodeInfos[i];
 						if (i > 0) {
 							strToSend += "&";
 						}
 		
-						String nodeStr = n.getNodeId() + "+" + n.getLabel();
+						String nodeStr = n.getId() + "+" + n.getLabel();
 						strToSend += nodeStr;
+					}
 				}
 			} else {
 				strToSend = MapsConstants.LOADNODES_ACTION + "Failed";
 			}
-		} catch (SQLException e) {
-			log.error(e.toString());
+		} catch (MapsException e) {
+			log.error("Error while getting elements' infos "+e.toString());
 			strToSend = MapsConstants.LOADNODES_ACTION + "Failed";
 		}
 		bw.write(strToSend);

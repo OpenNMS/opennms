@@ -40,23 +40,24 @@ package org.opennms.web.map;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.map.MapNotFoundException;
-import org.opennms.web.map.db.MapMenu;
+import org.opennms.web.map.dataaccess.MapMenu;
 import org.opennms.web.map.view.*;
 
 /**
  * @author mmigliore
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class LoadMapsServlet extends HttpServlet {
 	Category log;
@@ -71,38 +72,55 @@ public class LoadMapsServlet extends HttpServlet {
 				.getOutputStream()));
 		String strToSend = action + "OK";
 
+		HttpSession session = request.getSession(false);
+		Manager m = (Manager)session.getAttribute("manager");
+		try {
+			m.startSession();
+		} catch (MapsException e1) {
+			log.error("Error while starting Manager session "+e1);
+		}
+
+		String user = request.getRemoteUser();
+		String role = null;
+		if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+			role=Authentication.ADMIN_ROLE;
+		}else if (request.isUserInRole(Authentication.USER_ROLE)) {
+			role=Authentication.USER_ROLE;
+		}
+
+		List visibleMapsList = new ArrayList();
+		
 		try {
 			if (action.equals(MapsConstants.LOADMAPS_ACTION)) {
-				Manager m = new Manager();
-				MapMenu[] maps = m.getAllMapMenus();
-				if (maps != null) {
-					// create the string containing the main informations about
-					// all maps defined:
-					// the string will have the form:
-					// mapid1,mapname1,mapowner1-mapid2,mapname2,mapowner2...
-					for (int i = 0; i < maps.length; i++) {
-						if (i > 0) {
-							strToSend += "&";
-						}
-						strToSend += mapToString(maps[i]);
-
+				visibleMapsList = m.getVisibleMapsMenu(user, role);
+				// create the string containing the main informations about all maps
+				// defined:
+				// the string will have the form:
+				// mapid1,mapname1,mapowner1-mapid2,mapname2,mapowner2...
+				for (int i = 0; i < visibleMapsList.size(); i++) {
+					if (i > 0) {
+						strToSend += "&";
 					}
+					strToSend += mapToString((MapMenu) visibleMapsList.get(i));
+		
 				}
 			} else {
 				strToSend = MapsConstants.LOADMAPS_ACTION + "Failed";
 			}
 
-		} catch (MapNotFoundException mnf) {
-			log.info("No maps found " + mnf);
+		} catch (MapsException e) {
+			log.error("Error while getting visible maps for user "+user+ " and role "+role);
+			log.error(e);
 			strToSend = MapsConstants.LOADMAPS_ACTION + "Failed";
-			// do nothing
-		} catch (Exception e) {
-			log.error("Maps load error: " + e);
-			strToSend = MapsConstants.LOADMAPS_ACTION + "Failed";
-		} finally {
+		}finally {
 			bw.write(strToSend);
 			bw.close();
 			log.info("Sending response to the client '" + strToSend + "'");
+			try {
+				m.endSession();
+			} catch (MapsException e1) {
+				log.error("Error while ending Manager session "+e1);
+			}
 		}
 	}
 
@@ -111,7 +129,7 @@ public class LoadMapsServlet extends HttpServlet {
 		doPost(request, response);
 	}
 
-	private String mapToString(MapMenu map) throws Exception {
+	private String mapToString(MapMenu map) {
 		String strToSend = map.getId() + "+" + map.getName() + "+"
 				+ map.getOwner();
 		return strToSend;

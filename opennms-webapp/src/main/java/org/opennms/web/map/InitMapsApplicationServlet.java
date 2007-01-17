@@ -41,6 +41,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,62 +50,116 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.acegisecurity.Authentication;
+import org.opennms.web.map.config.MapPropertiesFactory;
+import org.opennms.web.map.config.MapsFactory;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VMap;
 
 /**
+ * The servlet inits the maps' application.
+ * It sets some attribute session and call the init() method of the initclass defined in the using factory  
  * @author mmigliore
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class InitMapsApplicationServlet extends HttpServlet {
-
-	static final long serialVersionUID = 2006102700;
-
+	
 	Category log;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		BufferedWriter bw = new BufferedWriter(
-				new OutputStreamWriter(response.getOutputStream()));
-		String strToSend=null;
+		HttpSession session=null;
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+				response.getOutputStream()));
+		String strToSend = MapsConstants.INIT_ACTION+"OK";
 		try {
 			ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 			log = ThreadCategory.getInstance(this.getClass());
 			log.info("Init maps application");
-			
-			String action = request.getParameter("action");
+			String mapFactoryLabel = request.getParameter("mapsFactory");
 
-			strToSend = action + "OK";
-
-			if (action.equals(MapsConstants.INIT_ACTION)) {
-				HttpSession userSession = request.getSession();
-				Manager m = new Manager();
-				VMap sessionMap = m.newMap();
-
-				Integer mapToOpen = (Integer) userSession.getAttribute("mapToOpen");
-
-				String refreshTime = (String) userSession.getAttribute("refreshTime");
-				if(refreshTime!=null){
-					strToSend += refreshTime;
+			session = request.getSession(true);
+			session.setMaxInactiveInterval(-1);
+			Manager m = null;
+			if(mapFactoryLabel==null || mapFactoryLabel.equalsIgnoreCase("null")){
+				log.debug("Instantiating Manager with default MapsFactory");
+				try {
+					m = new Manager();
+				} catch (MapsException e) {
+					strToSend=MapsConstants.INIT_ACTION+"Failed";
+					log.fatal("Error while instantiating default Manager");
+					bw.write(strToSend);
+					bw.close();
+					log.info("Sending response to the client "+strToSend);
+					return;
 				}
-				if (mapToOpen != null) {
-					strToSend += "&" + mapToOpen.intValue();
-				} 
-			} else {
-				strToSend = MapsConstants.INIT_ACTION + "Failed";
+			}else{
+				log.debug("Instantiating Manager with MapsFactory "+mapFactoryLabel);
+				try {
+					m = new Manager(mapFactoryLabel);
+				} catch (MapsException e) {
+					strToSend=MapsConstants.INIT_ACTION+"Failed";
+					log.fatal("Error while instantiating Manager with factory "+mapFactoryLabel);
+					bw.write(strToSend);
+					bw.close();
+					log.info("Sending response to the client "+strToSend);
+					return;
+				}
 			}
-		} catch (Exception e) {
-			log.error("Init maps application: " + e);
-			strToSend = MapsConstants.INIT_ACTION + "Failed";
-		}finally{
+			log.debug("Setting session manager with implementation data access manager "+m.getDataAccessManager().getClass().getName());
+			session.setAttribute("manager", m);
+			try {
+				m.startSession();
+			} catch (MapsException e1) {
+				log.error("Error while starting Manager session "+e1);
+				strToSend=MapsConstants.INIT_ACTION+"Failed";
+				bw.write(strToSend);
+				bw.close();
+				return;
+			}
+			MapPropertiesFactory.init();
+			MapPropertiesFactory mpf = MapPropertiesFactory.getInstance();
+			MapsFactory mf =null;
+			if (mapFactoryLabel == null || mapFactoryLabel.equalsIgnoreCase("null")) {
+				mf = mpf.getDefaultFactory();
+			}else{
+				mf = mpf.getMapsFactory(mapFactoryLabel);
+			}
+			VMap sessionMap = m.newMap();
+			boolean isMapEditable = false;
+			if ((request.isUserInRole(Authentication.ADMIN_ROLE) && mf.isAdminModify()) || mf.isAllModify()) {
+				isMapEditable = true;
+			}
+
+			session.setAttribute("sessionMap", sessionMap);
+			Integer mapToOpen = (Integer) session.getAttribute("mapToOpen");
+			String refreshTime = (String) session.getAttribute("refreshTime");
+
+			strToSend += refreshTime + "&" + isMapEditable;
+			if (mapToOpen != null) {
+				strToSend += "&" + mapToOpen.intValue();
+			}
+			
+			try {
+				m.endSession();
+			} catch (MapsException e1) {
+				log.error("Error while ending Manager session "+e1);
+				strToSend=MapsConstants.INIT_ACTION+"Failed";
+				bw.write(strToSend);
+				bw.close();
+				return;
+			}
 			bw.write(strToSend);
 			bw.close();
 			log.info("Sending response to the client '" + strToSend + "'");
+		} catch (Exception e) {
+			session.invalidate();
+			log.error("Init maps application: " + e);
+			e.printStackTrace();
+			strToSend=MapsConstants.INIT_ACTION+"Failed";
+			bw.write(strToSend);
+			bw.close();
+			return;
 		}
-		
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
