@@ -36,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -358,40 +359,46 @@ public class PropertiesGraphDao implements GraphDao {
             log().debug("returning empty graph list for resource " + resource + " because its attribute list is empty");
             return new PrefabGraph[0];
         }
-        
-        String resourceType = resource.getResourceType().getName();
-        
-        List<PrefabGraph> returnList = new LinkedList<PrefabGraph>();
 
         Set<String> availDataSourceList = new HashSet<String>(attributes.size());
         for (OnmsAttribute attribute : attributes) {
             availDataSourceList.add(attribute.getName());
         }
 
+        String resourceType = resource.getResourceType().getName();
+
+        List<PrefabGraph> returnList = new LinkedList<PrefabGraph>();
         for (PrefabGraph query : getAllPrefabGraphs()) {
             if (resourceType != null && !query.hasMatchingType(resourceType)) {
-                if (log().isDebugEnabled()) {
-                    log().debug("skipping " + query.getName() + " because its types \"" + StringUtils.arrayToDelimitedString(query.getTypes(), ", ") + "\" does not match resourceType \"" + resourceType + "\"");
-                }
+//                if (log().isDebugEnabled()) {
+//                    log().debug("skipping " + query.getName() + " because its types \"" + StringUtils.arrayToDelimitedString(query.getTypes(), ", ") + "\" does not match resourceType \"" + resourceType + "\"");
+//                }
                 continue;
             }
             
             List<String> requiredList = Arrays.asList(query.getColumns());
 
             if (availDataSourceList.containsAll(requiredList)) {
-                if (log().isDebugEnabled()) {
-                    log().debug("adding " + query.getName() + " to query list");
-                }
+//                if (log().isDebugEnabled()) {
+//                    log().debug("adding " + query.getName() + " to query list");
+//                }
                 returnList.add(query);
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("not adding " + query.getName() + " to query list because the required list of attributes (" + StringUtils.collectionToDelimitedString(requiredList, ", ") + ") is not in the list of attributes on the resource (" + StringUtils.collectionToDelimitedString(availDataSourceList, ", ")+ ")");
-                }
+//                if (log().isDebugEnabled()) {
+//                    log().debug("not adding " + query.getName() + " to query list because the required list of attributes (" + StringUtils.collectionToDelimitedString(requiredList, ", ") + ") is not in the list of attributes on the resource (" + StringUtils.collectionToDelimitedString(availDataSourceList, ", ")+ ")");
+//                }
             }
         }
 
+        if (log().isDebugEnabled()) {
+            ArrayList<String> nameList = new ArrayList<String>(returnList.size());
+            for (PrefabGraph graph : returnList) {
+                nameList.add(graph.getName());
+            }
+            log().debug("found " + nameList.size() + " prefabricated graphs for resource " + resource + ": " + StringUtils.collectionToDelimitedString(nameList, ", "));
+        }
         PrefabGraph[] availQueries = returnList.toArray(new PrefabGraph[returnList.size()]);
-
+        
         return availQueries;
     }
     
