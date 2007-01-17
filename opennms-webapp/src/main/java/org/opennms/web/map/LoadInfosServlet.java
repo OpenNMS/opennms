@@ -81,7 +81,7 @@ public class LoadInfosServlet extends HttpServlet {
 		
 		String strToSend = action + "OK";
 		HttpSession session = request.getSession(false);
-		org.opennms.web.map.dataaccess.Manager  implManager = null;
+		org.opennms.web.map.db.Manager  implManager = null;
 		VMap map =null;
 		if (session != null) {
 			Manager m = null;

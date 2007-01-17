@@ -56,7 +56,7 @@ import org.opennms.web.map.config.DataSource;
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.config.MapsFactory;
 
-import org.opennms.web.map.dataaccess.*;
+import org.opennms.web.map.db.*;
 
 
 
@@ -66,7 +66,7 @@ import org.opennms.web.map.dataaccess.*;
  */
 public class Manager{
 
-    org.opennms.web.map.dataaccess.Manager m_implManager = null;
+    org.opennms.web.map.db.Manager m_implManager = null;
     DataSource m_dataSource = null;
     MapPropertiesFactory mpf = null;
     MapsFactory m_mapsFactory = null;
@@ -95,7 +95,7 @@ public class Manager{
         	Object[] params = {m_dataSource,m_mapsFactory.getParam()};
         	Constructor managerConstr = Class.forName(m_mapsFactory.getManagerClass()).getConstructor(parameterTypes);
         	
-        	m_implManager = (org.opennms.web.map.dataaccess.Manager)managerConstr.newInstance(params);
+        	m_implManager = (org.opennms.web.map.db.Manager)managerConstr.newInstance(params);
         } catch (Exception e) {
         	log.fatal("cannot use map.properties file " + e);
         	e.printStackTrace();
@@ -123,7 +123,7 @@ public class Manager{
 	        	Object[] params = {m_dataSource,m_mapsFactory.getParam()};
 	        	Constructor managerConstr = Class.forName(m_mapsFactory.getManagerClass()).getConstructor(parameterTypes);
 	        	
-	        	m_implManager = (org.opennms.web.map.dataaccess.Manager)managerConstr.newInstance(params);
+	        	m_implManager = (org.opennms.web.map.db.Manager)managerConstr.newInstance(params);
         	}
     	} catch (Exception e) {
         	log.fatal("cannot use map.properties file " + e);
@@ -153,7 +153,7 @@ public class Manager{
 	        	Object[] params = {m_dataSource,m_mapsFactory.getParam()};
 	        	Constructor managerConstr = Class.forName(m_mapsFactory.getManagerClass()).getConstructor(parameterTypes);
 	        	
-	        	m_implManager = (org.opennms.web.map.dataaccess.Manager)managerConstr.newInstance(params);
+	        	m_implManager = (org.opennms.web.map.db.Manager)managerConstr.newInstance(params);
 	        	
 	    	}
     	} catch (Exception e) {
@@ -815,7 +815,7 @@ public class Manager{
 		return m_implManager.getAllElementInfo();
 	}
 	
-	public org.opennms.web.map.dataaccess.Manager getDataAccessManager(){
+	public org.opennms.web.map.db.Manager getDataAccessManager(){
 		return m_implManager;
 	}
 	

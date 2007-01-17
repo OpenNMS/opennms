@@ -48,7 +48,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.acegisecurity.Authentication;
-import org.opennms.web.map.dataaccess.MapMenu;
+import org.opennms.web.map.db.MapMenu;
 import org.opennms.web.map.view.*;
 
 import java.text.SimpleDateFormat;
