@@ -43,6 +43,8 @@ import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -277,6 +279,104 @@ public class DefaultResourceDaoTest extends TestCase {
         
         assertNotNull("Resource should not be null", resource);
     }
+    
+    public void testFindNodeResourcesWithResponseTime() throws Exception {
+        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        node.addIpInterface(ip);
+        nodes.add(node);
+        
+        expect(m_nodeDao.findAll()).andReturn(nodes);
+        
+
+        File response = m_fileAnticipator.tempDir("response");
+        File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
+        m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
+        
+        replayAll();
+        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        verifyAll();
+        
+        assertNotNull("resource list should not be null", resources);
+        assertEquals("resource list size", 1, resources.size());
+    }
+
+    // XXX this is a false positive match because there isn't an entry in the DB for this distributed data
+    public void testFindNodeResourcesWithDistributedResponseTime() throws Exception {
+        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        node.addIpInterface(ip);
+        nodes.add(node);
+        
+        expect(m_nodeDao.findAll()).andReturn(nodes);
+
+        File response = m_fileAnticipator.tempDir("response");
+        File distributed = m_fileAnticipator.tempDir(response, "distributed");
+        File monitor = m_fileAnticipator.tempDir(distributed, "1");
+        File ipDir = m_fileAnticipator.tempDir(monitor, "192.168.1.1");
+        m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
+        
+        replayAll();
+        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        verifyAll();
+        
+        assertNotNull("resource list should not be null", resources);
+        assertEquals("resource list size", 1, resources.size());
+    }
+
+    public void testFindNodeResourcesWithNodeSnmp() throws Exception {
+        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        node.addIpInterface(ip);
+        nodes.add(node);
+        
+        expect(m_nodeDao.findAll()).andReturn(nodes);
+        
+
+        File snmp = m_fileAnticipator.tempDir("snmp");
+        File nodeDir = m_fileAnticipator.tempDir(snmp, "1");
+        m_fileAnticipator.tempFile(nodeDir, "foo" + RrdUtils.getExtension());
+        
+        replayAll();
+        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        verifyAll();
+        
+        assertNotNull("resource list should not be null", resources);
+        assertEquals("resource list size", 1, resources.size());
+    }
 
 
+    public void testFindNodeResourcesWithNodeInterface() throws Exception {
+        List<OnmsNode> nodes = new LinkedList<OnmsNode>();
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        node.addIpInterface(ip);
+        nodes.add(node);
+        
+        expect(m_nodeDao.findAll()).andReturn(nodes);
+        
+
+        File snmp = m_fileAnticipator.tempDir("snmp");
+        File nodeDir = m_fileAnticipator.tempDir(snmp, "1");
+        File intfDir = m_fileAnticipator.tempDir(nodeDir, "eth0");
+        m_fileAnticipator.tempFile(intfDir, "foo" + RrdUtils.getExtension());
+        
+        replayAll();
+        List<OnmsResource> resources = m_resourceDao.findNodeResources();
+        verifyAll();
+        
+        assertNotNull("resource list should not be null", resources);
+        assertEquals("resource list size", 1, resources.size());
+    }
 }

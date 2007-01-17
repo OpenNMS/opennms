@@ -290,6 +290,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     
     /**
      * Returns a list of resources for a node.
+     * 
+     * XXX It does not currently fully check that an IP address that is found to have
+     * distriuted response time data is in the database on the proper node so it can have false positives.
      */
     public List<OnmsResource> findNodeResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
@@ -297,6 +300,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         IntSet snmpNodes = findSnmpNodeDirectories(); 
         Set<String> responseTimeInterfaces =
             findChildrenMatchingFilter(new File(getRrdDirectory(), RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+        Set<String> distributedResponseTimeInterfaces =
+            findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         List<OnmsNode> nodes = m_nodeDao.findAll();
         IntSet nodesFound = new IntSet();
@@ -308,9 +313,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             boolean found = false;
             if (snmpNodes.contains(node.getId())) {
                 found = true;
-            } else if (responseTimeInterfaces.size() > 0) {
+            } else if (responseTimeInterfaces.size() > 0 || distributedResponseTimeInterfaces.size() > 0) {
                 for (OnmsIpInterface ip : node.getIpInterfaces()) {
-                    if (responseTimeInterfaces.contains(ip.getIpAddress())) {
+                    if (responseTimeInterfaces.contains(ip.getIpAddress()) || distributedResponseTimeInterfaces.contains(ip.getIpAddress())) {
                         found = true;
                         break;
                     }
@@ -420,6 +425,37 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
         for (File nodeDir : nodeDirs) {
             children.add(nodeDir.getName());
+        }
+        
+        return children;
+    }
+
+    /**
+     * 
+     * @param directory
+     * @param filter
+     * @return
+     * 
+     * XXX should include the location monitor in the returned data
+     */
+    private Set<String> findChildrenChildrenMatchingFilter(File directory, FileFilter filter) {
+        Set<String> children = new HashSet<String>();
+        
+        File[] locationMonitorDirs = directory.listFiles();
+        if (locationMonitorDirs == null) {
+            return children;
+        }
+        
+        for (File locationMonitorDir : locationMonitorDirs) {
+            File[] intfDirs = locationMonitorDir.listFiles(filter);
+
+            if (intfDirs == null || intfDirs.length == 0) {
+                continue;
+            }
+
+            for (File intfDir : intfDirs) {
+                children.add(intfDir.getName());
+            }
         }
         
         return children;
