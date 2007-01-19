@@ -35,25 +35,7 @@
     if you prefer to use the web interface to add hosts for OpenNMS to
     monitor, you can comment out the contents of this file completely (put
     "<code>&lt;!--</code>" before the first line and "<code>--&gt;</code>"
-    after the last line). </para>
-  </section>
-
-  <section>
-    <title>Start PostgreSQL, Tomcat4, and OpenNMS</title>
-
-    <para>This is an example and may vary based on your operating
-    system:</para>
-
-    <para><programlisting><computeroutput># </computeroutput><command>/etc/init.d/postgres start
-</command><computeroutput># </computeroutput><command>/etc/init.d/tomcat4 start
-</command><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/opennms start
-</command></programlisting></para>
-
-    <para>If your operating system does not have a startup script for
-    PostgreSQL or Tomcat4, you would execute something like this:</para>
-
-    <programlisting><computeroutput># </computeroutput><command>sudo -u postgres /usr/local/pgsql/bin/pg_ctl -D /usr/local/pgsql/data start
-</command><computeroutput># </computeroutput><command>/usr/local/tomcat/bin/startup.sh</command></programlisting>
+    after the last line).</para>
   </section>
 
   <section>
@@ -71,13 +53,6 @@
     <para>If everything looks good, you can configure OpenNMS to start
     automatically at boot time. By default on most platforms OpenNMS does not
     start automatically until you configure it to do so.</para>
-
-    <section>
-      <title>Configuring Automatic Startup on Debian Linux</title>
-
-      <para>This is enabled automatically when you install the Debian
-      packages.</para>
-    </section>
 
     <section>
       <title>Configuring Automatic Startup on RPM-based Linux
