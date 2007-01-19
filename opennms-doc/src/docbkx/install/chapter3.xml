@@ -21,25 +21,6 @@
     section.</para>
 
     <section>
-      <title>Installing on Debian Linux</title>
-
-      <para>Assuming that you have setup the apt repository in the
-      prerequisities section, do this:</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms</command></programlisting></para>
-
-      <para>Optionally install the documentation and/or contrib
-      packages</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms-doc opennms-contrib</command></programlisting></para>
-
-      <para>You can also download the appropriate packages for your version of
-      Debian from the OpenNMS <ulink
-      url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
-      section on SourceForge.</para>
-    </section>
-
-    <section>
       <title>Installing on RPM-based Linux Distributions</title>
 
       <para>Download the appropriate packages for your Linux distribution from
@@ -55,8 +36,8 @@
     <section>
       <title>Installing on Solaris</title>
 
-      <para>Download the appropriate package for your Solaris version from
-      the OpenNMS <ulink
+      <para>Download the appropriate package for your Solaris version from the
+      OpenNMS <ulink
       url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
       section on SourceForge.</para>
 
@@ -68,33 +49,13 @@
     <section>
       <title>Installing on Mac OS X</title>
 
-      <para>XXX write me</para>
-    </section>
-
-    <section>
-      <title>Installing from Source</title>
-
-      <para>Before you try to install from source, visit the chapter on
-      "Building from Source," to first download and compile from
-      source.</para>
-
-      <note>
-        <para>this will install into <filename>dist</filename> in the same
-        directory as the <filename>build.xml</filename> file unless you
-        changed <filename>install.dir</filename> as mentioned in the "Building
-        from Source" chapter.</para>
-      </note>
-
-      <para>Execute this command to install:</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>sh build.sh install</command></programlisting></para>
+      <para>OpenNMS is support on Mac OS X via the <ulink
+      url="http://fink.sourceforge.net/">fink</ulink> project.</para>
     </section>
   </section>
 
   <section>
     <title>Upgrading an Existing Installation</title>
-
-    <para>XXX this section could use some more love, too.</para>
 
     <para>Upgrades from a previous version of OpenNMS to a current one usually
     just involve installing a new package for your particular
@@ -108,6 +69,10 @@
     the installer. The changes should go smoothly, but as with the best laid
     plans things may go wrong. Make a backup of your PostgreSQL database per
     the details below before upgrading in case there are problems.</para>
+
+    <para>To upgrade from 1.2.x to 1.3.x check out the <ulink
+    url="http://www.opennms.org/index.php/Upgrading_from_1.2.x_to_1.3.x">wiki
+    page</ulink>.</para>
 
     <section>
       <title>Basic Locations for OpenNMS Data</title>
@@ -244,20 +209,24 @@
 
         <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -S &lt;path to JRE&gt;</command></programlisting>
 
-	<para>Note that you will need the path to the "java" executable - i.e. the file named "java" - usually in $JAVA_HOME/bin.</para>
+        <para>Note that you will need the path to the "java" executable - i.e.
+        the file named "java" - usually in $JAVA_HOME/bin.</para>
       </section>
     </section>
 
     <section>
       <title>Run the Installer to Setup the PostgreSQL Database</title>
 
-      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -disU</command></programlisting>
+      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -dis</command></programlisting>
     </section>
 
     <section>
       <title>Run the Installer to Setup the Web Application</title>
 
-      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/webapps -W $CATALINA_HOME/server/lib</command></programlisting>
+      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/webapps</command></programlisting>
+
+      <para>$CATALINA_HOME is the base directory of your Tomcat
+      installation.</para>
     </section>
   </section>
 </chapter>

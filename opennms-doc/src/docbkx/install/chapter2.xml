@@ -25,110 +25,37 @@
     <section>
       <title>Installing Java on Debian</title>
 
-      <para>Add the following to /etc/apt/sources.list and update, (i.e.
-      "apt-get update").</para>
-
-      <para>For Woody, add:</para>
-
-      <para><programlisting>deb http://debian.opennms.org/ debian/opennms stable</programlisting></para>
-
-      <para>For Sid, add:</para>
-
-      <para><programlisting>deb http://debian.opennms.org/ debian/opennms unstable</programlisting></para>
-
-      <para>Next, obtain and install a suitable version of Java. Because of
-      licensing issues, a suitable Java SDK cannot be distributed with OpenNMS
-      so you will have to obtain and install one yourself prior to installing
-      OpenNMS. You have two options here:</para>
-
-      <orderedlist>
-        <listitem>
-          <para>Use the <code>sun-jdk1.4-installer</code> package and build
-          script to download the j2sdk from Sun and build your own j2sdk1.4
-          package (recommended).</para>
-
-          <para>Building and installing a <code>j2sdk1.4</code>
-          package:</para>
-
-          <itemizedlist>
-            <listitem>
-              <para>The <code>java-common</code> package is a dependency for
-              the <code>j2sdk1.4</code> package you will be creating, and
-              since it will be installed by <filename>dpkg</filename>,
-              <filename>apt</filename> will not be there to pull it in so
-              install it first:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-common</command></programlisting></para>
-            </listitem>
-
-            <listitem>
-              <para>Next, install the <code>sun-jdk1.4-installer</code>
-              package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>apt-get install sun-jdk1.4-installer</command></programlisting></para>
-            </listitem>
-
-            <listitem>
-              <para>Download the Java 1.4 SDK from Sun. We suggest 1.4.2 or
-              later. Make sure that you get the non-RPM binary package (the
-              "<filename>.bin</filename>" package).</para>
-            </listitem>
-
-            <listitem>
-              <para>Then run the following command to build the
-              package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</command></programlisting></para>
-
-              <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
-              is the binary file you downloaded from Sun.</para>
-            </listitem>
-
-            <listitem>
-              <para>And finally install the package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>dpkg -i j2sdk-1_4_2_05-linux-i586.deb</command></programlisting></para>
-
-              <para>where <filename>j2sdk-1_4_2_05-linux-i586.deb</filename>
-              is the Debian package that was just created by
-              <filename>build-sun-jdk14</filename>.</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-
-        <listitem>
-          <para>Obtain and install and your own version and meet the OpenNMS
-          packages dependencies by installing the
-          <filename>java-virtual-machine</filename> meta-package.</para>
-
-          <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-virtual-machine</command></programlisting></para>
-        </listitem>
-      </orderedlist>
+      <para>Note: At the moment OpenNMS does not have Debian packages, nor
+      does it correctly run on Java 6 (just yet). You can install the Sun Java
+      5 binary for linux and build OpenNMS on Debian just fine,
+      however.</para>
     </section>
 
     <section>
-      <title>Installing Java on Everything Else</title>
+      <title>Everything Else</title>
 
       <note>
-        <para>It is important to install the SDK instead of the JRE, as Tomcat
+        <para>It is important to install the JDK instead of the JRE, as Tomcat
         will need to compile Java code (which requires "javac" in the
-        SDK).</para>
+        JDK).</para>
       </note>
 
       <para>You will need to use Sun's Java 2 Platform, Standard Edition,
-      version 1.4 or later. We suggest using 1.4.2 or later. You can <ulink
-      url="http://java.sun.com/j2se/1.4.2/download.html">download it</ulink>
-      from Sun's <ulink url="http://java.sun.com/">Java</ulink> website. Step
-      through the licensing process and then download the proper version of
-      Java for your operating system. If you will be using an RPM-based Linux
-      package of OpenNMS, you will need to download the RPM package of Java,
-      otherwise, you will want the "<code>.bin</code>" file. Install Java
-      according to the instructions from Sun.</para>
+      version 5 (1.5) or later. You can <ulink
+      url="http://java.sun.com/javase/downloads/index_jdk5.jsp">download
+      it</ulink> from Sun's <ulink url="http://java.sun.com/">Java</ulink>
+      website. Step through the licensing process and then download the proper
+      version of Java for your operating system. If you will be using an
+      RPM-based Linux package of OpenNMS, you will need to download the RPM
+      package of Java, otherwise, you will want the "<code>.bin</code>" file.
+      Install Java according to the instructions from Sun. Note that all
+      64-bit versions of OpenNMS RPMs have been built against the 64-bit
+      version of Java (available toward the bottom of that page).</para>
     </section>
   </section>
 
   <section>
-    <title>Prerequisite Package: Tomcat4 (version 4.1 or greater)</title>
+    <title>Prerequisite Package: Tomcat5 (version 5.5 or greater)</title>
 
     <para><ulink
     url="http://jakarta.apache.org/tomcat/index.html">Tomcat</ulink> is part
@@ -140,149 +67,32 @@
     it, which means that the first visit to a particular page may be slow, but
     subsequent visits should be rather fast.</para>
 
-    <para>The latest version of Tomcat is Tomcat5, however OpenNMS does not
-    work with Tomcat5 due to using Tomcat4-specific authentication features.
-    This will be changed in a future version, but for now, you need to use
-    Tomcat4.</para>
-
     <section>
-      <title>Modifying Tomcat4 on Debian Sid</title>
+      <title>Installing Appropriate Tomcat5</title>
 
-      <para>Recent versions of the Tomcat package in Sid, (unstable), use
-      jikes as the compiler instead of the javac from your toolkit. Open up
-      <filename>/etc/tomcat4/web.xml</filename> in your favorite editor and
-      comment out the "<filename>compiler init param</filename>"
-      section.</para>
+      <para>Some distributions are able to use the <ulink
+      url="http://www.jpackage.org/">JPackage</ulink> project to download
+      Tomcat5, but easy to install RPMs are hard to find. Usually, just <ulink
+      url="http://tomcat.apache.org/download-55.cgi">downloading</ulink> the
+      tarball and placing it on the OpenNMS server is enough. There is no
+      longer a requirement for a Tomcat RPM in OpenNMS.</para>
     </section>
 
     <section>
-      <title>Installing Appropriate Tomcat4 on Fedora Core 2 and 3</title>
+      <title>Customizing Tomcat5</title>
 
-      <para>The Tomcat4 package that ships with Fedora Core 2 does not appear
-      to reliably run, even when the OpenNMS web app is not installed. For
-      now, we suggest using the tomcat4 packages on the <ulink
-      url="ftp://ftp.opennms.org/pub/dependencies/tomcat4/">OpenNMS FTP
-      site</ulink>. You'll want to install both packages,
-      <filename>tomcat4-4.1.18-full.1jpp.noarch.rpm</filename> and
-      <filename>tomcat4-webapps-4.1.18-full.1jpp.noarch.rpm</filename>.</para>
-
-      <para>There is a bug in some kernels that can cause Java processes, and
-      even the entire kernel to hang. It is documented in <ulink
-      url="https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=121902">Red
-      Hat bug #121902</ulink>. You should make sure you are running at least a
-      2.6.6-422 kernel.</para>
-    </section>
-
-    <section>
-      <title>Installing Tomcat4 on SuSE Linux Pro 9</title>
-
-      <para>SuSE 9 ships with Tomcat 5, which will not work with OpenNMS. You
-      will need to de-install the Tomcat 5 packages if they are installed and
-      install Tomcat 4 from an older release of SuSE. The Tomcat 4 packages
-      for SuSE 8.1 seem to work just fine. They are available on <ulink
-      url="ftp://ftp.suse.com/pub/projects/apache/jakarta-tomcat/8.1-i386/">SuSE's
-      FTP site</ulink>.</para>
-    </section>
-
-    <section>
-      <title>Customizing Tomcat4</title>
-
-      <para>We need to make a few changes to Tomcat. Most of these should be
-      done via the installer, but you will need to make a few changes by hand.
-      These two changes will need to be made manually to Tomcat:</para>
-
-      <orderedlist>
-        <listitem>
-          <para>Tomcat must be configured to use the same installation of Java
-          that OpenNMS uses.</para>
-        </listitem>
-
-        <listitem>
-          <para>Tomcat needs to be able to read and write the configuration
-          files of OpenNMS. This can be done one of two ways. The first option
-          is making Tomcat run as root and the second is making the OpenNMS
-          configuration files readable and writable by the user Tomcat runs
-          as. The first option, although not preferable from a security
-          standpoint, is easier to setup and is the suggested method. Plans
-          are in place to make OpenNMS so it easily runs as a non-root
-          user--see enhancement bug 1150.</para>
-        </listitem>
-      </orderedlist>
-
-      <para>Many Linux distributions have a <filename>tomcat4.conf</filename>
-      configuration file where you can set configuration parameters. It is in
-      <filename>/etc/tomcat4/</filename> on the Red Hat and Fedora series of
-      Linux distributions. It looks like this:</para>
-
-      <para><programlisting># tomcat /etc/rc.d script example configuration file
-# Use with version 1.07 of the scripts or later
-
-# Use Jpackage utils if present
-if [ -x /usr/bin/java-functions ]; then
-. /usr/bin/java-functions
-set_jvm
-fi
-
-# Source Java system configuration if exist
-if [ -r /etc/java/java.conf ]; then
-. /etc/java/java.conf
-fi
-
-# you could also override JAVA_HOME here
-# Where your java installation lives
-# JAVA_HOME="/usr/java/jdk"
-# JAVA_HOME="/opt/IBMJava2-131"
-
-# You can pass some parameters to java
-# here if you wish to
-#JAVACMD="$JAVA_HOME/bin/java -Xminf0.1 -Xmaxf0.3"
-
-# Where your tomcat installation lives
-# That change from previous RPM where TOMCAT_HOME 
-# used to be /var/tomcat.
-# Now /var/tomcat will be the base for webapps only
-CATALINA_HOME="/var/tomcat4"
-JASPER_HOME="/var/tomcat4"
-CATALINA_TMPDIR="/var/tomcat4/temp"
-
-# What user should run tomcat
-TOMCAT_USER="tomcat"
-
-# You can change your tomcat locale here
-#LANG=en_US
-
-# If you wish to further customize your tomcat environment,
-# put your own definitions here
-# (i.e. LD_LIBRARY_PATH for some jdbc drivers)
-# Just do not forget to export them </programlisting></para>
-
-      <para>In this file, you can change the location of the Java environment
-      and the user that Tomcat runs as by changing
-      <varname>JAVA_HOME</varname> and <varname>TOMCAT_USER</varname>
-      variables, respectively. You can add a line for
-      <varname>JAVA_HOME</varname> that points to your installation of Java,
-      for example:</para>
-
-      <para><programlisting>JAVA_HOME="/usr/java/j2sdk1.4.2_04/"</programlisting></para>
-
-      <para>To change the Tomcat user, you would set:</para>
-
-      <para><programlisting>TOMCAT_USER="root"</programlisting></para>
-
-      <para>If you are using a Linux distribution or another operating system
-      (e.g.: Solaris, Mac OS X) that does not have a
-      <filename>tomcat4.conf</filename> file, you will need to figure out how
-      effect the same changes. Please feel free to post your details as an
-      enhancement bug to the OpenNMS bug database or send an email to the
-      opennms-install mailing list and we will add it to this
-      documentation.</para>
+      <para>It is recommended that you run Tomcat as "root" so that it has
+      access to the files in the OpenNMS configuration and log directories.
+      Usually, just setting JAVA_HOME to point to your Java 5 directory and
+      running the startup scripts in the Tomcat bin directory is enough to get
+      Tomcat running.</para>
 
       <para>If you choose not to set the user that runs Tomcat to
       <code>root</code>, you will need to make the following changes so that
       the Tomcat user can read and write the OpenNMS configuration files. This
       process adds the "<code>tomcat</code>" and "<code>root</code>" users to
-      the "<code>tomcat4</code>" group, and then changes permissions so that
-      the "<code>tomcat4</code>" group can write to the OpenNMS
+      the "<code>tomcat5</code>" group, and then changes permissions so that
+      the "<code>tomcat5</code>" group can write to the OpenNMS
       "<filename>etc</filename>" and "<filename>logs</filename>" directory.
       You have to do this <emphasis role="bold">after</emphasis> the OpenNMS
       software is installed.</para>
@@ -299,7 +109,7 @@ TOMCAT_USER="tomcat"
           "<code>tomcat</code>" and "<code>root</code>" as members of the
           "<code>tomcat4</code>" group. It should look something like:</para>
 
-          <para><programlisting><code>tomcat4:x:91:tomcat,root</code></programlisting></para>
+          <para><programlisting><code>tomcat5:x:91:tomcat,root</code></programlisting></para>
         </listitem>
 
         <listitem>
@@ -310,7 +120,7 @@ TOMCAT_USER="tomcat"
           <filename>capsd-configuration.xml</filename>. Run the
           commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 $OPENNMS_HOME/etc
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat5 $OPENNMS_HOME/etc
 </command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/etc</command></programlisting></para>
 
           <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS
@@ -324,7 +134,7 @@ TOMCAT_USER="tomcat"
           OpenNMS "<filename>etc</filename>" directory (find an instance of
           "File"). Run the commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 /var/log/opennms
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat5 /var/log/opennms
 </command><computeroutput># </computeroutput><command>chmod -R g+w /var/log/opennms</command></programlisting></para>
 
           <para>where <varname>/var/log/opennms</varname> is the OpenNMS logs
@@ -346,10 +156,9 @@ TOMCAT_USER="tomcat"
 
       <para><programlisting>CATALINA_OPTS="-Xmx1024m"</programlisting></para>
 
-      <para>The -Xmx option
-      allows Tomcat to access up to 1GB of memory. Of course, the assumes that
-      there is 1GB of available memory on the system. It will need to be tuned
-      to the particular server in use.</para>
+      <para>The -Xmx option allows Tomcat to access up to 1GB of memory. Of
+      course, the assumes that there is 1GB of available memory on the system.
+      It will need to be tuned to the particular server in use.</para>
     </section>
   </section>
 
@@ -368,8 +177,8 @@ TOMCAT_USER="tomcat"
 
     <para>We require no special configuration for using RRDtool. As long as it
     was installed as a package, the OpenNMS package should be able to find it
-    and configure itself to use the proper commands. We are known to work with
-    any "1.0" version of RRDtool since 1.0.33.</para>
+    and configure itself to use the proper commands. OpenNMS 1.3 and beyond
+    require RRDtool 1.2.</para>
 
     <note>
       <para>OpenNMS can also use JRobin for storing and graphing of
@@ -397,14 +206,7 @@ TOMCAT_USER="tomcat"
     second, the installation process must be able to create the
     database.</para>
 
-    <para>OpenNMS requires version 7.2 or later of PostgreSQL. If you are
-    using a version of PostgreSQL prior to 7.4, the server error messages are
-    required to be in English (the 'C' locale). In particular, the parameter
-    <filename>lc_messages</filename> must be set to <filename>'C'</filename>.
-    This is set in <filename>postgresql.conf</filename> in the PostgreSQL data
-    directory and it requires the database be restarted if you change the
-    setting. See the section below on <filename>pg_hba.conf</filename> for
-    details on the location of the <filename>data</filename> directory.</para>
+    <para>OpenNMS requires version 7.4 or later of PostgreSQL.</para>
 
     <para>The minimum packages you will need to install should be:</para>
 
@@ -414,18 +216,9 @@ TOMCAT_USER="tomcat"
       </listitem>
     </itemizedlist>
 
-    <para>Note that Red Hat Enterprise Linux and CentOS call their PostgreSQL
-    packages "rhdb" for the "Red Hat DataBase" and older releases of SuSE call
-    their packages "postgres".</para>
-
-    <para>If you are using later releases Mandrake, around 9 or later, you
-    also need:</para>
-
-    <itemizedlist>
-      <listitem>
-        <para><filename>postgresql-pl</filename></para>
-      </listitem>
-    </itemizedlist>
+    <para>Note that Red Hat Enterprise Linux 3 and CentOS 3 call their
+    PostgreSQL packages "rhdb" for the "Red Hat DataBase" and older releases
+    of SuSE call their packages "postgres".</para>
 
     <para>Once you have installed Postgres, you will need to make two changes
     to Postgres configuration files: <filename>postgresql.conf</filename> and
@@ -497,13 +290,6 @@ host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting><
     </section>
 
     <section>
-      <title>Installing the PostgreSQL on Red Hat Linux 7</title>
-
-      <para>You will need to install version 7.2 of Postgres (which was
-      available in Red Hat Linux 7.3).</para>
-    </section>
-
-    <section>
       <title>Creating the PostgreSQL Database on Solaris</title>
 
       <para>You will need to create an <code>opennms</code> database.</para>
@@ -524,13 +310,5 @@ host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting><
 
       <para>Now you are finished as the <code>postgres</code> user.</para>
     </section>
-  </section>
-
-  <section>
-    <title>Prerequisite Package: <filename>curl</filename></title>
-
-    <para>The startup script uses <filename>curl</filename> to connect to the
-    OpenNMS daemon to check that the various components are up and running
-    ("<filename>opennms status</filename>").</para>
   </section>
 </chapter>
