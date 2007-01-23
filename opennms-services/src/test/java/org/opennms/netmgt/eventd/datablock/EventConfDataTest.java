@@ -365,7 +365,7 @@ public class EventConfDataTest extends TestCase {
 	}
 	
 	// FIXME
-	public void testV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
+	public void FIXMEtestV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
 	throws Exception {
 		
 		/*
