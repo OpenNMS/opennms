@@ -133,4 +133,8 @@ public class EventConfWrapper {
 		b.append("End Event\n");
         return b.toString();
     }
+    
+    public static String toString(Event e) {
+    	return e == null ? null : new EventConfWrapper(e).toString();
+    }
 }

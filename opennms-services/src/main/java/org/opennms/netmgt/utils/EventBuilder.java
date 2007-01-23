@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 
 public class EventBuilder {
@@ -137,5 +138,43 @@ public class EventBuilder {
         m_event.setService(monitoredService.getServiceName());
         return this;
     }
+
+
+    public EventBuilder setSnmpVersion(String version) {
+    	ensureSnmp();
+    	m_event.getSnmp().setVersion(version);
+		return this;
+	}
+
+	private void ensureSnmp() {
+		if (m_event.getSnmp() == null) {
+			m_event.setSnmp(new Snmp());
+		}
+		
+	}
+
+	public EventBuilder setEnterpriseId(String enterprise) {
+		ensureSnmp();
+		m_event.getSnmp().setId(enterprise);
+		return this;
+	}
+
+	public EventBuilder setGeneric(int generic) {
+		ensureSnmp();
+		m_event.getSnmp().setGeneric(generic);
+		return this;
+	}
+
+	public EventBuilder setSpecific(int specific) {
+		ensureSnmp();
+		m_event.getSnmp().setSpecific(specific);
+		return this;
+	}
+
+	public EventBuilder setSnmpHost(String snmpHost) {
+		m_event.setSnmphost(snmpHost);
+		return this;
+		
+	}
 
 }
