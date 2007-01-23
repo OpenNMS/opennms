@@ -214,6 +214,8 @@ public final class EventConfigurationManager {
      *                Thrown if the contents do not match the required schema.
      * @exception java.lang.IOException
      *                Thrown if the file cannot be opened for reading.
+     *                
+     * @deprecated this is currently unused and will be deleted. brozow - 23-Jan-07
      */
     public static void mergeConfiguration(String file) throws IOException, MarshalException, ValidationException {
         Reader rdr = new FileReader(file);
@@ -235,6 +237,7 @@ public final class EventConfigurationManager {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      * 
+     * @deprecated this is currently unused and will be deleted. brozow - 23-Jan-07
      */
     public static void mergeConfiguration(Reader rdr) throws MarshalException, ValidationException {
         synchronized (m_eventConf) {
