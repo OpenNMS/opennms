@@ -36,30 +36,50 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.opennms.core.utils.ProcessExec;
-
 import junit.framework.Assert;
 
+import org.opennms.core.utils.ProcessExec;
+
 public class FileAnticipator extends Assert {
-    private LinkedList m_expecting = new LinkedList();
-    private LinkedList m_deleteMe = new LinkedList();
+    private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+    
+    private LinkedList<File> m_expecting = new LinkedList<File>();
+    private LinkedList<File> m_deleteMe = new LinkedList<File>();
     private File m_tempDir = null;
+    private boolean m_initialized = false;
     
     public FileAnticipator() throws IOException {
-        createTempDir();
+        this(true);
     }
     
+    public FileAnticipator(boolean initialize) throws IOException {
+        if (initialize) {
+            initialize();
+        }
+    }
+    
+    @Override
+    protected void finalize() {
+        tearDown();
+    }
+
     public void tearDown() {
+        if (!isInitialized()) {
+            return;
+        }
+        
         try {
-            for (ListIterator i = m_deleteMe.listIterator(m_deleteMe.size());
-                 i.hasPrevious(); ) {
-                File f = (File) i.previous();
+            for (ListIterator<File> i = m_deleteMe.listIterator(m_deleteMe.size()); i.hasPrevious(); ) {
+                File f = i.previous();
                 if (!f.delete()) {
-                    fail("Could not delete " + f.getAbsolutePath()
-                         + ": is it a non-empty directory?");
+                    StringBuffer b = new StringBuffer();
+                    b.append("Could not delete " + f.getAbsolutePath() + ": is it a non-empty directory?  Output from 'ls -l':\n");
+                    fail(b.toString());
                 }
             }
             if (m_tempDir != null) {
@@ -82,48 +102,136 @@ public class FileAnticipator extends Assert {
         }
     }
     
-    private void createTempDir() throws IOException {
-        String systemTempDir = System.getProperty("java.io.tmpdir");
-        File f = new File(systemTempDir); 
-        if (!f.isDirectory()) {
-            fail("path specified in system property " +
-                 "java.io.tmpdir, \"" +
-                 systemTempDir + "\" is not a directory");
+    public void initialize() throws IOException {
+        if (m_initialized) {
+            return;
         }
+        
+        String systemTempDir = System.getProperty(JAVA_IO_TMPDIR);
+        assertNotNull(JAVA_IO_TMPDIR + " system property is not set, but must be", systemTempDir);
+        
+        File f = new File(systemTempDir); 
+        assertTrue("path specified in system property " + JAVA_IO_TMPDIR + ", \"" +
+                 systemTempDir + "\" is not a directory", f.isDirectory());
+        
+        String tempFileName = "FileAnticipator_temp_" + System.currentTimeMillis() + "_" + generateRandomHexString(8);
+        m_tempDir = internalTempDir(f, tempFileName);
+        
+        m_initialized = true;
+    }
 
-        m_tempDir = tempDir(f, "FileAnticipator_temp_"
-                            + System.currentTimeMillis());
+    protected static String generateRandomHexString(int length) {
+        if (length < 0) {
+            throw new IllegalArgumentException("length argument is " + length + " and cannot be below zero");
+        }
+        
+        SecureRandom random = null;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            fail("Could not initialize SecureRandom: " + e);
+        }
+        
+        byte bytes[] = new byte[length];
+        random.nextBytes(bytes);
+        
+        StringBuffer sb = new StringBuffer();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
     
     public File getTempDir() {
+        assertInitialized();
+        
         return m_tempDir;
     }
     
-    public File tempFile(String name) throws IOException {
-        return tempFile(m_tempDir, name);
+    private void assertInitialized() {
+        if (!isInitialized()) {
+            throw new IllegalStateException("not initialized");
+        }
     }
-    
-    public File tempFile(String name, String contents) throws IOException {
-        return tempFile(m_tempDir, name, contents);
+
+    public File tempFile(String name) throws IOException {
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
+        }
+
+        assertInitialized();
+
+        return internalTempFile(m_tempDir, name);
     }
     
     public File tempFile(File parent, String name) throws IOException {
-        String path;
-        if (parent != null) {
-            path = parent.getAbsolutePath() + File.separator + name;
-        } else {
-            path = name;
+        if (parent == null) {
+            throw new IllegalArgumentException("parent argument cannot be null");
+        }
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
         }
         
-        File f = new File(path);
+        assertInitialized();
+        
+        return internalTempFile(parent, name);
+    }
+    
+    public File tempFile(String name, String contents) throws IOException {
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
+        }
+        if (contents == null) {
+            throw new IllegalArgumentException("contents argument cannot be null");
+        }
+        
+        assertInitialized();
+        
+        return internalTempFile(m_tempDir, name, contents);
+    }
+    
+    public File tempFile(File parent, String name, String contents) throws IOException {
+        if (parent == null) {
+            throw new IllegalArgumentException("parent argument cannot be null");
+        }
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
+        }
+        if (contents == null) {
+            throw new IllegalArgumentException("contents argument cannot be null");
+        }
+        
+        assertInitialized();
+        
+        return internalTempFile(parent, name, contents);
+    }
+
+    /**
+     * Non-asserting version of tempDir that can be used in initialize()
+     * 
+     * @param parent
+     * @param name
+     * @return object representing the newly created temporary directory
+     * @throws IOException
+     */
+    private File internalTempDir(File parent, String name) throws IOException {
+        File f = new File(parent, name);
+        assertFalse("temporary directory exists but it shouldn't: " + f.getAbsolutePath(), f.exists());
+        assertTrue("could not create temporary directory: " + f.getAbsolutePath(), f.mkdir());
+        m_deleteMe.add(f);
+        return f;
+    }
+
+    private File internalTempFile(File parent, String name) throws IOException {
+        File f = new File(parent, name);
+        assertFalse("temporary file exists but it shouldn't: " + f.getAbsolutePath(), f.exists());
         assertTrue("createNewFile: " + f.getAbsolutePath(), f.createNewFile());
         m_deleteMe.add(f);
         return f;
     }
-    
-    public File tempFile(File parent, String name, String contents)
-        throws IOException {
-        File f = tempFile(parent, name);
+
+    private File internalTempFile(File parent, String name, String contents) throws IOException {
+        File f = internalTempFile(parent, name);
         PrintWriter w = new PrintWriter(new FileWriter(f));
         w.print(contents);
         w.close();
@@ -131,44 +239,67 @@ public class FileAnticipator extends Assert {
     }
 
     public File tempDir(String name) throws IOException {
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
+        }
+        
         return tempDir(m_tempDir, name);
     }
     
     public File tempDir(File parent, String name) throws IOException {
-        String path;
-        if (parent != null) {
-            path = parent.getAbsolutePath() + File.separator + name;
-        } else {
-            path = name;
+        if (parent == null) {
+            throw new IllegalArgumentException("parent argument cannot be null");
+        }
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
         }
         
-        File f = new File(path);
-        assertTrue("mkdir: " + f.getAbsolutePath(), f.mkdir());
-        m_deleteMe.add(f);
-        return f;
+        assertInitialized();
+        
+        return internalTempDir(parent, name);
+    }
+    
+    public File expecting(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
+        }
+        assertInitialized();
+        
+        return internalExpecting(m_tempDir, name);
     }
     
     public File expecting(File parent, String name) {
-        String path;
-        if (parent != null) {
-            path = parent.getAbsolutePath() + File.separator + name;
-        } else {
-            path = name;
+        if (parent == null) {
+            throw new IllegalArgumentException("parent argument cannot be null");
+        }
+        if (name == null) {
+            throw new IllegalArgumentException("name argument cannot be null");
         }
         
-        File f = new File(path);
+        assertInitialized();
+
+        return internalExpecting(parent, name);
+    }
+    
+    private File internalExpecting(File parent, String name) {
+        File f = new File(parent, name);
         m_expecting.add(f);
         return f;
     }
     
     public void deleteExpected() {
-        for (ListIterator i = m_expecting.listIterator(m_expecting.size());
-             i.hasPrevious(); ) {
-            File f = (File) i.previous();
+        assertInitialized();
+
+        for (ListIterator<File> i = m_expecting.listIterator(m_expecting.size()); i.hasPrevious(); ) {
+            File f = i.previous();
             assertTrue("\"" + f.getAbsolutePath() + "\" deleted", f.delete());
             i.remove();
         }
         assertEquals("No expected files left over", m_expecting.size(), 0);
+    }
+
+    public boolean isInitialized() {
+        return m_initialized;
     }
     
 }
