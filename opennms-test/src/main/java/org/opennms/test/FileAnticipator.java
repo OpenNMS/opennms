@@ -78,7 +78,7 @@ public class FileAnticipator extends Assert {
                 File f = i.previous();
                 if (!f.delete()) {
                     StringBuffer b = new StringBuffer();
-                    b.append("Could not delete " + f.getAbsolutePath() + ": is it a non-empty directory?  Output from 'ls -l':\n");
+                    b.append("Could not delete " + f.getAbsolutePath() + ": is it a non-empty directory?");
                     fail(b.toString());
                 }
             }
