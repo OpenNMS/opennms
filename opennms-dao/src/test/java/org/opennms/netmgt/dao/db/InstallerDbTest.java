@@ -52,12 +52,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.dao.db.BackupTablesFoundException;
-import org.opennms.netmgt.dao.db.Column;
-import org.opennms.netmgt.dao.db.Constraint;
-import org.opennms.netmgt.dao.db.InstallerDb;
-import org.opennms.netmgt.dao.db.Table;
-import org.opennms.netmgt.dao.db.Trigger;
 import org.opennms.test.ThrowableAnticipator;
 
 public class InstallerDbTest extends TemporaryDatabaseTestCase {
@@ -257,6 +251,41 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         getInstallerDb().createTables();
     }
 
+    public void testUpgradeColumnAddNotNullConstraint() throws Exception {
+        Table oldTable = new Table();
+        oldTable.setName("node");
+        oldTable.setConstraints(new LinkedList<Constraint>());
+        List<Column> oldColumns = new LinkedList<Column>();
+        Column oldColumn = new Column();
+        oldColumn.setName("nodeId");
+        oldColumn.setType("INTEGER");
+        oldColumn.setSize(4);
+        oldColumns.add(oldColumn);
+        oldTable.setColumns(oldColumns);
+        oldTable.setNotNullOnPrimaryKeyColumns();
+        
+        Table newTable = new Table();
+        newTable.setName("node");
+        newTable.setConstraints(new LinkedList<Constraint>());
+        List<Column> newColumns = new LinkedList<Column>();
+        Column newColumn = new Column();
+        newColumn.setName("nodeId");
+        newColumn.setType("INTEGER");
+        newColumn.setSize(4);
+        newColumn.setNotNull(true);
+        newColumns.add(newColumn);
+        newTable.setColumns(newColumns);
+        newTable.setNotNullOnPrimaryKeyColumns();
+
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("Column nodeid in new table has NOT NULL constraint, however this column did not have the NOT NULL constraint before and there is no change replacement for this column"));
+        try { 
+            getInstallerDb().changeTable("node", oldTable, newTable);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
 
     /**
      * Call Installer.checkOldTables, which should *not* throw an exception
