@@ -87,8 +87,6 @@ public class Main {
         } else {
             m_url = arg;
         }
-        System.err.println("m_url = "+m_url);
-        
     }
 
     private void registerShutDownHook() {
@@ -102,9 +100,10 @@ public class Main {
         if (homeUrl.endsWith("/")) {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
-        System.err.println("homeUrl = "+homeUrl);
+        System.err.println("user.home.url = "+homeUrl);
         System.setProperty("user.home.url", homeUrl);
         
+        System.err.println("opennms.poller.server.url = "+m_url);
         System.setProperty("opennms.poller.server.url", m_url);
         
         String[] configs = {
