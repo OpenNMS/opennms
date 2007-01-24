@@ -973,10 +973,6 @@ public class InstallerDb {
                     + ": " + oldConstraint);
         }
 
-        /*
-         * XXX This doesn't check for old column rows that don't exist
-         * in newColumns.
-         */
         for (Column newColumn : newColumns) {
             Column oldColumn = findColumn(oldColumns, newColumn.getName());
 
@@ -995,7 +991,7 @@ public class InstallerDb {
                 columnChanges.put(newColumn.getName(), new ColumnChange());
             }
 
-            ColumnChange columnChange = (ColumnChange) columnChanges.get(newColumn.getName());
+            ColumnChange columnChange = columnChanges.get(newColumn.getName());
             columnChange.setColumn(newColumn);
 
             /*
@@ -1250,8 +1246,7 @@ public class InstallerDb {
 
                 if (obj != null) {
                     if (change.isUpgradeTimestamp()
-                            && !obj.getClass().equals(
-                                                      java.sql.Timestamp.class)) {
+                            && !obj.getClass().equals(java.sql.Timestamp.class)) {
                         if (m_debug) {
                             m_out.println("      - " + name
                                     + " is an old-style timestamp");
