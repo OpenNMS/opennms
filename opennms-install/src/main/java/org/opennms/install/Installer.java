@@ -703,7 +703,7 @@ public class Installer {
                 + "exist");
         m_out.println("");
         m_out.println("   -T    location of tomcat.conf");
-        m_out.println("   -w    location of tomcat's contcxt directory");
+        m_out.println("   -w    location of tomcat's context directory");
         m_out.println("         (usually under conf/Catalina/localhost)");
         m_out.println("");
         m_out.println("   -r    run as an RPM install (does nothing)");
