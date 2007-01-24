@@ -98,7 +98,7 @@ fi
 show_help () {
     cat <<END
 
-Usage: $0 [-n] [-t] [-v] <command> [<service>]
+Usage: $0 [-n] [-t] [-v] [-Q] <command> [<service>]
  
   command options: start|stop|restart|status|check|pause|resume|kill
 
@@ -112,6 +112,9 @@ Usage: $0 [-n] [-t] [-v] <command> [<service>]
     -v    Verbose mode.  When used with the "status" command, gives the
           results for all OpenNMS services.  When used with "start", enables
           some verbose debugging, such as details on garbage collection.
+    -Q    Quick mode.  Don't wait for OpenNMS to startup.  Useful if you
+          want to watch the logs while OpenNMS starts up without wanting to
+          open another terminal window.
 
 END
     return
@@ -461,10 +464,13 @@ VERBOSE=0
 
 NAME="opennms"
 
-while getopts ntv c; do
+while getopts ntvQ c; do
     case $c in
 	n)
 	    NOEXECUTE="foo"
+	    ;;
+	Q)
+		START_TIMEOUT=0
 	    ;;
 	t)
 	    TEST=1
