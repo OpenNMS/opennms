@@ -98,10 +98,11 @@ public class Main {
         if (homeUrl.endsWith("/")) {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
-        System.err.println("homeUrl = "+homeUrl);
 
+        System.err.println("user.home.url = "+homeUrl);
         System.setProperty("user.home.url", homeUrl);
 
+        System.err.println("opennms.poller.server.url = "+m_url);
         System.setProperty("opennms.poller.server.url", m_url);
         
         String[] configs = {
@@ -125,9 +126,14 @@ public class Main {
     }
 		
     private void usage() {
-        System.err.println("The remote poller is not registered with the server");
-        System.err.println("Register it by running the following:");
-        System.err.println("\tjava -jar opennms-remote-poller.jar <serverUrl> <LocationName>");
+        System.err.println("The remote poller is not registered with the server.");
+        System.err.println("Register it by running this command:");
+        System.err.println("\tjava -jar opennms-remote-poller.jar <server URL> <location name>");
+        System.err.println("where:");
+        System.err.println("\t<server URL>    is URL of the RMI service on the OpenNMS server,");
+        System.err.println("\t                usually 'rmi://<server name>'.");
+        System.err.println("\t<location name> is name of a configured monitoring location");
+        System.err.println("\t                definition on the OpenNMS server.");
         System.exit(1);
     }
 
