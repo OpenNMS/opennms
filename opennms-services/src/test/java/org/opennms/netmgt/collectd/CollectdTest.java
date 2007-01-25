@@ -1,44 +1,55 @@
-
-//This file is part of the OpenNMS(R) Application.
-
-//OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-//OpenNMS(R) is a derivative work, containing both original code, included code and modified
-//code that was published under the GNU General Public License. Copyrights for modified 
-//and included code are below.
-
-//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-
-//Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-
-//This program is free software; you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation; either version 2 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program; if not, write to the Free Software
-//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-//For more information contact:
-//OpenNMS Licensing       <license@opennms.org>
-//http://www.opennms.org/
-//http://www.opennms.com/
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ * 
+ * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified 
+ * and included code are below.
+ * 
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ * 
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ * OpenNMS Licensing       <license@opennms.org>
+ * http://www.opennms.org/
+ * http://www.opennms.com/
+ */
 
 package org.opennms.netmgt.collectd;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.jmock.Mock;
-import org.jmock.cglib.MockObjectTestCase;
+import junit.framework.TestCase;
+
+import org.easymock.EasyMock;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -52,47 +63,64 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.SimpleTransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 
-public class CollectdTest extends MockObjectTestCase {
+public class CollectdTest extends TestCase {
+    
+    EasyMockUtils m_easyMockUtils = new EasyMockUtils();
 
     private Collectd m_collectd;
 
-    private Mock m_eventIpcManager;
-    private Mock m_collectorConfigDao;
-    private Mock m_ipIfDao;
-    private Mock m_monSvcDao;
-    private Mock m_collector;
+    private EventIpcManager m_eventIpcManager;
+    private CollectorConfigDao m_collectorConfigDao;
+    private IpInterfaceDao m_ipIfDao;
+    private MonitoredServiceDao m_monSvcDao;
+    private ServiceCollector m_collector;
 
     private MockScheduler m_scheduler;
     private CollectionSpecification m_spec;
 
+    private PlatformTransactionManager m_transactionManager;
 
+    @Override
     protected void setUp() throws Exception {
 
         MockLogAppender.setupLogging();
 
         // Test setup
-
-        m_eventIpcManager = mock(EventIpcManager.class);
-        m_collectorConfigDao = mock(CollectorConfigDao.class);
-        m_ipIfDao = mock(IpInterfaceDao.class);
-        m_monSvcDao = mock(MonitoredServiceDao.class);
-
-        m_collector = mock(ServiceCollector.class);
-
+        m_eventIpcManager = m_easyMockUtils.createMock(EventIpcManager.class);
+        m_collectorConfigDao = m_easyMockUtils.createMock(CollectorConfigDao.class);
+        m_ipIfDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
+        m_monSvcDao = m_easyMockUtils.createMock(MonitoredServiceDao.class);
+        m_collector = m_easyMockUtils.createMock(ServiceCollector.class);
         m_scheduler = new MockScheduler();
 
-        m_eventIpcManager.stubs();
+        m_eventIpcManager.addEventListener(isA(EventListener.class));
+        expectLastCall().anyTimes();
+        m_eventIpcManager.addEventListener(isA(EventListener.class), isA(List.class));
+        expectLastCall().anyTimes();
+        m_eventIpcManager.addEventListener(isA(EventListener.class), isA(String.class));
+        expectLastCall().anyTimes();
+        m_eventIpcManager.removeEventListener(isA(EventListener.class));
+        expectLastCall().anyTimes();
 
         MockNetwork m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
@@ -131,6 +159,9 @@ public class CollectdTest extends MockObjectTestCase {
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
         pollOutagesRdr.close();
 
+        Reader collectdReader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/collectd-testdata.xml");
+        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(collectdReader, "nms1", false);
+        CollectdConfigFactory.setInstance(collectdConfig);
 
         m_collectd = new Collectd();
         m_collectd.setEventIpcManager(getEventIpcManager());
@@ -157,24 +188,37 @@ public class CollectdTest extends MockObjectTestCase {
         m_spec = new CollectionSpecification(wpkg, "SNMP", null, getCollector());
     }
 
+    @Override
+    public void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNoWarningsOrGreater();
+    }
+    
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+
     private ServiceCollector getCollector() {
-        return (ServiceCollector)m_collector.proxy();
+        return m_collector;
     }
 
     private MonitoredServiceDao getMonitoredServiceDao() {
-        return (MonitoredServiceDao)m_monSvcDao.proxy();
+        return m_monSvcDao;
     }
 
     private IpInterfaceDao getIpInterfaceDao() {
-        return (IpInterfaceDao)m_ipIfDao.proxy();
+        return m_ipIfDao;
     }
 
     private CollectorConfigDao getCollectorConfigDao() {
-        return (CollectorConfigDao)m_collectorConfigDao.proxy();
+        return m_collectorConfigDao;
     }
 
     private EventIpcManager getEventIpcManager() {
-        return (EventIpcManager)m_eventIpcManager.proxy();
+        return m_eventIpcManager;
     }
 
     private CollectionSpecification getCollectionSpecification() {
@@ -188,37 +232,33 @@ public class CollectdTest extends MockObjectTestCase {
         return iface;
     }
 
-    protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
-        super.tearDown();
-    }
-
     public void testCreate() {
         String svcName = "SNMP";
-        
         setupCollector(svcName);
 
-        Mock m_scheduler = mock(Scheduler.class);
-        m_collectd.setScheduler((Scheduler)m_scheduler.proxy());
+        Scheduler m_scheduler = m_easyMockUtils.createMock(Scheduler.class);
+        m_collectd.setScheduler(m_scheduler);
+        
+        m_scheduler.schedule(eq(0L), isA(ReadyRunnable.class));
+        m_scheduler.start();
+        m_scheduler.stop();
 
-        m_scheduler.expects(once()).method("schedule").with(eq(0L), ANYTHING);
+        m_easyMockUtils.replayAll();
+        
         m_collectd.init();
-
-        m_scheduler.expects(once()).method("start");
         m_collectd.start();
-
-        m_scheduler.expects(once()).method("stop");
         m_collectd.stop();
+
+        m_easyMockUtils.verifyAll();
     }
 
+    // FIXME: Fix broken test
     public void FIXMEtestScheduling() {
         FIXMEtestNoMatchingSpecs();
     }
 
+    // FIXME: Fix broken test
     public void FIXMEtestNoMatchingSpecs() {
-        m_collectd.init();
-        m_collectd.start();
-
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
         List specs = Collections.EMPTY_LIST;
@@ -226,52 +266,78 @@ public class CollectdTest extends MockObjectTestCase {
         setupCollector(svcName);
         setupInterface(iface);
         setupSpecs(iface, svcName, specs);
+        setupTransactionManager();
+
+        m_easyMockUtils.replayAll();
+
+        m_collectd.init();
+        m_collectd.start();
 
         m_scheduler.next();
 
         assertEquals(0, m_scheduler.getEntryCount());
 
         m_collectd.stop();
-
+        
+        m_easyMockUtils.verifyAll();
     }
 
-    public void FIXMEtestOneMatchingSpec() {
-        m_collectd.init();
-        m_collectd.start();
-
+    public void testOneMatchingSpec() {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
         List specs = Collections.singletonList(getCollectionSpecification());
 
         setupCollector(svcName);
+        
+        m_collector.initialize(isA(CollectionAgent.class), isA(Map.class));
+        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class))).andReturn(ServiceCollector.COLLECTION_SUCCEEDED);
+        
         setupInterface(iface);
         setupSpecs(iface, svcName, specs);
+        
+        setupTransactionManager();
+        
+        m_easyMockUtils.replayAll();
 
-        m_collector.expects(once()).method("initialize").with(isA(CollectionAgent.class), isA(Map.class));
-
+        m_collectd.init();
+        m_collectd.start();
+        
         m_scheduler.next();
 
         assertEquals(1, m_scheduler.getEntryCount());
-
-        //public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters);
-        m_collector.expects(once()).method("collect").with(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class));
 
         m_scheduler.next();
 
         m_collectd.stop();
 
+        m_easyMockUtils.verifyAll();
+    }
+
+    private void setupTransactionManager() {
+        m_transactionManager = m_easyMockUtils.createMock(PlatformTransactionManager.class);
+        TransactionTemplate transactionTemplate = new TransactionTemplate(m_transactionManager);
+        m_collectd.setTransactionTemplate(transactionTemplate);
+        
+        expect(m_transactionManager.getTransaction(isA(TransactionDefinition.class))).andReturn(new SimpleTransactionStatus()).anyTimes();
+        m_transactionManager.rollback(isA(TransactionStatus.class));
+        expectLastCall().anyTimes();
+        m_transactionManager.commit(isA(TransactionStatus.class)); //anyTimes();
+        expectLastCall().anyTimes();
     }
 
     private void setupSpecs(OnmsIpInterface iface, String svcName, List specs) {
+//        expect(m_collectorConfigDao.getSpecificationsForInterface(iface, svcName)).andReturn(Collections.singleton(collector));
+
+        /*
         m_collectorConfigDao.expects(once()).method("getSpecificationsForInterface").
         with(same(iface), eq(svcName)).
         will(returnValue(specs));
+        */
+//        m_collectorConfigDao.
     }
 
     private void setupInterface(OnmsIpInterface iface) {
-        m_ipIfDao.expects(once()).method("findByServiceType").
-        with(eq("SNMP")).
-        will(returnValue(Collections.singleton(iface)));
+        expect(m_ipIfDao.findHierarchyByServiceType("SNMP")).andReturn(Collections.singleton(iface));
     }
 
     private void setupCollector(String svcName) {
@@ -279,30 +345,44 @@ public class CollectdTest extends MockObjectTestCase {
         collector.setService(svcName);
         collector.setClassName(MockServiceCollector.class.getName());
         
-        m_collectorConfigDao.expects(once()).method("getCollectors").
-        will(returnValue(Collections.singleton(collector)));
+        MockServiceCollector.setDelegate(getCollector());
+        
+        // Setup expectation
+        m_collector.initialize(null);
+
+        expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector));
     }
 
-    public void runTest() throws Throwable {
-        super.runTest();
-        MockLogAppender.assertNoWarningsOrGreater();
-    }
     
     public static class MockServiceCollector implements ServiceCollector {
+        private static ServiceCollector s_delegate;
+
+        public MockServiceCollector() {
+            
+        }
+        
+        public static void setDelegate(ServiceCollector delegate) {
+            s_delegate = delegate;
+        }
+        
         public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
-            return 0;
+            return s_delegate.collect(agent, eproxy, parameters);
         }
 
         public void initialize(Map parameters) {
+            s_delegate.initialize(parameters);
         }
 
         public void initialize(CollectionAgent agent, Map parameters) {
+            s_delegate.initialize(agent, parameters);
         }
 
         public void release() {
+            s_delegate.release();
         }
 
         public void release(CollectionAgent agent) {
+            s_delegate.release(agent);
         }
     }
 
