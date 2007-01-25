@@ -76,7 +76,9 @@ public class LatencyThresholderTest extends ThresholderTestCase {
     
     public void xtestIcmpDouble() throws Exception {
         setupFetchSequence(new double[] { 69000.0, 79000.0, 74999.0, 74998.0 });
+        replayMocks();
         ensureExceededAfterFetches("icmp-double", 3);
+        verifyMocks();
     }
     
     public void testNormalValue() throws Exception {
