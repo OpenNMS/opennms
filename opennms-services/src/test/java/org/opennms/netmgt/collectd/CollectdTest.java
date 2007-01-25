@@ -32,13 +32,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -48,7 +45,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.easymock.EasyMock;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataSourceFactory;
