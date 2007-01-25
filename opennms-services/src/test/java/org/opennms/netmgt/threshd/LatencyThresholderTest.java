@@ -47,18 +47,23 @@ public class LatencyThresholderTest extends ThresholderTestCase {
         createMockRrd();
 
         setupEventManager();
-       
+
+        replayMocks();
+
         String dirName = "target/threshd-test/192.168.1.1";
         String fileName = "icmp"+RrdUtils.getExtension();
         String ipAddress = "192.168.1.1";
         String serviceName = "ICMP";
         String groupName = "icmp-latency";
-		
+
 		setupThresholdConfig(dirName, fileName, ipAddress, serviceName, groupName);
 
         m_thresholder = new LatencyThresholder();
         m_thresholder.initialize(m_serviceParameters);
         m_thresholder.initialize(m_iface, m_parameters);
+
+        verifyMocks();
+        expectRrdStrategyCalls();
 
     }
 
@@ -78,17 +83,19 @@ public class LatencyThresholderTest extends ThresholderTestCase {
         
         setupFetchSequence(new double[] { 69000.0, 79000.0, 74999.0, 74998.0 });
 		
-        
+        replayMocks();
         ensureNoEventAfterFetches("icmp", 4);
-        
+        verifyMocks();
     }
     
     public void testBigValue() throws Exception {
         
         setupFetchSequence(new double[] {79000.0, 80000.0, 84999.0, 84998.0, 97000.0 });
         
+        replayMocks();
         ensureExceededAfterFetches("icmp", 3);
         ensureNoEventAfterFetches("icmp", 2);
+        verifyMocks();
     }
     
     public void testRearm() throws Exception {
@@ -105,9 +112,11 @@ public class LatencyThresholderTest extends ThresholderTestCase {
         
         setupFetchSequence(values);
         
+        replayMocks();
         ensureExceededAfterFetches("icmp", 3);
         ensureRearmedAfterFetches("icmp", 2);
         ensureExceededAfterFetches("icmp", 3);
+        verifyMocks();
     }
 
 

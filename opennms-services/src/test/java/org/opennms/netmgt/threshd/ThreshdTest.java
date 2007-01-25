@@ -31,7 +31,6 @@
 //
 package org.opennms.netmgt.threshd;
 
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
@@ -39,7 +38,6 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.threshd.mock.MockThreshdConfigManager;
@@ -99,15 +97,8 @@ public class ThreshdTest extends ThresholderTestCase {
             "        <thresholder service=\"DNS\"      class-name=\"org.opennms.netmgt.threshd.LatencyThresholder\"/>\n" + 
             "        <thresholder service=\"DHCP\"     class-name=\"org.opennms.netmgt.threshd.LatencyThresholder\"/>\n" + 
             "</threshd-configuration>\n";
-    private MockDatabase m_db;
-    
-    
-    
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(ThreshdTest.class);
-    }
-
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging();
@@ -142,13 +133,13 @@ public class ThreshdTest extends ThresholderTestCase {
         
     }
 
+    @Override
     protected void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
 
     public void testThreshd() throws Exception {
-		
         Threshd threshd = new Threshd();
         ThreshdConfigManager config = new MockThreshdConfigManager(THRESHD_CONFIG, "localhost", false);
         threshd.setThreshdConfig(config);

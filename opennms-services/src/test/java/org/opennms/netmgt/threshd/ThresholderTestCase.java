@@ -31,9 +31,12 @@
 //
 package org.opennms.netmgt.threshd;
 
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,21 +48,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import junit.framework.TestCase;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.jmock.Mock;
-import org.jmock.MockObjectTestCase;
-import org.jmock.core.Stub;
-import org.jmock.core.stub.StubSequence;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
@@ -68,17 +70,22 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-public class ThresholderTestCase extends MockObjectTestCase {
+//public class ThresholderTestCase extends MockObjectTestCase {
+public class ThresholderTestCase extends TestCase {
 
+    private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
+    
 	private EventAnticipator m_anticipator;
 	private EventProxy m_proxy;
-	private Mock m_mockRrdStrategy;
-	protected Map m_serviceParameters;
+	//private Mock m_mockRrdStrategy;
+    private RrdStrategy m_rrdStrategy;
+	protected Map<Object, Object> m_serviceParameters;
 	protected IPv4NetworkInterface m_iface;
-	protected Map m_parameters;
+	protected Map<Object, Object> m_parameters;
 	private String m_fileName;
 	private int m_step;
 	protected ServiceThresholder m_thresholder;
@@ -87,21 +94,17 @@ public class ThresholderTestCase extends MockObjectTestCase {
     private String m_serviceName;
     private String m_ipAddress;
 
+    @Override
 	protected void setUp() throws Exception {
 		super.setUp();
-
-
 	}
 
+    @Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
 
-	public Stub onConsecutiveCalls(Stub[] stubs) {
-	    return new StubSequence(stubs);
-	}
-
-	protected void setupEventManager() {
+    protected void setupEventManager() {
 		m_anticipator = new EventAnticipator();
 		m_eventMgr = new MockEventIpcManager();
 		m_eventMgr.setEventAnticipator(m_anticipator);
@@ -122,9 +125,9 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_fileName = f.getAbsolutePath();
 		m_step = 300000;
 		m_iface = new IPv4NetworkInterface(InetAddress.getByName(ipAddress));
-		m_serviceParameters = new HashMap();
+		m_serviceParameters = new HashMap<Object, Object>();
 		m_serviceParameters.put("svcName", serviceName);
-		m_parameters = new HashMap();
+		m_parameters = new HashMap<Object, Object>();
 		m_parameters.put("thresholding-group", groupName);
         m_ipAddress = ipAddress;
         m_serviceName = serviceName;
@@ -147,13 +150,24 @@ public class ThresholderTestCase extends MockObjectTestCase {
         return f;
     }
 
-	protected void createMockRrd() {
+	protected void createMockRrd() throws Exception {
 		// set this so we don't get exceptions in the log
 	    RrdConfig.setProperties(new Properties());
+        /*
 		m_mockRrdStrategy = mock(RrdStrategy.class);
 		RrdUtils.setStrategy((RrdStrategy)m_mockRrdStrategy.proxy());
 		m_mockRrdStrategy.expects(atLeastOnce()).method("initialize");
         m_mockRrdStrategy.expects(atLeastOnce()).method("getDefaultFileExtension").will(returnValue(".mockRrd"));
+        */
+        m_rrdStrategy = m_easyMockUtils.createMock(RrdStrategy.class);
+        expectRrdStrategyCalls();
+        RrdUtils.setStrategy(m_rrdStrategy);
+    }
+    
+	protected void expectRrdStrategyCalls() throws Exception {
+        m_rrdStrategy.initialize();
+        expectLastCall().anyTimes();
+        expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".mockRrd").anyTimes();
 	}
 
 	protected void setupDatabase() {
@@ -213,16 +227,10 @@ public class ThresholderTestCase extends MockObjectTestCase {
 	    ensureEventAfterFetches(count, null, null);
 	}
 
-	protected void setupFetchSequence(double[] values) {
-	    Stub[] stubs = new Stub[values.length];
-	    for(int i = 0; i < values.length; i++) {
-	        stubs[i] = returnValue(values[i]);
-	    }
-	    m_mockRrdStrategy
-	    .expects(atLeastOnce())
-	    .method("fetchLastValue")
-	    .with( eq(m_fileName), eq(m_step))
-	    .will(onConsecutiveCalls(stubs));
+	protected void setupFetchSequence(double[] values) throws NumberFormatException, RrdException {
+        for (int i = 0; i < values.length; i++) {
+            expect(m_rrdStrategy.fetchLastValue(eq(m_fileName), eq(m_step))).andReturn(values[i]);
+        }
 	}
 
 	private void verifyAnticipated(long millis) {
@@ -238,5 +246,13 @@ public class ThresholderTestCase extends MockObjectTestCase {
 	public void sleep(long millis) {
 	    try { Thread.sleep(millis); } catch (InterruptedException e) {}
 	}
+    
+    public void replayMocks() {
+        m_easyMockUtils.replayAll();
+    }
+    
+    public void verifyMocks() {
+        m_easyMockUtils.verifyAll();
+    }
 
 }

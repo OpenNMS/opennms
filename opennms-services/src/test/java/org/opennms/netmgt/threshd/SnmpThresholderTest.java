@@ -32,9 +32,6 @@
 package org.opennms.netmgt.threshd;
 
 
-import org.opennms.netmgt.mock.MockElement;
-import org.opennms.netmgt.mock.MockNode;
-import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -51,10 +48,7 @@ public class SnmpThresholderTest extends ThresholderTestCase {
 
         setupEventManager();
         
-        MockService svc = m_network.getService(1, "192.168.1.1", "SNMP");
-        
-        MockNode node = svc.getNode();
-        
+        replayMocks();
        
         String rrdRepository = "target/threshd-test";
         String fileName = "cpuUtilization"+RrdUtils.getExtension();
@@ -65,9 +59,14 @@ public class SnmpThresholderTest extends ThresholderTestCase {
         
         setupThresholdConfig(rrdRepository+"/"+nodeId, fileName, ipAddress, serviceName, groupName);
 
+        
         m_thresholder = new SnmpThresholder();
         m_thresholder.initialize(m_serviceParameters);
         m_thresholder.initialize(m_iface, m_parameters);
+        
+        verifyMocks();
+        
+        expectRrdStrategyCalls();
 
     }
 
@@ -83,7 +82,9 @@ public class SnmpThresholderTest extends ThresholderTestCase {
         setupFetchSequence(new double[] { 69.0, 79.0, 74.0, 74.0 });
         
         
+        replayMocks();
         ensureNoEventAfterFetches("cpuUtilization", 4);
+        verifyMocks();
         
     }
     
@@ -91,8 +92,10 @@ public class SnmpThresholderTest extends ThresholderTestCase {
         
         setupFetchSequence(new double[] {99.0, 98.0, 97.0, 96.0, 95.0 });
         
+        replayMocks();
         ensureExceededAfterFetches("cpuUtilization", 3);
         ensureNoEventAfterFetches("cpuUtilization", 2);
+        verifyMocks();
     }
     
     public void testRearm() throws Exception {
@@ -109,9 +112,11 @@ public class SnmpThresholderTest extends ThresholderTestCase {
         
         setupFetchSequence(values);
         
+        replayMocks();
         ensureExceededAfterFetches("cpuUtilization", 3);
         ensureRearmedAfterFetches("cpuUtilization", 2);
         ensureExceededAfterFetches("cpuUtilization", 3);
+        verifyMocks();
     }
 
 
