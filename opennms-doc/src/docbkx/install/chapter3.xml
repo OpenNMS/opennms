@@ -223,7 +223,7 @@
     <section>
       <title>Run the Installer to Setup the Web Application</title>
 
-      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/webapps</command></programlisting>
+      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/conf/Catalina/localhost</command></programlisting>
 
       <para>$CATALINA_HOME is the base directory of your Tomcat
       installation.</para>
