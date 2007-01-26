@@ -37,7 +37,16 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -46,6 +55,8 @@ import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
+import org.opennms.netmgt.config.vulnscand.ScanLevel;
+import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
@@ -114,6 +125,18 @@ public class Vulnscand extends AbstractServiceDaemon {
      * queued by the rescan scheduler thread.
      */
     private RunnableConsumerThreadPool m_scheduledScanRunner;
+
+	/**
+	 * SQL used to retrieve the last poll time for all the managed interfaces
+	 * belonging to a particular node.
+	 */
+	static final String SQL_GET_LAST_POLL_TIME = "SELECT lastAttemptTime FROM vulnerabilities WHERE ipaddr=? ORDER BY lastAttemptTime DESC";
+
+	/**
+	 * The SQL statement used to retrieve all non-deleted/non-forced unamanaged
+	 * IP interfaces from the 'ipInterface' table.
+	 */
+	static final String SQL_DB_RETRIEVE_IP_INTERFACE = "SELECT ipaddr FROM ipinterface WHERE ipaddr!='0.0.0.0' AND isManaged!='D' AND isManaged!='F'";
 
     /**
      * <P>
@@ -214,6 +237,7 @@ public class Vulnscand extends AbstractServiceDaemon {
             // During instantiation, the scheduler will load the
             // list of known nodes from the database
             m_scheduler = new Scheduler(m_scheduledScanRunner.getRunQueue());
+            initialize();
         } catch (SQLException sqlE) {
             log().error("Failed to initialize the rescan scheduler.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
@@ -256,4 +280,182 @@ public class Vulnscand extends AbstractServiceDaemon {
 
     protected void onInit() {
     }
+
+
+    void setInitialScheduleSleep() {
+		//
+	    m_scheduler.setInitialSleep(VulnscandConfigFactory.getInstance().getInitialSleepTime());
+		if (log().isDebugEnabled())
+	        log().debug("Scheduler: initial rescan sleep time(millis): " + m_scheduler.getInitialSleep());
+	}
+
+	/**
+	 * Creates a NessusScanConfiguration object representing the specified node
+	 * and adds it to the known node list for scheduling.
+	 * 
+	 * @param address
+	 *            the internet address.
+	 * @param scanLevel
+	 *            the scan level.
+	 * @param scheduler TODO
+	 * @throws SQLException
+	 *             if there is any problem accessing the database
+	 */
+	void addToKnownAddresses(InetAddress address, int scanLevel) throws SQLException {
+	    // Retrieve last poll time for the node from the ipInterface
+	    // table.
+		
+	    Connection db = null;
+	    try {
+	        db = DataSourceFactory.getInstance().getConnection();
+	        PreparedStatement ifStmt = db.prepareStatement(Vulnscand.SQL_GET_LAST_POLL_TIME);
+	        ifStmt.setString(1, address.getHostAddress());
+	        ResultSet rset = ifStmt.executeQuery();
+	        Category log = log();
+			if (rset.next()) {
+	            Timestamp lastPolled = rset.getTimestamp(1);
+	            if (lastPolled != null && rset.wasNull() == false) {
+	                if (log.isDebugEnabled())
+	                    log.debug("scheduleAddress: adding node " + address + " with last poll time " + lastPolled);
+						//try {
+	                    m_scheduler.schedule(address, new NessusScanConfiguration(address, scanLevel, lastPolled, getInterval()));
+	                //} catch (UnknownHostException ex) {
+	                  //  log.error("Could not add invalid address to schedule: " + address, ex);
+	                //}
+	            }
+	        } else {
+	            if (log.isDebugEnabled())
+	                log.debug("scheduleAddress: adding ipAddr " + address + " with no previous poll");
+				m_scheduler.schedule(address, new NessusScanConfiguration(address, scanLevel, new Timestamp(0), getInterval()));
+	        }
+	    } finally {
+	        if (db != null) {
+	            try {
+	                db.close();
+	            } catch (Exception e) {
+	            }
+	        }
+	    }
+	}
+
+	private long getInterval() {
+		return VulnscandConfigFactory.getInstance().getRescanFrequency();
+	}
+
+	Set getAllManagedInterfaces() {
+		Set retval = new TreeSet();
+		String addressString = null;
+
+		Connection connection = null;
+		Statement selectInterfaces = null;
+		ResultSet interfaces = null;
+		try {
+			connection = DataSourceFactory.getInstance().getConnection();
+			selectInterfaces = connection.createStatement();
+			interfaces = selectInterfaces.executeQuery(Vulnscand.SQL_DB_RETRIEVE_IP_INTERFACE);
+
+			int i = 0;
+			while (interfaces.next()) {
+				addressString = interfaces.getString(1);
+				if (addressString != null) {
+					//addressString = addressString.replaceAll("/", "");
+					//addressString = addressString + "/" + addressString;
+					retval.add(addressString);
+					m_scheduler.log().debug("JOHAN: " + addressString);
+				} else {
+					m_scheduler.log().warn("UNEXPECTED CONDITION: NULL string in the results of the query for managed interfaces from the ipinterface table.");
+				}
+
+				i++;
+			}
+			m_scheduler.log().info("Loaded " + i + " managed interfaces from the database.");
+		} catch (SQLException ex) {
+			m_scheduler.log().error(ex.getLocalizedMessage(), ex);
+		} finally {
+			try {
+				if (interfaces != null)
+					interfaces.close();
+				if (selectInterfaces != null)
+					selectInterfaces.close();
+			} catch (Exception ex) {
+			} finally {
+				try {
+					if (connection != null)
+						connection.close();
+				} catch (Exception e) {
+				}
+			}
+		}
+		return retval;
+	}
+
+	void scheduleExistingInterfaces() throws SQLException {
+		// Load the list of IP addresses from the config file and schedule
+		// them in the appropriate level
+
+		VulnscandConfigFactory configFactory = VulnscandConfigFactory.getInstance();
+		VulnscandConfiguration config = VulnscandConfigFactory.getConfiguration();
+
+		// If the status of the daemon is "true" (meaning "on")...
+		if (config.getStatus()) {
+			Enumeration scanLevels = config.enumerateScanLevel();
+
+			while (scanLevels.hasMoreElements()) {
+				ScanLevel scanLevel = (ScanLevel) scanLevels.nextElement();
+				int level = scanLevel.getLevel();
+
+				// Grab the list of included addresses for this level
+				//Set levelAddresses = configFactory.getAllIpAddresses(scanLevel);
+				Set levelAddresses = new TreeSet ();
+
+				// If scanning of the managed IPs is enabled...
+				if (configFactory.getManagedInterfacesStatus()) {
+					// And the managed IPs are set to be scanned at the current
+					// level...
+					if (configFactory.getManagedInterfacesScanLevel() == level) {
+						// Then schedule those puppies to be scanned
+						levelAddresses.addAll(getAllManagedInterfaces());
+						log().info("Scheduled the managed interfaces at scan level " + level + ".");
+					}
+				}
+
+				// Remove all of the excluded addresses (the excluded
+				// addresses are cached, so this operation is lighter
+				// than constructing the exclusion list each time)
+				// JOHAN - THINK....
+				levelAddresses.removeAll(configFactory.getAllExcludes());
+
+				log().info("Adding " + levelAddresses.size() + " addresses to the vulnerability scan scheduler.");
+
+				Iterator itr = levelAddresses.iterator();
+				while (itr.hasNext()) {
+					Object next = itr.next();
+					String nextAddress = null;
+					if (next instanceof String) {
+						nextAddress = (String) next;
+						// REMOVE SLASHES.... - 
+						//nextAddress = nextAddress.replaceAll("/", "");
+						//nextAddress = nextAddress + "/" + nextAddress;
+						log().debug("JOHAN LevelAddresses : " + nextAddress);
+					}
+					try {
+						// All we know right now is the IP.....
+						InetAddress frump = InetAddress.getByName(nextAddress);
+						addToKnownAddresses(frump, level);
+					} catch (UnknownHostException ex) {
+						log().error("Could not add invalid address to schedule: " + nextAddress, ex);
+					}
+				}
+			}
+		} else {
+			log().info("Vulnerability scanning is DISABLED.");
+		}
+	}
+
+	public void initialize() throws SQLException {
+		// Get rescan interval from configuration factory
+	    setInitialScheduleSleep();
+	
+	    scheduleExistingInterfaces();
+	}
 } // end Vulnscand class

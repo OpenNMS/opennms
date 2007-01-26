@@ -42,7 +42,7 @@ import org.opennms.netmgt.config.VulnscandConfigFactory;
  * This class encapsulates the information about an interface necessary to
  * schedule it for scans.
  */
-final class NessusScanConfiguration {
+final class NessusScanConfiguration implements ScheduleTrigger {
     /**
      * Nessus username
      */
@@ -120,7 +120,10 @@ final class NessusScanConfiguration {
         password = config.getServerPassword();
     }
 
-    boolean isScheduled() {
+    /* (non-Javadoc)
+	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#isScheduled()
+	 */
+    public boolean isScheduled() {
         return scheduled;
     }
 
@@ -136,7 +139,10 @@ final class NessusScanConfiguration {
         return interval;
     }
 
-    void setScheduled(boolean newScheduled) {
+    /* (non-Javadoc)
+	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#setScheduled(boolean)
+	 */
+    public void setScheduled(boolean newScheduled) {
         scheduled = newScheduled;
     }
 
@@ -148,7 +154,10 @@ final class NessusScanConfiguration {
         lastScan = newLastScan;
     }
 
-    boolean isTimeForRescan() {
+    /* (non-Javadoc)
+	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#isTimeForRescan()
+	 */
+    public boolean isTimeForRescan() {
         if (System.currentTimeMillis() >= (lastScan.getTime() + interval))
             return true;
         else
@@ -164,4 +173,16 @@ final class NessusScanConfiguration {
         boolean retval = ((hostname != null) && (username != null) && (username != "") && (password != null) && (password != "") && (scanLevel > 0) && (scanLevel < 5) && (targetAddress != null) && (hostport > 0) && (hostport < (1 << 16)));
         return retval;
     }
+
+	/* (non-Javadoc)
+	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#getJob()
+	 */
+	public Object getJob() {
+		return new NessusScan(this);
+	}
+
+	@Override
+	public String toString() {
+		return getAddress().toString();
+	}
 }

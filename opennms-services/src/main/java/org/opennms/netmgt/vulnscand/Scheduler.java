@@ -35,29 +35,15 @@ package org.opennms.netmgt.vulnscand;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.VulnscandConfigFactory;
-import org.opennms.netmgt.config.vulnscand.ScanLevel;
-import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 
 /**
  * This class implements a simple scheduler to ensure that Vulnscand rescans
@@ -74,23 +60,6 @@ final class Scheduler implements Runnable, PausableFiber {
     private static final String FIBER_NAME = "Vulnscand Scheduler";
 
     /**
-     * The SQL statement used to retrieve all non-deleted/non-forced unamanaged
-     * IP interfaces from the 'ipInterface' table.
-     */
-    private static final String SQL_DB_RETRIEVE_IP_INTERFACE = "SELECT ipaddr FROM ipinterface WHERE ipaddr!='0.0.0.0' AND isManaged!='D' AND isManaged!='F'";
-
-    /**
-     * SQL used to retrieve the last poll time for all the managed interfaces
-     * belonging to a particular node.
-     */
-    private static final String SQL_GET_LAST_POLL_TIME = "SELECT lastAttemptTime FROM vulnerabilities WHERE ipaddr=? ORDER BY lastAttemptTime DESC";
-
-    /**
-     * The name of this fiber.
-     */
-    private String m_name;
-
-    /**
      * The status for this fiber.
      */
     private int m_status;
@@ -104,12 +73,7 @@ final class Scheduler implements Runnable, PausableFiber {
      * List of NessusScanConfiguration objects representing the IP addresses
      * that will be scheduled.
      */
-    private List m_knownAddresses;
-
-    /**
-     * The configured interval (in milliseconds) between rescans
-     */
-    private long m_interval;
+    private LinkedHashMap<Object, ScheduleTrigger> m_triggers;
 
     /**
      * The configured initial sleep (in milliseconds) prior to scheduling
@@ -124,204 +88,35 @@ final class Scheduler implements Runnable, PausableFiber {
 
     /**
      * Constructs a new instance of the scheduler.
+     * @param vulnscand TODO
      * 
      */
     Scheduler(FifoQueue rescanQ) throws SQLException {
-        Category log = ThreadCategory.getInstance(Scheduler.class);
-
         m_scheduledScanQ = rescanQ;
 
-        m_name = FIBER_NAME;
         m_status = START_PENDING;
         m_worker = null;
 
-        m_knownAddresses = Collections.synchronizedList(new LinkedList());
+        m_triggers = new LinkedHashMap<Object, ScheduleTrigger>();
 
-        // Get rescan interval from configuration factory
-        //
-        m_interval = VulnscandConfigFactory.getInstance().getRescanFrequency();
-        if (log.isDebugEnabled())
-            log.debug("Scheduler: rescan interval(millis): " + m_interval);
-
-        // Get initial rescan sleep time from configuration factory
-        //
-        m_initialSleep = VulnscandConfigFactory.getInstance().getInitialSleepTime();
-        if (log.isDebugEnabled())
-            log.debug("Scheduler: initial rescan sleep time(millis): " + m_initialSleep);
-
-        // Load the list of IP addresses from the config file and schedule
-        // them in the appropriate level
-
-        VulnscandConfigFactory configFactory = VulnscandConfigFactory.getInstance();
-        VulnscandConfiguration config = VulnscandConfigFactory.getConfiguration();
-
-        // If the status of the daemon is "true" (meaning "on")...
-        if (config.getStatus()) {
-            Enumeration scanLevels = config.enumerateScanLevel();
-
-            while (scanLevels.hasMoreElements()) {
-                ScanLevel scanLevel = (ScanLevel) scanLevels.nextElement();
-                int level = scanLevel.getLevel();
-
-                // Grab the list of included addresses for this level
-		//Set levelAddresses = configFactory.getAllIpAddresses(scanLevel);
-		Set levelAddresses = new TreeSet ();
-
-                // If scanning of the managed IPs is enabled...
-                if (configFactory.getManagedInterfacesStatus()) {
-                    // And the managed IPs are set to be scanned at the current
-                    // level...
-                    if (configFactory.getManagedInterfacesScanLevel() == level) {
-                        // Then schedule those puppies to be scanned
-                        levelAddresses.addAll(getAllManagedInterfaces());
-                        log.info("Scheduled the managed interfaces at scan level " + level + ".");
-                    }
-                }
-
-                // Remove all of the excluded addresses (the excluded
-                // addresses are cached, so this operation is lighter
-                // than constructing the exclusion list each time)
-		// JOHAN - THINK....
-		levelAddresses.removeAll(configFactory.getAllExcludes());
-
-                log.info("Adding " + levelAddresses.size() + " addresses to the vulnerability scan scheduler.");
-
-		Iterator itr = levelAddresses.iterator();
-                while (itr.hasNext()) {
-                    Object next = itr.next();
-                    String nextAddress = null;
-                    if (next instanceof String) {
-                        nextAddress = (String) next;
-			// REMOVE SLASHES.... - 
-			//nextAddress = nextAddress.replaceAll("/", "");
-			//nextAddress = nextAddress + "/" + nextAddress;
-		        log.debug("JOHAN LevelAddresses : " + nextAddress);
-                    }
-                    try {
-			// All we know right now is the IP.....
-			InetAddress frump = InetAddress.getByName(nextAddress);
-                        addToKnownAddresses(frump, level);
-                    } catch (UnknownHostException ex) {
-                        log.error("Could not add invalid address to schedule: " + nextAddress, ex);
-                    }
-                }
-            }
-        } else {
-            log.info("Vulnerability scanning is DISABLED.");
-        }
     }
 
-    private Set getAllManagedInterfaces() {
-        Category log = ThreadCategory.getInstance(Scheduler.class);
-
-        Set retval = new TreeSet();
-        String addressString = null;
-
-        Connection connection = null;
-        Statement selectInterfaces = null;
-        ResultSet interfaces = null;
-        try {
-            connection = DataSourceFactory.getInstance().getConnection();
-            selectInterfaces = connection.createStatement();
-            interfaces = selectInterfaces.executeQuery(SQL_DB_RETRIEVE_IP_INTERFACE);
-
-            int i = 0;
-            while (interfaces.next()) {
-                addressString = interfaces.getString(1);
-                if (addressString != null) {
-		    //addressString = addressString.replaceAll("/", "");
-		    //addressString = addressString + "/" + addressString;
-                    retval.add(addressString);
-		    log.debug("JOHAN: " + addressString);
-                } else {
-                    log.warn("UNEXPECTED CONDITION: NULL string in the results of the query for managed interfaces from the ipinterface table.");
-                }
-
-                i++;
-            }
-            log.info("Loaded " + i + " managed interfaces from the database.");
-        } catch (SQLException ex) {
-            log.error(ex.getLocalizedMessage(), ex);
-
+	void schedule(Object key, ScheduleTrigger trigger) {
+		synchronized (getSchedulerLock()) {
+			m_triggers.put(key, trigger);
+		}
 	}
-	// JOHAN
-	 return retval;
-	}	
-	/*
-
-        } finally {
-            try {
-                if (interfaces != null)
-                    interfaces.close();
-                if (selectInterfaces != null)
-                    selectInterfaces.close();
-            } catch (Exception ex) {
-            } finally {
-                try {
-                    if (connection != null)
-                        connection.close();
-                } catch (Exception e) {
-                }
-            }
-        }
-        return retval;
-    }
-	*/
-
-    /**
-     * Creates a NessusScanConfiguration object representing the specified node
-     * and adds it to the known node list for scheduling.
-     * 
-     * @param address
-     *            the internet address.
-     * @param scanLevel
-     *            the scan level.
-     * 
-     * @throws SQLException
-     *             if there is any problem accessing the database
-     */
-    void addToKnownAddresses(InetAddress address, int scanLevel) throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // Retrieve last poll time for the node from the ipInterface
-        // table.
 	
-	
-        Connection db = null;
-        try {
-            db = DataSourceFactory.getInstance().getConnection();
-            PreparedStatement ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
-            ifStmt.setString(1, address.getHostAddress());
-            ResultSet rset = ifStmt.executeQuery();
-            if (rset.next()) {
-                Timestamp lastPolled = rset.getTimestamp(1);
-                if (lastPolled != null && rset.wasNull() == false) {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleAddress: adding node " + address + " with last poll time " + lastPolled);
-		     //try {
-	                    m_knownAddresses.add(new NessusScanConfiguration(address, scanLevel, lastPolled, m_interval));
-                    //} catch (UnknownHostException ex) {
-                      //  log.error("Could not add invalid address to schedule: " + address, ex);
-                    //}
-                }
-            } else {
-                if (log.isDebugEnabled())
-                    log.debug("scheduleAddress: adding ipAddr " + address + " with no previous poll");
-		   // try {
-                m_knownAddresses.add(new NessusScanConfiguration(address, scanLevel, new Timestamp(0), m_interval));
-		    //} catch (UnknownHostException ex) {
-                    //    log.error("Could not add invalid address to schedule: " + address, ex);
-                    //}
-            }
-        } finally {
-            if (db != null) {
-                try {
-                    db.close();
-                } catch (Exception e) {
-                }
-            }
+	private void unschedule(Object key) {
+        synchronized (getSchedulerLock()) {
+        	ScheduleTrigger addressInfo = m_triggers.remove(key);
+        	log().debug("unscheduleAddress: removing node " + addressInfo + " from the scheduler.");
         }
-    }
+	}
+
+	Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
 
     /**
      * Removes the specified node from the known node list.
@@ -330,17 +125,7 @@ final class Scheduler implements Runnable, PausableFiber {
      *            Address of interface to be removed.
      */
     void unscheduleAddress(InetAddress address) {
-        synchronized (m_knownAddresses) {
-            Iterator iter = m_knownAddresses.iterator();
-            while (iter.hasNext()) {
-                NessusScanConfiguration addressInfo = (NessusScanConfiguration) iter.next();
-                if (addressInfo.getAddress() == address) {
-                    ThreadCategory.getInstance(getClass()).debug("unscheduleAddress: removing node " + address + " from the scheduler.");
-                    m_knownAddresses.remove(addressInfo);
-                    break;
-                }
-            }
-        }
+    	unschedule(address);
     }
 
     public static InetAddress toInetAddress(long address) throws UnknownHostException {
@@ -362,13 +147,11 @@ final class Scheduler implements Runnable, PausableFiber {
         if (m_worker != null)
             throw new IllegalStateException("The fiber has already run or is running");
 
-        Category log = ThreadCategory.getInstance(getClass());
-
         m_worker = new Thread(this, getName());
         m_worker.start();
         m_status = STARTING;
 
-        log.debug("Scheduler.start: scheduler started");
+        log().debug("Scheduler.start: scheduler started");
     }
 
     /**
@@ -382,12 +165,10 @@ final class Scheduler implements Runnable, PausableFiber {
         if (m_worker == null)
             throw new IllegalStateException("The fiber has never been started");
 
-        Category log = ThreadCategory.getInstance(getClass());
-
         m_status = STOP_PENDING;
         m_worker.interrupt();
 
-        log.debug("Scheduler.stop: scheduler stopped");
+        log().debug("Scheduler.stop: scheduler stopped");
     }
 
     /**
@@ -460,12 +241,10 @@ final class Scheduler implements Runnable, PausableFiber {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
-
         synchronized (this) {
             m_status = RUNNING;
         }
-        log.debug("Scheduler.run: scheduler running");
+        log().debug("Scheduler.run: scheduler running");
 
         // Loop until a fatal exception occurs or until
         // the thread is interrupted.
@@ -476,7 +255,7 @@ final class Scheduler implements Runnable, PausableFiber {
             //
             synchronized (this) {
                 if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
-                    log.debug("Scheduler.run: status = " + m_status + ", time to exit");
+                    log().debug("Scheduler.run: status = " + m_status + ", time to exit");
                     break;
                 }
             }
@@ -489,10 +268,10 @@ final class Scheduler implements Runnable, PausableFiber {
                 firstPass = false;
                 synchronized (this) {
                     try {
-                        log.debug("Scheduler.run: initial sleep configured for " + m_initialSleep + "ms...sleeping...");
-                        wait(m_initialSleep);
+                        log().debug("Scheduler.run: initial sleep configured for " + getInitialSleep() + "ms...sleeping...");
+                        wait(getInitialSleep());
                     } catch (InterruptedException ex) {
-                        log.debug("Scheduler.run: interrupted exception during initial sleep...exiting.");
+                        log().debug("Scheduler.run: interrupted exception during initial sleep...exiting.");
                         break; // exit for loop
                     }
                 }
@@ -504,13 +283,12 @@ final class Scheduler implements Runnable, PausableFiber {
             //
             int added = 0;
 
-            synchronized (m_knownAddresses) {
+            synchronized (getSchedulerLock()) {
 
-                log.debug("Scheduler.run: iterating over known nodes list to schedule...");
-                Iterator iter = m_knownAddresses.iterator();
-                while (iter.hasNext()) {
-                    NessusScanConfiguration addressInfo = (NessusScanConfiguration) iter.next();
-		    log.debug("Scheduler.run: working on "  + addressInfo.getAddress().toString() );
+                log().debug("Scheduler.run: iterating over known nodes list to schedule...");
+                for (ScheduleTrigger addressInfo : getTriggerList()) {
+					
+                    log().debug("Scheduler.run: working on "  + addressInfo );
                     // Don't schedule if already scheduled
                     if (addressInfo.isScheduled())
                         continue;
@@ -528,15 +306,15 @@ final class Scheduler implements Runnable, PausableFiber {
                         // Create a new NessusScan object
                         // and add it to the rescan queue for execution
                         //
-                        log.debug("Scheduler.run: adding node " + addressInfo.getAddress().toString() + " to the rescan queue.");
+                        log().debug("Scheduler.run: adding node " + addressInfo + " to the rescan queue.");
 
-                        m_scheduledScanQ.add(new NessusScan(addressInfo));
+                        m_scheduledScanQ.add(addressInfo.getJob());
                         added++;
                     } catch (InterruptedException ex) {
-                        log.info("Scheduler.schedule: failed to add new node to rescan queue", ex);
+                        log().info("Scheduler.schedule: failed to add new node to rescan queue", ex);
                         throw new UndeclaredThrowableException(ex);
                     } catch (FifoQueueException ex) {
-                        log.info("Scheduler.schedule: failed to add new node to rescan queue", ex);
+                        log().info("Scheduler.schedule: failed to add new node to rescan queue", ex);
                         throw new UndeclaredThrowableException(ex);
                     }
                 }
@@ -557,9 +335,25 @@ final class Scheduler implements Runnable, PausableFiber {
             }
         } // end while(true)
 
-        log.debug("Scheduler.run: scheduler exiting, state = STOPPED");
+        log().debug("Scheduler.run: scheduler exiting, state = STOPPED");
         synchronized (this) {
             m_status = STOPPED;
         }
     } // end run
+
+	private Object getSchedulerLock() {
+		return m_triggers;
+	}
+	
+	private Collection<ScheduleTrigger> getTriggerList() {
+		return m_triggers.values();
+	}
+
+	void setInitialSleep(long initialSleep) {
+		m_initialSleep = initialSleep;
+	}
+
+	long getInitialSleep() {
+		return m_initialSleep;
+	}
 }
