@@ -65,7 +65,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The Vulnscand rescan scheduler
      */
-    private Scheduler m_scheduler;
+    private Object m_scheduler;
 
     /**
      * Create message selector to set to the subscription
@@ -94,7 +94,7 @@ final class BroadcastEventProcessor implements EventListener {
      *            Rescan scheduler.
      * 
      */
-    BroadcastEventProcessor(FifoQueue suspectQ, Scheduler scheduler) {
+    BroadcastEventProcessor(FifoQueue suspectQ, Object scheduler) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Suspect queue
