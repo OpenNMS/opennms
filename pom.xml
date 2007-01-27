@@ -75,6 +75,7 @@
     <url>http://svn.sourceforge.net/viewcvs.cgi/opennms/opennms/trunk</url>
   </scm>
   <modules>
+    <module>dependencies</module>
     <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
@@ -90,6 +91,7 @@
     <module>opennms-config</module>
     <module>opennms-services</module>
     <module>opennms-import</module>
+    <module>opennms-correlation</module>
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
     <module>opennms-webstart</module>
@@ -105,6 +107,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <version>2.3</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -424,6 +431,9 @@ opennms.home = ${opennms.home}
     </plugins>
   </reporting>
   <properties>
+    <!-- maven surefire version added here so it could be overridden -->
+    <maven.surefire.plugin.version>2.2</maven.surefire.plugin.version>
+
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
     <mock.debug>false</mock.debug>
