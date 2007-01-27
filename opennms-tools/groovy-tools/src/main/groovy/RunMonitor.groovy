@@ -5,9 +5,13 @@ import org.opennms.netmgt.poller.*;
 import org.opennms.netmgt.poller.monitors.*;
 import org.opennms.tools.groovy.*;
 
-	  
-	  ManuallyMonitoredService monSvc = new ManuallyMonitoredService(ipAddr:'209.34.247.247');	  
-	  
+	  String ipAddr = System.getProperty("org.opennms.groovy.ipAddr");
+          println ipAddr;
+	  ManuallyMonitoredService monSvc = new ManuallyMonitoredService(ipAddr:ipAddr);	  
+	  String config = new File(System.getProperty("org.opennms.groovy.configFileName")).getText();
+          println config;
+	  String pageSequenceConfig = config;
+/*
 	  String pageSequenceConfig = """
     <page-sequence>
       <page path="/opennms" port="8080" successMatch="Password" />
@@ -19,6 +23,7 @@ import org.opennms.tools.groovy.*;
       <page path="/opennms/j_acegi_logout" port="8080" successMatch="logged off" />
     </page-sequence>
     """
+*/
     
 	  Map parms = [retry:'1', timeout:'2000', 'page-sequence':pageSequenceConfig];
 	  
@@ -27,6 +32,6 @@ import org.opennms.tools.groovy.*;
 	  monitor.initialize(parms);
 	  monitor.initialize(monSvc);
 	  PollStatus status = monitor.poll(monSvc, parms);
-	  println status;
+	  println "${status} : ${status.reason}";
 	  
 
