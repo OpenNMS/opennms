@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<syslogd-configuration syslog-port="12514" new-suspect-on-message="true"
+	forwarding-regexp="^Forwarded from (\\d+\\.\\d+\\.\\d+\\.\\d+): (.*)"
+	matching-group-host="1" matching-group-message="2" />
