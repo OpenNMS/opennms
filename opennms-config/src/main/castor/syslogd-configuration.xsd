@@ -7,8 +7,8 @@
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
-    <documentation>XML Schema for the trapd-configuration.xml configuration
-    file. Version: $Id: syslogd-configuration.xsd 2261 2005-07-03 02:54:10 +0000 (Sun, 03 Jul 2005) djgregor $</documentation>
+    <documentation>XML Schema for the syslogd-configuration.xml configuration
+    file. Version: $Id: syslogd-configuration.xsd 3400 joed $</documentation>
   </annotation>
 
   <element name="syslogd-configuration">
@@ -20,17 +20,36 @@
     <complexType>
       <attribute name="syslog-port" type="positiveInteger" use="required">
         <annotation>
-          <documentation>The port on which trapd listens for SYSLOG Messages. The
+          <documentation>The port on which Syslogd listens for SYSLOG Messages. The
           standard port is 514.</documentation>
         </annotation>
       </attribute>
 
       <attribute name="new-suspect-on-message" type="boolean" use="required">
         <annotation>
-          <documentation>Whether traps from devices unknown to OpenNMS should
+          <documentation>Whether messages from devices unknown to OpenNMS should
           generate newSuspect events.</documentation>
         </annotation>
       </attribute>
+      
+      <attribute name="forwarding-regexp" type="string" use="required">
+        <annotation>
+          <documentation>The regular expression used to determine if a message is forwarded</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="matching-group-host" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>The matching group for the host</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="matching-group-message" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>The matching group for the message</documentation>
+        </annotation>
+      </attribute>
+      
     </complexType>
   </element>
 </schema>
