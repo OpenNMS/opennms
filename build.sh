@@ -45,6 +45,10 @@ if [ $VERBOSE -gt 0 ]; then
     set -x
 fi
 
+if [ -z "$MAVEN_SKIP" ]; then
+    MAVEN_SKIP=maven.test.skip
+fi
+
 MAVEN_OPTS=-Xmx512m
 export MAVEN_OPTS
-$PREFIX/maven-2.0.4/bin/mvn -Droot.dir=$PREFIX -Dmaven.test.skip=true "$@"
+$PREFIX/maven-2.0.4/bin/mvn -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "$@"
