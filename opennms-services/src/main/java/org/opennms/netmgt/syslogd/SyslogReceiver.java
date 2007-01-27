@@ -1,9 +1,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -12,7 +15,8 @@
 //
 // 2003 Jan 31: Cleaned up some unused imports.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,20 +25,23 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// For more information contact:
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 
 package org.opennms.netmgt.syslogd;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -42,19 +49,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 /**
- * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * 
  * @fiddler joed
- * 
  */
 class SyslogReceiver implements Runnable {
-    
+
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
     /**
@@ -77,14 +78,23 @@ class SyslogReceiver implements Runnable {
      */
     private String m_logPrefix;
     
+    private String m_matchPattern;
+    
+    private int m_hostGroup;
+    
+    private int m_messageGroup;
+
     /**
      * construct a new receiver
      */
-    SyslogReceiver(DatagramSocket sock) {
+    SyslogReceiver(DatagramSocket sock, String matchPattern, int hostGroup, int messageGroup) {
         m_stop = false;
         m_dgSock = sock;
+        m_matchPattern = matchPattern;
+        m_hostGroup = hostGroup;
+        m_messageGroup = messageGroup;
         m_logPrefix = LOG4J_CATEGORY;
-        
+
     }
 
     /**
@@ -94,10 +104,11 @@ class SyslogReceiver implements Runnable {
         m_stop = true;
         if (m_context != null) {
             Category log = ThreadCategory.getInstance(getClass());
-            log.debug("Stopping and joining thread context " + m_context.getName());
+            log.debug("Stopping and joining thread context "
+                    + m_context.getName());
             m_context.interrupt();
             m_context.join();
-                log.debug("Thread context stopped and joined");
+            log.debug("Thread context stopped and joined");
         }
     }
 
@@ -122,9 +133,9 @@ class SyslogReceiver implements Runnable {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (m_stop) {
-                log.debug("Stop flag set before thread started, exiting");
+            log.debug("Stop flag set before thread started, exiting");
             return;
-        } else 
+        } else
             log.debug("Thread context started");
 
         // allocate a buffer
@@ -140,7 +151,9 @@ class SyslogReceiver implements Runnable {
             log.debug("Setting socket timeout to 500ms");
             m_dgSock.setSoTimeout(500);
         } catch (SocketException e) {
-            log.warn("An I/O error occured while trying to set the socket timeout", e);
+            log.warn(
+                     "An I/O error occured while trying to set the socket timeout",
+                     e);
         }
 
         // Increase the receive buffer for the
@@ -159,22 +172,24 @@ class SyslogReceiver implements Runnable {
         //
         while (!m_stop) {
             if (m_context.isInterrupted()) {
-                    log.debug("Thread context interrupted");
-                    break;
+                log.debug("Thread context interrupted");
+                break;
             }
 
             try {
                 if (!ioInterrupted)
                     log.debug("Wating on a datagram to arrive");
                 m_dgSock.receive(pkt);
-                Thread worker = new Thread(new SyslogConnection(pkt));
+                Thread worker = new Thread(new SyslogConnection(pkt,m_matchPattern,m_hostGroup,m_messageGroup));
                 worker.start();
                 ioInterrupted = false; // reset the flag
             } catch (InterruptedIOException e) {
                 ioInterrupted = true;
                 continue;
             } catch (IOException e) {
-                log.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                log.error(
+                          "An I/O exception occured on the datagram receipt port, exiting",
+                          e);
                 break;
             }
 
@@ -183,9 +198,8 @@ class SyslogReceiver implements Runnable {
 
             pkt = new DatagramPacket(buffer, length);
 
-
         } // end while status ok
-        
+
         log.debug("Thread context exiting");
 
     } // end run method
