@@ -1,9 +1,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -12,7 +15,8 @@
 //
 // 2003 Jan 31: Cleaned up some unused imports.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,20 +25,27 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// For more information contact:
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 
 package org.opennms.netmgt.syslogd;
+
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.xml.event.*;
 
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -46,18 +57,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
@@ -124,10 +123,11 @@ final class ConvertToEvent {
      *             Thrown if the data buffer cannot be decoded using the
      *             US-ASCII encoding.
      */
-    static ConvertToEvent make(DatagramPacket packet)
+    static ConvertToEvent make(DatagramPacket packet, String matchPattern,
+            int hostGroup, int messageGroup)
             throws UnsupportedEncodingException {
         return make(packet.getAddress(), packet.getPort(), packet.getData(),
-                    packet.getLength());
+                    packet.getLength(), matchPattern, hostGroup, messageGroup);
     }
 
     /**
@@ -148,7 +148,8 @@ final class ConvertToEvent {
      *             US-ASCII encoding.
      */
     static ConvertToEvent make(InetAddress addr, int port, byte[] data,
-            int len) throws UnsupportedEncodingException {
+            int len, String matchPattern, int hostGroup, int messageGroup)
+            throws UnsupportedEncodingException {
 
         ConvertToEvent e = new ConvertToEvent();
 
@@ -260,21 +261,29 @@ final class ConvertToEvent {
             message = message.substring(16);
         }
 
-        // Looking for forwarded messages
-        Pattern bsdForward = Pattern.compile("^Forwarded from (\\d+\\.\\d+\\.\\d+\\.\\d+): (.*)");
+        // These 2 debugs will aid in analyzing the regexpes as syslog seems
+        // to differ alot
+        // depending on implementation or message structure.
+
+        log.debug("Message : " + message);
+        log.debug("Pattern : " + matchPattern);
+
+        Pattern bsdForward = Pattern.compile(matchPattern);
+
         Matcher m = bsdForward.matcher(message);
 
         if ((m = bsdForward.matcher(message)).matches()) {
 
-            nodeId = SyslogdIPMgr.getNodeId(m.group(1).toString().replaceAll(
-                                                                             "/",
-                                                                             ""));
+            nodeId = SyslogdIPMgr.getNodeId(m.group(hostGroup).replaceAll(
+                                                                          "/",
+                                                                          ""));
 
             if (nodeId != -1)
                 event.setNodeid(nodeId);
             // Clean up for further processing....
-            event.setInterface(m.group(1));
-            message = m.group(2);
+            event.setInterface(m.group(hostGroup).replaceAll("/", ""));
+
+            message = m.group(messageGroup);
             log.debug("Forwarded message: " + message);
 
         }
@@ -345,7 +354,7 @@ final class ConvertToEvent {
         parmValue.setContent(processName);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
-        
+
         eventParm = new Parm();
         eventParm.setParmName("service");
         parmValue = new Value();

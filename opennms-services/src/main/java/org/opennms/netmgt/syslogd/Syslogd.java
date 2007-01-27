@@ -1,9 +1,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -17,49 +20,44 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// For more information contact:
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
-// Tab Size = 8
 //
 
 package org.opennms.netmgt.syslogd;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.SQLException;
-
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
 
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+
 /**
  * The received messages are converted into XML and sent to eventd
  * </p>
- * 
  * <p>
  * <strong>Note: </strong>Syslogd is a PausableFiber so as to receive control
  * events. However, a 'pause' on Syslogd has no impact on the receiving and
  * processing of traps
  * </p>
- * 
- * 
  */
 public class Syslogd extends AbstractServiceDaemon {
     /**
-     * The name of the logging category for Trapd.
+     * The name of the logging category for Syslogd.
      */
     static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
@@ -76,12 +74,13 @@ public class Syslogd extends AbstractServiceDaemon {
 
     private EventDao m_eventDao;
 
+    @SuppressWarnings("unused")
     private BroadcastEventProcessor m_eventReader;
-    
+
     public Syslogd() {
-    	super("OpenNMS.Syslogd");
+        super("OpenNMS.Syslogd");
     }
-    
+
     protected void onInit() {
 
         try {
@@ -106,32 +105,31 @@ public class Syslogd extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(e);
         }
 
-          
         SyslogHandler.setSyslogConfig(SyslogdConfigFactory.getInstance());
         log().debug("Starting SyslogProcessor");
-          
+
         m_udpEventReceiver = new SyslogHandler();
 
     }
 
     protected void onStart() {
-		m_udpEventReceiver.start();
-        
-//      // start the event reader  
+        m_udpEventReceiver.start();
+
+        // // start the event reader
         // The Node list is update with new suspects
-        // Also this enables the syslogd to act as 
+        // Also this enables the syslogd to act as
         // trapd and see New suspects.
-         
-        try {    
-            m_eventReader = new BroadcastEventProcessor();   
-        } catch (Exception ex) {     
-            log().error("Failed to setup event reader", ex);   
-            throw new UndeclaredThrowableException(ex);      
+
+        try {
+            m_eventReader = new BroadcastEventProcessor();
+        } catch (Exception ex) {
+            log().error("Failed to setup event reader", ex);
+            throw new UndeclaredThrowableException(ex);
         }
-	}
+    }
 
     protected void onStop() {
-		// shutdown and wait on the background processing thread to exit.
+        // shutdown and wait on the background processing thread to exit.
         log().debug("exit: closing communication paths.");
 
         try {
@@ -146,7 +144,7 @@ public class Syslogd extends AbstractServiceDaemon {
 
         m_udpEventReceiver.stop();
         log().debug("Stopped the Syslog UDP Receiver");
-	}
+    }
 
     /**
      * Returns the singular instance of the syslogd daemon. There can be only
