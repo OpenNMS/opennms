@@ -35,5 +35,8 @@ package org.opennms.netmgt.config;
 public interface SyslogdConfig {
     public abstract int getSyslogPort();
     public abstract boolean getNewSuspectOnMessage();
+    public abstract String getForwardingRegexp();
+    public abstract int getMatchingGroupHost();
+    public abstract int getMatchingGroupMessage();
 }
 
