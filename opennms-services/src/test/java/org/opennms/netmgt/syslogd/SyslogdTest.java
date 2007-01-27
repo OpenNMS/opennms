@@ -66,7 +66,7 @@ public class SyslogdTest extends OpenNMSTestCase {
 
     public void tearDown() throws Exception {
         m_syslogd.stop();
-        m_syslogd = null;
+       // m_syslogd = null;
 
         rdr.close();
 
