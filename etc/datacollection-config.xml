@@ -1133,6 +1133,13 @@
                                 </collect>
                         </systemDef>
 
+                        <systemDef name = "Lexmark / Dell Printers">
+                        	<sysoidMask>.1.3.6.1.4.1.641.</sysoidMask>
+                                <collect>
+                                        <includeGroup>printer-usage</includeGroup>
+                                </collect>
+                        </systemDef>
+
 			<systemDef name = "MGE UPS">
 				<sysoidMask>.1.3.6.1.4.1.705.</sysoidMask>
                                 <collect>
