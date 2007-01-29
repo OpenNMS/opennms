@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 29: Indenting - dj@opennms.org
 // Aug 23, 2004: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -63,20 +64,20 @@ public class RrdConfig {
     private static synchronized Properties getProperties() throws IOException {
         if (m_properties == null) {
             File configFile = ConfigFileConstants.getFile(ConfigFileConstants.RRD_CONFIG_FILE_NAME);
-	    loadProperties(new FileInputStream(configFile));
+            loadProperties(new FileInputStream(configFile));
         }
         return m_properties;
 
     }
 
     public static synchronized void loadProperties(InputStream in) throws IOException {
-	Properties properties = new Properties(System.getProperties());
-	properties.load(in);
-	in.close();
-	m_properties = properties;
+        Properties properties = new Properties(System.getProperties());
+        properties.load(in);
+        in.close();
+        m_properties = properties;
     }
-    
-    
+
+
     public static synchronized void setProperties(Properties properties) {
         m_properties = properties;
     }
