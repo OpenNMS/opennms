@@ -33,6 +33,8 @@ package org.opennms.netmgt.correlation;
 
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class CorrelatorIntegrationTest extends
@@ -53,14 +55,34 @@ public class CorrelatorIntegrationTest extends
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",
 				"META-INF/opennms/applicationContext-correlator.xml",
+				"classpath*:META-INF/opennms/correlation-engine.xml"
 		};
 	}
 	
 	
 	public void testIt() {
-		
-		
+        
+        anticipateEvent(createEvent("testDownReceived", "TestEngine"));
+        anticipateEvent(createEvent("testUpReceived", "TestEngine"));
+	    
+		m_eventIpcMgr.broadcastNow(createEvent("testDown", "Test"));
+        m_eventIpcMgr.broadcastNow(createEvent("testUp", "Test"));
+        
+        verifyAnticipated();
 		
 	}
+    
+    private void verifyAnticipated() {
+        m_eventIpcMgr.getEventAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
+    }
+
+    public Event createEvent(String uei, String source) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+        return bldr.getEvent();
+    }
+    
+    private void anticipateEvent(Event e) {
+        m_eventIpcMgr.getEventAnticipator().anticipateEvent(e);
+    }
 
 }
