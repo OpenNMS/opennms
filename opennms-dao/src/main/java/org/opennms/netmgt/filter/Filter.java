@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 29: Improve exception handling - dj@opennms.org
 // 2006 Aug 15: Convert some of the collections to use Java 5 generics - dj@opennms.org
 // 2006 Apr 25: Add method getNodeMap to return nodeIds and nodeLabels
 // 2003 Aug 01: Created a proper Join for rules. Bug #752
@@ -42,11 +43,8 @@
 
 package org.opennms.netmgt.filter;
 
-import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
-import java.lang.Integer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -59,15 +57,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.filter.lexer.Lexer;
-import org.opennms.netmgt.filter.lexer.LexerException;
 import org.opennms.netmgt.filter.node.Start;
 import org.opennms.netmgt.filter.parser.Parser;
-import org.opennms.netmgt.filter.parser.ParserException;
 
 /**
  * This class is the main entry point for filtering the rules expressions. By
@@ -105,18 +99,12 @@ public class Filter {
 
                 // Parse the input.
                 m_parseTree = p.parse();
-            } catch (ParserException e) {
-                log.error("Failed to parse the filter rule: " + rule, e);
-                throw new FilterParseException("Parse error in " + rule, e);
-            } catch (LexerException e) {
-                log.error("Failed to parse filter rule: " + rule, e);
-                throw new FilterParseException("Parse error in " + rule, e);
-            } catch (IOException e) {
-                log.error("Failed to parse filter rule: " + rule, e);
-                throw new FilterParseException("Parse error in " + rule, e);
+            } catch (Exception e) {
+                log.error("Failed to parse the filter rule '" + rule + "': " + e, e);
+                throw new FilterParseException("Parse error in rule '" + rule + "': " + e, e);
             }
         } else {
-            throw new FilterParseException("Parse error, rule is null or empty");
+            throw new FilterParseException("Parse error: rule is null or empty");
         }
     }
 
@@ -214,22 +202,10 @@ public class Filter {
             } catch (SQLException e) {
             }
         } catch (SQLException e) {
-            log.info("SQL Exception occured getting IP List", e);
+            log.info("SQL Exception occured getting IP List: " + e, e);
             throw new UndeclaredThrowableException(e);
-        } catch (IOException ie) {
-            log.fatal("IOException getting database connection", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log.fatal("Marshall Exception getting database connection", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log.fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (PropertyVetoException ve) {
-            log.fatal("Property Veto Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (ClassNotFoundException e) {
-            log.fatal("Class Not Found Exception getting database connection", e);
+        } catch (Exception e) {
+            log.fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
             if (conn != null) {
@@ -298,23 +274,14 @@ public class Filter {
             } catch (SQLException e) {
             }
         } catch (ClassNotFoundException e) {
-            log.info("Class Not Found Exception occured getting IP List", e);
+            log.info("Class Not Found Exception occured getting IP List: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log.info("SQL Exception occured getting IP List", e);
+            log.info("SQL Exception occured getting IP List: " + e, e);
             throw new UndeclaredThrowableException(e);
-        } catch (IOException ie) {
-            log.fatal("IOException getting database connection", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log.fatal("Marshall Exception getting database connection", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log.fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (PropertyVetoException ve) {
-            log.fatal("Property Veto Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
+        } catch (Exception e) {
+            log.fatal("Exception getting database connection: " + e, e);
+            throw new UndeclaredThrowableException(e);
         } finally {
             if (conn != null) {
                 try {
@@ -381,23 +348,14 @@ public class Filter {
             } catch (SQLException e) {
             }
         } catch (ClassNotFoundException e) {
-            log.info("Class Not Found Exception occured getting node map", e);
+            log.info("Class Not Found Exception occured getting node map: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log.info("SQL Exception occured getting node map", e);
+            log.info("SQL Exception occured getting node map: " + e, e);
             throw new UndeclaredThrowableException(e);
-        } catch (IOException ie) {
-            log.fatal("IOException getting database connection", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log.fatal("Marshall Exception getting database connection", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log.fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (PropertyVetoException ve) {
-            log.fatal("Property Veto Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
+        } catch (Exception e) {
+            log.fatal("Exception getting database connection: " + e, e);
+            throw new UndeclaredThrowableException(e);
         } finally {
             if (conn != null) {
                 try {
