@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 29: Formatting; refactor code to minimize size of methods; use Java 5 generics; use new method for evaluating thresholds and building events. - dj@opennms.org
 // 2005 Nov 29: Added a method to allow for labels in Threshold events
 // 2005 Jan 03: minor mod to support lame SNMP hosts
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -43,13 +44,15 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -57,6 +60,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -71,6 +75,7 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.springframework.util.Assert;
 
 /**
  * <P>
@@ -81,16 +86,17 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class SnmpThresholder implements ServiceThresholder {
-    /**
-     * SQL statement to retrieve interface's 'ipinterface' table information.
-     */
-    static final String SQL_GET_NODEID = "SELECT nodeid,ifindex,issnmpprimary FROM ipinterface WHERE ipAddr=? AND ismanaged!='D'";
+public final class SnmpThresholder implements ServiceThresholder {
+    private static final String STRINGS_PROPERTIES = "strings.properties";
 
     /**
      * Name of monitored service.
      */
     private static final String SERVICE_NAME = "SNMP";
+    
+    private ThresholdsDao m_thresholdsDao;
+    
+    private Map<NetworkInterface, SnmpThresholdNetworkInterface> m_snmpThresholdNetworkInterfaces;
 
     /**
      * <P>
@@ -117,16 +123,28 @@ final class SnmpThresholder implements ServiceThresholder {
      * 
      */
     public void initialize(Map parameters) {
-
+        DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
+        
+        try {
+            defaultThresholdsDao.setThresholdingConfigFactory(ThresholdingConfigFactory.getInstance());
+            defaultThresholdsDao.afterPropertiesSet();
+        } catch (Throwable t) {
+            log().error("initialize: Could not initialize DefaultThresholdsDao: " + t, t);
+            throw new RuntimeException("Could not initialize DefaultThresholdsDao: " + t, t);
+        }
+        
+        setThresholdsDao(defaultThresholdsDao);
+        
         try {
             RrdUtils.initialize();
         } catch (RrdException e) {
-            log().error("initialize: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
+            log().error("initialize: Unable to initialize RrdUtils: " + e, e);
+            throw new RuntimeException("Unable to initialize RrdUtils: " + e, e);
         }
 
-        log().debug("initialize: successfully instantiated JNI interface to RRD...");
-
+        log().debug("initialize: successfully instantiated RRD subsystem");
+        
+        m_snmpThresholdNetworkInterfaces = Collections.synchronizedMap(new HashMap<NetworkInterface, SnmpThresholdNetworkInterface>()); 
     }
 
     /**
@@ -147,33 +165,32 @@ final class SnmpThresholder implements ServiceThresholder {
      *            interface belongs..
      * 
      */
-    public void initialize(NetworkInterface netIface, Map parms) {
-        
-        
-        SnmpThresholdInterface snmpIface = SnmpThresholdInterface.get(netIface);
-        SnmpThresholdConfiguration thresholdConfiguration = SnmpThresholdConfiguration.get(netIface, parms);
-        
-        if (!snmpIface.isIPV4())
-            throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
+    public void initialize(ThresholdNetworkInterface netIface, Map parms) {
+        SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, netIface, parms);
+        m_snmpThresholdNetworkInterfaces.put(netIface, snmpThresholdNetworkInterface);
 
-        // Debug
-        //
+        SnmpThresholdConfiguration config = snmpThresholdNetworkInterface.getThresholdConfiguration();
+
+        if (!snmpThresholdNetworkInterface.isIPV4()) {
+            throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        }
+
         if (log().isDebugEnabled()) {
-            log().debug("initialize: dumping node thresholds defined for " + snmpIface.getIpAddress() + "/" + thresholdConfiguration.getGroupName() + ":");
-            Iterator iter = thresholdConfiguration.getNodeResourceType().getThresholdMap().values().iterator();
-            while (iter.hasNext()) {
-                log().debug((ThresholdEntity) iter.next());
+            log().debug("initialize: dumping node thresholds defined for " + snmpThresholdNetworkInterface + ":");
+            for (ThresholdEntity entity : config.getNodeResourceType().getThresholdMap().values()) {
+                log().debug("    " + entity);
             }
 
-            log().debug("initialize: dumping interface thresholds defined for " + snmpIface.getIpAddress() + "/" + thresholdConfiguration.getGroupName() + ":");
-            iter = thresholdConfiguration.getIfResourceType().getThresholdMap().values().iterator();
-            while (iter.hasNext()) {
-                log().debug((ThresholdEntity) iter.next());
+            log().debug("initialize: dumping interface thresholds defined for " + snmpThresholdNetworkInterface + ":");
+            for (ThresholdEntity entity : config.getIfResourceType().getThresholdMap().values()) {
+                log().debug("    " + entity);
             }
         }
 
-        if (log().isDebugEnabled())
-            log().debug("initialize: initialization completed for " + snmpIface.getIpAddress());
+        if (log().isDebugEnabled()) {
+            log().debug("initialize: initialization completed for " + snmpThresholdNetworkInterface);
+        }
+        
         return;
     }
 
@@ -184,8 +201,8 @@ final class SnmpThresholder implements ServiceThresholder {
      * @param iface
      *            Network interface to be released.
      */
-    public void release(NetworkInterface iface) {
-        // Nothing to release...
+    public void release(ThresholdNetworkInterface iface) {
+        m_snmpThresholdNetworkInterfaces.remove(iface);
     }
 
     /**
@@ -199,89 +216,93 @@ final class SnmpThresholder implements ServiceThresholder {
      *            Key/value pairs from the package to which the interface
      *            belongs.
      */
-    public int check(NetworkInterface netIface, EventProxy eproxy, Map parms) {
+    public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, Map parms) {
+        SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = m_snmpThresholdNetworkInterfaces.get(netIface);
+        if (snmpThresholdNetworkInterface == null) {
+            log().warn("check: interface has not been initialized in this thresholder: " + netIface);
+            return THRESHOLDING_FAILED;
+        }
         
-        SnmpThresholdInterface snmpIface = SnmpThresholdInterface.get(netIface);
-        SnmpThresholdConfiguration thresholdConfiguration = SnmpThresholdConfiguration.get(netIface, parms);
-        SnmpThresholderState thresholderState = SnmpThresholderState.get(netIface, parms);
+        SnmpThresholdConfiguration config = snmpThresholdNetworkInterface.getThresholdConfiguration();
 
         // Get configuration parameters
-        //
-        if (log().isDebugEnabled())
-        	log().debug("check: service= " + SERVICE_NAME + " address= " + snmpIface.getIpAddress() + " thresholding-group=" + thresholdConfiguration.getGroupName() + " interval=" + thresholdConfiguration.getInterval() + "ms range=" + thresholdConfiguration.getRange() + " mS");
+        if (log().isDebugEnabled()) {
+        	log().debug("check: service= " + SERVICE_NAME + " address= " + snmpThresholdNetworkInterface.getIpAddress() + " thresholding-group=" + config.getGroupName() + " interval=" + config.getInterval() + "ms range=" + config.getRange() + " mS");
+        }
 
         // RRD Repository attribute
-        //
-        if (log().isDebugEnabled())
-            log().debug("check: rrd repository=" + thresholdConfiguration.getRrdRepository());
+        if (log().isDebugEnabled()) {
+            log().debug("check: rrd repository=" + config.getRrdRepository());
+        }
 
 
-        // -----------------------------------------------------------
-        // 
-        // Perform node-level threshold checking
-        //
-        // -----------------------------------------------------------
+        /*
+         * -----------------------------------------------------------
+         * 
+         * Perform node-level threshold checking
+         *
+         * -----------------------------------------------------------
+         */
 
         // Get File object representing the node directory
-        File nodeDirectory = new File(thresholdConfiguration.getRrdRepository(), snmpIface.getNodeId().toString());
+        File nodeDirectory = new File(config.getRrdRepository(), snmpThresholdNetworkInterface.getNodeId().toString());
         if (!RrdFileConstants.isValidRRDNodeDir(nodeDirectory)) {
-            log().info("Node directory for " + snmpIface.getNodeId() + "/" + snmpIface.getIpAddress() + " does not exist or is not a valid RRD node directory.");
-            log().info("Threshold checking failed for primary SNMP interface " + snmpIface.getIpAddress());
+            log().info("Node directory for " + snmpThresholdNetworkInterface.getNodeId() + "/" + snmpThresholdNetworkInterface.getIpAddress() + " does not exist or is not a valid RRD node directory.");
+            log().info("Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress());
             return THRESHOLDING_FAILED;
         }
 
-        // Create empty Events object to hold any threshold
-        // events generated during the thresholding check...
+        // Create empty Events object to hold any threshold events generated during the thresholding check
         Events events = new Events();
 
         // Date stamp for all outgoing events
-        Date dateStamp = new Date();
+        Date date = new Date();
 
         try {
-        	checkNodeDir(nodeDirectory, snmpIface, thresholdConfiguration, dateStamp, events);
+        	checkNodeDir(nodeDirectory, snmpThresholdNetworkInterface, date, events);
         } catch (IllegalArgumentException e) {
-            log().info("check: Threshold checking failed for primary SNMP interface " + snmpIface.getIpAddress(), e);
+            log().info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress() + ": " + e, e);
             return THRESHOLDING_FAILED;
         }
 
-        // -----------------------------------------------------------
-        // 
-        // Perform interface-level threshold checking
-        //
-        // -----------------------------------------------------------
+        /*
+         * -----------------------------------------------------------
+         * 
+         * Perform interface-level threshold checking
+         *
+         * -----------------------------------------------------------
+         */
 
-        // Iterate over node directory contents and call
-        // checkInterfaceDirectory() for any/all RRD interface
-        // directories.
-        //
+        /*
+         * Iterate over node directory contents and call
+         * checkInterfaceDirectory() for any/all RRD interface
+         * directories.
+         */
         File[] files = nodeDirectory.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
         if (files != null) {
-            for (int i = 0; i < files.length; i++) {
+            for (File file : files) {
                 try {
                     // Found interface directory...
-                    checkIfDir(files[i], snmpIface, thresholdConfiguration, dateStamp, thresholderState.getAllInterfaceMap(), events);
+                    checkIfDir(file, snmpThresholdNetworkInterface, date, events);
                 } catch (IllegalArgumentException e) {
-                    log().info("check: Threshold checking failed for primary SNMP interface " + snmpIface.getIpAddress(), e);
+                    log().info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress() + ": " + e, e);
                     return THRESHOLDING_FAILED;
                 }
             }
         }
 
         // Send created events
-        //
         if (events.getEventCount() > 0) {
             try {
                 Log eventLog = new Log();
                 eventLog.setEvents(events);
                 eproxy.send(eventLog);
             } catch (EventProxyException e) {
-                log().info("check: Failed sending threshold events via event proxy...", e);
+                log().info("check: Failed sending threshold events: " + e, e);
                 return THRESHOLDING_FAILED;
             }
         }
 
-        // return the status of the threshold check
-        //
         return THRESHOLDING_SUCCEEDED;
     }
 
@@ -291,7 +312,6 @@ final class SnmpThresholder implements ServiceThresholder {
      * @param directory
      *            RRD repository directory
      * @param snmpIface TODO
-     * @param thresholdConfiguration TODO
      * @param date
      *            Source for timestamp to be used for all generated events
      * @param events
@@ -312,104 +332,34 @@ final class SnmpThresholder implements ServiceThresholder {
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkNodeDir(File directory, SnmpThresholdInterface snmpIface, SnmpThresholdConfiguration thresholdConfiguration, Date date, Events events) throws IllegalArgumentException {
-        ThresholdResourceType resourceType = thresholdConfiguration.getNodeResourceType();
-        Map<String, ThresholdEntity> thresholdMap = resourceType.getThresholdMap();
-        // Sanity Check
-        if (directory == null || snmpIface.getNodeId() == null || snmpIface.getInetAddress() == null || date == null || thresholdMap == null || events == null) {
-            throw new IllegalArgumentException("Null parameters not permitted.");
+    protected void checkNodeDir(File directory, SnmpThresholdNetworkInterface thresholdNetworkInterface, Date date, Events events) throws IllegalArgumentException {
+        Assert.notNull(directory, "directory argument cannot be null");
+        Assert.notNull(thresholdNetworkInterface, "thresholdNetworkInterface argument cannot be null");
+        Assert.notNull(date, "date argument cannot be null");
+        Assert.notNull(events, "events argument cannot be null");
+        
+        SnmpThresholdConfiguration config = thresholdNetworkInterface.getThresholdConfiguration();
+        Assert.notNull(config, "getThresholdConfiguration() of thresholdNetworkInterface argument cannot be null");
+        Assert.notNull(thresholdNetworkInterface.getNetworkInterface(), "getNetworkInterface() of thresholdNetworkInterface argument cannot be null");
+        Assert.notNull(thresholdNetworkInterface.getNodeId(), "getNodeId() of thresholdNetworkInterface argument cannot be null");
+        Assert.notNull(thresholdNetworkInterface.getInetAddress(), "getInetAddress() of thresholdNetworkInterface argument cannot be null");
+
+        if (log().isDebugEnabled()) {
+            log().debug("checkNodeDir: threshold checking node dir: " + directory.getAbsolutePath());
         }
 
-        if (log().isDebugEnabled())
-            log().debug("checkNodeDir: threshold checking node dir: " + directory.getAbsolutePath());
-
-        // Iterate over directory contents and threshold
-        // check any RRD files which represent datasources
-        // in the threshold maps.
-        //
         File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
 
-        if (files == null)
+        if (files == null || files.length == 0) {
+            log().debug("checkNodeDir: No RRD files found in " + directory.getAbsolutePath());
             return;
+        }
 
-        for (int i = 0; i < files.length; i++) {
-            // File name has format: <datsource><extension>
-            // Must strip off <extension> portion.
-            String filename = files[i].getName();
-            String datasource = filename.substring(0, filename.indexOf(RrdUtils.getExtension()));
-
-            // Lookup the ThresholdEntity object corresponding
-            // to this datasource.
-            //
-            ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
-            if (threshold != null) {
-
-                // Get the value to use for the ds-label from this threshold
-                String dsLabelValue = "Unknown";
-                String propertiesFile = directory + "/strings.properties";
-                Properties stringProps = new Properties();
-                try {
-                        stringProps.load(new FileInputStream(propertiesFile));
-                        dsLabelValue = stringProps.getProperty(threshold.getDatasourceLabel());
-                } catch (FileNotFoundException e) {
-                        log().debug ("Label: No strings.properties file found for node id: " + snmpIface.getNodeId() + " looking here: " + propertiesFile);
-                } catch (NullPointerException e) {
-                        log().debug ("Label: No data source label for node id: " + snmpIface.getNodeId() );
-                } catch (java.io.IOException e) {
-                        log().debug ("Label: I/O exception when looking for strings.properties file for node id: "+ snmpIface.getNodeId() + " looking here: " + propertiesFile);
-                }
-
-
-                // Use RRD JNI interface to "fetch" value of the
-                // datasource from the RRD file
-                //
-                Double dsValue = null;
-		
-                try {
-                	if (thresholdConfiguration.getRange() != 0) {
-                		if (log().isDebugEnabled())
-                            log().debug("checking values within " + thresholdConfiguration.getRange() + " mS of last possible PDP");
-                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), thresholdConfiguration.getInterval(), thresholdConfiguration.getRange());
-                	} else {
-                		if (log().isDebugEnabled())
-                            log().debug("checking value of last possible PDP only");
-                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), thresholdConfiguration.getInterval());
-                	}
-                } catch (NumberFormatException nfe) {
-                    log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
-                } catch (RrdException e) {
-                    log().info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
-                }
-
-                if (dsValue != null && !dsValue.isNaN()) {
-                    // Evaluate the threshold
-                    // 
-                    // ThresholdEntity.evaluate() returns an integer value
-                    // which indicates which threshold values were
-                    // triggered and require an event to be generated (if any).
-                    // 
-                    int result = threshold.evaluate(dsValue.doubleValue());
-                    if (result != ThresholdEntity.NONE_TRIGGERED) {
-                        if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), null, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date, dsLabelValue));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), null, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date, dsLabelValue));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), null, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), null, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
-                        }
-                    }
-                }
-            }
+        for (File file : files) {
+            processThresholdForNodeFile(directory, thresholdNetworkInterface, date, events, file);
         }
     }
+
 
     /**
      * Performs threshold checking on an SNMP RRD interface directory.
@@ -417,7 +367,6 @@ final class SnmpThresholder implements ServiceThresholder {
      * @param directory
      *            RRD repository directory
      * @param snmpIface TODO
-     * @param thresholdConfiguration TODO
      * @param date
      *            Source for timestamp to be used for all generated events
      * @param allIfThresholdMap
@@ -440,356 +389,356 @@ final class SnmpThresholder implements ServiceThresholder {
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkIfDir(File directory, SnmpThresholdInterface snmpIface, SnmpThresholdConfiguration thresholdConfiguration, Date date, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
-        ThresholdResourceType resourceType = thresholdConfiguration.getIfResourceType();
+    private void checkIfDir(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events) throws IllegalArgumentException {
+        // TODO: do more specific and thorough assertions on arguments
+
         // Sanity Check
-        if (directory == null || snmpIface.getNodeId() == null || snmpIface.getInetAddress() == null || date == null || resourceType.getThresholdMap() == null || allIfThresholdMap == null || events == null) {
+        if (directory == null || snmpIface.getNodeId() == null || snmpIface.getInetAddress() == null || date == null || events == null) {
             throw new IllegalArgumentException("Null parameters not permitted.");
         }
 
-        if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("checkIfDir: threshold checking interface dir: " + directory.getAbsolutePath());
-
-        String ifLabel = directory.getName();
-        if (log().isDebugEnabled())
-            log().debug("checkIfDir: ifLabel=" + ifLabel);
-
-        // This is an interface directory extract the
-        // interface label from the full path name of the file
-        //
-        /*
-         * String path = directory.getAbsolutePath(); String path = directory
-         * int fileSepIndex = path.lastIndexOf(File.separatorChar); if
-         * (fileSepIndex >= 0) ifLabel = path.substring(fileSepIndex+1,
-         * path.length()); else ifLabel = path;
-         */
-
-        // Attempt to retrieve the threshold map for this interface
-        // using the ifLabel for the interface
-        // 
-        Map<String, ThresholdEntity> thresholdMap = (Map<String, ThresholdEntity>) allIfThresholdMap.get(ifLabel);
-        if (thresholdMap == null) {
-            // Doesn't exist yet, go ahead and create it
-            // Must maintain a separate threshold map for
-            // each interface.
-            thresholdMap = getAttributeMap(resourceType);
-
-            // Add the new threshold map for this interface
-            // to the all interfaces map.
-            allIfThresholdMap.put(ifLabel, thresholdMap);
         }
 
-        // Iterate over directory contents and threshold
-        // check any RRD files which represent datasources
-        // in the threshold maps.
-        //
+        String ifLabel = directory.getName();
+        if (log().isDebugEnabled()) {
+            log().debug("checkIfDir: ifLabel=" + ifLabel);
+        }
+
         File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
 
         if (files == null || files.length == 0) {
-            if (log().isDebugEnabled())
-                log().debug("checkIfDir: no RRD files in dir: " + directory);
+            if (log().isDebugEnabled()) {
+                log().debug("checkIfDir: no RRD files in dir: " + directory.getAbsolutePath());
+            }
             return;
         }
 
-        Map ifDataMap = null;
-        for (int i = 0; i < files.length; i++) {
-            // File name has format: <datsource><extension>
-            // Must strip off <extension> portion.
-            String filename = files[i].getName();
-            String datasource = filename.substring(0, filename.indexOf(RrdUtils.getExtension()));
-
-            // Lookup the ThresholdEntity object corresponding
-            // to this datasource.
-            //
-            if (log().isDebugEnabled())
-                log().debug("checkIfDir: looking up datasource: " + datasource);
-            ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
-            if (threshold != null) {
-
-		String dsLabelValue = "Unknown";
-
-                // Use RRD JNI interface to "fetch" value of the
-                // datasource from the RRD file
-                //
-                Double dsValue = null;
-                try {
-                	if (thresholdConfiguration.getRange() != 0) {
-                		if (log().isDebugEnabled())
-                            log().debug("checking values within " + thresholdConfiguration.getRange() + " mS of last possible PDP");
-                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), thresholdConfiguration.getInterval(), thresholdConfiguration.getRange());
-                	} else {
-                		if (log().isDebugEnabled())
-                            log().debug("checking value of last possible PDP only");
-                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), thresholdConfiguration.getInterval());
-                	}
-                } catch (NumberFormatException nfe) {
-                    log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
-                } catch (RrdException e) {
-                    log().info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
-                }
-
-                if (dsValue != null && !dsValue.isNaN()) {
-                    // Evaluate the threshold
-                    // 
-                    // ThresholdEntity.evaluate() returns an integer value
-                    // which indicates which threshold values were
-                    // triggered and require an event to be generated (if any).
-                    // 
-                    int result = threshold.evaluate(dsValue.doubleValue());
-                    if (result != ThresholdEntity.NONE_TRIGGERED) {
-                        // ifLabel will either be set to null for node level
-                        // datasource values
-                        // or to a specific interface in the case of an
-                        // interface level datasource.
-                        //
-                        // ifLabel has the following format:
-                        // <ifName|ifDescr>-<macAddr>
-                        // 
-                        // Call IfLabel.getInterfaceInfoFromLabel() utility
-                        // method to retrieve
-                        // data from the 'snmpInterfaces' table for this
-                        // interface. This method
-                        // will return a Map of database values keyed by field
-                        // name.
-                        //
-                        if (ifLabel != null && ifDataMap == null) {
-                            // Get database connection
-                            //
-                            java.sql.Connection dbConn = null;
-                            try {
-                                dbConn = DataSourceFactory.getInstance().getConnection();
-                            } catch (SQLException sqlE) {
-                                log().error("checkIfDir: Failed getting connection to the database.", sqlE);
-                                throw new UndeclaredThrowableException(sqlE);
-                            }
-
-                            // Make certain we close the connection
-                            //
-                            try {
-                                ifDataMap = IfLabel.getInterfaceInfoFromIfLabel(dbConn, snmpIface.getNodeId().intValue(), ifLabel);
-                            } catch (SQLException e) {
-                                // Logging a warning message but processing will
-                                // continue for
-                                // this thresholding event, when the event is
-                                // created it
-                                // will be created with an interface value set
-                                // to the primary
-                                // SNMP interface address and an event source
-                                // set to
-                                // <datasource>:<ifLabel>.
-                                //
-                                log().warn("Failed to retrieve interface info from database using ifLabel '" + ifLabel);
-                                ifDataMap = new HashMap();
-                            } finally {
-                                // Done with the database so close the
-                                // connection
-                                try {
-                                    if (dbConn != null)
-                                        dbConn.close();
-                                } catch (SQLException sqle) {
-                                    log().info("checkIfDir: SQLException while closing database connection", sqle);
-                                }
-                            }
-                            // Adding ifLabel value to the map for potential use
-                            // by
-                            // the createEvent() method
-                            ifDataMap.put("iflabel", ifLabel);
-
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date, dsLabelValue));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date, dsLabelValue));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
-                            events.addEvent(createEvent(snmpIface.getNodeId(), snmpIface.getInetAddress(), ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
-                        }
-                    }
-                }
-            }
+        Map<String, String> ifDataMap = new HashMap<String, String>();
+        for (File file : files) {
+            processThresholdForInterfaceFile(directory, snmpIface, date, events, ifLabel, ifDataMap, file);
         }
     }
 
-    private Map<String, ThresholdEntity> getAttributeMap(ThresholdResourceType resourceType) {
-        Map<String, ThresholdEntity> thresholdMap;
-        thresholdMap = new HashMap<String, ThresholdEntity>();
+    private void processThresholdForNodeFile(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events, File file) {
+        Map<String, ThresholdEntity> thresholdMap = snmpIface.getNodeThresholdMap();
 
-        // Iterate over base interface threshold map and clone each
-        // ThresholdEntity object and add it to the threshold map.
-        // for this interface.
-        // 
-        Iterator iter = resourceType.getThresholdMap().values().iterator();
-        while (iter.hasNext()) {
-            ThresholdEntity entity = (ThresholdEntity) iter.next();
-            thresholdMap.put(entity.getDatasourceName(), (ThresholdEntity)entity.clone());
+        Assert.notNull(thresholdMap, "threshold map in the threshold configuration cannot be null");
+
+        SnmpThresholdConfiguration thresholdConfiguration = snmpIface.getThresholdConfiguration();
+        
+        String datasource = stripRrdExtension(file.getName());
+        if (datasource == null) {
+            // Could not find the RRD extension, so skip
+            log().warn("File '" + file.getName() + "' was listed as an RRD file in directory '" + directory.getAbsolutePath() + "' but it does not end with the RRD extension.  Skipping thresholding on this file.");
+            return;
+        }
+
+        ThresholdEntity threshold = thresholdMap.get(datasource);
+        if (threshold == null) {
+            log().info("Did not find a threshold entity object for data source '" + datasource + "'.");
+            return;
+        }
+        
+        Double dsValue = getDataSourceValue(thresholdConfiguration, file, datasource);
+        if (dsValue == null) {
+            log().info("Could not get data source value for '" + datasource + "'.  Not evaluating threshold.");
+            return;
+        }
+        
+        List<Event> eventList = threshold.evaluateAndCreateEvents(dsValue, date);
+        if (eventList.size() == 0) {
+            // Nothing to do, so return
+            return;
+        }
+
+        String dsLabelValue = getDataSourceLabel(directory, snmpIface, threshold);
+        
+        completeEventListAndAddToEvents(events, eventList, snmpIface, null, dsLabelValue);
+    }
+
+    private void completeEventListAndAddToEvents(Events events, List<Event> eventList, SnmpThresholdNetworkInterface snmpIface, Map<String, String> ifDataMap, String dsLabelValue) {
+        // TODO: do more specific and thorough assertions on arguments
+        for (Event event : eventList) {
+            /*
+            Integer nodeId = snmpIface.getNodeId();
+            InetAddress primary = snmpIface.getInetAddress();
+            if (nodeId == null || primary == null) {
+                throw new IllegalArgumentException("nodeid, primary, and threshold cannot be null.");
+            }
+    
+            if (log().isDebugEnabled()) {
+                log().debug("createEvent: nodeId=" + nodeId + " primaryAddr=" + primary + " ds=" + threshold.getDsName() + " uei=" + uei);
+    
+                if (ifDataMap != null) {
+                    log().debug("createEvent: specific interface data: ifAddr=" + ifDataMap.get("ipaddr") + " macAddr=" + ifDataMap.get("snmpphysaddr") + " ifName=" + ifDataMap.get("snmpifname") + " ifDescr=" + ifDataMap.get("snmpifdescr") + " ifIndex=" + ifDataMap.get("snmpifindex") + " ifLabel=" + ifDataMap.get("iflabel"));
+                }
+            }
+            */
+    
+            // create the event to be sent
+            event.setNodeid(snmpIface.getNodeId().longValue());
+            event.setService(this.serviceName());
+    
+            // Set event interface
+            if (ifDataMap == null || ifDataMap.get("ipaddr") == null) {
+                // Node level datasource
+                if (snmpIface.getInetAddress() != null) {
+                    event.setInterface(snmpIface.getInetAddress().getHostAddress());
+                }
+            } else {
+                /*
+                 * Interface-level datasource
+                 * 
+                 * NOTE: Non-IP interfaces will have an
+                 * address of "0.0.0.0".
+                 */
+                String ifAddr = ifDataMap.get("ipaddr");
+                event.setInterface(ifAddr);
+            }
+        
+            // Add appropriate parms
+            Parms eventParms = event.getParms();
+            
+            Parm eventParm;
+            Value parmValue;
+    
+            // Add datasource label
+            if (dsLabelValue != null) {
+                eventParm = new Parm();
+                eventParm.setParmName("label");
+                parmValue = new Value();
+                parmValue.setContent(dsLabelValue);
+                eventParm.setValue(parmValue);
+                eventParms.addParm(eventParm);
+            }
+    
+            // Add interface parms if available
+            if (ifDataMap != null && ifDataMap.get("iflabel") != null) {
+                // Add ifLabel
+                eventParm = new Parm();
+                eventParm.setParmName("ifLabel");
+                parmValue = new Value();
+                parmValue.setContent(ifDataMap.get("iflabel"));
+                eventParm.setValue(parmValue);
+                eventParms.addParm(eventParm);
+            }
+    
+            if (ifDataMap != null && ifDataMap.get("snmpifindex") != null) {
+                // Add ifIndex
+                eventParm = new Parm();
+                eventParm.setParmName("ifIndex");
+                parmValue = new Value();
+                parmValue.setContent(ifDataMap.get("snmpifindex"));
+                eventParm.setValue(parmValue);
+                eventParms.addParm(eventParm);
+            }
+
+            events.addEvent(event);
+        }
+    }
+
+    private void processThresholdForInterfaceFile(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events, String ifLabel, Map<String, String> ifDataMap, File file) {
+        Map<String, ThresholdEntity> thresholdMap = snmpIface.getInterfaceThresholdMap(ifLabel);
+
+        SnmpThresholdConfiguration thresholdConfiguration = snmpIface.getThresholdConfiguration();
+        
+        String datasource = stripRrdExtension(file.getName());
+        if (datasource == null) {
+            // Could not find the RRD extension, so skip
+            log().warn("File '" + file.getName() + "' was listed as an RRD file in directory '" + directory.getAbsolutePath() + "' but it does not end with the RRD extension.  Skipping thresholding on this file.");
+            return;
+        }
+
+        ThresholdEntity threshold = thresholdMap.get(datasource);
+        if (threshold == null) {
+            log().info("Did not find a threshold entity object for data source '" + datasource + "'.");
+            return;
+        }
+
+        Double dsValue = getDataSourceValue(thresholdConfiguration, file, datasource);
+        if (dsValue == null) {
+            log().info("Could not get data source value for '" + datasource + "'.  Not evaluating threshold.");
+            return;
+        }
+        
+        List<Event> eventList = threshold.evaluateAndCreateEvents(dsValue, date);
+        if (eventList.size() == 0) {
+            // Nothing ot do, so return
+            return;
+        }
+
+        if (ifDataMap.size() == 0 && ifLabel != null) {
+            populateIfDataMap(ifDataMap, snmpIface, ifLabel);
+        }
+
+        completeEventListAndAddToEvents(events, eventList, snmpIface, ifDataMap, "Unknown");
+    }
+
+    /**
+     * Use RRD strategy to "fetch" value of the datasource from the RRD file
+     * using the threshold configuration.
+     */
+    private Double getDataSourceValue(SnmpThresholdConfiguration thresholdConfiguration, File file, String datasource) {
+        Double dsValue;
+
+        try {
+        	if (thresholdConfiguration.getRange() != 0) {
+        		if (log().isDebugEnabled()) {
+                    log().debug("Checking datasource '" + datasource + "' for values within " + thresholdConfiguration.getRange() + " milliseconds of last possible PDP with interval " + thresholdConfiguration.getInterval() + ".");
+                }
+        		dsValue = RrdUtils.fetchLastValueInRange(file.getAbsolutePath(), thresholdConfiguration.getInterval(), thresholdConfiguration.getRange());
+        	} else {
+        		if (log().isDebugEnabled()) {
+                    log().debug("Checking datasource '" + datasource + "' for value of last possible PDP only with interval " + thresholdConfiguration.getInterval() + ".");
+                }
+        		dsValue = RrdUtils.fetchLastValue(file.getAbsolutePath(), thresholdConfiguration.getInterval());
+        	}
+        } catch (NumberFormatException e) {
+            log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double: " + e);
+            return null;
+        } catch (RrdException e) {
+            log().info("An error occurred retriving the last value for datasource '" + datasource + "': " + e, e);
+            return null;
+        }
+
+        if (dsValue == null) {
+            log().info("fetch value for data source '" + datasource + "' was null.");
+            return null;
+        }
+        
+        if (dsValue.isNaN()) {
+            log().info("fetch value for data source '" + datasource + "' was NaN.");
+            return null;
+        }
+        
+        return dsValue;
+    }
+
+    /**
+     * File name has format: <datsource><extension>
+     *
+     * @return the fileName with the <extension> portion stripped off the end.
+     */
+    protected String stripRrdExtension(String fileName) {
+        if (!fileName.endsWith(RrdUtils.getExtension())) {
+            log().info("stripRrdExtension: File '" + fileName + "' does not end with the RRD extension '" + RrdUtils.getExtension() + "'.");
+            return null;
+        }
+        return fileName.substring(0, fileName.lastIndexOf(RrdUtils.getExtension()));
+    }
+
+
+    /**
+     * Get the value to use for the ds-label from this threshold
+     */
+    private String getDataSourceLabel(File directory, SnmpThresholdNetworkInterface snmpIface, ThresholdEntity threshold) {
+        String dsLabelValue = "Unknown";
+
+        File propertiesFile = new File(directory, STRINGS_PROPERTIES);
+        try {
+            Properties stringProps = new Properties();
+            stringProps.load(new FileInputStream(propertiesFile));
+            dsLabelValue = stringProps.getProperty(threshold.getDatasourceLabel());
+        } catch (FileNotFoundException e) {
+            if (log().isDebugEnabled()) {
+                log().debug ("getDataSourceLabel: No strings.properties file found for node id: " + snmpIface.getNodeId() + " looking here: " + propertiesFile);
+            }
+        } catch (NullPointerException e) {
+            if (log().isDebugEnabled()) {
+                log().debug ("getDataSourceLabel: No data source label for node id: " + snmpIface.getNodeId() + ": " + e, e);
+            }
+        } catch (IOException e) {
+            if (log().isDebugEnabled()) {
+                log().debug ("getDataSourceLabel: I/O exception when looking for strings.properties file for node id: " + snmpIface.getNodeId() + " looking here: " + propertiesFile + ": " + e, e);
+            }
+        }
+
+        return dsLabelValue;
+    }
+
+
+    /**
+     * ifLabel will either be set to null for node level
+     * datasource values
+     * or to a specific interface in the case of an
+     * interface level datasource.
+     *
+     * ifLabel has the following format:
+     * <ifName|ifDescr>-<macAddr>
+     * 
+     * Call IfLabel.getInterfaceInfoFromLabel() utility
+     * method to retrieve
+     * data from the 'snmpInterfaces' table for this
+     * interface. This method
+     * will return a Map of database values keyed by field
+     * name.
+     */
+    private void populateIfDataMap(Map<String, String> ifDataMap, SnmpThresholdNetworkInterface snmpIface, String ifLabel) {
+        // Get database connection
+        java.sql.Connection dbConn = null;
+        try {
+            dbConn = DataSourceFactory.getInstance().getConnection();
+        } catch (SQLException e) {
+            log().error("checkIfDir: Failed getting connection to the database: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        }
+
+        // Make certain we close the connection
+        try {
+            ifDataMap.putAll(IfLabel.getInterfaceInfoFromIfLabel(dbConn, snmpIface.getNodeId().intValue(), ifLabel));
+        } catch (SQLException e) {
+            /*
+             * Logging a warning message but processing will
+             * continue for
+             * this thresholding event, when the event is
+             * created it
+             * will be created with an interface value set
+             * to the primary
+             * SNMP interface address and an event source
+             * set to
+             * <datasource>:<ifLabel>.
+             */
+            log().warn("Failed to retrieve interface info from database using ifLabel '" + ifLabel + "': " + e, e);
+        } finally {
+            // Done with the database so close the connection
+            try {
+                if (dbConn != null) {
+                    dbConn.close();
+                }
+            } catch (SQLException e) {
+                log().info("checkIfDir: SQLException while closing database connection: " + e, e);
+            }
+        }
+        
+        // Adding ifLabel value to the map for potential use by the createEvent() method
+        ifDataMap.put("iflabel", ifLabel);
+    }
+
+    protected static Map<String, ThresholdEntity> getAttributeMap(ThresholdResourceType resourceType) {
+        Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
+
+        /*
+         * Iterate over base interface threshold map and clone each
+         * ThresholdEntity object and add it to the threshold map.
+         * for this interface.
+         */ 
+        for (ThresholdEntity entity : resourceType.getThresholdMap().values()) {
+            thresholdMap.put(entity.getDatasourceName(), entity.clone());
         }
         return thresholdMap;
     }
 
-    /**
-     * Creates a new threshold event from the specified parms.
-     * 
-     * @param nodeId
-     *            node identifier of the affected node
-     * @param primary
-     *            IP address of the affected primary SNMP interface
-     * @param ifDataMap
-     *            Map of this node's interface information
-     * @param dsValue
-     *            Data source value which triggered the threshold event
-     * @param threshold
-     *            Configured threshold
-     * @param uei
-     *            Event identifier
-     * @param date
-     *            source of event's timestamp
-     * 
-     * @return new threshold event to be sent to Eventd
-     */
-    private Event createEvent(Integer nodeId, InetAddress primary, Map ifDataMap, double dsValue, Threshold threshold, String uei, java.util.Date date, String label) {
-        if (nodeId == null || primary == null || threshold == null)
-            throw new IllegalArgumentException("nodeid, primary, and threshold cannot be null.");
-
-        if (log().isDebugEnabled()) {
-            log().debug("createEvent: nodeId=" + nodeId + " primaryAddr=" + primary + " ds=" + threshold.getDsName() + " uei=" + uei);
-
-            if (ifDataMap != null) {
-                log().debug("createEvent: specific interface data:" + " ifAddr=" + (String) ifDataMap.get("ipaddr") + " macAddr=" + (String) ifDataMap.get("snmpphysaddr") + " ifName=" + (String) ifDataMap.get("snmpifname") + " ifDescr=" + (String) ifDataMap.get("snmpifdescr") + " ifIndex=" + (String) ifDataMap.get("snmpifindex") + " ifLabel=" + (String) ifDataMap.get("iflabel"));
-            }
-        }
-
-        // create the event to be sent
-        Event newEvent = new Event();
-        newEvent.setUei(uei);
-        newEvent.setNodeid(nodeId.longValue());
-        newEvent.setService(this.serviceName());
-
-        // set the source of the event to the datasource name
-        newEvent.setSource("OpenNMS.Threshd." + threshold.getDsName());
-
-        // Set event interface
-        //
-        if (ifDataMap == null || ifDataMap.get("ipaddr") == null) {
-            // Node level datasource
-            //
-            if (primary != null)
-                newEvent.setInterface(primary.getHostAddress());
-        } else {
-            // Interface level datasource
-            // 
-            // NOTE: Non-IP interfaces will have an
-            // address of "0.0.0.0".
-            //
-            String ifAddr = (String) ifDataMap.get("ipaddr");
-            newEvent.setInterface(ifAddr);
-        }
-
-        // Set event host
-        //
-        try {
-            newEvent.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            newEvent.setHost("unresolved.host");
-            log().warn("Failed to resolve local hostname", uhE);
-        }
-
-        // Set event time
-        newEvent.setTime(EventConstants.formatToString(date));
-
-        // Add appropriate parms
-        //
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
-        // Add datasource name
-        eventParm = new Parm();
-        eventParm.setParmName("ds");
-        parmValue = new Value();
-        parmValue.setContent(threshold.getDsName());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add last known value of the datasource
-        // fetched from its RRD file
-        //
-        eventParm = new Parm();
-        eventParm.setParmName("value");
-        parmValue = new Value();
-        parmValue.setContent(Double.toString(dsValue));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add configured threshold value
-        eventParm = new Parm();
-        eventParm.setParmName("threshold");
-        parmValue = new Value();
-        parmValue.setContent(Double.toString(threshold.getValue()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add configured trigger value
-        eventParm = new Parm();
-        eventParm.setParmName("trigger");
-        parmValue = new Value();
-        parmValue.setContent(Integer.toString(threshold.getTrigger()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add configured rearm value
-        eventParm = new Parm();
-        eventParm.setParmName("rearm");
-        parmValue = new Value();
-        parmValue.setContent(Double.toString(threshold.getRearm()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add datasource label
-	if (label != null) {
-        	eventParm = new Parm();
-        	eventParm.setParmName("label");
-        	parmValue = new Value();
-        	parmValue.setContent(label);
-        	eventParm.setValue(parmValue);
-        	eventParms.addParm(eventParm);
-	}
-
-        // Add interface parms if available
-        if (ifDataMap != null && ifDataMap.get("iflabel") != null) {
-            // Add ifLabel
-            eventParm = new Parm();
-            eventParm.setParmName("ifLabel");
-            parmValue = new Value();
-            parmValue.setContent((String) ifDataMap.get("iflabel"));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-        }
-
-        if (ifDataMap != null && ifDataMap.get("snmpifindex") != null) {
-            // Add ifIndex
-            eventParm = new Parm();
-            eventParm.setParmName("ifIndex");
-            parmValue = new Value();
-            parmValue.setContent((String) ifDataMap.get("snmpifindex"));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-        }
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
-    }
-
-	Category log() {
+	private Category log() {
 	    return ThreadCategory.getInstance(getClass());
 	}
+    
+    public ThresholdsDao getThresholdsDao() {
+        return m_thresholdsDao;
+    }
+
+    public void setThresholdsDao(ThresholdsDao thresholdsDao) {
+        m_thresholdsDao = thresholdsDao;
+    }
 }

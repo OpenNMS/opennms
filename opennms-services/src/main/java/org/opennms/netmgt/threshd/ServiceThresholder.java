@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jan 29: Use new ThresholdNetworkInterface instead of NetworkInterface so we can pass the node ID to the implementing service thresholder. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -62,14 +66,14 @@ public interface ServiceThresholder {
 
     public void release();
 
-    public void initialize(NetworkInterface iface, Map parameters);
+    public void initialize(ThresholdNetworkInterface iface, Map parameters);
 
-    public void release(NetworkInterface iface);
+    public void release(ThresholdNetworkInterface iface);
 
     /**
      * <P>
      * Invokes threshold checking on the object.
      * </P>
      */
-    public int check(NetworkInterface iface, EventProxy eproxy, Map parameters);
+    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters);
 }

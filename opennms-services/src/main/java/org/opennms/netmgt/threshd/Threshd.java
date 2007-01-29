@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 29: Use Java 5 generics and for loop. - dj@opennms.org
 // 2004 Feb 12: Rebuild the package IP list when new discovered interface
 //              is scheduled.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -461,13 +462,8 @@ public final class Threshd extends AbstractServiceDaemon {
      * thresholdable services list. False otherwise.
      */
     private boolean alreadyScheduled(String ipAddress, String pkgName) {
-
         synchronized (m_thresholdableServices) {
-            ThresholdableService tSvc = null;
-            Iterator iter = m_thresholdableServices.iterator();
-            while (iter.hasNext()) {
-                tSvc = (ThresholdableService) iter.next();
-
+            for  (ThresholdableService tSvc : m_thresholdableServices) {
                 InetAddress addr = (InetAddress) tSvc.getAddress();
                 if (addr.getHostAddress().equals(ipAddress) && tSvc.getPackageName().equals(pkgName)) {
                     return true;

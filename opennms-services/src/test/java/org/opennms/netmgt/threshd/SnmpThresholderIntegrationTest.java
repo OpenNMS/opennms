@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jan 29: Modify to work with TestCase changes; rename to show that it's an integration test. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,8 +39,7 @@ package org.opennms.netmgt.threshd;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 
-public class LatencyThresholderTest extends ThresholderTestCase {
-
+public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
@@ -47,79 +50,76 @@ public class LatencyThresholderTest extends ThresholderTestCase {
         createMockRrd();
 
         setupEventManager();
-
+        
         replayMocks();
-
-        String dirName = "target/threshd-test/192.168.1.1";
-        String fileName = "icmp"+RrdUtils.getExtension();
+       
+        String rrdRepository = "target/threshd-test";
+        String fileName = "cpuUtilization"+RrdUtils.getExtension();
+        int nodeId = 1;
         String ipAddress = "192.168.1.1";
-        String serviceName = "ICMP";
-        String groupName = "icmp-latency";
+        String serviceName = "SNMP";
+        String groupName = "default-snmp";
+        
+        setupThresholdConfig(rrdRepository+"/"+nodeId, fileName, nodeId, ipAddress, serviceName, groupName);
 
-		setupThresholdConfig(dirName, fileName, ipAddress, serviceName, groupName);
-
-        m_thresholder = new LatencyThresholder();
+        
+        m_thresholder = new SnmpThresholder();
         m_thresholder.initialize(m_serviceParameters);
         m_thresholder.initialize(m_iface, m_parameters);
-
+        
         verifyMocks();
+        
         expectRrdStrategyCalls();
 
     }
 
 
-	protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
         RrdUtils.setStrategy(null);
         MockLogAppender.assertNoWarningsOrGreater();
         super.tearDown();
     }
     
-    public void xtestIcmpDouble() throws Exception {
-        setupFetchSequence(new double[] { 69000.0, 79000.0, 74999.0, 74998.0 });
-        replayMocks();
-        ensureExceededAfterFetches("icmp-double", 3);
-        verifyMocks();
-    }
-    
     public void testNormalValue() throws Exception {
         
-        setupFetchSequence(new double[] { 69000.0, 79000.0, 74999.0, 74998.0 });
-		
+        setupFetchSequence(69.0, 79.0, 74.0, 74.0);
+        
+        
         replayMocks();
-        ensureNoEventAfterFetches("icmp", 4);
+        ensureNoEventAfterFetches("cpuUtilization", 4);
         verifyMocks();
+        
     }
     
     public void testBigValue() throws Exception {
         
-        setupFetchSequence(new double[] {79000.0, 80000.0, 84999.0, 84998.0, 97000.0 });
+        setupFetchSequence(99.0, 98.0, 97.0, 96.0, 95.0);
         
         replayMocks();
-        ensureExceededAfterFetches("icmp", 3);
-        ensureNoEventAfterFetches("icmp", 2);
+        ensureExceededAfterFetches("cpuUtilization", 3);
+        ensureNoEventAfterFetches("cpuUtilization", 2);
         verifyMocks();
     }
     
     public void testRearm() throws Exception {
-        double values[] = { 
-                79000.0,
-                80000.0,
-                84999.0, // expect exceeded
-                84998.0,
-                15000.0, // expect rearm
-                77000.0,
-                77000.0,
-                77000.0 // expect exceeded
+        double values[] = {
+                99.0,
+                91.0,
+                93.0, // expect exceeded
+                96.0,
+                15.0, // expect rearm
+                98.0,
+                98.0,
+                98.0 // expect exceeded
         };
         
         setupFetchSequence(values);
         
         replayMocks();
-        ensureExceededAfterFetches("icmp", 3);
-        ensureRearmedAfterFetches("icmp", 2);
-        ensureExceededAfterFetches("icmp", 3);
+        ensureExceededAfterFetches("cpuUtilization", 3);
+        ensureRearmedAfterFetches("cpuUtilization", 2);
+        ensureExceededAfterFetches("cpuUtilization", 3);
         verifyMocks();
     }
-
 
 }

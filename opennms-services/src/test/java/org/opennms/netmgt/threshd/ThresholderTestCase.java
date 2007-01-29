@@ -74,17 +74,15 @@ import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-//public class ThresholderTestCase extends MockObjectTestCase {
 public class ThresholderTestCase extends TestCase {
 
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     
 	private EventAnticipator m_anticipator;
 	private EventProxy m_proxy;
-	//private Mock m_mockRrdStrategy;
     private RrdStrategy m_rrdStrategy;
 	protected Map<Object, Object> m_serviceParameters;
-	protected IPv4NetworkInterface m_iface;
+	protected ThresholdNetworkInterfaceImpl m_iface;
 	protected Map<Object, Object> m_parameters;
 	private String m_fileName;
 	private int m_step;
@@ -119,12 +117,12 @@ public class ThresholderTestCase extends TestCase {
 	    };
 	}
 
-	protected void setupThresholdConfig(String dirName, String fileName, String ipAddress, String serviceName, String groupName) throws IOException, UnknownHostException, FileNotFoundException, MarshalException, ValidationException {
+	protected void setupThresholdConfig(String dirName, String fileName, int nodeId, String ipAddress, String serviceName, String groupName) throws IOException, UnknownHostException, FileNotFoundException, MarshalException, ValidationException {
 		File dir = new File(dirName);
 		File f = createFile(dir, fileName);
 		m_fileName = f.getAbsolutePath();
 		m_step = 300000;
-		m_iface = new IPv4NetworkInterface(InetAddress.getByName(ipAddress));
+		m_iface = new ThresholdNetworkInterfaceImpl(nodeId, InetAddress.getByName(ipAddress));
 		m_serviceParameters = new HashMap<Object, Object>();
 		m_serviceParameters.put("svcName", serviceName);
 		m_parameters = new HashMap<Object, Object>();
@@ -153,12 +151,6 @@ public class ThresholderTestCase extends TestCase {
 	protected void createMockRrd() throws Exception {
 		// set this so we don't get exceptions in the log
 	    RrdConfig.setProperties(new Properties());
-        /*
-		m_mockRrdStrategy = mock(RrdStrategy.class);
-		RrdUtils.setStrategy((RrdStrategy)m_mockRrdStrategy.proxy());
-		m_mockRrdStrategy.expects(atLeastOnce()).method("initialize");
-        m_mockRrdStrategy.expects(atLeastOnce()).method("getDefaultFileExtension").will(returnValue(".mockRrd"));
-        */
         m_rrdStrategy = m_easyMockUtils.createMock(RrdStrategy.class);
         expectRrdStrategyCalls();
         RrdUtils.setStrategy(m_rrdStrategy);
@@ -227,9 +219,9 @@ public class ThresholderTestCase extends TestCase {
 	    ensureEventAfterFetches(count, null, null);
 	}
 
-	protected void setupFetchSequence(double[] values) throws NumberFormatException, RrdException {
-        for (int i = 0; i < values.length; i++) {
-            expect(m_rrdStrategy.fetchLastValue(eq(m_fileName), eq(m_step))).andReturn(values[i]);
+	protected void setupFetchSequence(double... values) throws NumberFormatException, RrdException {
+        for (double value : values) {
+            expect(m_rrdStrategy.fetchLastValue(eq(m_fileName), eq(m_step))).andReturn(value);
         }
 	}
 
@@ -244,7 +236,11 @@ public class ThresholderTestCase extends TestCase {
 	}
 
 	public void sleep(long millis) {
-	    try { Thread.sleep(millis); } catch (InterruptedException e) {}
+	    try {
+            Thread.sleep(millis);
+	    } catch (InterruptedException e) {
+	        // do nothing
+        }
 	}
     
     public void replayMocks() {
@@ -255,4 +251,22 @@ public class ThresholderTestCase extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
+    public static class ThresholdNetworkInterfaceImpl extends IPv4NetworkInterface implements  ThresholdNetworkInterface {
+        /**
+         * Generated serial version ID.
+         */
+        private static final long serialVersionUID = 8363288174688092210L;
+        
+        private int m_nodeId;
+        
+        public ThresholdNetworkInterfaceImpl(int nodeId, InetAddress inetAddress) {
+            super(inetAddress);
+            m_nodeId = nodeId;
+        }
+        
+        public int getNodeId() {
+            return m_nodeId;
+        }
+
+    }
 }

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 29: Indenting, convert to use new method for evaluating thresholds and building events, use log() method. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 22: Added threshold rearm events.  
 //
@@ -46,6 +47,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -60,6 +62,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -146,36 +149,32 @@ final class LatencyThresholder implements ServiceThresholder {
      * 
      */
     public void initialize(Map parameters) {
-        // Log4j category
-        //
-        Category log = log();
-
         // Service name
         //
         m_svcName = (String) parameters.get("svcName");
-        if (log.isDebugEnabled())
-            log.debug("initialize: latency thresholder for service '" + m_svcName + "'");
+        if (log().isDebugEnabled())
+            log().debug("initialize: latency thresholder for service '" + m_svcName + "'");
 
         // Get local host name (used when generating threshold events)
         //
         try {
             m_host = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
-            if (log.isEnabledFor(Priority.WARN))
-                log.warn("initialize: Unable to resolve local host name.", e);
+            if (log().isEnabledFor(Priority.WARN))
+                log().warn("initialize: Unable to resolve local host name.", e);
             m_host = "unresolved.host";
         }
 
         try {
             RrdUtils.initialize();
         } catch (RrdException e) {
-            if (log.isEnabledFor(Priority.ERROR))
-                log.error("initialize: Unable to initialize RrdUtils", e);
+            if (log().isEnabledFor(Priority.ERROR))
+                log().error("initialize: Unable to initialize RrdUtils", e);
             throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
 
-        if (log.isDebugEnabled())
-            log.debug("initialize: successfully instantiated JNI interface to RRD...");
+        if (log().isDebugEnabled())
+            log().debug("initialize: successfully instantiated JNI interface to RRD...");
 
         return;
     }
@@ -198,9 +197,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *            interface belongs..
      * 
      */
-    public void initialize(NetworkInterface iface, Map parameters) {
-        Category log = log();
-
+    public void initialize(ThresholdNetworkInterface iface, Map parameters) {
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
@@ -229,8 +226,8 @@ final class LatencyThresholder implements ServiceThresholder {
         try {
             dbConn = DataSourceFactory.getInstance().getConnection();
         } catch (SQLException sqlE) {
-            if (log.isEnabledFor(Priority.ERROR))
-                log.error("initialize: Failed getting connection to the database.", sqlE);
+            if (log().isEnabledFor(Priority.ERROR))
+                log().error("initialize: Failed getting connection to the database.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
         }
 
@@ -258,8 +255,8 @@ final class LatencyThresholder implements ServiceThresholder {
                 }
                 rs.close();
             } catch (SQLException sqle) {
-                if (log.isDebugEnabled())
-                    log.debug("initialize: SQL exception!!", sqle);
+                if (log().isDebugEnabled())
+                    log().debug("initialize: SQL exception!!", sqle);
                 throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + ipAddr.getHostAddress());
             } finally {
                 try {
@@ -269,8 +266,8 @@ final class LatencyThresholder implements ServiceThresholder {
                 }
             }
 
-            if (log.isDebugEnabled())
-                log.debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + ipAddr.getHostAddress());
+            if (log().isDebugEnabled())
+                log().debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + ipAddr.getHostAddress());
 
             if (nodeId == -1)
                 throw new RuntimeException("Unable to retrieve node id for interface " + ipAddr.getHostAddress());
@@ -279,8 +276,8 @@ final class LatencyThresholder implements ServiceThresholder {
             try {
                 dbConn.close();
             } catch (SQLException sqle) {
-                if (log.isEnabledFor(Priority.INFO))
-                    log.info("initialize: SQLException while closing database connection", sqle);
+                if (log().isEnabledFor(Priority.INFO))
+                    log().info("initialize: SQLException while closing database connection", sqle);
             }
         }
 
@@ -303,13 +300,10 @@ final class LatencyThresholder implements ServiceThresholder {
         //
 
         // Create empty map for storing threshold entities
-        Map thresholdMap = new HashMap();
+        Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
 
         try {
-            Iterator iter = ThresholdingConfigFactory.getInstance().getThresholds(groupName).iterator();
-            while (iter.hasNext()) {
-                Threshold thresh = (Threshold) iter.next();
-
+            for (Threshold thresh : ThresholdingConfigFactory.getInstance().getThresholds(groupName)) {
                 // See if map entry already exists for this datasource
                 // If not, create a new one.
                 boolean newEntity = false;
@@ -319,12 +313,12 @@ final class LatencyThresholder implements ServiceThresholder {
                 // the datasource type is set to "if"
                 //
                 if (!thresh.getDsType().equals("if") && !thresh.getDsType().equals("expr")) {
-                    log.warn("initialize: invalid datasource type, latency thresholder only supports interface level datasources.");
+                    log().warn("initialize: invalid datasource type, latency thresholder only supports interface level datasources.");
                     continue; // continue with the next threshold...
                 }
 
                 // First attempt to lookup the entry in the map
-                thresholdEntity = (ThresholdEntity) thresholdMap.get(thresh.getDsName());
+                thresholdEntity = thresholdMap.get(thresh.getDsName());
 
                 // Found entry?
                 if (thresholdEntity == null) {
@@ -334,13 +328,9 @@ final class LatencyThresholder implements ServiceThresholder {
                 }
 
                 try {
-                    // Set high/low threshold
-                    if (thresh.getType().equals(ThresholdEntity.HIGH_THRESHOLD))
-                        thresholdEntity.setHighThreshold(thresh);
-                    else if (thresh.getType().equals(ThresholdEntity.LOW_THRESHOLD))
-                        thresholdEntity.setLowThreshold(thresh);
+                    thresholdEntity.addThreshold(thresh);
                 } catch (IllegalStateException e) {
-                    log.warn("Encountered duplicate " + thresh.getType() + " for datasource " + thresh.getDsName(), e);
+                    log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + thresh.getDsName() + ": " + e, e);
                 }
 
                 // Add new entity to the map
@@ -358,15 +348,15 @@ final class LatencyThresholder implements ServiceThresholder {
 
         // Debug
         //
-        if (log.isDebugEnabled()) {
-            log.debug("initialize: dumping interface thresholds defined for " + ipAddr.getHostAddress() + "/" + groupName + ":");
+        if (log().isDebugEnabled()) {
+            log().debug("initialize: dumping interface thresholds defined for " + ipAddr.getHostAddress() + "/" + groupName + ":");
             Iterator iter = thresholdMap.values().iterator();
             while (iter.hasNext())
-                log.debug((ThresholdEntity) iter.next());
+                log().debug((ThresholdEntity) iter.next());
         }
 
-        if (log.isDebugEnabled())
-            log.debug("initialize: initialization completed for " + ipAddr.getHostAddress());
+        if (log().isDebugEnabled())
+            log().debug("initialize: initialization completed for " + ipAddr.getHostAddress());
         return;
     }
 
@@ -377,7 +367,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * @param iface
      *            Network interface to be released.
      */
-    public void release(NetworkInterface iface) {
+    public void release(ThresholdNetworkInterface iface) {
         // Nothing to release...
     }
 
@@ -392,7 +382,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *            Key/value pairs from the package to which the interface
      *            belongs.
      */
-    public int check(NetworkInterface iface, EventProxy eproxy, Map parameters) {
+    public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
 		LatencyInterface latIface = new LatencyInterface(iface, m_svcName);
 		LatencyParameters latParms = new LatencyParameters(parameters, m_svcName);
         
@@ -480,11 +470,32 @@ final class LatencyThresholder implements ServiceThresholder {
             if (threshold != null) {
                 Double dsValue = threshold.fetchLastValue(latIface, latParms);
 
+                List<Event> eventList = threshold.evaluateAndCreateEvents(dsValue, date);
+                if (eventList.size() == 0) {
+                    // Nothing to do, so continue
+                    continue;
+                }
+
+                completeEventListAndAddToEvents(events, eventList, latIface);
+                
+
+                /*
                 threshold.evaluateThreshold(dsValue, events, date, latIface);
+                */
             }
         }
 
         return events;
+    }
+
+    private void completeEventListAndAddToEvents(Events events, List<Event> eventList, LatencyInterface latIface) throws ThresholdingException {
+        for (Event event : eventList) {
+            event.setNodeid((long) latIface.getNodeId());
+            event.setInterface(latIface.getInetAddress().getHostAddress());
+            event.setService(latIface.getServiceName());
+
+            events.addEvent(event);
+        }
     }
 
     public final Category log() {
