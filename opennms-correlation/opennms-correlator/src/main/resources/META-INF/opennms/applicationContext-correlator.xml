@@ -11,12 +11,12 @@
     <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
   </bean>
   
+  <bean id="correlationEngines" class="org.opennms.netmgt.correlation.CorrelationEngineFactoryBean">
+  </bean>
+  
   <bean id="correlator" class="org.opennms.netmgt.correlation.Correlator">
 	<property name="eventIpcManager" ref="eventIpcManager" />
-	<property name="correlationEngines">
-	  <list>
-	  </list>
-	</property>
+	<property name="correlationEngines" ref="correlationEngines" />
   </bean>
 
 </beans>
