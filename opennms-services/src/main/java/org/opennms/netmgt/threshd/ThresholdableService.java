@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 29: Indenting; implement the new ThresholdNetworkInterface used by ServiceThresholder. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -66,7 +67,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class ThresholdableService extends IPv4NetworkInterface implements ReadyRunnable {
+final class ThresholdableService extends IPv4NetworkInterface implements ThresholdNetworkInterface, ReadyRunnable {
     /**
      * Interface's parent node identifier
      */
@@ -238,14 +239,14 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
     }
 
     /**
-    * Uses the existing package name to try and re-obtain the package from the threshd config factory.
-    * Should be called when the threshd config has been reloaded.
-    */
+     * Uses the existing package name to try and re-obtain the package from the threshd config factory.
+     * Should be called when the threshd config has been reloaded.
+     */
     public void refreshPackage() {
-	Package refreshedPackage=m_threshd.getPackage(getPackageName());
-	if(refreshedPackage!=null) {
-		this.m_package=refreshedPackage;
-	}
+        Package refreshedPackage=m_threshd.getPackage(getPackageName());
+        if(refreshedPackage!=null) {
+            this.m_package=refreshedPackage;
+        }
     }
 
     /**

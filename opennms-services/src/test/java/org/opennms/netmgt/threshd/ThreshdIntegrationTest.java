@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jan 29: Modify to work with TestCase changes; rename to show that it's an integration test. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -46,7 +50,7 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-public class ThreshdTest extends ThresholderTestCase {
+public class ThreshdIntegrationTest extends ThresholderTestCase {
     
     public static final String THRESHD_CONFIG = "<?xml version=\"1.0\"?>\n" + 
             "<?castor class-name=\"org.opennms.netmgt.threshd.ThreshdConfiguration\"?>\n" + 
@@ -120,11 +124,12 @@ public class ThreshdTest extends ThresholderTestCase {
 		
         String dirName = "target/tmp/192.168.1.1";
         String fileName = "icmp.rrd";
+        int nodeId = 1;
         String ipAddress = "192.168.1.1";
         String serviceName = "ICMP";
         String groupName = "icmp-latency";
 		
-		setupThresholdConfig(dirName, fileName, ipAddress, serviceName, groupName);
+		setupThresholdConfig(dirName, fileName, nodeId, ipAddress, serviceName, groupName);
         
 		Resource resource = new ClassPathResource("etc/poll-outages.xml");
 		InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());

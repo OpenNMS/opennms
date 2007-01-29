@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 29: Indent; pull evaluation code out into ThresholdEvaluator(State) interface and implementations; improve exception messages; use Java 5 generics. - dj@opennms.org
 // 2005 Nov 29: Added a method to allow for labels in Threshold events
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 22: Added Threshold rearm event.
@@ -40,202 +41,69 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Wraps the castor created org.opennms.netmgt.config.threshd.Threshold class
  * and provides the ability to track threshold exceeded occurrences.
  */
-final class ThresholdEntity implements Cloneable {
-    static final int NONE_TRIGGERED = 0;
+public final class ThresholdEntity implements Cloneable {
+    private static List<ThresholdEvaluator> s_thresholdEvaluators;
 
-    static final int HIGH_TRIGGERED = 1;
+    private List<ThresholdEvaluatorState> m_thresholdEvaluatorStates = new LinkedList<ThresholdEvaluatorState>();
 
-    static final int LOW_TRIGGERED = 2;
-
-    static final int HIGH_AND_LOW_TRIGGERED = 3;
-
-    static final int HIGH_REARMED = 4;
-
-    static final int LOW_REARMED = 5;
-
-    static final int HIGH_AND_LOW_REARMED = 6;
-
-    static final String HIGH_THRESHOLD = "high";
-
-    static final String LOW_THRESHOLD = "low";
-
-    /**
-     * Castor Threshold object containing threshold configuration data.
-     */
-    private Threshold m_highThreshold;
-
-    private Threshold m_lowThreshold;
-
-    /**
-     * Threshold exceeded count
-     */
-    private int m_highCount;
-
-    private int m_lowCount;
-
-    /**
-     * Threshold armed flag
-     * 
-     * This flag must be true before evaluate() will return true (indicating
-     * that the threshold has been triggered). This flag is initialized to true
-     * by the constructor and is set to false each time the threshold is
-     * triggered. It can only be reset by the current value of the datasource
-     * falling below (for high threshold) or rising above (for low threshold)
-     * the rearm value.
-     */
-    private boolean m_highArmed;
-
-    private boolean m_lowArmed;
+    static {
+        s_thresholdEvaluators = new LinkedList<ThresholdEvaluator>();
+        s_thresholdEvaluators.add(new ThresholdEvaluatorHighLow());
+        s_thresholdEvaluators.add(new ThresholdEvaluatorRelativeChange());
+    }
 
     /**
      * Constructor.
      */
-    ThresholdEntity() {
-        m_highThreshold = null;
-        m_lowThreshold = null;
-    }
-
-    void setHighThreshold(Threshold threshold) {
-        if (m_highThreshold != null)
-            throw new IllegalStateException("High threshold already set.");
-
-        m_highThreshold = threshold;
-        m_highCount = 0;
-        m_highArmed = true;
-    }
-
-    void setLowThreshold(Threshold threshold) {
-        if (m_lowThreshold != null)
-            throw new IllegalStateException("Low threshold already set.");
-
-        m_lowThreshold = threshold;
-        m_lowCount = 0;
-        m_lowArmed = true;
-    }
-
-    boolean hasHighThreshold() {
-        return m_highThreshold != null;
-    }
-
-    boolean hasLowThreshold() {
-        return m_lowThreshold != null;
-    }
-
-    Threshold getHighThreshold() {
-        return m_highThreshold;
-    }
-
-    Threshold getLowThreshold() {
-        return m_lowThreshold;
+    public ThresholdEntity() {
     }
 
     /**
      * Get datasource name
      */
-    String getDatasourceName() {
-        if (this.hasHighThreshold())
-            return m_highThreshold.getDsName();
-        else if (this.hasLowThreshold())
-            return m_lowThreshold.getDsName();
-        else
-            throw new IllegalStateException("Neither high nor low threshold set.");
+    public String getDatasourceName() {
+        if (getThresholdEvaluatorStates().size() > 0) {
+            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDsName();
+        } else {
+            throw new IllegalStateException("No thresholds have been added.");
+        }
     }
 
     /**
      * Get datasource type
      */
-    String getDatasourceType() {
-        if (this.hasHighThreshold())
-            return m_highThreshold.getDsType();
-        else if (this.hasLowThreshold())
-            return m_lowThreshold.getDsType();
-        else
-            throw new IllegalStateException("Neither high nor low threshold set.");
-    }
-
-    /**
-     * Get high threshold value
-     */
-    double getHighValue() {
-        if (m_highThreshold == null)
-            throw new IllegalStateException("High threshold not set.");
-
-        return m_highThreshold.getValue();
-    }
-
-    /**
-     * Get low threshold value
-     */
-    double getLowValue() {
-        if (m_lowThreshold == null)
-            throw new IllegalStateException("Low threshold not set.");
-
-        return m_lowThreshold.getValue();
-    }
-
-    /**
-     * Get high threshold re-arm
-     */
-    double getHighRearm() {
-        if (m_highThreshold == null)
-            throw new IllegalStateException("High threshold not set.");
-
-        return m_highThreshold.getRearm();
-    }
-
-    /**
-     * Get low threshold re-arm
-     */
-    double getLowRearm() {
-        if (m_lowThreshold == null)
-            throw new IllegalStateException("Low threshold not set.");
-
-        return m_lowThreshold.getRearm();
-    }
-
-    /**
-     * Get high threshold trigger
-     */
-    int getHighTrigger() {
-        if (m_highThreshold == null)
-            throw new IllegalStateException("High threshold not set.");
-
-        return m_highThreshold.getTrigger();
-    }
-
-    /**
-     * Get low threshold trigger
-     */
-    int getLowTrigger() {
-        if (m_lowThreshold == null)
-            throw new IllegalStateException("Low threshold not set.");
-
-        return m_lowThreshold.getTrigger();
+    public String getDatasourceType() {
+        if (getThresholdEvaluatorStates().size() > 0) {
+            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDsType();
+        } else {
+            throw new IllegalStateException("No thresholds have been added.");
+        }
     }
 
     /**
      * Get datasource Label
      */
-    String getDatasourceLabel() {
-        if (this.hasHighThreshold())
-            return m_highThreshold.getDsLabel();
-        else if (this.hasLowThreshold())
-            return m_lowThreshold.getDsLabel();
-        else
+    public String getDatasourceLabel() {
+        if (getThresholdEvaluatorStates().size() > 0) {
+            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDsLabel();
+        } else {
             return null;
+        }
     }
 
     /**
@@ -246,12 +114,11 @@ final class ThresholdEntity implements Cloneable {
      * references to the same castor Threshold objects as the original
      * ThresholdEntity object.
      */
-    public Object clone() {
+    public ThresholdEntity clone() {
         ThresholdEntity clone = new ThresholdEntity();
-        if (this.hasHighThreshold())
-            clone.setHighThreshold(this.m_highThreshold);
-        if (this.hasLowThreshold())
-            clone.setLowThreshold(this.m_lowThreshold);
+        for (ThresholdEvaluatorState thresholdItem : getThresholdEvaluatorStates()) {
+            clone.addThreshold(thresholdItem.getThresholdConfig());
+        }
 
         return clone;
     }
@@ -264,231 +131,128 @@ final class ThresholdEntity implements Cloneable {
      * @return String which represents the content of this ThresholdEntity
      */
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
-
-        // Build the buffer
-        //
-        if (!this.hasHighThreshold() && !this.hasLowThreshold())
-            return buffer.toString();
-
-        buffer.append("dsName=").append(this.getDatasourceName());
-        buffer.append(",dsType=").append(this.getDatasourceType()).append(":");
-        // High Threshold
-        //
-        if (this.hasHighThreshold()) {
-            buffer.append(" highVal=").append(m_highThreshold.getValue());
-            buffer.append(",highRearm=").append(m_highThreshold.getRearm());
-            buffer.append(",highTrigger=").append(m_highThreshold.getTrigger());
+        if (getThresholdEvaluatorStates().size() == 0) {
+            return "";
         }
 
-        // Low Threshold
-        //
-        if (this.hasLowThreshold()) {
-            buffer.append(",lowVal=").append(m_lowThreshold.getValue());
-            buffer.append(",lowRearm=").append(m_lowThreshold.getRearm());
-            buffer.append(",lowTrigger=").append(m_lowThreshold.getTrigger());
+        StringBuffer buffer = new StringBuffer();
+
+        buffer.append("dsName=").append(this.getDatasourceName());
+        buffer.append(", dsType=").append(this.getDatasourceType());
+
+        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
+            buffer.append(", ds=").append(item.getThresholdConfig().getDsName());
+            buffer.append(", value=").append(item.getThresholdConfig().getValue());
+            buffer.append(", rearm=").append(item.getThresholdConfig().getRearm());
+            buffer.append(", trigger=").append(item.getThresholdConfig().getTrigger());
         }
 
         return buffer.toString();
     }
 
     /**
-     * Evaluates the threshold in light of the provided datasource value.
+     * Evaluates the threshold in light of the provided datasource value and
+     * create any events for thresholds.
      * 
      * @param dsValue
      *            Current value of datasource
-     * 
-     * @return integer value indicating which threshold types (if any) were
-     *         exceeded indicating than an event should be generated. false
-     *         otherwise.
+
+     * @return List of events
      */
-    int evaluate(double dsValue) {
-        Category log = ThreadCategory.getInstance(getClass());
+    public List<Event> evaluateAndCreateEvents(double dsValue, Date date) {
+        if (log().isDebugEnabled()) {
+            log().debug("evaluate: value= " + dsValue + " against threshold: " + this);
+        }
 
-        boolean highTriggered = false;
-        boolean lowTriggered = false;
-        boolean highRearmed = false;
-        boolean lowRearmed = false;
+        List<Event> events = new LinkedList<Event>();
 
-        if (log.isDebugEnabled())
-            log.debug("evaluate: value= " + dsValue + " against threshold: " + this);
-
-        // Check high threshold
-        //
-        if (hasHighThreshold()) {
-            // threshold exceeded?
-            if (dsValue >= m_highThreshold.getValue()) {
-                // Is threshold armed?
-                if (m_highArmed) {
-                    // increment count
-                    m_highCount++;
-
-                    if (log.isDebugEnabled())
-                        log.debug("evaluate: high threshold exceeded, count=" + m_highCount);
-
-                    // trigger exceeded?
-                    if (m_highCount >= m_highThreshold.getTrigger()) {
-                        if (log.isDebugEnabled())
-                            log.debug("evaluate: high threshold triggered!");
-                        highTriggered = true;
-                        m_highCount = 0;
-                        m_highArmed = false;
-                    }
-                }
-            }
-            // rearm threshold?
-            else if (dsValue <= m_highThreshold.getRearm()) {
-                if (!m_highArmed) {
-                    if (log.isDebugEnabled())
-                        log.debug("evaluate: high threshold rearmed!");
-                    m_highArmed = true;
-                    highRearmed = true;
-                    m_highCount = 0;
-                }
-            }
-            // reset count
-            else {
-                if (log.isDebugEnabled())
-                    log.debug("evaluate: resetting high threshold count to 0");
-                m_highCount = 0;
+        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
+            Status status = item.evaluate(dsValue);
+            Event event = item.getEventForState(status, date, dsValue);
+            if (event != null) {
+                events.add(event);
             }
         }
 
-        // Check low threshold
-        //
-        if (hasLowThreshold()) {
-            // threshold exceeded?
-            if (dsValue <= m_lowThreshold.getValue()) {
-                // Is threshold armed?
-                if (m_lowArmed) {
-                    // increment count
-                    m_lowCount++;
-
-                    if (log.isDebugEnabled())
-                        log.debug("evaluate: low threshold exceeded, count=" + m_lowCount);
-
-                    // trigger exceeded?
-                    if (m_lowCount >= m_lowThreshold.getTrigger()) {
-                        if (log.isDebugEnabled())
-                            log.debug("evaluate: low threshold triggered!");
-                        lowTriggered = true;
-                        m_lowCount = 0;
-                        m_lowArmed = false;
-                    }
-                }
-            }
-            // rearm threshold?
-            else if (dsValue >= m_lowThreshold.getRearm()) {
-                if (!m_lowArmed) {
-                    if (log.isDebugEnabled())
-                        log.debug("evaluate: low threshold rearmed!");
-                    m_lowArmed = true;
-                    lowRearmed = true;
-                    m_lowCount = 0;
-                }
-            }
-            // reset count
-            else {
-                if (log.isDebugEnabled())
-                    log.debug("evaluate: resetting low threshold count to 0");
-                m_lowCount = 0;
-            }
-        }
-        // Return integer value indicating which
-        // threshold configurations have been triggered.
-        //
-        if (lowTriggered && highTriggered)
-            return HIGH_AND_LOW_TRIGGERED;
-        else if (lowTriggered)
-            return LOW_TRIGGERED;
-        else if (highTriggered)
-            return HIGH_TRIGGERED;
-        else if (lowRearmed && highRearmed)
-            return HIGH_AND_LOW_REARMED;
-        else if (lowRearmed)
-            return LOW_REARMED;
-        else if (highRearmed)
-            return HIGH_REARMED;
-
-        else
-            return NONE_TRIGGERED;
+        return events;
     }
-	
-	private final Category log() {
-		return ThreadCategory.getInstance(ThresholdEntity.class);
-	}
 
-	Double fetchLastValue(LatencyInterface latIface, LatencyParameters latParms) throws ThresholdingException {
-		String datasource = getDatasourceName();
-		// Use RRD JNI interface to "fetch" value of the
-	    // datasource from the RRD file
-	    //
-	    Double dsValue = null;
-	    try {
-	        if (getDatasourceType().equals("if")) {
-	            log().debug("Fetching last value from dataSource '" + datasource + "'");
-	            
-	            File rrdFile = new  File(latIface.getLatencyDir(), datasource+RrdUtils.getExtension());
-	            if (!rrdFile.exists()) {
-	                log().info("rrd file "+rrdFile+" does not exist");
-	                return null;
-	            }
-	            
-	            if (!rrdFile.canRead()) {
-	               log().error("Unable to read existing rrd file "+rrdFile);
-	                return null;
-	            }
-	            
-	            if (latParms.getRange() == 0) {
-	            	dsValue = RrdUtils.fetchLastValue(rrdFile.getAbsolutePath(), latParms.getInterval());
-	            } else {
-	            	dsValue = RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), latParms.getInterval(), latParms.getRange());
-	            }
-	        } else {
-	           throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
-	        }
-	        log().debug("Last value from dataSource '" + datasource + "' was "+dsValue);
-	    } catch (NumberFormatException nfe) {
-	        log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
-	    } catch (RrdException e) {
-	        log().error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
-	    }
-	    return dsValue;
-	}
+    private final Category log() {
+        return ThreadCategory.getInstance(ThresholdEntity.class);
+    }
 
-	void evaluateThreshold(Double dsValue, Events events, Date date, LatencyInterface latIface) throws ThresholdingException {
-	    if (dsValue != null && !dsValue.isNaN()) {
-	        // Evaluate the threshold
-	        // 
-	        // ThresholdEntity.evaluate() returns an integer value
-	        // which indicates which threshold values were
-	        // triggered and require an event to be generated (if any).
-	        // 
-	        int result = evaluate(dsValue.doubleValue());
-	        if (result != ThresholdEntity.NONE_TRIGGERED) {
-	            if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
-	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date));
-	            }
-	
-	            if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
-	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date));
-	            }
-	
-	            if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
-	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date));
-	            }
-	
-	            if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
-	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date));
-	            }
-	        }
-	    }
-	}
+    public Double fetchLastValue(LatencyInterface latIface, LatencyParameters latParms) throws ThresholdingException {
+        String datasource = getDatasourceName();
 
-    void setThreshold(Threshold thresh) {
-        if (thresh.getType().equals(ThresholdEntity.HIGH_THRESHOLD))
-            setHighThreshold(thresh);
-        else if (thresh.getType().equals(ThresholdEntity.LOW_THRESHOLD))
-            setLowThreshold(thresh);
+        // Use RRD strategy to "fetch" value of the datasource from the RRD file
+        Double dsValue = null;
+        try {
+            if (getDatasourceType().equals("if")) {
+                if (log().isDebugEnabled()) {
+                    log().debug("Fetching last value from dataSource '" + datasource + "'");
+                }
+
+                File rrdFile = new  File(latIface.getLatencyDir(), datasource+RrdUtils.getExtension());
+                if (!rrdFile.exists()) {
+                    log().info("rrd file "+rrdFile+" does not exist");
+                    return null;
+                }
+
+                if (!rrdFile.canRead()) {
+                    log().error("Unable to read existing rrd file "+rrdFile);
+                    return null;
+                }
+
+                if (latParms.getRange() == 0) {
+                    dsValue = RrdUtils.fetchLastValue(rrdFile.getAbsolutePath(), latParms.getInterval());
+                } else {
+                    dsValue = RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), latParms.getInterval(), latParms.getRange());
+                }
+            } else {
+                throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
+            }
+
+            if (log().isDebugEnabled()) {
+                log().debug("Last value from dataSource '" + datasource + "' was "+dsValue);
+            }
+        } catch (NumberFormatException nfe) {
+            log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
+        } catch (RrdException e) {
+            log().error("An error occurred retriving the last value for datasource '" + datasource + "': " + e, e);
+        }
+
+        return dsValue;
+    }
+
+    public void addThreshold(Threshold threshold) {
+        ThresholdEvaluator evaluator = getEvaluatorForThreshold(threshold);
+
+        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
+            if (item.getThresholdConfig().getType() == threshold.getType()) {
+                throw new IllegalStateException(threshold.getType().toString() + " threshold already set.");
+            }
+        }
+
+        m_thresholdEvaluatorStates.add(evaluator.getThresholdEvaluatorState(threshold));
+    }
+
+    private ThresholdEvaluator getEvaluatorForThreshold(Threshold threshold) {
+        for (ThresholdEvaluator evaluator : getThresholdEvaluators()) {
+            if (evaluator.supportsType(threshold.getType())) {
+                return evaluator;
+            }
+        }
+
+        String message = "Threshold type '" + threshold.getType().toString() + "' for datasource " + threshold.getDsName() + " is not supported"; 
+        log().warn(message);
+        throw new IllegalArgumentException(message);
+    }
+
+    public List<ThresholdEvaluatorState> getThresholdEvaluatorStates() {
+        return m_thresholdEvaluatorStates;
+    }
+
+    public static final List<ThresholdEvaluator> getThresholdEvaluators() {
+        return s_thresholdEvaluators;
     }
 }

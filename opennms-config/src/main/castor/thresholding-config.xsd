@@ -88,18 +88,12 @@
     </annotation>
 
     <complexType>
-      <attribute name="type" use="required">
+      <attribute name="type" type="string" use="required">
         <annotation>
           <documentation>Threshold type. If "high", a 'highThresholdExceeded'
           event will be generated. If "low", a 'lowThresholdExceeded'
           event.</documentation>
         </annotation>
-
-        <simpleType>
-          <restriction base="string">
-            <pattern value="high|low"/>
-          </restriction>
-        </simpleType>
       </attribute>
 
       <attribute name="ds-name" type="string" use="required">

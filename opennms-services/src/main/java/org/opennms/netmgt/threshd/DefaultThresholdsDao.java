@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jan 29: Indent, convert to use Java 5 generics, use dependency injection for ThresholdingConfigFactory - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,25 +37,26 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Threshold;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
-public class DefaultThresholdsDao implements ThresholdsDao {
-	
+public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
+	private ThresholdingConfigFactory m_thresholdingConfigFactory;
+    
 	public DefaultThresholdsDao() {
 		
 	}
 
 	public ThresholdGroup get(String name) {
-		
-		File rrdRepository = new File(ThresholdingConfigFactory.getInstance().getRrdRepository(name));
-
 		ThresholdGroup group = new ThresholdGroup(name);
+
+        File rrdRepository = new File(getThresholdingConfigFactory().getRrdRepository(name));
 		group.setRrdRepository(rrdRepository);
 		
 		ThresholdResourceType nodeType = createType(name, "node");
@@ -61,21 +66,12 @@ public class DefaultThresholdsDao implements ThresholdsDao {
         group.setIfResourceType(ifType);
 
         return group;
-
 	}
 
-	private ThresholdResourceType createType(String groupName, String type) {
-		ThresholdResourceType resourceType = new ThresholdResourceType(type);
-		resourceType.setThresholdMap(createThresholdStateMap(type, groupName));
-		return resourceType;
-	}
-
-	public Map<String, ThresholdEntity> createThresholdStateMap(String type, String groupName) {
+	private Map<String, ThresholdEntity> createThresholdStateMap(String type, String groupName) {
 	    Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
-		Iterator iter = ThresholdingConfigFactory.getInstance().getThresholds(groupName).iterator();
-	    while (iter.hasNext()) {
-	        Threshold thresh = (Threshold) iter.next();
-	    
+        
+	    for (Threshold thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
 	        // See if map entry already exists for this datasource
 	        // If not, create a new one.
 	        if (thresh.getDsType().equals(type)) {
@@ -89,18 +85,36 @@ public class DefaultThresholdsDao implements ThresholdsDao {
 	            }
 	    
 	            try {
-	                thresholdEntity.setThreshold(thresh);
+	                thresholdEntity.addThreshold(thresh);
 	            } catch (IllegalStateException e) {
-	                log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + thresh.getDsName(), e);
+	                log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + thresh.getDsName() + ": " + e, e);
 	            }
 	    
 	        }
 	    }
 	    return thresholdMap;
 	}
+    
+    private ThresholdResourceType createType(String groupName, String type) {
+        ThresholdResourceType resourceType = new ThresholdResourceType(type);
+        resourceType.setThresholdMap(createThresholdStateMap(type, groupName));
+        return resourceType;
+    }
 
 	private Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
+
+    public ThresholdingConfigFactory getThresholdingConfigFactory() {
+        return m_thresholdingConfigFactory;
+    }
+
+    public void setThresholdingConfigFactory(ThresholdingConfigFactory thresholdingConfigFactory) {
+        m_thresholdingConfigFactory = thresholdingConfigFactory;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_thresholdingConfigFactory != null, "thresholdingConfigFactory property not set");
+    }
 
 }

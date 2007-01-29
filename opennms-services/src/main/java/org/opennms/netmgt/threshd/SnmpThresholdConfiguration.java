@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jan 29: Indenting, do not store instance of this object as attributes in NetworkInterface. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,82 +38,85 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.ParameterMap;
 
 public class SnmpThresholdConfiguration {
-    
+
+    /**
+     * Default thresholding group.
+     */
+    private static final String DEFAULT_GROUP = "default";
+
     /**
      * Default thresholding interval (in milliseconds).
      * 
      */
     private static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
-    
+
     /**
      * Default age before which a data point is considered "out of date"
      */
-    
     private static final int DEFAULT_RANGE = 0; 
 
-    private static final String THRESHD_SERVICE_CONFIG_KEY = SnmpThresholdConfiguration.class.getName();
-
-
-    public static SnmpThresholdConfiguration get(NetworkInterface iface, Map parms) {
-        SnmpThresholdConfiguration config = (SnmpThresholdConfiguration)iface.getAttribute(THRESHD_SERVICE_CONFIG_KEY);
-        if (config == null) {
-            config = new SnmpThresholdConfiguration(parms);
-            iface.setAttribute(THRESHD_SERVICE_CONFIG_KEY, config);
-        }
-        return config;
-    }
-
-    private Map m_parms;
-    
     private ThresholdGroup m_thresholdGroup;
 
-    private SnmpThresholdConfiguration(Map parms) {
-        m_parms = parms;
-        DefaultThresholdsDao dao = new DefaultThresholdsDao();
-        m_thresholdGroup = dao.get(ParameterMap.getKeyedString(m_parms, "thresholding-group", "default"));
+    private int m_range;
+
+    private int m_interval;
+
+    public SnmpThresholdConfiguration(ThresholdsDao thresholdsDao, Map parms) {
+        setRange(ParameterMap.getKeyedInteger(parms, "range", SnmpThresholdConfiguration.DEFAULT_RANGE));
+        setInterval(ParameterMap.getKeyedInteger(parms, "interval", SnmpThresholdConfiguration.DEFAULT_INTERVAL));
+        setThresholdGroup(thresholdsDao.get(ParameterMap.getKeyedString(parms, "thresholding-group", DEFAULT_GROUP)));
     }
-    
-    File getRrdRepository() {
+
+    public int getRange() {
+        return m_range;
+    }
+
+    public void setRange(int range) {
+        m_range = range;
+    }
+
+    public int getInterval() {
+        return m_interval;
+    }
+
+    public void setInterval(int interval) {
+        m_interval = interval;
+    }
+
+    public ThresholdGroup getThresholdGroup() {
+        return m_thresholdGroup;
+    }
+
+    public void setThresholdGroup(ThresholdGroup thresholdGroup) {
+        m_thresholdGroup = thresholdGroup;
+    }
+
+    public File getRrdRepository() {
         return m_thresholdGroup.getRrdRepository();
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
     public String getGroupName() {
         return m_thresholdGroup.getName();
     }
 
-    public int getRange() {
-        return ParameterMap.getKeyedInteger(m_parms, "range", SnmpThresholdConfiguration.DEFAULT_RANGE);
+    public ThresholdResourceType getIfResourceType() {
+        return m_thresholdGroup.getIfResourceType();
     }
 
-    public int getInterval() {
-        return ParameterMap.getKeyedInteger(m_parms, "interval", SnmpThresholdConfiguration.DEFAULT_INTERVAL);
+    public void setIfResourceType(ThresholdResourceType ifResourceType) {
+        m_thresholdGroup.setIfResourceType(ifResourceType);
     }
 
-	public ThresholdResourceType getIfResourceType() {
-		return m_thresholdGroup.getIfResourceType();
-	}
+    public ThresholdResourceType getNodeResourceType() {
+        return m_thresholdGroup.getNodeResourceType();
+    }
 
-	public ThresholdResourceType getNodeResourceType() {
-		return m_thresholdGroup.getNodeResourceType();
-	}
-
-	public void setIfResourceType(ThresholdResourceType ifResourceType) {
-		m_thresholdGroup.setIfResourceType(ifResourceType);
-	}
-
-	public void setNodeResourceType(ThresholdResourceType nodeResourceType) {
-		m_thresholdGroup.setNodeResourceType(nodeResourceType);
-	}
+    public void setNodeResourceType(ThresholdResourceType nodeResourceType) {
+        m_thresholdGroup.setNodeResourceType(nodeResourceType);
+    }
 
 
 }

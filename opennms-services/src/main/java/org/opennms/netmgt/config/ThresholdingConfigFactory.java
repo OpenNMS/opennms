@@ -47,12 +47,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 /**
@@ -88,7 +90,7 @@ public final class ThresholdingConfigFactory {
      * Map of org.opennms.netmgt.config.threshd.Group objects indexed by group
      * name.
      */
-    private Map m_groupMap;
+    private Map<String, Group> m_groupMap;
 
     /**
      * Private constructor
@@ -103,9 +105,15 @@ public final class ThresholdingConfigFactory {
     private ThresholdingConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
         FileReader cfgIn = new FileReader(configFile);
 
-        parseXML(cfgIn);
-
-        cfgIn.close();
+        try {
+            parseXML(cfgIn);
+        } finally {
+            try {
+                cfgIn.close();
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
 
     }
     
@@ -115,18 +123,26 @@ public final class ThresholdingConfigFactory {
 
     private void parseXML(Reader cfgIn) throws MarshalException, ValidationException {
         m_config = (ThresholdingConfig) Unmarshaller.unmarshal(ThresholdingConfig.class, cfgIn);
-        // Build map of org.opennms.netmgt.config.threshd.Group objects
-        // indexed by group name.
-        //
-        // This is parsed and built at initialization for
-        // faster processing at run-timne.
-        // 
-        m_groupMap = new HashMap();
+        initGroupMap();
+    }
+    
+    /**
+     * Build map of org.opennms.netmgt.config.threshd.Group objects
+     * indexed by group name.
+     *
+     * This is parsed and built at initialization for
+     * faster processing at run-timne.
+     */ 
+    private void initGroupMap() {
+        Map<String, Group> groupMap = new HashMap<String, Group>();
+        
         Iterator iter = m_config.getGroupCollection().iterator();
         while (iter.hasNext()) {
             Group group = (Group) iter.next();
-            m_groupMap.put(group.getName(), group);
+            groupMap.put(group.getName(), group);
         }
+        
+        m_groupMap = groupMap;
     }
 
     /**
@@ -149,12 +165,15 @@ public final class ThresholdingConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
-        ThreadCategory.getInstance(ThresholdingConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+        if (log().isDebugEnabled()) {
+            log().debug("init: config file path: " + cfgFile.getPath());
+        }
 
         m_singleton = new ThresholdingConfigFactory(cfgFile.getPath());
 
         m_loaded = true;
     }
+
 
     /**
      * Reload the config from the default config file
@@ -182,14 +201,15 @@ public final class ThresholdingConfigFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized ThresholdingConfigFactory getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
+        }
 
         return m_singleton;
     }
 
     public static synchronized void setInstance(ThresholdingConfigFactory instance) {
-        m_loaded=true;
+        m_loaded = true;
         m_singleton = instance;
     }
     /**
@@ -209,9 +229,10 @@ public final class ThresholdingConfigFactory {
     }
 
     public Group getGroup(String groupName) {
-        Group group = (Group) m_groupMap.get(groupName);
-        if (group == null)
-            throw new IllegalArgumentException("Thresholding group "+groupName+" does not exist.");
+        Group group = m_groupMap.get(groupName);
+        if (group == null) {
+            throw new IllegalArgumentException("Thresholding group " + groupName + " does not exist.");
+        }
         return group;
     }
 
@@ -229,7 +250,12 @@ public final class ThresholdingConfigFactory {
      * @throws IllegalArgumentException
      *             if group name does not exist in the group map.
      */
-    public Collection getThresholds(String groupName) {
+    @SuppressWarnings("unchecked")
+    public Collection<Threshold> getThresholds(String groupName) {
         return getGroup(groupName).getThresholdCollection();
+    }
+    
+    private static Category log() {
+        return ThreadCategory.getInstance(ThresholdingConfigFactory.class);
     }
 }
