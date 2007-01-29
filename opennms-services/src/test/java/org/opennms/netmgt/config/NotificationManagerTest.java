@@ -92,14 +92,18 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
 
         getJdbcTemplate().update("INSERT INTO service ( serviceId, serviceName ) VALUES ( 1, 'HTTP' )");
 
-        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime ) VALUES ( 1, now() )");
+        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 1, now(), 'node 1' )");
         getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 1, '192.168.1.1' )");
         getJdbcTemplate().update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 1, '192.168.1.1', 1 )");
 
-        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime ) VALUES ( 2, now() )");
+        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 2, now(), 'node 2' )");
         getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '192.168.1.1' )");
         getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '0.0.0.0' )");
         getJdbcTemplate().update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 2, '192.168.1.1', 1 )");
+
+        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 3, now(), 'node 3' )");
+        getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 3, '192.168.1.2' )");
+        getJdbcTemplate().update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 3, '192.168.1.2', 1 )");
 
         getJdbcTemplate().update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 1, 'CategoryOne' )");
         getJdbcTemplate().update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 2, 'CategoryTwo' )");
@@ -273,6 +277,23 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
                                            2, "192.168.1.1", "HTTP",
                                            "(catincCategoryOne) & (catincCategoryTwo) & (catincCategoryThree)",
                                            false);
+    }
+    
+    /**
+     * This tests bugzilla bug #1807.  The problem happened when we add our
+     * own constraints to the filter but fail to wrap the user's filter in
+     * parens.  This isn't a problem when the outermost logic expression in
+     * the user's filter (if any) is an AND, but it is if it's an OR.
+     */
+    public void testRuleWithOrNoMatch() {
+        /*
+         * Note: the nodeLabel for nodeId=3/ipAddr=192.168.1.2 is 'node 3'
+         * which shouldn't match the filter.
+         */
+        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be false",
+                3, "192.168.1.2", "HTTP",
+                "(nodelabel=='node 1') | (nodelabel=='node 2')",
+                false);
     }
     
     private void doTestNodeInterfaceServiceWithRule(String description, int nodeId, String intf, String svc, String rule, boolean matches) {

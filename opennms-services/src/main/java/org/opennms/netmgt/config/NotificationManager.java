@@ -209,7 +209,7 @@ public abstract class NotificationManager {
             }
         }
         
-        String rule = "(" + notif.getRule() + constraints + ")";
+        String rule = "((" + notif.getRule() + ")" + constraints + ")";
 
         Connection connection = null;
         Statement stmt = null;
