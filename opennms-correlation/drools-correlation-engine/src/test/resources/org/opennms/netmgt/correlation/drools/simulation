@@ -1,0 +1,63 @@
+#
+# This defines a network as follows
+#
+# opennms(1) --- switch(2) -- router1(3) -- switchA(4) -- hostA1(5)
+#                                |             |
+#                                |             ---------- hostA2(6)
+#                                |             |
+#                                |             ---------- switchAA(7) --- hostAA1(8)
+#                                |             |              |     
+#                                |             |              ----------- hostAA2(9)
+#                                |             |
+#                                |             ---------- switchAB(10) -- hostAB1(11)
+#                                |                             |
+#                                |                             ---------- hostAB2(12)
+#                                |             
+#                                |            
+#                                ---------- switchB(13) -- hostB1(14)
+#                                               |
+#                                               ---------- hostB2(15)
+#                                               |
+#                                               ---------- switchBA(16) -- hostBA1(17)
+#                                               |               |
+#                                               |               ---------- hostBA2(18)
+#                                               |
+#                                               ---------- switchBB(19) -- hostBB1(20)
+#                                                               |
+#                                                               ---------- hostBB2(21)
+#
+#
+node opennms 1
+node switch 2 1
+node router1 3 2
+node switchA 4 3
+node hostA1 5 4
+node hostA2 6 4
+node switchAA 7 4
+node hostAA1 8 7
+node hostAA2 9 7
+node switchAB 10 7
+node hostAB1 11 10
+node hostAB2 12 10
+node switchB 13 3
+node hostB1 14 13
+node hostB2 15 13
+node switchBA 16 13
+node hostBA1 17 16
+node hostBA2 18 16
+node switchBB 19 13
+node hostBB1 20 19
+node hostBB2 21 19
+#
+# Define the poll interval.  This may be using is rules to know how long to wait
+#
+pollInterval 1000
+#
+# Event Sequences
+# This first one represents an outage on hostBB1 and then a resolution after two poll intervals
+event 500 nodeDown 20
+event 500 nodeDown 19
+event 11500 nodeUp 20
+event 12000 nodeUp 19
+
+

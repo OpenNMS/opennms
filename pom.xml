@@ -904,6 +904,11 @@ opennms.home = ${opennms.home}
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-correlator</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-dao</artifactId>
         <version>${project.version}</version>
         <exclusions>
@@ -916,6 +921,11 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-daemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-drools</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
