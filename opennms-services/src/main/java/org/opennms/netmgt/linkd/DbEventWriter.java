@@ -925,10 +925,12 @@ public class DbEventWriter implements Runnable {
 								String stpPortDesignatedBridge = dot1dstpptentry.getDot1dStpPortDesignatedBridge();
 								String stpPortDesignatedPort = dot1dstpptentry.getDot1dStpPortDesignatedPort();
 
-								if (stpPortDesignatedBridge.equals("0000000000000000")) {
+								if (stpPortDesignatedBridge == null || stpPortDesignatedBridge.equals("0000000000000000")) {
 									log.warn("store: "+ stpPortDesignatedBridge + " designated bridge is invalid not adding to discoveryLink");
-								} else if (stpPortDesignatedPort.equals("0000")) {
+									stpPortDesignatedBridge = "0000000000000000";
+								} else if (stpPortDesignatedPort == null || stpPortDesignatedPort.equals("0000")) {
 									log.warn("store: " + stpPortDesignatedPort + " designated port is invalid not adding to discoveryLink");
+									stpPortDesignatedPort = "0000";
 								} else {
 									BridgeStpInterface stpIface = new BridgeStpInterface(stpport,vlanindex);
 									stpIface.setStpPortDesignatedBridge(stpPortDesignatedBridge);
