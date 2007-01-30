@@ -10,5 +10,6 @@
   <name>OpenNMS Correlation Engines</name>
   <modules>
     <module>opennms-correlator</module>
+    <module>drools-correlation-engine</module>
   </modules>
 </project>
