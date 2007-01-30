@@ -889,6 +889,11 @@ opennms.home = ${opennms.home}
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>drools-correlation-engine</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-bootstrap</artifactId>
         <version>${project.version}</version>
       </dependency>
