@@ -60,14 +60,17 @@ import org.opennms.web.command.DistributedStatusDetailsCommand;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.SimpleWebTable;
+import org.opennms.web.svclayer.SimpleWebTable.Cell;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
-public class DefaultDistributedStatusService implements DistributedStatusService {
+public class DefaultDistributedStatusService implements DistributedStatusService, InitializingBean {
     private MonitoredServiceDao m_monitoredServiceDao;
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
+    private boolean m_layoutApplicationsVertically = false;
     
     /*
      * XXX No unit tests
@@ -117,11 +120,13 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             table.addCell(s.getPollResult().getStatusName(),
                           "bright");
             
-            String responseValue = "";
+            String responseValue;
             if (s.getPollResult().isAvailable()) {
                 long responseTime = s.getPollResult().getResponseTime();
                 if (responseTime >= 0) {
                     responseValue = responseTime + "ms"; 
+                } else {
+                    responseValue = "";
                 }
             } else {
                 responseValue = s.getPollResult().getReason(); 
@@ -156,24 +161,21 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             throw new IllegalArgumentException("application cannot be null");
         }
         
-        OnmsMonitoringLocationDefinition location =
-            m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
+        OnmsMonitoringLocationDefinition location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
         if (location == null) {
             throw new IllegalArgumentException("Could not find location for "
                                                + "location name \""
                                                + locationName + "\"");
         }
         
-        OnmsApplication application =
-            m_applicationDao.findByName(applicationName);
+        OnmsApplication application = m_applicationDao.findByName(applicationName);
         if (application == null) {
             throw new IllegalArgumentException("Could not find application "
                                                + "for application name \""
                                                + applicationName + "\"");
         }
 
-        Collection<OnmsLocationMonitor> locationMonitors =
-            m_locationMonitorDao.findByLocationDefinition(location);
+        Collection<OnmsLocationMonitor> locationMonitors = m_locationMonitorDao.findByLocationDefinition(location);
         
         if (locationMonitors.size() == 0) {
             errors.reject("location.no-monitors",
@@ -183,18 +185,15 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             return null;
         }
         
-        List<OnmsLocationMonitor> sortedLocationMonitors =
-            new ArrayList<OnmsLocationMonitor>(locationMonitors);
+        List<OnmsLocationMonitor> sortedLocationMonitors = new ArrayList<OnmsLocationMonitor>(locationMonitors);
         Collections.sort(sortedLocationMonitors);
         
         Collection<OnmsMonitoredService> services = m_monitoredServiceDao.findByApplication(application);
-
-
-        List<OnmsLocationSpecificStatus> status = new LinkedList<OnmsLocationSpecificStatus>();
         
         List<OnmsMonitoredService> sortedServices = new ArrayList<OnmsMonitoredService>(services);
         Collections.sort(sortedServices);
                                                                      
+        List<OnmsLocationSpecificStatus> status = new LinkedList<OnmsLocationSpecificStatus>();
         for (OnmsMonitoredService service : sortedServices) {
             for (OnmsLocationMonitor locationMonitor : sortedLocationMonitors) {
                 OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
@@ -280,6 +279,32 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
         }
         
+        if (isLayoutApplicationsVertically()) {
+            SimpleWebTable newTable = new SimpleWebTable();
+            newTable.setErrors(table.getErrors());
+            newTable.setTitle(table.getTitle());
+            
+            newTable.addColumn("Application");
+            for (List<Cell> row : table.getRows()) {
+                // The location is in the second row
+                newTable.addColumn(row.get(1).getContent(), row.get(1).getStyleClass());
+            }
+            
+            for (Cell columnHeader : table.getColumnHeaders().subList(2, table.getColumnHeaders().size())) {
+                // This is the index into collumn list of the old table to get the data for the current application
+                int rowColumnIndex = newTable.getRows().size() + 2;
+                
+                newTable.newRow();
+                newTable.addCell(columnHeader.getContent(), columnHeader.getStyleClass());
+                
+                for (List<Cell> row : table.getRows()) {
+                    newTable.addCell(row.get(rowColumnIndex).getContent(), row.get(rowColumnIndex).getStyleClass(), row.get(rowColumnIndex).getLink());
+                }
+            }
+            
+            return newTable;
+        }
+        
         return table;
     }
     
@@ -324,14 +349,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         int badMonitors = 0;
         
         for (OnmsLocationMonitor monitor : monitors) {
-            if (monitor == null
-                    || monitor.getStatus() != MonitorStatus.STARTED) {
+            if (monitor == null || monitor.getStatus() != MonitorStatus.STARTED) {
                 continue;
             }
             
-            String status = calculateCurrentStatus(monitor,
-                                                   applicationServices,
-                                                   statuses);
+            String status = calculateCurrentStatus(monitor, applicationServices, statuses);
             
             // FIXME: "Normal", etc. should be done with static variables
             if ("Normal".equals(status)) {
@@ -609,5 +631,19 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                                                  monitor,
                                                  period,
                                                  errors);
+    }
+
+    public void setLayoutApplicationsVertically(boolean layoutApplicationsVertically) {
+        m_layoutApplicationsVertically = layoutApplicationsVertically;
+    }
+    
+    public boolean isLayoutApplicationsVertically() {
+        return m_layoutApplicationsVertically;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao cannot be null");
+        Assert.state(m_locationMonitorDao != null, "property locationMonitorDao cannot be null");
+        Assert.state(m_applicationDao != null, "property applicationDao cannot be null");
     }
 }
