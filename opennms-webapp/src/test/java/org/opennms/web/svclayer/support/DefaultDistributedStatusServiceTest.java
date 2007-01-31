@@ -100,10 +100,14 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     
     public final static String IGNORE_MATCH = "**IGNORE*MATCH**";
         
-    protected void setUp() {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        
         m_service.setMonitoredServiceDao(m_monitoredServiceDao);
         m_service.setLocationMonitorDao(m_locationMonitorDao);
         m_service.setApplicationDao(m_applicationDao);
+        m_service.afterPropertiesSet();
         
         m_locationDefinition1 = new OnmsMonitoringLocationDefinition("Raleigh", "raleigh", "OpenNMS NC");
         m_locationDefinition2 = new OnmsMonitoringLocationDefinition("Durham", "durham", "OpenNMS NC");
@@ -314,8 +318,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
         expectedTable.addCell(IGNORE_MATCH, "");
-        expectedTable.newRow();
         
+        expectedTable.newRow();
         expectedTable.addCell("Node 1", "Critical", "element/node.jsp?node=1");
         expectedTable.addCell("Raleigh-1", "");
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
@@ -443,7 +447,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
     
-    public void testCreateFacilityStatusTable() throws ParseException {
+    public void testCreateFacilityStatusTable() throws Exception {
         for (int i = 0; i < 5; i++) {
             runTestCreateFacilityStatusTable();
         }
@@ -453,7 +457,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     /*
      * XXX need to check sorting
      */
-    public void runTestCreateFacilityStatusTable() throws ParseException {
+    public void runTestCreateFacilityStatusTable() throws Exception {
         // No need to shuffle, since this is a list
         List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
         locationDefinitions.add(m_locationDefinition1);
@@ -531,6 +535,86 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         assertTableEquals(expectedTable, table);
     }
+    
+    /*
+     * XXX need to check sorting
+     */
+    public void testCreateFacilityStatusTableLayoutApplicationsVertically() throws Exception {
+        // No need to shuffle, since this is a list
+        List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
+        locationDefinitions.add(m_locationDefinition1);
+        locationDefinitions.add(m_locationDefinition2);
+        locationDefinitions.add(m_locationDefinition3);
+        
+        List<OnmsApplication> applications = new LinkedList<OnmsApplication>();
+        applications.add(m_application1);
+        applications.add(m_application2);
+        Collections.shuffle(applications);
+        
+        OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
+        OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
+        OnmsMonitoredService icmpService = findMonitoredService(m_services, m_ip, "ICMP");
+        
+        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<OnmsLocationSpecificStatus>();
+        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        
+        Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<OnmsLocationSpecificStatus>();
+        statusChanges.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statusChanges.add(createStatus(m_locationMonitor1_1, icmpService, PollStatus.down(), "20061010-06:00:00"));
+
+        Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
+        Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
+
+        expect(m_locationMonitorDao.findAllMonitoringLocationDefinitions()).andReturn(locationDefinitions);
+        expect(m_applicationDao.findAll()).andReturn(applications);
+        expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(Collections.singleton(m_locationMonitor1_1));
+        Collection<OnmsLocationMonitor> monitors2 = new HashSet<OnmsLocationMonitor>();
+        monitors2.add(m_locationMonitor2_1);
+        monitors2.add(m_locationMonitor2_2);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
+        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(new HashSet<OnmsLocationMonitor>());
+        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
+        expect(m_locationMonitorDao.getAllStatusChangesAt(startDate)).andReturn(new HashSet<OnmsLocationSpecificStatus>());
+
+        expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1).times(3);
+        expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(3);
+        
+        m_service.setLayoutApplicationsVertically(true);
+
+        m_easyMockUtils.replayAll();
+        SimpleWebTable table = m_service.createFacilityStatusTable(startDate, endDate);
+        m_easyMockUtils.verifyAll();
+        
+        SimpleWebTable expectedTable = new SimpleWebTable();
+        expectedTable.setTitle("Distributed Poller Status Summary");
+        expectedTable.addColumn("Application", "");
+        expectedTable.addColumn("Raleigh", "");
+        expectedTable.addColumn("Durham", "");
+        expectedTable.addColumn("Columbus", "");
+        
+        
+        expectedTable.newRow();
+        expectedTable.addCell("Application 1", "");
+        expectedTable.addCell("75.000%", "Normal", "distributedStatusHistory.htm?location=Raleigh&application=Application+1");
+        expectedTable.addCell("No data", "Normal");
+        expectedTable.addCell("No data", "Indeterminate");
+        
+        expectedTable.newRow();
+        expectedTable.addCell("Application 2", "");
+        expectedTable.addCell("75.000%", "Normal", "distributedStatusHistory.htm?location=Raleigh&application=Application+2");
+        expectedTable.addCell("No data", "Normal");
+        expectedTable.addCell("No data", "Indeterminate");
+        
+        assertTableEquals(expectedTable, table);
+    }
+    
     
     public void testPercentageCalculation() throws ParseException {
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
