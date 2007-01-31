@@ -11,6 +11,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jan 31: Implement Comparable interface. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
 //
@@ -58,12 +62,18 @@ import org.hibernate.annotations.MapKey;
 import org.springframework.core.style.ToStringCreator;
 
 /**
+ * Represents the current status of a location monitor from the
+ * view of the controlling OpenNMS daemon.
+ * 
+ * Note: this class has a natural ordering that is inconsistent
+ * with equals.
+ * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @Entity
 @Table(name = "location_monitors")
-public class OnmsLocationMonitor {
+public class OnmsLocationMonitor implements Comparable<OnmsLocationMonitor> {
     
     public static enum MonitorStatus {
     	/** @deprecated */
@@ -165,12 +175,20 @@ public class OnmsLocationMonitor {
         m_details = pollerDetails;
     }
 
-	@Override
-	public String toString() {
-		return new ToStringCreator(this)
-			.append("id", m_id)
-			.append("status", m_status)
-			.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringCreator(this)
+        .append("id", m_id)
+        .append("status", m_status)
+        .toString();
+    }
+
+    public int compareTo(OnmsLocationMonitor o) {
+        int diff = getDefinitionName().compareTo(o.getDefinitionName());
+        if (diff != 0) {
+            return diff;
+        }
+        return getId().compareTo(o.getId());
+    }
     
 }
