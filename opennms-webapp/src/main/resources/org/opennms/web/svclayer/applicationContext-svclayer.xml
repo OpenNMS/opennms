@@ -80,6 +80,7 @@
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
     <property name="applicationDao" ref="applicationDao"/>
+    <property name="layoutApplicationsVertically" value="${distributed.layoutApplicationsVertically}"/>
   </bean>
   
   <bean id="distributedPollerService" class="org.opennms.web.svclayer.support.DefaultDistributedPollerService">
