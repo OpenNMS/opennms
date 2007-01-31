@@ -1,0 +1,21 @@
+package org.opennms.netmgt.correlation.drools
+
+import java.util.Date;
+
+import org.opennms.netmgt.xml.event.Event;
+
+rule "retractEvent so we don't comsume memory"
+	salience 100
+	when
+		$e : Event( $nodeid : nodeid )
+	then
+		println( "Found event " + $e + " for nodeid " + $nodeid + ". Retracting it" );
+		retract( $e );
+end
+
+
+function void println(Object msg) {
+	System.out.println(new Date()+" : "+msg);
+}
+
+
