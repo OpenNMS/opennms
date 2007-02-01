@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Feb 01: Indent, add methods to support searches with OnmsCriteria. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,63 +38,64 @@ package org.opennms.web.svclayer.outage;
 import java.util.Collection;
 import java.util.Date;
 
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 public interface OutageService {
 
-    Collection<OnmsOutage> getCurrentOutages();
+    public Collection<OnmsOutage> getCurrentOutages();
     
-    Collection<OnmsOutage> getCurrentOutagesByRange(Integer offset, Integer oimit, String orderProperty, String direction);
+    public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, OnmsCriteria criteria);
 
-    Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter);
+    public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter);
     
-    Collection<OnmsOutage> getSuppressedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction);    
+    public Collection<OnmsOutage> getSuppressedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction);    
     
-    Collection<OnmsOutage> getSuppressedOutages();
+    public Collection<OnmsOutage> getSuppressedOutages();
 
-    Integer getCurrentOutageCount() ;
-
-    Integer getSuppressedOutageCount() ;
-
-    Collection<OnmsOutage> getCurrentOutagesForNode(int nodeId)
-            ;
-
-    Collection<OnmsOutage> getNonCurrentOutagesForNode(int nodeId)
-            ;
-
-    Collection<OnmsOutage> getOutagesForNode(int nodeId) ;
-
-    Collection<OnmsOutage> getOutagesForNode(int nodeId, Date time)
-            ;
-
-    Collection<OnmsOutage> getOutagesForInterface(int nodeId, String ipInterface)
-            ;
-
-    Collection<OnmsOutage> getOutagesForInterface(int nodeId, String ipAddr, Date time) ;
-
-    Collection<OnmsOutage> getOutagesForService(int nodeId, String ipInterface, int serviceId) ;
+    public Integer getCurrentOutageCount();
     
-    Collection<OnmsOutage>  getOutagesForService(int nodeId, String ipAddr, int serviceId, Date time) ;
+    public Integer getOutageCount(OnmsCriteria criteria);
 
-	Collection<OnmsOutage> getCurrentOutages(String orderProperty);
+    public Integer getSuppressedOutageCount();
 
-	OnmsOutage load(Integer outageid);
-	
-	void update(OnmsOutage outage);
-	
-	Integer getOutageCount() ;
-	
-	Integer outageCountFiltered(String filter);
+    public Collection<OnmsOutage> getCurrentOutagesForNode(int nodeId);
 
-	Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter);
+    public Collection<OnmsOutage> getNonCurrentOutagesForNode(int nodeId);
 
-	Integer outageResolvedCountFiltered(String searchFilter);
+    public Collection<OnmsOutage> getOutagesForNode(int nodeId);
+
+    public Collection<OnmsOutage> getOutagesForNode(int nodeId, Date time);
+
+    public Collection<OnmsOutage> getOutagesForInterface(int nodeId, String ipInterface);
+
+    public Collection<OnmsOutage> getOutagesForInterface(int nodeId, String ipAddr, Date time);
+
+    public Collection<OnmsOutage> getOutagesForService(int nodeId, String ipInterface, int serviceId);
+    
+    public Collection<OnmsOutage>  getOutagesForService(int nodeId, String ipAddr, int serviceId, Date time);
+
+    public Collection<OnmsOutage> getCurrentOutages(String orderProperty);
+
+    public OnmsOutage load(Integer outageid);
+
+    public void update(OnmsOutage outage);
+
+    public Integer getOutageCount();
+
+    public Integer outageCountFiltered(String filter);
+
+    public Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter);
+
+    public Integer outageResolvedCountFiltered(String searchFilter);
 	
     // This we may have to define 
     /*
-    OutageSummary[] getCurrentOutageSummaries() ;
+    public OutageSummary[] getCurrentOutageSummaries() ;
 
-    OutageSummary[] getCurrentSDSOutageSummaries() ;
+    public OutageSummary[] getCurrentSDSOutageSummaries() ;
     */
     
 }

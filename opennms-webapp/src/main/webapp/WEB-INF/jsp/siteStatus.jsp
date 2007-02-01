@@ -4,11 +4,12 @@
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Site Status Page" />
-	<jsp:param name="headTitle" value="SiteStatus" />
+	<jsp:param name="headTitle" value="Site Status" />
 	<jsp:param name="breadcrumb" value="Site Status" />
+	<jsp:param name="breadcrumb" value="${view.columnValue}" />
 </jsp:include>
 
-<h3>Site: <c:out value="${view.columnValue}" /></h3>
+<h3>Site status for nodes in site '${view.columnValue}'</h3>
 
   <table>
     <thead>
@@ -19,19 +20,41 @@
     </thead>
     <c:forEach items="${stati}" var="status">
       <tr class="CellStatus" >
-        <td><c:out value="${status.label}" /></td>
-        <td class="<c:out value='${status.status}'/> divider" >
+        <td>${status.label}</td>
+        <td class="${status.status} divider" >
           <c:choose>
             <c:when test="${! empty status.link}">
-              <a href="<c:out value='${status.link}'/>"><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></a>
+              <c:url var="statusLink" value="${status.link}"/>
+              <a href="${statusLink}">${status.downEntityCount} of ${status.totalEntityCount}</a>
             </c:when>
             <c:otherwise>
-              <c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" />
+              ${status.downEntityCount} of ${status.totalEntityCount}
             </c:otherwise>
           </c:choose>
         </td>
       </tr>
     </c:forEach>
   </table>
+  
+<%--
+
+<c:import url="/displayCurrentOutages.htm">
+  <c:param name="building" value="${view.columnValue}"/>
+  <c:param name="quiet" value="true"/>
+  <c:param name="nonavbar" value="true"/>
+</c:import>
+
+--%>
+
+<h3>Site outages</h3>
+<div class="boxWrapper">
+  <c:url var="outagesLink" value="outage/list.htm">
+    <c:param name="currentOutages" value="true"/>
+    <c:param name="building" value="${view.columnValue}"/>
+  </c:url>
+  <p>
+    <a href="${outagesLink}">View</a> current site outages.
+  </p>
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

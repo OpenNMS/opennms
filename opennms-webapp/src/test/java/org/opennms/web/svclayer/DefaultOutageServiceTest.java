@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Feb 01: Make testCurrentByRange work again. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,18 +35,25 @@
 //
 package org.opennms.web.svclayer;
 
+import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.JdbcSet;
 import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.DefaultOutageService;
 
@@ -153,24 +164,24 @@ public class DefaultOutageServiceTest extends TestCase {
 
 	}
 
-	public void FIXMEtestCurrentByRange() {
+	public void testCurrentByRange() {
+		List<OnmsOutage> expectedOutages = new LinkedList<OnmsOutage>();
+		OnmsOutage expectedCurrent = new OnmsOutage();
+		expectedCurrent.setId(1);
+                expectedCurrent.setMonitoredService(new OnmsMonitoredService());
+                expectedCurrent.getMonitoredService().setIpInterface(new OnmsIpInterface());
+                expectedCurrent.getMonitoredService().getIpInterface().setNode(new OnmsNode());
 
-		fail("Needs to be upgraded to hibernate");
+		expectedOutages.add(expectedCurrent);
 
-//		Collection<OnmsOutage> expectedOutages = new JdbcSet();
-//		OnmsOutage expectedCurrent = new OnmsOutage();
-//		expectedCurrent.setId(1);
-//
-//		expectedOutages.add(expectedCurrent);
-//
-//		expect(outageDao.currentOutages(1, 1, "ifLostService", true))
-//				.andReturn(expectedOutages);
-//		replay(outageDao);
-//
-//		Set suppressed = (Set) outageService.getCurrentOutagesByRange(1, 1, "ifLostService", "asc");
-//		verify(outageDao);
-//		assertTrue("Current Outages", suppressed.equals(expectedOutages));
-
+                OnmsCriteria criteria = new OnmsCriteria(OnmsOutage.class);
+		expect(outageDao.findMatching(criteria)).andReturn(expectedOutages);
+                
+		replay(outageDao);
+		Collection<OnmsOutage> outages = outageService.getOutagesByRange(1, 1, "iflostservice", "asc", criteria);
+		verify(outageDao);
+                
+		assertTrue("Current Outages", outages.equals(expectedOutages));
 	}
 
 	public void FIXMEtestSuppressedByRange() {

@@ -48,7 +48,7 @@ public class RedCell implements ColumnInterceptor {
    public void modifyColumnAttributes(TableModel tableModel, Column column) {
       String value = column.getPropertyValueAsString();
         if (value.equals("")){
-            column.setStyle("background:red");
+            column.setStyle("background: red;");
         } else {
         	
         	column.setStyle("");

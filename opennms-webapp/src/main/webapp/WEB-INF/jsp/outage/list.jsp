@@ -2,16 +2,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib uri="/tld/extremecomponents" prefix="ec"%>
+<%@ taglib uri="http://www.extremecomponents.org" prefix="ec"%>
 
 
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Current Outages" />
+	<jsp:param name="title" value="Outages List" />
 	<jsp:param name="headTitle" value="Outages" />
 	<jsp:param name="breadcrumb"
 		value="<a href='outage/index.jsp'>Outages</a>" />
-	<jsp:param name="breadcrumb" value="Current By Node" />
+	<jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
 <script type="text/javascript"
@@ -22,14 +22,15 @@
 	href="<c:url value="/css/styles.css"/>">
 <link rel="stylesheet" type="text/css"
 	href="<c:url value="/css/extremecomponents.css"/>">
-<center>
+
 <form id="outageForm"
 	action="<c:url value="displayCurrentOutages.htm"/>" method="post">
 
+
 <ec:table items="tabledata" var="tabledata"
-	action="${pageContext.request.contextPath}/displayCurrentOutages.htm"
+	action="${relativeRequestPath}?${pageContext.request.queryString}"
 	filterable="false"
-	imagePath="${pageContext.request.contextPath}/images/table/compact/*.gif"
+	imagePath="images/table/compact/*.gif"
 	title="Current Outages" 
 	retrieveRowsCallback="limit"
 	filterRowsCallback="limit" 
@@ -49,28 +50,32 @@
 	<ec:row highlightRow="false">
 
 
-		<ec:column property="nodeid" alias="Node"
-			cell="org.opennms.web.svclayer.outage.GroupCell">
+		<ec:column property="node" alias="Node" cell="org.opennms.web.svclayer.outage.GroupCell">
 			<a href="element/node.jsp?node=${tabledata.nodeid}">${tabledata.node}</a>
 		</ec:column>
 
 		<ec:column property="ipaddr" alias="Interface">
-			<a
-				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}">${tabledata.ipaddr}</a>
+			<a href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}">${tabledata.ipaddr}</a>
 		</ec:column>
 
-		<ec:column property="serviceid" alias="Service">
-			<a
-				href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}&service=${tabledata.serviceid }">${tabledata.service}
-			</a>
+		<ec:column property="service" alias="Service">
+			<a href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}&service=${tabledata.serviceid }">${tabledata.service}</a>
 		</ec:column>
 
-		<ec:column property="iflostservice" alias="Down" cell="date"
-			format="MM-dd-yyyy hh:mm:ss" parse="yyyy-MM-dd" />
-		<ec:column property="outageid" alias="ID">
+		<ec:column property="iflostservice" alias="Down" title="Time Down" cell="date"
+			format="yyyy-MM-dd hh:mm:ss" parse="yyyy-MM-dd" />
+
+        <c:if test="${param.currentOutages != 'true'}">
+          <ec:column property="ifregainedservice" alias="Up" title="Time Up" cell="date"
+			         format="yyyy-MM-dd hh:mm:ss" parse="yyyy-MM-dd"
+			         interceptor="org.opennms.web.svclayer.outage.RedCell" />
+        </c:if>
+			
+		<ec:column property="outageid" alias="ID" title="Outage ID">
 			<a href="outage/detail.jsp?id=${tabledata.outageid}">${tabledata.outageid}</a>
 		</ec:column>
 
+<%--
 
 		<ec:column alias="checkbox" title=" " width="5px" filterable="false"
 			sortable="false"
@@ -93,11 +98,14 @@
 				<option value="-1">Forever</option>
 			</select>
 		</ec:column>
+		
+--%>
 
 	</ec:row>
 
 </ec:table>
 
+<%--
 
 <p><input type="submit" name="sel" class="button"
 	value="Suppress Outage"
@@ -118,8 +126,7 @@
                         }
      </script></form>
 
-</center>
-
+--%>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
