@@ -27,13 +27,13 @@ response.setDateHeader("Expires", startTime);
 </c:set>
 
   <div align="center">
-    <c:out value="${label}"/>...
+    ${label}...
     
     <div style="width: 400px; height: 30px; border-size: 1px; border-style: ridge;">
       <div style="width: 400px; height: 30px; position: relative; text-align: center; line-height: 30px; z-index: 2">
-        <c:out value="${percentage}"/>%
+        ${percentage}%
       </div>
-      <div style="position: relative; top: -30px; z-index: 1; float: left; width: <c:out value="${percentage}"/>%; height: 30px; background-color: green;">
+      <div style="position: relative; top: -30px; z-index: 1; float: left; width: ${percentage}%; height: 30px; background-color: green;">
       </div>
     </div>
   </div>
