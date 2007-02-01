@@ -8,8 +8,14 @@ public class Affliction {
     String m_ipAddr;
     String m_svcName;
     
+    public static enum Type {
+        UNDECIDED,
+        ISOLATED,
+        WIDE_SPREAD
+    }
+    
     List<Integer> m_reporters = new ArrayList<Integer>();
-    private boolean m_alerted;
+    private Type m_type  = Type.UNDECIDED;
     
     public Affliction(Long nodeId, String ipAddr, String svcName, Integer reporter) {
         m_nodeid = nodeId;
@@ -58,12 +64,16 @@ public class Affliction {
         m_reporters.add( reporter );
     }
     
-    public boolean isAlerted() {
-        return m_alerted;
+    public void removeReporter(Integer reporter) {
+        m_reporters.remove(reporter);
     }
     
-    public void setAlerted(boolean alerted) {
-        m_alerted = alerted;
+    public Type getType() {
+        return m_type;
+    }
+    
+    public void setType(Type type) {
+        m_type = type;
     }
     
 }

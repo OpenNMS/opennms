@@ -1,9 +1,11 @@
 package org.opennms.netmgt.correlation.drools;
 
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
@@ -33,7 +35,14 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
 
     public void afterPropertiesSet() throws Exception {
         PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( DroolsCorrelationEngine.class.getResourceAsStream( "Correlation.drl" ) ) );
+        
+        Reader rdr = null;
+        try {
+            rdr = new InputStreamReader( DroolsCorrelationEngine.class.getResourceAsStream( "Correlation.drl" ) );
+            builder.addPackageFromDrl( rdr );
+        } finally {
+            IOUtils.closeQuietly(rdr);
+        }
 
         RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         ruleBase.addPackage( builder.getPackage() );

@@ -8,6 +8,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.correlation.drools.Affliction.Type;
+
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 
@@ -27,7 +29,7 @@ rule "service lost detected by additional monitor"
 	salience 100
 	when
 		$e : Event( uei == EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
-		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters -> ( !$reporters.contains( locationMonitor( $e ) ) ) ) 
+		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters -> ( !$reporters.contains( locationMonitor( $e ) ) ) )
 	then
 		$aff.addReporter( locationMonitor( $e ) );
 		retract( $e );
@@ -38,38 +40,80 @@ end
 rule "wide spread affliction"
 	salience 100
 	when
-		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, alerted == false, reporterCount > 1 )
+		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, type == Type.UNDECIDED, reporterCount > 1 )
 	then
-		sendAlertableEvent( engine, $nodeid, $ipAddr, $svcName );
-		$aff.setAlerted( true );
+		sendWideSpreadOutageEvent( engine, $nodeid, $ipAddr, $svcName );
+		$aff.setType( Type.WIDE_SPREAD );
 		modify( $aff );
 end
 
 rule "isolated affliction"
 	duration 30000
 	when
-		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, alerted == false, reporterCount <= 1 )
+		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, type == Type.UNDECIDED, reporterCount <= 1 )
 	then
-		sendIsolatedEvent( engine, $nodeid, $ipAddr, $svcName );
-		$aff.setAlerted( true );
+		sendIsolatedOutageEvent( engine, $nodeid, $ipAddr, $svcName );
+		$aff.setType( Type.ISOLATED );
 		modify( $aff );
+end
+
+rule "affliction resolved for one monitor"
+	when
+		$e : Event( uei == EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
+		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters -> ( $reporters.contains( locationMonitor( $e ) ) ) ) 
+	then
+		$aff.removeReporter( locationMonitor( $e ) );
+		modify( $aff );
+		retract( $e );
+		println(" Monitor " + locationMonitor( $e ) + " has reported up for afflication " + $aff );
+end
+
+rule "resolve affliction when all reporters have resolved"
+	when
+		$aff: Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $type : type != Type.UNDECIDED, reporterCount == 0 ) 		
+	then
+		if ( $type == Type.ISOLATED ) {
+			sendIsolatedOutageResolvedEvent( engine , $nodeid, $ipAddr, $svcName );
+		} else {
+			sendWideSpreadOutageResolvedEvent( engine, $nodeid, $ipAddr, $svcName );
+		}
+		retract( $aff );
+		println("Afflication completely resolved " + $aff );
 end
 		
 
-function void sendAlertableEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
-	EventBuilder bldr = new EventBuilder("alertableOutage", "Drools")
+function void sendWideSpreadOutageEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
+	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/wideSpreadOutage", "Drools")
 		.setNodeid(nodeId.intValue())
 		.setInterface(ipAddr)
 		.setService(svcName);
 	engine.sendEvent(bldr.getEvent());
 }
 
-function void sendIsolatedEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
-	EventBuilder bldr = new EventBuilder("isolatedOutage", "Drools")
+function void sendIsolatedOutageEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
+	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/isolatedOutage", "Drools")
 		.setNodeid(nodeId.intValue())
 		.setInterface(ipAddr)
 		.setService(svcName);
 	engine.sendEvent(bldr.getEvent());
+}
+
+function void sendWideSpreadOutageResolvedEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
+	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/wideSpreadOutageResolved", "Drools")
+		.setNodeid(nodeId.intValue())
+		.setInterface(ipAddr)
+		.setService(svcName);
+	engine.sendEvent(bldr.getEvent());
+
+}
+
+function void sendIsolatedOutageResolvedEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
+	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/isolatedOutageResolved", "Drools")
+		.setNodeid(nodeId.intValue())
+		.setInterface(ipAddr)
+		.setService(svcName);
+	engine.sendEvent(bldr.getEvent());
+
 }
 
 function Integer locationMonitor( Event e ) {
