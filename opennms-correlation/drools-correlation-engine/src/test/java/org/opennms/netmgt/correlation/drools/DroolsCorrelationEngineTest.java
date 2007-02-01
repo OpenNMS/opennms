@@ -45,8 +45,6 @@ public class DroolsCorrelationEngineTest extends TestCase {
 		verify();
 	}
 
-
-
 	public void testMultipleLocationMonitorOutage() {
 
 		anticipateAlertableOutageEvent();
@@ -58,10 +56,15 @@ public class DroolsCorrelationEngineTest extends TestCase {
         m_anticipatedMemorySize = 1;
     }
 	
-    public void testSingleLocationMonitorOutage() {
+    public void testSingleLocationMonitorOutage() throws Exception {
+        
+        anticipateIsolatedOutageEvent();
     	// recieve outage event for only a single monitor
+        m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        Thread.sleep(31000);
     	
-    	// send a non alertable event
+        m_anticipatedMemorySize = 1;
     }
     
     public void testFlappingMonitor() {
@@ -78,6 +81,15 @@ public class DroolsCorrelationEngineTest extends TestCase {
 		
 		m_anticipator.anticipateEvent(bldr.getEvent());
 	}
+
+    private void anticipateIsolatedOutageEvent() {
+        EventBuilder bldr = new EventBuilder("isolatedOutage", "Drools");
+        bldr.setNodeid(1)
+            .setInterface("192.168.1.1")
+            .setService("HTTP");
+        
+        m_anticipator.anticipateEvent(bldr.getEvent());
+    }
 
 
 
