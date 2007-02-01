@@ -1709,6 +1709,27 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    public static Vlan[] getVlansOnNode(int nodeID) throws SQLException {
+    	Vlan[] vlans = null;
+        Connection conn = Vault.getDbConnection();
+        try {
+
+            String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
+
+            PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+            stmt.setInt(1, nodeID);
+            ResultSet rs = stmt.executeQuery();
+            vlans = rs2Vlan(rs);
+
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return vlans;
+    }
+    
     public static StpInterface[] getStpInterface(int nodeID)
             throws SQLException {
 
@@ -2098,6 +2119,58 @@ public class NetworkElementFactory extends Object {
 
         return (StpNode[]) stpNodes.toArray(new StpNode[stpNodes.size()]);
     }
+
+    /**
+     * This method returns the data from the result set as an array of StpNode
+     * objects.
+     */
+    protected static Vlan[] rs2Vlan(ResultSet rs) throws SQLException {
+        if (rs == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        List<Vlan> vlan = new ArrayList<Vlan>();
+
+        while (rs.next()) {
+            Vlan vlanEntry = new Vlan();
+
+            Object element = new Integer(rs.getInt("nodeId"));
+            vlanEntry.m_nodeId = ((Integer) element).intValue();
+
+            element = rs.getInt("vlanId");
+            if (element != null) {
+                vlanEntry.m_vlanId = ((Integer) element).intValue();
+            }
+
+            element = rs.getString("vlanname");
+            vlanEntry.m_vlanname = (String) element;
+
+            element = rs.getTimestamp("lastpolltime");
+            if (element != null)
+                vlanEntry.m_lastPollTime = EventConstants.formatToString(new Date(
+                        ((Timestamp) element).getTime()));
+
+            element = new Integer(rs.getInt("vlantype"));
+            if (element != null) {
+                vlanEntry.m_vlantype = ((Integer) element).intValue();
+            }
+
+            element = new Integer(rs.getInt("vlanstatus"));
+            if (element != null) {
+            	vlanEntry.m_vlanstatus= ((Integer) element).intValue();
+            }
+
+            element = rs.getString("status");
+            if (element != null) {
+                vlanEntry.m_status = ((String) element).charAt(0);
+            }
+
+            vlan.add(vlanEntry);
+        }
+
+        return (Vlan[]) vlan.toArray(new Vlan[vlan.size()]);
+    }
+
 
     /**
      * This method returns the data from the result set as an array of
