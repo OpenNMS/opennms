@@ -197,6 +197,9 @@
     boolean isBridge = NetworkElementFactory.isBridgeNode(nodeId);
     boolean isRouteIP = NetworkElementFactory.isRouteInfoNode(nodeId);
 
+    // Get vlans on node
+    Vlan[] vlans = NetworkElementFactory.getVlansOnNode(nodeId);
+    
     //Get Asset Info for this node
     Asset asset = this.model.getAsset( nodeId );
 %>
@@ -309,7 +312,7 @@
 		         </ul>	     
 
 		</div>
-
+ 
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
 
@@ -376,6 +379,37 @@
               <% } %>
 			  </ul>
 			</div>
+
+           <!-- Vlan box if available -->
+            <% if ( vlans != null && vlans.length > 0) { %>
+                          <h3>Vlan Information</h3>
+                          <table>
+                                <thead>
+                                <tr>
+                                  <th>Vlan ID</th>
+                                  <th>Vlan name</th>
+                                  <th>Vlan Type</th>
+                                  <th>Vlan Status</th>
+                                  <th>Status - Last Poll Time</th>
+                                </tr>
+                                </thead>
+                          <% for ( int i=0; i< vlans.length ;i++ ) {
+                                Vlan vlan = vlans[i];
+                          %>
+                                <tr>
+                                  <td ><%=vlan.getVlanId()%></td>
+                                  <td><%=vlan.getVlanName()%></td>
+                                  <td><%=vlan.getVlanTypeString()%></td>
+                                  <td><%=vlan.getVlanStatusString()%></td>
+                                  <td><%=vlan.getStatusString()%> -
+                                  <%=vlan.get_lastPollTime()%></td></tr>
+
+                                </tr>
+
+                    <% } %>
+                          </table>
+
+            <% } %>
 
       <!-- Category box -->
 	  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
