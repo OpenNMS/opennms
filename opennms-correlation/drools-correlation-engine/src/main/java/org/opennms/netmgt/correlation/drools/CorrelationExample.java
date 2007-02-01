@@ -58,17 +58,19 @@ public class CorrelationExample {
     	
     	public static class SimItem {
     		int m_delay;
-    		Event m_event;
+    		EventBean m_event;
     		
-    		public SimItem(int delay, Event event) {
+    		public SimItem(int delay, EventBean event) {
     			m_delay = delay;
     			m_event = event;
     		}
 
 			public void simulate(WorkingMemory memory) {
 				sleep(m_delay);
+    			System.out.println("Start simulation of "+this);
 				memory.assertObject(m_event);
 				memory.fireAllRules();
+    			System.out.println("End simulation of "+this);
 			}
     		
     	}
@@ -118,7 +120,7 @@ public class CorrelationExample {
             		
             		assert m_nodes.containsKey(nodeId) : "Invalid nodeId "+nodeId;
             		
-            		Event e = new Event(uei, m_nodes.get(nodeId));
+            		EventBean e = new EventBean(uei, m_nodes.get(nodeId));
             		
             		SimItem item = new SimItem(delay, e);
             		
@@ -138,72 +140,13 @@ public class CorrelationExample {
     	}
     }
 
-	public static class Node {
-    	private Integer m_id;
-		private Node m_parent;
-		private String m_label;
-
-		public Node(Integer id, String label, Node parent) {
-			m_id = id;
-			m_label = label;
-			m_parent = parent;
-		}
-		
-		public Integer getId() {
-			return m_id;
-		}
-		
-		public Node getParent() {
-			return m_parent;
-		}
-		
-		public String getLabel() {
-			return m_label;
-		}
-		
-		public String toString( ) {
-			return 
-				"Node["
-				+ " id="+m_id
-				+ " , label="+m_label
-				+ " ]"
-				;
-		}
-    }
-    
-    public static class Event {
-    	private String m_uei;
-		private Node m_node;
-
-		public Event(String uei, Node node) {
-    		m_uei = uei;
-    		m_node = node;
-    	}
-		
-		public String getUei() {
-			return m_uei;
-		}
-		
-		public Node getNode() {
-			return m_node;
-		}
-		
-		public String toString() {
-			return
-				"Event["
-				+ " uei="+m_uei
-				+ " , node="+m_node
-				+ " ]";
-		}
-    }
-    
-    public static class Outage {
-    	private Event m_problem;
-    	private Event m_resolution;
+	public static class Outage {
+    	private EventBean m_problem;
+    	private EventBean m_resolution;
 		private Node m_cause;
 		private Node m_node;
     	
-		public Outage(Node node, Event problem) {
+		public Outage(Node node, EventBean problem) {
 			m_node = node;
     		m_problem = problem;
     	}
@@ -212,15 +155,15 @@ public class CorrelationExample {
 			return m_node;
 		}
 		
-		public Event getProblem() {
+		public EventBean getProblem() {
 			return m_problem;
 		}
 		
-		public Event getResolution() {
+		public EventBean getResolution() {
 			return m_resolution;
 		}
 		
-		public void setResolution(Event resolution) {
+		public void setResolution(EventBean resolution) {
 			m_resolution = resolution;
 		}
 		
@@ -237,6 +180,66 @@ public class CorrelationExample {
 		}
 		
     }
+
+    public static class Node {
+        private Integer m_id;
+        private Node m_parent;
+        private String m_label;
+
+        public Node(Integer id, String label, Node parent) {
+            m_id = id;
+            m_label = label;
+            m_parent = parent;
+        }
+        
+        public Integer getId() {
+            return m_id;
+        }
+        
+        public Node getParent() {
+            return m_parent;
+        }
+        
+        public String getLabel() {
+            return m_label;
+        }
+        
+        public String toString( ) {
+            return 
+                "Node["
+                + " id="+m_id
+                + " , label="+m_label
+                + " ]"
+                ;
+        }
+    }
+	public static class EventBean {
+	    private String m_uei;
+	    private Node m_node;
+
+	    public EventBean(String uei, Node node) {
+	        m_uei = uei;
+	        m_node = node;
+	    }
+
+	    public String getUei() {
+	        return m_uei;
+	    }
+
+	    public Node getNode() {
+	        return m_node;
+	    }
+
+	    public String toString() {
+	        return
+	        "Event["
+	               + " uei="+m_uei
+	               + " , node="+m_node
+	               + " ]";
+	    }
+	}
+
+
     
     public static class PossibleCause {
     	private Node m_node;

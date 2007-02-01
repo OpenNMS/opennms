@@ -20,6 +20,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
     public void correlate(Event e) {
         m_workingMemory.assertObject(e);
         m_workingMemory.fireAllRules();
+        System.err.println("Finished fireRules for event "+e.getUei());
     }
 
     public List<String> getInterestingEvents() {
@@ -38,7 +39,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
         ruleBase.addPackage( builder.getPackage() );
 
         m_workingMemory = ruleBase.newWorkingMemory();
-        
+        m_workingMemory.setGlobal("engine", this);
+    }
+    
+    public int getMemorySize() {
+    	return m_workingMemory.getObjects().size();
     }
 
 }

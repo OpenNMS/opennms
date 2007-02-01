@@ -1,21 +1,64 @@
-package org.opennms.netmgt.correlation.drools
+
+package org.opennms.netmgt.correlation.drools;
 
 import java.util.Date;
 
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 
-rule "retractEvent so we don't comsume memory"
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+
+rule "first service lost event received"
 	salience 100
 	when
-		$e : Event( $nodeid : nodeid )
+		$e : Event( uei == EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
+		not( Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName ) )
 	then
-		println( "Found event " + $e + " for nodeid " + $nodeid + ". Retracting it" );
+		Affliction $aff = new Affliction( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) );
+		println( "Affliction detected for nodeId = " + $nodeid + ": " + $aff );
 		retract( $e );
+		assert( $aff );
 end
 
+rule "service lost detected by additional monitor"
+	salience 100
+	when
+		$e : Event( uei == EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
+		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters -> ( !$reporters.contains( locationMonitor( $e ) ) ) ) 
+	then
+		$aff.addReporter( locationMonitor( $e ) );
+		retract( $e );
+		modify( $aff );
+		println(" Added reporter " + locationMonitor( $e ) + " to affliction " + $aff);
+end
+
+rule "wide spread affliction"
+	salience 100
+	when
+		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, alerted == false, reporterCount > 1 )
+	then
+		sendAlertableEvent( engine, $nodeid, $ipAddr, $svcName );
+		$aff.setAlerted( true );
+		modify( $aff );
+end
+
+
+function void sendAlertableEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
+	EventBuilder bldr = new EventBuilder("alertableOutage", "Drools")
+		.setNodeid(nodeId.intValue())
+		.setInterface(ipAddr)
+		.setService(svcName);
+	engine.sendEvent(bldr.getEvent());
+}
+
+function Integer locationMonitor( Event e ) {
+	return new Integer( EventUtils.getIntParm( e, EventConstants.PARM_LOCATION_MONITOR_ID, -1 ) );
+}
 
 function void println(Object msg) {
 	System.out.println(new Date()+" : "+msg);
 }
-
 
