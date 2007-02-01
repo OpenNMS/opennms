@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2007 Feb 01: Don't display the "Site Status" link if the building
+//              column in assets is a zero-length string. - dj@opennms.org
 // 2006 Oct 30: Convert to use Java 5 generics and clean up warnings.
 //              - dj@opennms.org
 // 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
@@ -228,7 +230,7 @@
          <a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
         </li -->
 
-        <% if (asset != null && asset.getBuilding() != null) { %>
+        <% if (asset != null && asset.getBuilding() != null && asset.getBuilding().length() > 0) { %>
           <li>
             <a href="siteStatusView.htm?statusSite=<%=asset.getBuilding()%>">Site Status</a>
           </li>
