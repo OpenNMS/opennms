@@ -81,40 +81,30 @@
 	          value="org.opennms.web.controller.DaemonStatusBinder" />
 	<property name="successView" value="daemonstatus" />
   </bean>
-
-  <bean name="/displayCurrentOutages.htm"
-		class="org.opennms.web.controller.OutageCurrentController">
+  
+  <bean name="/outage/list.htm"
+		class="org.opennms.web.controller.OutageListController">
 	<property name="outageService" ref="outageService" />
-	<property name="displayCurrentOutages">
-	  <value>displayCurrentOutages</value>
-    </property>
-    <property name="defaultRowsDisplayed">
-      <value>75</value>
-    </property>
+	<property name="successView" value="outage/list"/>
+    <property name="defaultRowsDisplayed" value="25"/>
   </bean>
 	
-  <bean name="/displayAllOutages.htm"
+  <bean name="/outage/displayAllOutages.htm"
 		class="org.opennms.web.controller.OutageAllController">
 	<property name="outageService" ref="outageService" />
-	<property name="displayAllOutages">
-	  <value>displayAllOutages</value>
-    </property>
+	<property name="successView" value="outage/displayAllOutages"/>
   </bean>
  
-  <bean name="/displaySuppressedOutages.htm"
+  <bean name="/outage/displaySuppressedOutages.htm"
 		class="org.opennms.web.controller.OutageSuppressedController">
 	<property name="outageService" ref="outageService" />
-	<property name="displaySuppressedOutages">
-	  <value>displaySuppressedOutages</value>
-    </property>
+	<property name="successView" value="outage/displaySuppressedOutages"/>
   </bean>
 	
-  <bean name="/displayResolvedOutages.htm"
+  <bean name="/outage/displayResolvedOutages.htm"
 	    class="org.opennms.web.controller.OutageResolvedController">
 	<property name="outageService" ref="outageService" />
-	<property name="displayResolvedOutages">
-	  <value>displayResolvedOutages</value>
-    </property>
+	<property name="successView" value="outage/displayResolvedOutages"/>
   </bean>
 
   <bean name="/distributedStatusSummary.htm"
@@ -275,15 +265,6 @@
   </bean>
   
  
-  	<!--
-		<property name="formView" value="displayCurrentOutages" />
-		<property name="successView" value="displayCurrentOutages" />
-		<property name="commandName"><value>outageService</value></property>
-		<property name="commandClass"><value>org.opennms.web.controller.OutageCurrentController</value></property>
-	-->
-
-
-
 	<!-- Examples
 		<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
 		  <property name="entityService" ref="entityService" />

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Feb 01: Add new property that is needed and make testGetRangeOutages work. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,6 +40,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
@@ -54,6 +59,8 @@ public class DefaultOutageServiceIntegrationTest extends
 		if (!rrdDir.exists()) {
 			rrdDir.mkdirs();
 		}
+                System.setProperty("distributed.layoutApplicationsVertically", "false");
+                // FIXME: We should never modify anything under src... this should be under target
 		System.setProperty("opennms.logs.dir", "src/test/opennms-home/logs");
 		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
 	}
@@ -74,8 +81,8 @@ public class DefaultOutageServiceIntegrationTest extends
 		};
 	}
 
-	public void FIXMEtestGetRangeOutages() {
-		Collection<OnmsOutage> outages = outageService.getCurrentOutagesByRange(1,RANGE_LIMIT,"iflostservice","asc");
+	public void testGetRangeOutages() {
+		Collection<OnmsOutage> outages = outageService.getOutagesByRange(1,RANGE_LIMIT,"iflostservice","asc", new OnmsCriteria(OnmsOutage.class));
 		assertFalse("Collection should not be emtpy", outages.isEmpty());
 		assertEquals("Collection should be of size " + RANGE_LIMIT, RANGE_LIMIT, outages.size());
 	}
