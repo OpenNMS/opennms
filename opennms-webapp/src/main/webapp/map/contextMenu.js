@@ -3,8 +3,6 @@
 function setContextMenuForElement(evt, elem){
 	var elemType = elem.getType();
 	if(elemType==NODE_TYPE){
-		
-		var pingLink = "response/ping.jsp?node="+elem.getNodeId();
 		var id =elem.getNodeId(); 
 		var label = elem.getLabel();
 		var str = "<menu id='ContextMenu' xmlns='http://foo' >"+
@@ -18,7 +16,7 @@ function setContextMenuForElement(evt, elem){
 					var params = CM_PARAMS[index];				
 					link = link.replace("ELEMENT_ID",""+id);
 					link = link.replace("ELEMENT_LABEL",label);
-					str+=" <item onactivate='openLink(\""+link+"\",\""+params+"\");' action='"+CM_COMMANDS[index]+"'>"+CM_COMMANDS[index]+"</item>";
+					str+=" <item onactivate='openLink(\""+escape(link)+"\",\""+params+"\");' action='"+CM_COMMANDS[index]+"'>"+unescape(CM_COMMANDS[index])+"</item>";
 				}
 			}
 		}
@@ -33,7 +31,7 @@ function setContextMenuForElement(evt, elem){
 
 
 function openLink( link, params){
-	open(baseContext+link, '', params);	
+	open(baseContext+unescape(link), '', params);	
 }
 
 //funtion for disabling context menu.
