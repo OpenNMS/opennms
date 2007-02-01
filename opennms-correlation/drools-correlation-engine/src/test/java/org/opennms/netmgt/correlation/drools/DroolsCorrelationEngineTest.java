@@ -11,6 +11,11 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class DroolsCorrelationEngineTest extends TestCase {
     
+    private static final String WS_OUTAGE_UEI = "uei.opennms.org/correlation/locationMonitors/wideSpreadOutage";
+    private static final String WS_RESOLVED_UEI = "uei.opennms.org/correlation/locationMonitors/wideSpreadOutageResolved";
+    private static final String ISO_OUTAGE_UEI = "uei.opennms.org/correlation/locationMonitors/isolatedOutage";
+    private static final String ISO_RESOLVED_UEI = "uei.opennms.org/correlation/locationMonitors/isolatedOutageResolved";
+    
     private MockEventIpcManager m_eventIpcMgr;
 	private EventAnticipator m_anticipator;
 	private DroolsCorrelationEngine m_engine;      
@@ -45,26 +50,71 @@ public class DroolsCorrelationEngineTest extends TestCase {
 		verify();
 	}
 
-	public void testMultipleLocationMonitorOutage() {
+	public void testMultipleLocationMonitorOutage() throws Exception {
 
-		anticipateAlertableOutageEvent();
+		anticipateWideSpreadOutageEvent();
 		
-    	// received outage events for all monitors
+        // received outage events for all monitors
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        Thread.sleep(5000);
+        
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 8));
         
+        // expect memory to contain only the single 'affliction' for this service
         m_anticipatedMemorySize = 1;
+        
+        verify();
+        
+        anticipateWideSpreadOutageResolvedEvent();
+        
+        // received outage events for all monitors
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        Thread.sleep(5000);
+        
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 8));
+        
+        m_anticipatedMemorySize = 0;
+        
+        verify();
+        
+        
     }
+    
+    
 	
     public void testSingleLocationMonitorOutage() throws Exception {
         
         anticipateIsolatedOutageEvent();
+        
     	// recieve outage event for only a single monitor
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
         Thread.sleep(31000);
     	
+        // expect memory to contain only the single 'afflication' for htis service
         m_anticipatedMemorySize = 1;
+        
+        verify();
+        
+        anticipateIsolatedOutageResolvedEvent();
+        
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        m_anticipatedMemorySize = 0;
+        
+        verify();
+    }
+    
+    public void testOutageEscalation() {
+        // we detect an isolated outage from a single monitor
+        // anticipateIsolated(mon 7)
+        
+        // sometime later the outage is detected from additional monitors (becomes wide spread)
+        // anticipateWideSpread
+        
+        // 
     }
     
     public void testFlappingMonitor() {
@@ -73,8 +123,8 @@ public class DroolsCorrelationEngineTest extends TestCase {
     	// send a flapping event
     }
 
-	private void anticipateAlertableOutageEvent() {
-		EventBuilder bldr = new EventBuilder("alertableOutage", "Drools");
+	private void anticipateWideSpreadOutageEvent() {
+		EventBuilder bldr = new EventBuilder(WS_OUTAGE_UEI, "Drools");
 		bldr.setNodeid(1)
 			.setInterface("192.168.1.1")
 			.setService("HTTP");
@@ -82,8 +132,26 @@ public class DroolsCorrelationEngineTest extends TestCase {
 		m_anticipator.anticipateEvent(bldr.getEvent());
 	}
 
+    private void anticipateWideSpreadOutageResolvedEvent() {
+        EventBuilder bldr = new EventBuilder(WS_RESOLVED_UEI, "Drools");
+        bldr.setNodeid(1)
+            .setInterface("192.168.1.1")
+            .setService("HTTP");
+        
+        m_anticipator.anticipateEvent(bldr.getEvent());
+    }
+
+    private void anticipateIsolatedOutageResolvedEvent() {
+        EventBuilder bldr = new EventBuilder(ISO_RESOLVED_UEI, "Drools");
+        bldr.setNodeid(1)
+            .setInterface("192.168.1.1")
+            .setService("HTTP");
+        
+        m_anticipator.anticipateEvent(bldr.getEvent());
+    }
+
     private void anticipateIsolatedOutageEvent() {
-        EventBuilder bldr = new EventBuilder("isolatedOutage", "Drools");
+        EventBuilder bldr = new EventBuilder(ISO_OUTAGE_UEI, "Drools");
         bldr.setNodeid(1)
             .setInterface("192.168.1.1")
             .setService("HTTP");
