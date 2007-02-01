@@ -2,7 +2,7 @@ package org.opennms.netmgt.correlation.drools
 
 import java.util.Date;
 
-import org.opennms.netmgt.correlation.drools.CorrelationExample.Event;
+import org.opennms.netmgt.correlation.drools.CorrelationExample.EventBean;
 import org.opennms.netmgt.correlation.drools.CorrelationExample.Outage;
 import org.opennms.netmgt.correlation.drools.CorrelationExample.Node;
 import org.opennms.netmgt.correlation.drools.CorrelationExample.PossibleCause;
@@ -10,7 +10,7 @@ import org.opennms.netmgt.correlation.drools.CorrelationExample.PossibleCause;
 rule "openIssue"
 	salience 100
 	when
-		$e : Event( uei matches "nodeDown", $node : node )
+		$e : EventBean( uei matches "nodeDown", $node : node )
 	then
 		println( "Found nodeDown event " + $e + " for node " + $node );
 		Outage $outage = new Outage( $node, $e );
@@ -20,13 +20,14 @@ rule "openIssue"
 		assert( $cause );
 		
 		retract( $e );
-		println( "Possible cause: " + $cause ); 
+		println( "Initial Possible cause: " + $cause ); 
 end
 
 rule "parentDependency"
 	salience 100
 	when
 		PossibleCause( $node : node -> ( $node.getParent() != null ) , $outage : outage )
+		not ( PossibleCause( $node2 : node -> ( $node2 == $node.getParent() ), outage == $outage ) )
 	then
 	    PossibleCause $cause = new PossibleCause( $node.getParent(), $outage );
 		assert( $cause );

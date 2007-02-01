@@ -43,6 +43,14 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalBuildcommands>
+            <buildcommand>org.drools.ide.droolsbuilder</buildcommand>
+          </additionalBuildcommands> 
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <forkMode>pertest</forkMode>
