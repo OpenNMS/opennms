@@ -45,9 +45,27 @@ rule "wide spread affliction"
 		modify( $aff );
 end
 
+rule "isolated affliction"
+	duration 30000
+	when
+		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, alerted == false, reporterCount <= 1 )
+	then
+		sendIsolatedEvent( engine, $nodeid, $ipAddr, $svcName );
+		$aff.setAlerted( true );
+		modify( $aff );
+end
+		
 
 function void sendAlertableEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
 	EventBuilder bldr = new EventBuilder("alertableOutage", "Drools")
+		.setNodeid(nodeId.intValue())
+		.setInterface(ipAddr)
+		.setService(svcName);
+	engine.sendEvent(bldr.getEvent());
+}
+
+function void sendIsolatedEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
+	EventBuilder bldr = new EventBuilder("isolatedOutage", "Drools")
 		.setNodeid(nodeId.intValue())
 		.setInterface(ipAddr)
 		.setService(svcName);
