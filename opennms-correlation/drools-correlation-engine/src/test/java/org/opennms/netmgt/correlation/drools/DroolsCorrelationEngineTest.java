@@ -14,9 +14,9 @@ import org.springframework.scheduling.timer.TimerFactoryBean;
 
 public class DroolsCorrelationEngineTest extends TestCase {
     
-    private static final String WS_OUTAGE_UEI = "uei.opennms.org/correlation/locationMonitors/wideSpreadOutage";
-    private static final String WS_RESOLVED_UEI = "uei.opennms.org/correlation/locationMonitors/wideSpreadOutageResolved";
-    private static final String SERVICE_FLAPPING_UEI = "uei.opennms.org/correlation/locationMonitors/serviceFlapping";
+    private static final String WS_OUTAGE_UEI = "uei.opennms.org/correlation/remote/wideSpreadOutage";
+    private static final String WS_RESOLVED_UEI = "uei.opennms.org/correlation/remote/wideSpreadOutageResolved";
+    private static final String SERVICE_FLAPPING_UEI = "uei.opennms.org/correlation/serviceFlapping";
     
     private MockEventIpcManager m_eventIpcMgr;
 	private EventAnticipator m_anticipator;
