@@ -89,7 +89,7 @@ rule "count"
 end
 
 rule "retract expired flaps"
-	
+	duration 1000
 	when
 		$flap : Flap( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor )
 		$flapCount : FlapCount( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, locationMonitor == $locMon )
