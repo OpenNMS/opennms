@@ -112,6 +112,7 @@ rule "flap count exceeded"
 		sendServiceFlappingEvent( engine, $nodeid, $ipAddr, $svcName, $locMon );
 		$flapCount.setAlerted( true );
 		modify( $flapCount );
+		println("Service flapping!");
 end
 
 

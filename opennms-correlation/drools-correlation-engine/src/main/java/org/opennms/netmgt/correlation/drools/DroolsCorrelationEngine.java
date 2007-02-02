@@ -1,28 +1,32 @@
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
+import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
 
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine implements InitializingBean {
 
     private WorkingMemory m_workingMemory;
-    private Integer m_wideSpreadThreshold = 3;
-    private Long m_flapInterval = 600000L;
-    private Integer m_flapCount = 3;
-
+    private List<String> m_interestingEvents;
+    private List<Resource> m_rules;
+    private Map<String, Object> m_globals = new HashMap<String, Object>();
+    
+    @Override
     public void correlate(Event e) {
         m_workingMemory.assertObject(e);
         m_workingMemory.fireAllRules();
@@ -35,12 +39,21 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
         m_workingMemory.fireAllRules();
     }
 
+    @Override
     public List<String> getInterestingEvents() {
-        String[] ueis = {
-                EventConstants.REMOTE_NODE_LOST_SERVICE_UEI,
-                EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
-        };
-        return Arrays.asList(ueis);
+        return m_interestingEvents;
+    }
+    
+    public void setInterestingEvents(List<String> ueis) {
+        m_interestingEvents = ueis;
+    }
+    
+    public void setRulesResources(List<Resource> rules) {
+        m_rules = rules;
+    }
+    
+    public void setGlobals(Map<String, Object> globals) {
+        m_globals = globals;
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -48,22 +61,31 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
         conf.setJavaLanguageLevel( "1.5" );
         PackageBuilder builder = new PackageBuilder( conf );
         
-        Reader rdr = null;
-        try {
-            rdr = new InputStreamReader( DroolsCorrelationEngine.class.getResourceAsStream( "Correlation.drl" ) );
-            builder.addPackageFromDrl( rdr );
-        } finally {
-            IOUtils.closeQuietly(rdr);
-        }
+        loadRules(builder);
 
         RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         ruleBase.addPackage( builder.getPackage() );
 
         m_workingMemory = ruleBase.newWorkingMemory();
         m_workingMemory.setGlobal("engine", this);
-        m_workingMemory.setGlobal("WIDE_SPREAD_THRESHOLD", m_wideSpreadThreshold);
-        m_workingMemory.setGlobal("FLAP_INTERVAL", m_flapInterval);
-        m_workingMemory.setGlobal("FLAP_COUNT", m_flapCount);
+        
+        for (Map.Entry<String, Object> entry : m_globals.entrySet()) {
+            m_workingMemory.setGlobal(entry.getKey(), entry.getValue());
+        }
+
+    }
+
+    private void loadRules(PackageBuilder builder) throws DroolsParserException, IOException {
+        
+        for (Resource rulesFile : m_rules) {
+            Reader rdr = null;
+            try {
+                rdr = new InputStreamReader( rulesFile.getInputStream() );
+                builder.addPackageFromDrl( rdr );
+            } finally {
+                IOUtils.closeQuietly(rdr);
+            }
+        }
     }
     
     public int getMemorySize() {
@@ -74,29 +96,4 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
         return m_workingMemory.getObjects();
     }
     
-    public Integer getFlapCount() {
-        return m_flapCount;
-    }
-
-    public void setFlapCount(Integer flapCount) {
-        m_flapCount = flapCount;
-    }
-
-    public Long getFlapInterval() {
-        return m_flapInterval;
-    }
-
-    public void setFlapInterval(Long flapInterval) {
-        m_flapInterval = flapInterval;
-    }
-
-    public Integer getWideSpreadThreshold() {
-        return m_wideSpreadThreshold;
-    }
-
-    public void setWideSpreadThreshold(Integer wideSpreadThreshold) {
-        m_wideSpreadThreshold = wideSpreadThreshold;
-    }
-
-
 }
