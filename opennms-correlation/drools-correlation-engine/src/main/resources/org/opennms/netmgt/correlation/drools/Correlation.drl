@@ -24,7 +24,7 @@ rule "first service lost event received"
 		not( Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName ) )
 	then
 		Affliction $aff = new Affliction( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) );
-		println( "Affliction detected for nodeId = " + $nodeid + ": " + $aff );
+		println( "Affliction detected by monitor " + locationMonitor( $e ) + " for nodeId = " + $nodeid + ": " + $aff );
 		retract( $e );
 		assert( $aff );
 		assert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
