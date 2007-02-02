@@ -1,5 +1,9 @@
 package org.opennms.netmgt.correlation.drools;
 
+import java.util.Date;
+
+import org.springframework.core.style.ToStringCreator;
+
 
 public class FlapCount {
     Long m_nodeid;
@@ -17,14 +21,18 @@ public class FlapCount {
         m_locationMonitor = locationMonitor;
         m_count = 1;
         m_alerted = false;
+        
+        System.err.println(new Date()+" FlapCount.created : "+this);
     }
     
     public void increment() {
         m_count += 1;
+        System.err.println(new Date()+" FlapCount.increment : "+this);
     }
     
     public void decrement() {
         m_count -= 1;
+        System.err.println(new Date()+" FlapCount.decrement : "+this);
     }
 
     public Integer getCount() {
@@ -73,6 +81,16 @@ public class FlapCount {
 
     public void setLocationMonitor(Integer locationMonitor) {
         m_locationMonitor = locationMonitor;
+    }
+    
+    public String toString() {
+        ToStringCreator creator = new ToStringCreator(this);
+        creator.append("nodeid", m_nodeid);
+        creator.append("ipAddr", m_ipAddr);
+        creator.append("svcName", m_svcName);
+        creator.append("locMon", m_locationMonitor);
+        creator.append("count", m_count);
+        return creator.toString();
     }
 
 }
