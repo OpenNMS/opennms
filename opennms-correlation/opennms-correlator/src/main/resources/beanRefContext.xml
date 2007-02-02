@@ -7,6 +7,7 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-correlator.xml</value>
+         <value>classpath*:META-INF/opennms/correlation-engine.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daoContext" />
