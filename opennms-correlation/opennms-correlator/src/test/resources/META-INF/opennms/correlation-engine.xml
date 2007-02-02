@@ -10,5 +10,9 @@
 			<bean class="org.springframework.scheduling.timer.TimerFactoryBean" />
 		</property>
 	</bean>
+	
+	<bean name="listedEngines" class="org.opennms.netmgt.correlation.TestListFactoryBean">
+		<property name="eventIpcManager" ref="eventIpcManager" />
+	</bean>
 
 </beans>
