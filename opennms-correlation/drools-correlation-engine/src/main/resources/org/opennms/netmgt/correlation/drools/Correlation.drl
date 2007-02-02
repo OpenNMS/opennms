@@ -9,13 +9,13 @@ import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.correlation.drools.Affliction.Type;
+import org.drools.spi.KnowledgeHelper;
 
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
-global java.lang.Integer wideSpreadThreshold;
-global java.lang.Long wideSpreadWaitTime;
-global java.lang.Long flapInterval;
-global java.lang.Integer flapCount;
+global java.lang.Integer WIDE_SPREAD_THRESHOLD;
+global java.lang.Long FLAP_INTERVAL;
+global java.lang.Integer FLAP_COUNT;
 
 rule "first service lost event received"
 	salience 100
@@ -27,7 +27,7 @@ rule "first service lost event received"
 		println( "Affliction detected for nodeId = " + $nodeid + ": " + $aff );
 		retract( $e );
 		assert( $aff );
-		assert( new Flap( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) ) );
+		assert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
 end
 
 rule "service lost detected by additional monitor"
@@ -39,14 +39,14 @@ rule "service lost detected by additional monitor"
 		$aff.addReporter( locationMonitor( $e ) );
 		retract( $e );
 		modify( $aff );
-		assert( new Flap( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) ) );
+		assert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
 		println(" Added reporter " + locationMonitor( $e ) + " to affliction " + $aff);
 end
 
 rule "wide spread affliction"
 	salience 100
 	when
-		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, type == Type.UNDECIDED, reporterCount >= ( wideSpreadThreshold ) )
+		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, type == Type.UNDECIDED, reporterCount >= ( WIDE_SPREAD_THRESHOLD ) )
 	then
 		sendWideSpreadOutageEvent( engine, $nodeid, $ipAddr, $svcName );
 		$aff.setType( Type.WIDE_SPREAD );
@@ -89,9 +89,9 @@ rule "count"
 end
 
 rule "retract expired flaps"
-	duration 1000
 	when
-		$flap : Flap( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor )
+		$flap : Flap( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor, $timerId : timerId )
+		$expiration: TimerExpired( id == $timerId )
 		$flapCount : FlapCount( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, locationMonitor == $locMon )
 	then
 		$flapCount.decrement();
@@ -101,11 +101,12 @@ rule "retract expired flaps"
 			modify( $flapCount );
 		}
 		retract( $flap );
+		retract( $expiration );
 end
 
 rule "flap count exceeded"
 	when
-		$flapCount : FlapCount( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor, alerted == false, count >= ( flapCount ) )
+		$flapCount : FlapCount( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor, alerted == false, count >= ( FLAP_COUNT ) )
 		
 	then
 		sendServiceFlappingEvent( engine, $nodeid, $ipAddr, $svcName, $locMon );
@@ -153,7 +154,9 @@ function void sendServiceFlappingEvent(DroolsCorrelationEngine engine, Long node
 
 }
 
-
+function Flap createFlap(DroolsCorrelationEngine engine, Long nodeid, String ipAddr, String svcName, Integer locationMonitor, Long flapInterval) {
+		return new Flap( nodeid, ipAddr, svcName, locationMonitor, engine.setTimer( flapInterval ) );
+}
 
 function Integer locationMonitor( Event e ) {
 	return new Integer( EventUtils.getIntParm( e, EventConstants.PARM_LOCATION_MONITOR_ID, -1 ) );

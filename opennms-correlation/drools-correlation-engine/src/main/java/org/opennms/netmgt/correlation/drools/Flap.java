@@ -10,12 +10,14 @@ public class Flap {
     Date m_endTime;
     Integer m_locationMonitor;
     boolean m_counted;
+    Integer m_timerId;
     
-    public Flap(Long nodeid, String ipAddr, String svcName, Integer locationMonitor) {
+    public Flap(Long nodeid, String ipAddr, String svcName, Integer locationMonitor, Integer timerId) {
         m_nodeid = nodeid;
         m_ipAddr = ipAddr;
         m_svcName = svcName;
         m_locationMonitor = locationMonitor;
+        m_timerId = timerId;
         m_startTime = new Date();
         m_counted = false;
     }
@@ -63,6 +65,14 @@ public class Flap {
 
     public void setCounted(boolean counted) {
         m_counted = counted;
+    }
+
+    public Integer getTimerId() {
+        return m_timerId;
+    }
+
+    public void setTimerId(Integer timerId) {
+        m_timerId = timerId;
     }
     
     
