@@ -65,15 +65,19 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
 
         m_workingMemory = ruleBase.newWorkingMemory();
         m_workingMemory.setGlobal("engine", this);
-        m_workingMemory.setGlobal("wideSpreadThreshold", m_wideSpreadThreshold);
-        m_workingMemory.setGlobal("flapInterval", m_flapInterval);
-        m_workingMemory.setGlobal("flapCount", m_flapCount);
+        m_workingMemory.setGlobal("WIDE_SPREAD_THRESHOLD", m_wideSpreadThreshold);
+        m_workingMemory.setGlobal("FLAP_INTERVAL", m_flapInterval);
+        m_workingMemory.setGlobal("FLAP_COUNT", m_flapCount);
     }
     
     public int getMemorySize() {
     	return m_workingMemory.getObjects().size();
     }
-
+    
+    public List getMemoryObjects() {
+        return m_workingMemory.getObjects();
+    }
+    
     public Integer getFlapCount() {
         return m_flapCount;
     }

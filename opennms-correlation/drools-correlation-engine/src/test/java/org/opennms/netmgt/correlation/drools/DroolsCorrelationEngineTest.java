@@ -177,23 +177,17 @@ public class DroolsCorrelationEngineTest extends TestCase {
         
         verify();
         
-        Thread.sleep(900);
-        // FIXME: need but shouldn't need this
-        Thread.sleep(200);
+        Thread.sleep(850);
+
         m_anticipatedMemorySize = 3;
-        
-        
         
         verify();
         
-        // FIXME: shouldn't need this
-        Thread.sleep(3000);
+        Thread.sleep(150);
         
         m_anticipatedMemorySize = 0;
         
         verify();
-        
-        Thread.sleep(1000);
         
         anticipateServiceFlappingEvent();
         
@@ -212,14 +206,11 @@ public class DroolsCorrelationEngineTest extends TestCase {
         
         Thread.sleep(1100);
         
-        // FIXME:This doesnt work unless we wait an extra secode for each flap.  NOT GOOD
-        Thread.sleep(3000);
-        
         m_anticipatedMemorySize = 0;
         
         verify();
         
-        
+
     }
 
 	private void anticipateWideSpreadOutageEvent() {
@@ -254,7 +245,7 @@ public class DroolsCorrelationEngineTest extends TestCase {
 	private void verify() {
 		m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
         if (m_anticipatedMemorySize != null) {
-            assertEquals("Unexpected number of objects in working memory", m_anticipatedMemorySize.intValue(), m_engine.getMemorySize());
+            assertEquals("Unexpected number of objects in working memory: "+m_engine.getMemoryObjects(), m_anticipatedMemorySize.intValue(), m_engine.getMemorySize());
         }
 	}
     
