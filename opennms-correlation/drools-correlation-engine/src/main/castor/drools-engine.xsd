@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/drools-engine"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:this="http://xmlns.opennms.org/xsd/drools-engine">
+
+  <element name="engine-configuration">
+    <annotation>
+      <documentation>The top-level element of the drools-engine.xml configuration
+      file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:rule-package"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="rule-package">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:rule-file"/>
+        <element minOccurs="0" maxOccurs="unbounded" ref="this:global" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="rule-file" type="string" />
+
+  <element name="global">
+    <complexType>
+    	<attribute name="name" type="string" use="required" />
+    	<attribute name="value" type="string" use="required" />
+    	<attribute name="type" type="string" use="required" />
+    </complexType>
+  </element>
+
+</schema>

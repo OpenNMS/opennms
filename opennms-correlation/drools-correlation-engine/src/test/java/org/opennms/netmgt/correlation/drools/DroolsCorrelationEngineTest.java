@@ -1,5 +1,9 @@
 package org.opennms.netmgt.correlation.drools;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 
 import junit.framework.TestCase;
@@ -10,6 +14,8 @@ import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.scheduling.timer.TimerFactoryBean;
 
 public class DroolsCorrelationEngineTest extends TestCase {
@@ -44,12 +50,28 @@ public class DroolsCorrelationEngineTest extends TestCase {
         timerFactory.afterPropertiesSet();
         m_timer = (Timer)timerFactory.getObject();
 
+        
+        String[] ueis = {
+                EventConstants.REMOTE_NODE_LOST_SERVICE_UEI,
+                EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
+        };
+        
+        Map<String, Object> globals = new HashMap<String, Object>();
+        globals.put("WIDE_SPREAD_THRESHOLD", new Integer(3));
+        globals.put("FLAP_INTERVAL", new Long(1000));
+        globals.put("FLAP_COUNT", new Integer(3));
+        
+        
         m_engine = new DroolsCorrelationEngine();
+
+        Resource rules = new ClassPathResource("Correlation.drl", m_engine.getClass());
+
 		m_engine.setEventIpcManager(m_eventIpcMgr);
 		m_engine.setScheduler(m_timer);
-        m_engine.setWideSpreadThreshold(3);
-        m_engine.setFlapCount(3);
-        m_engine.setFlapInterval(1000L);
+        m_engine.setInterestingEvents(Arrays.asList(ueis));
+        m_engine.setRulesResources(Collections.singletonList(rules));
+        m_engine.setGlobals(globals);
+
         m_engine.afterPropertiesSet();
 		
 	}
@@ -208,6 +230,34 @@ public class DroolsCorrelationEngineTest extends TestCase {
         
         verify();
         
+
+    }
+    
+    public void testDontFlapWhenOnlyTwoOutages() throws Exception {
+        
+        m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+
+        Thread.sleep(100);
+        
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        Thread.sleep(100);
+        
+        m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+
+        Thread.sleep(100);
+        
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        m_anticipatedMemorySize = 6;
+        
+        Thread.sleep(100);
+        
+        verify();
 
     }
 
