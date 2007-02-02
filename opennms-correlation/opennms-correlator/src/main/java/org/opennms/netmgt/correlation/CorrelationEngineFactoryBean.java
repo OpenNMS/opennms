@@ -1,5 +1,6 @@
 package org.opennms.netmgt.correlation;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,13 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
             BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine.class);
         
         m_correlationEngines = new LinkedList<CorrelationEngine>(beans.values());
+        
+        Map<String, CorrelationEngine[]> listBeans = 
+            BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine[].class);
+        
+        for (CorrelationEngine[] engines : listBeans.values()) {
+            m_correlationEngines.addAll(Arrays.asList(engines));
+        }
         
     }
     

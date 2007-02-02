@@ -100,6 +100,16 @@ public class CorrelatorIntegrationTest extends
         verifyAnticipated();
         
     }
+    
+    public void testListEngineLoaded() throws Exception {
+        
+        anticipateEvent(createEvent("listLoaded", "TestEngine"));
+
+        m_eventIpcMgr.broadcastNow(createEvent("isListLoaded", "Test"));
+
+        verifyAnticipated();
+
+    }
 
     private void verifyAnticipated() {
         m_eventIpcMgr.getEventAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
