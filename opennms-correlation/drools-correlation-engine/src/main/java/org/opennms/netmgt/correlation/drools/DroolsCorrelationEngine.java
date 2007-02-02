@@ -26,7 +26,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
     public void correlate(Event e) {
         m_workingMemory.assertObject(e);
         m_workingMemory.fireAllRules();
-        System.err.println("Finished fireRules for event "+e.getUei());
     }
 
     @Override
@@ -34,8 +33,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
         TimerExpired expiration  = new TimerExpired(timerId);
         m_workingMemory.assertObject(expiration);
         m_workingMemory.fireAllRules();
-        System.err.println("Timer "+timerId+" expired");
-        
     }
 
     public List<String> getInterestingEvents() {
