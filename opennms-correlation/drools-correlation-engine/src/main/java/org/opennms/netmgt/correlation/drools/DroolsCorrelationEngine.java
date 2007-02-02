@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
 
 import org.apache.commons.io.IOUtils;
 import org.drools.RuleBase;
@@ -21,7 +20,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
 
     private WorkingMemory m_workingMemory;
     private Integer m_wideSpreadThreshold = 3;
-    private Long m_flapInterval = 60000L;
+    private Long m_flapInterval = 600000L;
     private Integer m_flapCount = 3;
 
     public void correlate(Event e) {
