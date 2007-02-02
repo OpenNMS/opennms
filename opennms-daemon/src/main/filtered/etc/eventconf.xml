@@ -1436,9 +1436,9 @@
       that have detected that a wide spread outage has been cleared.
     </descr>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutageResolved</uei>
-    <event-label>A widespread outage has been detected</event-label>
+    <event-label>A widespread outage has been resolved</event-label>
     <logmsg dest='logndisplay'>
-      A wide spread outage of the service: %service% has been correlated from multiple location monitors.
+      A wide spread outage of the service: %service% has been resolved.
     </logmsg>
     <severity>Normal</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" auto-clean="false" />
