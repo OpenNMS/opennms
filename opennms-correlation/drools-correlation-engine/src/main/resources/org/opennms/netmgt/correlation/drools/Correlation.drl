@@ -12,6 +12,10 @@ import org.opennms.netmgt.correlation.drools.Affliction.Type;
 
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global java.lang.Integer wideSpreadThreshold;
+global java.lang.Long wideSpreadWaitTime;
+global java.lang.Long flapInterval;
+global java.lang.Integer flapCount;
 
 rule "first service lost event received"
 	salience 100
@@ -23,6 +27,7 @@ rule "first service lost event received"
 		println( "Affliction detected for nodeId = " + $nodeid + ": " + $aff );
 		retract( $e );
 		assert( $aff );
+		assert( new Flap( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) ) );
 end
 
 rule "service lost detected by additional monitor"
@@ -34,26 +39,17 @@ rule "service lost detected by additional monitor"
 		$aff.addReporter( locationMonitor( $e ) );
 		retract( $e );
 		modify( $aff );
+		assert( new Flap( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) ) );
 		println(" Added reporter " + locationMonitor( $e ) + " to affliction " + $aff);
 end
 
 rule "wide spread affliction"
 	salience 100
 	when
-		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, type == Type.UNDECIDED, reporterCount > 1 )
+		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, type == Type.UNDECIDED, reporterCount >= ( wideSpreadThreshold ) )
 	then
 		sendWideSpreadOutageEvent( engine, $nodeid, $ipAddr, $svcName );
 		$aff.setType( Type.WIDE_SPREAD );
-		modify( $aff );
-end
-
-rule "isolated affliction"
-	duration 30000
-	when
-		$aff : Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, type == Type.UNDECIDED, reporterCount <= 1 )
-	then
-		sendIsolatedOutageEvent( engine, $nodeid, $ipAddr, $svcName );
-		$aff.setType( Type.ISOLATED );
 		modify( $aff );
 end
 
@@ -61,37 +57,79 @@ rule "affliction resolved for one monitor"
 	when
 		$e : Event( uei == EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
 		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters -> ( $reporters.contains( locationMonitor( $e ) ) ) ) 
+		$flap: Flap( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, endTime == null, locationMonitor == ( locationMonitor( $e ) ) )
 	then
 		$aff.removeReporter( locationMonitor( $e ) );
+		$flap.setEndTime( new Date() );
 		modify( $aff );
+		modify( $flap );
 		retract( $e );
 		println(" Monitor " + locationMonitor( $e ) + " has reported up for afflication " + $aff );
 end
 
-rule "resolve affliction when all reporters have resolved"
+rule "create flap count for flap if it doesn't exist"
 	when
-		$aff: Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $type : type != Type.UNDECIDED, reporterCount == 0 ) 		
+		$flap : Flap( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor, endTime != null, counted == false )
+		not FlapCount( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, locationMonitor == $locMon)
 	then
-		if ( $type == Type.ISOLATED ) {
-			sendIsolatedOutageResolvedEvent( engine , $nodeid, $ipAddr, $svcName );
+		assert( new FlapCount( $nodeid, $ipAddr, $svcName, $locMon ) );
+		$flap.setCounted( true );
+		modify( $flap );
+end
+
+rule "count"
+	when
+		$flap : Flap( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor, endTime != null, counted == false )
+		$flapCount : FlapCount( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, locationMonitor == $locMon )
+	then
+		$flapCount.increment();
+		modify( $flapCount );
+		$flap.setCounted( true );
+		modify( $flap );
+end
+
+
+
+rule "retract expired flaps"
+	duration 1000
+	when
+		$flap : Flap( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor )
+		$flapCount : FlapCount( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, locationMonitor == $locMon )
+	then
+		$flapCount.decrement();
+		if ( $flapCount.getCount() == 0 ) {
+			retract( $flapCount );
 		} else {
+			modify( $flapCount );
+		}
+		retract( $flap );
+end
+
+rule "flap count exceeded"
+	when
+		$flapCount : FlapCount( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor, alerted == false, count >= ( flapCount ) )
+		
+	then
+		sendServiceFlappingEvent( engine, $nodeid, $ipAddr, $svcName, $locMon );
+		$flapCount.setAlerted( true );
+		modify( $flapCount );
+end
+
+
+rule "resolve affliction that caused wide spread event"
+	when
+		$aff: Affliction( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $type : type, reporterCount == 0 ) 		
+	then
+		if ($type == Type.WIDE_SPREAD) {
 			sendWideSpreadOutageResolvedEvent( engine, $nodeid, $ipAddr, $svcName );
 		}
 		retract( $aff );
 		println("Afflication completely resolved " + $aff );
 end
-		
+
 
 function void sendWideSpreadOutageEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
 	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/wideSpreadOutage", "Drools")
-		.setNodeid(nodeId.intValue())
-		.setInterface(ipAddr)
-		.setService(svcName);
-	engine.sendEvent(bldr.getEvent());
-}
-
-function void sendIsolatedOutageEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
-	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/isolatedOutage", "Drools")
 		.setNodeid(nodeId.intValue())
 		.setInterface(ipAddr)
 		.setService(svcName);
@@ -107,14 +145,17 @@ function void sendWideSpreadOutageResolvedEvent(DroolsCorrelationEngine engine, 
 
 }
 
-function void sendIsolatedOutageResolvedEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
-	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/isolatedOutageResolved", "Drools")
+function void sendServiceFlappingEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName, Integer locationMonitor) {
+	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/locationMonitors/serviceFlapping", "Drools")
 		.setNodeid(nodeId.intValue())
 		.setInterface(ipAddr)
-		.setService(svcName);
+		.setService(svcName)
+		.addParam(EventConstants.PARM_LOCATION_MONITOR_ID, locationMonitor);
 	engine.sendEvent(bldr.getEvent());
 
 }
+
+
 
 function Integer locationMonitor( Event e ) {
 	return new Integer( EventUtils.getIntParm( e, EventConstants.PARM_LOCATION_MONITOR_ID, -1 ) );
