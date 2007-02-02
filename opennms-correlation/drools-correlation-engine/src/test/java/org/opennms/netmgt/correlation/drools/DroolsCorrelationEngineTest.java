@@ -1,5 +1,7 @@
 package org.opennms.netmgt.correlation.drools;
 
+import java.util.Timer;
+
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
@@ -8,6 +10,9 @@ import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.quartz.Scheduler;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.timer.TimerFactoryBean;
 
 public class DroolsCorrelationEngineTest extends TestCase {
     
@@ -19,12 +24,15 @@ public class DroolsCorrelationEngineTest extends TestCase {
 	private EventAnticipator m_anticipator;
 	private DroolsCorrelationEngine m_engine;      
 	private Integer m_anticipatedMemorySize = 0;
+    private Scheduler m_scheduler;
+    private Timer m_timer;
 
     public DroolsCorrelationEngineTest() {
         System.setProperty("opennms.home", "src/test/opennms-home");
         
         m_eventIpcMgr = new MockEventIpcManager();
         EventIpcManagerFactory.setIpcManager(m_eventIpcMgr);
+        
     }
     
 
@@ -34,9 +42,14 @@ public class DroolsCorrelationEngineTest extends TestCase {
 		super.setUp();
 		
     	m_anticipator = m_eventIpcMgr.getEventAnticipator();
-        
+
+        TimerFactoryBean timerFactory = new TimerFactoryBean();
+        timerFactory.afterPropertiesSet();
+        m_timer = (Timer)timerFactory.getObject();
+
         m_engine = new DroolsCorrelationEngine();
 		m_engine.setEventIpcManager(m_eventIpcMgr);
+		m_engine.setScheduler(m_timer);
         m_engine.setWideSpreadThreshold(3);
         m_engine.setFlapCount(3);
         m_engine.setFlapInterval(1000L);
@@ -151,9 +164,39 @@ public class DroolsCorrelationEngineTest extends TestCase {
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
+        Thread.sleep(100);
+        
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        Thread.sleep(100);
 
+        m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
+        m_anticipatedMemorySize = 4;
+        
+        verify();
+        
+        Thread.sleep(900);
+        Thread.sleep(200);
+        m_anticipatedMemorySize = 3;
+        
+        
+        
+        verify();
+        
+        m_anticipatedMemorySize = 0;
+        
+        verify();
+        
+        Thread.sleep(1000);
+        
+        anticipateServiceFlappingEvent();
+        
+        m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
@@ -207,7 +250,9 @@ public class DroolsCorrelationEngineTest extends TestCase {
 
 	private void verify() {
 		m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-		assertEquals("Unexpected number of objects in working memory", m_anticipatedMemorySize.intValue(), m_engine.getMemorySize());
+        if (m_anticipatedMemorySize != null) {
+            assertEquals("Unexpected number of objects in working memory", m_anticipatedMemorySize.intValue(), m_engine.getMemorySize());
+        }
 	}
     
 

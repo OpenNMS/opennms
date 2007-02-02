@@ -7,6 +7,8 @@ import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 public class TestEngine extends AbstractCorrelationEngine {
+    
+    Integer m_timerId = null;
 
 	public void correlate(Event e) {
 		if ("testDown".equals(e.getUei())) {
@@ -17,6 +19,12 @@ public class TestEngine extends AbstractCorrelationEngine {
             EventBuilder bldr = new EventBuilder("testUpReceived", "TestEngine");
             sendEvent(bldr.getEvent());
 		}
+        else if ("timed".equals(e.getUei())) {
+            m_timerId = setTimer(1000);
+        }
+        else if ("cancelTimer".equals(e.getUei())) {
+            cancelTimer(m_timerId);
+        }
 		else {
 			throw new IllegalArgumentException("Unexpected event with uei = "+e.getUei());
 		}
@@ -27,7 +35,15 @@ public class TestEngine extends AbstractCorrelationEngine {
 		List<String> ueis = new ArrayList<String>();
 		ueis.add("testDown");
 		ueis.add("testUp");
+        ueis.add("timed");
+        ueis.add("cancelTimer");
 		return ueis;
 	}
+
+    @Override
+    protected void timerExpired(Integer timerId) {
+        EventBuilder bldr = new EventBuilder("timerExpired", "TestEngine");
+        sendEvent(bldr.getEvent());
+    }
 
 }

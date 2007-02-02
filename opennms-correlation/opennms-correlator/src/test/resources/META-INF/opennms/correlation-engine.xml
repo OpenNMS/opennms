@@ -6,6 +6,9 @@
 
 	<bean name="testEngine" class="org.opennms.netmgt.correlation.TestEngine">
 		<property name="eventIpcManager" ref="eventIpcManager"/>
+		<property name="scheduler">
+			<bean class="org.springframework.scheduling.timer.TimerFactoryBean" />
+		</property>
 	</bean>
 
 </beans>
