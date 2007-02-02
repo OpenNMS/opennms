@@ -24,7 +24,6 @@ public class DroolsCorrelationEngineTest extends TestCase {
 	private EventAnticipator m_anticipator;
 	private DroolsCorrelationEngine m_engine;      
 	private Integer m_anticipatedMemorySize = 0;
-    private Scheduler m_scheduler;
     private Timer m_timer;
 
     public DroolsCorrelationEngineTest() {
@@ -179,12 +178,16 @@ public class DroolsCorrelationEngineTest extends TestCase {
         verify();
         
         Thread.sleep(900);
+        // FIXME: need but shouldn't need this
         Thread.sleep(200);
         m_anticipatedMemorySize = 3;
         
         
         
         verify();
+        
+        // FIXME: shouldn't need this
+        Thread.sleep(3000);
         
         m_anticipatedMemorySize = 0;
         
@@ -203,7 +206,7 @@ public class DroolsCorrelationEngineTest extends TestCase {
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
-        m_anticipatedMemorySize = 5;
+        m_anticipatedMemorySize = 4;
         
         verify();
         
