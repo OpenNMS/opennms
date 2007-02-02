@@ -10,8 +10,6 @@ import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.quartz.Scheduler;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.timer.TimerFactoryBean;
 
 public class DroolsCorrelationEngineTest extends TestCase {
