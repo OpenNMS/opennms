@@ -90,7 +90,8 @@
 	// colorSemaphoreBy must be 'A' (by availability) or 'S' (by status by default)
 	var colorSemaphoreBy='S';
 	
-// static info for status and severity
+// static info for status, severity, availability, links and context menu
+
 	var STATUSES_TEXT= new Array();
 	var STATUSES_COLOR= new Array();
 	var STATUSES_UEI= new Array();
@@ -103,6 +104,14 @@
 	var AVAIL_MIN = new Array();
 	var AVAIL_FLASH= new Array();
 	
+	var LINK_SPEED = new Array();
+	var LINK_TEXT = new Array();
+	var LINK_WIDTH = new Array();
+	var LINK_DASHARRAY = new Array();	
+	
+	var LINKSTATUS_COLOR = new Array();	
+	var LINKSTATUS_FLASH = new Array();	
+		
 	var CM_COMMANDS = new Array();
 	var CM_LINKS = new Array();
 	var CM_PARAMS = new Array();
@@ -144,6 +153,30 @@
 			}
 		}
 	}
+	
+	Map links = mpf.getLinksMap();
+	Iterator it = 	links.keySet().iterator();
+	while(it.hasNext()){
+		Integer linkid = (Integer) it.next();
+		Link link = (Link) links.get(linkid);
+		%>
+		LINK_SPEED[<%=linkid.intValue()%>]='<%=link.getSpeed()%>';
+		LINK_TEXT[<%=linkid.intValue()%>]='<%=link.getText()%>';
+		LINK_WIDTH[<%=linkid.intValue()%>]='<%=link.getWidth()%>';
+		LINK_DASHARRAY[<%=linkid.intValue()%>]=<%=link.getDasharray()%>;
+		<%
+	}
+	
+	Map linkstatuses = mpf.getLinkStatusesMap();
+	it = 	linkstatuses.keySet().iterator();
+	while(it.hasNext()){
+		String linkstid = (String) it.next();
+		LinkStatus linkst = (LinkStatus) linkstatuses.get(linkstid);
+		%>
+		LINKSTATUS_COLOR['<%=linkstid%>']='<%=linkst.getColor()%>';
+		LINKSTATUS_FLASH['<%=linkstid%>']=<%=linkst.isFlash()%>;
+		<%
+	}	
 	
 	%>
 		var reloadMap = <%=reload%>;
@@ -301,7 +334,7 @@
 	var myMEIconsResult;		
 <%
 	java.util.Map icons = mpf.getIconsMap();
-	java.util.Iterator it = icons.entrySet().iterator();
+	it = icons.entrySet().iterator();
 	while(it.hasNext()){
 		java.util.Map.Entry iconEntry=(java.util.Map.Entry) it.next();
 		%>

@@ -47,12 +47,55 @@ final public class VLink {
 	VElement elem1;
 
 	VElement elem2;
+	
+	//the link typology defined in the map properties file
+	int typology;
+	
+	//the link status
+	String status;
+	
+
+	
+
 
 	public VLink(VElement elem1, VElement elem2) {
 		this.elem1 = elem1;
 		this.elem2 = elem2;
 	}
+	
+	public VLink(VElement elem1, VElement elem2, int typology) {
+		this.elem1 = elem1;
+		this.elem2 = elem2;
+		this.typology=typology;
+	}	
 
+	public VLink(VElement elem1, VElement elem2, int typology, String status) {
+		this.elem1 = elem1;
+		this.elem2 = elem2;
+		this.typology=typology;
+		this.status=status;
+	}	
+
+
+	public void setTypology(int typology){
+		this.typology=typology;
+	}
+	
+	public void setStatus(String status){
+		this.status=status;
+	}
+	public String getStatus() {
+		return status;
+	}
+
+	public int getTypology() {
+		return typology;
+	}
+
+
+	/**
+	 * Asserts if the link links the same elements
+	 */
 	public boolean equals(Object otherLink) {
 		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;

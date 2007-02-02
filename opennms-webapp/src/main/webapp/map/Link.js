@@ -3,9 +3,9 @@
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
 
-function Link(id, mapElement1, mapElement2, stroke, stroke_width)
+function Link(id, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash)
 {
-	if (arguments.length == 5) { 
+	if (arguments.length >= 5) { 
 		this.animateTag = null;
 		this.id = id;
 		this.mapElement1 = mapElement1;
@@ -16,7 +16,7 @@ function Link(id, mapElement1, mapElement2, stroke, stroke_width)
 		var y2 = this.mapElement2.getCPoint().y;
 		//Title.scale  = doc.getDocumentElement().getCurrentScale();     // scaling modified by zooming ..
 		//Title.offset = doc.getDocumentElement().getCurrentTranslate(); // offset modified by zooming ..
-		this.init(id, x1, x2, y1, y2, stroke, stroke_width);
+		this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash);
 		//doc.getDocumentElement().addEventListener("zoom", Title.Zoom, false);
 	}
 	else
@@ -24,7 +24,7 @@ function Link(id, mapElement1, mapElement2, stroke, stroke_width)
 }
 
 // <line onclick="*" stroke="*" stroke-width="*"/>
-Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width)
+Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash)
 {
 	this.svgNode = mapSvgDocument.createElement("line");
 	this.svgNode.setAttribute("id", id);	
@@ -34,6 +34,8 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width)
 	this.svgNode.setAttribute("y2", y2);
 	this.svgNode.setAttribute("stroke", stroke);
 	this.svgNode.setAttribute("stroke-width", stroke_width);
+	if(dash_array!=-1)
+		this.svgNode.setAttribute("dash-array", dash_array);
 	this.svgNode.setAttribute("style", "z-index:0");
 	this.svgNode.addEventListener("click", this.onClick, false);
 
@@ -45,6 +47,9 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width)
 	this.animateTag.setAttribute("repeatCount", "indefinite");
 	this.animateTag.addEventListener("repeat", this.onRepeat, false);
 	this.svgNode.appendChild(this.animateTag);
+	this.flash=false;
+	if(flash!=undefined && flash==true)
+		this.setFlash(true);
 }
 
 Link.prototype.getStroke = function() {
@@ -55,11 +60,20 @@ Link.prototype.getStrokeWidth = function() {
 	return this.svgNode.getAttribute("stroke-width");
 }
 
+Link.prototype.getDashArray = function() {
+	return this.svgNode.getAttribute("dash-array");
+}
+
+Link.prototype.getFlash = function() {
+	return this.flash;
+}
+
 /*
 	set flashing of link
 */
-Link.prototype.flash = function(bool)
+Link.prototype.setFlash = function(bool)
 {
+	this.flash=bool;
 	if (this.animateTag != null) 
 	{
 		var val;
