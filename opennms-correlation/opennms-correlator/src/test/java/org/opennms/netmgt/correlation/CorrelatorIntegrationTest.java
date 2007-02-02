@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.correlation;
 
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
@@ -38,40 +39,68 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class CorrelatorIntegrationTest extends
-		AbstractTransactionalDataSourceSpringContextTests {
-	
-	private MockEventIpcManager m_eventIpcMgr;
+        AbstractTransactionalDataSourceSpringContextTests {
 
+    private MockEventIpcManager m_eventIpcMgr;
 
-	public CorrelatorIntegrationTest() {
-		System.setProperty("opennms.home", "src/test/opennms-home");
-		
-		m_eventIpcMgr = new MockEventIpcManager();
-		EventIpcManagerFactory.setIpcManager(m_eventIpcMgr);
-	}
+    static {
+        System.setProperty("opennms.home", "src/test/opennms-home");
 
-	@Override
-	protected String[] getConfigLocations() {
-		return new String[] {
-				"META-INF/opennms/applicationContext-dao.xml",
-				"META-INF/opennms/applicationContext-correlator.xml",
-				"classpath*:META-INF/opennms/correlation-engine.xml"
-		};
-	}
-	
-	
-	public void testIt() {
-        
+        MockEventIpcManager eventIpcMgr = new MockEventIpcManager();
+        EventIpcManagerFactory.setIpcManager(eventIpcMgr);
+    }
+
+    @Override
+    protected String[] getConfigLocations() {
+
+        return new String[] { "META-INF/opennms/applicationContext-dao.xml",
+                "META-INF/opennms/applicationContext-correlator.xml",
+                "classpath*:META-INF/opennms/correlation-engine.xml" };
+    }
+
+    public void setEventIpcManager(EventIpcManager eventIpcMgr) {
+        m_eventIpcMgr = (MockEventIpcManager)eventIpcMgr;
+    }
+
+    public void testIt() throws Exception {
+
         anticipateEvent(createEvent("testDownReceived", "TestEngine"));
         anticipateEvent(createEvent("testUpReceived", "TestEngine"));
-	    
-		m_eventIpcMgr.broadcastNow(createEvent("testDown", "Test"));
+
+        m_eventIpcMgr.broadcastNow(createEvent("testDown", "Test"));
         m_eventIpcMgr.broadcastNow(createEvent("testUp", "Test"));
-        
+
+        Thread.sleep(1000);
+
         verifyAnticipated();
-		
-	}
+
+    }
+
+    public void testTimer() throws Exception {
+
+        anticipateEvent(createEvent("timerExpired", "TestEngine"));
+
+        m_eventIpcMgr.broadcastNow(createEvent("timed", "Test"));
+
+        Thread.sleep(1500);
+
+        verifyAnticipated();
+    }
     
+    public void testTimerCancel() throws Exception {
+
+        m_eventIpcMgr.broadcastNow(createEvent("timed", "Test"));
+        
+        Thread.sleep(500);
+        
+        m_eventIpcMgr.broadcastNow(createEvent("cancelTimer", "Test"));
+
+        Thread.sleep(1500);
+
+        verifyAnticipated();
+        
+    }
+
     private void verifyAnticipated() {
         m_eventIpcMgr.getEventAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
     }
@@ -80,7 +109,7 @@ public class CorrelatorIntegrationTest extends
         EventBuilder bldr = new EventBuilder(uei, source);
         return bldr.getEvent();
     }
-    
+
     private void anticipateEvent(Event e) {
         m_eventIpcMgr.getEventAnticipator().anticipateEvent(e);
     }
