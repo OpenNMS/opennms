@@ -113,6 +113,10 @@ public class MapPropertiesFactory extends Object {
 	
 	protected static Map factoriesMap = null;
 	
+	protected static Map linksMap = null;
+	
+	protected static Map linkStatusesMap = null;
+	
 	protected static String defaultFactory = null; 
 	
 	protected static String severityMapAs = "avg"; 
@@ -432,6 +436,8 @@ public class MapPropertiesFactory extends Object {
 		bgImagesMap = new HashMap();
 		sourcesMap = new HashMap();
 		factoriesMap = new HashMap();
+		linksMap = new HashMap();
+		linkStatusesMap = new HashMap();
 
 		// read the file
 		Properties props = new Properties();
@@ -634,6 +640,62 @@ public class MapPropertiesFactory extends Object {
 		}
 		Arrays.sort(orderedSeverities);
 
+		//Links
+		String[] links = BundleLists.parseBundleList(props
+				.getProperty("links"));
+		for (int i = 0; i < links.length; i++) {
+			String id = props.getProperty("link." + links[i] + ".id");
+			String text = props.getProperty("link." + links[i]+ ".text");
+			String speed = props.getProperty("link." + links[i]+ ".speed");
+			String width = props.getProperty("link." + links[i]+ ".width");
+			String dasharray = props.getProperty("link." + links[i]+ ".dash-array");			
+			if(id==null){
+				log.error("param id for link cannot be null in map.properties: skipping link...");
+				continue;
+			}
+			if(text==null){
+				log.error("param text for link cannot be null in map.properties: skipping link...");
+				continue;
+			}
+			if(speed==null){
+				log.error("param speed for link cannot be null in map.properties: skipping link...");
+				continue;
+			}
+			if(width==null){
+				log.error("param width for link cannot be null in map.properties: skipping link...");
+				continue;
+			}
+				
+			int dash_arr=-1;
+			if(dasharray!=null)
+				dash_arr=Integer.parseInt(dasharray);
+			Link lnk = new Link(speed,text,width,dash_arr);
+			
+			log.debug("found link " + links[i] + " with id=" + id
+					+ ", text=" + text+ ", speed=" + speed+ ", width=" + width+ ", dash-array=" + dasharray+ ". Adding it.");
+			linksMap.put(new Integer(id), lnk);
+		}
+		
+		//Links Statuses
+		String[] linkStatuses = BundleLists.parseBundleList(props
+				.getProperty("linkstatuses"));
+		for (int i = 0; i < linkStatuses.length; i++) {
+			String color = props.getProperty("linkstatus." + linkStatuses[i] + ".color");
+			String flash = props.getProperty("linkstatus." + linkStatuses[i]+ ".flash");
+			if(color==null){
+				log.error("param color for linkstatus cannot be null in map.properties: skipping linkstatus...");
+				continue;
+			}
+			boolean flashBool = false;
+			if(flash!=null && flash.equalsIgnoreCase("false"))
+				flashBool=false;			
+			log.debug("found linkstatus " + linkStatuses[i] + " with color=" + color
+					+ ", flash=" + flashBool+ ". Adding it.");
+			LinkStatus ls = new LinkStatus(linkStatuses[i],color,flashBool);
+			linkStatusesMap.put(linkStatuses[i], ls);
+		}		
+		
+		
 		// look up statuses and their properties
 		String[] statuses = BundleLists.parseBundleList(props
 				.getProperty("statuses"));
@@ -1017,6 +1079,32 @@ public class MapPropertiesFactory extends Object {
     	}
     	return status.getId();
     }
+    
+    /**
+     * gets the config Link by Id defined in the map properties config file
+     * @param linkTypologyId
+     * @return 
+     */
+    public Link getLink(int linkTypologyId){
+    	return (Link)linksMap.get(new Integer(linkTypologyId));
+    }
 
+    /**
+     * gets the config LinkStatus by label defined in the map properties config file
+     * @param linkStatusLabel
+     * @return
+     */
+    public LinkStatus getLinkStatus(String linkStatusLabel){
+    	return (LinkStatus)linkStatusesMap.get(linkStatusLabel);
+    }
+
+	public Map getLinksMap() {
+		return linksMap;
+	}
+
+	public Map getLinkStatusesMap() {
+		return linkStatusesMap;
+	}
+    
 	
 }

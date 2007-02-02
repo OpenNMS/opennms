@@ -272,7 +272,7 @@ Map.prototype.deleteLinksOnElement = function(id)
 }
 
 // add a new link to map
-Map.prototype.addLink = function(id1, id2, stroke, stroke_width)
+Map.prototype.addLink = function(id1, id2, stroke, stroke_width, dash_array, flash)
 {
 //alert("Map::addLink("+id1+", "+id2+")");
 	// check parameter
@@ -307,7 +307,7 @@ Map.prototype.addLink = function(id1, id2, stroke, stroke_width)
 		this.deleteLink(id1,id2);
 	}
 
-	var link = new Link(id, first, second, stroke, stroke_width);
+	var link = new Link(id, first, second, stroke, stroke_width, dash_array, flash);
 	this.mapLinks[id] = link;
 	this.mapLinkSize++;
 	linkAdded = true;
@@ -315,7 +315,7 @@ Map.prototype.addLink = function(id1, id2, stroke, stroke_width)
 	return linkAdded;
 }
 
-Map.prototype.setLink = function(id1, id2, stroke, stroke_width)
+Map.prototype.setLink = function(id1, id2, stroke, stroke_width, dash_array, flash)
 {
 //alert("Map::addLink("+id1+", "+id2+")");
 	// check parameter
@@ -350,7 +350,7 @@ Map.prototype.setLink = function(id1, id2, stroke, stroke_width)
 		this.deleteLink(id1,id2);
 	}
 
-	var link = new Link(id, first, second, stroke, stroke_width);
+	var link = new Link(id, first, second, stroke, stroke_width, dash_array, flash);
 	this.mapLinks[id] = link;
 	this.mapLinkSize++;
 	this.svgNode.appendChild(link.getSvgNode());
