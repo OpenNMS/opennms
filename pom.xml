@@ -70,9 +70,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://svn.sourceforge.net/svnroot/opennms/opennms/trunk</connection>
-    <developerConnection>scm:svn:https://svn.sourceforge.net/svnroot/opennms/opennms/trunk</developerConnection>
-    <url>http://svn.sourceforge.net/viewcvs.cgi/opennms/opennms/trunk</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk</developerConnection>
+    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/opennms/trunk</url>
   </scm>
   <modules>
     <module>dependencies</module>
