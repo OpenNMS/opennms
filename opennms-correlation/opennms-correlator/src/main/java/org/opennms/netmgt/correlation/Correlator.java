@@ -73,6 +73,8 @@ public class Correlator extends AbstractServiceDaemon {
 	protected void onInit() {
 		Assert.notNull(m_eventIpcManager, "property eventIpcManager must be set");
 		Assert.notNull(m_engines, "property engines must be set");
+        
+        System.err.println("m_engines.size = " + m_engines.size());
 		
 		for(CorrelationEngine engine : m_engines) {
             System.err.println("Registering engine "+engine);
