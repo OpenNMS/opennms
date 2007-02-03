@@ -28,10 +28,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
     
     @Override
     public synchronized void correlate(Event e) {
-        System.err.println("Begin correlation for Event " + e.getDbid()+" uei: " + e.getUei());
+        System.err.println("Begin correlation for Event " + e.getDbid() + " uei: " + e.getUei());
         m_workingMemory.assertObject(e);
         m_workingMemory.fireAllRules();
-        System.err.println("End correlation for Event " + e.getDbid()+" uei: " + e.getUei());
+        System.err.println("End correlation for Event " + e.getDbid() + " uei: " + e.getUei());
     }
 
     @Override
