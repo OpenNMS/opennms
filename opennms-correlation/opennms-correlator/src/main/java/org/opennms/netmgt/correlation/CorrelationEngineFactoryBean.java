@@ -39,6 +39,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
             BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine.class);
         
         // put them in a set to deduplicate the beans
+        System.err.println("Deduplicating engines");
         HashSet<CorrelationEngine> engineSet = new HashSet<CorrelationEngine>(beans.values()); 
         
         Map<String, CorrelationEngine[]> listBeans = 
@@ -48,7 +49,10 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
             engineSet.addAll(Arrays.asList(engines));
         }
         
+
         m_correlationEngines = new LinkedList<CorrelationEngine>(engineSet);
+        
+        System.err.println("Found "+m_correlationEngines.size()+" engines");
     }
     
 
