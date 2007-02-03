@@ -72,7 +72,7 @@ public class DroolsCorrelationEngineTest extends TestCase {
         m_engine.setRulesResources(Collections.singletonList(rules));
         m_engine.setGlobals(globals);
 
-        m_engine.afterPropertiesSet();
+        m_engine.initialize();
 		
 	}
 

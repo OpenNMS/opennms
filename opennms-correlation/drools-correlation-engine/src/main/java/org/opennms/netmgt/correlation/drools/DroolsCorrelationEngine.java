@@ -19,7 +19,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
-public class DroolsCorrelationEngine extends AbstractCorrelationEngine implements InitializingBean {
+public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
     private WorkingMemory m_workingMemory;
     private List<String> m_interestingEvents;
@@ -60,7 +60,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
         m_globals = globals;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void initialize() throws Exception {
         PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
         conf.setJavaLanguageLevel( "1.5" );
         PackageBuilder builder = new PackageBuilder( conf );

@@ -11,21 +11,23 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:rule-package"/>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:rule-set"/>
       </sequence>
     </complexType>
   </element>
 
-  <element name="rule-package">
+  <element name="rule-set">
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:rule-file"/>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:rule-file" />
+        <element minOccurs="1" maxOccurs="unbounded" ref="this:event" />
         <element minOccurs="0" maxOccurs="unbounded" ref="this:global" />
       </sequence>
     </complexType>
   </element>
   
   <element name="rule-file" type="string" />
+  <element name="event" type="string" />
 
   <element name="global">
     <complexType>
