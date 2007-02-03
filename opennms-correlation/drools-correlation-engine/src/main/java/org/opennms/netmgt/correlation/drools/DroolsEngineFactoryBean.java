@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.Unmarshaller;
@@ -16,6 +17,7 @@ import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
 import org.opennms.netmgt.correlation.drools.config.Global;
 import org.opennms.netmgt.correlation.drools.config.RuleSet;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.FactoryBean;
@@ -32,6 +34,7 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
     private String m_engineBean;
     private Resource m_configResource;
     private List<RuleSetConfiguration> m_ruleSets;
+    private EventIpcManager m_eventIpcManager;
     
     public DroolsEngineFactoryBean() {
         registerDefaultEditors();
@@ -69,12 +72,18 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
     }
 
     private CorrelationEngine constructEngine(RuleSetConfiguration ruleSet) throws Exception {
-        DroolsCorrelationEngine engine = (DroolsCorrelationEngine)m_applicationContext.getBean(m_engineBean, DroolsCorrelationEngine.class);
+        DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
+        engine.setEventIpcManager(m_eventIpcManager);
+        engine.setScheduler(new Timer());
         engine.setInterestingEvents(ruleSet.getInterestingEvents());
         engine.setRulesResources(ruleSet.getRuleResources());
         engine.setGlobals(ruleSet.getGlobals());
         engine.initialize();
         return engine;
+    }
+    
+    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+        m_eventIpcManager = eventIpcManager;
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
