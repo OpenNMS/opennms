@@ -1,24 +1,17 @@
 package org.opennms.netmgt.correlation.drools;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.scheduling.timer.TimerFactoryBean;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.util.StringUtils;
 
-public class DroolsCorrelationEngineTest extends TestCase {
+public class DroolsCorrelationEngineTest extends AbstractDependencyInjectionSpringContextTests {
     
     private static final String WS_OUTAGE_UEI = "uei.opennms.org/correlation/remote/wideSpreadOutage";
     private static final String WS_RESOLVED_UEI = "uei.opennms.org/correlation/remote/wideSpreadOutageResolved";
@@ -28,62 +21,35 @@ public class DroolsCorrelationEngineTest extends TestCase {
 	private EventAnticipator m_anticipator;
 	private DroolsCorrelationEngine m_engine;      
 	private Integer m_anticipatedMemorySize = 0;
-    private Timer m_timer;
+
 
     public DroolsCorrelationEngineTest() {
         System.setProperty("opennms.home", "src/test/opennms-home");
         
-        m_eventIpcMgr = new MockEventIpcManager();
-        EventIpcManagerFactory.setIpcManager(m_eventIpcMgr);
-        
     }
     
+    @Override
+    protected ConfigurableApplicationContext loadContextLocations(String[] locations) throws Exception {
+        if (logger.isInfoEnabled()) {
+            logger.info("Loading context for: " + StringUtils.arrayToCommaDelimitedString(locations));
+        }
+        return new FileSystemXmlApplicationContext(locations);
+    }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:test-context.xml",
+                "classpath:META-INF/opennms/correlation-engine.xml"
+        };
+    }
 
     
-    @Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-    	m_anticipator = m_eventIpcMgr.getEventAnticipator();
-
-        TimerFactoryBean timerFactory = new TimerFactoryBean();
-        timerFactory.afterPropertiesSet();
-        m_timer = (Timer)timerFactory.getObject();
-
-        
-        String[] ueis = {
-                EventConstants.REMOTE_NODE_LOST_SERVICE_UEI,
-                EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
-        };
-        
-        Map<String, Object> globals = new HashMap<String, Object>();
-        globals.put("WIDE_SPREAD_THRESHOLD", new Integer(3));
-        globals.put("FLAP_INTERVAL", new Long(1000));
-        globals.put("FLAP_COUNT", new Integer(3));
-        
-        
-        m_engine = new DroolsCorrelationEngine();
-
-        Resource rules = new ClassPathResource("Correlation.drl", m_engine.getClass());
-
-		m_engine.setEventIpcManager(m_eventIpcMgr);
-		m_engine.setScheduler(m_timer);
-        m_engine.setInterestingEvents(Arrays.asList(ueis));
-        m_engine.setRulesResources(Collections.singletonList(rules));
-        m_engine.setGlobals(globals);
-
-        m_engine.initialize();
-		
-	}
-
-
-
-    @Override
-	protected void runTest() throws Throwable {
-		super.runTest();
-		verify();
-	}
-
+    public void setEventIpcMgr(MockEventIpcManager eventIpcManager) {
+        m_eventIpcMgr = eventIpcManager;
+        m_anticipator = m_eventIpcMgr.getEventAnticipator();
+    }
+    
 	public void testWideSpreadLocationMonitorOutage() throws Exception {
 
 		anticipateWideSpreadOutageEvent();
@@ -335,6 +301,9 @@ public class DroolsCorrelationEngineTest extends TestCase {
         Event event = bldr.getEvent();
 		return event;
 	}
-    
+
+    public void setEngine(CorrelationEngine[] engines) {
+        m_engine = (DroolsCorrelationEngine) engines[0];
+    }
 
 }

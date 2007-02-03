@@ -4,7 +4,7 @@
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
         
     <bean class="org.opennms.netmgt.correlation.drools.DroolsEngineFactoryBean">
-    	<property name="eventIpcManager" ref="eventIcpManager" />
+    	<property name="eventIpcManager" ref="eventIpcManager" />
     	<property name="configurationResource" value="${opennms.home}/etc/drools-engine.xml"/>
     </bean>
         
