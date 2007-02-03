@@ -27,16 +27,20 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine implement
     private Map<String, Object> m_globals = new HashMap<String, Object>();
     
     @Override
-    public void correlate(Event e) {
+    public synchronized void correlate(Event e) {
+        System.err.println("Begin correlation for Event " + e.getUei());
         m_workingMemory.assertObject(e);
         m_workingMemory.fireAllRules();
+        System.err.println("End correlation for Event " + e.getUei());
     }
 
     @Override
-    protected void timerExpired(Integer timerId) {
+    protected synchronized void timerExpired(Integer timerId) {
+        System.err.println("Begin processing for Timer " + timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_workingMemory.assertObject(expiration);
         m_workingMemory.fireAllRules();
+        System.err.println("End processing for Timer " + timerId);
     }
 
     @Override
