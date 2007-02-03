@@ -102,6 +102,7 @@ rule "retract expired flaps"
 		}
 		retract( $flap );
 		retract( $expiration );
+		println( "Flap " + $flap + " has expired. ");
 end
 
 rule "flap count exceeded"
