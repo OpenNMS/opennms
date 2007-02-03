@@ -5,16 +5,4 @@
         
     <bean name="eventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager" />
         
-	<bean name="enginePrototype" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine" scope="prototype">
-    	<property name="eventIpcManager" ref="eventIpcManager" />
-    	<property name="scheduler">
-			<bean class="org.springframework.scheduling.timer.TimerFactoryBean" />
-    	</property>
-    </bean>
-        
-    <bean class="org.opennms.netmgt.correlation.drools.DroolsEngineFactoryBean">
-    	<property name="engineBean"><idref bean="enginePrototype"/></property>
-    	<property name="configurationResource" value="${opennms.home}/etc/drools-engine.xml" />
-    </bean>
-        
 </beans>

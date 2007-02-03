@@ -44,7 +44,8 @@ public class DroolsEngineFactoryBeanTest extends AbstractDependencyInjectionSpri
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
-                "classpath:test-context.xml"
+                "classpath:test-context.xml",
+                "classpath:META-INF/opennms/correlation-engine.xml"
         };
     }
 

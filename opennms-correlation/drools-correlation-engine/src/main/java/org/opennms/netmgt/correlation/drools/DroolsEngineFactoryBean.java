@@ -28,13 +28,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport implements FactoryBean, InitializingBean, ApplicationContextAware {
-
-    private CorrelationEngine[] m_engines;
+    // injected
     private ApplicationContext m_applicationContext;
-    private String m_engineBean;
     private Resource m_configResource;
-    private List<RuleSetConfiguration> m_ruleSets;
     private EventIpcManager m_eventIpcManager;
+
+    // built
+    private CorrelationEngine[] m_engines;
+    private List<RuleSetConfiguration> m_ruleSets;
     
     public DroolsEngineFactoryBean() {
         registerDefaultEditors();
@@ -59,7 +60,7 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
     public void afterPropertiesSet() throws Exception {
         assertSet(m_configResource, "configurationResource");
         assertSet(m_applicationContext, "applicationContext");
-        assertSet(m_engineBean, "engineBean");
+        assertSet(m_eventIpcManager, "eventIpcManager");
         
         readConfiguration();
         
@@ -88,10 +89,6 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
-    }
-    
-    public void setEngineBean(String engineBean) {
-        m_engineBean = engineBean;
     }
     
     public void setConfigurationResource(Resource configResource) {
