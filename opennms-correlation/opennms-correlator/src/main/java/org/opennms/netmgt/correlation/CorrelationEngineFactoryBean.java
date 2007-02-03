@@ -2,6 +2,7 @@ package org.opennms.netmgt.correlation;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +38,17 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         Map<String, CorrelationEngine> beans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine.class);
         
-        m_correlationEngines = new LinkedList<CorrelationEngine>(beans.values());
+        // put them in a set to deduplicate the beans
+        HashSet<CorrelationEngine> engineSet = new HashSet<CorrelationEngine>(beans.values()); 
         
         Map<String, CorrelationEngine[]> listBeans = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine[].class);
         
         for (CorrelationEngine[] engines : listBeans.values()) {
-            m_correlationEngines.addAll(Arrays.asList(engines));
+            engineSet.addAll(Arrays.asList(engines));
         }
         
+        m_correlationEngines = new LinkedList<CorrelationEngine>(engineSet);
     }
     
 
