@@ -236,26 +236,44 @@ public class DroolsCorrelationEngineTest extends TestCase {
     public void testDontFlapWhenOnlyTwoOutages() throws Exception {
         
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        
+        Thread.sleep(50);
+        
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
-        Thread.sleep(100);
+        Thread.sleep(50);
         
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        
+        Thread.sleep(50);
+        
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
-        Thread.sleep(100);
+        Thread.sleep(50);
         
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        
+        Thread.sleep(50);
+        
         m_engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
-        Thread.sleep(100);
+        Thread.sleep(50);
         
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        
+        Thread.sleep(50);
+        
         m_engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
         m_anticipatedMemorySize = 6;
         
         Thread.sleep(100);
+        
+        verify();
+        
+        Thread.sleep(1000);
+        
+        m_anticipatedMemorySize = 0;
         
         verify();
 
