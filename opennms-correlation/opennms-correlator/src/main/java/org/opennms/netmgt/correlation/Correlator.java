@@ -75,6 +75,7 @@ public class Correlator extends AbstractServiceDaemon {
 		Assert.notNull(m_engines, "property engines must be set");
 		
 		for(CorrelationEngine engine : m_engines) {
+            System.err.println("Registering engine "+engine);
 			m_adapters.add(new EngineAdapter(engine));
 		}
 		
