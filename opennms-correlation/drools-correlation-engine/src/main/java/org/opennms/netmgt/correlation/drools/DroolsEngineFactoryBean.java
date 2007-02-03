@@ -11,12 +11,11 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.Unmarshaller;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
 import org.opennms.netmgt.correlation.drools.config.Global;
 import org.opennms.netmgt.correlation.drools.config.RuleSet;
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.FactoryBean;
@@ -24,7 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderSupport;
+import org.springframework.util.Assert;
 
 public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport implements FactoryBean, InitializingBean, ApplicationContextAware {
 
@@ -50,7 +49,15 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
         return true;
     }
     
+    public void assertSet(Object obj, String name) {
+        Assert.state(obj != null, name+" required for DroolsEngineFactoryBean");
+    }
+    
     public void afterPropertiesSet() throws Exception {
+        assertSet(m_configResource, "configurationResource");
+        assertSet(m_applicationContext, "applicationContext");
+        assertSet(m_engineBean, "engineBean");
+        
         readConfiguration();
         
         List<CorrelationEngine> engineList = new LinkedList<CorrelationEngine>();
@@ -61,11 +68,12 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
         m_engines = (CorrelationEngine[]) engineList.toArray(new CorrelationEngine[engineList.size()]);
     }
 
-    private CorrelationEngine constructEngine(RuleSetConfiguration ruleSet) {
+    private CorrelationEngine constructEngine(RuleSetConfiguration ruleSet) throws Exception {
         DroolsCorrelationEngine engine = (DroolsCorrelationEngine)m_applicationContext.getBean(m_engineBean, DroolsCorrelationEngine.class);
         engine.setInterestingEvents(ruleSet.getInterestingEvents());
         engine.setRulesResources(ruleSet.getRuleResources());
         engine.setGlobals(ruleSet.getGlobals());
+        engine.initialize();
         return engine;
     }
 
@@ -113,7 +121,7 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
             m_ruleResources = new LinkedList<Resource>();
             
             for (String resourceName : ruleSet.getRuleFile()) {
-                m_ruleResources.add( m_applicationContext.getResource( resourceName ) );
+                m_ruleResources.add( createResource(resourceName) );
             }
             
             m_globals = new HashMap<String, Object>();
@@ -122,6 +130,11 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
                 m_globals.put(global.getName(), constructValue(global.getValue(), global.getType()));
             }
             
+        }
+
+        private Resource createResource(String resourceName) {
+            String finalName = PropertiesUtils.substitute(resourceName, System.getProperties());
+            return m_applicationContext.getResource( finalName );
         }
         
         private Object constructValue(String value, String type) {
