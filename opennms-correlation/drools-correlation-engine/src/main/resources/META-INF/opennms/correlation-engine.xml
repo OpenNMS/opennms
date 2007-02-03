@@ -3,48 +3,9 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
         
-    <bean name="eventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager" />
-        
-	<bean name="enginePrototype" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine" scope="prototype">
-    	<property name="eventIpcManager" ref="eventIpcManager" />
-    	<property name="scheduler">
-			<bean class="org.springframework.scheduling.timer.TimerFactoryBean" />
-    	</property>
-    </bean>
-        
     <bean class="org.opennms.netmgt.correlation.drools.DroolsEngineFactoryBean">
-    	<property name="engineBean"><idref bean="enginePrototype"/></property>
+    	<property name="eventIpcManager" ref="eventIcpManager" />
+    	<property name="configurationResource" value="${opennms.home}/etc/drools-engine.xml"/>
     </bean>
         
-	<bean name="droolsEngine" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine">
-		<property name="eventIpcManager" ref="eventIpcManager"/>
-		<property name="scheduler">
-			<bean class="org.springframework.scheduling.timer.TimerFactoryBean" />
-		</property>
-		<property name="interestingEvents">
-		  <list>
-		  	<value>uei.opennms.org/remote/nodes/nodeLostService</value>
-		  	<value>uei.opennms.org/remote/nodes/nodeRegainedService</value>
-		  </list>
-		</property>
-		<property name="rulesResources">
-			<list>
-				<value>classpath:org/opennms/netmgt/correlation/drools/Correlation.drl</value>
-			</list>
-		</property>
-		<property name="globals">
-			<map>
-				<entry key="WIDE_SPREAD_THRESHOLD">
-					<value type="java.lang.Integer">3</value>
-				</entry>
-				<entry key="FLAP_INTERVAL">
-					<value type="java.lang.Long">600000</value>
-				</entry>
-				<entry key="FLAP_COUNT">
-				 	<value type="java.lang.Integer">3</value>
-				</entry>
-			</map>
-		</property>
-	</bean>
-
 </beans>

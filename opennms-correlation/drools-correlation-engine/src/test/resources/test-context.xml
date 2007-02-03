@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+        
+    <bean name="eventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager" />
+        
+	<bean name="enginePrototype" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine" scope="prototype">
+    	<property name="eventIpcManager" ref="eventIpcManager" />
+    	<property name="scheduler">
+			<bean class="org.springframework.scheduling.timer.TimerFactoryBean" />
+    	</property>
+    </bean>
+        
+    <bean class="org.opennms.netmgt.correlation.drools.DroolsEngineFactoryBean">
+    	<property name="engineBean"><idref bean="enginePrototype"/></property>
+    	<property name="configurationResource" value="${opennms.home}/etc/drools-engine.xml" />
+    </bean>
+        
+</beans>
