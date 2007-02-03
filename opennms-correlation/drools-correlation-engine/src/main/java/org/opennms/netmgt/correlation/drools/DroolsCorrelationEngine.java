@@ -16,7 +16,6 @@ import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
