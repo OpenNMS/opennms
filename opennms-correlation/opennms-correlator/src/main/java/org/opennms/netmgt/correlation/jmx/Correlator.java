@@ -38,16 +38,17 @@ import org.springframework.context.access.DefaultLocatorFactory;
 
 
 public class Correlator implements CorrelatorMBean {
+    
+    org.opennms.netmgt.correlation.Correlator m_correlator;
 
 	public void init() {
-        getBean().init();
-    }
-
-	private org.opennms.netmgt.correlation.Correlator getBean() {
 		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
         BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
-        org.opennms.netmgt.correlation.Correlator correlator = (org.opennms.netmgt.correlation.Correlator) bf.getFactory().getBean("correlator");
-		return correlator;
+        m_correlator = (org.opennms.netmgt.correlation.Correlator) bf.getFactory().getBean("correlator");
+    }
+    
+    private org.opennms.netmgt.correlation.Correlator getBean() {
+		return m_correlator;
 	}
 
     public void start() {
