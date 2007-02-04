@@ -1,0 +1,40 @@
+#!/bin/sh - 
+
+show_help () {
+    cat <<END
+Usage: $0 [category name] [format] [month format] [start month] [start date] [start year]
+END
+    return
+}
+
+# TODO: Is this needed?  If so, document why
+ulimit -s 2048
+
+opennms_home="@install.dir@"
+opennms_webapp="$opennms_home/webapps/opennms"
+
+if [ $# -ne 6 ]; then
+    show_help
+    exit 1
+fi
+
+category_name="$1"; shift
+format="$1"; shift
+month_format="$1"; shift
+start_month="$1"; shift
+start_date="$1"; shift
+start_year="$1"; shift
+
+app_class=org.opennms.report.availability.AvailabilityReport
+
+exec $opennms_home/bin/runjava -r -- \
+    -Dimage=$opennms_webapp/images/logo.gif \
+    -Dopennms.manager.class=$app_class \
+    -DcatName="$category_name" \
+    -Dformat="$format" \
+    -DMonthFormat="$month_format" \
+    -DstartMonth="$start_month" \
+    -DstartDate="$start_date" \
+    -DstartYear="$start_year" \
+    -jar $opennms_home/lib/opennms_bootstrap.jar \
+     "$@"

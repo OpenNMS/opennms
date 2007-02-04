@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Feb 04: Cleaned up logging and added a ConsoleLogger for the main() method. - dj@opennms.org
 // 2006 May 30: added a way to choose the date to run the availability reports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -47,13 +50,17 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.report.datablock.PDFWriter;
+import org.springframework.util.StringUtils;
 
 /**
  * AvailabilityReport generates the Availability report in pdf format
@@ -78,8 +85,6 @@ public class AvailabilityReport extends Object {
      * xml to be translated to the pdf.
      */
     private Report m_report = null;
-	
-	private Category log;
 
      /**
      * String of Months
@@ -106,9 +111,9 @@ public class AvailabilityReport extends Object {
      */
     public AvailabilityReport(String author, String startMonth, String startDate, String startYear) {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(this.getClass());
-        if (log.isDebugEnabled())
-            log.debug("Inside AvailabilityReport");
+        if (log().isDebugEnabled()) {
+            log().debug("Inside AvailabilityReport");
+        }
 
         Calendar today = new GregorianCalendar();
         int day = Integer.parseInt(startDate);
@@ -136,8 +141,8 @@ public class AvailabilityReport extends Object {
         m_report.setCreated(created);
         m_report.setAuthor(author);
 
-        if (log.isDebugEnabled()) {
-            log.debug("Leaving AvailabilityReport");
+        if (log().isDebugEnabled()) {
+            log().debug("Leaving AvailabilityReport");
         }
     }
 
@@ -158,19 +163,18 @@ public class AvailabilityReport extends Object {
 	public void getReportData(String logourl, String categoryName, String reportFormat, String monthFormat, String startMonth, String startDate, 
 String startYear) {
 
-		if (log.isDebugEnabled()) {
-            log.debug("inside getReportData");
-            log.debug("Category name  " + categoryName);
-            log.debug("Report format   " + reportFormat);
-            log.debug("logo  " + logourl);
-			log.debug("monthFormat "+monthFormat);
+		if (log().isDebugEnabled()) {
+            log().debug("inside getReportData");
+            log().debug("Category name  " + categoryName);
+            log().debug("Report format   " + reportFormat);
+            log().debug("logo  " + logourl);
+			log().debug("monthFormat "+monthFormat);
         }
 		populateReport(logourl, categoryName, reportFormat, monthFormat, startMonth, startDate, startYear);
 		try {
 			marshalReport();
 		} catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Exception ", e);
+		    log().fatal("Exception: " + e, e);
         }
 	}
 	
@@ -195,19 +199,9 @@ String startYear) {
         m_report.setCategories(categories);
         try {
 			Calendar calendar = new GregorianCalendar();
-			AvailabilityData availData = new AvailabilityData(categoryName, m_report, reportFormat, monthFormat, calendar, startMonth, startDate, startYear);
-		} catch (MarshalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ValidationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new AvailabilityData(categoryName, m_report, reportFormat, monthFormat, calendar, startMonth, startDate, startYear);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            log().fatal("Exception: " + e, e);
 		}
     }
 	
@@ -225,18 +219,12 @@ String startYear) {
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
-            if (log.isDebugEnabled())
-                log.debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+            if (log().isDebugEnabled()) {
+                log().debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+            }
             fileWriter.close();
-        } catch (ValidationException validex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("ValidationException ", validex);
-        } catch (MarshalException marex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("MarshalException ", marex);
-        } catch (IOException ioe) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("IOException ", ioe);
+        } catch (Exception e) {
+            log().fatal("Exception: " + e, e);
         }
     }
 
@@ -245,46 +233,59 @@ String startYear) {
      */
     public void generatePDF(String pdfFileName, OutputStream out, String format) throws Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(AvailabilityReport.class);
-        if (log.isDebugEnabled())
-            log.debug("inside generatePDF");
+        if (log().isDebugEnabled()) {
+            log().debug("inside generatePDF");
+        }
         File file = new File(ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
         try {
-            if (log.isDebugEnabled())
-                log.debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+            if (log().isDebugEnabled()) {
+                log().debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+            }
             FileReader fileReader = new FileReader(file);
             PDFWriter pdfWriter = new PDFWriter(pdfFileName);
             Calendar calendar = new GregorianCalendar();
             long timeMillis = calendar.getTime().getTime();
             if (!format.equals("HTML")) {
                 pdfWriter.generatePDF(fileReader, out, ConfigFileConstants.getHome() + "/share/reports/avail-" + timeMillis + ".fot");
-            } else
+            } else {
                 pdfWriter.generateHTML(fileReader, out);
+            }
         } catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Exception " + e);
-            throw e;
+            log().fatal("Exception: " + e, e);
         }
-        if (log.isInfoEnabled())
-            log.info("leaving generatePDF");
+        if (log().isInfoEnabled()) {
+            log().info("leaving generatePDF");
+        }
     }
 
     /**
      * Main method
      */
     public static void main(String args[]) {
+        // Spit warning level and higher messages out to the console
+        ConsoleAppender consoleAppender =  new ConsoleAppender(new PatternLayout("%m%n"), ConsoleAppender.SYSTEM_ERR);
+        consoleAppender.setThreshold(Level.WARN);
+        Category logger = Logger.getLogger(LOG4J_CATEGORY);
+        logger.addAppender(consoleAppender);
+
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(AvailabilityReport.class);
+        log().debug("main() called with args: " + StringUtils.arrayToDelimitedString(args, ", "));
+        
+        System.setProperty("java.awt.headless", "true");
+        
         String logourl = System.getProperty("image");
         String categoryName = System.getProperty("catName");
-        if (categoryName == null || categoryName.equals(""))
+        if (categoryName == null || categoryName.equals("")) {
             categoryName = "all";
+        }
         String format = System.getProperty("format");
-        if (format == null || format.equals(""))
+        if (format == null || format.equals("")) {
             format = "SVG";
+        }
 		String monthFormat = System.getProperty("MonthFormat");
-        if (monthFormat == null || format.equals(""))
+        if (monthFormat == null || format.equals("")) {
             monthFormat = MONTH_FORMAT_CLASSIC;
+        }
         String startMonth = System.getProperty("startMonth");
         String startDate = System.getProperty("startDate");
         String startYear = System.getProperty("startYear");
@@ -292,7 +293,9 @@ String startYear) {
         try {
             generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
         } catch (Exception e) {
-            log.error("Caught Exception generating report", e);
+            log().error("Caught exception while generating report: " + e, e);
+            System.err.println("Caught exception while generating report: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -306,41 +309,44 @@ String startYear) {
         // This report will be invoked by the mailer script.
         // Only SVG formatted reports are needed.
         // 
-        Category log = ThreadCategory.getInstance(AvailabilityReport.class);
         SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
         String catFileName = categoryName.replace(' ', '-');
-        String pdfFileName = null;
-        if (format.equals("SVG"))
+
+        String pdfFileName;
+        String xslFileName;
+        if (format.equals("SVG")) {
             pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-SVG-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-        else if (format.equals("PDF"))
+            xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_SVG_XSL);
+        } else if (format.equals("PDF")) {
             pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-        else if (format.equals("HTML"))
+            xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_PDF_XSL);
+        } else if (format.equals("HTML")) {
             pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName + fmt.format(new java.util.Date()) + ".html";
+            xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_HTML_XSL);
+        } else {
+            log().fatal("Format '" + format + "' is unsupported.  Must be one of: SVG, PDF, or HTML.");
+            return;
+        }
+
         try {
             AvailabilityReport report = new AvailabilityReport("Unknown", startMonth, startDate, startYear);
             report.getReportData(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
-            if (log.isInfoEnabled())
-                log.info("Generated Report Data... ");
+            if (log().isInfoEnabled()) {
+                log().info("Generated Report Data... ");
+            }
             File file = new File(pdfFileName);
             FileOutputStream pdfFileWriter = new FileOutputStream(file);
-            String xslFileName = null;
-            if (format.equals("SVG"))
-                xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_SVG_XSL);
-            else if (format.equals("PDF"))
-                xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_PDF_XSL);
-            else if (format.equals("HTML"))
-                xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_HTML_XSL);
             report.generatePDF(xslFileName, pdfFileWriter, format);
-            if (log.isInfoEnabled()) {
-                log.debug("xsl -> " + xslFileName + " pdfFileName -> " + pdfFileName + " format -> " + format);
-                log.info("Generated Report ... and saved as " + pdfFileName);
+            if (log().isInfoEnabled()) {
+                log().debug("xsl -> " + xslFileName + " pdfFileName -> " + pdfFileName + " format -> " + format);
+                log().info("Generated Report ... and saved as " + pdfFileName);
             }
-        } catch (IOException ioe) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("IOException ", ioe);
         } catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Exception  ", e);
+            log().fatal("Exception " + e, e);
         }
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(AvailabilityReport.class);
     }
 }
