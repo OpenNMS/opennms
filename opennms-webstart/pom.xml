@@ -105,6 +105,15 @@
           <additionalProjectnatures>
             <projectnature>org.codehaus.groovy.eclipse.groovyNature</projectnature>
           </additionalProjectnatures>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.codehaus.groovy.eclipse.preferences.prefs</name>
+              <content><![CDATA[#Added by maven-eclipse-plugin
+eclipse.preferences.version=1
+groovy.compiler.output.path=target/classes
+]]></content>
+            </file>
+          </additionalConfig>
         </configuration>
       </plugin>
     </plugins>
