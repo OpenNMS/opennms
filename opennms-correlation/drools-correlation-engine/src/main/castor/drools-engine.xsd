@@ -23,6 +23,7 @@
         <element minOccurs="1" maxOccurs="unbounded" ref="this:event" />
         <element minOccurs="0" maxOccurs="unbounded" ref="this:global" />
       </sequence>
+      <attribute name="name" type="string" use="required" />
     </complexType>
   </element>
   

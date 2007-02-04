@@ -1,5 +1,6 @@
 package org.opennms.netmgt.correlation.drools;
 
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -10,15 +11,7 @@ import org.springframework.util.StringUtils;
 public class DroolsEngineFactoryBeanTest extends AbstractDependencyInjectionSpringContextTests {
 
     public DroolsEngineFactoryBeanTest() {
-        System.setProperty("opennms.home", "src/test/opennms-home");
-    }
-
-    @Override
-    protected ConfigurableApplicationContext loadContextLocations(String[] locations) throws Exception {
-        if (logger.isInfoEnabled()) {
-            logger.info("Loading context for: " + StringUtils.arrayToCommaDelimitedString(locations));
-        }
-        return new FileSystemXmlApplicationContext(locations);
+        System.setProperty("opennms.home", PropertiesUtils.substitute("${user.dir}/src/test/opennms-home", System.getProperties()));
     }
 
     private DroolsEngineFactoryBean m_droolsEngineFactoryBean;
