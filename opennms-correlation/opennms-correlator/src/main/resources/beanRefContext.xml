@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd" default-lazy-init="true">
         
-   <bean id="correlatorContext" class="org.springframework.context.support.FileSystemXmlApplicationContext">
+   <bean id="correlatorContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>classpath:META-INF/opennms/applicationContext-correlator.xml</value>

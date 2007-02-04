@@ -24,6 +24,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private List<String> m_interestingEvents;
     private List<Resource> m_rules;
     private Map<String, Object> m_globals = new HashMap<String, Object>();
+    private String m_name;
     
     @Override
     public synchronized void correlate(Event e) {
@@ -97,6 +98,14 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     
     public List getMemoryObjects() {
         return m_workingMemory.getObjects();
+    }
+
+    public void setName(String name) {
+        m_name = name;
+    }
+    
+    public String getName() {
+        return m_name;
     }
     
 }

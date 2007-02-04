@@ -5,7 +5,7 @@
         
     <bean class="org.opennms.netmgt.correlation.drools.DroolsEngineFactoryBean">
     	<property name="eventIpcManager" ref="eventIpcManager" />
-    	<property name="configurationResource" value="${opennms.home}/etc/drools-engine.xml"/>
+    	<property name="configurationResource" value="file:${opennms.home}/etc/drools-engine.xml"/>
     </bean>
         
 </beans>

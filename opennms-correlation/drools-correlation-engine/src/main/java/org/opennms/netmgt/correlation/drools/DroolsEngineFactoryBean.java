@@ -24,7 +24,10 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport implements FactoryBean, InitializingBean, ApplicationContextAware {
@@ -32,6 +35,8 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
     private ApplicationContext m_applicationContext;
     private Resource m_configResource;
     private EventIpcManager m_eventIpcManager;
+    
+    private ResourceLoader m_resourceLoader;
 
     // built
     private CorrelationEngine[] m_engines;
@@ -62,6 +67,9 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
         assertSet(m_applicationContext, "applicationContext");
         assertSet(m_eventIpcManager, "eventIpcManager");
         
+        
+        m_resourceLoader = new ConfigFileResourceLoader();
+        
         readConfiguration();
         
         List<CorrelationEngine> engineList = new LinkedList<CorrelationEngine>();
@@ -74,8 +82,9 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
 
     private CorrelationEngine constructEngine(RuleSetConfiguration ruleSet) throws Exception {
         DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
+        engine.setName(ruleSet.getName());
         engine.setEventIpcManager(m_eventIpcManager);
-        engine.setScheduler(new Timer());
+        engine.setScheduler(new Timer(ruleSet.getName()+"-Timer"));
         engine.setInterestingEvents(ruleSet.getInterestingEvents());
         engine.setRulesResources(ruleSet.getRuleResources());
         engine.setGlobals(ruleSet.getGlobals());
@@ -116,12 +125,22 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
         
     }
     
+    private final class ConfigFileResourceLoader extends DefaultResourceLoader {
+
+        @Override
+        protected Resource getResourceByPath(String path) {
+            return new FileSystemResource(path);
+        }
+    }
+
     public class RuleSetConfiguration {
+        private String m_name;
         private List<String> m_interestingEvents;
         private List<Resource> m_ruleResources;
         private Map<String, Object> m_globals;
         
         public RuleSetConfiguration(RuleSet ruleSet) {
+            m_name = ruleSet.getName();
             m_interestingEvents = Arrays.asList(ruleSet.getEvent());
             
             m_ruleResources = new LinkedList<Resource>();
@@ -137,10 +156,14 @@ public class DroolsEngineFactoryBean extends PropertyEditorRegistrySupport imple
             }
             
         }
+        
+        public String getName() {
+            return m_name;
+        }
 
         private Resource createResource(String resourceName) {
-            String finalName = PropertiesUtils.substitute(resourceName, System.getProperties());
-            return m_applicationContext.getResource( finalName );
+            String finalName = PropertiesUtils.substitute( resourceName, System.getProperties() );
+            return m_resourceLoader.getResource( finalName );
         }
         
         private Object constructValue(String value, String type) {
