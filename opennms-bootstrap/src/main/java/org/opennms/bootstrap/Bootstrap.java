@@ -358,7 +358,7 @@ public class Bootstrap {
                 }
 
             };
-            Thread bootstrapper = new Thread(execer, "BootStrapper");
+            Thread bootstrapper = new Thread(execer, "Main");
             bootstrapper.setContextClassLoader(cl);
             bootstrapper.start();
         }
