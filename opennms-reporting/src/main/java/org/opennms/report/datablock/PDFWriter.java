@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Feb 04: Cleaned up logging a bit, removed unused code and organized imports. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,23 +44,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.text.SimpleDateFormat;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.apache.avalon.framework.logger.*;
 
-import org.apache.fop.apps.Version;
+import org.apache.avalon.framework.logger.Log4JLogger;
+import org.apache.avalon.framework.logger.Logger;
+import org.apache.avalon.framework.logger.NullLogger;
 import org.apache.fop.messaging.MessageHandler;
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 /**
  * PDFWriter is a XML to PDF generator. It uses apache's fop api for conversion.
@@ -94,12 +96,11 @@ public class PDFWriter extends Object {
      * This converts the outage report from xml to pdf format using fop.
      */
     public void generateHTML(FileReader xml, OutputStream fotFileName) throws MarshalException, ValidationException, IOException, Exception {
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(PDFWriter.class);
         try {
-            if (log.isInfoEnabled())
-                log.info("XSL File " + m_xslSource);
+            if (log().isInfoEnabled()) {
+                log().info("XSL File " + m_xslSource);
+            }
             Reader xsl = new FileReader(m_xslSource);
 
             // create the SAX parser to supply to the FOP Driver to build the FO
@@ -112,17 +113,14 @@ public class PDFWriter extends Object {
             xml = null;
             fotFileName.close();
             fotFileName = null;
-        } catch (IOException ioe) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("IOException ", ioe);
-            ioe.printStackTrace();
-            throw ioe;
         } catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Exception ", e);
-            e.printStackTrace();
+            log().fatal("Exception: " + e, e);
             throw e;
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(PDFWriter.class);
     }
 
     /**
@@ -130,12 +128,12 @@ public class PDFWriter extends Object {
      */
     public void generatePDF(FileReader xml, OutputStream pdfWriter, String fotFileName) throws MarshalException, ValidationException, IOException, Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(PDFWriter.class);
-		Logger avalonLogger = new Log4JLogger(log);
+		Logger avalonLogger = new Log4JLogger(log());
 		
 		try {
-            if (log.isInfoEnabled())
-                log.info("XSL File " + m_xslSource);
+            if (log().isInfoEnabled()) {
+                log().info("XSL File " + m_xslSource);
+            }
             Reader xsl = new FileReader(m_xslSource);
 
             // create the SAX parser to supply to the FOP Driver to build the FO
@@ -152,8 +150,9 @@ public class PDFWriter extends Object {
             Transformer processor = tfact.newTransformer(new StreamSource(xsl));
             processor.transform(new StreamSource(xml), new StreamResult(fot));
 
-            if (log.isInfoEnabled())
-                log.info("FOT generated is saved in " + fotFileName);
+            if (log().isInfoEnabled()) {
+                log().info("FOT generated is saved in " + fotFileName);
+            }
 
             xml = null;
             // initDriver();
@@ -185,64 +184,9 @@ public class PDFWriter extends Object {
              */
             Runtime runn = Runtime.getRuntime();
             runn.exec("rm " + fotFileName);
-        } catch (IOException ioe) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("IOException ", ioe);
-            ioe.printStackTrace();
-            throw ioe;
         } catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Exception ", e);
-            e.printStackTrace();
+            log().fatal("Exception: " + e, e);
             throw e;
         }
     }
-
-    /**
-     * Initialises the fop driver
-     */
-    private void initDriver() throws Exception {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(PDFWriter.class);
-		Logger avalonLogger = new Log4JLogger(log);
-		
-        try {
-            m_driver = new org.apache.fop.apps.Driver();
-			m_driver.setLogger(avalonLogger);
-            m_driver.setRenderer("org.apache.fop.render.pdf.PDFRenderer", Version.getVersion());
-            m_driver.addElementMapping("org.apache.fop.fo.StandardElementMapping");
-            m_driver.addElementMapping("org.apache.fop.svg.SVGElementMapping");
-            // m_driver.addPropertyList(
-            // "org.apache.fop.fo.StandardPropertyListMapping" );
-            // m_driver.addPropertyList(
-            // "org.apache.fop.svg.SVGPropertyListMapping" );
-        } catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Exception : ", e);
-            throw e;
-        }
-    }
-
-    /**
-     * Creates an xml parser.
-     * 
-     * @return XMLReader
-     */
-    private XMLReader createParser() throws Exception {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(PDFWriter.class);
-        String parserClassName = null;
-        if (parserClassName == null) {
-            parserClassName = "org.apache.xerces.parsers.SAXParser";
-        }
-        try {
-            return (XMLReader) Class.forName(parserClassName).newInstance();
-        } catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Exception : ", e);
-            e.printStackTrace();
-            throw (e);
-        }
-    }
-
 }

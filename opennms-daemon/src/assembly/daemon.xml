@@ -30,6 +30,10 @@
       <directory>target/classes/logs</directory>
       <outputDirectory>logs</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>target/classes/share</directory>
+      <outputDirectory>share</outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
