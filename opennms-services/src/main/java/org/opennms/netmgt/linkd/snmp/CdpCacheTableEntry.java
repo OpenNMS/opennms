@@ -403,7 +403,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 	}
 	
 	public int getCdpCacheIfIndex() {
-		Integer val = getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
+		Integer val = getInt32(CdpCacheTableEntry.CDP_IFINDEX);
 		if (val == null) return -1;
 		return val;
 	}
