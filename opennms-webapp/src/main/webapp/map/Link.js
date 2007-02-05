@@ -1,4 +1,4 @@
-// == link.js -- Copyright (C) Michele Masullo ========================
+// == link.js -- 
 
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
@@ -34,7 +34,7 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 	this.svgNode.setAttribute("y2", y2);
 	this.svgNode.setAttribute("stroke", stroke);
 	this.svgNode.setAttribute("stroke-width", stroke_width);
-	if(dash_array!=-1)
+	if(dash_array!=-1 && dash_array!=0)
 		this.svgNode.setAttribute("dash-array", dash_array);
 	this.svgNode.setAttribute("style", "z-index:0");
 	this.svgNode.addEventListener("click", this.onClick, false);

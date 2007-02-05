@@ -1,4 +1,4 @@
-// == MapElement.js -- Copyright (C) Michele Masullo ========================
+// == MapElement.js
 // before include this file must be include:
 // 1 - Application.js
 // 2 - Debug.js
