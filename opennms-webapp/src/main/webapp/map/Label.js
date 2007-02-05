@@ -1,4 +1,4 @@
-// == Label.js -- Copyright (C) Michele Masullo ========================
+// == Label.js --
 
 Label.prototype = new MoveableSVGElement;
 Label.superclass = MoveableSVGElement.prototype;

@@ -1,4 +1,4 @@
-// == SVGElement.js -- Copyright (C) Michele Masullo ========================
+// == SVGElement.js -- 
 // class Element, ancestor of element
 function SVGElement()
 {

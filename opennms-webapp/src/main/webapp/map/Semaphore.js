@@ -1,4 +1,4 @@
-// == Semaphore.js -- Copyright (C) Michele Masullo ========================
+// == Semaphore.js --
 
 // Semaphore inherits Element
 Semaphore.prototype = new MoveableSVGElement;
