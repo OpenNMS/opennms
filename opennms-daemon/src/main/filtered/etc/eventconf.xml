@@ -1328,7 +1328,7 @@
     <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>
     <event-label>A remote location monitor has registered</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor has registered.
+      A remote location monitor has registered and been given the id: %parm[locationMonitorId]%.
     </logmsg>
     <severity>Normal</severity>
   </event>
@@ -1341,7 +1341,7 @@
     <uei>uei.opennms.org/remote/locationMonitorStarted</uei>
     <event-label>A remote location monitor has started polling</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor has started polling.
+      The remote location monitor: %parm[locationMonitorId]% has started polling.
     </logmsg>
     <severity>Normal</severity>
   </event>
@@ -1358,7 +1358,7 @@
     <uei>uei.opennms.org/remote/locationMonitorPaused</uei>
     <event-label>A remote location monitor has been paused</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor has been paused.
+      The remote location monitor: %parm[locationMonitorId]% has been paused.
     </logmsg>
     <severity>Minor</severity>
   </event>
@@ -1371,7 +1371,7 @@
     <uei>uei.opennms.org/remote/locationMonitorStopped</uei>
     <event-label>A remote location monitor has been shutdown.</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor has been shutdown.
+      The remote location monitor: %parm[locationMonitorId]% has been shutdown.
     </logmsg>
     <severity>Normal</severity>
   </event>
@@ -1384,9 +1384,9 @@
     <uei>uei.opennms.org/remote/locationMonitorDisconnected</uei>
     <event-label>A remote location monitor has disconnected</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor has disconnected.
+      The remote location monitor: %parm[locationMonitorId]% has disconnected.
     </logmsg>
-    <alarm-data reduction-key="%uei%" alarm-type="1" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="1" auto-clean="false"/>
     <severity>Warning</severity>
   </event>
   
@@ -1398,10 +1398,10 @@
     <uei>uei.opennms.org/remote/locationMonitorReconnected</uei>
     <event-label>A disconnected remote location monitor has reconnected</event-label>
     <logmsg dest='logndisplay'>
-      A disconnected remote location monitor has reconnected.
+      The disconnected remote location monitor: %parm[locationMonitorId]% has reconnected.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%" alarm-type="2" clearUei="uei.opennms.org/remote/locationMonitorDisconnected" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2" clearUei="uei.opennms.org/remote/locationMonitorDisconnected" auto-clean="false"/>
   </event>
   
   <event>
@@ -1412,7 +1412,7 @@
     <uei>uei.opennms.org/remote/configurationChangeDetected</uei>
     <event-label>A remote location monitor's configuration has been changed</event-label>
     <logmsg dest='logndisplay'>
-      A remote location monitor's configuration has been changed.
+      The remote location monitor: %parm[locationMonitorId]% configuration has been changed.
     </logmsg>
     <severity>Normal</severity>
   </event> 
