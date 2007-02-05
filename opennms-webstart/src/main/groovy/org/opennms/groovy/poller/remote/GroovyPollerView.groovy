@@ -145,7 +145,7 @@ class GroovyPollerView implements InitializingBean {
    private String reasonResponse(PollStatus lastPoll) {
        if (lastPoll == null)
            return '-';
-       if (lastPoll.responseTime >- 0)
+       if (lastPoll.responseTime >= 0)
            return lastPoll.responseTime+" ms";
        if (lastPoll.reason != null)
            return lastPoll.reason
