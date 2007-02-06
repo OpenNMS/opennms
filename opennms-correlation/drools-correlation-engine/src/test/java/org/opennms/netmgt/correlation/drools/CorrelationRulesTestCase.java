@@ -3,6 +3,7 @@ package org.opennms.netmgt.correlation.drools;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngine;
+import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
@@ -15,7 +16,7 @@ public class CorrelationRulesTestCase extends
     private MockEventIpcManager m_eventIpcMgr;
     protected EventAnticipator m_anticipator;
     protected Integer m_anticipatedMemorySize = 0;
-    private CorrelationEngine[] m_engines;
+    private CorrelationEngineRegistrar m_correlator;
     
     protected CorrelationRulesTestCase() {
         System.setProperty("opennms.home", PropertiesUtils.substitute("${user.dir}/src/test/opennms-home", System.getProperties()));
@@ -27,6 +28,10 @@ public class CorrelationRulesTestCase extends
                 "classpath:test-context.xml",
                 "classpath:META-INF/opennms/correlation-engine.xml"
         };
+    }
+    
+    public void setCorrelationEngineRegistrar(CorrelationEngineRegistrar correlator) {
+        m_correlator = correlator;
     }
 
     public void setEventIpcMgr(MockEventIpcManager eventIpcManager) {
@@ -42,19 +47,7 @@ public class CorrelationRulesTestCase extends
     }
 
     protected DroolsCorrelationEngine findEngineByName(String engineName) {
-        for (CorrelationEngine engine : m_engines) {
-            if (engine instanceof DroolsCorrelationEngine) {
-                DroolsCorrelationEngine droolsEngine = (DroolsCorrelationEngine)engine;
-                if (engineName.equals(droolsEngine.getName())) {
-                    return droolsEngine;
-                }   
-            }
-        }
-        return null;
-    }
-
-    public void setEngines(CorrelationEngine[] engines) {
-        m_engines = engines;
+        return (DroolsCorrelationEngine) m_correlator.findEngineByName(engineName);
     }
 
     protected void anticipate(Event event) {

@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,7 +44,7 @@ public class DataSourceFactoryBean implements FactoryBean, InitializingBean, Dis
     }
 
     public Class getObjectType() {
-        return DataSourceFactory.getDataSource().getClass();
+        return (DataSourceFactory.getDataSource() == null ? DataSource.class : DataSourceFactory.getDataSource().getClass());
     }
 
     public boolean isSingleton() {

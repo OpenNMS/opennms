@@ -2,89 +2,83 @@ package org.opennms.netmgt.correlation.drools
 
 import java.util.Date;
 
-import org.opennms.netmgt.correlation.drools.CorrelationExample.EventBean;
-import org.opennms.netmgt.correlation.drools.CorrelationExample.Outage;
-import org.opennms.netmgt.correlation.drools.CorrelationExample.Node;
-import org.opennms.netmgt.correlation.drools.CorrelationExample.PossibleCause;
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.correlation.drools.Cause.Type;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
+import org.drools.spi.KnowledgeHelper;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global org.opennms.netmgt.correlation.drools.NodeService nodeService;
 global java.lang.Long POLL_INTERVAL;
 
-rule "openIssue"
+
+rule "newIssue"
 	salience 100
 	when
-		$e : EventBean( uei matches "nodeDown", $node : node )
+		$e : Event( $uei : uei matches ".*nodeDown", $nodeid : nodeid )
+		not( Cause( cause == $nodeid ) )
 	then
-		println( "Found nodeDown event " + $e + " for node " + $node );
-		Outage $outage = new Outage( $node, $e );
-		assert( $outage );
-		
-		PossibleCause $cause = new PossibleCause( $node, $outage, true );
-		assert( $cause );
-		
-		retract( $e );
-		println( "Initial Possible cause: " + $cause ); 
+		Cause $c = new Cause( Type.POSSIBLE, $nodeid, $e );
+		println( "Found nodeDown event " + $uei + " for node " + $nodeid +". Asserting: " + $c );
+		assert( $c );
 end
 
-rule "parentDependency"
-	salience 100
-	when
-		PossibleCause( $node : node -> ( $node.getParent() != null ) , $outage : outage )
-		not ( PossibleCause( $node2 : node -> ( $node2 == $node.getParent() ), outage == $outage ) )
-	then
-	    PossibleCause $cause = new PossibleCause( $node.getParent(), $outage );
-		assert( $cause );
-		println( "Possible cause: " + $cause );
-end
-
-rule "causeTimeout"
-
-	duration 10000
-	when
-		$possibleCause : PossibleCause( verified == false )
-	then
-		println( "Retracting " + $possibleCause + " since we didn't verify it in one cycle");
-		retract( $possibleCause );
-end 
-
-rule "verify possible causes"
-	salience 100
-	when
-		$possibleCause : PossibleCause( $node : node, verified == false )
-		$outage : Outage( node == $node )
-	then
-		$possibleCause.setVerified( true );
-		modify( $possibleCause );
-		println( "Verified " + $possibleCause );
-end
-	
-rule "parentless node is its own root cause"
-	salience 100
-	when
-		$possibleCause : PossibleCause( $node : node -> ( $node.getParent() == null ), $outage: outage, verified == true )
-		Outage( node == $node )
-	then
-		$outage.setCause( $node );
-		println( $outage );
-		modify( $outage );
-		println( "Found root cause for " + $outage + " : " + $node + " since it has no parents");
-end
-
-rule "no parent causes possible"
+rule "possibleCauses"
 	salience 200
 	when
-		$outage : Outage( cause == null )
-		$pc : PossibleCause( $node : node -> ( $node.getParent() != null ), outage == $outage, verified == true )
-		$o : Outage( node == $node )
-		not( PossibleCause( node == ( $node.getParent() ), outage == $outage ) )
+		$c : Cause( $cause : cause, $e : symptom )
+		not( Cause( cause == ( nodeService.getParentNode( $cause ) ) ) )
 	then
-		$outage.setCause( $node );
-		modify( $outage );
-		println( "Found root cause for " + $outage + " : " + $node + " since its parent cause is resolved.");
+		Long $parentNode = nodeService.getParentNode( $cause );
+		if ( $parentNode != null ) {
+			Cause $parent = possibleCause( engine, $parentNode, $e, POLL_INTERVAL );
+			$parent.addImpacted( $c );
+			println( "No Cause for parent. Asserting: " + $parent );
+			assert( $parent );
+		} else {
+			println( "No parent for node " + $cause );
+		}
 end
 
+rule "existingCause"
+	salience 200
+	when
+		$c : Cause( $cause : cause, $e : symptom )
+		$parent : Cause( cause == ( nodeService.getParentNode( $cause ) ), impacted excludes $c )
+	then
+		$parent.addImpacted( $c );
+		println(" Adding cause " + $c +" to existing parent " + $parent );
+		modify( $parent );
+end
+ 
+rule "resolveIssue"
+	salience 100
+	when
+		$up : Event( $upUei : uei matches ".*nodeUp", $node : nodeid )
+		$down : Event( uei matches ".*nodeDown", nodeid == $node )
+	then
+		println( "Found nodeUp event " + $upUei + " for node " + $node );
+		retract( $down );
+		retract( $up );
+end
+
+function Cause possibleCause( DroolsCorrelationEngine engine, Long nodeId, Event symptom, Long POLL_INTERVAL ) {
+	return new Cause( Type.POSSIBLE, nodeId, symptom, engine.setTimer( POLL_INTERVAL ) );
+}
+
+//function void foundRootCause( DroolsCorrelationEngine engine, PossibleCause cause ) {
+//	EventBuilder bldr = new EventBuilder( "rootCauseEvent", "Drools" );
+//	bldr.setNodeid((int)cause.getSymptom().getNodeid());
+//	bldr.addParam("rootCause", cause.getCause().intValue());
+//	
+//	engine.sendEvent(bldr.getEvent());
+//}
+
 function void println(Object msg) {
-	System.out.println(System.currentTimeMillis()+" : "+msg);
+	System.out.println(new Date() + " : " + msg);
 }
 
 
