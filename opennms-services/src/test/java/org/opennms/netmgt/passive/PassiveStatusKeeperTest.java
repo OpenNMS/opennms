@@ -104,9 +104,11 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
-        m_psk = PassiveStatusKeeper.getInstance();
+        m_psk = new PassiveStatusKeeper();
         m_psk.setEventManager(m_eventMgr);
         m_psk.setDbConnectionFactory(m_db);
+        
+        PassiveStatusKeeper.setInstance(m_psk);
         
         m_psk.init();
         m_psk.start();
@@ -235,8 +237,6 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_db.createOutage(svc, downEvent);
 
         m_psk.stop();
-        m_psk.onStop();
-        
         
         m_psk.setEventManager(m_eventMgr);
         m_psk.setDbConnectionFactory(m_db);
