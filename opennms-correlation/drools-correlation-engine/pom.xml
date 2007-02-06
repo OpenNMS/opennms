@@ -101,7 +101,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupid>postgresql</groupid>
+      <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
