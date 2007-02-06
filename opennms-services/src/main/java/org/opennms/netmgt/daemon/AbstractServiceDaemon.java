@@ -104,6 +104,11 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, Initializi
     final public void init() {
         String prefix = ThreadCategory.getPrefix();
         try {
+            
+            if (!isStartPending()) {
+                return;
+            }
+            
             ThreadCategory.setPrefix(getName());
             log().debug(getName()+" initializing.");
 

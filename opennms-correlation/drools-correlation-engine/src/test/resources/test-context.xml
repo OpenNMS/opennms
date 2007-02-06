@@ -4,5 +4,7 @@
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
         
     <bean name="eventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager" />
+    
+    <bean name="correlator" class="org.opennms.netmgt.correlation.drools.MockCorrelator" />
         
 </beans>

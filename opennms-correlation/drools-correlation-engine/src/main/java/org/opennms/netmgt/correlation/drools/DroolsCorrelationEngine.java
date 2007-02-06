@@ -107,5 +107,9 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     public String getName() {
         return m_name;
     }
+
+    public void setGlobal(String name, Object value) {
+        m_workingMemory.setGlobal(name, value);
+    }
     
 }

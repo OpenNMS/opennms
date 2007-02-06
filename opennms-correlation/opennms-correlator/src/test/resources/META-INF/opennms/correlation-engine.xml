@@ -11,7 +11,8 @@
 		</property>
 	</bean>
 	
-	<bean name="listedEngines" class="org.opennms.netmgt.correlation.TestListFactoryBean">
+	<bean name="listedEngines" class="org.opennms.netmgt.correlation.MultiEngineBuilder">
+		<property name="correlator" ref="correlator" />
 		<property name="eventIpcManager" ref="eventIpcManager" />
 	</bean>
 

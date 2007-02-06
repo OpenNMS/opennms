@@ -6,10 +6,9 @@ import java.util.List;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-public class TestListFactoryBean implements FactoryBean, InitializingBean {
+public class MultiEngineBuilder implements InitializingBean {
     
     
     private static class MyEngine extends AbstractCorrelationEngine {
@@ -30,31 +29,26 @@ public class TestListFactoryBean implements FactoryBean, InitializingBean {
         protected void timerExpired(Integer timerId) {
             
         }
+
+        public String getName() {
+           return "MyEngine";
+        }
         
     }
     
     CorrelationEngine[] m_engines;
+    CorrelationEngineRegistrar m_correlator;
     EventIpcManager m_eventIpcManager;
     
-    public Object getObject() throws Exception {
-        return m_engines;
-    }
-
-    public Class getObjectType() {
-        return CorrelationEngine[].class;
-    }
-
-    public boolean isSingleton() {
-        return true;
-    }
-
     public void afterPropertiesSet() throws Exception {
         MyEngine engine = new MyEngine();
         engine.setEventIpcManager(m_eventIpcManager);
         
-        m_engines = new CorrelationEngine[] {
-                engine
-        };
+        m_correlator.addCorrelationEngine(engine);
+    }
+    
+    public void setCorrelator(CorrelationEngineRegistrar correlator) {
+        m_correlator = correlator;
     }
 
     public void setEventIpcManager(EventIpcManager eventIpcManager) {

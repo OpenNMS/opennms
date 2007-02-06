@@ -42,14 +42,6 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         System.err.println("Deduplicating engines");
         HashSet<CorrelationEngine> engineSet = new HashSet<CorrelationEngine>(beans.values()); 
         
-        Map<String, CorrelationEngine[]> listBeans = 
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine[].class);
-        
-        for (CorrelationEngine[] engines : listBeans.values()) {
-            engineSet.addAll(Arrays.asList(engines));
-        }
-        
-
         m_correlationEngines = new LinkedList<CorrelationEngine>(engineSet);
         
         System.err.println("Found "+m_correlationEngines.size()+" engines");

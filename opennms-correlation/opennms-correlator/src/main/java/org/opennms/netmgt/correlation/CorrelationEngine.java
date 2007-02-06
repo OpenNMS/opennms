@@ -35,6 +35,8 @@ import java.util.List;
 import org.opennms.netmgt.xml.event.Event;
 
 public interface CorrelationEngine {
+    
+    String getName();
 
 	List<String> getInterestingEvents();
 

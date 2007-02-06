@@ -39,11 +39,12 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
-public class Correlator extends AbstractServiceDaemon {
+public class Correlator extends AbstractServiceDaemon implements CorrelationEngineRegistrar {
 
 	private EventIpcManager m_eventIpcManager;
 	private List<CorrelationEngine> m_engines;
 	private List<EngineAdapter> m_adapters = new LinkedList<EngineAdapter>();
+    private boolean m_initialized = false;
 	
 	
 	private class EngineAdapter implements EventListener {
@@ -80,6 +81,8 @@ public class Correlator extends AbstractServiceDaemon {
             System.err.println("Registering engine "+engine);
 			m_adapters.add(new EngineAdapter(engine));
 		}
+        
+        m_initialized = true;
 		
 	}
 
@@ -90,5 +93,28 @@ public class Correlator extends AbstractServiceDaemon {
 	public void setEventIpcManager(EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
 	}
+    
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.correlation.CorrelationEngineRegistrar#addCorrelationEngine(org.opennms.netmgt.correlation.CorrelationEngine)
+     */
+    public void addCorrelationEngine(CorrelationEngine engine) {
+        m_engines.add(engine);
+        if (m_initialized) {
+            m_adapters.add(new EngineAdapter(engine));
+        }
+    }
+
+    public CorrelationEngine findEngineByName(String name) {
+        for (CorrelationEngine engine : m_engines) {
+            if (name.equals(engine.getName())) {
+                return engine;
+            }
+        }
+        return null;
+    }
+
+    public List<CorrelationEngine> getEngines() {
+        return m_engines;
+    }
 
 }

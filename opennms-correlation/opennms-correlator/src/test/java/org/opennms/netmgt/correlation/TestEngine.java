@@ -46,4 +46,8 @@ public class TestEngine extends AbstractCorrelationEngine {
         sendEvent(bldr.getEvent());
     }
 
+    public String getName() {
+        return "TestEngine";
+    }
+
 }
