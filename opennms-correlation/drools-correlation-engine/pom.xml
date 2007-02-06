@@ -100,5 +100,10 @@
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupid>postgresql</groupid>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
