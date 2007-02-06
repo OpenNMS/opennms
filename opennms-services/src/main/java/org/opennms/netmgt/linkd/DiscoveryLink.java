@@ -219,6 +219,7 @@ final class DiscoveryLink implements ReadyRunnable {
 
 					int cdpIfIndex = cdpIface.getCdpIfIndex();
 					
+					if (log.isDebugEnabled()) log.debug("run: found CDP ifindex " + cdpIfIndex);
 					if (cdpIfIndex < 0) {
 						log.warn("run: found not valid CDP IfIndex "
 								+ cdpIfIndex + " . Skipping");
@@ -226,6 +227,8 @@ final class DiscoveryLink implements ReadyRunnable {
 					}
 
 					InetAddress targetIpAddr = cdpIface.getCdpTargetIpAddr();
+
+					if (log.isDebugEnabled()) log.debug("run: found CDP target ipaddress " + targetIpAddr);
 
 					int targetCdpNodeId = cdpIface.getCdpTargetNodeId();
 
@@ -236,6 +239,8 @@ final class DiscoveryLink implements ReadyRunnable {
 									+ ". Skipping");
 						continue;
 					}
+
+					if (log.isDebugEnabled()) log.debug("run: found CDP target nodeid " + targetCdpNodeId);
 
 					if (targetCdpNodeId == curCdpNodeId) {
 						if (log.isDebugEnabled())
@@ -254,8 +259,10 @@ final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
+					if (log.isDebugEnabled()) log.debug("run: found CDP target ifindex " + cdpDestIfindex);
+
 					if (log.isDebugEnabled())
-						log.debug("run: CDP link found: nodeid=" + curCdpNodeId
+						log.debug("run: parsing CDP link: nodeid=" + curCdpNodeId
 								+ " ifindex=" + cdpIfIndex + " nodeparentid="
 								+ targetCdpNodeId + " parentifindex="
 								+ cdpDestIfindex);
@@ -278,12 +285,16 @@ final class DiscoveryLink implements ReadyRunnable {
 					// now add the cdp link
 					if (add) {
 						if (log.isDebugEnabled())
-							log.debug("run: try add CDP link found ");
+							log.debug("run: adding found CDP link ");
 						NodeToNodeLink lk = new NodeToNodeLink(targetCdpNodeId,
 								cdpDestIfindex);
 						lk.setNodeparentid(curCdpNodeId);
 						lk.setParentifindex(cdpIfIndex);
 						addNodetoNodeLink(lk, log);
+					} else {
+						if (log.isDebugEnabled())
+							log.debug("run: found CDP link not added");
+						
 					}
 				}
 			}
@@ -1316,10 +1327,11 @@ final class DiscoveryLink implements ReadyRunnable {
 			
 			Set<String> macs = node1.getMacAddressesOnBridgePort(bridgeport);
 			Set<String> macsonnode2 = nodeToMac.get(nodeid2);
-			if (macsonnode2 != null ) macs.removeAll(macsonnode2);
+			if (macsonnode2 != null ) {
+				macs.removeAll(macsonnode2);
+				macsParsed.addAll(macsonnode2);
+			}
 			addLinks(macs,node1.getNodeId(),ifindex1,log);
-			
-			
 		} else {
 			if (log.isDebugEnabled())
 				log
@@ -1360,11 +1372,16 @@ final class DiscoveryLink implements ReadyRunnable {
 
 			node1.addBackBoneBridgePorts(bridgeport1);
 			m_bridge.put(new Integer(node1.getNodeId()), node1);
-			
+			Set<String> macsonnode1 = nodeToMac.get(node1.getNodeId());
+			if (macsonnode1 != null) macsParsed.addAll(macsonnode1);
+
 			node2.addBackBoneBridgePorts(bridgeport2);
 			m_bridge.put(new Integer(node2.getNodeId()),node2);
+			Set<String> macsonnode2 = nodeToMac.get(node2.getNodeId());
+			if (macsonnode2 != null) macsParsed.addAll(macsonnode2);
+
 			if (log.isDebugEnabled())
-				log.debug("parseCdpLinkOn: Adding node on links. Skipping");
+				log.debug("parseCdpLinkOn: Adding node on links.");
 			addLinks(getMacsOnBridgeLink(node1,
 					bridgeport1, node2, bridgeport2),node1.getNodeId(),ifindex1,log);
 		} else {
@@ -1416,7 +1433,6 @@ final class DiscoveryLink implements ReadyRunnable {
 									+ curMacAddress
 									+ " just found on other bridge port! Skipping...");
 					continue;
-
 				}
 				macsParsed.add(curMacAddress);
 				if (log.isDebugEnabled())
