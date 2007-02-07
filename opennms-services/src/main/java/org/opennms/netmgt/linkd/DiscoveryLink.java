@@ -75,7 +75,6 @@ final class DiscoveryLink implements ReadyRunnable {
 
 	private List<MacToNodeLink> maclinks = new ArrayList<MacToNodeLink>();
 
-
 	private HashMap<Integer,LinkableNode> m_bridge = new HashMap<Integer,LinkableNode>();
 
 	private List<LinkableNode> routerNodes = new ArrayList<LinkableNode>();
@@ -459,6 +458,7 @@ final class DiscoveryLink implements ReadyRunnable {
 											+ " . Nothing to save to db");
 							continue; // no saving info if no nodeid
 						}
+						
 						int designatednodeid = designatedNode.getNodeId();
 
 						if (log.isDebugEnabled())
@@ -502,6 +502,8 @@ final class DiscoveryLink implements ReadyRunnable {
 
 						curNode.addBackBoneBridgePorts(stpbridgeport);
 						m_bridge.put(new Integer(curNodeId), curNode);
+						Set<String> nodeati = nodeToMac.get(curNodeId);
+						if (nodeati != null) macsParsed.addAll(nodeati);
 
 
 						if (log.isDebugEnabled())
@@ -514,7 +516,10 @@ final class DiscoveryLink implements ReadyRunnable {
 								.addBackBoneBridgePorts(designatedbridgeport);
 						m_bridge.put(new Integer(designatednodeid),
 								designatedNode);
+						Set<String> designatednodeati = nodeToMac.get(designatednodeid);
+						if (designatednodeati != null) macsParsed.addAll(designatednodeati);
 
+						
 						if (log.isDebugEnabled())
 							log.debug("run: adding links on bb bridge port " + designatedbridgeport);
 
@@ -524,6 +529,7 @@ final class DiscoveryLink implements ReadyRunnable {
 
 						// writing to db using class
 						// DbDAtaLinkInterfaceEntry
+						//TODO make sure not using atinterface.......
 						NodeToNodeLink lk = new NodeToNodeLink(curNodeId,
 								curIfIndex);
 						lk.setNodeparentid(designatednodeid);
@@ -573,8 +579,8 @@ final class DiscoveryLink implements ReadyRunnable {
 
 					Set macs = curNode.getMacAddressesOnBridgePort(curBridgePort);
 
-					HashMap bridgesOnPort = new HashMap();
-					bridgesOnPort = getBridgesFromMacs(macs);
+					HashMap bridgesOnPort = getBridgesFromMacs(macs);
+					
 					if (bridgesOnPort.isEmpty()) {
 						if (log.isDebugEnabled())
 							log.debug("run: no bridge info found on port "
@@ -688,6 +694,9 @@ final class DiscoveryLink implements ReadyRunnable {
 
 							curNode.addBackBoneBridgePorts(curBridgePort);
 							m_bridge.put(new Integer(curNodeId), curNode);
+							Set<String> nodeati = nodeToMac.get(curNodeId);
+							if (nodeati != null) macsParsed.addAll(nodeati);
+
 
 							if (log.isDebugEnabled())
 								log.debug("run: backbone port found for node "
@@ -697,6 +706,8 @@ final class DiscoveryLink implements ReadyRunnable {
 
 							endNode.addBackBoneBridgePorts(endBridgePort);
 							m_bridge.put(new Integer(endNodeid), endNode);
+							Set<String> endnodeati = nodeToMac.get(endNodeid);
+							if (endnodeati != null) macsParsed.addAll(endnodeati);
 
 							// finding links between two backbone ports
 							addLinks(getMacsOnBridgeLink(curNode,
