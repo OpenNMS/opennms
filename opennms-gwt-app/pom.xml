@@ -1,0 +1,167 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms</artifactId>
+        <version>1.3.3-SNAPSHOT</version>
+    </parent>
+    <properties>
+        <xdocletOutput>${project.build.directory}/${project.build.finalName}/WEB-INF</xdocletOutput>
+        <gwtVersion>1.3.3</gwtVersion>
+        <moduleName>org.opennms.gwt.sample.hello.Hello</moduleName>
+        <moduleHtml>Hello.html</moduleHtml>
+    </properties>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>opennms-gwt-app</artifactId>
+    <packaging>war</packaging>
+    <name>OpenNMS GWT App</name>
+    <!-- Work-around for MNG-2209 -->
+    <url>${project.artifactId}/</url>
+    <pluginRepositories>
+      <pluginRepository>
+        <id>opennms-repo</id>
+        <name>OpenNMS Repository</name>
+        <url>http://repo.opennms.org/maven2</url>
+      </pluginRepository>  
+      <pluginRepository>
+        <snapshots />
+        <id>opennms-snapshots</id>
+        <name>OpenNMS SNAPSHOT Repository</name>
+        <url>http://repo.opennms.org/snapshots</url>
+      </pluginRepository>
+    </pluginRepositories>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwtVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev-linux</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-eclipse-plugin</artifactId>
+            <configuration>
+              <additionalConfig>
+                <file>
+                  <name>${project.artifactId}.launch</name>
+                 <content><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.GWTShell"/>
+<listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;${project.artifactId}&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.variableClasspathEntry&quot;&gt;&#10;&lt;memento variableString=&quot;&#36;{workspace_loc:${project.artifactId}/src/main/java}&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;${project.artifactId}&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-out target ${moduleName}/${moduleHtml}"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="${project.artifactId}"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/${project.artifactId}"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+</launchConfiguration>
+]]></content>
+                </file>
+              </additionalConfig>
+            </configuration>
+          </plugin>
+          <plugin> 
+            <groupId>org.mortbay.jetty</groupId> 
+            <artifactId>maven-jetty-plugin</artifactId>
+            <configuration>
+              <!-- contextPath>/jettyGoogleHello</contextPath -->
+              <connectors>
+                <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                  <port>9090</port>
+                  <maxIdleTime>60000</maxIdleTime>
+                </connector>
+              </connectors>
+              <scanIntervalSeconds>10</scanIntervalSeconds>
+            </configuration>
+           </plugin>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>tomcat-maven-plugin</artifactId>
+              <configuration>
+                <port>8765</port>
+              </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.opennms.maven.plugins</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <configuration>
+                    <moduleName>${moduleName}</moduleName>
+                    <homePage>${moduleHtml}</homePage>
+                    <gwtDirectory>${GWThome}</gwtDirectory>
+                    <!-- testClass>plants.client.TestGWTClasses</testClass -->
+                    <pathelements>
+                        <pathelement>src/main/webapp</pathelement>
+                    </pathelements>
+                </configuration>
+                <dependencies>  <!-- "provided" jars that the shell needs -->
+                    <dependency>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                        <version>1.2.8</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <!-- goal>test</goal -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>${project.build.directory}/${moduleName}</directory>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <useFile>false</useFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
