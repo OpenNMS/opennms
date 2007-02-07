@@ -373,7 +373,8 @@ public class Installer {
 
                     case 'u':
                         i++;
-                        m_installerDb.setPostgresAdminUser(getNextArg(argv, i, 'u'));
+                        m_pg_user = getNextArg(argv, i, 'u');
+                        m_installerDb.setPostgresAdminUser(m_pg_user);
                         break;
 
                     case 'U':
