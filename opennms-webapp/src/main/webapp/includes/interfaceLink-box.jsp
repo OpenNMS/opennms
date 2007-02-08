@@ -37,7 +37,7 @@
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*" %>
 
 <%
-    statusMap = new HashMap();
+    statusMap = new HashMap<Character, String>();
   	statusMap.put( new Character('A'), "Active" );
     statusMap.put( new Character(' '), "Unknown" );
     statusMap.put( new Character('D'), "Deleted" );
@@ -97,7 +97,7 @@
 </table>
 
 <%!
-    public static HashMap statusMap;
+    public static HashMap<Character, String> statusMap;
 
      public String getVlanColorIdentifier( int i ) {
         int red = 128;
@@ -117,7 +117,7 @@
     }
     
     public String getStatusString( char c ) {
-        return( (String)statusMap.get( new Character(c) ));
+        return statusMap.get(new Character(c));
     }
 
 %>
