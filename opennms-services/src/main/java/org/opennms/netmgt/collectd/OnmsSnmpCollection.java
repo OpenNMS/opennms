@@ -38,14 +38,13 @@ package org.opennms.netmgt.collectd;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
@@ -65,8 +64,16 @@ public class OnmsSnmpCollection {
     private IfAliasResourceType m_ifAliasResourceType;
     private Map<String, ResourceType> m_genericIndexResourceTypes;
     private int m_maxVarsPerPdu;
+    private DataCollectionConfig m_dataCollectionConfig;
 
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params) {
+        this(agent, params, null);
+    }
+
+    public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params, DataCollectionConfig config) {
+        // Need to set this first before determineMaxVarsPerPdu is called
+        m_dataCollectionConfig = config;
+        
         m_params = params;
         m_maxVarsPerPdu = determineMaxVarsPerPdu(agent);
     }
@@ -89,7 +96,7 @@ public class OnmsSnmpCollection {
 
     private int determineMaxVarsPerPdu(CollectionAgent agent) {
         // Retrieve configured value for max number of vars per PDU
-        int maxVarsPerPdu = DataCollectionConfigFactory.getInstance().getMaxVarsPerPdu(getName());
+        int maxVarsPerPdu = getDataCollectionConfig().getMaxVarsPerPdu(getName());
         if (maxVarsPerPdu == -1) {
             log().info("determineMaxVarsPerPdu: using agent's configured value: "
                        + agent.getMaxVarsPerPdu());
@@ -101,15 +108,28 @@ public class OnmsSnmpCollection {
         return maxVarsPerPdu;
     }
 
+    public DataCollectionConfig getDataCollectionConfig() {
+        if (m_dataCollectionConfig == null) {
+            initializeDataCollectionConfig();
+        }
+        return m_dataCollectionConfig;
+    }
+
+    public void setDataCollectionConfig(DataCollectionConfig config) {
+        m_dataCollectionConfig = config;
+    }
+    
+    private void initializeDataCollectionConfig() {
+        setDataCollectionConfig(DataCollectionConfigFactory.getInstance());
+    }
+
     public String getStorageFlag() {
         String collectionName = getName();
-        String storageFlag = DataCollectionConfigFactory.getInstance().getSnmpStorageFlag(collectionName);
+        String storageFlag = getDataCollectionConfig().getSnmpStorageFlag(collectionName);
         if (storageFlag == null) {
-            if (log().isEnabledFor(Priority.WARN)) {
-                log().warn("getStorageFlag: Configuration error, failed to "
-                           + "retrieve SNMP storage flag for collection: "
-                           + collectionName);
-            }
+            log().warn("getStorageFlag: Configuration error, failed to "
+                    + "retrieve SNMP storage flag for collection: "
+                    + collectionName);
             storageFlag = SnmpCollector.SNMP_STORAGE_PRIMARY;
         }
         return storageFlag;
@@ -127,9 +147,9 @@ public class OnmsSnmpCollection {
     public Collection<AttributeType> getAttributeTypes(CollectionAgent agent, int ifType) {
         String sysObjectId = agent.getSysObjectId();
         String hostAddress = agent.getHostAddress();
-        List<MibObject> oidList = DataCollectionConfigFactory.getInstance().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
+        List<MibObject> oidList = getDataCollectionConfig().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
 
-        Map groupTypes = new HashMap();
+        Map<String, AttributeGroupType> groupTypes = new HashMap<String, AttributeGroupType>();
 
         List<AttributeType> typeList = new LinkedList<AttributeType>();
         for (MibObject mibObject : oidList) {
@@ -143,8 +163,8 @@ public class OnmsSnmpCollection {
         return typeList;
     }
 
-    private AttributeGroupType getGroup(Map groupTypes, MibObject mibObject) {
-        AttributeGroupType groupType = (AttributeGroupType) groupTypes.get(mibObject.getGroupName());
+    private AttributeGroupType getGroup(Map<String, AttributeGroupType> groupTypes, MibObject mibObject) {
+        AttributeGroupType groupType = groupTypes.get(mibObject.getGroupName());
         if (groupType == null) {
             groupType = new AttributeGroupType(mibObject.getGroupName(), mibObject.getGroupIfType());
             groupTypes.put(mibObject.getGroupName(), groupType);
@@ -186,7 +206,7 @@ public class OnmsSnmpCollection {
     private Map<String, ResourceType> getGenericIndexResourceTypes(CollectionAgent agent) {
         if (m_genericIndexResourceTypes == null) {
             Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
-                DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().values();
+                getDataCollectionConfig().getConfiguredResourceTypes().values();
             Map<String,ResourceType> resourceTypes = new HashMap<String,ResourceType>();
             for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
                 resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
@@ -200,8 +220,8 @@ public class OnmsSnmpCollection {
         return getGenericIndexResourceTypes(agent).get(name);
     }
 
-    private Collection getResourceTypes(CollectionAgent agent) {
-        HashSet set = new HashSet(3);
+    private Collection<ResourceType> getResourceTypes(CollectionAgent agent) {
+        HashSet<ResourceType> set = new HashSet<ResourceType>(3);
         set.add(getNodeResourceType(agent));
         set.add(getIfResourceType(agent));
         set.add(getIfAliasResourceType(agent));
@@ -209,20 +229,18 @@ public class OnmsSnmpCollection {
         return set;
     }
 
-    public Collection getAttributeTypes(CollectionAgent agent) {
-        HashSet set = new HashSet();
-        for (Iterator it = getResourceTypes(agent).iterator(); it.hasNext();) {
-            ResourceType resourceType = (ResourceType) it.next();
+    public Collection<AttributeType> getAttributeTypes(CollectionAgent agent) {
+        HashSet<AttributeType> set = new HashSet<AttributeType>();
+        for (ResourceType resourceType : getResourceTypes(agent)) {
             set.addAll(resourceType.getAttributeTypes());
         }
         return set;
 
     }
 
-    public Collection getResources(CollectionAgent agent) {
-        LinkedList resources = new LinkedList();
-        for (Iterator it = getResourceTypes(agent).iterator(); it.hasNext();) {
-            ResourceType resourceType = (ResourceType) it.next();
+    public Collection<? extends CollectionResource> getResources(CollectionAgent agent) {
+        LinkedList<CollectionResource> resources = new LinkedList<CollectionResource>();
+        for (ResourceType resourceType : getResourceTypes(agent)) {
             resources.addAll(resourceType.getResources());
         }
         return resources;

@@ -73,7 +73,7 @@ public abstract class ResourceType {
 
     public abstract CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias);
     
-    public abstract Collection getResources();
+    public abstract Collection<? extends CollectionResource> getResources();
     
     public Category log() { return ThreadCategory.getInstance(getClass()); }
 }
