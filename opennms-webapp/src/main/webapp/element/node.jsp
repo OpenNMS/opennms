@@ -403,9 +403,7 @@
                                   <td><%=vlan.getVlanName()%></td>
                                   <td><%=vlan.getVlanTypeString()%></td>
                                   <td><%=vlan.getVlanStatusString()%></td>
-                                  <td><%=vlan.getStatusString()%> -
-                                  <%=vlan.get_lastPollTime()%></td></tr>
-
+                                  <td><%=vlan.getStatusString()%> - <%=vlan.get_lastPollTime()%></td>
                                 </tr>
 
                     <% } %>
