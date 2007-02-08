@@ -118,7 +118,7 @@ if (overallRtcValue < 0) {
 <table>
   <tr class="<%= overallStatus %>">
     <td class="divider">Overall Availability</td>
-    <td class="divider bright" colspan="2"><%= overallStatusString %></td>
+    <td class="divider bright" colspan="2"><%= overallStatusString %>%</td>
   </tr>
 
   <% for( int i=0; i < services.length; i++ ) { %>
