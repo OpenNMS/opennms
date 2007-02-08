@@ -311,7 +311,7 @@ public class FileAnticipator extends Assert {
             File f = i.previous();
             if (!f.exists()) {
                 if (!ignoreNonExistantFiles) {
-                    fail("Expected file that needs to be deleteted does not exist: " + f.getAbsolutePath());
+                    fail("Expected file that needs to be deleted does not exist: " + f.getAbsolutePath());
                 }
             } else {
                 assertTrue("Could not delete expected file: " + f.getAbsolutePath(), f.delete());
