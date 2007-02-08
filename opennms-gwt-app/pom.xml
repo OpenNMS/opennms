@@ -50,8 +50,9 @@
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev-linux</artifactId>
+            <artifactId>gwt-dev</artifactId>
             <version>${gwtVersion}</version>
+            <classifier>linux</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -63,6 +64,19 @@
     </dependencies>
     <build>
         <plugins>
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>.gwt-cache</directory>
+                </fileset>
+                <fileset>
+                  <directory>tomcat</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
           <plugin>
             <artifactId>maven-eclipse-plugin</artifactId>
             <configuration>
