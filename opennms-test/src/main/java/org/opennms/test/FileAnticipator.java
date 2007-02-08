@@ -287,12 +287,35 @@ public class FileAnticipator extends Assert {
         return f;
     }
     
+    /**
+     * Delete expected files, throwing an AssertionFailedError if any of
+     * the expected files don't exist.
+     */
     public void deleteExpected() {
+        deleteExpected(false);
+    }
+    
+    /**
+     * Delete expected files, throwing an AssertionFailedError if any of
+     * the expected files don't exist.
+     *
+     * @param ignoreNonExistantFiles if true, non-existant files will be
+     *      ignored and will not throw an AssertionFailedError
+     * @throws AssertionFailedError if ignoreNonExistantFiles is false
+     *      and an expected file does not exist, or if a file cannot be deleted
+     */
+    public void deleteExpected(boolean ignoreNonExistantFiles) {
         assertInitialized();
 
         for (ListIterator<File> i = m_expecting.listIterator(m_expecting.size()); i.hasPrevious(); ) {
             File f = i.previous();
-            assertTrue("\"" + f.getAbsolutePath() + "\" deleted", f.delete());
+            if (!f.exists()) {
+                if (!ignoreNonExistantFiles) {
+                    fail("Expected file that needs to be deleteted does not exist: " + f.getAbsolutePath());
+                }
+            } else {
+                assertTrue("Could not delete expected file: " + f.getAbsolutePath(), f.delete());
+            }
             i.remove();
         }
         assertEquals("No expected files left over", m_expecting.size(), 0);
