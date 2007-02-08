@@ -28,7 +28,7 @@ Application '${model.application.name}' has ${fn:length(model.memberServices)} s
   <c:forEach items="${model.memberServices}" var="service">
     <tr>
     	<td><a href="element/node.jsp?node=${service.ipInterface.node.id}">${service.ipInterface.node.label}</a></td> 
-    	<td><a href="element/interface.jsp?node=${service.ipInterface.node.id}&amp;intf=${service.ipAddress}">${service.ipAddress}</a></td> 
+    	<td><a href="element/interface.jsp?ipinterfaceid=${service.ipInterface.id}">${service.ipInterface.ipAddress}</a></td> 
     	<td><a href="element/service.jsp?ifserviceid=${service.id}">${service.serviceName}</a></td> 
     </tr>
   </c:forEach>
