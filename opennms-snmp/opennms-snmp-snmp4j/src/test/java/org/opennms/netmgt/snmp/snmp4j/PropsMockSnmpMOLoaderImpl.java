@@ -29,7 +29,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp.snmp4j;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
@@ -37,13 +37,13 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.HexStringSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.IpAddressSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.NetworkAddressSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.NumberSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.OidSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.StringSnmpValue;
-import org.opennms.netmgt.snmp.mock.TestSnmpValue.TimeticksSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue.HexStringSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue.IpAddressSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue.NetworkAddressSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue.NumberSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue.OidSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue.StringSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue.TimeticksSnmpValue;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOScalar;

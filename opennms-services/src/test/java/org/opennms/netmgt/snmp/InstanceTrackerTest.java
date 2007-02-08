@@ -31,7 +31,7 @@
 //
 package org.opennms.netmgt.snmp;
 
-import org.opennms.netmgt.snmp.mock.TestSnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue;
 
 public class InstanceTrackerTest extends SnmpCollectorTestCase {
 

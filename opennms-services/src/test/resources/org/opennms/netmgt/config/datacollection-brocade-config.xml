@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<datacollection-config rrdRepository="target/rrd-output-data/snmp/">
+<datacollection-config rrdRepository="%rrdRepository%">
   <snmp-collection name="default" maxVarsPerPdu="10" snmpStorageFlag="select">
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:8928</rra>

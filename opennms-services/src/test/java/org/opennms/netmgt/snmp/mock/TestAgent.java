@@ -42,6 +42,7 @@ import java.util.TreeMap;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue;
 
 
 public class TestAgent {
