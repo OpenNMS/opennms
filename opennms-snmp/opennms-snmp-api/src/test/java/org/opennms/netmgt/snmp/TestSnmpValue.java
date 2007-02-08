@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -228,7 +228,7 @@ public class TestSnmpValue implements SnmpValue {
         return false;
     }
 
-    static SnmpValue parseMibValue(String mibVal) {
+    public static SnmpValue parseMibValue(String mibVal) {
         if (mibVal.startsWith("OID:"))
             return new OidSnmpValue(mibVal.substring("OID:".length()).trim());
         else if (mibVal.startsWith("Timeticks:"))

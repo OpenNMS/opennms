@@ -29,7 +29,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -62,7 +62,7 @@ public class MockSnmpAgentTest extends TestCase {
 		MockLogAppender.setupLogging();
 
 		agt = MockSnmpAgent.createAgentAndRun(
-				new ClassPathResource("org/opennms/netmgt/snmp/mock/loadSnmpDataTest.properties"),
+				new ClassPathResource("org/opennms/netmgt/snmp/loadSnmpDataTest.properties"),
 				"127.0.0.1/1691");	// Homage to Empire
 	}
 	

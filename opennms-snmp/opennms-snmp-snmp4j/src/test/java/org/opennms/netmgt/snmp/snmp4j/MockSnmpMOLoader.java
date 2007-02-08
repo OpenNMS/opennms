@@ -29,7 +29,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp.snmp4j;
 
 import java.util.ArrayList;
 

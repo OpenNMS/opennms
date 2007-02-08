@@ -54,12 +54,12 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdConfig;
-import org.opennms.netmgt.snmp.mock.MockSnmpAgent;
+import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgent;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ClassPathResource;
 
 import junit.framework.TestCase;
 
@@ -70,11 +70,14 @@ public class SnmpCollectorTest extends TestCase {
 
     private MockSnmpAgent m_agent;
 
+    private FileAnticipator m_fileAnticipator;
+
+    private File m_snmpRrdDirectory;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        MockUtil.println("------------ Begin Test " + getName()
-                + " --------------------------");
+        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
         MockLogAppender.setupLogging();
 
         MockNetwork m_network = new MockNetwork();
@@ -87,12 +90,15 @@ public class SnmpCollectorTest extends TestCase {
         m_db.populate(m_network);
 
         DataSourceFactory.setInstance(m_db);
+        
+        m_fileAnticipator = new FileAnticipator();
     }
 
     @Override
     public void runTest() throws Throwable {
         super.runTest();
         MockLogAppender.assertNoWarningsOrGreater();
+        m_fileAnticipator.deleteExpected();
     }
 
     @Override
@@ -100,8 +106,9 @@ public class SnmpCollectorTest extends TestCase {
         if (m_agent != null) {
             m_agent.shutDownAndWait();
         }
-        MockUtil.println("------------ End Test " + getName()
-                + " --------------------------");
+        m_fileAnticipator.deleteExpected(true);
+        m_fileAnticipator.tearDown();
+        MockUtil.println("------------ End Test " + getName() + " --------------------------");
         super.tearDown();
     }
 
@@ -113,6 +120,7 @@ public class SnmpCollectorTest extends TestCase {
         initialize();
     }
 
+    // FIXME: This test doesn't seem to store any RRD data
     public void testCollect() throws Exception {
         String svcName = "SNMP";
 
@@ -123,9 +131,7 @@ public class SnmpCollectorTest extends TestCase {
 
         initializeAgent();
 
-        Reader dataCollectionConfig = ConfigurationTestUtils.getReaderForResource(
-                                                                                  this,
-                                                                                  "/org/opennms/netmgt/config/datacollection-config.xml");
+        Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-config.xml");
         initialize(new StringReader(m_snmpConfig), dataCollectionConfig);
         dataCollectionConfig.close();
 
@@ -156,9 +162,12 @@ public class SnmpCollectorTest extends TestCase {
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      spec.collect(agent));
+        
+        // Wait for any RRD writes to finish up
+        Thread.sleep(1000);
     }
 
-    public void FIXMEtestBrocadeCollect() throws Exception {
+    public void testBrocadeCollect() throws Exception {
         String svcName = "SNMP";
 
         String m_snmpConfig = "<?xml version=\"1.0\"?>\n"
@@ -166,11 +175,19 @@ public class SnmpCollectorTest extends TestCase {
                 + "               read-community=\"public\"\n"
                 + "               version=\"v1\">\n" + "</snmp-config>\n";
 
-        initializeAgent("target/test-classes/org/opennms/netmgt/snmp/brocadeTestData1.properties");
+        initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
+        
+        File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
+        File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");
+        for (int i = 1; i <= 8; i++) {
+            File brocadeIndexDir = m_fileAnticipator.expecting(brocadeDir, Integer.toString(i));
+            for (String file : new String[] { "strings.properties", "swFCPortTxWords.jrb", "swFCPortRxWords.jrb", "swFCPortWwn.jrb" }) {
+                m_fileAnticipator.expecting(brocadeIndexDir, file);
+            }
+        }
 
-        Reader dataCollectionConfig = ConfigurationTestUtils.getReaderForResource(
-                                                                                  this,
-                                                                                  "/org/opennms/netmgt/config/datacollection-brocade-config.xml");
+        Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-brocade-config.xml");
+
         initialize(new StringReader(m_snmpConfig), dataCollectionConfig);
         dataCollectionConfig.close();
 
@@ -201,6 +218,9 @@ public class SnmpCollectorTest extends TestCase {
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      spec.collect(agent));
+
+        // Wait for any RRD writes to finish up
+        Thread.sleep(1000);
     }
 
     public void initialize(Reader snmpConfig, Reader dataCollectionConfig)
@@ -224,11 +244,8 @@ public class SnmpCollectorTest extends TestCase {
 
     public void initialize() throws IOException, MarshalException,
             ValidationException {
-        Reader snmpConfig = ConfigurationTestUtils.getReaderForResource(this,
-                                                                        "/org/opennms/netmgt/config/snmp-config.xml");
-        Reader dataCollectionConfig = ConfigurationTestUtils.getReaderForResource(
-                                                                                  this,
-                                                                                  "/org/opennms/netmgt/config/datacollection-config.xml");
+        Reader snmpConfig = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/snmp-config.xml");
+        Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-config.xml");
 
         initialize(snmpConfig, dataCollectionConfig);
 
@@ -236,12 +253,23 @@ public class SnmpCollectorTest extends TestCase {
         dataCollectionConfig.close();
     }
 
+    private Reader getDataCollectionConfigReader(String classPathLocation) throws IOException {
+        return ConfigurationTestUtils.getReaderForResourceWithReplacements(this, classPathLocation, new String[] { "%rrdRepository%", getSnmpRrdDirectory().getAbsolutePath() });
+    }
+
+    private File getSnmpRrdDirectory() throws IOException {
+        if (m_snmpRrdDirectory == null) {
+            m_snmpRrdDirectory = m_fileAnticipator.tempDir("snmp");
+        }
+        return m_snmpRrdDirectory;
+    }
+
     private void initializeAgent(String testData) throws InterruptedException {
-        m_agent = MockSnmpAgent.createAgentAndRun(new FileSystemResource(testData),
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource(testData),
                                                   "127.0.0.1/1691");
     }
 
     private void initializeAgent() throws InterruptedException {
-        initializeAgent("target/test-classes/org/opennms/netmgt/snmp/mock/loadSnmpDataTest.properties");
+        initializeAgent("/org/opennms/netmgt/snmp/loadSnmpDataTest.properties");
     }
 }

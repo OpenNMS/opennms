@@ -38,6 +38,7 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.TestSnmpValue;
 
 public class TestAgentTest extends TestCase {
     

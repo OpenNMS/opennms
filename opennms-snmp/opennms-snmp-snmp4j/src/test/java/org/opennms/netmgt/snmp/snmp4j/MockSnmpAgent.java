@@ -29,14 +29,21 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.BindException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import junit.framework.Assert;
+
+import org.opennms.netmgt.snmp.snmp4j.MockSnmpMOLoader;
+import org.opennms.netmgt.snmp.snmp4j.PropsMockSnmpMOLoaderImpl;
+import org.opennms.test.AssertUtils;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
@@ -115,6 +122,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	}
 	
 	public static MockSnmpAgent createAgentAndRun(Resource moFile, String bindAddress) throws InterruptedException {
+        try {
+            Assert.assertNotNull("could not get InputStream mock object resource; does it exist?  Resource: " + moFile, moFile.getInputStream());
+        } catch (IOException e) {
+            AssertUtils.fail("Got IOException while checking for existence of mock object file: " + e, e);
+        }
 		MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
 		Thread thread = new Thread(agent);
 		thread.start();
