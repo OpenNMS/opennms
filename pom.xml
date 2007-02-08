@@ -1387,6 +1387,16 @@ opennms.home = ${opennms.home}
         <version>1.2.6</version>
       </dependency>
       <dependency>
+        <groupId>org.snmp4j</groupId>
+        <artifactId>snmp4j</artifactId>
+        <version>1.7.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.snmp4j</groupId>
+        <artifactId>snmp4j-agent</artifactId>
+        <version>1.0-beta4</version>
+      </dependency>
+      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring</artifactId>
         <version>2.0</version>
