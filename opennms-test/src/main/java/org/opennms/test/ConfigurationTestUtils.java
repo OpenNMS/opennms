@@ -57,7 +57,7 @@ public class ConfigurationTestUtils extends Assert {
     }
     
     public static Reader getReaderForResourceWithReplacements(Object obj,
-            String resource, String[][] replacements) throws IOException {
+            String resource, String[] ... replacements) throws IOException {
         String newConfig = getConfigForResourceWithReplacements(obj, resource,
                                                                 replacements);
         return new StringReader(newConfig);
@@ -65,7 +65,7 @@ public class ConfigurationTestUtils extends Assert {
     
     
     public static InputStream getInputStreamForResourceWithReplacements(Object obj,
-            String resource, String[][] replacements) throws IOException {
+            String resource, String[] ... replacements) throws IOException {
         String newConfig = getConfigForResourceWithReplacements(obj, resource,
                                                                 replacements);
         return new ByteArrayInputStream(newConfig.getBytes());
@@ -73,7 +73,7 @@ public class ConfigurationTestUtils extends Assert {
     
     
     public static String getConfigForResourceWithReplacements(Object obj,
-            String resource, String[][] replacements) throws IOException {
+            String resource, String[] ... replacements) throws IOException {
 
         Reader inputReader = getReaderForResource(obj, resource);
         BufferedReader bufferedReader = new BufferedReader(inputReader);
