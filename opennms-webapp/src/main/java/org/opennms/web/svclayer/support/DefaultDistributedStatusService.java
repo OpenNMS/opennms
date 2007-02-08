@@ -44,6 +44,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -71,6 +73,36 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
     private boolean m_layoutApplicationsVertically = false;
+
+    public enum Severity {
+        INDETERMINATE("Indeterminate"),
+        NORMAL("Normal"),
+        WARNING("Warning"),
+        CRITICAL("Critical");
+        
+        private final String m_style;
+
+        private Severity(String style) {
+            m_style = style;
+        }
+        
+        public String getStyle() {
+            return m_style;
+        }
+    }
+    
+    /*
+    if (goodMonitors == 0 && badMonitors == 0) {
+        return "Indeterminate"; // No current responses
+    } else if (goodMonitors != 0 && badMonitors == 0) {
+        return "Normal"; // No bad responses
+    } else if (goodMonitors == 0 && badMonitors != 0) {
+        return "Critical"; // All bad responses
+    } else if (goodMonitors != 0 && badMonitors != 0){
+        return "Warning"; // Some bad responses
+    } else {
+    */
+
     
     /*
      * XXX No unit tests
@@ -247,7 +279,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Collection<OnmsLocationSpecificStatus> statusesPeriod = new HashSet<OnmsLocationSpecificStatus>();
         statusesPeriod.addAll(m_locationMonitorDao.getAllStatusChangesAt(start));
         statusesPeriod.addAll(m_locationMonitorDao.getStatusChangesBetween(start, end));
-        
+
         table.setTitle("Distributed Poller Status Summary");
         
         table.addColumn("Area", "");
@@ -257,8 +289,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
         
         for (OnmsMonitoringLocationDefinition locationDefinition : locationDefinitions) {
-            Collection<OnmsLocationMonitor> monitors =
-                m_locationMonitorDao.findByLocationDefinition(locationDefinition);
+            Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
             
             table.newRow();
             table.addCell(locationDefinition.getArea(), "");
@@ -266,15 +297,15 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             
             for (OnmsApplication application : sortedApplications) {
                 Collection<OnmsMonitoredService> memberServices = m_monitoredServiceDao.findByApplication(application);
-                String status = calculateCurrentStatus(monitors, memberServices, mostRecentStatuses);
+                Severity status = calculateCurrentStatus(monitors, memberServices, mostRecentStatuses);
             
                 Set<OnmsLocationSpecificStatus> selectedStatuses = filterStatus(statusesPeriod, monitors, memberServices);
                 
                 if (selectedStatuses.size() > 0) {
                     String percentage = calculatePercentageUptime(memberServices, selectedStatuses, start, end);
-                    table.addCell(percentage, status, createHistoryPageUrl(locationDefinition, application));
+                    table.addCell(percentage, status.getStyle(), createHistoryPageUrl(locationDefinition, application));
                 } else {
-                    table.addCell("No data", status);
+                    table.addCell("No data", status.getStyle());
                 }
             }
         }
@@ -308,6 +339,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return table;
     }
     
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
     /**
      * Filter a collection of OnmsLocationSpecificStatus based on a
      * collection of monitors and a collection of monitored services.
@@ -341,7 +376,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return filteredStatuses;
     }
 
-    public String calculateCurrentStatus(
+    public Severity calculateCurrentStatus(
             Collection<OnmsLocationMonitor> monitors,
             Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
@@ -353,24 +388,24 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 continue;
             }
             
-            String status = calculateCurrentStatus(monitor, applicationServices, statuses);
+            Severity status = calculateCurrentStatus(monitor, applicationServices, statuses);
             
             // FIXME: "Normal", etc. should be done with static variables
-            if ("Normal".equals(status)) {
+            if (status == Severity.NORMAL) {
                 goodMonitors++;
-            } else {
+            } else if (status != Severity.INDETERMINATE) {
                 badMonitors++;
             }
         }
         
         if (goodMonitors == 0 && badMonitors == 0) {
-            return "Indeterminate"; // No current responses
+            return Severity.INDETERMINATE; // No current responses
         } else if (goodMonitors != 0 && badMonitors == 0) {
-            return "Normal"; // No bad responses
+            return Severity.NORMAL; // No bad responses
         } else if (goodMonitors == 0 && badMonitors != 0) {
-            return "Critical"; // All bad responses
+            return Severity.CRITICAL; // All bad responses
         } else if (goodMonitors != 0 && badMonitors != 0){
-            return "Warning"; // Some bad responses
+            return Severity.WARNING; // Some bad responses
         } else {
             throw new IllegalStateException("Shouldn't have gotten here. "
                                             + "good monitors = "
@@ -380,7 +415,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
     }
     
-    public String calculateCurrentStatus(OnmsLocationMonitor monitor,
+    public Severity calculateCurrentStatus(OnmsLocationMonitor monitor,
             Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
         Set<PollStatus> pollStatuses = new HashSet<PollStatus>();
@@ -388,34 +423,48 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         for (OnmsMonitoredService service : applicationServices) {
             boolean foundIt = false;
             for (OnmsLocationSpecificStatus status : statuses) {
-                if (status.getMonitoredService().equals(service)
-                        && status.getLocationMonitor().equals(monitor)) {
+                if (status.getMonitoredService().equals(service) && status.getLocationMonitor().equals(monitor)) {
                     pollStatuses.add(status.getPollResult());
                     foundIt = true;
                     break;
                 }
             }
             if (!foundIt) {
-                pollStatuses.add(PollStatus.unknown());
+                pollStatuses.add(PollStatus.unknown("No status found for this service"));
+                if (log().isDebugEnabled()) {
+                    log().debug("Did not find status for service " + service + " in application.  Setting status for it to unknown.");
+                }
             }
         }
         
         return calculateStatus(pollStatuses);
     }       
     
-    public String calculateStatus(Collection<PollStatus> pollStatuses) {
+    public Severity calculateStatus(Collection<PollStatus> pollStatuses) {
         /*
          * XXX We aren't doing anything for warning, because we don't
          * have a warning state available, right now.  Should unknown
          * be a warning state?
          */
+        
+        int goodStatuses = 0;
+        int badStatuses = 0;
+        
         for (PollStatus pollStatus : pollStatuses) {
-            if (!pollStatus.isAvailable()) {
-                return "Critical";
+            if (pollStatus.isAvailable()) {
+                goodStatuses++;
+            } else if (pollStatus.getStatusCode() != PollStatus.SERVICE_UNKNOWN) {
+                badStatuses++;
             }
         }
-        
-        return "Normal";
+
+        if (goodStatuses == 0 && badStatuses == 0) {
+            return Severity.INDETERMINATE;
+        } else if (goodStatuses > 0 && badStatuses == 0) {
+            return Severity.NORMAL;
+        } else {
+            return Severity.CRITICAL;
+        }
     }
 
     /**
@@ -479,7 +528,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         float normalMilliseconds = 0f;
         
         Date lastDate = startDate;
-        String lastStatus = "Critical";
+        Severity lastStatus = Severity.CRITICAL;
         
         for (OnmsLocationSpecificStatus status : sortedStatuses) {
             Date currentDate = status.getPollResult().getTimestamp();
@@ -490,7 +539,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
             
             serviceStatus.put(status.getMonitoredService(), status.getPollResult());
-            String currentStatus = calculateStatus(serviceStatus.values());
+            Severity currentStatus = calculateStatus(serviceStatus.values());
             
             if (currentDate.before(startDate)) {
                 /*
@@ -508,7 +557,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
              * Because we *just* had a state change, we want to look at the
              * value of the *last* status.
              */
-            if ("Normal".equals(lastStatus)) {
+            if (lastStatus == Severity.NORMAL) {
                 long milliseconds = currentDate.getTime() - lastDate.getTime();
                 normalMilliseconds += milliseconds;
             }
@@ -517,7 +566,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             lastStatus = currentStatus;
         }
         
-        if ("Normal".equals(lastStatus)) {
+        if (lastStatus == Severity.NORMAL) {
             long milliseconds = endDate.getTime() - lastDate.getTime();
             normalMilliseconds += milliseconds;
         }
