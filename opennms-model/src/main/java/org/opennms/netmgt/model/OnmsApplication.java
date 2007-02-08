@@ -48,6 +48,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.core.style.ToStringCreator;
+
 @Entity
 @Table(name = "applications")
 public class OnmsApplication implements Comparable<OnmsApplication> {
@@ -96,6 +98,14 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());
+    }
+    
+    @Override
+    public String toString() {
+        ToStringCreator creator = new ToStringCreator(this);
+        creator.append("id", getId());
+        creator.append("name", getName());
+        return creator.toString();
     }
 
 }
