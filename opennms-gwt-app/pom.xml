@@ -49,19 +49,46 @@
             <version>${gwtVersion}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwtVersion}</version>
-            <classifier>linux</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+      <profile>
+        <id>gwt-mac</id>
+        <activation>
+          <os>
+            <family>mac</family>
+          </os>
+        </activation>
+        <dependencies>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <classifier>mac</classifier>
+          </dependency>
+        </dependencies>
+      </profile>
+      <profile>
+        <id>gwt-linux</id>
+        <activation>
+          <os>
+            <family>unix</family>
+          </os>
+        </activation>
+        <dependencies>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <classifier>linux</classifier>
+          </dependency>
+        </dependencies>
+      </profile>
+    </profiles>
     <build>
         <plugins>
           <plugin>
