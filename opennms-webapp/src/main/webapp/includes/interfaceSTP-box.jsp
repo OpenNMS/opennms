@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
@@ -24,7 +24,7 @@
 //      http://www.sortova.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -45,63 +45,63 @@
 
 %>
 <h3>Interface Spanning Tree Protocol Info</h3>
-<table class="standard">
+<table>
   
   
 <% if(stpifs.length == 0) { %>
   <tr>
-    <td class="standardheaderplain" colspan="11">There have been no STP Interfaces info on this node.</td>
+    <td colspan="11">No spanning tree information has been collected for this interface.</td>
   </tr>
 <% } else { %>
         <% for (int i=0; i < stpifs.length;i++) { %>
 	<tr>
-        <td class="standard">VlanIdentifier</td>			  
-		<td class="standard" bgcolor="<%=stpifs[i].getVlanColorIdentifier()%>"><%=stpifs[i].get_stpvlan()%>
+        <td>VlanIdentifier</td>			  
+		<td bgcolor="<%=stpifs[i].getVlanColorIdentifier()%>"><%=stpifs[i].get_stpvlan()%>
 		</td>			  
 	</tr>
 	<tr>
-        <td  class="standard">STP Port Status</td>
-        <td  class="standard"><%=stpifs[i].getStpPortState()%></td>
+        <td>STP Port Status</td>
+        <td><%=stpifs[i].getStpPortState()%></td>
 	</tr>
 	<tr>
-        <td  class="standard">Path Cost</td>
-        <td  class="standard"><%=stpifs[i].get_stpportpathcost()%></td>
+        <td>Path Cost</td>
+        <td><%=stpifs[i].get_stpportpathcost()%></td>
 	</tr>
 	<tr>
-        <td  class="standard">Stp Root</td>
+        <td>Stp Root</td>
 	<% if (stpifs[i].get_stprootnodeid() != 0) { 
 	Node node = NetworkElementFactory.getNode(stpifs[i].get_stprootnodeid());
 	%>
-	<td  class="standard"><a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><%=node.getLabel()%></a><br>(<strong><%=stpifs[i].get_stpdesignatedroot()%></strong>)</td>
+	<td><a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><%=node.getLabel()%></a><br>(<strong><%=stpifs[i].get_stpdesignatedroot()%></strong>)</td>
 	<% } else { %>
-	<td  class="standard"><%=stpifs[i].get_stpdesignatedroot()%></td>
+	<td><%=stpifs[i].get_stpdesignatedroot()%></td>
 	<% } %>
 	</tr>
 	<tr>
-        <td  class="standard">Designated Bridge</td>
+        <td>Designated Bridge</td>
 	<% if (stpifs[i].get_stpbridgenodeid() != 0) { 
 	Node node = NetworkElementFactory.getNode(stpifs[i].get_stpbridgenodeid());
 	%>
-	<td  class="standard"><a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><%=node.getLabel()%></a><br>(<strong><%=stpifs[i].get_stpdesignatedbridge()%></strong>)</td>
+	<td><a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><%=node.getLabel()%></a><br>(<strong><%=stpifs[i].get_stpdesignatedbridge()%></strong>)</td>
 	<% } else {%>
-	<td  class="standard"><%=stpifs[i].get_stpdesignatedbridge()%></td>
+	<td><%=stpifs[i].get_stpdesignatedbridge()%></td>
 	<% } %>
 	</tr>
 	<tr>
-        <td  class="standard">Designated Port</td>
+        <td>Designated Port</td>
         <td><%=stpifs[i].get_stpdesignatedport()%></td>
 	</tr>
 	<tr>
-        <td  class="standard">Designated Cost</td>
+        <td>Designated Cost</td>
         <td><%=stpifs[i].get_stpportdesignatedcost()%></td>
 	</tr>
 	<tr>
-        <td  class="standard">Information Status</td>
+        <td>Information Status</td>
         <td><%=stpifs[i].getStatusString()%></td>
 	</tr>
 	<tr>
-        <td  class="standard">Last Poll Time</td>
-        <td  class="standard"><%=stpifs[i].get_lastPollTime()%></td>
+        <td>Last Poll Time</td>
+        <td><%=stpifs[i].get_lastPollTime()%></td>
         </tr>
         <% } %>
 <% } %>

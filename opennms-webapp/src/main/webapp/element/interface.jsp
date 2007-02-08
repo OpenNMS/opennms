@@ -48,7 +48,17 @@
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
 				org.opennms.netmgt.config.PollerConfig,
-				java.util.*,org.opennms.netmgt.model.OnmsResource,org.opennms.web.Util,org.opennms.web.acegisecurity.Authentication,org.opennms.web.element.*,org.opennms.web.event.*,org.opennms.web.svclayer.ResourceService,org.opennms.netmgt.utils.IfLabel,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
+				java.util.*,
+                org.opennms.core.utils.SIUtils,
+                org.opennms.netmgt.model.OnmsResource,
+                org.opennms.web.Util,
+                org.opennms.web.acegisecurity.Authentication,
+                org.opennms.web.element.*,
+                org.opennms.web.event.*,
+                org.opennms.web.svclayer.ResourceService,
+                org.opennms.netmgt.utils.IfLabel,
+                org.springframework.web.context.WebApplicationContext,
+                org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 
 <%!protected int telnetServiceId;
@@ -233,11 +243,11 @@ function doDelete() {
             <!-- general info box -->
 	    <table>
               <tr>
-                <td>Node</td> 
+                <th>Node</th>
                 <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(intf_db.getNodeId())%></a></td>
               </tr>
               <tr> 
-                <td>Polling Status</td>
+                <th>Polling Status</th>
                 <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
               <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ADMIN_ROLE )) {
@@ -245,13 +255,13 @@ function doDelete() {
                   Iterator pkgiter = inPkgs.iterator();
                   while (pkgiter.hasNext()) { %>
                       <tr>
-                          <td>Polling Package</td>
+                          <th>Polling Package</th>
                           <td><%= (String) pkgiter.next()%></td>
                       </tr>
                   <% } %>
               <% } %>
               <tr>
-                <td>Interface Index</td> 
+                <th>Interface Index</th>
                 <td>
                   <% int ifIndex = intf_db.getIfIndex(); %>
                   <% if( ifIndex > 0 ) {  %>
@@ -262,11 +272,11 @@ function doDelete() {
                 </td>
               </tr>
               <tr> 
-                <td>Last Service Scan</td>
+                <th>Last Service Scan</th>
                 <td><%=intf_db.getLastCapsdPoll()%></td>
               </tr>
               <tr>
-                <td>Physical Address</td>        
+                <th>Physical Address</th>
                 <td>
                   <% String macAddr = intf_db.getPhysicalAddress(); %>
                   <% if( macAddr != null && macAddr.trim().length() > 0 && !macAddr.equals("000000000000")) { %>
@@ -289,17 +299,17 @@ function doDelete() {
               <h3>SNMP Attributes</h3>
 		  <table>
                     <tr> 
-                      <td>Subnet Mask</td>
+                      <th>Subnet Mask</th>
                       <td>
                         <%=(intf_db.getSnmpIpAdEntNetMask() == null) ? "&nbsp;" : intf_db.getSnmpIpAdEntNetMask()%>                                    
                       </td>
                     </tr>
                     <tr>
-                      <td>Interface Type</td>
+                      <th>Interface Type</th>
                       <td><%=getIfTypeString(intf_db.getSnmpIfType())%></td>
                     </tr>
                     <tr> 
-                      <td>Status (Adm/Op)</td>
+                      <th>Status (Adm/Op)</th>
                       <td>
                         <% if( intf_db.getSnmpIfAdminStatus() < 1 || intf_db.getSnmpIfOperStatus() < 1 ) { %>
                           &nbsp;
@@ -309,15 +319,15 @@ function doDelete() {
                       </td>
                     </tr>
                     <tr>
-                      <td>Speed</td>        
-                      <td><%=(intf_db.getSnmpIfSpeed() > 0) ? String.valueOf(intf_db.getSnmpIfSpeed()) : "&nbsp;"%></td>
+                      <th>Speed</th>
+                      <td><%=(intf_db.getSnmpIfSpeed() > 0) ? SIUtils.getHumanReadableIfSpeed(intf_db.getSnmpIfSpeed()) : "&nbsp;"%></td>
                     </tr>
                     <tr> 
-                      <td>Description</td>
+                      <th>Description</th>
                       <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
                     </tr>
                     <tr>
-                      <td>Alias</td>
+                      <th>Alias</th>
                       <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
                     </tr>
 

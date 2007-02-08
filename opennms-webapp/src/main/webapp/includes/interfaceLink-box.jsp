@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
@@ -24,7 +24,7 @@
 //      http://www.sortova.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -51,18 +51,18 @@
 	
 %>
 <h3>Link Node/Interface</h3>
-<table class="standard">
+<table>
  
 <% if(dl_if == null  || dl_if.length == 0) { %>
   <tr>
-    <td class="standardheaderplain" colspan="4">There have been no Link Info on this Interface.</td>
+    <td colspan="4">No link information has been collected for this interface.</td>
   </tr>
 <% } else { %>
   <tr>
-    <td class="standardheader">Node</td>
-    <td class="standardheader">Interface</td>
-    <td class="standardheader">Status</td>
-    <td class="standardheader">Last Poll Time</td>
+    <th>Node</th>
+    <th>Interface</th>
+    <th>Status</th>
+    <th>Last Poll Time</th>
   </tr>
 
   <% for( int i=0; i < dl_if.length; i++ ) { %>
@@ -88,8 +88,8 @@
    <% } %>
    </td>
 
-      <td class="standard"><%=getStatusString(dl_if[i].get_status())%></td>
-      <td class="standard"><%=dl_if[i].get_lastPollTime()%></td>
+      <td><%=getStatusString(dl_if[i].get_status())%></td>
+      <td><%=dl_if[i].get_lastPollTime()%></td>
      </tr>
   <% } %>
 <% } %>
