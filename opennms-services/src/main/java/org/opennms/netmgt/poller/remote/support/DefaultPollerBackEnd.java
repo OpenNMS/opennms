@@ -177,7 +177,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     }
 
     public String getMonitorName(int locationMonitorId) {
-        OnmsLocationMonitor locationMonitor = m_locMonDao.get(locationMonitorId);
+        OnmsLocationMonitor locationMonitor = m_locMonDao.load(locationMonitorId);
         return locationMonitor.getName();
     }
 
