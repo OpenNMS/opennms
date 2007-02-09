@@ -34,7 +34,6 @@ package org.opennms.netmgt.poller.remote.support;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
@@ -99,7 +98,10 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         try {
             
             boolean pollerStarting = m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
-            m_monitorName = m_remoteBackEnd.getMonitorName(locationMonitorId);
+            // If false was returned, this location monitor doesn't exist on the server, so we can't get its name
+            if (pollerStarting) {
+                m_monitorName = m_remoteBackEnd.getMonitorName(locationMonitorId);
+            }
             m_serverUnresponsive = false;
             return pollerStarting;
             
