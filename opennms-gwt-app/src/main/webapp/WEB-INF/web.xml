@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+	<servlet>
+	  <servlet-class>org.opennms.netmgt.dashboard.server.SchoolCalendarServiceImpl</servlet-class>
+	  <servlet-name>calendar</servlet-name>
+	</servlet>
+
+	<servlet-mapping>
+	  <servlet-name>calendar</servlet-name>
+	  <url-pattern>/calendar/*</url-pattern>
+	</servlet-mapping>
    
-    <display-name>googleHello</display-name>
+    <display-name>opennms-gwt-app</display-name>
     <welcome-file-list>
-        <welcome-file>Hello.html</welcome-file>
+        <welcome-file>DynaTable.html</welcome-file>
     </welcome-file-list>
 
 </web-app>
