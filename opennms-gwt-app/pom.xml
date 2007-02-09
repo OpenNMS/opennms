@@ -6,10 +6,9 @@
         <version>1.3.3-SNAPSHOT</version>
     </parent>
     <properties>
-        <xdocletOutput>${project.build.directory}/${project.build.finalName}/WEB-INF</xdocletOutput>
         <gwtVersion>1.3.3</gwtVersion>
-        <moduleName>org.opennms.gwt.sample.hello.Hello</moduleName>
-        <moduleHtml>Hello.html</moduleHtml>
+        <moduleName>org.opennms.netmgt.dashboard.DynaTable</moduleName>
+        <moduleHtml>DynaTable.html</moduleHtml>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>opennms-gwt-app</artifactId>
@@ -69,6 +68,7 @@
             <artifactId>gwt-dev</artifactId>
             <version>${gwtVersion}</version>
             <classifier>mac</classifier>
+            <scope>test</scope>
           </dependency>
         </dependencies>
       </profile>
@@ -85,6 +85,7 @@
             <artifactId>gwt-dev</artifactId>
             <version>${gwtVersion}</version>
             <classifier>linux</classifier>
+            <scope>test</scope>
           </dependency>
         </dependencies>
       </profile>
