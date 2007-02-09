@@ -58,7 +58,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 
     private ServiceParameters m_params;
     private RrdRepository m_repository;
-    private LinkedList stack = new LinkedList();
+    private LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
     private PersistOperationBuilder m_builder;
 
     public BasePersister() {
@@ -76,7 +76,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             m_builder.commit();
             m_builder = null;
         } catch (RrdException e) {
-            log().error("Unable to persist data for "+name, e);
+            log().error("Unable to persist data for " + name + ": " + e, e);
     
         }
     }
@@ -98,11 +98,19 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     protected void createBuilder(CollectionResource resource, String name, Set attributeTypes) {
-        m_builder = new PersistOperationBuilder(m_repository, resource, name);
+        m_builder = new PersistOperationBuilder(getRepository(), resource, name);
         for (Iterator iter = attributeTypes.iterator(); iter.hasNext();) {
             AttributeType attrType = (AttributeType) iter.next();
             m_builder.declareAttribute(attrType);
         }
+    }
+
+    public RrdRepository getRepository() {
+        return m_repository;
+    }
+
+    public void setRepository(RrdRepository repository) {
+        m_repository = repository;
     }
 
     private Properties getCurrentProperties(File propertiesFile) throws FileNotFoundException, IOException {
@@ -116,9 +124,11 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
                 props.load(fileInputStream);
             } finally {
                 try {
-                    if (fileInputStream != null) fileInputStream.close();
+                    if (fileInputStream != null) {
+                        fileInputStream.close();
+                    }
                 } catch (IOException e) {
-                    log().error("performUpdate: Error closing file.", e);
+                    log().error("performUpdate: Error closing file: " + e, e);
                 }
             }
         }
@@ -137,15 +147,14 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     public void persistStringAttribute(Attribute attribute) {
         try {
             log().debug("Persisting "+attribute);
-            RrdRepository repository = m_repository;
             CollectionResource resource = attribute.getResource();
             SnmpValue value = attribute.getValue();
     
-            File resourceDir = resource.getResourceDir(repository);
+            File resourceDir = resource.getResourceDir(getRepository());
     
             String val = (value == null ? null : value.toString());
             if (val == null) {
-                log().info("No data collected for attribute "+attribute+". Skipping");
+                log().info("No data collected for attribute "+attribute+".  Skipping.");
                 return;
             }
             File propertiesFile = new File(resourceDir,"strings.properties");
@@ -153,13 +162,13 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             props.setProperty(attribute.getName(), val);
             saveUpdatedProperties(propertiesFile, props);
         } catch(IOException e) {
-            log().error("Unable to save string attribute "+attribute, e);
+            log().error("Unable to save string attribute " + attribute + ": " + e, e);
         }
     }
 
     private boolean pop() {
         boolean top = top();
-        stack.removeLast();
+        m_stack.removeLast();
         return top;
     }
 
@@ -168,7 +177,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
     
     private void push(boolean b) {
-        stack.addLast(Boolean.valueOf(b));
+        m_stack.addLast(Boolean.valueOf(b));
     }
 
     protected void pushShouldPersist(Attribute attribute) {
@@ -188,6 +197,13 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     private void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
+        if (!propertiesFile.getParentFile().isDirectory()) {
+            log().info("Parent directory for properties file '" + propertiesFile.getParentFile().getAbsolutePath() + "' does not exist (or is not a directory).  Creating it.");
+            if (!propertiesFile.getParentFile().mkdirs()) {
+                log().error("Could not create parent directories for properties file: " + propertiesFile.getAbsolutePath());
+                throw new IOException("Could not create parent directories for properties file: " + propertiesFile.getAbsolutePath());
+            }
+        }
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(propertiesFile);
@@ -199,7 +215,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
                     fileOutputStream.close();
                 }
             } catch (IOException e) {
-                log().error("performUpdate: Error closing file.", e);
+                log().error("performUpdate: Error closing file: " + e, e);
             }
         }
     }
@@ -213,7 +229,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
     
     private boolean top() {
-        return ((Boolean)stack.getLast()).booleanValue();
+        return m_stack.getLast();
     }
 
     public void visitAttribute(Attribute attribute) {
