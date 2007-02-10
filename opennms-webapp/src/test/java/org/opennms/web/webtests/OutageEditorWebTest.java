@@ -549,7 +549,7 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
     }
 
     public void FIXMEtestNodeListMargins() throws Exception {
-        beginAt("/element/nodelist.jsp");
+        beginAt("/element/nodeList.htm");
         assertHeaderPresent("Node List", "Node List", new String[]{"Home", "Search", "Node List"});
         assertFooterPresent("Node List");
     }

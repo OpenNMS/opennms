@@ -81,7 +81,7 @@
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
 					<td>(interface not in DB)</td>
 					<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
-						<td><a href="element/nodelist.jsp?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
+						<td><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
 						<% } else { %>
 							<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
 							<% } %>

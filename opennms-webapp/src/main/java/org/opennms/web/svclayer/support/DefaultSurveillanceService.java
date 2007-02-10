@@ -280,7 +280,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         for (OnmsCategory category : rows) {
             params.add("category2=" + Util.encode(category.getName()));
         }
-        return "element/nodelist.jsp"
+        return "element/nodeList.htm"
             + "?"
             + StringUtils.collectionToDelimitedString(params, "&");
     }
