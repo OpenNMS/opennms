@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.maven.ide.eclipse.Maven2LaunchConfigurationType">
+<listAttribute key="M2_PROPERTIES"/>
+<stringAttribute key="M2_GOALS" value="jetty:run-exploded"/>
+<stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${workspace}"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
+</listAttribute>
+<stringAttribute key="M2_PROFILES" value=""/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:opennms-gwt-app}"/>
+</launchConfiguration>
