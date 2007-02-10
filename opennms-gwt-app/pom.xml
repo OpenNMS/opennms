@@ -31,6 +31,10 @@
     </pluginRepositories>
     <dependencies>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.4</version>
@@ -150,13 +154,6 @@
               <scanIntervalSeconds>10</scanIntervalSeconds>
             </configuration>
            </plugin>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>tomcat-maven-plugin</artifactId>
-              <configuration>
-                <port>8765</port>
-              </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
