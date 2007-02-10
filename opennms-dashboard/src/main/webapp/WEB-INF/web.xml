@@ -11,7 +11,7 @@
 	  <url-pattern>/calendar/*</url-pattern>
 	</servlet-mapping>
    
-    <display-name>opennms-gwt-app</display-name>
+    <display-name>opennms-dashboard</display-name>
     <welcome-file-list>
         <welcome-file>DynaTable.html</welcome-file>
     </welcome-file-list>
