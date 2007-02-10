@@ -66,122 +66,122 @@ public class DefaultSurveillanceService implements SurveillanceService {
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SurveillanceViewConfigDao m_surveillanceConfigDao;
-    
+
     class CellStatusStrategy {
 
-		Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
-			return m_nodeDao.findAllByCategoryList(categories);
-		}
+        Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
+            return m_nodeDao.findAllByCategoryList(categories);
+        }
 
-		AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
-			
-		    List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
-		    List<Collection<OnmsNode>> nodesByColIndex = new ArrayList<Collection<OnmsNode>>();
-		
-		    /*
-		     * Iterate of the requested view's configuration (row's and columns) and set an aggreated status into each table
-		     * cell.
-		     */
-		    for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
-		    	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getRowLabel(rowIndex));
-		        Collection<OnmsNode> nodesForRow = getNodesInCategories(sView.getCategoriesForRow(rowIndex));
-		        nodesByRowIndex.add(rowIndex, nodesForRow);
-		    }
-		
-		    for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
-		    	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getColumnLabel(colIndex));
-		        Collection<OnmsNode> nodesForCol = getNodesInCategories(sView.getCategoriesForColumn(colIndex));
-		        nodesByColIndex.add(colIndex, nodesForCol);
-		    }
-		    
-		    AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
-		
-		    
-		    progressMonitor.beginNextPhase("Intersecting Rows and Columns");
-		    
-		    for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
-		        
-		        Collection<OnmsNode> nodesForRow = nodesByRowIndex.get(rowIndex);
-		
-		        for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
-		
-		        	Collection<OnmsNode> nodesForCol = nodesByColIndex.get(colIndex);
-		
-		            Set<OnmsNode> cellNodes = new HashSet<OnmsNode>(nodesForRow);
-					cellNodes.retainAll(nodesForCol);
-					
-					cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
-					
-					
-		            
-		        }
-		            
-		    }
-			return cellStatus;
-		}
-    	
+        AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
+
+            List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
+            List<Collection<OnmsNode>> nodesByColIndex = new ArrayList<Collection<OnmsNode>>();
+
+            /*
+             * Iterate of the requested view's configuration (row's and columns) and set an aggreated status into each table
+             * cell.
+             */
+            for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+                progressMonitor.beginNextPhase("Loading Nodes for "+sView.getRowLabel(rowIndex));
+                Collection<OnmsNode> nodesForRow = getNodesInCategories(sView.getCategoriesForRow(rowIndex));
+                nodesByRowIndex.add(rowIndex, nodesForRow);
+            }
+
+            for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+                progressMonitor.beginNextPhase("Loading Nodes for "+sView.getColumnLabel(colIndex));
+                Collection<OnmsNode> nodesForCol = getNodesInCategories(sView.getCategoriesForColumn(colIndex));
+                nodesByColIndex.add(colIndex, nodesForCol);
+            }
+
+            AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
+
+
+            progressMonitor.beginNextPhase("Intersecting Rows and Columns");
+
+            for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+
+                Collection<OnmsNode> nodesForRow = nodesByRowIndex.get(rowIndex);
+
+                for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+
+                    Collection<OnmsNode> nodesForCol = nodesByColIndex.get(colIndex);
+
+                    Set<OnmsNode> cellNodes = new HashSet<OnmsNode>(nodesForRow);
+                    cellNodes.retainAll(nodesForCol);
+
+                    cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
+
+
+
+                }
+
+            }
+            return cellStatus;
+        }
+
     }
-    
+
     public SimpleWebTable createSurveillanceTable() {
         return createSurveillanceTable("default", null);
     }
-    
+
     public class SurveillanceView {
         private SurveillanceViewConfigDao m_surveillanceConfigDao;
         private CategoryDao m_categoryDao;
         private View m_view;
-        
+
         public SurveillanceView(String viewName, SurveillanceViewConfigDao surveillanceConfigDao, CategoryDao categoryDao) {
-        	m_surveillanceConfigDao = surveillanceConfigDao;
-        	m_categoryDao = categoryDao;
-        	m_view = m_surveillanceConfigDao.getView(viewName);
+            m_surveillanceConfigDao = surveillanceConfigDao;
+            m_categoryDao = categoryDao;
+            m_view = m_surveillanceConfigDao.getView(viewName);
         }
-        
+
         public int getRowCount() {
-        	return m_view.getRows().getRowDefCount();
+            return m_view.getRows().getRowDefCount();
         }
-        
+
         public int getColumnCount() {
-        	return m_view.getColumns().getColumnDefCount();
-        }
-        
-        @SuppressWarnings("unchecked")
-		public Set<OnmsCategory> getCategoriesForRow(int rowIndex) {
-        	return getOnmsCategoriesFromViewCategories(getRowDef(rowIndex).getCategoryCollection());
+            return m_view.getColumns().getColumnDefCount();
         }
 
-		private RowDef getRowDef(int rowIndex) {
-			return m_view.getRows().getRowDef(rowIndex);
-		}
-        
         @SuppressWarnings("unchecked")
-		public Set<OnmsCategory> getCategoriesForColumn(int colIndex) {
-        	return getOnmsCategoriesFromViewCategories(getColumnDef(colIndex).getCategoryCollection());
+        public Set<OnmsCategory> getCategoriesForRow(int rowIndex) {
+            return getOnmsCategoriesFromViewCategories(getRowDef(rowIndex).getCategoryCollection());
         }
 
-		private ColumnDef getColumnDef(int colIndex) {
-			return m_view.getColumns().getColumnDef(colIndex);
-		}
-        
+        private RowDef getRowDef(int rowIndex) {
+            return m_view.getRows().getRowDef(rowIndex);
+        }
+
+        @SuppressWarnings("unchecked")
+        public Set<OnmsCategory> getCategoriesForColumn(int colIndex) {
+            return getOnmsCategoriesFromViewCategories(getColumnDef(colIndex).getCategoryCollection());
+        }
+
+        private ColumnDef getColumnDef(int colIndex) {
+            return m_view.getColumns().getColumnDef(colIndex);
+        }
+
         private Set<OnmsCategory> getOnmsCategoriesFromViewCategories(Collection<Category> viewCats) {
             Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
             for (Category viewCat : viewCats) {
-            	
+
                 OnmsCategory category = m_categoryDao.findByName(viewCat.getName());
                 if (category == null)
-                	throw new ObjectRetrievalFailureException(OnmsCategory.class, viewCat.getName(), "Unable to locate OnmsCategory named: "+viewCat.getName()+" as specified in the surveillance view configuration file", null);
-				categories.add(category);
+                    throw new ObjectRetrievalFailureException(OnmsCategory.class, viewCat.getName(), "Unable to locate OnmsCategory named: "+viewCat.getName()+" as specified in the surveillance view configuration file", null);
+                categories.add(category);
             }
-            
+
             return categories;
         }
-        
+
         public String getRowLabel(int rowIndex) {
-        	return getRowDef(rowIndex).getLabel();
+            return getRowDef(rowIndex).getLabel();
         }
-        
+
         public String getColumnLabel(int colIndex) {
-        	return getColumnDef(colIndex).getLabel();
+            return getColumnDef(colIndex).getLabel();
         }
 
         public String getColumnReportCategory(int colIndex) {
@@ -191,7 +191,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         public String getRowReportCategory(int rowIndex) {
             return getRowDef(rowIndex).getReportCategory();
         }
-        
+
     }
 
     /**
@@ -202,61 +202,61 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
         surveillanceViewName = (surveillanceViewName == null ? m_surveillanceConfigDao.getDefaultView().getName() : surveillanceViewName);
         View view = m_surveillanceConfigDao.getView(surveillanceViewName);
-        
+
         SurveillanceView sView = new SurveillanceView(surveillanceViewName, m_surveillanceConfigDao, m_categoryDao);
-        
+
         progressMonitor.setPhaseCount(sView.getRowCount()+sView.getColumnCount()+2);
-        
+
         /*
          * Initialize a status table 
          */
         SimpleWebTable webTable = new SimpleWebTable();
         webTable.setTitle(view.getName());
-        
+
         webTable.addColumn("Nodes Down", "simpleWebTableHeader");
-        
+
         // set up the column headings
         for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
             webTable.addColumn(sView.getColumnLabel(colIndex), "simpleWebTableHeader")
-              .setLink(computeReportCategoryLink(sView.getColumnReportCategory(colIndex)));
+            .setLink(computeReportCategoryLink(sView.getColumnReportCategory(colIndex)));
         }
-        
+
 
         // build the set of nodes for each cell
-        
+
         CellStatusStrategy strategy = new CellStatusStrategy();
-        
+
         AggregateStatus[][] cellStatus = strategy.calculateCellStatus(sView, progressMonitor);
-        
+
         progressMonitor.beginNextPhase("Calculating Status Values");
-        
+
         for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
-            
+
             webTable.newRow();
             webTable.addCell(sView.getRowLabel(rowIndex),
-                             "simpleWebTableRowLabel").setLink(computeReportCategoryLink(sView.getRowReportCategory(rowIndex)));
+                    "simpleWebTableRowLabel").setLink(computeReportCategoryLink(sView.getRowReportCategory(rowIndex)));
 
 
             for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
 
                 AggregateStatus aggStatus = cellStatus[rowIndex][colIndex];
-				
+
                 SimpleWebTable.Cell cell = webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
 
                 if (aggStatus.getDownEntityCount() > 0) {
                     cell.setLink(createNodePageUrl(sView, colIndex, rowIndex));
                 }
             }
-                
+
         }
         progressMonitor.finished(webTable);
-        
+
         return webTable;
     }
 
     private String computeReportCategoryLink(String reportCategory) {
         String link = null;
-        
+
         if (reportCategory != null) {
             link = "rtc/category.jsp?category=" + Util.encode(reportCategory);
         }
@@ -281,8 +281,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
             params.add("category2=" + Util.encode(category.getName()));
         }
         return "element/nodeList.htm"
-            + "?"
-            + StringUtils.collectionToDelimitedString(params, "&");
+        + "?"
+        + StringUtils.collectionToDelimitedString(params, "&");
     }
 
     public NodeDao getNodeDao() {
@@ -315,9 +315,9 @@ public class DefaultSurveillanceService implements SurveillanceService {
     }
 
     public boolean isViewName(String viewName) {
-	View view;
+        View view;
         view = ( viewName == null ? m_surveillanceConfigDao.getDefaultView() : m_surveillanceConfigDao.getView(viewName) );
-	return (view == null) ? false : true;
+        return (view == null) ? false : true;
     }
 
 }
