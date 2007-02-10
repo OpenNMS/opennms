@@ -1,42 +1,45 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
-// reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included
-// code and modified
-// code that was published under the GNU General Public License. Copyrights
-// for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-// reserved.
-//
-// Modifications:
-//
-// 2006 Sep 15: Format code. - dj@opennms.org
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing <license@opennms.org>
-// http://www.opennms.org/
-// http://www.opennms.com/
-//
+
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
+ * reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included
+ * code and modified
+ * code that was published under the GNU General Public License. Copyrights
+ * for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+ * reserved.
+ *
+ * Modifications:
+ *
+ * 2007 Feb 10: Format code (I'm seeing a pattern develop). - dj@opennms.org
+ * 2006 Sep 15: Format code. - dj@opennms.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
+
 
 package org.opennms.web.controller;
 
@@ -73,15 +76,15 @@ public class SurveillanceViewController extends AbstractController {
 
         final String progressMonitorKey = "surveillanceViewProgressMonitor";
 
-	if ( ! m_service.isViewName(req.getParameter("viewName")) ) {
-	    SurveillanceViewError viewError = createSurveillanceViewError( req.getParameter("viewName") );
-	    return new ModelAndView("surveillanceViewError", "error", viewError);
-	}
+        if ( ! m_service.isViewName(req.getParameter("viewName")) ) {
+            SurveillanceViewError viewError = createSurveillanceViewError( req.getParameter("viewName") );
+            return new ModelAndView("surveillanceViewError", "error", viewError);
+        }
 
         HttpSession session = req.getSession();
         resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(req.getParameter("viewName")));
         ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(progressMonitorKey);
-        
+
         if (progressMonitor == null) {
             progressMonitor = createProgressMonitor(req.getParameter("viewName"));
             session.setAttribute(progressMonitorKey, progressMonitor);
@@ -91,8 +94,8 @@ public class SurveillanceViewController extends AbstractController {
             session.removeAttribute(progressMonitorKey);
             Throwable t = progressMonitor.getThrowable();
             throw new Exception("SurveillanceView Builder Thread threw exception: ["
-                                        + t.getClass().getName() + "] "
-                                        + t.getMessage(), t);
+                    + t.getClass().getName() + "] "
+                    + t.getMessage(), t);
         }
 
         if (progressMonitor.isFinished()) {
@@ -126,16 +129,16 @@ public class SurveillanceViewController extends AbstractController {
     }
 
     private SurveillanceViewError createSurveillanceViewError(final String viewName) {
-	SurveillanceViewError viewError = new SurveillanceViewError();
-	if (viewName == null) {
-		viewError.setShortDescr("No default view");
-		viewError.setLongDescr("No view name was specified, and no default view exists in the system.");
-	} else {
-		viewError.setShortDescr("No such view");
-		viewError.setLongDescr("The requested view '" + viewName + "' does not exist in the system.");
-	}
+        SurveillanceViewError viewError = new SurveillanceViewError();
+        if (viewName == null) {
+            viewError.setShortDescr("No default view");
+            viewError.setLongDescr("No view name was specified, and no default view exists in the system.");
+        } else {
+            viewError.setShortDescr("No such view");
+            viewError.setLongDescr("The requested view '" + viewName + "' does not exist in the system.");
+        }
 
-	return viewError;
+        return viewError;
     }
 
 }
