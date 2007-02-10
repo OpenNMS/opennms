@@ -11,7 +11,7 @@
         <moduleHtml>DynaTable.html</moduleHtml>
     </properties>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>opennms-gwt-app</artifactId>
+    <artifactId>opennms-dashboard</artifactId>
     <packaging>war</packaging>
     <name>OpenNMS GWT App</name>
     <!-- Work-around for MNG-2209 -->
