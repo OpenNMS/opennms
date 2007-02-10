@@ -67,6 +67,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 public class DefaultRrdGraphService implements RrdGraphService, InitializingBean {
@@ -83,30 +84,14 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             String[] dataSources, String[] aggregateFunctions,
             String[] colors, String[] dataSourceTitles, String[] styles,
             long start, long end) {
-        if (resourceId == null) {
-            throw new IllegalArgumentException("resourceId argument cannot be null");
-        }
-        if (title == null) {
-            throw new IllegalArgumentException("title argument cannot be null");
-        }
-        if (dataSources == null) {
-            throw new IllegalArgumentException("dataSources argument cannot be null");
-        }
-        if (aggregateFunctions == null) {
-            throw new IllegalArgumentException("aggregateFunctions argument cannot be null");
-        }
-        if (colors == null) {
-            throw new IllegalArgumentException("colors argument cannot be null");
-        }
-        if (dataSourceTitles == null) {
-            throw new IllegalArgumentException("dataSourceTitles argument cannot be null");
-        }
-        if (styles == null) {
-            throw new IllegalArgumentException("styles argument cannot be null");
-        }
-        if (end < start) {
-            throw new IllegalArgumentException("end time cannot be before start time");
-        }
+        Assert.notNull(resourceId, "resourceId argument cannot be null");
+        Assert.notNull(title, "title argument cannot be null");
+        Assert.notNull(dataSources, "dataSources argument cannot be null");
+        Assert.notNull(aggregateFunctions, "aggregateFunctions argument cannot be null");
+        Assert.notNull(colors, "colors argument cannot be null");
+        Assert.notNull(dataSourceTitles, "dataSourceTitles argument cannot be null");
+        Assert.notNull(styles, "styles argument cannot be null");
+        Assert.isTrue(end > start, "end time must be after start time");
         
         AdhocGraphType t = m_graphDao.findAdhocByName("performance");
 
@@ -159,8 +144,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     }
     
     public InputStream returnErrorImage(String file) {
-        InputStream is =
-            getClass().getResourceAsStream(file);
+        InputStream is =  getClass().getResourceAsStream(file);
         if (is == null) {
             throw new ObjectRetrievalFailureException(InputStream.class, file, "Could not find error image for '" + file + "' or could open", null);
         }
@@ -170,15 +154,9 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     public InputStream getPrefabGraph(String resourceId,
             String report, long start,
             long end) {
-        if (resourceId == null) {
-            throw new IllegalArgumentException("resourceId argument cannot be null");
-        }
-        if (report == null) {
-            throw new IllegalArgumentException("report argument cannot be null");
-        }
-        if (end < start) {
-            throw new IllegalArgumentException("end time cannot be before start time");
-        }
+        Assert.notNull(resourceId, "resourceId argument cannot be null");
+        Assert.notNull(report, "report argument cannot be null");
+        Assert.isTrue(end > start, "end time must be after start time");
 
         PrefabGraphType t = m_graphDao.findByName("performance");
         if (t == null) {
@@ -192,26 +170,27 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         
         Graph graph = new Graph(prefabGraph, r, new Date(start), new Date(end));
 
+        String command = createPrefabCommand(graph,
+                                             t.getCommandPrefix(),
+                                             m_resourceDao.getRrdDirectory(true),
+                                             report,
+                                             getRelativePropertiesPath(r));
+        
+        return getInputStreamForCommand(command);
+    }
+
+    private String getRelativePropertiesPath(OnmsResource r) {
         String attributePath = r.getResourceType().getRelativePathForAttribute(r.getParent().getName(), r.getName(), "bogusAttribute");
         int lastSeparator = attributePath.lastIndexOf(File.separatorChar);
         String relativePropertiesPath = attributePath.substring(0, lastSeparator)
             + File.separator + "strings.properties";
-        String command = getCommandNonAdhoc(t, report, graph, 
-                                            relativePropertiesPath);
-        
-        return getInputStreamForCommand(command);
+        return relativePropertiesPath;
     }
     
     public void afterPropertiesSet() {
-        if (m_resourceDao == null) {
-            throw new IllegalStateException("resourceDao property has not been set");
-        }
-        if (m_graphDao == null) {
-            throw new IllegalStateException("graphDao property has not been set");
-        }
-        if (m_rrdStrategy == null) {
-            throw new IllegalStateException("rrdStrategy property has not been set");
-        }
+        Assert.state(m_resourceDao != null, "resourceDao property has not been set");
+        Assert.state(m_graphDao != null, "graphDao property has not been set");
+        Assert.state(m_rrdStrategy != null, "rrdStrategy property has not been set");
     }
     
     protected String createAdHocCommand(AdhocGraphType adhocType,
@@ -297,18 +276,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     }
 
 
-    public String getCommandNonAdhoc(PrefabGraphType type,
-                                     String report,
-                                     Graph graph,
-                                     String relativePropertiesPath) {
-        return createPrefabCommand(graph,
-                                   type.getCommandPrefix(),
-                                   m_resourceDao.getRrdDirectory(true),
-                                   report,
-                                   relativePropertiesPath);
-    }
-    
-
     private String[] getRRDNames(Graph graph) {
         String[] columns = graph.getPrefabGraph().getColumns();
         String[] rrds = new String[columns.length];
@@ -330,7 +297,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         PrefabGraph prefabGraph = graph.getPrefabGraph();
 
         String[] rrds = getRRDNames(graph);
-        
         
         StringBuffer buf = new StringBuffer();
         buf.append(commandPrefix);
@@ -450,24 +416,16 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return speed;
     }
     
-    public Properties loadProperties(File workDir, String propertiesFile) {
-        if (workDir == null) {
-            throw new IllegalArgumentException("argument workDir cannot e null");
-        }
-        
-        if (propertiesFile == null) {
-            throw new IllegalArgumentException("argument propertiesFile cannot e null");
-        }
+    protected Properties loadProperties(File workDir, String propertiesFile) {
+        Assert.notNull(workDir, "workDir argument cannot be null");
+        Assert.notNull(propertiesFile, "propertiesFile argument cannot be null");
         
         Properties externalProperties = new Properties();
         
         File file = new File(workDir, propertiesFile);
         if (!file.exists()) {
-            String message =
-                "loadProperties: Properties file does not exist: "
-                + file.getAbsolutePath();
-            log().warn(message);
-            //throw new DataAccessResourceFailureException(message);
+            log().warn("loadProperties: Properties file does not exist: " + file.getAbsolutePath());
+            throw new ObjectRetrievalFailureException(Properties.class, "strings.properties", "This resource does not have a string properties file: " + file.getAbsolutePath(), null);
         }
         
         FileInputStream fileInputStream = null;
@@ -475,7 +433,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             fileInputStream = new FileInputStream(file);
         } catch (IOException e) {
             String message = "loadProperties: Error opening properties file "
-                + propertiesFile + ": " + e.getMessage();
+                + file.getAbsolutePath() + ": " + e.getMessage();
             log().warn(message, e);
             throw new DataAccessResourceFailureException(message, e);
         }
@@ -484,7 +442,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             externalProperties.load(fileInputStream);
         } catch (IOException e) {
             String message = "loadProperties: Error loading properties file "
-                + propertiesFile + ": " + e.getMessage();
+                + file.getAbsolutePath() + ": " + e.getMessage();
             log().warn(message, e);
             throw new DataAccessResourceFailureException(message, e);
         } finally {
@@ -495,7 +453,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             } catch (IOException e) {
                 String message = 
                     "loadProperties: Error closing properties file "
-                    + propertiesFile + ": " + e.getMessage();
+                    + file.getAbsolutePath() + ": " + e.getMessage();
                 log().warn(message, e);
                 throw new DataAccessResourceFailureException(message, e);
             }
