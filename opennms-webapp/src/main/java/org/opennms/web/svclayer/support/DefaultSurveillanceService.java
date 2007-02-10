@@ -34,6 +34,7 @@ package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -280,6 +281,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         for (OnmsCategory category : rows) {
             params.add("category2=" + Util.encode(category.getName()));
         }
+        params.add("nodesWithDownAggregateStatus=true");
         return "element/nodeList.htm"
         + "?"
         + StringUtils.collectionToDelimitedString(params, "&");
@@ -318,6 +320,20 @@ public class DefaultSurveillanceService implements SurveillanceService {
         View view;
         view = ( viewName == null ? m_surveillanceConfigDao.getDefaultView() : m_surveillanceConfigDao.getView(viewName) );
         return (view == null) ? false : true;
+    }
+
+    public List<String> getViewNames() {
+        List<String> viewNames = new ArrayList<String>(m_surveillanceConfigDao.getViews().getViewCount());
+        for (View view : getViewCollection()) {
+            viewNames.add(view.getName());
+        }
+        Collections.sort(viewNames);
+        return viewNames;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<View> getViewCollection() {
+        return m_surveillanceConfigDao.getViews().getViewCollection();
     }
 
 }

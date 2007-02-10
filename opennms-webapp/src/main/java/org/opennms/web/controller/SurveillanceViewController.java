@@ -51,6 +51,8 @@ import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceViewError;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -62,36 +64,41 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class SurveillanceViewController extends AbstractController {
+public class SurveillanceViewController extends AbstractController implements InitializingBean {
+    private static final String VIEW_NAME_PARAMETER = "viewName";
 
-    private static SurveillanceService m_service;
+    private static final String PROGRESS_MONITOR_KEY = "surveillanceViewProgressMonitor";
+
+    private SurveillanceService m_service;
 
     public void setService(SurveillanceService svc) {
         m_service = svc;
+    }
+    
+    public void afterPropertiesSet() {
+        Assert.state(m_service != null, "service property must be set");
     }
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest req,
             HttpServletResponse resp) throws Exception {
 
-        final String progressMonitorKey = "surveillanceViewProgressMonitor";
-
-        if ( ! m_service.isViewName(req.getParameter("viewName")) ) {
-            SurveillanceViewError viewError = createSurveillanceViewError( req.getParameter("viewName") );
+        if ( ! m_service.isViewName(req.getParameter(VIEW_NAME_PARAMETER)) ) {
+            SurveillanceViewError viewError = createSurveillanceViewError( req.getParameter(VIEW_NAME_PARAMETER) );
             return new ModelAndView("surveillanceViewError", "error", viewError);
         }
 
         HttpSession session = req.getSession();
-        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(req.getParameter("viewName")));
-        ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(progressMonitorKey);
+        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(req.getParameter(VIEW_NAME_PARAMETER)));
+        ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(PROGRESS_MONITOR_KEY);
 
         if (progressMonitor == null) {
-            progressMonitor = createProgressMonitor(req.getParameter("viewName"));
-            session.setAttribute(progressMonitorKey, progressMonitor);
+            progressMonitor = createProgressMonitor(req.getParameter(VIEW_NAME_PARAMETER));
+            session.setAttribute(PROGRESS_MONITOR_KEY, progressMonitor);
         }
 
         if (progressMonitor.isError()) {
-            session.removeAttribute(progressMonitorKey);
+            session.removeAttribute(PROGRESS_MONITOR_KEY);
             Throwable t = progressMonitor.getThrowable();
             throw new Exception("SurveillanceView Builder Thread threw exception: ["
                     + t.getClass().getName() + "] "
@@ -99,9 +106,11 @@ public class SurveillanceViewController extends AbstractController {
         }
 
         if (progressMonitor.isFinished()) {
-            session.removeAttribute(progressMonitorKey);
+            session.removeAttribute(PROGRESS_MONITOR_KEY);
             SimpleWebTable table = (SimpleWebTable) progressMonitor.getResult();
-            return new ModelAndView("surveillanceView", "webTable", table);
+            ModelAndView modelAndView = new ModelAndView("surveillanceView", "webTable", table);
+            modelAndView.addObject("viewNames", m_service.getViewNames());
+            return modelAndView;
         }
 
         return new ModelAndView("progressBar", "progress", progressMonitor);

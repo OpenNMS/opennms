@@ -32,6 +32,8 @@
 
 package org.opennms.web.svclayer;
 
+import java.util.List;
+
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,9 +48,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly=true)
 public interface SurveillanceService {
 
-    SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor);
+    public SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor);
     
-    String getHeaderRefreshSeconds(String viewName);
+    public String getHeaderRefreshSeconds(String viewName);
 
-    boolean isViewName(String viewName);
+    public boolean isViewName(String viewName);
+    
+    public List<String> getViewNames();
 }
