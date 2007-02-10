@@ -92,19 +92,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
     
     /*
-    if (goodMonitors == 0 && badMonitors == 0) {
-        return "Indeterminate"; // No current responses
-    } else if (goodMonitors != 0 && badMonitors == 0) {
-        return "Normal"; // No bad responses
-    } else if (goodMonitors == 0 && badMonitors != 0) {
-        return "Critical"; // All bad responses
-    } else if (goodMonitors != 0 && badMonitors != 0){
-        return "Warning"; // Some bad responses
-    } else {
-    */
-
-    
-    /*
      * XXX No unit tests
      * XXX Not sorting by category
      * XXX not dealing with the case where a node has multiple categories
