@@ -1,6 +1,0 @@
-<module>
-	<inherits name='com.google.gwt.user.User'/>
-	<entry-point class='org.opennms.netmgt.dashboard.client.DynaTable'/>
-	<servlet path='/calendar' class='org.opennms.netmgt.dashboard.server.SchoolCalendarServiceImpl'/>
-</module>
-
