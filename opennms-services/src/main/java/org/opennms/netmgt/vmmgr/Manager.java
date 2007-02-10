@@ -44,7 +44,6 @@ package org.opennms.netmgt.vmmgr;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -69,9 +68,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
-import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -218,11 +216,10 @@ public class Manager implements ManagerMBean {
 
     public static void start(MBeanServer server) {
         log().debug("Beginning startup");
-        List resultInfo = getInstancesAndInvoke(server, true,
+        List<InvokerResult> resultInfo = getInstancesAndInvoke(server, true,
                                                 InvokeAtType.START, false,
                                                 true);
-        InvokerResult result =
-            (InvokerResult) resultInfo.get(resultInfo.size() - 1);
+        InvokerResult result = resultInfo.get(resultInfo.size() - 1);
         if (result != null && result.getThrowable() != null) {
             Service service = result.getService();
             String name = service.getName();
@@ -258,9 +255,9 @@ public class Manager implements ManagerMBean {
         log().debug("Shutdown complete");
     }
     
-    public List status() {
+    public List<String> status() {
         List servers = MBeanServerFactory.findMBeanServer(null);
-        List result = new ArrayList();
+        List<String> result = new ArrayList<String>();
         for (Iterator i = servers.iterator(); i.hasNext(); ) {
             MBeanServer server = (MBeanServer) i.next();
             result.addAll(status(server));
@@ -268,15 +265,14 @@ public class Manager implements ManagerMBean {
         return result;
     }
     
-    public static List status(MBeanServer server) {
+    public static List<String> status(MBeanServer server) {
         log().debug("Beginning status check");
-        List results = getInstancesAndInvoke(server, false,
+        List<InvokerResult> results = getInstancesAndInvoke(server, false,
                                              InvokeAtType.STATUS, false,
                                              false);
         
-        List statusInfo = new ArrayList(results.size());
-        for (Iterator i = results.iterator(); i.hasNext(); ) {
-            InvokerResult invokerResult = (InvokerResult) i.next();
+        List<String> statusInfo = new ArrayList<String>(results.size());
+        for (InvokerResult invokerResult : results) {
             if (invokerResult.getThrowable() == null) {
                 statusInfo.add("Status: "
                                + invokerResult.getMbean().getObjectName()
@@ -292,7 +288,7 @@ public class Manager implements ManagerMBean {
         return statusInfo;
     }
 
-    public static List getInstancesAndInvoke(MBeanServer server,
+    public static List<InvokerResult> getInstancesAndInvoke(MBeanServer server,
                                              boolean instantiate,
                                              InvokeAtType at,
                                              boolean reverse,
@@ -323,8 +319,8 @@ public class Manager implements ManagerMBean {
          * Preload the classes and register a new instance with the
          * MBeanServer.
          */
-        for (int i = 0; i < invokerServices.length; i++) {
-            Service service = invokerServices[i].getService();
+        for (InvokerService invokerService : invokerServices) {
+            Service service = invokerService.getService();
             try {
                 // preload the class
                 if (log().isDebugEnabled()) {
@@ -346,7 +342,7 @@ public class Manager implements ManagerMBean {
                             + service.getName());
                 }
                 ObjectName name = new ObjectName(service.getName());
-                invokerServices[i].setMbean(server.registerMBean(bean, name));
+                invokerService.setMbean(server.registerMBean(bean, name));
 
                 // Set attributes
                 org.opennms.netmgt.config.service.Attribute[] attribs =
@@ -366,7 +362,7 @@ public class Manager implements ManagerMBean {
                           + service.getName() + " of type "
                           + service.getClassName() + " it will be skipped",
                           t);
-                invokerServices[i].setBadThrowable(t);
+                invokerService.setBadThrowable(t);
             }
         }
     }
@@ -394,7 +390,7 @@ public class Manager implements ManagerMBean {
         }
     }
 
-    private static List invokeMethods(MBeanServer server,
+    private static List<InvokerResult> invokeMethods(MBeanServer server,
             InvokerService[] invokerServices,
             InvokeAtType at, boolean reverse,
             boolean failFast) {
@@ -407,39 +403,38 @@ public class Manager implements ManagerMBean {
             }
         }
 
-        List resultInfo = new ArrayList(invokerServices.length);
+        List<InvokerResult> resultInfo = new ArrayList<InvokerResult>(invokerServices.length);
         for (int pass = 0, end = getEndPass(invokerServices); pass <= end; pass++) {
             if (log().isDebugEnabled()) {
                 log().debug("starting pass " + pass);
             }
 
-            for (int i = 0; i < serviceIndexes.length; i++) {
-                int j = serviceIndexes[i].intValue();
-                String name = invokerServices[j].getService().getName();
-                if (invokerServices[j].isBadService()) {
+            for (Integer serviceIndex : serviceIndexes) {
+                String name = invokerServices[serviceIndex].getService().getName();
+                if (invokerServices[serviceIndex].isBadService()) {
                     if (log().isDebugEnabled()) {
                         log().debug("pass " + pass + " on service " + name
                                 + " is bad: not invoking any more methods"); 
                     }
                     break;
                 }
-                Invoke[] todo = invokerServices[j].getService().getInvoke();
-                for (int k = 0; todo != null && k < todo.length; k++) {
-                    if (todo[k].getPass() != pass || !at.equals(todo[k].getAt())) {
+                Invoke[] todo = invokerServices[serviceIndex].getService().getInvoke();
+                for (Invoke todoItem : todo) {
+                    if (todoItem.getPass() != pass || !at.equals(todoItem.getAt())) {
                         continue;
                     }
 
-                    Service service = invokerServices[j].getService();
-                    ObjectInstance mbean = invokerServices[j].getMbean();
+                    Service service = invokerServices[serviceIndex].getService();
+                    ObjectInstance mbean = invokerServices[serviceIndex].getMbean();
 
                     if (log().isDebugEnabled()) {
                         log().debug("pass " + pass + " on service " + name
                                 + " will invoke method \""
-                                + todo[k].getMethod() + "\""); 
+                                + todoItem.getMethod() + "\""); 
                     }
 
                     try {
-                        Object result = invoke(server, todo[k], mbean);
+                        Object result = invoke(server, todoItem, mbean);
                         resultInfo.add(new InvokerResult(service, mbean, result, null));
                     } catch (Throwable t) {
                         resultInfo.add(new InvokerResult(service, mbean, null, t));
