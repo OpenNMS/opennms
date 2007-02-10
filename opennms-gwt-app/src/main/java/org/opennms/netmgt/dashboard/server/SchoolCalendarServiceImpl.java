@@ -41,7 +41,7 @@ public class SchoolCalendarServiceImpl extends RemoteServiceServlet implements
     "Miskel", "Brozowski" };
 
   private static final String[] SUBJECTS = new String[]{
-    "Prestidigiation", "Russion Literature", "Great Feats of IT Magic", "Underwater Basket Weaving",
+    "Prestidigitation", "Russian Literature", "Great Feats of IT Magic", "Underwater Basket Weaving",
     "Springology", "Computer Science", "Wicketology", "Materials Engineering",
     "English Literature", "Geology"};
 
