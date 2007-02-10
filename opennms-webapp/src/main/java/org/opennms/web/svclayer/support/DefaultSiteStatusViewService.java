@@ -208,7 +208,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     private String createNodePageUrl(AggregateStatusView statusView, AggregateStatus status) {
         
         if (status.getDownEntityCount() == 0) {
-            StringBuffer buf = new StringBuffer("element/nodelist.jsp?");
+            StringBuffer buf = new StringBuffer("element/nodeList.htm?");
             buf.append("statusViewName=");
             buf.append(Util.encode(statusView.getName()));
             buf.append('&');
@@ -225,7 +225,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             buf.append(node.getId());
             return buf.toString();
         } else {
-            StringBuffer buf = new StringBuffer("element/nodelist.jsp?");
+            StringBuffer buf = new StringBuffer("element/nodeList.htm?");
             buf.append("statusViewName=");
             buf.append(Util.encode(statusView.getName()));
             buf.append('&');

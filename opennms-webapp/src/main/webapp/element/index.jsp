@@ -72,30 +72,30 @@
   <div class="TwoColLeft">
       <h3>Search for Nodes</h3>
 		<div class="boxWrapper">
-            <form action="element/nodelist.jsp" method="GET">
+            <form action="element/nodeList.htm" method="GET">
 					<p align="right">Name containing:          
-              <input type="hidden" name="listInterfaces" value=""/>
+              <input type="hidden" name="listInterfaces" value="true"/>
               <input type="text" name="nodename" />
               <input type="submit" value="Search"/></p>                
             </form>
 
-            <form action="element/nodelist.jsp" method="GET">
+            <form action="element/nodeList.htm" method="GET">
 					<p align="right">TCP/IP Address like:          
-              <input type="hidden" name="listInterfaces" value=""/>
+              <input type="hidden" name="listInterfaces" value="true"/>
               <input type="text" name="iplike" value="*.*.*.*" />
               <input type="submit" value="Search"/></p>                
             </form>
 
-            <form action="element/nodelist.jsp" method="GET">
+            <form action="element/nodeList.htm" method="GET">
 					<p align="right">IfAlias containing:          
-						<input type="hidden" name="listInterfaces" value=""/>
+						<input type="hidden" name="listInterfaces" value="true"/>
 						<input type="text" name="ifAlias" />
 						<input type="submit" value="Search"/></p>                
             </form>
 
-            <form action="element/nodelist.jsp" method="GET">
+            <form action="element/nodeList.htm" method="GET">
 					<p align="right">Providing service:          
-						<input type="hidden" name="listInterfaces" value=""/>
+						<input type="hidden" name="listInterfaces" value="true"/>
 						<select name="service" size="1">
 						  <% while( serviceNameIterator.hasNext() ) { %>
 						    <% String name = (String)serviceNameIterator.next(); %> 
@@ -105,16 +105,16 @@
 						<input type="submit" value="Search"/></p>                
             </form>
             
-            <form action="element/nodelist.jsp" method="GET">
+            <form action="element/nodeList.htm" method="GET">
 					<p align="right">Mac Address like:          
-						<input type="hidden" name="listInterfaces" value=""/>
+						<input type="hidden" name="listInterfaces" value="true"/>
 						<input type="text" name="maclike" />
 						<input type="submit" value="Search"/></p>                
             </form>
                         
 			<ul class="plain">
-				<li><a href="element/nodelist.jsp">All nodes</a></li>
-				<li><a href="element/nodelist.jsp?listInterfaces">All nodes and their interfaces</a></li>
+				<li><a href="element/nodeList.htm">All nodes</a></li>
+				<li><a href="element/nodeList.htm?listInterfaces=true">All nodes and their interfaces</a></li>
 			</ul>
 		</div>
 		

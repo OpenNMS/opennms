@@ -161,6 +161,19 @@
     <property name="distributedPollerService" ref="distributedPollerService" />
   </bean>
   
+  <bean id="outageModel" class="org.opennms.web.outage.OutageModel"/>
+  
+  <bean name="/element/nodeList.htm" class="org.opennms.web.controller.element.NodeListController">
+    <property name="commandName"><value>command</value></property>
+    <property name="commandClass"><value>org.opennms.web.command.NodeListCommand</value></property>
+    <property name="successView"><value>element/nodeList</value></property>
+    <property name="outageModel" ref="outageModel" />
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="categoryDao" ref="categoryDao" />
+    <property name="transactionTemplate" ref="transactionTemplate" />
+    <property name="siteStatusViewService" ref="siteStatusViewService" />
+  </bean>
+  
   <bean name="/admin/distributed/locationMonitorResume.htm" class="org.opennms.web.controller.distributed.LocationMonitorResumeController">
     <property name="commandName"><value>command</value></property>
     <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>

@@ -89,7 +89,7 @@ public class NavBarController extends AbstractController {
         File vulnEnableFile = new File(vulnEnableLocation);
 
         LinkedList<NavBarEntry> navBar = new LinkedList<NavBarEntry>();
-        navBar.add(new NavBarEntry("nodelist", "element/nodelist.jsp",
+        navBar.add(new NavBarEntry("nodelist", "element/nodeList.htm",
                                    "Node List"));
         navBar.add(new NavBarEntry("element", "element/index.jsp", "Search"));
         navBar.add(new NavBarEntry("outages", "outage/index.jsp", "Outages"));
