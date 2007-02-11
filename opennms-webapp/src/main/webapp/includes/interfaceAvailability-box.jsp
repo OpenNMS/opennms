@@ -109,7 +109,7 @@ if (overallRtcValue < 0) {
         overallStatusString = "Not Monitored";
     } else {
         overallStatus = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
-        overallStatusString = "" + CategoryUtil.formatValue(overallRtcValue);
+        overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
     }
 }
 %>
@@ -118,7 +118,7 @@ if (overallRtcValue < 0) {
 <table>
   <tr class="<%= overallStatus %>">
     <td class="divider">Overall Availability</td>
-    <td class="divider bright" colspan="2"><%= overallStatusString %>%</td>
+    <td class="divider bright" colspan="2"><%= overallStatusString %></td>
   </tr>
 
   <% for( int i=0; i < services.length; i++ ) { %>
