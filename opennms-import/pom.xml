@@ -78,6 +78,8 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-snmp4j</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 
