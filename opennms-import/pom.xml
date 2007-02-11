@@ -75,6 +75,11 @@
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-snmp-snmp4j</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>castor</groupId>
