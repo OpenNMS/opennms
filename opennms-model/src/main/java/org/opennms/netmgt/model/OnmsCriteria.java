@@ -118,7 +118,7 @@ public class OnmsCriteria {
     public boolean resultsOfType(Class clazz) {
         if (m_entityName == null) {
             return true;
-        } {
+        } else {
             return clazz.getName().endsWith(m_entityName);
         }
     }
