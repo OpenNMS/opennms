@@ -27,15 +27,17 @@ response.setDateHeader("Expires", startTime);
 </c:set>
 
   <div align="center">
-    ${label}...
-    
-    <div style="width: 400px; height: 30px; border-size: 1px; border-style: ridge;">
-      <div style="width: 400px; height: 30px; position: relative; text-align: center; line-height: 30px; z-index: 2">
-        ${percentage}%
-      </div>
-      <div style="position: relative; top: -30px; z-index: 1; float: left; width: ${percentage}%; height: 30px; background-color: green;">
-      </div>
+    <p style="margin-bottom: 0px; font-size: 80%;">
+      ${label}...
+    </p>
+
+    <div style="width: 400px; height: 25px; border-size: 1px; border-style: ridge; background-color: white;">
+      <div style="float: left; width: ${percentage}%; height: 25px; background-color: green;">&nbsp;</div>
     </div>
+    
+    <p>
+      ${percentage}% completed
+    </p>
   </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
