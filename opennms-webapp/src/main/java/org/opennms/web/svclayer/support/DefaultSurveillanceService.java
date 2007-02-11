@@ -84,13 +84,13 @@ public class DefaultSurveillanceService implements SurveillanceService {
              * cell.
              */
             for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
-                progressMonitor.beginNextPhase("Loading Nodes for "+sView.getRowLabel(rowIndex));
+                progressMonitor.beginNextPhase("Loading nodes for row '"+sView.getRowLabel(rowIndex) + "'");
                 Collection<OnmsNode> nodesForRow = getNodesInCategories(sView.getCategoriesForRow(rowIndex));
                 nodesByRowIndex.add(rowIndex, nodesForRow);
             }
 
             for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
-                progressMonitor.beginNextPhase("Loading Nodes for "+sView.getColumnLabel(colIndex));
+                progressMonitor.beginNextPhase("Loading nodes for column '"+sView.getColumnLabel(colIndex) + "'");
                 Collection<OnmsNode> nodesForCol = getNodesInCategories(sView.getCategoriesForColumn(colIndex));
                 nodesByColIndex.add(colIndex, nodesForCol);
             }
@@ -98,7 +98,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
             AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
 
 
-            progressMonitor.beginNextPhase("Intersecting Rows and Columns");
+            progressMonitor.beginNextPhase("Intersecting rows and columns");
 
             for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
 
