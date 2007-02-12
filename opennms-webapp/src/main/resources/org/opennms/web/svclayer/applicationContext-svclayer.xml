@@ -204,4 +204,12 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.getInstance</value></property>
   </bean>
   
+  <!-- Node List page -->
+  <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="categoryDao" ref="categoryDao" />
+    <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao" />
+  </bean>
+  
+  
 </beans>

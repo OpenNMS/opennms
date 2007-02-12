@@ -72,11 +72,11 @@
 
     <c:otherwise>
       <div class="TwoColLeft">
-        <element:nodelist nodes="${model.nodesLeft}" isIfAliasSearch="${command.ifAlias}"/>
+        <element:nodelist nodes="${model.nodesLeft}" isIfAliasSearch="${command.ifAlias != null}"/>
       </div>
         
       <div class="TwoColRight">
-        <element:nodelist nodes="${model.nodesRight}" isIfAliasSearch="${command.ifAlias}"/>
+        <element:nodelist nodes="${model.nodesRight}" isIfAliasSearch="${command.ifAlias != null}"/>
       </div>
 
       <div class="spacer"><!-- --></div>
@@ -129,10 +129,14 @@
       <c:param name="ifAlias" value="${command.ifAlias}"/>
     </c:if>
     <c:if test="${command.category1 != null}">
-      <c:param name="category1" value="${command.category1}"/>
+      <c:forEach var="category" items="${command.category1}">
+        <c:param name="category1" value="${category}"/>
+      </c:forEach>
     </c:if>
     <c:if test="${command.category2 != null}">
-      <c:param name="category2" value="${command.category2}"/>
+      <c:forEach var="category" items="${command.category2}">
+        <c:param name="category2" value="${category}"/>
+      </c:forEach>
     </c:if>
     <c:if test="${command.statusViewName != null}">
       <c:param name="statusViewName" value="${command.statusViewName}"/>
