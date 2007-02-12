@@ -1,0 +1,24 @@
+.label {
+    font-size: xx-large;
+
+}
+
+
+
+.dashlet-conrolbar {
+    background: darkgreen;
+    color: white;
+    border: black;
+
+
+}
+
+.dashlet {
+   background: yellow;
+}
+
+.dashboard table tbody tr td {
+    width: 33%
+
+
+}
