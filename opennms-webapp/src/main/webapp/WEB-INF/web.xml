@@ -390,11 +390,7 @@
     <servlet-name>deleteUser</servlet-name>
     <servlet-class>org.opennms.web.admin.users.DeleteUserServlet</servlet-class>
   </servlet>
-  <servlet>
-    <!-- servlet for manipulating oncall-schedules in the modify user jsp -->
-    <servlet-name>updateOncall</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.UpdateOncallServlet</servlet-class>
-  </servlet>
+  
   <servlet>
     <!-- servlet for adding duty schedules to a user's notification info-->
     <servlet-name>addDutySchedules</servlet-name>
@@ -487,156 +483,8 @@
     <servlet-name>deleteView</servlet-name>
     <servlet-class>org.opennms.web.admin.views.DeleteViewServlet</servlet-class>
   </servlet>
+
   
-  <!-- Servlets for the editing of the eventconf.xml file -->
-  <servlet>
-    <servlet-name>deleteEvent</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.DeleteEventServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>index.jsp</param-value>
-    </init-param>
-  </servlet>
-  
-  <servlet>
-    <!-- servlet for passing parameters to the event conf modify jsp -->
-    <servlet-name>modifyParam</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.ModifyParamServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving an event -->
-    <servlet-name>saveEvent</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.SaveEventServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating changes to the mask elements of an event conf -->
-    <servlet-name>updateEvent</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.UpdateEventServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for renaming an event -->
-    <servlet-name>renameEvent</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.RenameEventServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for creating a new event -->
-    <servlet-name>newEvent</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.NewEventServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for copying event -->
-    <servlet-name>copyEvent</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.CopyEventServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <!-- servlet for rearranging event configurations -->
-    <servlet-name>rearrangeEvents</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.RearrangeEventsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for adding a new mask element when editing event conf masks -->
-    <servlet-name>newMaskElement</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.masks.NewMaskElementServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating changes to the mask elements of an event conf -->
-    <servlet-name>updateMaskElements</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.masks.UpdateMaskElementsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving changes to the mask elements of an event conf -->
-    <servlet-name>saveMaskElements</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.masks.SaveMaskElementsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for deleting mask elements of an event conf -->
-    <servlet-name>deleteElement</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.masks.DeleteElementServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for intializing parameters for editing an event mask-->
-    <servlet-name>maskEditing</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.masks.MaskEditingServlet</servlet-class>
-  </servlet> 
-  <servlet>
-    <!-- servlet for intializing parameters for editing the event auto actions-->
-    <servlet-name>autoActionEditing</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.autoActions.AutoActionEditingServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for adding a new auto action to an event -->
-    <servlet-name>newAutoAction</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.autoActions.NewAutoActionServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating changes to the mask elements of an event conf -->
-    <servlet-name>updateAutoActions</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.autoActions.UpdateAutoActionsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving changes to the mask elements of an event conf -->
-    <servlet-name>saveAutoActions</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.autoActions.SaveAutoActionsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for deleting mask elements of an event conf -->
-    <servlet-name>deleteAutoAction</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.autoActions.DeleteAutoActionServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <!-- servlet for intializing parameters for editing the event operator actions-->
-    <servlet-name>operActionEditing</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.operActions.OperActionEditingServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for adding a new operator action to an event -->
-    <servlet-name>newOperAction</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.operActions.NewOperActionServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating changes to operator actions -->
-    <servlet-name>updateOperActions</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.operActions.UpdateOperActionsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving changes to operator actions -->
-    <servlet-name>saveOperActions</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.operActions.SaveOperActionsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for deleting operator actions -->
-    <servlet-name>deleteOperAction</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.operActions.DeleteOperActionServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <!-- servlet for intializing parameters for editing the event forwards-->
-    <servlet-name>forwardsEditing</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.forwards.ForwardsEditingServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for adding a new operator action to an event -->
-    <servlet-name>newForward</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.forwards.NewForwardServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating changes to operator actions -->
-    <servlet-name>updateForwards</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.forwards.UpdateForwardsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving changes to operator actions -->
-    <servlet-name>saveForwards</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.forwards.SaveForwardsServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for deleting operator actions -->
-    <servlet-name>deleteForward</servlet-name>
-    <servlet-class>org.opennms.web.eventconf.forwards.DeleteForwardServlet</servlet-class>
-  </servlet>
   <servlet>
     <servlet-name>nodeLabelChange</servlet-name>
     <servlet-class>org.opennms.web.nodelabel.NodeLabelChangeServlet</servlet-class>
@@ -783,24 +631,7 @@
     <servlet-class>org.opennms.web.outage.OutageFilterServlet</servlet-class>
   </servlet>
 
-  <servlet>
-    <!-- This servlet generates PNG images from SVG input -->
-    <servlet-name>SVGServlet</servlet-name>
-    <servlet-class>org.opennms.web.map.SVGServlet</servlet-class>
-  </servlet>
 
-  <servlet>
-    <!-- This servlet generates PNG images from SVG input -->
-    <servlet-name>SVGTranscoder</servlet-name>
-    <servlet-class>org.opennms.web.map.SVGTranscoder</servlet-class>
-  </servlet>
-
-  <servlet>
-    <!-- This servlet is used to set NodeParentID -->
-    <servlet-name>modifyParent</servlet-name>
-    <servlet-class>org.opennms.web.map.ModifyParentServlet</servlet-class>
-  </servlet>
-  
   <servlet>
   	<servlet-name>scheduleEditor</servlet-name>
   	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
@@ -869,21 +700,7 @@
   	</init-param>
   </servlet>
 
-  <servlet>
-  	<servlet-name>graphResults</servlet-name>
-  	<servlet-class>org.opennms.web.graph.GraphResultsServlet</servlet-class>
-  </servlet>
-
-  <!-- python servlet for testing purposes -->
-  <servlet>
-      <servlet-name>PyServlet</servlet-name>
-      <servlet-class>org.python.util.PyServlet</servlet-class>
-      <init-param>
-          <param-name>python.home</param-name>
-          <param-value>/home/larry/jython-2.1a1</param-value>
-      </init-param>
-  </servlet>
-
+ 
   <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -895,13 +712,6 @@
         <servlet-name>JnlpDownloadServlet</servlet-name>
         <url-pattern>/webstart/*</url-pattern>
      </servlet-mapping>
-
-
-  <servlet-mapping>
-      <servlet-name>PyServlet</servlet-name>
-      <url-pattern>*.py</url-pattern>
-  </servlet-mapping>
-  <!-- python servlet for testing purposes -->
 
   <!-- ******************* servlet for map management ******************--> 
   <servlet-mapping>
@@ -1074,10 +884,6 @@
     <url-pattern>/admin/userGroupView/users/deleteUser</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>updateOncall</servlet-name>
-  	<url-pattern>/admin/userGroupView/users/updateOncall</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>addDutySchedules</servlet-name>
     <url-pattern>/admin/userGroupView/users/addDutySchedules</url-pattern>
   </servlet-mapping>
@@ -1160,128 +966,7 @@
   <!-- end of group configuration servlets -->
   
   <!-- end of user groups and views configuration servlets -->
-  
-  <!-- servlet mapping for event conf editing -->
-  <servlet-mapping>
-    <servlet-name>deleteEvent</servlet-name>
-    <url-pattern>/admin/eventconf/deleteEvent</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>modifyParam</servlet-name>
-    <url-pattern>/admin/eventconf/modifyParam</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>updateEvent</servlet-name>
-    <url-pattern>/admin/eventconf/updateEvent</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveEvent</servlet-name>
-    <url-pattern>/admin/eventconf/saveEvent</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>renameEvent</servlet-name>
-    <url-pattern>/admin/eventconf/renameEvent</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>newEvent</servlet-name>
-    <url-pattern>/admin/eventconf/newEvent</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>copyEvent</servlet-name>
-    <url-pattern>/admin/eventconf/copyEvent</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rearrangeEvents</servlet-name>
-    <url-pattern>/admin/eventconf/rearrangeEvents</url-pattern>
-  </servlet-mapping>
-  
-  
-  <!-- event mask servlet mappings -->
-  <servlet-mapping>
-    <servlet-name>newMaskElement</servlet-name>
-    <url-pattern>/admin/eventconf/masks/newMaskElement</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>updateMaskElements</servlet-name>
-    <url-pattern>/admin/eventconf/masks/updateMaskElements</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveMaskElements</servlet-name>
-    <url-pattern>/admin/eventconf/masks/saveMaskElements</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteElement</servlet-name>
-    <url-pattern>/admin/eventconf/masks/deleteElement</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>maskEditing</servlet-name>
-    <url-pattern>/admin/eventconf/masks/maskEditing</url-pattern>
-  </servlet-mapping>
-  <!-- auto action servlet mappings -->
-  <servlet-mapping>
-    <servlet-name>autoActionEditing</servlet-name>
-    <url-pattern>/admin/eventconf/autoActions/autoActionEditing</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>newAutoAction</servlet-name>
-    <url-pattern>/admin/eventconf/autoActions/newAutoAction</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>updateAutoActions</servlet-name>
-    <url-pattern>/admin/eventconf/autoActions/updateAutoActions</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveAutoActions</servlet-name>
-    <url-pattern>/admin/eventconf/autoActions/saveAutoActions</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteAutoAction</servlet-name>
-    <url-pattern>/admin/eventconf/autoActions/deleteAutoAction</url-pattern>
-  </servlet-mapping>
-  
-  <!-- operator action servlet mappings -->
-  <servlet-mapping>
-    <servlet-name>operActionEditing</servlet-name>
-    <url-pattern>/admin/eventconf/operActions/operActionEditing</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>newOperAction</servlet-name>
-    <url-pattern>/admin/eventconf/operActions/newOperAction</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>updateOperActions</servlet-name>
-    <url-pattern>/admin/eventconf/operActions/updateOperActions</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveOperActions</servlet-name>
-    <url-pattern>/admin/eventconf/operActions/saveOperActions</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteOperAction</servlet-name>
-    <url-pattern>/admin/eventconf/operActions/deleteOperAction</url-pattern>
-  </servlet-mapping>
-  
-  <!-- forwards servlet mappings -->
-  <servlet-mapping>
-    <servlet-name>forwardsEditing</servlet-name>
-    <url-pattern>/admin/eventconf/forwards/forwardsEditing</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>newForward</servlet-name>
-    <url-pattern>/admin/eventconf/forwards/newForward</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>updateForwards</servlet-name>
-    <url-pattern>/admin/eventconf/forwards/updateForwards</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveForwards</servlet-name>
-    <url-pattern>/admin/eventconf/forwards/saveForwards</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteForward</servlet-name>
-    <url-pattern>/admin/eventconf/forwards/deleteForward</url-pattern>
-  </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>nodeLabelChange</servlet-name>
     <url-pattern>/admin/nodeLabelChange</url-pattern>
@@ -1403,27 +1088,6 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>SVGServlet</servlet-name>
-    <url-pattern>/map/SVGServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>SVGTranscoder</servlet-name>
-    <url-pattern>/map/SVGTranscoder</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>modifyParent</servlet-name>
-    <url-pattern>/map/modifyParent</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>graphResults</servlet-name>
-    <url-pattern>/graph/results</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>graphResults</servlet-name>
-    <url-pattern>/graph/domainResults</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
   </servlet-mapping>
@@ -1445,10 +1109,7 @@
     <exception-type>org.opennms.web.event.EventIdNotFoundException</exception-type>
     <location>/errors/eventidnotfound.jsp</location>
   </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.alarm.AlarmIdNotFoundException</exception-type>
-    <location>/errors/alarmidnotfound.jsp</location>
-  </error-page>
+
   <error-page>
     <exception-type>org.opennms.web.notification.NoticeIdNotFoundException</exception-type>
     <location>/errors/noticeidnotfound.jsp</location>
