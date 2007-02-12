@@ -32,6 +32,7 @@
 
 package org.opennms.web.svclayer;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -64,7 +65,7 @@ public class AggregateStatus {
 
     public static final String ALL_NODES_UP = "Normal";
 
-    public AggregateStatus(Set<OnmsNode> nodes) {
+    public AggregateStatus(Collection<OnmsNode> nodes) {
         computeStatusValues(nodes);
     }
 
@@ -159,7 +160,7 @@ public class AggregateStatus {
 
     }
 
-    private void visitNodes(Set<OnmsNode> nodes,
+    private void visitNodes(Collection<OnmsNode> nodes,
             AggregateStatusVisitor statusVisitor) {
 
         if (nodes == null) {
@@ -171,7 +172,7 @@ public class AggregateStatus {
         }
     }
 
-    private AggregateStatus computeStatusValues(Set<OnmsNode> nodes) {
+    private AggregateStatus computeStatusValues(Collection<OnmsNode> nodes) {
         AggregateStatusVisitor statusVisitor = new AggregateStatusVisitor();
         visitNodes(nodes, statusVisitor);
 
