@@ -2203,6 +2203,7 @@ public class InstallerDb {
                                            new DoNotAddColumn());
         addColumnReplacement("assets.id",
                                            new DoNotAddColumn());
+        addColumnReplacement("atinterface.id", new DoNotAddColumn());
 
         // Triggers will take care of these surrogate foreign keys
         addColumnReplacement("ipinterface.snmpinterfaceid",

@@ -132,7 +132,10 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 
     /** persistent field */
     private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
-    
+
+    /** persistent field */
+    private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<OnmsArpInterface>();
+
     private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
 
     public OnmsNode() {
@@ -435,6 +438,28 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public void setSnmpInterfaces(Set<OnmsSnmpInterface> snmpinterfaces) {
         m_snmpInterfaces = snmpinterfaces;
     }
+    
+    /** 
+     * The arp interfaces on this node
+     * 
+     */
+    @OneToMany(mappedBy="node")
+    @org.hibernate.annotations.Cascade( {
+        org.hibernate.annotations.CascadeType.ALL,
+        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<OnmsArpInterface> getArpInterfaces() {
+        return m_arpInterfaces;
+    }
+
+    public void setArpInterfaces(Set<OnmsArpInterface> arpInterfaces) {
+        m_arpInterfaces = arpInterfaces;
+    }
+    
+    public void addArpInterface(OnmsArpInterface iface) {
+        iface.setNode(this);
+        getArpInterfaces().add(iface);
+    }
+
     
     @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(

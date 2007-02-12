@@ -1388,6 +1388,7 @@ insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dp
 --########################################################################
 
 create table atinterface (
+    id			integer default nextval('opennmsNxtId') not null,
 	nodeid		integer not null,
 	ipAddr		varchar(16) not null,
 	atPhysAddr	varchar(12) not null,

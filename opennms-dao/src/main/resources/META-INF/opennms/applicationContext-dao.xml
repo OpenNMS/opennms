@@ -34,6 +34,7 @@
 				<value>org.opennms.netmgt.model.OnmsNode</value>
 				<value>org.opennms.netmgt.model.OnmsIpInterface</value>
 				<value>org.opennms.netmgt.model.OnmsSnmpInterface</value>
+                <value>org.opennms.netmgt.model.OnmsArpInterface</value>
 				<value>org.opennms.netmgt.model.OnmsMonitoredService</value>
 				<value>org.opennms.netmgt.model.OnmsCategory</value>
 				<value>org.opennms.netmgt.model.OnmsServiceType</value>
