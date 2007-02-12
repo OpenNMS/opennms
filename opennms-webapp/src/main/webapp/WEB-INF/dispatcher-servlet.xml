@@ -73,14 +73,14 @@
 	          ref="categoryStatusService" />
   </bean>
 
-  <bean name="/daemonstatus.htm"
+  <!--<bean name="/daemonstatus.htm"
 		class="org.opennms.web.controller.DaemonStatusController">
     <property name="daemonStatusService" ref="daemonStatusService" />
 	<property name="commandName" value="toModify" />
 	<property name="commandClass"
 	          value="org.opennms.web.controller.DaemonStatusBinder" />
 	<property name="successView" value="daemonstatus" />
-  </bean>
+  </bean>-->
   
   <bean name="/outage/list.htm"
 		class="org.opennms.web.controller.OutageListController">
