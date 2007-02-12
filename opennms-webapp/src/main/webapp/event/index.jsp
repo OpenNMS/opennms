@@ -53,7 +53,7 @@
   <div class="TwoColLeft">
       <h3>Event Queries</h3>
       <div class="boxWrapper">
-      <jsp:include page="/event/querypanel.jsp" flush="false" />
+      <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
 			<form action="event/detail.jsp" method="GET">
 				<p align="right">Event ID:          
 					<input type="text" name="id" />
