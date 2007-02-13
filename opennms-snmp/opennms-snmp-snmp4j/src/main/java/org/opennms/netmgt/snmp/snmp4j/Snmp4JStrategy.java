@@ -33,7 +33,6 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -75,13 +74,13 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.UdpAddress;
-import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4JStrategy implements SnmpStrategy {
 
-    public static Map m_registrations = new HashMap();
+    public static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
+    
     private Snmp4JValueFactory m_valueFactory;
     
     static private boolean m_initialized = false;
@@ -200,8 +199,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * @param oids
      * @return
      *        Returns an array of Snmp4JValues.  If the
-     *        getNext was unsuccessful, then the first elment
-     *        of the array will be null and lenth of 1. 
+     *        getNext was unsuccessful, then the first element
+     *        of the array will be null and length of 1. 
      */
     public SnmpValue[] getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids) {
         Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(snmpAgentConfig);
@@ -221,7 +220,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * @param oids
      * @return
      */
-    private SnmpValue[] send(Snmp4JAgentConfig agentConfig, int pduType, SnmpObjId[] oids) {
+    protected SnmpValue[] send(Snmp4JAgentConfig agentConfig, int pduType, SnmpObjId[] oids) {
         
         SnmpValue[] values = { null };
         Snmp session = null;
@@ -263,7 +262,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 values = new Snmp4JValue[responseEvent.getResponse().getVariableBindings().size()];
                 
                 for (int i=0; i<values.length; i++) {
-                    values[i] = new Snmp4JValue(responseEvent.getResponse().get(0).getVariable());
+                    values[i] = new Snmp4JValue(responseEvent.getResponse().get(i).getVariable());
                 }
                 
                 if (log().isDebugEnabled())
@@ -334,7 +333,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 retvalues = new Snmp4JValue[responseEvent.getResponse().getVariableBindings().size()];
                 
                 for (int i=0; i<values.length; i++) {
-                    retvalues[i] = new Snmp4JValue(responseEvent.getResponse().get(0).getVariable());
+                    retvalues[i] = new Snmp4JValue(responseEvent.getResponse().get(i).getVariable());
                 }
                 
                 if (log().isDebugEnabled())
@@ -474,13 +473,13 @@ public class Snmp4JStrategy implements SnmpStrategy {
         snmp.addCommandResponder(m_trapHandler);
         info.setSession(snmp);
         
-        m_registrations.put(listener, info);
+        s_registrations.put(listener, info);
         
         snmp.listen();
     }
 
     public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException {
-        RegistrationInfo info = (RegistrationInfo)m_registrations.remove(listener);
+        RegistrationInfo info = s_registrations.remove(listener);
         info.getSession().close();
     }
 
@@ -511,8 +510,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     public static void sendTest(String agentAddress, int port, String community, PDU pdu) {
-        for (Iterator it = m_registrations.values().iterator(); it.hasNext();) {
-            RegistrationInfo info = (RegistrationInfo) it.next();
+        for (RegistrationInfo info : s_registrations.values()) {
             if (port == info.getPort()) {
                 Snmp snmp = info.getSession();
                 MessageDispatcher dispatcher = snmp.getMessageDispatcher();
