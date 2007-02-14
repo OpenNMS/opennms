@@ -63,10 +63,9 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertNotNull("authenticated Authentication object not null", authenticated);
 		GrantedAuthority[] authorities = authenticated.getAuthorities();
 		assertNotNull("GrantedAuthorities should not be null", authorities);
-		assertEquals("GrantedAuthorities size", 3, authorities.length);
+		assertEquals("GrantedAuthorities size", 2, authorities.length);
 		assertEquals("GrantedAuthorities zero role", "ROLE_USER", authorities[0].getAuthority());
-		assertEquals("GrantedAuthorities one name", "ROLE_RTC", authorities[1].getAuthority());
-		assertEquals("GrantedAuthorities two name", "ROLE_ADMIN", authorities[2].getAuthority());
+		assertEquals("GrantedAuthorities two name", "ROLE_ADMIN", authorities[1].getAuthority());
 	}
 	
 	public void testAuthenticateRtc() {
@@ -75,9 +74,8 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 		assertNotNull("authenticated Authentication object not null", authenticated);
 		GrantedAuthority[] authorities = authenticated.getAuthorities();
 		assertNotNull("GrantedAuthorities should not be null", authorities);
-		assertEquals("GrantedAuthorities size", 2, authorities.length);
-		assertEquals("GrantedAuthorities zero role", "ROLE_USER", authorities[0].getAuthority());
-		assertEquals("GrantedAuthorities one name", "ROLE_RTC", authorities[1].getAuthority());
+		assertEquals("GrantedAuthorities size", 1, authorities.length);
+		assertEquals("GrantedAuthorities one name", "ROLE_RTC", authorities[0].getAuthority());
 	}
 	
 	public void testAuthenticateTempUser() {
