@@ -95,7 +95,7 @@
   </jsp:include>
 <% } %>
 
-  <div style="width: 40%; float: left;">
+<div class="TwoColLAdmin">
       <h3>Capability Rescan</h3>
       
       <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>      
@@ -117,7 +117,7 @@
       </form>
   </div>
 
-  <div style="width: 40%; float: left;">
+<div class="TwoColRAdmin">
       <h3>Capability Scanning</h3>
     
       <p>
