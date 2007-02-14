@@ -130,6 +130,9 @@ public class NsclientMonitor extends IPv4Monitor {
                                                  DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout",
                                                    DEFAULT_TIMEOUT);
+        
+        // Get the password for the NSClients
+        String password = ParameterMap.getKeyedString(parameters, "password", "None");
 
 
         // Get the address we're going to poll.
@@ -147,6 +150,7 @@ public class NsclientMonitor extends IPv4Monitor {
                                                              ipv4Addr.getHostAddress(),
                                                              port);
                 client.setTimeout(timeout);
+                client.setPassword(password);
                 client.init();
 
                 // Set up the parameters the client will use to validate the
