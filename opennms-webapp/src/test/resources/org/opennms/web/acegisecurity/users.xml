@@ -24,5 +24,11 @@
       <contact type="textPage" info="9876" serviceProvider="Sprint" />
       <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>
     </user>
+    <user>
+      <user-id>dashboard</user-id>
+      <full-name>Dashboard-only user</full-name>
+      <user-comments></user-comments>
+      <password>DC7161BE3DBF2250C8954E560CC35060</password>
+    </user>
   </users>
 </userinfo>

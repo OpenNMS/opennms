@@ -103,10 +103,9 @@ public class UserDaoImplTest extends TestCase {
 
         GrantedAuthority[] authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
-        assertEquals("authorities size", 3, authorities.length);
+        assertEquals("authorities size", 2, authorities.length);
         assertEquals("authorities 0 name", "ROLE_USER", authorities[0].getAuthority());
-        assertEquals("authorities 1 name", "ROLE_RTC", authorities[1].getAuthority());
-        assertEquals("authorities 2 name", "ROLE_ADMIN", authorities[2].getAuthority());
+        assertEquals("authorities 2 name", "ROLE_ADMIN", authorities[1].getAuthority());
     }
 
     public void testGetByUsernameBogus() {
@@ -132,9 +131,8 @@ public class UserDaoImplTest extends TestCase {
 
         GrantedAuthority[] authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
-        assertEquals("authorities size", 2, authorities.length);
-        assertEquals("authorities 0 name", "ROLE_USER", authorities[0].getAuthority());
-        assertEquals("authorities 1 name", "ROLE_RTC", authorities[1].getAuthority());
+        assertEquals("authorities size", 1, authorities.length);
+        assertEquals("authorities 0 name", "ROLE_RTC", authorities[0].getAuthority());
     }
 
     public void testGetByUsernameTempUser() {
@@ -153,6 +151,24 @@ public class UserDaoImplTest extends TestCase {
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.length);
         assertEquals("authorities 0 name", "ROLE_USER", authorities[0].getAuthority());
+    }
+    
+    public void testGetByUsernameDashoard() {
+        UserDaoImpl dao = new UserDaoImpl();
+        setUsersConfigurationFile(dao);
+        setMagicUsersConfigurationFile(dao);
+
+        User user = dao.getByUsername("dashboard");
+        assertNotNull("user object should not be null", user);
+        assertEquals("User name", "dashboard", user.getUsername());
+        assertEquals("Full name", null, user.getFullName());
+        assertEquals("Comments", null, user.getComments());
+        assertEquals("Password", "DC7161BE3DBF2250C8954E560CC35060", user.getPassword());
+
+        GrantedAuthority[] authorities = user.getAuthorities();
+        assertNotNull("authorities should not be null", authorities);
+        assertEquals("authorities size", 1, authorities.length);
+        assertEquals("authorities 0 name", "ROLE_DASHBOARD", authorities[0].getAuthority());
     }
 
     private void setUsersConfigurationFile(UserDaoImpl dao) {

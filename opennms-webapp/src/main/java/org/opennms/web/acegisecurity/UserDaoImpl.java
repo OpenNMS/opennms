@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -200,10 +201,21 @@ public class UserDaoImpl implements UserDao {
         }
 
         String[] configuredRoles = BundleLists.parseBundleList(properties.getProperty("roles"));
-        HashMap<String, LinkedList<String>> roleMap = new HashMap<String, LinkedList<String>>();
+        Map<String, LinkedList<String>> roleMap = new HashMap<String, LinkedList<String>>();
+        Map<String, Boolean> roleAddDefaultMap = new HashMap<String, Boolean>();
         for (String role : configuredRoles) {
             String rolename = properties.getProperty("role." + role + ".name");
-            String[] authUsers = BundleLists.parseBundleList(properties.getProperty("role." + role + ".users"));
+            if (rolename == null) {
+                throw new DataRetrievalFailureException("Role configuration for '" + role + "' does not have 'name' parameter.  Expecting a 'role." + role + ".name' property");
+            }
+
+            String userList = properties.getProperty("role." + role + ".users");
+            if (userList == null) {
+                throw new DataRetrievalFailureException("Role configuration for '" + role + "' does not have 'users' parameter.  Expecting a 'role." + role + ".users' property");
+            }
+            String[] authUsers = BundleLists.parseBundleList(userList);
+
+            boolean notInDefaultGroup = "true".equals(properties.getProperty("role." + role + ".notInDefaultGroup"));
 
             String acegiRole = Authentication.getAcegiRoleFromOldRoleName(rolename);
             if (acegiRole == null) {
@@ -217,10 +229,12 @@ public class UserDaoImpl implements UserDao {
                 LinkedList<String> userRoleList = roleMap.get(authUser); 
                 userRoleList.add(acegiRole);
             }
+            
+            roleAddDefaultMap.put(acegiRole, !notInDefaultGroup);
         }
 
         for (String user : roleMap.keySet()) {
-            roles.put(user, getAuthorityListFromRoleList(roleMap.get(user)));
+            roles.put(user, getAuthorityListFromRoleList(roleMap.get(user), roleAddDefaultMap));
         }
 
         m_magicUsersLastModified = lastModified; 
@@ -228,16 +242,26 @@ public class UserDaoImpl implements UserDao {
         m_roles = roles;
     }
 
-    private GrantedAuthority[] getAuthorityListFromRoleList(LinkedList<String> roleList) {
-        GrantedAuthority[] authorities = new GrantedAuthority[roleList.size() + 1];
-        int index = 0;
-        authorities[index++] = s_roleUser;
-
+    private GrantedAuthority[] getAuthorityListFromRoleList(LinkedList<String> roleList, Map<String, Boolean> roleAddDefaultMap) {
+        boolean addToDefaultGroup = false;
+        
         for (String role : roleList) {
-            authorities[index++] = new GrantedAuthorityImpl(role);
+            if (Boolean.TRUE.equals(roleAddDefaultMap.get(role))) {
+                addToDefaultGroup = true;
+                break;
+            }
+        }
+        
+        List<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
+        if (addToDefaultGroup) {
+            authorities.add(s_roleUser);
         }
 
-        return authorities;
+        for (String role : roleList) {
+            authorities.add(new GrantedAuthorityImpl(role));
+        }
+
+        return authorities.toArray(new GrantedAuthority[authorities.size()]);
     }
 
     protected GrantedAuthority[] getAuthoritiesByUsername(String user) {
