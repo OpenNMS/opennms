@@ -71,10 +71,11 @@ import org.springframework.dao.DataRetrievalFailureException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class UserDaoImpl implements UserDao {
-	private static final UpperCaseMd5PasswordEncoder s_encoder = new UpperCaseMd5PasswordEncoder();
-	private static final GrantedAuthority s_roleUser = new GrantedAuthorityImpl(Authentication.USER_ROLE);
+    private static final UpperCaseMd5PasswordEncoder s_encoder = new UpperCaseMd5PasswordEncoder();
 
-	private String m_usersConfigurationFile;
+    private static final GrantedAuthority s_roleUser = new GrantedAuthorityImpl(Authentication.USER_ROLE);
+
+    private String m_usersConfigurationFile;
 	
     /**
      * The set of valid users from users.xml, keyed by userId
@@ -82,20 +83,17 @@ public class UserDaoImpl implements UserDao {
     private Map<String, org.opennms.web.acegisecurity.User> m_users = null;
     
     private long m_usersLastModified;
-    
 
-	private String m_magicUsersConfigurationFile;
+    private String m_magicUsersConfigurationFile;
 	
-	private String m_foo;
-
-	/**
+    /**
      * The set of valid users from magic-users.properties, keyed by userId
      */
     private Map<String, org.opennms.web.acegisecurity.User> m_magicUsers = null;
+
     private Map<String, GrantedAuthority[]> m_roles = null;
     
     private long m_magicUsersLastModified;
-
 
     /**
      * The Log4J category for logging web authentication messages.
@@ -106,30 +104,30 @@ public class UserDaoImpl implements UserDao {
     }
     
     private Userinfo unmarshallUsers() throws DataRetrievalFailureException {
-		if (m_usersConfigurationFile == null) {
-			// XXX there must be a better way to do this
-			throw new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
-		}
-		
+        if (m_usersConfigurationFile == null) {
+            // XXX there must be a better way to do this
+            throw new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
+        }
+
         FileInputStream in;
-		try {
-			in = new FileInputStream(m_usersConfigurationFile);
-		} catch (FileNotFoundException e) {
-			throw new DataRetrievalFailureException("Could not find configuration file '" + m_usersConfigurationFile + "': " + e.getMessage(), e);
-		}
+        try {
+            in = new FileInputStream(m_usersConfigurationFile);
+        } catch (FileNotFoundException e) {
+            throw new DataRetrievalFailureException("Could not find configuration file '" + m_usersConfigurationFile + "': " + e.getMessage(), e);
+        }
 
         Reader reader = new InputStreamReader(in);
         return unmarshall(reader);
     }
-    
+
     private Userinfo unmarshall(Reader reader) throws DataRetrievalFailureException {
-    	try {
-    		return (Userinfo) Unmarshaller.unmarshal(Userinfo.class, reader);
-    	} catch (MarshalException e) {
-    		throw new DataRetrievalFailureException("Failed unmarshalling configuration: " + e.getMessage(), e);
-    	} catch (ValidationException e) {
-			throw new DataRetrievalFailureException("Failed validating configuration: " + e.getMessage(), e);
-		}
+        try {
+            return (Userinfo) Unmarshaller.unmarshal(Userinfo.class, reader);
+        } catch (MarshalException e) {
+            throw new DataRetrievalFailureException("Failed unmarshalling configuration: " + e.getMessage(), e);
+        } catch (ValidationException e) {
+            throw new DataRetrievalFailureException("Failed validating configuration: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -141,12 +139,12 @@ public class UserDaoImpl implements UserDao {
      */
     private void parseUsers() throws DataRetrievalFailureException {
         HashMap<String, org.opennms.web.acegisecurity.User> users = new HashMap<String, org.opennms.web.acegisecurity.User>();
-        
-		long lastModified = new File(m_usersConfigurationFile).lastModified();
+
+        long lastModified = new File(m_usersConfigurationFile).lastModified();
         Userinfo userinfo = unmarshallUsers();
 
         Collection usersList = userinfo.getUsers().getUserCollection();
-        
+
         Iterator i = usersList.iterator();
         while (i.hasNext()) {
             User user = (User) i.next();
@@ -161,11 +159,11 @@ public class UserDaoImpl implements UserDao {
 
         log.debug("Loaded " + users.size() + " users into memory");
 
-        
+
         m_usersLastModified = lastModified; 
         m_users = users;
     }
-    
+
     /**
      * Parses the magic-users.properties file into two mappings: from magic
      * username to password, and from magic role to authorized users of that
@@ -175,17 +173,17 @@ public class UserDaoImpl implements UserDao {
         HashMap<String, org.opennms.web.acegisecurity.User> magicUsers = new HashMap<String, org.opennms.web.acegisecurity.User>();
         HashMap<String, GrantedAuthority[]> roles = new HashMap<String, GrantedAuthority[]>();
 
-		long lastModified = new File(m_usersConfigurationFile).lastModified();
+        long lastModified = new File(m_usersConfigurationFile).lastModified();
 
         // read the file
         Properties properties = new Properties();
-       	try {
-			properties.load(new FileInputStream(m_magicUsersConfigurationFile));
-		} catch (FileNotFoundException e) {
-    		throw new DataRetrievalFailureException("Magic users configuration file '" + m_magicUsersConfigurationFile + "' not found: " + e.getMessage(), e);
-		} catch (IOException e) {
-    		throw new DataRetrievalFailureException("Error reading magic users configuration file '" + m_magicUsersConfigurationFile + "': " + e.getMessage(), e);
-		}
+        try {
+            properties.load(new FileInputStream(m_magicUsersConfigurationFile));
+        } catch (FileNotFoundException e) {
+            throw new DataRetrievalFailureException("Magic users configuration file '" + m_magicUsersConfigurationFile + "' not found: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new DataRetrievalFailureException("Error reading magic users configuration file '" + m_magicUsersConfigurationFile + "': " + e.getMessage(), e);
+        }
 
         // look up users and their passwords
         String[] configuredUsers = BundleLists.parseBundleList(properties.getProperty("users"));
@@ -206,51 +204,51 @@ public class UserDaoImpl implements UserDao {
         for (String role : configuredRoles) {
             String rolename = properties.getProperty("role." + role + ".name");
             String[] authUsers = BundleLists.parseBundleList(properties.getProperty("role." + role + ".users"));
-            
+
             String acegiRole = Authentication.getAcegiRoleFromOldRoleName(rolename);
             if (acegiRole == null) {
-            	throw new DataRetrievalFailureException("Could not find Acegi Security role mapping for old role name '" + rolename + "' for role '" + role + "'");
+                throw new DataRetrievalFailureException("Could not find Acegi Security role mapping for old role name '" + rolename + "' for role '" + role + "'");
             }
 
             for (String authUser : authUsers) {
-            	if (roleMap.get(authUser) == null) {
-            		roleMap.put(authUser, new LinkedList<String>());
-            	}
-            	LinkedList<String> userRoleList = roleMap.get(authUser); 
-            	userRoleList.add(acegiRole);
+                if (roleMap.get(authUser) == null) {
+                    roleMap.put(authUser, new LinkedList<String>());
+                }
+                LinkedList<String> userRoleList = roleMap.get(authUser); 
+                userRoleList.add(acegiRole);
             }
         }
-        
+
         for (String user : roleMap.keySet()) {
-        	roles.put(user, getAuthorityListFromRoleList(roleMap.get(user)));
+            roles.put(user, getAuthorityListFromRoleList(roleMap.get(user)));
         }
-        
+
         m_magicUsersLastModified = lastModified; 
         m_magicUsers = magicUsers;
         m_roles = roles;
     }
 
     private GrantedAuthority[] getAuthorityListFromRoleList(LinkedList<String> roleList) {
-    	GrantedAuthority[] authorities = new GrantedAuthority[roleList.size() + 1];
-    	int index = 0;
-    	authorities[index++] = s_roleUser;
-    	
-    	for (String role : roleList) {
-    		authorities[index++] = new GrantedAuthorityImpl(role);
-    	}
+        GrantedAuthority[] authorities = new GrantedAuthority[roleList.size() + 1];
+        int index = 0;
+        authorities[index++] = s_roleUser;
 
-    	return authorities;
-	}
-    
-    protected GrantedAuthority[] getAuthoritiesByUsername(String user) {
-    	if (m_roles.containsKey(user)) {
-    		return m_roles.get(user);
-    	} else {
-    		return new GrantedAuthority[] { s_roleUser };
-    	}
+        for (String role : roleList) {
+            authorities[index++] = new GrantedAuthorityImpl(role);
+        }
+
+        return authorities;
     }
 
-	/**
+    protected GrantedAuthority[] getAuthoritiesByUsername(String user) {
+        if (m_roles.containsKey(user)) {
+            return m_roles.get(user);
+        } else {
+            return new GrantedAuthority[] { s_roleUser };
+        }
+    }
+
+    /**
      * Checks the last modified time of the user file against
      * the last known last modified time. If the times are different, then the
      * file must be reparsed.
@@ -264,17 +262,17 @@ public class UserDaoImpl implements UserDao {
      * </p>
      */
     private boolean isUsersParseNecessary() {
-    	if (m_users == null) {
-    		return true;
-    	}
-    	
+        if (m_users == null) {
+            return true;
+        }
+
         if (m_usersLastModified != new File(m_usersConfigurationFile).lastModified()) {
             return true;
         }
 
         return false;
     }
-    
+
     /**
      * Checks the last modified time of the magic-users file against
      * the last known last modified time. If the times are different, then the
@@ -289,10 +287,10 @@ public class UserDaoImpl implements UserDao {
      * </p>
      */
     private boolean isMagicUsersParseNecessary() {
-    	if (m_magicUsers == null) {
-    		return true;
-    	}
-    	
+        if (m_magicUsers == null) {
+            return true;
+        }
+
         if (m_magicUsersLastModified != new File(m_magicUsersConfigurationFile).lastModified()) {
             return true;
         }
@@ -300,57 +298,57 @@ public class UserDaoImpl implements UserDao {
         return false;
     }
 
-	public void setUsersConfigurationFile(String usersConfigurationFile) {
-		m_usersConfigurationFile = usersConfigurationFile;
-	}
-	
-	public String getUsersConfigurationFile() {
-		return m_usersConfigurationFile;
-	}
+    public void setUsersConfigurationFile(String usersConfigurationFile) {
+        m_usersConfigurationFile = usersConfigurationFile;
+    }
 
-	public void setMagicUsersConfigurationFile(String magicUsersConfigurationFile) {
-		m_magicUsersConfigurationFile = magicUsersConfigurationFile;
-	}
-	
-	public String getMagicUsersConfigurationFile() {
-		return m_magicUsersConfigurationFile;
-	}
-	
-	public org.opennms.web.acegisecurity.User getByUsername(String username) {
-		reloadIfNecessary();
+    public String getUsersConfigurationFile() {
+        return m_usersConfigurationFile;
+    }
 
-		org.opennms.web.acegisecurity.User user;
-		if (m_magicUsers.containsKey(username)) {
-			user = m_magicUsers.get(username);
-		} else {
-			user = m_users.get(username);
-		}
-		
-		if (user == null) {
-			return null;
-		}
-		
-		user.setAuthorities(getAuthoritiesByUsername(username));
-		
-		return user;
-	}
-	
-	private void reloadIfNecessary() {
-		if (m_usersConfigurationFile == null) {
-			// XXX there must be a better way to do this
-			throw new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
-		}
-		if (m_magicUsersConfigurationFile == null) {
-			// XXX there must be a better way to do this
-			throw new IllegalStateException("magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file");
-		}
-		
-		if (isUsersParseNecessary()) {
-			parseUsers();
-		}
-		
-		if (isMagicUsersParseNecessary()) {
-			parseMagicUsers();
-		}
-	}
+    public void setMagicUsersConfigurationFile(String magicUsersConfigurationFile) {
+        m_magicUsersConfigurationFile = magicUsersConfigurationFile;
+    }
+
+    public String getMagicUsersConfigurationFile() {
+        return m_magicUsersConfigurationFile;
+    }
+
+    public org.opennms.web.acegisecurity.User getByUsername(String username) {
+        reloadIfNecessary();
+
+        org.opennms.web.acegisecurity.User user;
+        if (m_magicUsers.containsKey(username)) {
+            user = m_magicUsers.get(username);
+        } else {
+            user = m_users.get(username);
+        }
+
+        if (user == null) {
+            return null;
+        }
+
+        user.setAuthorities(getAuthoritiesByUsername(username));
+
+        return user;
+    }
+
+    private void reloadIfNecessary() {
+        if (m_usersConfigurationFile == null) {
+            // XXX there must be a better way to do this
+            throw new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
+        }
+        if (m_magicUsersConfigurationFile == null) {
+            // XXX there must be a better way to do this
+            throw new IllegalStateException("magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file");
+        }
+
+        if (isUsersParseNecessary()) {
+            parseUsers();
+        }
+
+        if (isMagicUsersParseNecessary()) {
+            parseMagicUsers();
+        }
+    }
 }
