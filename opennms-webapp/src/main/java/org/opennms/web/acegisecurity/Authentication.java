@@ -33,8 +33,7 @@
 package org.opennms.web.acegisecurity;
 
 import java.util.HashMap;
-
-import org.apache.log4j.Category;
+import java.util.Map;
 
 /**
  * An uninstantiatable class that provides a servlet container-independent
@@ -44,27 +43,19 @@ import org.apache.log4j.Category;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public final class Authentication extends Object {
-    /** The Log4J category for logging web authentication messages. */
-    public static Category log = Category.getInstance("OpenNMS.WEB.AUTH");
-
-    /** The name of the role defined for users in the web.xml file. */
     public static final String USER_ROLE = "ROLE_USER";
-
-    /** The name of the role defined for administrators in the web.xml file. */
     public static final String ADMIN_ROLE = "ROLE_ADMIN";
-
-    /** The name of the role defined for read-only users in the web.xml file. */
     public static final String READONLY_ROLE = "ROLE_READONLY";
-
-    /** The name of the role defined for RTC posts in the web.xml file. */
+    public static final String DASHBOARD_ROLE = "ROLE_DASHBOARD";
     public static final String RTC_ROLE = "ROLE_RTC";
     
-    private static HashMap<String, String> m_oldToNewMap = new HashMap<String, String>();
+    private static Map<String, String> s_oldToNewMap = new HashMap<String, String>();
     
     static {
-    	m_oldToNewMap.put("OpenNMS RTC Daemon", RTC_ROLE);
-    	m_oldToNewMap.put("OpenNMS Administrator", ADMIN_ROLE);
-    	m_oldToNewMap.put("OpenNMS Read-Only User", READONLY_ROLE);
+    	s_oldToNewMap.put("OpenNMS RTC Daemon", RTC_ROLE);
+    	s_oldToNewMap.put("OpenNMS Administrator", ADMIN_ROLE);
+        s_oldToNewMap.put("OpenNMS Read-Only User", READONLY_ROLE);
+        s_oldToNewMap.put("OpenNMS Dashboard User", DASHBOARD_ROLE);
     	// There is no entry for USER_ROLE, because all authenticated people are users
     }
 
@@ -73,7 +64,7 @@ public final class Authentication extends Object {
     }
     
     public static String getAcegiRoleFromOldRoleName(String oldRole) {
-    	return m_oldToNewMap.get(oldRole);
+    	return s_oldToNewMap.get(oldRole);
     }
 
 }

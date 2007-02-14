@@ -138,21 +138,22 @@
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
-        /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER
-        /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_USER
-        /css/styles.css=ROLE_ANONYMOUS,ROLE_USER
-        /css/print.css=ROLE_ANONYMOUS,ROLE_USER
-        /js/pngfix.js=ROLE_ANONYMOUS,ROLE_USER
-        /js/global.js=ROLE_ANONYMOUS,ROLE_USER
-        /images/logo.png=ROLE_ANONYMOUS,ROLE_USER
-        /images/logo-background.gif=ROLE_ANONYMOUS,ROLE_USER
-        /images/headingbg.png=ROLE_ANONYMOUS,ROLE_USER
-        /images/mainbg.png=ROLE_ANONYMOUS,ROLE_USER
-        /images/headerbg.png=ROLE_ANONYMOUS,ROLE_USER
-        /images/footerbg.png=ROLE_ANONYMOUS,ROLE_USER
+        /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /css/styles.css=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /css/print.css=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /js/pngfix.js=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /js/global.js=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /images/logo.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /images/logo-background.gif=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /images/headingbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /images/mainbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /images/headerbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /images/footerbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
         /admin/**=ROLE_ADMIN
         /rtc/post/**=ROLE_RTC
-        /webstart/**=ROLE_ANONYMOUS,ROLE_USER
+        /webstart/**=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
+        /frontpage.htm=ROLE_USER,ROLE_DASHBOARD
         /**=ROLE_USER
       </value>
     </property>
