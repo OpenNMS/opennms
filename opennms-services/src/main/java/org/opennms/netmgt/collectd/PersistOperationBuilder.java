@@ -102,9 +102,13 @@ public class PersistOperationBuilder {
     }
 
     public void commit() throws RrdException {
+        if (m_declarations.size() == 0) {
+            // Nothing to do.  In fact, we'll get an error if we try to create an RRD file with no data sources            
+            return;
+        }
+        
         RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList());
         RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, System.currentTimeMillis(), getValues());
-        
     }
 
     private String getValues() {
