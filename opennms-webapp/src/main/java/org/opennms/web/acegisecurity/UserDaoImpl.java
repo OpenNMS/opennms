@@ -57,7 +57,9 @@ import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.util.Assert;
 
 
 /**
@@ -71,7 +73,7 @@ import org.springframework.dao.DataRetrievalFailureException;
  * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl implements UserDao, InitializingBean {
     private static final UpperCaseMd5PasswordEncoder s_encoder = new UpperCaseMd5PasswordEncoder();
 
     private static final GrantedAuthority s_roleUser = new GrantedAuthorityImpl(Authentication.USER_ROLE);
@@ -96,20 +98,11 @@ public class UserDaoImpl implements UserDao {
     
     private long m_magicUsersLastModified;
 
-    /**
-     * The Log4J category for logging web authentication messages.
-     */
-    private Category log = ThreadCategory.getInstance(getClass());
 
     public UserDaoImpl() {
     }
     
     private Userinfo unmarshallUsers() throws DataRetrievalFailureException {
-        if (m_usersConfigurationFile == null) {
-            // XXX there must be a better way to do this
-            throw new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
-        }
-
         FileInputStream in;
         try {
             in = new FileInputStream(m_usersConfigurationFile);
@@ -156,9 +149,7 @@ public class UserDaoImpl implements UserDao {
             users.put(user.getUserId(), newUser);
         }
 
-        log.debug("Reloaded the users.xml file into memory");
-
-        log.debug("Loaded " + users.size() + " users into memory");
+        log().debug("Loaded the users.xml file with " + users.size() + " users");
 
 
         m_usersLastModified = lastModified; 
@@ -174,7 +165,7 @@ public class UserDaoImpl implements UserDao {
         HashMap<String, org.opennms.web.acegisecurity.User> magicUsers = new HashMap<String, org.opennms.web.acegisecurity.User>();
         HashMap<String, GrantedAuthority[]> roles = new HashMap<String, GrantedAuthority[]>();
 
-        long lastModified = new File(m_usersConfigurationFile).lastModified();
+        long lastModified = new File(m_magicUsersConfigurationFile).lastModified();
 
         // read the file
         Properties properties = new Properties();
@@ -236,6 +227,9 @@ public class UserDaoImpl implements UserDao {
         for (String user : roleMap.keySet()) {
             roles.put(user, getAuthorityListFromRoleList(roleMap.get(user), roleAddDefaultMap));
         }
+        
+        log().debug("Loaded the magic-users.properties file with " + magicUsers.size() + " magic users, " + configuredRoles.length + " roles, and " + roles.size() + " user roles");
+
 
         m_magicUsersLastModified = lastModified; 
         m_magicUsers = magicUsers;
@@ -358,15 +352,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     private void reloadIfNecessary() {
-        if (m_usersConfigurationFile == null) {
-            // XXX there must be a better way to do this
-            throw new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
-        }
-        if (m_magicUsersConfigurationFile == null) {
-            // XXX there must be a better way to do this
-            throw new IllegalStateException("magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file");
-        }
-
         if (isUsersParseNecessary()) {
             parseUsers();
         }
@@ -374,5 +359,25 @@ public class UserDaoImpl implements UserDao {
         if (isMagicUsersParseNecessary()) {
             parseMagicUsers();
         }
+    }
+
+    /**
+     * Returns the Log4J category for logging web authentication messages.
+     */
+    private final Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    public long getMagicUsersLastModified() {
+        return m_magicUsersLastModified;
+    }
+
+    public long getUsersLastModified() {
+        return m_usersLastModified;
+    }
+    
+    public void afterPropertiesSet() {
+        Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
+        Assert.state(m_magicUsersConfigurationFile != null, "magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file");
     }
 }
