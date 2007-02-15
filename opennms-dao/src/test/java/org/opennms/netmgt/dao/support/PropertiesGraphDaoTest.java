@@ -419,7 +419,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     public void testNoType() throws Exception {
         PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
         String ourConfig = s_responsePrefab.replaceAll("report.icmp.type=responseTime", "");
-            ByteArrayInputStream in = new ByteArrayInputStream(ourConfig.getBytes());
+        ByteArrayInputStream in = new ByteArrayInputStream(ourConfig.getBytes());
         dao.loadProperties("response", in);
         
         PrefabGraphType type = dao.findByName("response");
@@ -436,7 +436,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     
     public void testOneType() throws Exception {
         PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
-            ByteArrayInputStream in = new ByteArrayInputStream(s_responsePrefab.getBytes());
+        ByteArrayInputStream in = new ByteArrayInputStream(s_responsePrefab.getBytes());
         dao.loadProperties("response", in);
         
         PrefabGraphType type = dao.findByName("response");
@@ -458,7 +458,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     public void testTwoTypes() throws Exception {
         PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
         String ourConfig = s_responsePrefab.replaceAll("report.icmp.type=responseTime", "report.icmp.type=responseTime, distributedStatus");
-            ByteArrayInputStream in = new ByteArrayInputStream(ourConfig.getBytes());
+        ByteArrayInputStream in = new ByteArrayInputStream(ourConfig.getBytes());
         dao.loadProperties("response", in);
         
         PrefabGraphType type = dao.findByName("response");
