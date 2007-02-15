@@ -145,8 +145,8 @@ public class RrdUtils {
         try {
             return (RrdStrategy) Class.forName(RRD_STRATEGY_CLASSNAME).newInstance();
         } catch (Exception e) {
-            log().error("Unable to load RrdStrategyClass "+RRD_STRATEGY_CLASSNAME, e);
-            throw new RrdException("Unable to construct RrdStrategy: "+RRD_STRATEGY_CLASSNAME, e);
+            log().error("constructStrategyInstance: Unable to load and instantiate RrdStrategy " + RRD_STRATEGY_CLASSNAME + ": " + e, e);
+            throw new RrdException("Unable to load and instantiate RrdStrategy " + RRD_STRATEGY_CLASSNAME + ": " + e, e);
         }
         
     }
@@ -185,18 +185,15 @@ public class RrdUtils {
 
         String completePath = directory + File.separator + fileName;
 
-        if (log().isDebugEnabled()) {
-            log().debug("createRRD: rrd path and file name to create: " + completePath);
-        }
-
+        log().info("createRRD: creating RRD file " + completePath);
 
         try {
             Object def = getStrategy().createDefinition(creator, directory, rrdName, step, dataSources, rraList);
             getStrategy().createFile(def);
             return true;
         } catch (Exception e) {
-            log().debug("An error occured creating rrdfile " + completePath, e);
-            throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + completePath, e);
+            log().error("createRRD: An error occured creating rrdfile " + completePath + ": "  + e, e);
+            throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + completePath + ": " + e, e);
         }
     }
 
@@ -246,22 +243,23 @@ public class RrdUtils {
 
         String updateVal = Long.toString(time) + ":" + val;
 
-        log().info("updateRRD:updating RRD file: " + rrdFile + " with value: " + updateVal);
+        log().info("updateRRD: updating RRD file " + rrdFile + " with values '" + updateVal + "'");
 
         Object rrd = null;
         try {
             rrd = getStrategy().openFile(rrdFile);
             getStrategy().updateFile(rrd, owner, updateVal);
         } catch (Exception e) {
-            log().error("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);
-            throw new org.opennms.netmgt.rrd.RrdException("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);
+            log().error("updateRRD: Error updating RRD file " + rrdFile + " with values '" + updateVal + "': " + e, e);
+            throw new org.opennms.netmgt.rrd.RrdException("Error updating RRD file " + rrdFile + " with values '" + updateVal + "': " + e, e);
         } finally {
             try {
                 if (rrd != null) {
                     getStrategy().closeFile(rrd);
                 }
             } catch (Exception e) {
-                throw new org.opennms.netmgt.rrd.RrdException("Exception closing rrdDb", e);
+                log().error("updateRRD: Exception closing RRD file " + rrdFile + ": " + e, e);
+                throw new org.opennms.netmgt.rrd.RrdException("Exception closing RRD file " + rrdFile + ": " + e, e);
             }
         }
 
