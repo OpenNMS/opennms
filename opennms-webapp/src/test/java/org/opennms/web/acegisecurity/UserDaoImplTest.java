@@ -31,12 +31,23 @@
 
 package org.opennms.web.acegisecurity;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
 import org.acegisecurity.GrantedAuthority;
+import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 
 public class UserDaoImplTest extends TestCase {
+
+    private static final String MAGIC_USERS_FILE = "src/test/resources/org/opennms/web/acegisecurity/magic-users.properties";
+    private static final String USERS_XML_FILE = "src/test/resources/org/opennms/web/acegisecurity/users.xml";
 
     public void testConfigSetter() {
         String usersConfigurationFile = "users.xml";
@@ -59,21 +70,21 @@ public class UserDaoImplTest extends TestCase {
         assertEquals("getMagicUsersConfigurationFile returned what we passed to setMagicUsersConfigurationFile", magicUsersConfigurationFile, dao.getMagicUsersConfigurationFile());
     }
 
-    public void testGetByUsernameWithoutUsersConfigFile() {
+    public void testAfterPropertiesSetWithoutUsersConfigFile() {
         UserDaoImpl dao = new UserDaoImpl();
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("usersConfigurationFile parameter must be set to the location of the users.xml configuration file"));
 
         try {
-            dao.getByUsername("test_user");
+            dao.afterPropertiesSet();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
     }
 
-    public void testGetByUsernameWithoutMagicUsersConfigFile() {
+    public void testAfterPropertiesSetWithoutMagicUsersConfigFile() {
         UserDaoImpl dao = new UserDaoImpl();
         setUsersConfigurationFile(dao);
 
@@ -81,7 +92,7 @@ public class UserDaoImplTest extends TestCase {
         ta.anticipate(new IllegalStateException("magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file"));
 
         try {
-            dao.getByUsername("test_user");
+            dao.afterPropertiesSet();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -170,15 +181,207 @@ public class UserDaoImplTest extends TestCase {
         assertEquals("authorities size", 1, authorities.length);
         assertEquals("authorities 0 name", "ROLE_DASHBOARD", authorities[0].getAuthority());
     }
+    
+    public void testUsersReload() throws Exception {
+        /*
+         * We're not going to use the anticipator functionality, but it's
+         * handy for handling temporary directories.
+         */
+        FileAnticipator fa = new FileAnticipator();
+        
+        try {
+            File users = fa.tempFile("users.xml");
+            File magicUsers = fa.tempFile("magic-users.properties");
+            
+            writeTemporaryFile(users, getUsersXmlContents());
+            writeTemporaryFile(magicUsers, getMagicUsersContents());
+
+            UserDaoImpl dao = new UserDaoImpl();
+            dao.setUsersConfigurationFile(users.getAbsolutePath());
+            dao.setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
+
+            User user;
+            
+            user = dao.getByUsername("dashboard");
+            assertNotNull("dashboard user should exist and the object should not be null", user);
+            
+            user = dao.getByUsername("dashboard-foo");
+            assertNull("dashboard-foo user should not exist and the object should be null", user);
+
+            /*
+             *  On UNIX, the resolution of the last modified time is 1 second,
+             *  so we need to wait at least that long before rewriting the
+             *  file to ensure that we have crossed over into the next second.
+             *  At least we're not crossing over with John Edward.
+             */
+            Thread.sleep(1100);
+
+            writeTemporaryFile(users, getUsersXmlContents().replace("<user-id>dashboard</user-id>", "<user-id>dashboard-foo</user-id>"));
+
+            user = dao.getByUsername("dashboard");
+            assertNull("dashboard user should no longer exist and the object should be null", user);
+            
+            user = dao.getByUsername("dashboard-foo");
+            assertNotNull("dashboard-foo user should now exist and the object should not be null", user);
+        } finally {
+            fa.deleteExpected();
+            fa.tearDown();
+        }
+    }
+
+
+    public void testMagicUsersReload() throws Exception {
+        /*
+         * We're not going to use the anticipator functionality, but it's
+         * handy for handling temporary directories.
+         */
+        FileAnticipator fa = new FileAnticipator();
+        
+        try {
+            File users = fa.tempFile("users.xml");
+            File magicUsers = fa.tempFile("magic-users.properties");
+            
+            writeTemporaryFile(users, getUsersXmlContents());
+            writeTemporaryFile(magicUsers, getMagicUsersContents());
+
+            UserDaoImpl dao = new UserDaoImpl();
+            dao.setUsersConfigurationFile(users.getAbsolutePath());
+            dao.setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
+
+            User user;
+            GrantedAuthority[] authorities;
+            
+            user = dao.getByUsername("dashboard");
+            assertNotNull("dashboard user should exist and the object should not be null", user);
+            authorities = user.getAuthorities(); 
+            assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
+            assertEquals("user GrantedAuthorities[0]", "ROLE_DASHBOARD", authorities[0].getAuthority());
+
+            /*
+             *  On UNIX, the resolution of the last modified time is 1 second,
+             *  so we need to wait at least that long before rewriting the
+             *  file to ensure that we have crossed over into the next second.
+             *  At least we're not crossing over with John Edward.
+             */
+            Thread.sleep(1100);
+
+            writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
+
+            user = dao.getByUsername("dashboard");
+            assertNotNull("dashboard user should exist and the object should not be null", user);
+            authorities = user.getAuthorities(); 
+            assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
+            assertEquals("user GrantedAuthorities[0]", "ROLE_USER", authorities[0].getAuthority());
+        } finally {
+            fa.deleteExpected();
+            fa.tearDown();
+        }
+    }
+    
+    /**
+     * Test for bugzilla bug #1810.  This is the case:
+     * <ol>
+     * <li>Both users and magic users files are loaded</li>
+     * <li>Magic users file is changed</li>
+     * <li>Magic users file is reloaded on the next call to getByUsername</li>
+     * <li>Subsequent calls to getByUsername call caues a reload because the
+     *     last update time for the users file is stored when magic users is
+     *     reloaded</li>
+     * </ol>
+     * 
+     * @param file
+     * @param content
+     * @throws IOException
+     */
+    public void testMagicUsersReloadUpdateLastModified() throws Exception {
+        /*
+         * We're not going to use the anticipator functionality, but it's
+         * handy for handling temporary directories.
+         */
+        FileAnticipator fa = new FileAnticipator();
+        
+        try {
+            File users = fa.tempFile("users.xml");
+            File magicUsers = fa.tempFile("magic-users.properties");
+            
+            writeTemporaryFile(users, getUsersXmlContents());
+            writeTemporaryFile(magicUsers, getMagicUsersContents());
+
+            UserDaoImpl dao = new UserDaoImpl();
+            dao.setUsersConfigurationFile(users.getAbsolutePath());
+            dao.setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
+
+            User user;
+            GrantedAuthority[] authorities;
+            
+            user = dao.getByUsername("dashboard");
+            assertNotNull("dashboard user should exist and the object should not be null", user);
+            authorities = user.getAuthorities(); 
+            assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
+            assertEquals("user GrantedAuthorities[0]", "ROLE_DASHBOARD", authorities[0].getAuthority());
+
+            /*
+             *  On UNIX, the resolution of the last modified time is 1 second,
+             *  so we need to wait at least that long before rewriting the
+             *  file to ensure that we have crossed over into the next second.
+             *  At least we're not crossing over with John Edward.
+             */
+            Thread.sleep(1100);
+
+            writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
+
+            user = dao.getByUsername("dashboard");
+            assertNotNull("dashboard user should exist and the object should not be null", user);
+            authorities = user.getAuthorities(); 
+            assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
+            assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.length);
+            assertEquals("user GrantedAuthorities[0]", "ROLE_USER", authorities[0].getAuthority());
+
+            long ourLastModifiedTime = magicUsers.lastModified();
+            long daoLastModifiedTime = dao.getMagicUsersLastModified();
+            
+            assertEquals("last modified time of magic users file does not match what the DAO stored after reloading the file", ourLastModifiedTime, daoLastModifiedTime);
+        } finally {
+            fa.deleteExpected();
+            fa.tearDown();
+        }
+    }
+    private void writeTemporaryFile(File file, String content) throws IOException {
+        FileWriter writer = new FileWriter(file);
+        writer.write(content);
+        writer.close();
+    }
+    
+    private String getUsersXmlContents() throws IOException {
+        return getFileContents(new File(USERS_XML_FILE));
+    }
+    
+    private String getMagicUsersContents() throws IOException {
+        return getFileContents(new File(MAGIC_USERS_FILE));
+    }
+
+    private String getFileContents(File file) throws FileNotFoundException, IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        
+        StringBuffer contents = new StringBuffer();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            contents.append(line);
+            contents.append("\n");
+        }
+        
+        return contents.toString();
+    }
 
     private void setUsersConfigurationFile(UserDaoImpl dao) {
-        //dao.setUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/users.xml").getFile());
-        dao.setUsersConfigurationFile("src/test/resources/org/opennms/web/acegisecurity/users.xml");
+        dao.setUsersConfigurationFile(USERS_XML_FILE);
     }
 
     private void setMagicUsersConfigurationFile(UserDaoImpl dao) {
-        //dao.setMagicUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/magic-users.properties").getFile());
-        dao.setMagicUsersConfigurationFile("src/test/resources/org/opennms/web/acegisecurity/magic-users.properties");
+        dao.setMagicUsersConfigurationFile(MAGIC_USERS_FILE);
     }
 
 }
