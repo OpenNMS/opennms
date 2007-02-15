@@ -181,7 +181,7 @@ public class SnmpCollectorTest extends TestCase {
         File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");
         for (int i = 1; i <= 8; i++) {
             File brocadeIndexDir = m_fileAnticipator.expecting(brocadeDir, Integer.toString(i));
-            for (String file : new String[] { "strings.properties", "swFCPortTxWords.jrb", "swFCPortRxWords.jrb", "swFCPortWwn.jrb" }) {
+            for (String file : new String[] { "strings.properties", "swFCPortTxWords.jrb", "swFCPortRxWords.jrb" }) {
                 m_fileAnticipator.expecting(brocadeIndexDir, file);
             }
         }
