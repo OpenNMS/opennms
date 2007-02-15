@@ -37,7 +37,6 @@
 package org.opennms.netmgt.collectd;
 
 
-import org.apache.log4j.Priority;
 import org.opennms.netmgt.config.MibObject;
 
 public class NumericAttributeType extends AttributeType {
@@ -81,12 +80,10 @@ public class NumericAttributeType extends AttributeType {
     }
 
     void logNameTooLong() {
-
-       if (log().isEnabledFor(Priority.WARN))
-           log().warn(
-                   "buildDataSourceList: Mib object name/alias '"
-                   + getAlias()
-                   + "' exceeds 19 char maximum for RRD data source names, truncating.");
+        log().warn(
+                "buildDataSourceList: Mib object name/alias '"
+                + getAlias()
+                + "' exceeds 19 char maximum for RRD data source names, truncating.");
    }
 
 
