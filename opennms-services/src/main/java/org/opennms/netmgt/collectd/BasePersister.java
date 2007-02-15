@@ -101,7 +101,10 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
         for (Iterator iter = attributeTypes.iterator(); iter.hasNext();) {
             AttributeType attrType = (AttributeType) iter.next();
-            m_builder.declareAttribute(attrType);
+            // Only numeric values can be included on RRDs
+            if (attrType instanceof NumericAttributeType) {
+                m_builder.declareAttribute(attrType);
+            }
         }
     }
 
