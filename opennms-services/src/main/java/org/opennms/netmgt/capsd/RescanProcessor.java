@@ -3283,11 +3283,11 @@ public final class RescanProcessor implements Runnable {
                                        dbInterfaces, collectorMap);
                     }
                     updateCompleted = true;
-		    createRescanCompletedEvent(dbNodeEntry);
+                    createRescanCompletedEvent(dbNodeEntry);
                 }
             }
         } catch (Throwable t) {
-            log.error("Error updating records", t);
+            log.error("Error updating records for node ID " + m_scheduledNode.getNodeId() + ": " + t, t);
         } finally {
             // Finished with the database connection, close it.
             try {
@@ -3295,7 +3295,7 @@ public final class RescanProcessor implements Runnable {
                     dbc.close();
                 }
             } catch (SQLException e) {
-                log.error("Error closing connection", e);
+                log.error("Error closing connection: " + e, e);
             }
         }
 
@@ -3307,7 +3307,7 @@ public final class RescanProcessor implements Runnable {
                     EventIpcManagerFactory.getIpcManager().sendNow(event);
                 } catch (Throwable t) {
                     log.warn("run: unexpected throwable exception caught "
-                             + "while sending event", t);
+                             + "while sending event: " + t, t);
                 }
             }
         }
