@@ -1911,11 +1911,11 @@ public final class RescanProcessor implements Runnable {
 
                 // admin status
                 sint = ifte.getIfAdminStatus();
-                currSnmpIfEntry.setAdminStatus(sint.intValue());
+                currSnmpIfEntry.setAdminStatus(sint == null ? 0 : sint.intValue());
 
                 // oper status
                 sint = ifte.getIfOperStatus();
-                currSnmpIfEntry.setOperationalStatus(sint.intValue());
+                currSnmpIfEntry.setOperationalStatus(sint == null ? 0 : sint.intValue());
 
                 // name (from interface extensions table)
                 String ifName = snmpc.getIfName(ifIndex);
