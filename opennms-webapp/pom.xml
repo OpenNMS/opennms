@@ -9,8 +9,22 @@
   <artifactId>opennms-webapp</artifactId>
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
+  <properties>
+    <gwtVersion>1.3.3</gwtVersion>
+    <moduleName>org.opennms.dashboard.Dashboard</moduleName>
+    <moduleHtml>index.html</moduleHtml>
+  </properties>
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset><directory>.gwt-cache</directory></fileset>
+            <fileset><directory>tomcat</directory></fileset>
+          </filesets>
+        </configuration>
+     </plugin> 
      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>dependency-maven-plugin</artifactId>
@@ -36,12 +50,35 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <moduleName>${moduleName}</moduleName>
+          <homePage>${moduleHtml}</homePage>
+          <gwtDirectory>${GWThome}</gwtDirectory>
+          <pathelements>
+            <pathelement>src/main/webapp</pathelement>
+          </pathelements>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
         <webResources>
           <resource>
             <filtering>true</filtering>
             <directory>${basedir}/src/main/web-filtered</directory>
+          </resource>
+          <resource>
+            <directory>${project.build.directory}/${moduleName}</directory>
           </resource>
           </webResources>
         </configuration>
@@ -57,6 +94,20 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <configuration>
+          <container>
+            <containerId>tomcat5x</containerId>
+            <type>embedded</type>
+          </container>
+        </configuration>
+    </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -166,6 +217,12 @@
     <dependency>
       <groupId>castor</groupId>
       <artifactId>castor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwtVersion}</version>
+      <!--  scope>runtime</scope -->
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
