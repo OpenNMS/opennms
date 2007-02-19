@@ -52,11 +52,11 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
         <configuration>
           <moduleName>${moduleName}</moduleName>
           <homePage>${moduleHtml}</homePage>
-          <gwtDirectory>${GWThome}</gwtDirectory>
+          <gwtHome>${gwt.home}</gwtHome>
           <pathelements>
             <pathelement>src/main/webapp</pathelement>
           </pathelements>
