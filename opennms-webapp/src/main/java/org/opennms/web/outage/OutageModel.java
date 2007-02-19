@@ -46,8 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Vector;
+import java.util.List;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.web.element.Node;
@@ -178,7 +177,7 @@ public class OutageModel extends Object {
     }
     
     public Collection<Integer> getCurrentOutagesIdsForNode(int nodeId) throws SQLException {
-        LinkedList<Integer> outageIds = new LinkedList<Integer>();
+        List<Integer> outageIds = new ArrayList<Integer>();
         Connection conn = Vault.getDbConnection();
 
         try {
@@ -208,7 +207,7 @@ public class OutageModel extends Object {
         
         String nodeList = StringUtils.collectionToDelimitedString(nodeMap.keySet(), ", ");
         
-        LinkedList<Node> newNodes = new LinkedList<Node>();
+        List<Node> newNodes = new ArrayList<Node>();
         
         Connection conn = Vault.getDbConnection();
 
@@ -226,7 +225,7 @@ public class OutageModel extends Object {
             Vault.releaseDbConnection(conn);
         }
 
-        return newNodes.toArray(new Node[0]);
+        return newNodes.toArray(new Node[newNodes.size()]);
     }
 
     public Outage[] getNonCurrentOutagesForNode(int nodeId) throws SQLException {
@@ -449,7 +448,7 @@ public class OutageModel extends Object {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, node.nodelabel " + "from outages, node, ipinterface, ifservices " + "where ifregainedservice is null " + "and node.nodeid=outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid=outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + "group by outages.nodeid, node.nodelabel " + "order by timeDown desc;");
 
-            ArrayList list = new ArrayList();
+            List<OutageSummary> list = new ArrayList<OutageSummary>();
 
             while (rs.next()) {
                 int nodeId = rs.getInt("nodeID");
@@ -464,7 +463,7 @@ public class OutageModel extends Object {
             rs.close();
             stmt.close();
 
-            summaries = (OutageSummary[]) list.toArray(new OutageSummary[list.size()]);
+            summaries = list.toArray(new OutageSummary[list.size()]);
         } finally {
             Vault.releaseDbConnection(conn);
         }
@@ -487,7 +486,7 @@ public class OutageModel extends Object {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, node.nodelabel from outages, node, ipinterface, ifservices, assets " + "where ifregainedservice is null " + "and node.nodeid=outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid=outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + "and assets.nodeid=node.nodeid and assets.displaycategory != 'SDS-A-Side' and assets.displaycategory != 'SDS-B-Side' " + "group by outages.nodeid, node.nodelabel " + "order by timeDown desc;");
 
-            ArrayList list = new ArrayList();
+            List<OutageSummary> list = new ArrayList<OutageSummary>();
 
             while (rs.next()) {
                 int nodeId = rs.getInt("nodeID");
@@ -502,7 +501,7 @@ public class OutageModel extends Object {
             rs.close();
             stmt.close();
 
-            summaries = (OutageSummary[]) list.toArray(new OutageSummary[list.size()]);
+            summaries = list.toArray(new OutageSummary[list.size()]);
         } finally {
             Vault.releaseDbConnection(conn);
         }
@@ -524,63 +523,55 @@ public class OutageModel extends Object {
      */
     protected static Outage[] rs2Outages(ResultSet rs, boolean includesRegainedTime, boolean includesNotifications) throws SQLException {
         Outage[] outages = null;
-        Vector vector = new Vector();
+        List<Outage> list = new ArrayList<Outage>();
 
         while (rs.next()) {
             Outage outage = new Outage();
 
-            Object element = new Integer(rs.getInt("nodeid"));
-            outage.nodeId = ((Integer) element).intValue();
+            outage.nodeId = rs.getInt("nodeid");
+            
+            outage.ipAddress = rs.getString("ipaddr");
 
-            element = rs.getString("ipaddr");
-            outage.ipAddress = (String) element;
+            outage.serviceId = rs.getInt("serviceid");
 
-            element = new Integer(rs.getInt("serviceid"));
-            outage.serviceId = ((Integer) element).intValue();
+            outage.nodeLabel = rs.getString("nodeLabel");
 
-            element = rs.getString("nodeLabel");
-            outage.nodeLabel = (String) element;
+            outage.hostname = rs.getString("iphostname");
 
-            element = rs.getString("iphostname");
-            outage.hostname = (String) element;
-
-            element = rs.getString("servicename");
-            outage.serviceName = (String) element;
+            outage.serviceName = rs.getString("servicename");
 
             outage.outageId = rs.getInt("outageid");
 
-            element = rs.getTimestamp("iflostservice");
-            if (element != null) {
-                outage.lostServiceTime = new Date(((Timestamp) element).getTime());
+            Timestamp lostService = rs.getTimestamp("iflostservice");
+            if (!rs.wasNull()) {
+                outage.lostServiceTime = new Date(lostService.getTime());
             }
 
             if (includesRegainedTime) {
-                element = rs.getTimestamp("ifregainedservice");
-                if (element != null) {
-                    outage.regainedServiceTime = new Date(((Timestamp) element).getTime());
+                Timestamp regainedService = rs.getTimestamp("iflostservice");
+                if (!rs.wasNull()) {
+                    outage.regainedServiceTime = new Date(regainedService.getTime());
                 }
             }
 
             if (includesNotifications) {
-                int intElement = rs.getInt("svclosteventid");
-                if (intElement != 0) {
-                    outage.lostServiceEventId = new Integer(intElement);
+                int serviceLostEventId = rs.getInt("svclosteventid");
+                if (!rs.wasNull()) {
+                    outage.lostServiceEventId = new Integer(serviceLostEventId);
                 }
 
-                intElement = rs.getInt("notifyid");
-                if (intElement != 0) {
-                    outage.lostServiceNotificationId = new Integer(intElement);
+                int notifyId = rs.getInt("notifyid");
+                if (!rs.wasNull()) {
+                    outage.lostServiceNotificationId = new Integer(notifyId);
                 }
 
-                element = rs.getString("answeredby");
-                outage.lostServiceNotificationAcknowledgedBy = (String) element;
-
+                outage.lostServiceNotificationAcknowledgedBy = rs.getString("answeredby");
             }
 
-            vector.addElement(outage);
+            list.add(outage);
         }
 
-        outages = (Outage[]) vector.toArray(new Outage[vector.size()]);
+        outages = list.toArray(new Outage[list.size()]);
 
         return outages;
     }
