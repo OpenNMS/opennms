@@ -48,6 +48,9 @@ tr.odd td {
 p {
 	margin: 0 0 7px 0;
 }
+p.noBottomMargin {
+	margin-bottom: 0px;
+}
 form {
 	margin: 0;
 }
