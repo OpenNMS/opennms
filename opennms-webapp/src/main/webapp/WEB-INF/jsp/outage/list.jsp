@@ -1,7 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://www.extremecomponents.org" prefix="ec"%>
 
 
@@ -49,26 +47,25 @@
 	<ec:exportXls fileName="output.xls" tooltip="Export Excel" />
 	<ec:row highlightRow="false">
 
+        <ec:column property="node" alias="Node" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
+          <a href="element/node.jsp?node=${tabledata.nodeid}">${tabledata.node}</a>
+        </ec:column>
 
-		<ec:column property="node" alias="Node" cell="org.opennms.web.svclayer.outage.GroupCell">
-			<a href="element/node.jsp?node=${tabledata.nodeid}">${tabledata.node}</a>
+		<ec:column property="ipaddr" alias="Interface" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
+			<a href="element/interface.jsp?ipinterfaceid=${tabledata.interfaceid}">${tabledata.ipaddr}</a>
 		</ec:column>
 
-		<ec:column property="ipaddr" alias="Interface">
-			<a href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}">${tabledata.ipaddr}</a>
-		</ec:column>
-
-		<ec:column property="service" alias="Service">
-			<a href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}&service=${tabledata.serviceid }">${tabledata.service}</a>
+		<ec:column property="service" alias="Service" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
+			<a href="element/service.jsp?ifserviceid=${tabledata.ifserviceid}">${tabledata.service}</a>
 		</ec:column>
 
 		<ec:column property="iflostservice" alias="Down" title="Time Down" cell="date"
-			format="yyyy-MM-dd hh:mm:ss" parse="yyyy-MM-dd" />
+			format="yyyy-MM-dd hh:mm:ss"/>
 
         <c:if test="${param.currentOutages != 'true'}">
-          <ec:column property="ifregainedservice" alias="Up" title="Time Up" cell="date"
-			         format="yyyy-MM-dd hh:mm:ss" parse="yyyy-MM-dd"
-			         interceptor="org.opennms.web.svclayer.outage.RedCell" />
+          <ec:column property="ifregainedservice" alias="Up" title="Time Up" cell="org.opennms.web.svclayer.outage.DownDateCell"
+			         format="yyyy-MM-dd hh:mm:ss"
+			         interceptor="org.opennms.web.svclayer.outage.RedColumnInterceptor" />
         </c:if>
 			
 		<ec:column property="outageid" alias="ID" title="Outage ID">
