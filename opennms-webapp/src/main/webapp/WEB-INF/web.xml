@@ -170,6 +170,11 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
+   <!--  XXX GWT Servlet - this here temporarily.. moving to spring next -->
+   <servlet>
+     <servlet-name>gwtNodeService</servlet-name>
+     <servlet-class>org.opennms.dashboard.server.NodeServiceImpl</servlet-class>
+   </servlet>
    <!-- WebStart servlet -->
    <servlet>
       <servlet-name>JnlpDownloadServlet</servlet-name>
@@ -707,6 +712,11 @@
         <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <!-- GWT Servlet Mapping - XXX removing this when we move it to spring -->
+      <servlet-mapping>
+        <servlet-name>gwtNodeService</servlet-name>
+        <url-pattern>/nodeService</url-pattern>
+      </servlet-mapping>
  <!-- WebStart Servlet mapping -->
      <servlet-mapping>
         <servlet-name>JnlpDownloadServlet</servlet-name>
