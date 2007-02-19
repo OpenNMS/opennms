@@ -1,4 +1,5 @@
 <module>
 	<inherits name='com.google.gwt.user.User'/>
 	<entry-point class='org.opennms.dashboard.client.Dashboard'/>
+	<servlet path="/nodeService" class="org.opennms.dashboard.server.NodeServiceImpl"/>
 </module>
