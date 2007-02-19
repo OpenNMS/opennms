@@ -96,7 +96,7 @@
 <div class="boxWrapper">
   <c:choose>
     <c:when test="${fn:length(reports) == 0}">
-      <p>
+      <p class="noBottomMargin">
         No KSC reports defined
       </p>
     </c:when>
