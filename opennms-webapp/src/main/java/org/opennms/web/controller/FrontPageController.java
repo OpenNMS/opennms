@@ -44,7 +44,7 @@ public class FrontPageController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         if (request.isUserInRole(Authentication.DASHBOARD_ROLE)) {
-            return new ModelAndView("redirect:/images/logo.png");
+            return new ModelAndView("redirect:/dashboard.jsp");
         } else {
             return new ModelAndView("redirect:/index.jsp");
         }
