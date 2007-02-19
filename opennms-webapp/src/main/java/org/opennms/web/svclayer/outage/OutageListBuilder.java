@@ -50,7 +50,7 @@ public class OutageListBuilder {
 
 	public List theTable(Collection<OnmsOutage> foundOutages) {
 
-		List theTable = new LinkedList();
+		List<Map<String, Object>> theTable = new LinkedList<Map<String, Object>>();
 		Locale locale = Locale.getDefault();
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss",locale);
 		
@@ -69,14 +69,14 @@ public class OutageListBuilder {
 			
 			
 
-			Map outagerow = new HashMap();
-			outagerow.put("outageid", (String) outage.getId().toString());
+			Map<String, Object> outagerow = new HashMap<String, Object>();
+			outagerow.put("outageid", outage.getId());
 			outagerow.put("node", ipInterface.getNode().getLabel());
-			outagerow.put("nodeid", (String) monitoredService.getNodeId()
-					.toString());
+			outagerow.put("nodeid", monitoredService.getNodeId());
 			outagerow.put("ipaddr", ipInterface.getIpAddress());
 			outagerow.put("interfaceid", ipInterface.getId());
-			outagerow.put("service", serviceType.getName());
+            outagerow.put("ifserviceid", monitoredService.getId());
+            outagerow.put("service", serviceType.getName());
 			outagerow.put("serviceid", serviceType.getId());
 			outagerow.put("eventid", outage.getServiceLostEvent().getId());
 
@@ -88,22 +88,13 @@ public class OutageListBuilder {
 			// }
 
 			if (outage.getIfLostService() != null) {
-				outagerow
-						.put("iflostservice", formatter.format( outage.getIfLostService()));
-						
-						// Long format for searches
-				
-						outagerow.put("iflostservicelong",(Long)outage.getIfLostService().getTime());
-				
-						// Format the date-output.
-				
+				outagerow.put("iflostservice", outage.getIfLostService());
+				outagerow.put("iflostservicelong", outage.getIfLostService().getTime());
 			}
 
 			if (outage.getIfRegainedService() != null) {
-				outagerow.put("ifregainedservice", formatter.format( outage
-						.getIfRegainedService()));
-				
-				outagerow.put("ifregainedservicelong", (Long)outage.getIfRegainedService().getTime());
+				outagerow.put("ifregainedservice", outage.getIfRegainedService());
+				outagerow.put("ifregainedservicelong", outage.getIfRegainedService().getTime());
 			}
 
 			if (outage.getSuppressTime() != null) {
