@@ -54,7 +54,7 @@
     <table border="1" cellspacing="5" width="100%">
       <tbody>
       	<tr>
-      		<td id="siteStatus"></td>
+      		<td id="surveillanceView"></td>
       		<td id="alarms"></td>
       		<td colspan="2" id="events"></td>
         </tr>

@@ -11,7 +11,7 @@ public class Dashboard implements EntryPoint {
 
     public void onModuleLoad() {
 
-        add(new SiteStatusViewer(),   "siteStatus");
+        add(new SurveillanceViewer(),   "surveillanceView");
         add(new AlarmViewer(),        "alarms");
         add(new OutageViewer(),       "outages");
         add(new EventViewer(),        "events");
