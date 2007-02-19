@@ -10,6 +10,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Feb 19: Convert to MVC. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,33 +51,50 @@
         session="true"
         import="org.opennms.web.outage.*" %>
 
-<%! 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%!
     public static final int ROW_COUNT = 12;
-    OutageModel model = new OutageModel();    
+    private OutageModel m_model = new OutageModel();    
 %>
 
 <%
-    OutageSummary[] summaries = this.model.getCurrentOutageSummaries();
+    OutageSummary[] summaries = m_model.getCurrentOutageSummaries();
+    int last = (summaries.length <= ROW_COUNT) ? summaries.length : ROW_COUNT;
+    OutageSummary[] displaySummaries = new OutageSummary[last];
+    System.arraycopy(summaries, 0, displaySummaries, 0, last);
+    
+    pageContext.setAttribute("summaries", displaySummaries);
+    pageContext.setAttribute("moreCount", summaries.length - displaySummaries.length);
 %>
+
 <!-- includes/servicesdown-box.jsp -->
-<h3><a href="outage/current.jsp">Nodes with Outages</a></h3>
+<c:url var="headingLink" value="outage/current.jsp"/>
+<h3><a href="${headingLink}">Nodes with Outages</a></h3>
 <div class="boxWrapper">
-	<% if( summaries.length == 0 ) { %>
-	<p>There are no current outages</p>
-	<% } else { %>
+  <c:choose>
+    <c:when test="${empty summaries}">
+      <p class="noBottomMargin">
+        There are no current outages
+      </p>
+    </c:when>
+
+    <c:otherwise>
       <ul class="plain">
-	  <% for( int i=0; i < ROW_COUNT; i++ ) { %>
-	    <% if( i < summaries.length ) { %>
-	      <% OutageSummary summary = summaries[i];
-	         String nodeLabel = summary.getNodeLabel();
-	         int nodeId = summary.getNodeId();
-	      %>
-	      <li><a href="element/node.jsp?node=<%=nodeId%>"><%=nodeLabel%></a></li>
-	    <% } %>
-	  <% } %>
-	  </ul>
-	  <% if( summaries.length > ROW_COUNT ) { %>
-	  <p><a HREF="outage/index.jsp"><%=summaries.length - ROW_COUNT%> more</a></p>
-	  <% } %>      
-	<% } %>      
+        <c:forEach var="summary" items="${summaries}">
+          <c:url var="nodeLink" value="element/node.jsp">
+            <c:param name="node" value="${summary.nodeId}"/>
+          </c:url>
+          <li><a href="${nodeLink}">${summary.nodeLabel}</a></li>
+        </c:forEach>
+      </ul>
+    
+      <c:if test="${moreCount > 0}">
+        <p class="noBottomMargin" align="right">
+          <c:url var="moreLink" value="outage/index.jsp"/>
+          <a href="${moreLink}">${moreCount} more...</a>
+        </p>
+      </c:if>
+    </c:otherwise>
+  </c:choose>
 </div>
