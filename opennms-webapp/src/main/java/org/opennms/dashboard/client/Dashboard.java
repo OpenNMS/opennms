@@ -2,6 +2,7 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -28,12 +29,12 @@ public class Dashboard implements EntryPoint {
         // define the service you want to call
         NodeServiceAsync svc = (NodeServiceAsync) GWT.create(NodeService.class);
         ServiceDefTarget endpoint = (ServiceDefTarget) svc;
-        endpoint.setServiceEntryPoint(GWT.getModuleBaseURL()+"nodeService");
+        endpoint.setServiceEntryPoint(GWT.getModuleBaseURL()+"nodeService.gwt");
         
         AsyncCallback cb = new AsyncCallback() {
 
             public void onFailure(Throwable e) {
-                throw new UnsupportedOperationException(".onFailure not yet implemented.");
+                Window.alert(e.toString());
             }
 
             public void onSuccess(Object arg) {
