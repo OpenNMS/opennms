@@ -170,10 +170,11 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-   <!--  XXX GWT Servlet - this here temporarily.. moving to spring next -->
+  <!--  servlet that gwt rpc requests get mapped to -->
    <servlet>
-     <servlet-name>gwtNodeService</servlet-name>
-     <servlet-class>org.opennms.dashboard.server.NodeServiceImpl</servlet-class>
+     <servlet-name>gwtDispatcher</servlet-name>
+     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+     <load-on-startup>1</load-on-startup>
    </servlet>
    <!-- WebStart servlet -->
    <servlet>
@@ -712,11 +713,6 @@
         <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- GWT Servlet Mapping - XXX removing this when we move it to spring -->
-      <servlet-mapping>
-        <servlet-name>gwtNodeService</servlet-name>
-        <url-pattern>/nodeService</url-pattern>
-      </servlet-mapping>
  <!-- WebStart Servlet mapping -->
      <servlet-mapping>
         <servlet-name>JnlpDownloadServlet</servlet-name>
@@ -1095,6 +1091,11 @@
   <servlet-mapping>
     <servlet-name>filterOutage</servlet-name>
     <url-pattern>/outage/list</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>gwtDispatcher</servlet-name>
+    <url-pattern>*.gwt</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

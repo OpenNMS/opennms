@@ -1,20 +1,35 @@
 package org.opennms.dashboard.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.dashboard.client.NodeService;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+@Transactional
+public class NodeServiceImpl implements NodeService {
 
-public class NodeServiceImpl extends RemoteServiceServlet implements
-        NodeService {
-
+    NodeDao m_nodeDao;
+    
+    
     public String[] getNodeNames() {
         
-        return new String[] {
-                "node1",
-                "node2",
-                "node3"
-        };
+        List<OnmsNode> nodes = m_nodeDao.findAll();
+        
+        List<String> labels = new ArrayList<String>(nodes.size());
+        for (OnmsNode node : nodes) {
+            labels.add(node.getLabel());
+        }
+        
+        return (String[]) labels.toArray(new String[labels.size()]);
+
+    }
+
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
 }
