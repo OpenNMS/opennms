@@ -170,7 +170,7 @@
           </td>
           <% if (parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID)) { %>
             <th>Location Monitor ID</th>
-            <td><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></td>
+            <td><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
             <td colspan="2">&nbsp;</td>
           <% } else { %>
             <td colspan="4">&nbsp;</td>
