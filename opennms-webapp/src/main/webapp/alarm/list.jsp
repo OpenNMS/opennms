@@ -348,7 +348,7 @@
             <% } %>
           </td>
           <td class="divider">
-            <nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getLastEventTime())%></nobr>
+            <nobr><span title="Event <%= alarms[i].getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEventID() %>"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getLastEventTime())%></a></span></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one"><%=addAfterDateFilterString%></a>            
               <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one"><%=addBeforeDateFilterString%></a>

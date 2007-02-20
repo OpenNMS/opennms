@@ -110,7 +110,7 @@
         </tr>
         <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
           <th>Last Event</th>
-          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></td>
+          <td><span title="Event <%= alarm.getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarm.getLastEventID() %>"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></a></span></td>
           <th>Interface</th>
           <td>
             <% if( alarm.getIpAddress() != null ) { %>
