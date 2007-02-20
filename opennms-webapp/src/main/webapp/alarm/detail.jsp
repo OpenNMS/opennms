@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2007 Feb 20: Make the style match that of the event page. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 2002 Jul 18: Added operinstructions to display.
@@ -94,9 +95,9 @@
  
       <table>
         <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          <td class="divider" width="10%">Severity</td>
+          <th width="10%">Severity</th>
           <td class="divider"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
-          <td class="divider" width="10%">Node</td>
+          <th width="10%">Node</th>
           <td class="divider">
             <% if( alarm.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=alarm.getNodeId()%>"><%=alarm.getNodeLabel()%></a>
@@ -104,13 +105,13 @@
               &nbsp;
             <% } %>
           </td>
-          <td class="divider" width="10%">Acknowledged&nbsp;By</td>
+          <th width="10%">Acknowledged&nbsp;By</th>
           <td class="divider"><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
         <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          <td>Last Event</td>
+          <th>Last Event</th>
           <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></td>
-          <td>Interface</td>
+          <th>Interface</th>
           <td>
             <% if( alarm.getIpAddress() != null ) { %>
               <% if( alarm.getNodeId() > 0 ) { %>
@@ -122,13 +123,13 @@
               &nbsp;
             <% } %>
           </td>
-          <td>Time&nbsp;Acknowledged</td>
+          <th>Time&nbsp;Acknowledged</th>
           <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
         <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          <td>First Event</td>
+          <th>First Event</th>
           <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
-          <td>Service</td>
+          <th>Service</th>
           <td colspan="3">
             <% if( alarm.getServiceName() != null ) { %>
               <% if( alarm.getIpAddress() != null && alarm.getNodeId() > 0 ) { %>
@@ -142,9 +143,9 @@
           </td>
           </tr> 
           <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          	<td>Count</td>
+          	<th>Count</th>
 	        <td><%=alarm.getCount()%></td>
-          	<td>UEI</td>
+          	<th>UEI</th>
           	<td colspan="3">
           	<% if( alarm.getUei() != null ) { %>
           	      <%=alarm.getUei()%>
@@ -154,7 +155,7 @@
 		</td>
         </tr>
         <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          	<td>Reduct. Key</td>
+          	<th>Reduct. Key</th>
           	<td colspan="5">
           	<% if( alarm.getReductionKey() != null ) { %>
           	      <%=alarm.getReductionKey()%>
@@ -167,7 +168,7 @@
 
       <table>
 	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          <td>Log Message</td>
+          <th>Log Message</th>
         </tr>
 	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
           <td><%=alarm.getLogMessage()%></td>
@@ -176,7 +177,7 @@
 
       <table>
 	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          <td>Description</td>
+          <th>Description</th>
         </tr>
 	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
           <td><%=alarm.getDescription()%></td>
@@ -186,11 +187,11 @@
       
       <table>
 	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          <td>Operator Instructions</td>
+          <th>Operator Instructions</th>
         </tr>
 	
 	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
-          <td class="standard">
+          <td>
 	    <%if (alarm.getOperatorInstruction()==null) { %>
               No instructions available
             <% } else { %>
