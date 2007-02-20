@@ -5,12 +5,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class NodeStatusViewer extends Composite {
+public class NodeStatusDashlet extends Composite {
 
     VerticalPanel m_panel = new VerticalPanel();
     ListBox m_listBox = new ListBox();
     
-    public NodeStatusViewer() {
+    public NodeStatusDashlet() {
         Label label = new Label("nodeStatus");
         
         m_panel.add(label);
