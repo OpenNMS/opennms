@@ -8,7 +8,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+@Transactional(readOnly=true)
 public class NodeServiceImpl implements NodeService {
 
     NodeDao m_nodeDao;

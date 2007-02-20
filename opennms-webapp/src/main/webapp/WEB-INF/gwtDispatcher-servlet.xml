@@ -11,6 +11,7 @@
     <property name="mapping">
       <map>
         <entry key="/nodeService.gwt" value-ref="gwtNodeService"/>
+        <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
       </map>
     </property>
     <property name="unwrappingGWTExceptions" value="true" />
@@ -23,6 +24,9 @@
   
   <bean name="gwtNodeService" class="org.opennms.dashboard.server.NodeServiceImpl">
      <property name="nodeDao" ref="nodeDao" />
+  </bean>
+  
+  <bean name="gwtSurveillanceService" class="org.opennms.dashboard.server.DefaultSurveillanceService">
   </bean>
   
 </beans>
