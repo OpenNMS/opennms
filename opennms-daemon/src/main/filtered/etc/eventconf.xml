@@ -615,7 +615,7 @@
 			previously failed and has been restored.&lt;/p&gt;
 		</descr>
 		<logmsg dest='logndisplay'>
-			%service% data collection on interface %interface% prevously
+			%service% data collection on interface %interface% previously
 			failed and has been restored.
 		</logmsg>
 		<severity>Normal</severity>
@@ -1163,7 +1163,7 @@
 			previously failed and has been restored.&lt;/p&gt;
 		</descr>
 		<logmsg dest='logndisplay'>
-			%service% thresholding on interface %interface% prevously
+			%service% thresholding on interface %interface% previously
 			failed and has been restored.
 		</logmsg>
 		<severity>Normal</severity>
