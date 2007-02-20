@@ -1,15 +1,17 @@
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 
-public class GraphDashlet extends Composite {
+public class GraphDashlet extends Dashlet {
     
     
     GraphDashlet() {
-        Label label = new Label("graphViewer");
         
-        initWidget(label);
+        super("Graphs");
+        
+        Label label = new Label("Graphs should go here.");
+        
+        setContent(label);
     }
 
 }

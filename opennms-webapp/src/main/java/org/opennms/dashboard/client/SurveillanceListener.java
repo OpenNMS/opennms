@@ -2,10 +2,10 @@ package org.opennms.dashboard.client;
 
 public interface SurveillanceListener {
     
-    public void onAllClicked(SurveillanceDashlet viewer);
+    public void onAllClicked(Dashlet viewer);
     
-    public void onSurveillanceGroupClicked(SurveillanceDashlet viewer, SurveillanceGroup group);
+    public void onSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group);
     
-    public void onIntersectionClicked(SurveillanceDashlet viewer, SurveillanceIntersection intersection);
+    public void onIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection);
 
 }

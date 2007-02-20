@@ -1,18 +1,14 @@
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class AlarmDashlet extends Composite {
+public class AlarmDashlet extends Dashlet {
     
-    VerticalPanel m_panel = new VerticalPanel();
     Label m_alarms = new Label();
     
     AlarmDashlet() {
-        m_panel.add(new Label("alarmViewer"));
-        m_panel.add(m_alarms);
-        initWidget(m_panel);
+        super("Alarms");
+        setContent(m_alarms);
     }
 
     public void setIntersection(SurveillanceIntersection intersection) {
