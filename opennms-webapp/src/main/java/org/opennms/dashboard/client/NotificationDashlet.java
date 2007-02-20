@@ -1,13 +1,13 @@
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 
-public class NotificationDashlet extends Composite {
+public class NotificationDashlet extends Dashlet {
     
     NotificationDashlet() {
-        Label label = new Label("notificationViewer");
-        initWidget(label);
+        super("Notifications");
+        Label label = new Label("Notifications Here.");
+        setContent(label);
     }
 
 }

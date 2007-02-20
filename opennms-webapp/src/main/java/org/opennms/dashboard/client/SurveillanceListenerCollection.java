@@ -6,21 +6,21 @@ import java.util.Vector;
 
 public class SurveillanceListenerCollection extends Vector {
     
-    public void fireAllClicked(SurveillanceDashlet viewer) {
+    public void fireAllClicked(Dashlet viewer) {
         for (Iterator it = iterator(); it.hasNext();) {
             SurveillanceListener listener = (SurveillanceListener) it.next();
             listener.onAllClicked(viewer);
           }
     }
     
-    public void fireSurveillanceGroupClicked(SurveillanceDashlet viewer, SurveillanceGroup group) {
+    public void fireSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group) {
         for (Iterator it = iterator(); it.hasNext();) {
             SurveillanceListener listener = (SurveillanceListener) it.next();
             listener.onSurveillanceGroupClicked(viewer, group);
           }
     }
     
-    public void fireIntersectionClicked(SurveillanceDashlet viewer, SurveillanceIntersection intersection) {
+    public void fireIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection) {
         for (Iterator it = iterator(); it.hasNext();) {
             SurveillanceListener listener = (SurveillanceListener) it.next();
             listener.onIntersectionClicked(viewer, intersection);

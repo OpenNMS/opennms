@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class Dashboard implements EntryPoint {
     
-    SurveillanceDashlet m_surveillance;
+    Dashlet m_surveillance;
     AlarmDashlet m_alarms;
     OutageDashlet m_outages;
     NodeStatusDashlet m_nodeStatus;
@@ -54,20 +54,20 @@ public class Dashboard implements EntryPoint {
         return m_alarms;
     }
 
-    private SurveillanceDashlet createSurveillanceDashlet() {
+    private Dashlet createSurveillanceDashlet() {
         final SurveillanceDashlet surveillance = new SurveillanceDashlet();
         
         SurveillanceListener listener = new SurveillanceListener() {
 
-            public void onAllClicked(SurveillanceDashlet viewer) {
+            public void onAllClicked(Dashlet viewer) {
                 Window.alert("All");
             }
 
-            public void onIntersectionClicked(SurveillanceDashlet viewer, SurveillanceIntersection intersection) {
+            public void onIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection) {
                 m_alarms.setIntersection(intersection);
             }
 
-            public void onSurveillanceGroupClicked(SurveillanceDashlet viewer, SurveillanceGroup group) {
+            public void onSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group) {
                 Window.alert("Group: "+group);
             }
             

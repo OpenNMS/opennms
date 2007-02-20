@@ -1,46 +1,28 @@
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class SurveillanceDashlet extends Composite {
+public class SurveillanceDashlet extends Dashlet {
     
-    class DashletTitle extends Composite {
-        private DockPanel m_panel = new DockPanel();
-        private Label m_label = new Label();
-        private Label m_status = new Label();
-        DashletTitle(String title) {
-            
-            m_label.setText(title);
-            m_panel.add(m_label, DockPanel.WEST);
-            m_panel.add(m_status, DockPanel.EAST);
-            initWidget(m_panel);
-        }
-        
-        public void setStatus(String status) {
-            m_status.setText(status);
-        }
-        
-        
-    }
-    
-    private VerticalPanel m_panel = new VerticalPanel();
-    private Grid m_grid = new Grid();
-    private DashletTitle m_title = new DashletTitle("SurveillanceView");
+    private Grid m_grid;
     private SurveillanceListenerCollection m_listeners = new SurveillanceListenerCollection();
     private SurveillanceData m_data;
     
     public SurveillanceDashlet() {
-        
-        m_panel.add(m_title);
-        m_panel.add(m_grid);
-        
-        m_grid.addTableListener(new TableListener() {
+        super("Surveillance View");
+        setGrid(constructGrid());
+    }
+    
+    private void setGrid(Grid grid) {
+        m_grid = grid;
+        setContent(grid);
+    }
+
+    private Grid constructGrid() {
+        Grid grid = new Grid();
+        grid.addTableListener(new TableListener() {
 
             public void onCellClicked(SourcesTableEvents table, int row, int col) {
                 if (row == 0 && col == 0) {
@@ -57,10 +39,10 @@ public class SurveillanceDashlet extends Composite {
 
         });
         
-        initWidget(m_panel);
+        return grid;
     }
-    
-    
+
+
     private void onIntersectionClicked(int row, int col) {
         m_listeners.fireIntersectionClicked(this, m_data.getIntersection(row, col));
     }
@@ -112,9 +94,9 @@ public class SurveillanceDashlet extends Composite {
         }
         
         if (data.isComplete()) {
-            m_title.setStatus("");
+            setStatus("");
         } else {
-            m_title.setStatus("Loading");
+            setStatus("Loading");
         }
     }
 
