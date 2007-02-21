@@ -1,14 +1,18 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +21,7 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -25,157 +29,180 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 package org.opennms.report.availability;
 
-import java.text.Format;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.log4j.Category;
+
 import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.report.availability.render.ReportRenderException;
 import org.opennms.report.availability.render.ReportRenderer;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class AvailabilityReportRunner {
+/**
+ * Send an availability report to the intended recipient.
+ * 
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ */
 
-	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+public class AvailabilityReportRunner implements Runnable {
 
-	private static final String HTML_FORMAT = "HTML";
+    private String m_logo;
 
-	private static final String SVG_FORMAT = "SVG";
+    private String m_categoryName;
 
-	private static final String PDF_FORMAT = "PDF";
+    private String m_monthFormat;
 
-	private static AvailabilityCalculator calculator;
+    private String m_format;
 
-	private static ReportRenderer renderer;
-	
-	public static void main(String args[]) {
+    private String m_email;
 
-		String startMonth = System.getProperty("startMonth");
-		String startDate = System.getProperty("startDate");
-		String startYear = System.getProperty("startYear");
+    private Date m_periodEndDate;
 
-		if ((startMonth == null) && (startDate == null) && (startYear == null)) {
-			Date date = new Date();
-			String defaultMonth = new SimpleDateFormat("MM").format(date);
-			String defaultDay = new SimpleDateFormat("dd").format(date);
-			String defaultYear = new SimpleDateFormat("yyyy").format(date);
-			System.out.println("running report with date of (yyyy/mm/dd) " + defaultYear +  defaultMonth + defaultDay );
-			doReport(defaultYear, defaultMonth, defaultDay);
-		} else if (isValidDate(startDate, startMonth, startYear)) {
-			System.out.println("running report with valid user date of (yyyy/mm/dd) " + startYear +  startMonth + startDate );
-			doReport(startDate, startMonth, startYear);
-		} else 
-			System.out.println("Oops, invalid date entered, cannot run report");
+    private AvailabilityCalculator m_classicCalculator;
 
-	}
+    private AvailabilityCalculator m_calendarCalculator;
 
-	public static void doReport(String startYear, String startMonth,
-			String startDate) {
+    private ReportRenderer m_htmlReportRenderer;
 
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance(AvailabilityReport.class);
-		ApplicationContext context = new ClassPathXmlApplicationContext(
-			new String[] {"META-INF/opennms/standaloneApplicationContext-reporting.xml",
-				"META-INF/opennms/applicationContext-reporting.xml"});
-		BeanFactory bf = (BeanFactory) context;
-	
-		// properties required for calculating the availability data and
-		// marshalling to XML
+    private ReportRenderer m_pdfReportRenderer;
 
-		String logoURL = System.getProperty("image");
-		String categoryName = System.getProperty("catName");
-		if (categoryName == null || categoryName.equals(""))
-			categoryName = "all";
+    private ReportRenderer m_svgReportRenderer;
 
-		String monthFormat = System.getProperty("monthFormat");
+    private Category log;
 
-		if (monthFormat == null || monthFormat.equals("")
-				|| monthFormat.equals("classic")) {
-			calculator = (AvailabilityCalculator) bf.getBean("classicAvailabilityCalculator");
-		} else {
-			calculator = (AvailabilityCalculator) bf.getBean("calendarAvailabilityCalculator");
-		}
+    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
-		calculator.setCalendar(new GregorianCalendar());
-		calculator.setCategoryName(categoryName);
-		calculator.setLogoURL(logoURL);
-		calculator.setStartMonth(startMonth);
-		calculator.setStartDate(startDate);
-		calculator.setStartYear(startYear);
+    private static final String HTML_FORMAT = "HTML";
 
-		String format = System.getProperty("format");
-		
-		if (format == null || format.equals(SVG_FORMAT)) {
-			log.debug("report will be rendered as PDF with embedded SVG");
-			renderer = (ReportRenderer) bf.getBean("svgReportRenderer");
-			//renderer.setOutputFileName("svg-" + categoryName + "-adhoc.pdf");
-			calculator.setReportFormat(SVG_FORMAT);
-		} else if (format.equals(PDF_FORMAT)) {
-			log.debug("report will be rendered as PDF");
-			renderer = (ReportRenderer) bf.getBean("pdfReportRenderer");
-			//renderer.setOutputFileName(categoryName + "-adhoc.pdf");
-			calculator.setReportFormat(PDF_FORMAT);
-		} else {
-			log.debug("report will be rendered as html");
-			renderer = (ReportRenderer) bf.getBean("htmlReportRenderer");
-			//renderer.setOutputFileName(categoryName + "-adhoc.html");
-			calculator.setReportFormat(HTML_FORMAT);
-		}
+    private static final String SVG_FORMAT = "SVG";
 
-		try {
-			//String xmlFileName = categoryName + "-adhoc.xml";
-			calculator.calculate();
-			//calculator.setOutputFileName(xmlFileName);
-			calculator.writeXML();
-			//renderer.setInputFileName(xmlFileName);
-			renderer.render();
-		} catch (AvailabilityCalculationException ce) {
-			log.fatal("Unable to calculate report data ", ce);
-		} catch (ReportRenderException re) {
-			log.fatal("Unable to render report ", re);
-		}
-	}
+    private static final String PDF_FORMAT = "PDF";
 
-	private static boolean isValidDate(String day, String month, String year) {
+    public AvailabilityReportRunner() {
 
-		String month2;
-		String day2;
+        // TODO: sorto out logo bits here
 
-		String format = new String("MM/dd/yy");
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        log = ThreadCategory.getInstance(AvailabilityReport.class);
+        log.debug("initialised AvailablilityReportMailer");
 
-		if (month.length() == 1)
-			month2 = new String("0" + month);
-		else
-			month2 = new String(month);
+        /*
+         * ApplicationContext context = new ClassPathXmlApplicationContext(
+         * new String[]
+         * {"META-INF/opennms/standaloneApplicationContext-reporting.xml",
+         * "META-INF/opennms/applicationContext-reporting.xml"}); BeanFactory
+         * bf = (BeanFactory) context;
+         */
 
-		if (day.length() == 1)
-			day2 = new String("0" + day);
-		else
-			day2 = new String(day);
+    }
 
-		String date = new String(month2 + "/" + day2 + "/" + year);
+    public void run() {
 
-		try {
-			Date dateSimple = new SimpleDateFormat(format).parse(date);
-			Format formatter = new SimpleDateFormat(format);
-			if (!date.equals(formatter.format(dateSimple))) {
-				return false;
-			}
-			return true;
-		} catch (ParseException e) {
-			return false;
-		}
-	}
+        ReportRenderer renderer;
+        AvailabilityCalculator calculator;
+
+        if (m_monthFormat == null || m_monthFormat.equals("")
+                || m_monthFormat.equals("classic")) {
+            calculator = m_classicCalculator;
+        } else {
+            calculator = m_calendarCalculator;
+        }
+
+        calculator.setCalendar(new GregorianCalendar());
+        calculator.setCategoryName(m_categoryName);
+        calculator.setLogoURL(m_logo);
+        calculator.setPeriodEndDate(m_periodEndDate);
+        
+        if (m_format == null || m_format.equals(SVG_FORMAT)) {
+            log.debug("report will be rendered as PDF with embedded SVG");
+            renderer = m_svgReportRenderer;
+            calculator.setReportFormat(SVG_FORMAT);
+        } else if (m_format.equals(PDF_FORMAT)) {
+            log.debug("report will be rendered as PDF");
+            renderer = m_pdfReportRenderer;
+            calculator.setReportFormat(PDF_FORMAT);
+        } else {
+            log.debug("report will be rendered as html");
+            renderer = m_htmlReportRenderer;
+            // renderer.setOutputFileName(categoryName + "-adhoc.html");
+            calculator.setReportFormat(HTML_FORMAT);
+        }
+
+        try {
+            log.debug("Starting Availability Report Calculations");
+            calculator.calculate();
+            calculator.writeLocateableXML();
+            String outputFile = calculator.getOutputFileName();
+            log.debug("Written Availability Report as XML to " + outputFile);
+            renderer.setInputFileName(outputFile);
+            log.debug("rendering XML " + outputFile + " as "
+                    + renderer.getOutputFileName());
+            renderer.render();
+            ReportMailer mailer = new ReportMailer(
+                                                   m_email,
+                                                   renderer.getBaseDir()
+                                                           + renderer.getOutputFileName());
+            mailer.send();
+        } catch (AvailabilityCalculationException ce) {
+            log.fatal("Unable to calculate report data ", ce);
+        } catch (ReportRenderException re) {
+            log.fatal("Unable to render report ", re);
+        } catch (IOException ioe) {
+            log.fatal("Unable to render report ", ioe);
+        }
+
+    }
+
+    public void setCalendarCalculator(AvailabilityCalculator calculator) {
+        m_calendarCalculator = calculator;
+    }
+
+    public void setClassicCalculator(AvailabilityCalculator calulator) {
+        m_classicCalculator = calulator;
+    }
+
+    public void setHtmlReportRenderer(ReportRenderer reportRenderer) {
+        m_htmlReportRenderer = reportRenderer;
+    }
+
+    public void setPdfReportRenderer(ReportRenderer reportRenderer) {
+        m_pdfReportRenderer = reportRenderer;
+    }
+
+    public void setSvgReportRenderer(ReportRenderer reportRenderer) {
+        m_svgReportRenderer = reportRenderer;
+    }
+
+    public void setCategoryName(String name) {
+        m_categoryName = name;
+    }
+
+    public void setEmail(String m_email) {
+        this.m_email = m_email;
+    }
+
+    public void setFormat(String m_format) {
+        this.m_format = m_format;
+    }
+
+    public void setLogo(String m_logo) {
+        this.m_logo = m_logo;
+    }
+
+    public void setMonthFormat(String format) {
+        m_monthFormat = format;
+    }
+
+    public void setPeriodEndDate(Date date) {
+        m_periodEndDate = date;
+    }
 
 }
