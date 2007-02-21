@@ -45,6 +45,13 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="reportLocator")
+
+/**
+ * AvailabilityReportLocator contains details of a pre-run availability report
+ *
+ *  @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ */
+
 public class AvailabilityReportLocator implements Serializable {
 	
 	private static final long serialVersionUID = 4674675490758669590L;
