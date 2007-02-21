@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.dao.support;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -81,7 +83,11 @@ public class DomainResourceType implements OnmsResourceType {
     }
 
     public String getLinkForResource(OnmsResource resource) {
-        return null;
+        try {
+            return "element/nodeList.htm?listInterfaces=true&ifAlias=" + URLEncoder.encode(resource.getName(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("URLEncoder.encode complained about UTF-8.  My opinion about that is: WTF? " + e, e);
+        }
     }
     
     public OnmsResource createChildResource(String domain) {
