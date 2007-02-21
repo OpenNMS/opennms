@@ -180,7 +180,7 @@ public class AvailCalculations extends Object {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
-            log.debug("Inside AvailCalculations");
+            log.debug("Inside AvailCalculations using endTime " + endTime);
 
         m_monitoredServices = monitoredServices;
         m_endLastMonthTime = lastMonthEndTime;
@@ -775,14 +775,19 @@ public class AvailCalculations extends Object {
                 serviceCount += node.getServiceCount();
             }
             double percentAvail;
-            if (serviceCount > 0)
+            if (serviceCount > 0){
+                
+                log.debug("LOOK: calculating percentAvail using outage " + outage + " service count " + serviceCount + " ROLLING_WINODW " + ROLLING_WINDOW + " endTime " + endTime);
                 percentAvail = 100.0 * (1 - (outage * 1.0) / (1.0 * serviceCount * ROLLING_WINDOW));
+        }
             else
                 percentAvail = 100.0;
 
             //need a double object in here
 			
 			treeMap.put(new Date(endTime), new Double (percentAvail));
+                        Date nicedate = new Date(endTime);
+                        log.debug("Inserting " + percentAvail + " into " + nicedate);
 
             periodFrom = fmt.format(new java.util.Date(endTime));
             endTime -= ROLLING_WINDOW;
@@ -794,7 +799,9 @@ public class AvailCalculations extends Object {
 		while (iter.hasNext()) {
 			Date key = (Date) iter.next();
             Double percent = (Double) treeMap.get(key);
+                        log.debug("Inserting value " + percent.doubleValue() + " into date slot " + dateSlot);
 			dateSlot++;
+                        log.debug("Inserting value " + percent.doubleValue() + " into date slot " + dateSlot);
 			calBuilder.setPctValue(dateSlot, percent.doubleValue());
 		}
 		

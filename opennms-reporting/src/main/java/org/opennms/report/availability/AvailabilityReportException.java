@@ -35,39 +35,23 @@
 //
 package org.opennms.report.availability;
 
-import java.util.Date;
+public class AvailabilityReportException extends Exception {
 
-import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
-import org.opennms.netmgt.model.AvailabilityReportLocator;
+    private static final long serialVersionUID = 7517318175420733757L;
 
-public class AvailabilityReportSchedulerService implements
-        ReportSchedulerService {
-
-    private AvailabilityReportLocatorService m_locatorService;
-
-    private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
-
-    public void setAvailabilityReportLocatorDao(
-            AvailabilityReportLocatorDao dao) {
-        m_availabilityReportLocatorDao = dao;
+    public AvailabilityReportException(String message, Throwable cause) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
     }
 
-    public void Schedule(String category, String type, String format,
-            Date date) {
+    public AvailabilityReportException(String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
 
-        // TODO: All this does right now is add a locator entry, it does
-        // not actually shedule anything.
-
-        AvailabilityReportLocator locator = new AvailabilityReportLocator();
-        locator.setCategory(category);
-        locator.setFormat(format);
-        locator.setType(type);
-        locator.setDate(date);
-        locator.setLocation("not yet available");
-        locator.setAvailable(false);
-        m_locatorService = new AvailabilityReportLocatorService();
-        m_locatorService.setAvailabilityReportLocatorDao(m_availabilityReportLocatorDao);
-        m_locatorService.addReport(locator);
+    public AvailabilityReportException(Throwable cause) {
+        super(cause);
+        // TODO Auto-generated constructor stub
     }
 
 }

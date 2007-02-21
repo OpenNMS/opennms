@@ -33,7 +33,9 @@ package org.opennms.report.availability;
 
 public class AvailabilityCalculationException extends Exception {
 
-	public AvailabilityCalculationException(String message, Throwable cause) {
+    private static final long serialVersionUID = -8290071295128513350L;
+
+    public AvailabilityCalculationException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
