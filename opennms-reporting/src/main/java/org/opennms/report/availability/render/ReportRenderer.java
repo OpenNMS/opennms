@@ -1,14 +1,18 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +21,7 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -25,19 +29,35 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 package org.opennms.report.availability.render;
 
+import org.springframework.core.io.Resource;
 
 /**
- * @author jsartin
- *
+ * ReportRenderer is the interface for rendering xml reports to pdf, pdf with
+ * embedded svg and html
+ * 
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  */
-public interface ReportRenderer{
-	
-	public void render() throws ReportRenderException;
-	
+
+public interface ReportRenderer {
+
+    public void render() throws ReportRenderException;
+
+    public void setOutputFileName(String outputFileName);
+    
+    public String getOutputFileName();
+    
+    public void setInputFileName(String inputFileName);
+
+    public void setXsltResource(Resource xsltResource);
+    
+    public void setBaseDir(String baseDir);
+    
+    public String getBaseDir();
+
 }

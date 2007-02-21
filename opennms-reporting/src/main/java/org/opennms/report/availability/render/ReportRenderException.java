@@ -33,7 +33,9 @@ package org.opennms.report.availability.render;
 
 public class ReportRenderException extends Exception {
 
-	public ReportRenderException(String message, Throwable cause) {
+    private static final long serialVersionUID = 3345608823051705228L;
+
+    public ReportRenderException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
