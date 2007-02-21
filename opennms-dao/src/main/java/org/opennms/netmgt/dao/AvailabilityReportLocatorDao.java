@@ -41,4 +41,6 @@ public interface AvailabilityReportLocatorDao extends OnmsDao<AvailabilityReport
 	
 	public List<AvailabilityReportLocator> findByCategory(String category);
 	
+	public AvailabilityReportLocator get(int it);
+	
 }
