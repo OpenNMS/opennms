@@ -181,7 +181,6 @@
     <property name="graphDao" ref="graphDao"/>
     <property name="rrdStrategy" ref="rrdStrategy"/>
   </bean>
-  
 
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
@@ -204,6 +203,21 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.getInstance</value></property>
   </bean>
   
+  
+  <!-- Availability Report Beans -->
+  
+  <bean id="categoryConfigService" class="org.opennms.web.svclayer.support.DefaultCategoryConfigService">
+    <property name="categoryConfigDao" ref="categoryConfigDao" />
+  </bean>
+  
+  <bean id="availabilityReportService" class="org.opennms.web.svclayer.support.DefaultAvailabilityReportService">
+    <property name="mailer" ref="availabilityReportMailer"/>
+  </bean>
+  
+  <bean id="reportListService" class="org.opennms.web.svclayer.support.DefaultReportListService">
+    <property name="reportLocatorDao" ref="availabilityReportLocatorDao"/>
+  </bean>
+
   <!-- Node List page -->
   <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
     <property name="nodeDao" ref="nodeDao" />

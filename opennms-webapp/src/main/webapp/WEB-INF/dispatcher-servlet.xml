@@ -13,9 +13,17 @@
 
   <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
 
-  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+  <!-- view resolver to deal with Availability reports -->
+  
+  <bean id="reportViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+  	<property name="order" value="0"/>
+  	<property name="location" value="/WEB-INF/views.xml"/>
+  </bean>
+
+  <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="viewClass"
 	          value="org.springframework.web.servlet.view.JstlView" />
+ 	<property name="order" value="1"/>
 	<property name="prefix" value="/WEB-INF/jsp/" />
 	<property name="suffix" value=".jsp" />
   </bean>
@@ -25,9 +33,6 @@
     <property name="cacheSeconds"><value>2</value></property>
   </bean>
   
-  <!-- Home Page -->
-  <bean name="/frontPage.htm" class="org.opennms.web.controller.FrontPageController"/>
-    
   <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
     <property name="provisioningService" ref="manualProvisioningService" />
     <property name="commandName" value="groupAction" />
@@ -207,6 +212,48 @@
   <bean name="/graph/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
     <property name="chooseResourceService" ref="chooseResourceService"/>
     <property name="defaultEndUrl"><value>graph/results.htm</value></property>
+  </bean>
+  
+  <bean name="/availability/categories.htm"
+  		class="org.opennms.web.controller.AvailabilityCategoriesController">
+  	<property name="categoryConfigService" ref="categoryConfigService"/>
+  </bean>
+  
+  <bean name="/availability/report.htm"
+  		class="org.opennms.web.controller.AvailabilityReportController">
+  	<property name="availabilityReportService" ref="availabilityReportService"/>
+  	<property name="categoryConfigService" ref="categoryConfigService"/>
+  </bean>
+  
+  <bean name="/availability/list.htm"
+  		class="org.opennms.web.controller.ReportListController">
+  	<property name="reportListService" ref="reportListService"/>
+  </bean>
+  
+  <!-- Availability Reports - These are for testing and need to be removed -->
+  
+  <bean name="/availability/viewreport.htm"
+  		class="org.opennms.web.controller.SimpleXMLReportController">
+  		<property name="reportId">
+  			<value>2</value>
+  		</property>
+  		<property name="viewerService" ref="availabilityReportViewerService"/>
+  </bean>
+  
+   <bean name="/availability/viewpdfreport.htm"
+  		class="org.opennms.web.controller.SimplePDFReportController">
+  		<property name="reportId">
+  			<value>2</value>
+  		</property>
+  		<property name="viewerService" ref="availabilityReportViewerService"/>
+  </bean>
+  
+     <bean name="/availability/viewsvgreport.htm"
+  		class="org.opennms.web.controller.SimpleSVGReportController">
+  		<property name="reportId">
+  			<value>2</value>
+  		</property>
+  		<property name="viewerService" ref="availabilityReportViewerService"/>
   </bean>
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
