@@ -145,26 +145,17 @@
           Filter filter = new Filter();
           //return filter.getIPServiceMap(rule);
           
-          Map interfaces = filter.getIPServiceMap(rule);
+          Map<String, Set<String>> interfaces = filter.getIPServiceMap(rule);
           
-          Iterator i = interfaces.keySet().iterator();
-          while(i.hasNext())
-          {
-              String key = (String)i.next();
+          for (String key : interfaces.keySet()) {
               buffer.append("<tr><td width=\"50%\" valign=\"top\">").append(key).append("</td>");
               buffer.append("<td width=\"50%\">");
               
-              if (serviceList.length!=0 || notServiceList.length!=0)
-              {
-                  Map services = (Map)interfaces.get(key);
-                  Iterator j = services.keySet().iterator();
-                  while(j.hasNext())
-                  {
-                      buffer.append((String)j.next()).append("<br>");
+              if (serviceList.length!=0 || notServiceList.length!=0) {
+                  for (String service : interfaces.get(key)) { 
+                      buffer.append(service).append("<br>");
                   }
-              }
-              else
-              {
+              } else {
                   buffer.append("All services");
               }
               

@@ -43,6 +43,8 @@
 
 package org.opennms.netmgt.filter;
 
+import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -53,10 +55,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.filter.lexer.Lexer;
@@ -90,8 +96,6 @@ public class Filter {
      *             Thrown if the rule cannot be parsed.
      */
     public void parseRule(String rule) throws FilterParseException {
-        Category log = ThreadCategory.getInstance(getClass());
- 
         if (rule != null && rule.length() > 0) {
             try {
                 // Create a Parser instance.
@@ -100,12 +104,16 @@ public class Filter {
                 // Parse the input.
                 m_parseTree = p.parse();
             } catch (Exception e) {
-                log.error("Failed to parse the filter rule '" + rule + "': " + e, e);
+                log().error("Failed to parse the filter rule '" + rule + "': " + e, e);
                 throw new FilterParseException("Parse error in rule '" + rule + "': " + e, e);
             }
         } else {
             throw new FilterParseException("Parse error: rule is null or empty");
         }
+    }
+
+    private final Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -157,9 +165,8 @@ public class Filter {
         }
     }
 
-    public Map getIPServiceMap(String rule) {
-        Category log = ThreadCategory.getInstance(getClass());
-        Map ipServices = new TreeMap();
+    public Map<String, Set<String>> getIPServiceMap(String rule) {
+        Map<String, Set<String>> ipServices = new TreeMap<String, Set<String>>();
 
         // parse the rule
         parseRule(rule);
@@ -168,8 +175,7 @@ public class Filter {
         // get the database connection
         Connection conn = null;
         try {
-            DataSourceFactory.init();
-            conn = DataSourceFactory.getInstance().getConnection();
+            conn = getConnection();
 
             // execute query and return the list of ip addresses
             Statement stmt = conn.createStatement();
@@ -181,14 +187,11 @@ public class Filter {
                 while (rset.next()) {
                     String ipaddr = rset.getString(1);
 
-                    if (ipServices.containsKey(ipaddr)) {
-                        Map services = (Map) ipServices.get(ipaddr);
-                        services.put(rset.getString(2), null);
-                    } else {
-                        Map services = new TreeMap();
-                        services.put(rset.getString(2), null);
-                        ipServices.put(ipaddr, services);
+                    if (!ipServices.containsKey(ipaddr)) {
+                        ipServices.put(ipaddr, new TreeSet<String>());
                     }
+                    
+                    ipServices.get(ipaddr).add(rset.getString(2));
                 }
             }
 
@@ -202,10 +205,10 @@ public class Filter {
             } catch (SQLException e) {
             }
         } catch (SQLException e) {
-            log.info("SQL Exception occured getting IP List: " + e, e);
+            log().info("SQL Exception occured getting IP List: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (Exception e) {
-            log.fatal("Exception getting database connection: " + e, e);
+            log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
             if (conn != null) {
@@ -233,7 +236,6 @@ public class Filter {
      *                executing the SQL statement
      */
     public List<String> getIPList(String rule) throws FilterParseException {
-        Category log = ThreadCategory.getInstance(getClass());
         List<String> resultList = new ArrayList<String>();
         String sqlString = null;
 
@@ -243,13 +245,12 @@ public class Filter {
         // get the database connection
         Connection conn = null;
         try {
-            DataSourceFactory.init();
-            conn = DataSourceFactory.getInstance().getConnection();
+            conn = getConnection();
 
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement();
-            if (log.isDebugEnabled()) {
-                log.debug("Filter: SQL statement: \n" + sqlString);
+            if (log().isDebugEnabled()) {
+                log().debug("Filter: SQL statement: \n" + sqlString);
             }
 
             // execute query and return the list of ip addresses
@@ -274,13 +275,13 @@ public class Filter {
             } catch (SQLException e) {
             }
         } catch (ClassNotFoundException e) {
-            log.info("Class Not Found Exception occured getting IP List: " + e, e);
+            log().info("Class Not Found Exception occured getting IP List: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log.info("SQL Exception occured getting IP List: " + e, e);
+            log().info("SQL Exception occured getting IP List: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (Exception e) {
-            log.fatal("Exception getting database connection: " + e, e);
+            log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
             if (conn != null) {
@@ -292,6 +293,11 @@ public class Filter {
         }
 
         return resultList;
+    }
+
+    private Connection getConnection() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+        DataSourceFactory.init();
+        return DataSourceFactory.getInstance().getConnection();
     }
 
     /**
@@ -307,9 +313,8 @@ public class Filter {
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
      */
-    public SortedMap getNodeMap(String rule) throws FilterParseException {
-        Category log = ThreadCategory.getInstance(getClass());
-        SortedMap resultMap = new TreeMap();
+    public SortedMap<Integer, String> getNodeMap(String rule) throws FilterParseException {
+        SortedMap<Integer, String> resultMap = new TreeMap<Integer, String>();
         String sqlString = null;
 
         // parse the rule
@@ -318,13 +323,12 @@ public class Filter {
         // get the database connection
         Connection conn = null;
         try {
-            DataSourceFactory.init();
-            conn = DataSourceFactory.getInstance().getConnection();
+            conn = getConnection();
 
             // parse the rule and get the sql select statement
             sqlString = getNodeMappingStatement();
-            if (log.isDebugEnabled()) {
-                log.debug("Filter: SQL statement: \n" + sqlString);
+            if (log().isDebugEnabled()) {
+                log().debug("Filter: SQL statement: \n" + sqlString);
             }
 
             // execute query
@@ -348,13 +352,13 @@ public class Filter {
             } catch (SQLException e) {
             }
         } catch (ClassNotFoundException e) {
-            log.info("Class Not Found Exception occured getting node map: " + e, e);
+            log().info("Class Not Found Exception occured getting node map: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log.info("SQL Exception occured getting node map: " + e, e);
+            log().info("SQL Exception occured getting node map: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (Exception e) {
-            log.fatal("Exception getting database connection: " + e, e);
+            log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
             if (conn != null) {
