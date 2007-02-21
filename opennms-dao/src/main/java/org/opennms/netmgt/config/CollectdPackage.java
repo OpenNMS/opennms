@@ -280,7 +280,8 @@ public class CollectdPackage {
 			log.debug("createPackageIpMap: package is " + pkg.getName()
 					+ ". filer rules are  " + filterRules);
 		try {
-			List<String> ipList = Filter.getMatchingIps(filterRules);
+			Filter filter = new Filter();
+            List<String> ipList = filter.getIPList(filterRules);
 			if (ipList.size() > 0) {
 				putIpList(ipList);
 			}

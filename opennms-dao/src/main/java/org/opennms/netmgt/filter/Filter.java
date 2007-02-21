@@ -422,9 +422,4 @@ public class Filter {
         parseRule(rule);
         getSQLStatement();
     }
-
-	public static List<String> getMatchingIps(String filterRules) {
-		Filter filter = new Filter();
-		return filter.getIPList(filterRules);
-	}
 }
