@@ -47,6 +47,10 @@ public class AvailabilityReportLocatorDaoHibernate extends AbstractDaoHibernate<
 		AvailabilityReportLocator locator = (AvailabilityReportLocator)getHibernateTemplate().get(AvailabilityReportLocator.class, id);
 		super.delete(locator);
 	}
+	
+	public AvailabilityReportLocator get(int id) {
+		return super.get(id);
+	}
 
 	public List<AvailabilityReportLocator> findByCategory(String category) {
 		return find("from AvailabilityReportLocator as a where a.category = ?", category);
