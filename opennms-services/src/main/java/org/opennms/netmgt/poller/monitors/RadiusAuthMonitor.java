@@ -89,7 +89,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
     /**
      * Default radius accounting port
      */
-    public static final int DEFAULT_ACCT_PORT = 1812;
+    public static final int DEFAULT_ACCT_PORT = 1813;
 
     /**
      * Default radius authentication type
