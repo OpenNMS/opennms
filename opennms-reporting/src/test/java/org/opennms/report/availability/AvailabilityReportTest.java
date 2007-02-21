@@ -296,13 +296,13 @@ public class AvailabilityReportTest extends TestCase {
 
         day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,1);
         assertNotNull("day 1,1 object", day);
-        assertEquals("day 1,1 percentage value", 99.3059, fourDec(day.getPctValue()), 0);
+        assertEquals("day 1,1 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
         assertTrue("day 1,1 visibility", day.getVisible());
         assertEquals("day 1,1 date", 4,day.getDate());
 
         day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,2);
         assertNotNull("day 1,2 object", day);
-        assertEquals("day 1,2 percentage value", 99.3052, fourDec(day.getPctValue()), 0);
+        assertEquals("day 1,2 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
         assertTrue("day 1,2 visibility", day.getVisible());
         assertEquals("day 1,2 date", 5,day.getDate());
 
