@@ -1,19 +1,25 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
 //
-// 2007 Feb 04: Cleaned up logging and added a ConsoleLogger for the main() method. - dj@opennms.org
-// 2006 May 30: added a way to choose the date to run the availability reports.
+// 2007 Feb 04: Cleaned up logging and added a ConsoleLogger for the main()
+// method. - dj@opennms.org
+// 2006 May 30: added a way to choose the date to run the availability
+// reports.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +28,7 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -30,9 +36,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 // Tab Size = 8
 //
@@ -73,43 +79,32 @@ public class AvailabilityReport extends Object {
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-	
-	/*
-	 * classic month format
-	 */
-	
-	private static final String MONTH_FORMAT_CLASSIC = "classic";
+
+    /*
+     * classic month format
+     */
+
+    private static final String MONTH_FORMAT_CLASSIC = "classic";
 
     /**
-     * Castor object that holds all the information required for the generating
-     * xml to be translated to the pdf.
+     * Castor object that holds all the information required for the
+     * generating xml to be translated to the pdf.
      */
     private Report m_report = null;
 
-     /**
+    /**
      * String of Months
      */
 
-    public static String[] months = new String[] {
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    };
-
+    public static String[] months = new String[] { "January", "February",
+            "March", "April", "May", "June", "July", "August", "September",
+            "October", "November", "December" };
 
     /**
      * Default constructor
      */
-    public AvailabilityReport(String author, String startMonth, String startDate, String startYear) {
+    public AvailabilityReport(String author, String startMonth,
+            String startDate, String startYear) {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         if (log().isDebugEnabled()) {
             log().debug("Inside AvailabilityReport");
@@ -122,7 +117,8 @@ public class AvailabilityReport extends Object {
         // int day = today.get(Calendar.DAY_OF_MONTH);
         // int year = today.get(Calendar.YEAR);
         // SimpleDateFormat smpMonth = new SimpleDateFormat("MMMMMMMMMMM");
-        // String month = smpMonth.format(new java.util.Date(today.getTime().getTime()));
+        // String month = smpMonth.format(new
+        // java.util.Date(today.getTime().getTime()));
         // int month = today.get(Calendar.MONTH) + 1;
         String month = months[Integer.parseInt(startMonth)];
         int hour = today.get(Calendar.HOUR);
@@ -155,30 +151,30 @@ public class AvailabilityReport extends Object {
      *            of the logo to be displayed on the report
      * @param reportFormat
      *            Report Format ("SVG" / all)
-     *            
      * @param monthFormat
      *            Format for month data ("classic"/"calendar")
-     * 
      */
-	public void getReportData(String logourl, String categoryName, String reportFormat, String monthFormat, String startMonth, String startDate, 
-String startYear) {
+    public void getReportData(String logourl, String categoryName,
+            String reportFormat, String monthFormat, String startMonth,
+            String startDate, String startYear) {
 
-		if (log().isDebugEnabled()) {
+        if (log().isDebugEnabled()) {
             log().debug("inside getReportData");
             log().debug("Category name  " + categoryName);
             log().debug("Report format   " + reportFormat);
             log().debug("logo  " + logourl);
-			log().debug("monthFormat "+monthFormat);
+            log().debug("monthFormat " + monthFormat);
         }
-		populateReport(logourl, categoryName, reportFormat, monthFormat, startMonth, startDate, startYear);
-		try {
-			marshalReport();
-		} catch (Exception e) {
-		    log().fatal("Exception: " + e, e);
+        populateReport(logourl, categoryName, reportFormat, monthFormat,
+                       startMonth, startDate, startYear);
+        try {
+            marshalReport();
+        } catch (Exception e) {
+            log().fatal("Exception: " + e, e);
         }
-	}
-	
-	/**
+    }
+
+    /**
      * This when invoked populates the castor classes.
      * 
      * @param logourl
@@ -189,38 +185,44 @@ String startYear) {
      *            Report Format ("SVG" / all)
      * @param monthFormat
      *            Format for month data ("classic"/"calendar")
-     * 
      */
-    public void populateReport(String logourl, String categoryName, String reportFormat, String monthFormat,  String startMonth, String startDate, String startYear) {
+    public void populateReport(String logourl, String categoryName,
+            String reportFormat, String monthFormat, String startMonth,
+            String startDate, String startYear) {
         m_report.setLogo(logourl);
         ViewInfo viewInfo = new ViewInfo();
         m_report.setViewInfo(viewInfo);
         org.opennms.report.availability.Categories categories = new org.opennms.report.availability.Categories();
         m_report.setCategories(categories);
         try {
-			Calendar calendar = new GregorianCalendar();
-			new AvailabilityData(categoryName, m_report, reportFormat, monthFormat, calendar, startMonth, startDate, startYear);
-		} catch (Exception e) {
+            Calendar calendar = new GregorianCalendar();
+            new AvailabilityData(categoryName, m_report, reportFormat,
+                                 monthFormat, calendar, startMonth,
+                                 startDate, startYear);
+        } catch (Exception e) {
             log().fatal("Exception: " + e, e);
-		}
+        }
     }
-	
-	/**
-	 * 
-     * This when invoked marshalls the report XML from the castor classes.
-     * 
-     */
-	
-	public void marshalReport() throws ValidationException, MarshalException, IOException, Exception {
 
-        File file = new File(ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+    /**
+     * This when invoked marshalls the report XML from the castor classes.
+     */
+
+    public void marshalReport() throws ValidationException, MarshalException,
+            IOException, Exception {
+
+        File file = new File(ConfigFileConstants.getHome()
+                + "/share/reports/AvailReport.xml");
         try {
             FileWriter fileWriter = new FileWriter(file);
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
             if (log().isDebugEnabled()) {
-                log().debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+                log().debug(
+                            "The xml marshalled from the castor classes is saved in "
+                                    + ConfigFileConstants.getHome()
+                                    + "/share/reports/AvailReport.xml");
             }
             fileWriter.close();
         } catch (Exception e) {
@@ -231,22 +233,30 @@ String startYear) {
     /**
      * Generate PDF from castor classes.
      */
-    public void generatePDF(String pdfFileName, OutputStream out, String format) throws Exception {
+    public void generatePDF(String pdfFileName, OutputStream out,
+            String format) throws Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         if (log().isDebugEnabled()) {
             log().debug("inside generatePDF");
         }
-        File file = new File(ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+        File file = new File(ConfigFileConstants.getHome()
+                + "/share/reports/AvailReport.xml");
         try {
             if (log().isDebugEnabled()) {
-                log().debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
+                log().debug(
+                            "The xml marshalled from the castor classes is saved in "
+                                    + ConfigFileConstants.getHome()
+                                    + "/share/reports/AvailReport.xml");
             }
             FileReader fileReader = new FileReader(file);
             PDFWriter pdfWriter = new PDFWriter(pdfFileName);
             Calendar calendar = new GregorianCalendar();
             long timeMillis = calendar.getTime().getTime();
             if (!format.equals("HTML")) {
-                pdfWriter.generatePDF(fileReader, out, ConfigFileConstants.getHome() + "/share/reports/avail-" + timeMillis + ".fot");
+                pdfWriter.generatePDF(fileReader, out,
+                                      ConfigFileConstants.getHome()
+                                              + "/share/reports/avail-"
+                                              + timeMillis + ".fot");
             } else {
                 pdfWriter.generateHTML(fileReader, out);
             }
@@ -263,16 +273,21 @@ String startYear) {
      */
     public static void main(String args[]) {
         // Spit warning level and higher messages out to the console
-        ConsoleAppender consoleAppender =  new ConsoleAppender(new PatternLayout("%m%n"), ConsoleAppender.SYSTEM_ERR);
+        ConsoleAppender consoleAppender = new ConsoleAppender(
+                                                              new PatternLayout(
+                                                                                "%m%n"),
+                                                              ConsoleAppender.SYSTEM_ERR);
         consoleAppender.setThreshold(Level.WARN);
         Category logger = Logger.getLogger(LOG4J_CATEGORY);
         logger.addAppender(consoleAppender);
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log().debug("main() called with args: " + StringUtils.arrayToDelimitedString(args, ", "));
-        
+        log().debug(
+                    "main() called with args: "
+                            + StringUtils.arrayToDelimitedString(args, ", "));
+
         System.setProperty("java.awt.headless", "true");
-        
+
         String logourl = System.getProperty("image");
         String categoryName = System.getProperty("catName");
         if (categoryName == null || categoryName.equals("")) {
@@ -282,7 +297,7 @@ String startYear) {
         if (format == null || format.equals("")) {
             format = "SVG";
         }
-		String monthFormat = System.getProperty("MonthFormat");
+        String monthFormat = System.getProperty("MonthFormat");
         if (monthFormat == null || format.equals("")) {
             monthFormat = MONTH_FORMAT_CLASSIC;
         }
@@ -291,10 +306,12 @@ String startYear) {
         String startYear = System.getProperty("startYear");
 
         try {
-            generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
+            generateReport(logourl, categoryName, format, monthFormat,
+                           startMonth, startDate, startYear);
         } catch (Exception e) {
             log().error("Caught exception while generating report: " + e, e);
-            System.err.println("Caught exception while generating report: " + e);
+            System.err.println("Caught exception while generating report: "
+                    + e);
             e.printStackTrace();
         }
     }
@@ -304,7 +321,9 @@ String startYear) {
      * @param categoryName
      * @param format
      */
-    public static void generateReport(String logourl, String categoryName, String format, String monthFormat, String startMonth, String startDate, String startYear) throws Exception {
+    public static void generateReport(String logourl, String categoryName,
+            String format, String monthFormat, String startMonth,
+            String startDate, String startYear) throws Exception {
 
         // This report will be invoked by the mailer script.
         // Only SVG formatted reports are needed.
@@ -315,22 +334,38 @@ String startYear) {
         String pdfFileName;
         String xslFileName;
         if (format.equals("SVG")) {
-            pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-SVG-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-            xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_SVG_XSL);
+            pdfFileName = ConfigFileConstants.getHome()
+                    + "/share/reports/AVAIL-SVG-" + catFileName
+                    + fmt.format(new java.util.Date()) + ".pdf";
+            xslFileName = ConfigFileConstants.getFilePathString()
+                    + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_SVG_XSL);
         } else if (format.equals("PDF")) {
-            pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-            xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_PDF_XSL);
+            pdfFileName = ConfigFileConstants.getHome()
+                    + "/share/reports/AVAIL-PDF-" + catFileName
+                    + fmt.format(new java.util.Date()) + ".pdf";
+            xslFileName = ConfigFileConstants.getFilePathString()
+                    + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_PDF_XSL);
         } else if (format.equals("HTML")) {
-            pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName + fmt.format(new java.util.Date()) + ".html";
-            xslFileName = ConfigFileConstants.getFilePathString() + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_HTML_XSL);
+            pdfFileName = ConfigFileConstants.getHome()
+                    + "/share/reports/AVAIL-HTML-" + catFileName
+                    + fmt.format(new java.util.Date()) + ".html";
+            xslFileName = ConfigFileConstants.getFilePathString()
+                    + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_HTML_XSL);
         } else {
-            log().fatal("Format '" + format + "' is unsupported.  Must be one of: SVG, PDF, or HTML.");
+            log().fatal(
+                        "Format '"
+                                + format
+                                + "' is unsupported.  Must be one of: SVG, PDF, or HTML.");
             return;
         }
 
         try {
-            AvailabilityReport report = new AvailabilityReport("Unknown", startMonth, startDate, startYear);
-            report.getReportData(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
+            AvailabilityReport report = new AvailabilityReport("Unknown",
+                                                               startMonth,
+                                                               startDate,
+                                                               startYear);
+            report.getReportData(logourl, categoryName, format, monthFormat,
+                                 startMonth, startDate, startYear);
             if (log().isInfoEnabled()) {
                 log().info("Generated Report Data... ");
             }
@@ -338,7 +373,9 @@ String startYear) {
             FileOutputStream pdfFileWriter = new FileOutputStream(file);
             report.generatePDF(xslFileName, pdfFileWriter, format);
             if (log().isInfoEnabled()) {
-                log().debug("xsl -> " + xslFileName + " pdfFileName -> " + pdfFileName + " format -> " + format);
+                log().debug(
+                            "xsl -> " + xslFileName + " pdfFileName -> "
+                                    + pdfFileName + " format -> " + format);
                 log().info("Generated Report ... and saved as " + pdfFileName);
             }
         } catch (Exception e) {

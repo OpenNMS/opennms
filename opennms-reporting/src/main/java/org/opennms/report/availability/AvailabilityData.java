@@ -11,9 +11,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// 2006 May 30: Added a way to choose the date to run the availability reports.
+// 2006 May 30: Added a way to choose the date to run the availability
+// reports.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -49,6 +51,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -82,7 +85,7 @@ public class AvailabilityData extends Object {
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-    
+
     private static final String DEFAULT_FORMAT = "PDF";
 
     /**
@@ -145,32 +148,54 @@ public class AvailabilityData extends Object {
      */
     private int m_sectionIndex = 0;
 
-    
-    
     public AvailabilityData(String categoryName, Report report,
-            String monthFormat, Calendar calendar,
-            String startMonth, String startDate, String startYear)
-            throws IOException, MarshalException, ValidationException,
-            Exception {
-    	generateData(categoryName, report, DEFAULT_FORMAT, monthFormat, calendar, startMonth, startDate, startYear);
+            String monthFormat, Calendar calendar, String startMonth,
+            String startDate, String startYear) throws IOException,
+            MarshalException, ValidationException, Exception {
+        
+        Calendar cal = new GregorianCalendar();
+        cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(startDate));
+        cal.set(Calendar.MONTH, Integer.parseInt(startMonth));
+        cal.set(Calendar.YEAR, Integer.parseInt(startYear));
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        generateData(categoryName, report, DEFAULT_FORMAT, monthFormat,
+                     calendar, new Date(cal.getTimeInMillis()));
     }
-    
+
     public AvailabilityData(String categoryName, Report report,
             String format, String monthFormat, Calendar calendar,
             String startMonth, String startDate, String startYear)
             throws IOException, MarshalException, ValidationException,
             Exception {
-    	generateData(categoryName, report, format, monthFormat, calendar, startMonth, startDate, startYear);
+      
+        Calendar cal = new GregorianCalendar();
+        cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(startDate));
+        cal.set(Calendar.MONTH, Integer.parseInt(startMonth));
+        cal.set(Calendar.YEAR, Integer.parseInt(startYear));
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        generateData(categoryName, report, format, monthFormat, calendar,
+                     new Date(cal.getTimeInMillis()));
     }
-    
+
+    public AvailabilityData(String categoryName, Report report,
+            String format, String monthFormat, Calendar calendar,
+            Date periodEndDate)
+            throws IOException, MarshalException, ValidationException,
+            Exception {
+       generateData(categoryName, report, format, monthFormat, calendar, periodEndDate);
+    }
+
     /**
      * Original constructor, now called by new version
      */
-    
-    
+
     private void generateData(String categoryName, Report report,
             String format, String monthFormat, Calendar calendar,
-            String startMonth, String startDate, String startYear)
+            Date periodEndDate)
             throws IOException, MarshalException, ValidationException,
             Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -178,7 +203,7 @@ public class AvailabilityData extends Object {
         log.debug("Inside AvailabilityData");
 
         m_nodes = new ArrayList();
-        initialiseInterval(calendar, startMonth, startDate, startYear);
+        initializeInterval(calendar, periodEndDate);
         m_categoryName = categoryName;
         Catinfo config = null;
         try {
@@ -209,14 +234,11 @@ public class AvailabilityData extends Object {
                 Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
                 // go through the categories
-                org.opennms.netmgt.config.categories.Categories cats =
-                    cg.getCategories();
+                org.opennms.netmgt.config.categories.Categories cats = cg.getCategories();
 
                 Enumeration enumCat = cats.enumerateCategory();
                 while (enumCat.hasMoreElements()) {
-                    org.opennms.netmgt.config.categories.Category cat =
-                        (org.opennms.netmgt.config.categories.Category)
-                        enumCat.nextElement();
+                    org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) enumCat.nextElement();
                     Enumeration enumMonitoredSvc = cat.enumerateService();
                     List monitoredServices = new ArrayList();
                     while (enumMonitoredSvc.hasMoreElements()) {
@@ -235,9 +257,7 @@ public class AvailabilityData extends Object {
                 log.debug("catCount " + catCount);
             }
         } else {
-            org.opennms.netmgt.config.categories.Category cat =
-                (org.opennms.netmgt.config.categories.Category)
-                m_catFactory.getCategory(categoryName);
+            org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
             if (log.isDebugEnabled()) {
                 log.debug("CATEGORY - now populating data structures "
                         + cat.getLabel());
@@ -245,10 +265,10 @@ public class AvailabilityData extends Object {
             populateDataStructures(cat, report, format, monthFormat, 1);
         }
 
-        SimpleDateFormat simplePeriod =
-            new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
-        String reportPeriod =
-            simplePeriod.format(new java.util.Date(m_12MonthsBack))
+        SimpleDateFormat simplePeriod = new SimpleDateFormat(
+                                                             "MMMMMMMMMMM dd, yyyy");
+        String reportPeriod = simplePeriod.format(new java.util.Date(
+                                                                     m_12MonthsBack))
                 + " - " + simplePeriod.format(new java.util.Date(m_endTime));
         Created created = report.getCreated();
         if (created == null) {
@@ -276,8 +296,7 @@ public class AvailabilityData extends Object {
     private void populateDataStructures(
             org.opennms.netmgt.config.categories.Category cat, Report report,
             String format, String monthFormat, int catIndex) throws Exception {
-        org.apache.log4j.Category log =
-            ThreadCategory.getInstance(this.getClass());
+        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside populate data Structures" + catIndex);
         report.setCatCount(catIndex);
@@ -322,26 +341,25 @@ public class AvailabilityData extends Object {
                 m_nodes = null;
             }
             if (m_nodes != null) {
-                AvailCalculations availCalculations =
-                    new AvailCalculations(m_nodes,
-                                          m_endTime,
-                                          m_lastMonthEndTime,
-                                          monitoredServices,
-                                          report,
-                                          topOffenders,
-                                          cat.getWarning(),
-                                          cat.getNormal(),
-                                          cat.getComment(),
-                                          cat.getLabel(),
-                                          format,
-                                          monthFormat,
-                                          catIndex,
-                                          m_sectionIndex);
+                AvailCalculations availCalculations = new AvailCalculations(
+                                                                            m_nodes,
+                                                                            m_endTime,
+                                                                            m_lastMonthEndTime,
+                                                                            monitoredServices,
+                                                                            report,
+                                                                            topOffenders,
+                                                                            cat.getWarning(),
+                                                                            cat.getNormal(),
+                                                                            cat.getComment(),
+                                                                            cat.getLabel(),
+                                                                            format,
+                                                                            monthFormat,
+                                                                            catIndex,
+                                                                            m_sectionIndex);
                 m_sectionIndex = availCalculations.getSectionIndex();
                 report.setSectionCount(m_sectionIndex - 1);
             } else {
-                org.opennms.report.availability.Category category =
-                    new org.opennms.report.availability.Category();
+                org.opennms.report.availability.Category category = new org.opennms.report.availability.Category();
                 category.setCatComments(cat.getComment());
                 category.setCatName(cat.getLabel());
                 category.setCatIndex(catIndex);
@@ -350,12 +368,10 @@ public class AvailabilityData extends Object {
                 category.setServiceCount(0);
                 Section section = new Section();
                 section.setSectionIndex(m_sectionIndex);
-                org.opennms.report.availability.CatSections catSections =
-                    new org.opennms.report.availability.CatSections();
+                org.opennms.report.availability.CatSections catSections = new org.opennms.report.availability.CatSections();
                 catSections.addSection(section);
                 category.addCatSections(catSections);
-                org.opennms.report.availability.Categories categories =
-                    report.getCategories();
+                org.opennms.report.availability.Categories categories = report.getCategories();
                 categories.addCategory(category);
                 report.setCategories(categories);
                 report.setSectionCount(m_sectionIndex);
@@ -368,12 +384,60 @@ public class AvailabilityData extends Object {
     }
 
     /**
+     * Initialise the endTime, start Time, last Months end time and number of days in the
+     * last month.
+     */
+    
+    public void initializeInterval(Calendar calendar, Date periodEndDate) {
+        
+        Calendar tempCal = new GregorianCalendar();
+        tempCal.setTime(periodEndDate);
+        
+        // Calculate m_endTime as 23:59:59 on the day prior to the report being run
+        
+        tempCal.add(Calendar.DAY_OF_MONTH, -1);
+        tempCal.set(Calendar.HOUR_OF_DAY, 23);
+        tempCal.set(Calendar.MINUTE, 59);
+        tempCal.set(Calendar.SECOND, 59);
+        tempCal.set(Calendar.MILLISECOND, 999);
+        m_endTime = tempCal.getTimeInMillis();
+        
+        // Calculate first of the month, 12 months ago.
+        
+        tempCal.add(Calendar.YEAR, -1);
+        tempCal.set(Calendar.DAY_OF_MONTH, 1);
+        tempCal.set(Calendar.HOUR_OF_DAY, 0);
+        tempCal.set(Calendar.MINUTE, 0);
+        tempCal.set(Calendar.SECOND, 0);
+        tempCal.set(Calendar.MILLISECOND, 0);
+        
+        m_12MonthsBack = tempCal.getTimeInMillis();
+        
+        // Reset tempCal to m_end time and calculate last month calanedar details
+        
+        tempCal.setTimeInMillis(m_endTime);
+        tempCal.add(Calendar.MONTH, -1);
+        
+        m_daysInLastMonth = tempCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        // Not entirely sure if this is needed
+        
+        tempCal.set(Calendar.DAY_OF_MONTH, m_daysInLastMonth);
+        tempCal.set(Calendar.HOUR_OF_DAY, 23);
+        tempCal.set(Calendar.MINUTE, 59);
+        tempCal.set(Calendar.SECOND, 59);
+        tempCal.set(Calendar.MILLISECOND, 999);
+        
+        m_lastMonthEndTime = tempCal.getTimeInMillis();
+        
+    }
+    
+    /**
      * Initialise the endTime, last Months end time and number of days in the
      * last month.
      */
-    private void initialiseInterval(Calendar calendar, String startMonth, String startDate, String startYear) {
-        org.apache.log4j.Category log =
-            ThreadCategory.getInstance(this.getClass());
+    private void initialiseInterval(Calendar calendar, String startMonth,
+            String startDate, String startYear) {
+        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
 
         int month = Integer.parseInt(startMonth);
         int day = Integer.parseInt(startDate);
@@ -381,18 +445,29 @@ public class AvailabilityData extends Object {
         // int month = calendar.get(Calendar.MONTH);
         // int day = calendar.get(Calendar.DAY_OF_MONTH);
         // int year = calendar.get(Calendar.YEAR);
-	calendar.set(year, month, day - 1, 23, 59, 59); // Set the end Time
+        
+        // Set m_endTime to 23:59 on the day prior to that 
+        // specified by year month day
+        
+        calendar.set(year, month, day - 1, 23, 59, 59); // Set the end Time
         m_endTime = calendar.getTime().getTime();
 
         calendar.add(Calendar.YEAR, -1);
         LAST_YEAR_ROLLING_WINDOW = m_endTime - calendar.getTime().getTime();
         m_12MonthsBack = m_endTime - LAST_YEAR_ROLLING_WINDOW;
+        
+        //m_12MonthsBack is now 1 year prior to m_endTime
 
         calendar = new GregorianCalendar();
         calendar.setTime(new java.util.Date(m_12MonthsBack));
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
         year = calendar.get(Calendar.YEAR);
+        
+        // day is discarded and m_12Months back is now reset to 
+        // the first day of the month, twelve months ago.
+        // The start day has therefore become the first of the month
+        
         calendar.set(year, month, 1, 0, 0, 0); // Set the end Time
         m_12MonthsBack = calendar.getTime().getTime();
 
@@ -402,19 +477,29 @@ public class AvailabilityData extends Object {
             log.debug("Rolling window of the last year "
                     + LAST_YEAR_ROLLING_WINDOW);
         }
+        
+        // Create lastMonthCalendar and initialise it to the end period of
+        // the report using m_end_time
+        
         Calendar lastMonthCalendar = new GregorianCalendar();
-        java.util.Date lastMonthDate =
-            new java.util.Date(new Double(m_endTime).longValue());
+        java.util.Date lastMonthDate = new java.util.Date(
+                                                          new Double(
+                                                                     m_endTime).longValue());
         lastMonthCalendar.setTime(lastMonthDate);
+        
+        
         month = lastMonthCalendar.get(Calendar.MONTH) - 1;
         year = lastMonthCalendar.get(Calendar.YEAR);
+        
+        // now reset lastMonthCalendar to the first of the month prior to end 
+        // period of the report
+        
         lastMonthCalendar.set(year, month, 1, 0, 0, 0);
 
         // Number of days in the last month
-        m_daysInLastMonth =
-            getDaysForMonth(lastMonthCalendar.getTime().getTime());
+        m_daysInLastMonth = getDaysForMonth(lastMonthCalendar.getTime().getTime());
 
-        // Set the end time of the last month
+        // Set the end time of the last full month prior to the report end date 
         lastMonthCalendar.set(year, month, m_daysInLastMonth, 23, 59, 59);
         m_lastMonthEndTime = lastMonthCalendar.getTime().getTime();
     }
@@ -481,8 +566,7 @@ public class AvailabilityData extends Object {
      */
     public void initialiseConnection() throws IOException, MarshalException,
             ValidationException, ClassNotFoundException, SQLException {
-        org.apache.log4j.Category log =
-            ThreadCategory.getInstance(this.getClass());
+        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         //
         // Initialize the DataCollectionConfigFactory
         //
@@ -490,26 +574,31 @@ public class AvailabilityData extends Object {
             DataSourceFactory.init();
             m_availConn = DataSourceFactory.getInstance().getConnection();
         } catch (MarshalException e) {
-            log.fatal("initialize: Failed to load data collection configuration",
+            log.fatal(
+                      "initialize: Failed to load data collection configuration",
                       e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log.fatal("initialize: Failed to load data collection configuration",
+            log.fatal(
+                      "initialize: Failed to load data collection configuration",
                       e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log.fatal("initialize: Failed to load data collection configuration",
+            log.fatal(
+                      "initialize: Failed to load data collection configuration",
                       e);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
             log.fatal("initialize: Failed loading database driver.", e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log.fatal("initialize: Failed getting connection to the database.",
+            log.fatal(
+                      "initialize: Failed getting connection to the database.",
                       e);
             throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
-            log.fatal("initialize: Failed getting connection to the database.",
+            log.fatal(
+                      "initialize: Failed getting connection to the database.",
                       e);
             throw new UndeclaredThrowableException(e);
         }
@@ -519,15 +608,15 @@ public class AvailabilityData extends Object {
      * Closes the database connection.
      */
     public void closeConnection() {
-        org.apache.log4j.Category log =
-            ThreadCategory.getInstance(this.getClass());
+        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         if (m_availConn != null) {
             try {
                 m_availConn.close();
                 m_availConn = null;
             } catch (Throwable t) {
-                log.warn("initialize: an exception occured while closing the "
-                         + "JDBC connection", t);
+                log.warn(
+                         "initialize: an exception occured while closing the "
+                                 + "JDBC connection", t);
             }
         }
     }
@@ -537,8 +626,7 @@ public class AvailabilityData extends Object {
      * get the last months top 20 offenders
      */
     public TreeMap getPercentNode() {
-        org.apache.log4j.Category log =
-            ThreadCategory.getInstance(this.getClass());
+        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         int days = m_daysInLastMonth;
         long endTime = m_lastMonthEndTime;
         Calendar cal = new GregorianCalendar();
@@ -595,8 +683,7 @@ public class AvailabilityData extends Object {
             List monitoredServices) throws SQLException,
             FilterParseException, Exception {
         m_nodes = new ArrayList();
-        org.apache.log4j.Category log =
-            ThreadCategory.getInstance(AvailabilityData.class);
+        org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
 
         log.debug("in populateNodesFromDB");
 
@@ -605,15 +692,12 @@ public class AvailabilityData extends Object {
 
         initialiseConnection();
         // Prepare the statement to get service entries for each IP
-        PreparedStatement servicesGetStmt =
-            m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
+        PreparedStatement servicesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
         // Prepared statement to get node info for an ip
-        PreparedStatement ipInfoGetStmt =
-            m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
+        PreparedStatement ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
         // Prepared statement to get outages entries
-        PreparedStatement outagesGetStmt =
-            m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
-        
+        PreparedStatement outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
+
         /*
          * Tet the rule for this category, get the list of nodes that satisfy
          * this rule.
@@ -677,8 +761,7 @@ public class AvailabilityData extends Object {
                             // log.debug("services result: " + nodeid + "\t" +
                             // ip + "\t" + svcname);
 
-                            OutageSvcTimesList outageSvcTimesList =
-                                new OutageSvcTimesList();
+                            OutageSvcTimesList outageSvcTimesList = new OutageSvcTimesList();
                             getOutagesNodeIpSvc(nodeid, nodeName, ip, svcid,
                                                 svcname, outageSvcTimesList,
                                                 outagesGetStmt);
@@ -700,15 +783,16 @@ public class AvailabilityData extends Object {
                             svcRS.close();
                         }
                     } catch (Exception e) {
-                        log.fatal("Exception while closing the services result "
-                                  + "set", e);
+                        log.fatal(
+                                  "Exception while closing the services result "
+                                          + "set", e);
                         throw e;
                     }
                 }
             }
         } catch (SQLException e) {
             log.fatal("Unable to get node list for category '"
-                      + cat.getLabel() + "'", e);
+                    + cat.getLabel() + "'", e);
             throw e;
         } catch (FilterParseException e) {
             /*
@@ -716,11 +800,11 @@ public class AvailabilityData extends Object {
              * nodelist from the filters.
              */
             log.fatal("Unable to get node list for category '"
-                      + cat.getLabel() + "'", e);
+                    + cat.getLabel() + "'", e);
             throw e;
         } catch (Exception e) {
             log.fatal("Unable to get node list for category '"
-                      + cat.getLabel() + "'", e);
+                    + cat.getLabel() + "'", e);
 
             // re-throw exception
             throw new Exception("Unable to get node list for category \'"
@@ -746,16 +830,17 @@ public class AvailabilityData extends Object {
                     closeConnection();
                 }
             } catch (Exception e) {
-                log.fatal("Exception while closing the ip get node info result "
-                          + "set.  IP: " + ip, e);
+                log.fatal(
+                          "Exception while closing the ip get node info result "
+                                  + "set.  IP: " + ip, e);
                 throw e;
             }
         }
         /*
-         * XXX why do we rethrow the original exception in a few cases and create
-         * a new exception in others? 
+         * XXX why do we rethrow the original exception in a few cases and
+         * create a new exception in others?
          */
-        
+
     }
 
     /**
@@ -766,8 +851,7 @@ public class AvailabilityData extends Object {
             String ipaddr, int serviceid, String serviceName,
             OutageSvcTimesList outageSvcTimesList,
             PreparedStatement outagesGetStmt) throws SQLException {
-        org.apache.log4j.Category log =
-            ThreadCategory.getInstance(AvailabilityData.class);
+        org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
         // Get outages for this node/ip/svc pair
         try {
             // if (log.isDebugEnabled())
