@@ -2,7 +2,7 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class SurveillanceIntersection implements IsSerializable {
+public class SurveillanceIntersection extends SurveillanceSet implements IsSerializable {
     
     private SurveillanceGroup m_rowGroup;
     private SurveillanceGroup m_columnGroup;

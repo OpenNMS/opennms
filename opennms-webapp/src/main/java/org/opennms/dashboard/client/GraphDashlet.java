@@ -5,9 +5,9 @@ import com.google.gwt.user.client.ui.Label;
 public class GraphDashlet extends Dashlet {
     
     
-    GraphDashlet() {
+    GraphDashlet(Dashboard dashboard) {
         
-        super("Graphs");
+        super(dashboard, "Graphs");
         
         Label label = new Label("Graphs should go here.");
         

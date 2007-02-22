@@ -2,7 +2,6 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
@@ -21,6 +20,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     NodeStatusDashlet m_nodeStatus;
     NotificationDashlet m_notifications;
     GraphDashlet m_graphs;
+    private SurveillanceServiceAsync m_surveillanceService;
 
     public void onModuleLoad() {
 
@@ -34,53 +34,48 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     }
 
     private GraphDashlet createGraphDashlet() {
-        m_graphs = new GraphDashlet();
+        m_graphs = new GraphDashlet(this);
         return m_graphs;
     }
 
     private NotificationDashlet createNotificationDashlet() {
-        m_notifications = new NotificationDashlet();
+        m_notifications = new NotificationDashlet(this);
         return m_notifications;
     }
 
     private OutageDashlet createOuageDashlet() {
-        m_outages = new OutageDashlet();
+        m_outages = new OutageDashlet(this);
         return m_outages;
     }
 
     private AlarmDashlet createAlarmDashlet() {
-        m_alarms = new AlarmDashlet();
+        m_alarms = new AlarmDashlet(this);
+        m_alarms.setSurveillanceService(getSurveillanceService());
         return m_alarms;
     }
 
     private Dashlet createSurveillanceDashlet() {
-        SurveillanceDashlet surveillance = new SurveillanceDashlet();
-        surveillance.setErrorHandler(this);
+        SurveillanceDashlet surveillance = new SurveillanceDashlet(this);
         
         SurveillanceListener listener = new SurveillanceListener() {
 
             public void onAllClicked(Dashlet viewer) {
-                Window.alert("All");
+                m_alarms.setSurveillanceSet(SurveillanceSet.DEFAULT);
             }
 
             public void onIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection) {
-                m_alarms.setIntersection(intersection);
+                m_alarms.setSurveillanceSet(intersection);
             }
 
             public void onSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group) {
-                Window.alert("Group: "+group);
+                m_alarms.setSurveillanceSet(group);
             }
             
         };
         
         surveillance.addSurveillanceViewListener(listener);
         
-        String serviceEntryPoint = GWT.getModuleBaseURL()+"surveillanceService.gwt";
-        
-        // define the service you want to call
-        final SurveillanceServiceAsync svc = (SurveillanceServiceAsync) GWT.create(SurveillanceService.class);
-        ServiceDefTarget endpoint = (ServiceDefTarget) svc;
-        endpoint.setServiceEntryPoint(serviceEntryPoint);
+        final SurveillanceServiceAsync svc = getSurveillanceService();
         
         
         surveillance.setSurveillanceService(svc);
@@ -89,9 +84,22 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         return m_surveillance;
     }
 
+    private SurveillanceServiceAsync getSurveillanceService() {
+        if (m_surveillanceService == null) {
+            String serviceEntryPoint = GWT.getModuleBaseURL()+"surveillanceService.gwt";
+
+            // define the service you want to call
+            final SurveillanceServiceAsync svc = (SurveillanceServiceAsync) GWT.create(SurveillanceService.class);
+            ServiceDefTarget endpoint = (ServiceDefTarget) svc;
+            endpoint.setServiceEntryPoint(serviceEntryPoint);
+            m_surveillanceService = svc;
+        }
+        return m_surveillanceService;
+    }
+
     private NodeStatusDashlet createNodeStatusDashlet() {
 
-        final NodeStatusDashlet nodeStatus = new NodeStatusDashlet();
+        final NodeStatusDashlet nodeStatus = new NodeStatusDashlet(this);
         
         // define the service you want to call
         NodeServiceAsync svc = (NodeServiceAsync) GWT.create(NodeService.class);

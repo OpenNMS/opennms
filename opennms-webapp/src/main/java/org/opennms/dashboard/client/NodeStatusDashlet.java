@@ -6,8 +6,8 @@ public class NodeStatusDashlet extends Dashlet {
 
     ListBox m_listBox = new ListBox();
     
-    public NodeStatusDashlet() {
-        super("Node Status");
+    public NodeStatusDashlet(Dashboard dashboard) {
+        super(dashboard, "Node Status");
         
         setView(m_listBox);
     }
