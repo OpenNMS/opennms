@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
@@ -71,8 +71,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 	}
 
     public Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
-        Filter filter = new Filter();
-        Set<String> matchingIps = new HashSet<String>(filter.getIPList(selector.getFilterRule()));
+        Set<String> matchingIps = new HashSet<String>(FilterDaoFactory.getInstance().getIPList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
         
         List<OnmsMonitoredService> matchingServices = new LinkedList<OnmsMonitoredService>();

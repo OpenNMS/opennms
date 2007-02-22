@@ -68,7 +68,7 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.eventd.EventUtil;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.RowProcessor;
@@ -267,12 +267,8 @@ public abstract class NotificationManager {
      * @return
      */
     protected String getInterfaceFilter(String rule) {
-        Filter filter = new Filter(rule);
-   
         // Select the Interfaces and Services that match the rule
-   
-        String sql = filter.getInterfaceWithServiceStatement();
-        return sql;
+        return FilterDaoFactory.getInstance().getInterfaceWithServiceStatement(rule);
     }
 
     /**

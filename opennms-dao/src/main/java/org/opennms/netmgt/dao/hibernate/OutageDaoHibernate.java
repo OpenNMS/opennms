@@ -41,7 +41,7 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.OutageDao;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
@@ -77,8 +77,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 	}
 
 	public Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector) {
-    	Filter filter = new Filter();
-    	Set<String> matchingIps = new HashSet<String>(filter.getIPList(selector.getFilterRule()));
+    	Set<String> matchingIps = new HashSet<String>(FilterDaoFactory.getInstance().getIPList(selector.getFilterRule()));
     	Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
     	
     	List<OnmsOutage> matchingOutages = new LinkedList<OnmsOutage>();

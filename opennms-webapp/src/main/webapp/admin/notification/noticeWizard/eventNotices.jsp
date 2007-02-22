@@ -121,14 +121,13 @@
 
 <h2>Event Notifications</h2>
 
+
+<h3>Add a notification to an event or edit an existing event notification</h3>
 <form method="post" name="notices" action="admin/notification/noticeWizard/notificationWizard">
   <input type="hidden" name="userAction" value=""/>
   <input type="hidden" name="notice" value=""/>
   <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTICES%>"/>
   <table>
-    <tr>
-      <td><h3>Add a notification to an event or edit an existing event notification.</h3></td>
-    </tr>
     <tr>
       <td> <input type="button" value="Add New Event Notification" onclick="javascript:newNotice()"/>
     </tr>

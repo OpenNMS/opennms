@@ -90,7 +90,7 @@ import org.opennms.netmgt.filter.node.Start;
  * 
  */
 public class SQLTranslation extends DepthFirstAdapter {
-    private DatabaseSchemaConfigFactory m_schemaFactory = DatabaseSchemaConfigFactory.getInstance();
+    private DatabaseSchemaConfigFactory m_schemaFactory;
 
     /**
      * Constant to identify a virtual column for determining if an interface
@@ -144,20 +144,6 @@ public class SQLTranslation extends DepthFirstAdapter {
      * The starting node of the parse tree
      */
     private Start m_node;
-
-    // Statically load the configuration resource.
-    //
-    static {
-        try {
-            DatabaseSchemaConfigFactory.init();
-        } catch (MarshalException ex) {
-        	throw new UndeclaredThrowableException(ex, "Failed to initialize DatabaseSchemaConfigFactory: " + ex.getMessage());
-        } catch (ValidationException ex) {
-        	throw new UndeclaredThrowableException(ex, "Failed to initialize DatabaseSchemaConfigFactory: " + ex.getMessage());
-        } catch (IOException ex) {
-        	throw new UndeclaredThrowableException(ex, "Failed to initialize DatabaseSchemaConfigFactory: " + ex.getMessage());
-        }
-    }
 
     /**
      * This method is used to build the join condtions to be added to the where
@@ -334,10 +320,9 @@ public class SQLTranslation extends DepthFirstAdapter {
         }
     }
 
-    /**
-     * Default constructor, initalizes the data structures
-     */
-    public SQLTranslation(Start node) {
+    public SQLTranslation(Start node, DatabaseSchemaConfigFactory databaseSchemaConfigFactory) {
+        m_schemaFactory = databaseSchemaConfigFactory;
+        
         m_node = node;
 
         m_selectList = new ArrayList();

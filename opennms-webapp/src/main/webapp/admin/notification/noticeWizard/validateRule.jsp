@@ -46,7 +46,7 @@
 	import="java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.Util,
-		org.opennms.netmgt.filter.Filter,
+        org.opennms.netmgt.filter.FilterDaoFactory,
 		org.opennms.netmgt.filter.FilterParseException,
 		org.opennms.netmgt.config.notifications.*
 	"
@@ -142,10 +142,10 @@
       throws FilterParseException
   {
           StringBuffer buffer = new StringBuffer();
-          Filter filter = new Filter();
+          //Filter filter = new Filter();
           //return filter.getIPServiceMap(rule);
           
-          Map<String, Set<String>> interfaces = filter.getIPServiceMap(rule);
+          Map<String, Set<String>> interfaces = FilterDaoFactory.getInstance().getIPServiceMap(rule);
           
           for (String key : interfaces.keySet()) {
               buffer.append("<tr><td width=\"50%\" valign=\"top\">").append(key).append("</td>");

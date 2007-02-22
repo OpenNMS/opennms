@@ -44,8 +44,8 @@
 	import="java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.Util,
-		org.opennms.netmgt.filter.Filter,
-		org.opennms.netmgt.filter.FilterParseException
+        org.opennms.netmgt.filter.FilterDaoFactory,
+        org.opennms.netmgt.filter.FilterParseException
 	"
 %>
 
@@ -140,8 +140,7 @@
       throws FilterParseException
   {
           StringBuffer buffer = new StringBuffer();
-          Filter filter = new Filter();
-          SortedMap nodes = filter.getNodeMap(rule);
+          SortedMap nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
           Iterator i = nodes.keySet().iterator();
           while(i.hasNext())
           {

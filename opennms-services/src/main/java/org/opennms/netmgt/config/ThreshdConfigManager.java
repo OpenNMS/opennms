@@ -55,7 +55,7 @@ import org.opennms.netmgt.config.threshd.ExcludeRange;
 import org.opennms.netmgt.config.threshd.IncludeRange;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
  * @author mhuot
@@ -142,7 +142,6 @@ public abstract class ThreshdConfigManager {
             // Get a list of ipaddress per package agaist the filter rules from
             // database and populate the package, IP list map.
             //
-            Filter filter = new Filter();
             StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
     
             try {
@@ -157,7 +156,7 @@ public abstract class ThreshdConfigManager {
                 if (log.isDebugEnabled())
                     log.debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
     
-                List ipList = filter.getIPList(filterRules.toString());
+                List ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
                 if (ipList.size() > 0) {
                     m_pkgIpMap.put(pkg, ipList);
                 }

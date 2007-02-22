@@ -67,7 +67,7 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.report.datablock.Node;
 import org.opennms.report.datablock.Outage;
@@ -687,9 +687,6 @@ public class AvailabilityData extends Object {
 
         log.debug("in populateNodesFromDB");
 
-        // Create the filter
-        Filter filter = new Filter();
-
         initialiseConnection();
         // Prepare the statement to get service entries for each IP
         PreparedStatement servicesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
@@ -712,7 +709,7 @@ public class AvailabilityData extends Object {
         String ip = null;
         ResultSet ipRS = null;
         try {
-            List nodeIPs = filter.getIPList(filterRule);
+            List nodeIPs = FilterDaoFactory.getInstance().getIPList(filterRule);
 
             if (log.isDebugEnabled()) {
                 log.debug("Number of IPs satisfying rule: " + nodeIPs.size());
