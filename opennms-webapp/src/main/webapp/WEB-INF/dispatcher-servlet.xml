@@ -214,10 +214,7 @@
     <property name="defaultEndUrl"><value>graph/results.htm</value></property>
   </bean>
   
-  <bean name="/availability/categories.htm"
-  		class="org.opennms.web.controller.AvailabilityCategoriesController">
-  	<property name="categoryConfigService" ref="categoryConfigService"/>
-  </bean>
+  <!-- Availability Reports -->
   
   <bean name="/availability/report.htm"
   		class="org.opennms.web.controller.AvailabilityReportController">
@@ -230,30 +227,9 @@
   	<property name="reportListService" ref="reportListService"/>
   </bean>
   
-  <!-- Availability Reports - These are for testing and need to be removed -->
-  
   <bean name="/availability/viewreport.htm"
   		class="org.opennms.web.controller.SimpleXMLReportController">
-  		<property name="reportId">
-  			<value>2</value>
-  		</property>
-  		<property name="viewerService" ref="availabilityReportViewerService"/>
-  </bean>
-  
-   <bean name="/availability/viewpdfreport.htm"
-  		class="org.opennms.web.controller.SimplePDFReportController">
-  		<property name="reportId">
-  			<value>2</value>
-  		</property>
-  		<property name="viewerService" ref="availabilityReportViewerService"/>
-  </bean>
-  
-     <bean name="/availability/viewsvgreport.htm"
-  		class="org.opennms.web.controller.SimpleSVGReportController">
-  		<property name="reportId">
-  			<value>2</value>
-  		</property>
-  		<property name="viewerService" ref="availabilityReportViewerService"/>
+   		<property name="viewerService" ref="availabilityReportViewerService"/>
   </bean>
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
