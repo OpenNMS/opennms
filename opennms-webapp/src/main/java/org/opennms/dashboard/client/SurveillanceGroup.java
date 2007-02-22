@@ -2,7 +2,7 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class SurveillanceGroup implements IsSerializable {
+public class SurveillanceGroup extends SurveillanceSet implements IsSerializable {
     
     private String m_label;
     private String m_id;

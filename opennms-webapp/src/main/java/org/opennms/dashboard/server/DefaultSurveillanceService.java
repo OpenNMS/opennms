@@ -1,11 +1,15 @@
 package org.opennms.dashboard.server;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.opennms.dashboard.client.Alarm;
 import org.opennms.dashboard.client.SurveillanceData;
 import org.opennms.dashboard.client.SurveillanceGroup;
 import org.opennms.dashboard.client.SurveillanceService;
+import org.opennms.dashboard.client.SurveillanceSet;
 
 public class DefaultSurveillanceService implements SurveillanceService {
     
@@ -70,6 +74,35 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return m_data;
 
         
+    }
+
+    int m_alarmCount = 0;
+    List<Alarm> m_alarms = new LinkedList<Alarm>();
+
+    public Alarm[] getAlarmsForSet(SurveillanceSet set) {
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
+        Alarm alarm = newAlarm();
+        m_alarms.add(alarm);
+        return (Alarm[]) m_alarms.toArray(new Alarm[m_alarms.size()]);
+
+    }
+
+    private Alarm newAlarm() {
+        Alarm alarm = new Alarm(getSeverify(m_alarmCount), "node"+m_alarmCount/2, "An alarm", m_alarmCount/2);
+        m_alarmCount++;
+        return alarm;
+    }
+    
+    private String getSeverify(int count) {
+        switch(count % 5) {
+        case 0: return "Normal";
+        case 1: return "Critical";
+        case 2: return "Major";
+        case 3: return "Minor";
+        case 4: return "Resolved";
+        default: return "Normal";
+        }
     }
 
 }

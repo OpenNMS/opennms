@@ -2,15 +2,12 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 
 public class SurveillanceDashlet extends Dashlet {
     
-    private ErrorHandler m_errorHandler;
-
     private SurveillanceListenerCollection m_listeners = new SurveillanceListenerCollection();
     private SurveillanceData m_data;
 
@@ -32,7 +29,7 @@ public class SurveillanceDashlet extends Dashlet {
         
         public void onFailure(Throwable caught) {
             setStatus("Error");
-            m_errorHandler.error(caught);
+            error(caught);
         }
 
         public void onSuccess(Object result) {
@@ -112,18 +109,14 @@ public class SurveillanceDashlet extends Dashlet {
     }
     
     
-    public SurveillanceDashlet() {
-        super("Surveillance View");
+    public SurveillanceDashlet(Dashboard dashboard) {
+        super(dashboard, "Surveillance View");
         m_view = new SurveillanceView();
         m_loader = new SurveillanceLoader();
 
         setLoader(m_loader);
         setView(m_view);
 
-    }
-    
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        m_errorHandler = errorHandler;
     }
     
     public void setData(SurveillanceData data) {
@@ -159,10 +152,6 @@ public class SurveillanceDashlet extends Dashlet {
 
     void initialLoader(String serviceEntryPoint) {
         m_loader.load();
-    }
-
-    protected void error(Throwable e) {
-        m_errorHandler.error(e);
     }
 
     public void setSurveillanceService(SurveillanceServiceAsync svc) {

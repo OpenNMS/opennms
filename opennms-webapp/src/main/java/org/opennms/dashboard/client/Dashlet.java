@@ -27,9 +27,11 @@ public abstract class Dashlet extends Composite {
     private DashletTitle m_titleWidget;
     private Widget m_view;
     private DashletLoader m_loader;
+    private Dashboard m_dashboard;
 
-    public Dashlet(String title) {
+    public Dashlet(Dashboard dashboard, String title) {
         m_title = title;
+        m_dashboard = dashboard;
         initWidget(m_panel);
     }
 
@@ -53,6 +55,10 @@ public abstract class Dashlet extends Composite {
         m_panel.add(m_titleWidget);
         m_panel.add(m_view);
         
+    }
+    
+    protected void error(Throwable caught) {
+        m_dashboard.error(caught);
     }
     
     
