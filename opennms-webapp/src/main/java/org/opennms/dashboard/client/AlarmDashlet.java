@@ -3,6 +3,7 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class AlarmDashlet extends Dashlet {
     
@@ -55,15 +56,28 @@ public class AlarmDashlet extends Dashlet {
         
     }
     
-    class AlarmView extends DashletView {
+    class AlarmView extends DashletView implements Pageable {
         
-        FlexTable m_alarmTable = new FlexTable();
+        private VerticalPanel m_panel = new VerticalPanel();
         
-        int m_rows = 5;
+        private FlexTable m_alarmTable = new FlexTable();
+        
+        private int m_rows = 5;
+
+        private Alarm[] m_alarms;
+        
+        private int m_currentIndex = 0;
+        
+        private Pager m_pager;
         
         AlarmView() {
             initializeTable();
-            initWidget(m_alarmTable);
+            
+            m_pager = new Pager(this);
+            
+            m_panel.add(m_alarmTable);
+            m_panel.add(m_pager);
+            initWidget(m_panel);
         }
         
         private void initializeTable() {
@@ -85,16 +99,24 @@ public class AlarmDashlet extends Dashlet {
         }
 
         public void setAlarms(Alarm[] alarms) {
-            int rows = Math.min(m_rows, alarms.length);
+            m_alarms = alarms;
+            refresh();
             
-            for(int i = 1; i <= rows; i++) {
-                setRow(i, alarms[i-1]);
+        }
+        
+        private void refresh() {
+
+            int rows = Math.min(m_currentIndex+m_rows, m_alarms.length);
+            
+            for(int i = m_currentIndex+1; i <= rows; i++) {
+                setRow(i - m_currentIndex, m_alarms[i-1]);
             }
             
-            for(int i = rows+1; i <= m_rows; i++) {
-                clearRow(i);
+            for(int i = rows+1; i <= m_currentIndex+m_rows; i++) {
+                clearRow(i - m_currentIndex);
             }
 
+            m_pager.update();
         }
 
         private void setRow(int row, Alarm alarm) {
@@ -106,6 +128,23 @@ public class AlarmDashlet extends Dashlet {
 
         public void setRows(int rows) {
             m_rows = rows;
+        }
+
+        public int getCurrentElement() {
+            return m_currentIndex;
+        }
+
+        public int getElementCount() {
+            return (m_alarms == null ? 0 : m_alarms.length);
+        }
+
+        public int getPageSize() {
+            return m_rows;
+        }
+
+        public void setCurrentElement(int element) {
+            m_currentIndex = element;
+            refresh();
         }
         
     }
