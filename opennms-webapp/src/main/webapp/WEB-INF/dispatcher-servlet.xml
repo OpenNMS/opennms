@@ -32,6 +32,9 @@
     <property name="basename"><value>/WEB-INF/messages</value></property>
     <property name="cacheSeconds"><value>2</value></property>
   </bean>
+
+  <!-- Home Page -->
+  <bean name="/frontPage.htm" class="org.opennms.web.controller.FrontPageController"/>
   
   <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
     <property name="provisioningService" ref="manualProvisioningService" />
