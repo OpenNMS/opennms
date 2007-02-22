@@ -24,7 +24,6 @@ public class Pager extends Composite {
             m_label.addClickListener(new ClickListener() {
 
                 public void onClick(Widget sender) {
-                    Window.alert("Clicked with direction "+m_direction);
                     adjustPage(m_direction);
                     
                 }
@@ -106,7 +105,6 @@ public class Pager extends Composite {
 
         int newIndex = Math.max(Math.min(m_pageable.getCurrentElement()+adjustment, maxIndex), 0);
 
-        Window.alert("Setting new index to "+newIndex);
         m_pageable.setCurrentElement(newIndex);
 
     }
