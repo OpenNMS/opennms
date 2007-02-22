@@ -210,10 +210,6 @@
     <property name="categoryConfigDao" ref="categoryConfigDao" />
   </bean>
   
-  <bean id="availabilityReportService" class="org.opennms.web.svclayer.support.DefaultAvailabilityReportService">
-    <property name="mailer" ref="availabilityReportMailer"/>
-  </bean>
-  
   <bean id="reportListService" class="org.opennms.web.svclayer.support.DefaultReportListService">
     <property name="reportLocatorDao" ref="availabilityReportLocatorDao"/>
   </bean>
