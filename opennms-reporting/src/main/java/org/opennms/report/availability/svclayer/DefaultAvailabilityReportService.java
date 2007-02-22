@@ -32,32 +32,30 @@
 // http://www.opennms.org/
 // http://www.opennms.com/
 //
-package org.opennms.web.svclayer.support;
+package org.opennms.report.availability.svclayer;
 
 import org.opennms.report.availability.AvailabilityReportRunner;
-import org.opennms.web.svclayer.AvailabilityReportCriteria;
-import org.opennms.web.svclayer.AvailabilityReportService;
 
 public class DefaultAvailabilityReportService implements
         AvailabilityReportService {
 
-    AvailabilityReportRunner m_mailer;
+    AvailabilityReportRunner m_reportRunner;
 
     public void runReport(AvailabilityReportCriteria criteria) {
 
-        m_mailer.setEmail(criteria.getEmail());
-        m_mailer.setCategoryName(criteria.getCategoryName());
-        m_mailer.setLogo(criteria.getLogo());
-        m_mailer.setFormat(criteria.getFormat());
-        m_mailer.setMonthFormat(criteria.getMonthFormat());
-        m_mailer.setPeriodEndDate(criteria.getPeriodEndDate());
+        m_reportRunner.setEmail(criteria.getEmail());
+        m_reportRunner.setCategoryName(criteria.getCategoryName());
+        m_reportRunner.setLogo(criteria.getLogo());
+        m_reportRunner.setFormat(criteria.getFormat());
+        m_reportRunner.setMonthFormat(criteria.getMonthFormat());
+        m_reportRunner.setPeriodEndDate(criteria.getPeriodEndDate());
 
-        new Thread(m_mailer).start();
+        new Thread(m_reportRunner).start();
 
     }
 
-    public void setMailer(AvailabilityReportRunner mailer) {
-        m_mailer = mailer;
+    public void setReportRunner(AvailabilityReportRunner reportRunner) {
+        m_reportRunner = reportRunner;
     }
 
 }

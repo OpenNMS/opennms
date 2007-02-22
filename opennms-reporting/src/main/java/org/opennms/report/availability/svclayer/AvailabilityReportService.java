@@ -28,7 +28,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer;
+package org.opennms.report.availability.svclayer;
 
 public interface AvailabilityReportService {
 

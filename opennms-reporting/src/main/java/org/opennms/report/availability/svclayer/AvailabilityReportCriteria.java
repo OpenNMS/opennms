@@ -31,7 +31,7 @@
 // OpenNMS Licensing <license@opennms.org>
 // http://www.opennms.org/
 // http://www.opennms.com/
-package org.opennms.web.svclayer;
+package org.opennms.report.availability.svclayer;
 
 /**
  * AvailabilityReportCriteria is the backing object for the availability
