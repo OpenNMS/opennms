@@ -2,7 +2,6 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -14,7 +13,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Dashboard implements EntryPoint {
+public class Dashboard implements EntryPoint, ErrorHandler {
     
     Dashlet m_surveillance;
     AlarmDashlet m_alarms;
@@ -55,7 +54,8 @@ public class Dashboard implements EntryPoint {
     }
 
     private Dashlet createSurveillanceDashlet() {
-        final SurveillanceDashlet surveillance = new SurveillanceDashlet();
+        SurveillanceDashlet surveillance = new SurveillanceDashlet();
+        surveillance.setErrorHandler(this);
         
         SurveillanceListener listener = new SurveillanceListener() {
 
@@ -75,38 +75,15 @@ public class Dashboard implements EntryPoint {
         
         surveillance.addSurveillanceViewListener(listener);
         
+        String serviceEntryPoint = GWT.getModuleBaseURL()+"surveillanceService.gwt";
         
         // define the service you want to call
         final SurveillanceServiceAsync svc = (SurveillanceServiceAsync) GWT.create(SurveillanceService.class);
         ServiceDefTarget endpoint = (ServiceDefTarget) svc;
-        endpoint.setServiceEntryPoint(GWT.getModuleBaseURL()+"surveillanceService.gwt");
+        endpoint.setServiceEntryPoint(serviceEntryPoint);
         
         
-        AsyncCallback cb = new AsyncCallback() {
-
-            public void onFailure(Throwable e) {
-                error(e);
-            }
-
-            public void onSuccess(Object arg) {
-                SurveillanceData data = (SurveillanceData)arg;
-                surveillance.setData(data);
-                
-                
-                if (!data.isComplete()) {
-                    final AsyncCallback cb = this;
-                    Timer timer = new Timer() {
-                        public void run() {
-                            svc.getSurveillanceData(cb);
-                        }
-                    };
-                    timer.schedule(2000);
-                }
-            }
-            
-        };
-
-        svc.getSurveillanceData(cb);
+        surveillance.setSurveillanceService(svc);
         
         m_surveillance = surveillance;
         return m_surveillance;

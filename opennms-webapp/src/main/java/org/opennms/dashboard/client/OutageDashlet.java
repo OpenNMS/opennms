@@ -6,7 +6,7 @@ public class OutageDashlet extends Dashlet {
     
     public OutageDashlet() {
         super("Outages");
-        setContent(new Label("Outages go here."));
+        setView(new Label("Outages go here."));
     }
 
 }

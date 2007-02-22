@@ -7,7 +7,7 @@ public class NotificationDashlet extends Dashlet {
     NotificationDashlet() {
         super("Notifications");
         Label label = new Label("Notifications Here.");
-        setContent(label);
+        setView(label);
     }
 
 }

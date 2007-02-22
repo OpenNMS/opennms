@@ -11,7 +11,7 @@ public class GraphDashlet extends Dashlet {
         
         Label label = new Label("Graphs should go here.");
         
-        setContent(label);
+        setView(label);
     }
 
 }

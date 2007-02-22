@@ -11,38 +11,52 @@ public abstract class Dashlet extends Composite {
     class DashletTitle extends Composite {
         private DockPanel m_panel = new DockPanel();
         private Label m_label = new Label();
-        private Label m_status = new Label();
-        DashletTitle(String title) {
+        
+        DashletTitle(String title, DashletLoader loader) {
             
             m_label.setText(title);
             m_panel.add(m_label, DockPanel.WEST);
-            m_panel.add(m_status, DockPanel.EAST);
+            m_panel.add(m_loader, DockPanel.EAST);
             initWidget(m_panel);
-        }
-        
-        
-        public void setStatus(String status) {
-            m_status.setText(status);
         }
         
     }
     
-    protected VerticalPanel m_panel = new VerticalPanel();
-    protected DashletTitle m_title;
+    private VerticalPanel m_panel = new VerticalPanel();
+    private String m_title;
+    private DashletTitle m_titleWidget;
+    private Widget m_view;
+    private DashletLoader m_loader;
 
     public Dashlet(String title) {
-        
-        m_title = new DashletTitle(title);
-        m_panel.add(m_title);
+        m_title = title;
         initWidget(m_panel);
     }
 
-    protected void setContent(Widget content) {
-        m_panel.add(content);
+    protected void setView(Widget view) {
+        m_view = view;
+    }
+    
+    public void setLoader(DashletLoader loader) {
+        m_loader = loader;
     }
 
     public void setStatus(String status) {
-        m_title.setStatus(status);
+        m_loader.setStatus(status);
     }
+
+    protected void onLoad() {
+        if (m_loader == null) {
+            m_loader = new DashletLoader();
+        }
+        m_titleWidget = new DashletTitle(m_title, m_loader);
+        m_panel.add(m_titleWidget);
+        m_panel.add(m_view);
+        
+    }
+    
+    
+    
+    
 
 }

@@ -1,45 +1,134 @@
 package org.opennms.dashboard.client;
 
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 
 public class SurveillanceDashlet extends Dashlet {
     
-    private Grid m_grid;
+    private ErrorHandler m_errorHandler;
+
     private SurveillanceListenerCollection m_listeners = new SurveillanceListenerCollection();
     private SurveillanceData m_data;
+
+    private SurveillanceView m_view;
+    private SurveillanceLoader m_loader;
+    
+    class SurveillanceLoader extends DashletLoader implements AsyncCallback {
+        
+        private SurveillanceServiceAsync m_surveillanceService;
+        
+        protected void onLoad() {
+            load();
+        }
+
+        public void load() {
+            setStatus("Loading...");
+            m_surveillanceService.getSurveillanceData(this);
+        }
+        
+        public void onFailure(Throwable caught) {
+            setStatus("Error");
+            m_errorHandler.error(caught);
+        }
+
+        public void onSuccess(Object result) {
+            SurveillanceData data = (SurveillanceData)result;
+            setData(data);
+            
+            
+            if (!data.isComplete()) {
+                final AsyncCallback cb = this;
+                Timer timer = new Timer() {
+                    public void run() {
+                        m_surveillanceService.getSurveillanceData(cb);
+                    }
+                };
+                timer.schedule(2000);
+            } else {
+                setStatus("");
+            }
+        }
+
+        public void setSurveillanceService(SurveillanceServiceAsync surveillanceService) {
+            m_surveillanceService = surveillanceService;
+        }
+        
+    }
+
+    
+    class SurveillanceView extends DashletView {
+        
+        private Grid m_grid = new Grid();
+        
+        public SurveillanceView() {
+            m_grid.addTableListener(new TableListener() {
+
+                public void onCellClicked(SourcesTableEvents table, int row, int col) {
+                    if (row == 0 && col == 0) {
+                        onAllClicked();
+                    } else if (row == 0) {
+                        onColumnGroupClicked(col-1);
+                    } else if (col == 0) {
+                        onRowGroupClicked(row-1);
+                    } else {
+                        onIntersectionClicked(row-1, col-1);
+                    }
+
+                }
+
+            });
+            
+            initWidget(m_grid);
+            
+        }
+        
+        void populate(SurveillanceData data) {
+            m_grid.resize(data.getRowCount()+1, data.getColumnCount()+1);
+            
+            // set row 0 to be column headings
+            for(int col = 0; col < data.getColumnCount(); col++) {
+                m_grid.setText(0, col+1, data.getColumnHeading(col));
+            }
+            
+            
+            // now do row 1 to rowCount
+            for(int row = 0; row < data.getRowCount(); row++) {
+                // set the row heading
+                m_grid.setText(row+1, 0, data.getRowHeading(row));
+                
+                // now set the data
+                for(int col = 0; col < data.getColumnCount(); col++) {
+                    m_grid.setText(row+1, col+1, data.getCell(row, col));
+                }
+            }
+            
+        }
+
+        
+    }
+    
     
     public SurveillanceDashlet() {
         super("Surveillance View");
-        setGrid(constructGrid());
+        m_view = new SurveillanceView();
+        m_loader = new SurveillanceLoader();
+
+        setLoader(m_loader);
+        setView(m_view);
+
     }
     
-    private void setGrid(Grid grid) {
-        m_grid = grid;
-        setContent(grid);
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        m_errorHandler = errorHandler;
     }
-
-    private Grid constructGrid() {
-        Grid grid = new Grid();
-        grid.addTableListener(new TableListener() {
-
-            public void onCellClicked(SourcesTableEvents table, int row, int col) {
-                if (row == 0 && col == 0) {
-                    onAllClicked();
-                } else if (row == 0) {
-                    onColumnGroupClicked(col-1);
-                } else if (col == 0) {
-                    onRowGroupClicked(row-1);
-                } else {
-                    onIntersectionClicked(row-1, col-1);
-                }
-
-            }
-
-        });
-        
-        return grid;
+    
+    public void setData(SurveillanceData data) {
+        m_data = data;
+        m_view.populate(data);
     }
 
 
@@ -67,37 +156,17 @@ public class SurveillanceDashlet extends Dashlet {
         m_listeners.remove(listener);
     }
 
-    public void setData(SurveillanceData data) {
-        m_data = data;
-        populateGrid(data);
+
+    void initialLoader(String serviceEntryPoint) {
+        m_loader.load();
     }
 
+    protected void error(Throwable e) {
+        m_errorHandler.error(e);
+    }
 
-    private void populateGrid(SurveillanceData data) {
-        m_grid.resize(data.getRowCount()+1, data.getColumnCount()+1);
-        
-        // set row 0 to be column headings
-        for(int col = 0; col < data.getColumnCount(); col++) {
-            m_grid.setText(0, col+1, data.getColumnHeading(col));
-        }
-        
-        
-        // now do row 1 to rowCount
-        for(int row = 0; row < data.getRowCount(); row++) {
-            // set the row heading
-            m_grid.setText(row+1, 0, data.getRowHeading(row));
-            
-            // now set the data
-            for(int col = 0; col < data.getColumnCount(); col++) {
-                m_grid.setText(row+1, col+1, data.getCell(row, col));
-            }
-        }
-        
-        if (data.isComplete()) {
-            setStatus("");
-        } else {
-            setStatus("Loading");
-        }
+    public void setSurveillanceService(SurveillanceServiceAsync svc) {
+        m_loader.setSurveillanceService(svc);
     }
 
 }

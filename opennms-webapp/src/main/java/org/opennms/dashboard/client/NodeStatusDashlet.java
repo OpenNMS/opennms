@@ -9,7 +9,7 @@ public class NodeStatusDashlet extends Dashlet {
     public NodeStatusDashlet() {
         super("Node Status");
         
-        setContent(m_listBox);
+        setView(m_listBox);
     }
 
     public void setNodes(String[] nodeNames) {
