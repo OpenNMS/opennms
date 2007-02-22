@@ -76,7 +76,7 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Categorygroup;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.datablock.RTCHashMap;
@@ -169,12 +169,10 @@ public class DataManager extends Object {
 		private Set catConstructIpAddrs(RTCCategory cat) {
 			String filterRule = cat.getEffectiveRule();
 			try {
-				Filter filter = new Filter();
-		
 				if (log().isDebugEnabled())
 					log().debug("Category: " + cat.getLabel() + "\t" + filterRule);
 		
-				List ips = filter.getIPList(filterRule);
+				List ips = FilterDaoFactory.getInstance().getIPList(filterRule);
 				
 		        if (log().isDebugEnabled())
 		            log().debug("Number of IPs satisfying rule: " + ips.size());

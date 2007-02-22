@@ -59,7 +59,7 @@ import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.web.Util;
 
@@ -196,9 +196,8 @@ public class NotificationWizardServlet extends HttpServlet {
             String redirectPage = request.getParameter("nextPage");
 
             // now lets see if the rule is syntactically valid
-            Filter filter = new Filter();
             try {
-                filter.validateRule(rule.toString());
+                FilterDaoFactory.getInstance().validateRule(rule.toString());
             } catch (FilterParseException e) {
                 // page to redirect to if the rule is invalid
                 params.put("mode", "failed");
@@ -281,11 +280,10 @@ public class NotificationWizardServlet extends HttpServlet {
 	      params.put("criticalSvc", request.getParameter("criticalSvc"));
 	    if (request.getParameter("showNodes") != null)
 	      params.put("showNodes", request.getParameter("showNodes"));
-            Filter filter = new Filter();
 	    if (criticalIp != null && !criticalIp.equals("")) {
 	      params.put("criticalIp", criticalIp);
               try {
-                filter.validateRule("IPADDR IPLIKE " + criticalIp);
+                FilterDaoFactory.getInstance().validateRule("IPADDR IPLIKE " + criticalIp);
               } catch (FilterParseException e) {
                 // page to redirect to if the critical IP is invalid
                 params.put("mode", "Critical path IP failed");
@@ -293,7 +291,7 @@ public class NotificationWizardServlet extends HttpServlet {
               }
             }
             try {
-                filter.validateRule(newRule);
+                FilterDaoFactory.getInstance().validateRule(newRule);
             } catch (FilterParseException e) {
                 // page to redirect to if the rule is invalid
                 params.put("mode", "Current rule failed");
@@ -453,8 +451,7 @@ public class NotificationWizardServlet extends HttpServlet {
                                  throws FilterParseException, SQLException {
         Connection conn = Vault.getDbConnection();
         StringBuffer buffer = new StringBuffer();
-        Filter filter = new Filter();
-	SortedMap nodes = filter.getNodeMap(rule);
+	SortedMap nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
         try {
             Iterator i = nodes.keySet().iterator();
             while(i.hasNext()) {

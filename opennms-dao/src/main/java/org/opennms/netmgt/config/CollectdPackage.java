@@ -40,14 +40,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collectd.ExcludeRange;
 import org.opennms.netmgt.config.collectd.IncludeRange;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 
 public class CollectdPackage {
 	private Package m_pkg;
@@ -275,21 +274,17 @@ public class CollectdPackage {
 		//
 		String filterRules = getFilterRule(localServer, verifyServer);
 	
-		Category log = log();
-		if (log.isDebugEnabled())
-			log.debug("createPackageIpMap: package is " + pkg.getName()
+		if (log().isDebugEnabled())
+			log().debug("createPackageIpMap: package is " + pkg.getName()
 					+ ". filer rules are  " + filterRules);
 		try {
-			Filter filter = new Filter();
-            List<String> ipList = filter.getIPList(filterRules);
+            List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules);
 			if (ipList.size() > 0) {
 				putIpList(ipList);
 			}
 		} catch (Throwable t) {
-			if (log.isEnabledFor(Priority.ERROR)) {
-				log.error("createPackageIpMap: failed to map package: "
-						+ pkg.getName() + " to an IP List", t);
-			}
+		    log().error("createPackageIpMap: failed to map package: "
+		            + pkg.getName() + " to an IP List: " + t, t);
 		}
 	}
 
