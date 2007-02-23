@@ -84,7 +84,7 @@ public class AlarmDashlet extends Dashlet {
             m_alarmTable.setText(0, 0, "Node");
             m_alarmTable.setText(0, 1, "Description");
             m_alarmTable.setText(0, 2, "Count");
-            m_alarmTable.getRowFormatter().addStyleName(0, "header");
+            m_alarmTable.getRowFormatter().setStyleName(0, "header");
             
             for(int i = 1; i <= m_rows; i++) {
                 clearRow(i);
@@ -92,10 +92,16 @@ public class AlarmDashlet extends Dashlet {
         }
 
         private void clearRow(int row) {
-            m_alarmTable.setText(row, 0, "");
-            m_alarmTable.setText(row, 1, "");
-            m_alarmTable.setText(row, 2, "");
-            m_alarmTable.getRowFormatter().addStyleName(0, "empty");
+            if (row >= m_alarmTable.getRowCount()) {
+                return;
+            }
+            m_alarmTable.clearCell(row, 0);
+            m_alarmTable.clearCell(row, 1);
+            m_alarmTable.clearCell(row, 2);
+            String currStyle = m_alarmTable.getRowFormatter().getStyleName(row);
+            if (currStyle != null) {
+                m_alarmTable.getRowFormatter().removeStyleName(row, currStyle);
+            }
         }
 
         public void setAlarms(Alarm[] alarms) {
@@ -123,7 +129,7 @@ public class AlarmDashlet extends Dashlet {
             m_alarmTable.setText(row, 0, alarm.getNodeLabel());
             m_alarmTable.setText(row, 1, alarm.getDescrption());
             m_alarmTable.setText(row, 2, ""+alarm.getCount());
-            m_alarmTable.getRowFormatter().addStyleName(row, alarm.getSeverity());
+            m_alarmTable.getRowFormatter().setStyleName(row, alarm.getSeverity());
         }
 
         public void setRows(int rows) {
