@@ -2,6 +2,7 @@ package org.opennms.dashboard.server;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,6 +16,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
     
     private int m_count = 0;
     private Timer m_timer = new Timer();
+    
+    private Random m_random = new Random();
     
     private SurveillanceData m_data;
     
@@ -76,22 +79,23 @@ public class DefaultSurveillanceService implements SurveillanceService {
         
     }
 
-    int m_alarmCount = 0;
-    List<Alarm> m_alarms = new LinkedList<Alarm>();
 
     public Alarm[] getAlarmsForSet(SurveillanceSet set) {
         try { Thread.sleep(2000); } catch (InterruptedException e) {}
         
-        Alarm alarm = newAlarm();
-        m_alarms.add(alarm);
-        return (Alarm[]) m_alarms.toArray(new Alarm[m_alarms.size()]);
-
+        int alarmCount = m_random.nextInt(30);
+        
+        Alarm[] alarms = new Alarm[alarmCount];
+        for(int i = 0; i < alarmCount; i++) {
+            alarms[i] = newAlarm();
+        }
+        
+        return alarms;
+        
     }
 
     private Alarm newAlarm() {
-        Alarm alarm = new Alarm(getSeverify(m_alarmCount), "node"+m_alarmCount/2, "An alarm", m_alarmCount/2);
-        m_alarmCount++;
-        return alarm;
+        return new Alarm(getSeverify(m_random.nextInt(5)), "node"+m_random.nextInt(20), "An alarm", 2);
     }
     
     private String getSeverify(int count) {
