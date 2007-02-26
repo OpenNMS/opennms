@@ -18,6 +18,9 @@ import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.web.svclayer.ProgressMonitor;
+import org.opennms.web.svclayer.SimpleWebTable;
+import org.opennms.web.svclayer.SimpleWebTable.Cell;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -35,7 +38,71 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private Random m_random = new Random();
     
     private SurveillanceData m_data;
+    private org.opennms.web.svclayer.SurveillanceService m_webSurveillanceService;
 
+    
+    public SurveillanceData getSurveillanceData() {
+        /*
+        System.err.println("Request made!");
+        
+        if (m_data == null) {
+            System.err.println("Creating new data");
+            final SurveillanceData data = new SurveillanceData();
+            m_data = data;
+            
+            
+            
+        } else if (m_data.isComplete()) {
+            SurveillanceData data = m_data;
+            m_data = null;
+            return data;
+        }
+        
+        return m_data;
+        */
+
+        SurveillanceData data = new SurveillanceData();
+
+        SimpleWebTable table = m_webSurveillanceService.createSurveillanceTable(null, new ProgressMonitor());
+        
+        List<SurveillanceGroup> columnGroups = new ArrayList<SurveillanceGroup>();
+        for (Cell columnHeader : table.getColumnHeaders().subList(1, table.getColumnHeaders().size())) {
+            SurveillanceGroup columnGroup = new SurveillanceGroup();
+            columnGroup.setId(columnHeader.getContent().toString());
+            columnGroup.setLabel(columnHeader.getContent().toString());
+            columnGroups.add(columnGroup);
+        }
+        data.setColumnGroups(columnGroups.toArray(new SurveillanceGroup[columnGroups.size()]));
+        
+        List<SurveillanceGroup> rowGroups = new ArrayList<SurveillanceGroup>();
+        for (List<Cell> row : table.getRows()) {
+            Cell rowHeader = row.get(0);
+            
+            SurveillanceGroup rowGroup = new SurveillanceGroup();
+            rowGroup.setId(rowHeader.getContent().toString());
+            rowGroup.setLabel(rowHeader.getContent().toString());
+            rowGroups.add(rowGroup);
+        }
+        data.setRowGroups(rowGroups.toArray(new SurveillanceGroup[rowGroups.size()]));
+
+        int rowIndex = 0;
+        for (List<Cell> row : table.getRows()) {
+            int columnIndex = 0;
+            for (Cell cell : row.subList(1, row.size())) {
+                data.setCell(rowIndex, columnIndex, cell.getContent().toString());
+                
+                columnIndex++;
+            }
+            rowIndex++;
+        }
+        
+        data.setComplete(true);
+
+        return data;
+    }
+    
+    
+    /*
     public SurveillanceData getSurveillanceData() {
         
         System.err.println("Request made!");
@@ -93,6 +160,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
     }
 
+*/
 
     public Alarm[] getAlarmsForSet(SurveillanceSet set) {
         try { Thread.sleep(2000); } catch (InterruptedException e) {}
@@ -184,6 +252,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
         Assert.state(m_resourceDao != null, "resourceDao property must be set and cannot be null");
         Assert.state(m_graphDao != null, "graphDao property must be set and cannot be null");
+        Assert.state(m_webSurveillanceService != null, "m_webSurveillanceService property must be set and cannot be null");
     }
 
     public void setNodeDao(NodeDao nodeDao) {
@@ -196,6 +265,16 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
+    }
+
+
+    public org.opennms.web.svclayer.SurveillanceService getWebSurveillanceService() {
+        return m_webSurveillanceService;
+    }
+
+
+    public void setWebSurveillanceService(org.opennms.web.svclayer.SurveillanceService webSurveillanceService) {
+        m_webSurveillanceService = webSurveillanceService;
     }
 
 
