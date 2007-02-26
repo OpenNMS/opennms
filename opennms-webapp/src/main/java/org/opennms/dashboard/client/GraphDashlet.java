@@ -1,17 +1,237 @@
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class GraphDashlet extends Dashlet {
+    /**
+     * The offset from the current time (rounded by TIME_ROUNDING_INTERVAL) for the start time on graphs
+     */
+    private static final int TIME_START_OFFSET = - (7 * 24 * 60 * 60);
+
+    /**
+     * The interval on which we round the start and end times for graph timespans
+     */ 
+    private static final int TIME_ROUNDING_INTERVAL = (5 * 60);
+
+    private SurveillanceServiceAsync m_surveillanceService;
     
+    private GraphView m_view;
     
-    GraphDashlet(Dashboard dashboard) {
+    private DashletLoader m_loader = new DashletLoader();
+    
+    public GraphDashlet(Dashboard dashboard) {
+        super(dashboard, "Resource Graphs");
+        setLoader(m_loader);
         
-        super(dashboard, "Graphs");
-        
-        Label label = new Label("Graphs should go here.");
-        
-        setView(label);
+        m_view = new GraphView();
+        setView(m_view);
     }
 
+    public void setSurveillanceService(SurveillanceServiceAsync surveillanceService) {
+        m_surveillanceService = surveillanceService;
+    }
+    
+    public void setSurveillanceSet(SurveillanceSet set) {
+        m_view.getTopLevelResourceLoader().load(set);
+    }
+    
+    public class GraphView extends DashletView {
+        private VerticalPanel m_panel = new VerticalPanel();
+        private SimplePager m_pager = new SimplePager(new SimplePageable() {
+            public void adjustPage(int direction) {
+                m_prefabGraphListBox.adjustSelectedValue(direction);
+            }
+        });
+        private ValidatedListBox m_topLevelResourceListBox = new ValidatedListBox(GraphDashlet.this);
+        private ValidatedListBox m_childResourceListBox = new ValidatedListBox(GraphDashlet.this);
+        private ValidatedListBox m_prefabGraphListBox = new ValidatedListBox(GraphDashlet.this);
+        private ResourceGraph m_graph = new ResourceGraph();
+        
+        private TopLevelResourceLoader m_topLevelResourceLoader;
+        private ChildResourceLoader m_childResourceLoader;
+        private PrefabGraphLoader m_prefabGraphLoader;
+        
+        private TopLevelResourceChangeListener m_topLevelResourceListener = new TopLevelResourceChangeListener();
+        private ChildResourceChangeListener m_childResourceListener = new ChildResourceChangeListener();
+        private PrefabGraphChangeListener m_prefabGraphListener = new PrefabGraphChangeListener();
+        
+        private String m_selectedResourceId = null;
+        
+        public GraphView() {
+            m_panel.add(m_pager);
+            m_panel.add(m_topLevelResourceListBox);
+            m_panel.add(m_childResourceListBox);
+            m_panel.add(m_prefabGraphListBox);
+            m_panel.add(m_graph);
+            
+            m_topLevelResourceListBox.addChangeListener(m_topLevelResourceListener);
+            m_topLevelResourceListBox.setDirectionalChangeListener(m_topLevelResourceListener);
+
+            m_childResourceListBox.addChangeListener(m_childResourceListener);
+            m_childResourceListBox.setDirectionalChangeListener(m_childResourceListener);
+            m_childResourceListBox.setParent(m_topLevelResourceListBox);
+
+            m_prefabGraphListBox.addChangeListener(m_prefabGraphListener);
+            m_prefabGraphListBox.setDirectionalChangeListener(m_prefabGraphListener);
+            m_prefabGraphListBox.setParent(m_childResourceListBox);
+            
+            m_topLevelResourceLoader = new TopLevelResourceLoader(m_topLevelResourceListBox);
+            m_childResourceLoader = new ChildResourceLoader(m_childResourceListBox);
+            m_prefabGraphLoader = new PrefabGraphLoader(m_prefabGraphListBox);
+            
+            initWidget(m_panel);
+        }
+        
+        public TopLevelResourceLoader getTopLevelResourceLoader() {
+            return m_topLevelResourceLoader;
+        }
+        
+        public class TopLevelResourceLoader extends ListBoxCallback {
+            public TopLevelResourceLoader(ListBox listBox) {
+                super(GraphDashlet.this, listBox);
+            }
+
+            public void load(SurveillanceSet surveillanceSet) {
+                setStatus("Loading...");
+                m_surveillanceService.getResources(this);
+            }
+
+            public void onDataLoaded(String[][] resources) {
+                super.onDataLoaded(resources);
+
+                // Trigger a change so sub-lists get loaded
+                m_topLevelResourceListener.onChange(m_view.m_topLevelResourceListBox);
+            }
+        }
+
+        public class TopLevelResourceChangeListener extends DirectionalChangeListener {
+            public void onChange(Widget widget, int direction) {
+                String resourceId = m_view.m_topLevelResourceListBox.getSelectedValue();
+                if (resourceId == null) {
+                    return;
+                }
+
+                // Reload child resources since we just change the top-level resource
+                m_childResourceLoader.load(resourceId, direction);
+            }
+        }
+
+        public class ChildResourceLoader extends ListBoxCallback {
+            public ChildResourceLoader(ListBox listBox) {
+                super(GraphDashlet.this, listBox);
+                setEmptyListItem("Parent resource has no child resources--parent resource selected", "");
+            }
+
+            public void load(String resourceId, int direction) {
+                setDirection(direction);
+
+                setStatus("Loading data for resource...");
+                m_surveillanceService.getChildResources(resourceId, this);
+            }
+
+            public void onDataLoaded(String[][] resources) {
+                super.onDataLoaded(resources);
+
+                // Trigger a change so sub-lists get loaded
+                m_childResourceListener.onChange(getListBox(), getDirection());
+            }
+
+        }
+
+        public class ChildResourceChangeListener extends DirectionalChangeListener {
+            public void onChange(Widget widget, int direction) {
+                String resourceId = m_view.m_childResourceListBox.getSelectedValue();
+                if (resourceId == null) {
+                    return;
+                }
+
+                if ("".equals(resourceId)) {
+                    m_selectedResourceId = m_view.m_topLevelResourceListBox.getSelectedValue();
+                } else {
+                    m_selectedResourceId = resourceId;
+                }
+
+                // Reload prefab graphs since we just changed the resource
+                m_prefabGraphLoader.load(m_selectedResourceId, direction);
+            }
+        }
+
+        public class PrefabGraphLoader extends ListBoxCallback {
+            public PrefabGraphLoader(ListBox listBox) {
+                super(GraphDashlet.this, listBox);
+                setEmptyListItem("There are no graphs to display for this resource", "");
+            }
+
+            public void load(String resourceId, int direction) {
+                setDirection(direction);
+
+                setStatus("Loading data for child resource...");
+                m_surveillanceService.getPrefabGraphs(resourceId, this);
+            }
+
+            public void onDataLoaded(String[][] prefabGraphs) {
+                super.onDataLoaded(prefabGraphs);
+
+                // Trigger a change so sub-lists get loaded
+                m_prefabGraphListener.onChange(getListBox());
+            }
+        }
+
+        public class PrefabGraphChangeListener extends DirectionalChangeListener {
+            public void onChange(Widget widget, int direction) {
+                String name = m_view.m_prefabGraphListBox.getSelectedValue();
+                if (name == null || "".equals(name)) {
+                    m_view.m_graph.displayNoGraph();
+                } else {
+                    String[] times = getTimes();
+
+                    m_view.m_graph.setGraph(m_selectedResourceId, name, times[0], times[1]);
+                    prefetchAdjacentGraphs(times);
+                }
+
+            }
+
+            private void prefetchAdjacentGraphs(String[] times) {
+                String previousReport = m_view.m_prefabGraphListBox.getRelativeSelectedValue(-1);
+                if (previousReport != null) {
+                    m_view.m_graph.prefetchGraph(m_selectedResourceId, previousReport, times[0], times[1]);
+                }
+
+                String nextReport = m_view.m_prefabGraphListBox.getRelativeSelectedValue(1);
+                if (nextReport != null) {
+                    m_view.m_graph.prefetchGraph(m_selectedResourceId, nextReport, times[0], times[1]);
+                }
+            }
+
+            /**
+             * Returns start and end times as Strings, in standard Java milliseconds
+             * values.  The time will be rounded to the nearest five minute interval
+             * so when we prefetch graph images the URL will remain the same for that
+             * interval, allowing the browser to use the prefetched image.
+             */
+            public String[] getTimes() {
+                /*
+                 * Get the current time and convert it from a long to integer so we
+                 * can do reliable math in Javascript.
+                 * 
+                 * With GWT, a long is implemented in Javascript as a double since
+                 * Javascript doesn't have a 64 bit integer type.  We want to make
+                 * sure that the times that we return don't change even a millisecond,
+                 * otherwise a graph that we prefetch might not be usable because the
+                 * prefetched URL and the URL that we use when we want to show the
+                 * image might not be the same.
+                 * 
+                 * FIXME This has a Y2038 issue where the signed integer will overflow.
+                 */
+                int now = (int) (System.currentTimeMillis() / 1000);
+
+                int end = (now / TIME_ROUNDING_INTERVAL) * TIME_ROUNDING_INTERVAL; 
+                int start = end + TIME_START_OFFSET;
+
+                return new String[] { start + "000", end + "000" };
+            }
+        }
+    }
 }

@@ -26,7 +26,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
         add(createSurveillanceDashlet(), "surveillanceView");
         add(createAlarmDashlet(),        "alarms");
-        add(createOuageDashlet(),       "outages");
+        add(createOutageDashlet(),       "outages");
         add(createNodeStatusDashlet(),   "nodeStatus");
         add(createNotificationDashlet(), "notifications");
         add(createGraphDashlet(),        "graphs");
@@ -35,6 +35,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
     private GraphDashlet createGraphDashlet() {
         m_graphs = new GraphDashlet(this);
+        m_graphs.setSurveillanceService(getSurveillanceService());
         return m_graphs;
     }
 
@@ -43,7 +44,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         return m_notifications;
     }
 
-    private OutageDashlet createOuageDashlet() {
+    private OutageDashlet createOutageDashlet() {
         m_outages = new OutageDashlet(this);
         return m_outages;
     }
@@ -61,14 +62,17 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
             public void onAllClicked(Dashlet viewer) {
                 m_alarms.setSurveillanceSet(SurveillanceSet.DEFAULT);
+                m_graphs.setSurveillanceSet(SurveillanceSet.DEFAULT);
             }
 
             public void onIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection) {
                 m_alarms.setSurveillanceSet(intersection);
+                m_graphs.setSurveillanceSet(intersection);
             }
 
             public void onSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group) {
                 m_alarms.setSurveillanceSet(group);
+                m_graphs.setSurveillanceSet(group);
             }
             
         };
@@ -101,11 +105,6 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
         final NodeStatusDashlet nodeStatus = new NodeStatusDashlet(this);
         
-        // define the service you want to call
-        NodeServiceAsync svc = (NodeServiceAsync) GWT.create(NodeService.class);
-        ServiceDefTarget endpoint = (ServiceDefTarget) svc;
-        endpoint.setServiceEntryPoint(GWT.getModuleBaseURL()+"nodeService.gwt");
-        
         AsyncCallback cb = new AsyncCallback() {
 
             public void onFailure(Throwable e) {
@@ -118,7 +117,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
             
         };
 
-        svc.getNodeNames(cb);
+        getSurveillanceService().getNodeNames(cb);
 
         m_nodeStatus = nodeStatus;
         return m_nodeStatus;

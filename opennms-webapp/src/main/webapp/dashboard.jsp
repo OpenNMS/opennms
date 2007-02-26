@@ -50,22 +50,21 @@
 	</jsp:param>
 </jsp:include>
 
-    <script type="text/javascript" language='javascript' src='gwt.js'></script>
-    <table border="1" cellspacing="5" width="100%">
-      <tbody>
-      	<tr>
-      		<td id="surveillanceView"></td>
-      		<td id="alarms"></td>
-      		<td colspan="2" id="events"></td>
-        </tr>
-      	<tr>
-      		<td id="outages"></td>
-      		<td id="nodeStatus"></td>
-      		<td id="notifications"></td>
-      		<td id="graphs"></td>
-      	</tr>
-      </tbody>
-    </table>
-      
+<script type="text/javascript" language='javascript' src='gwt.js'></script>
+<table style="normal" cellspacing="5" width="100%">
+  <tbody>
+    <tr>
+      <td id="surveillanceView"></td>
+      <td colspan="2" id="alarms"></td>
+      <td id="notifications"></td>
+    </tr>
+    <tr>
+      <td id="outages"></td>
+      <td id="nodeStatus"></td>
+      <td colspan="2" id="graphs"></td>
+    </tr>
+  </tbody>
+</table>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
