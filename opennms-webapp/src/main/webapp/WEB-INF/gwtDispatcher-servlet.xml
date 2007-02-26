@@ -10,7 +10,6 @@
   <bean id="urlMapping"   class="org.gwtwidgets.server.spring.GWTHandler">
     <property name="mapping">
       <map>
-        <entry key="/nodeService.gwt" value-ref="gwtNodeService"/>
         <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
       </map>
     </property>
@@ -22,11 +21,10 @@
   	<property name="order" value="1" />
   </bean>
   
-  <bean name="gwtNodeService" class="org.opennms.dashboard.server.NodeServiceImpl">
-     <property name="nodeDao" ref="nodeDao" />
-  </bean>
-  
   <bean name="gwtSurveillanceService" class="org.opennms.dashboard.server.DefaultSurveillanceService">
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="resourceDao" ref="resourceDao" />
+    <property name="graphDao" ref="graphDao" />
   </bean>
   
 </beans>

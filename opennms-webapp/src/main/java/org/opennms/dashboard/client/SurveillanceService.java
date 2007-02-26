@@ -8,4 +8,11 @@ public interface SurveillanceService extends RemoteService {
     
     public Alarm[] getAlarmsForSet(SurveillanceSet set);
     
+    public String[] getNodeNames();
+    
+    public String[][] getResources();
+    
+    public String[][] getChildResources(String resourceId);
+    
+    public String[][] getPrefabGraphs(String resourceId);
 }
