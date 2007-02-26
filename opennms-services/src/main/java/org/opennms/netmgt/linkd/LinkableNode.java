@@ -310,16 +310,17 @@ public class LinkableNode extends Object {
 		return (portMacs.containsKey(new Integer(bridgeport)) && portMacs.get(new Integer(bridgeport)) != null );
 	}
 
-	int getBridgePort(String macAddress) {
+	List<Integer> getBridgePortsFromMac(String macAddress) {
+		List<Integer> ports = new ArrayList<Integer>();
 		Iterator ite = portMacs.keySet().iterator();
 		while (ite.hasNext()) {
 			Integer intePort = (Integer) ite.next();
 			Set macs = (Set) portMacs.get(intePort);
 			if (macs.contains(macAddress)) {
-				return intePort.intValue();
+				ports.add(intePort);
 			}
 		}
-		return -1;
+		return ports;
 	}
 
 	int getIfindex(int bridgeport) {
