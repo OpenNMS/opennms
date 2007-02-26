@@ -28,6 +28,7 @@
     <property name="webSurveillanceService" ref="surveillanceService" />
     <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao" />
     <property name="categoryDao" ref="categoryDao" />
+    <property name="alarmDao" ref="alarmDao" />
   </bean>
   
 </beans>

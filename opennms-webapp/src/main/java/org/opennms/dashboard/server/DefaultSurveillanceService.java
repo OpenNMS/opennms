@@ -13,10 +13,14 @@ import org.opennms.dashboard.client.SurveillanceData;
 import org.opennms.dashboard.client.SurveillanceGroup;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
@@ -37,6 +41,8 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private GraphDao m_graphDao;
     private org.opennms.web.svclayer.SurveillanceService m_webSurveillanceService;
     private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
+    private CategoryDao m_categoryDao;
+    private AlarmDao m_alarmDao;
 
     private int m_count = 0;
     private Timer m_timer = new Timer();
@@ -44,7 +50,6 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private Random m_random = new Random();
     
     private SurveillanceData m_data;
-    private CategoryDao m_categoryDao;
 
     
     public SurveillanceData getSurveillanceData() {
@@ -170,6 +175,25 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 */
 
     public Alarm[] getAlarmsForSet(SurveillanceSet set) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
+        OnmsCriteria nodeCriteria = criteria.createCriteria("node");
+        addCriteriaForSurveillanceSet(nodeCriteria, set);
+        
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
+
+        Alarm[] alarmArray = new Alarm[alarms.size()];
+        
+        int index = 0;
+        for (OnmsAlarm alarm : alarms) {
+            alarmArray[index] = new Alarm(getSeverityString(alarm.getSeverity()), alarm.getNode().getLabel(), alarm.getDescription(), alarm.getCounter());
+            index++;
+        }
+        
+        return alarmArray;
+    }
+    
+    /*
+    public Alarm[] getAlarmsForSet(SurveillanceSet set) {
         try { Thread.sleep(2000); } catch (InterruptedException e) {}
         
         int alarmCount = m_random.nextInt(30);
@@ -197,6 +221,21 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         default: return "Normal";
         }
     }
+    */
+
+    private String getSeverityString(Integer severity) {
+        switch(severity) {
+        case 1: return "Indeterminate";
+        case 2: return "Cleared";
+        case 3: return "Normal";
+        case 4: return "Warning";
+        case 5: return "Minor";
+        case 6: return "Major";
+        case 7: return "Critical";
+        default: return "Unknown";
+        }
+    }
+
 
     public String[] getNodeNames(SurveillanceSet set) {
 
@@ -216,7 +255,6 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         addCriteriaForSurveillanceSet(criteria, set);
         criteria.addOrder(Order.asc("node.label"));
         
-        //List<OnmsNode> nodes = m_nodeDao.findAll();
         List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
         
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
@@ -276,6 +314,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_webSurveillanceService != null, "webSurveillanceService property must be set and cannot be null");
         Assert.state(m_surveillanceViewConfigDao != null, "surveillanceViewConfigDao property must be set and cannot be null");
         Assert.state(m_categoryDao != null, "categoryDao property must be set and cannot be null");
+        Assert.state(m_alarmDao != null, "alarmDao property must be set and cannot be null");
     }
 
     public void setNodeDao(NodeDao nodeDao) {
@@ -298,27 +337,28 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         m_webSurveillanceService = webSurveillanceService;
     }
 
-
     public SurveillanceViewConfigDao getSurveillanceViewConfigDao() {
         return m_surveillanceViewConfigDao;
     }
-
 
     public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceViewConfigDao) {
         m_surveillanceViewConfigDao = surveillanceViewConfigDao;
     }
 
-
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
-
 
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
+    public AlarmDao getAlarmDao() {
+        return m_alarmDao;
+    }
 
-
+    public void setAlarmDao(AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
+    }
 
 }
