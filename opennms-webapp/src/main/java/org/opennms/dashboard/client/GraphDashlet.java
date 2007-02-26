@@ -91,6 +91,7 @@ public class GraphDashlet extends Dashlet {
         public class TopLevelResourceLoader extends ListBoxCallback {
             public TopLevelResourceLoader(ListBox listBox) {
                 super(GraphDashlet.this, listBox);
+                setEmptyListItem("No nodes found", "");
             }
 
             public void load(SurveillanceSet surveillanceSet) {
@@ -121,6 +122,7 @@ public class GraphDashlet extends Dashlet {
         public class ChildResourceLoader extends ListBoxCallback {
             public ChildResourceLoader(ListBox listBox) {
                 super(GraphDashlet.this, listBox);
+                setNullListItem("No parent resource", "");
                 setEmptyListItem("Parent resource has no child resources--parent resource selected", "");
             }
 
@@ -161,6 +163,7 @@ public class GraphDashlet extends Dashlet {
         public class PrefabGraphLoader extends ListBoxCallback {
             public PrefabGraphLoader(ListBox listBox) {
                 super(GraphDashlet.this, listBox);
+                setNullListItem("Nothing to graph", "");
                 setEmptyListItem("There are no graphs to display for this resource", "");
             }
 
