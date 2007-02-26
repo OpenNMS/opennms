@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import java.net.InetAddress;
+
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 
@@ -70,6 +72,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @see IpRouteTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  */
+
 public final class IpRouteTableEntry extends SnmpTableEntry
 {
 	// Lookup strings for specific table entries
@@ -276,5 +279,82 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 	public IpRouteTableEntry( )
 	{
 		super(ms_elemList);
+	}
+	
+	 public InetAddress getIpRouteDest() {
+		 return getIPAddress(IpRouteTableEntry.IP_ROUTE_DEST); 
+	 }
+
+	public int getIpRouteIfIndex() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
+		if (val == null ) return -1;
+		return val;
+	}
+	
+	public int getIpRouteMetric1() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
+		if (val == null ) return -1;
+		return val;
+	}
+
+	public int getIpRouteMetric2() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC2);
+		if (val == null ) return -1;
+		return val;
+		
+	}
+
+	public int getIpRouteMetric3() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC3);
+		if (val == null ) return -1;
+		return val;
+
+	}
+
+	public int getIpRouteMetric4() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC4);
+		if (val == null ) return -1;
+		return val;
+
+	}
+
+	public InetAddress getIpRouteNextHop() {
+		return getIPAddress(IpRouteTableEntry.IP_ROUTE_NXTHOP);
+	}
+
+	public int getIpRouteType() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
+		if (val == null ) return -1;
+		return val;
+		
+	}
+
+	public int getIpRouteProto() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
+		if (val == null ) return -1;
+		return val;
+		
+	}
+
+	public int getIpRouteAge() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_AGE);
+		if (val == null ) return -1;
+		return val;
+		
+	}
+
+	public InetAddress getIpRouteMask() {
+		return getIPAddress(IpRouteTableEntry.IP_ROUTE_MASK);
+	}
+
+	public int getIpRouteMetric5() {
+		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC5);
+		if (val == null ) return -1;
+		return val;
+
+	}
+
+	public String getIpRouteInfo() {
+		return getObjectID(IpRouteTableEntry.IP_ROUTE_INFO);
 	}
 }   

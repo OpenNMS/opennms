@@ -576,17 +576,32 @@ public class DbEventWriter implements Runnable {
 			while (ite3.hasNext()) {
 				IpRouteTableEntry ent = (IpRouteTableEntry) ite3.next();
 
-				Integer ifindex = ent.getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
+				int ifindex = ent.getIpRouteIfIndex();
 
-				if (ifindex == null || ifindex < 0) {
+				if (ifindex < 0) {
 					log.warn("store: Not valid ifindex" + ifindex 
 							+ " Skipping...");
 					continue;
 				}
 
-				InetAddress routedest = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_DEST);
-				InetAddress routemask = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_MASK);
-				InetAddress nexthop = ent.getIPAddress(IpRouteTableEntry.IP_ROUTE_NXTHOP);
+				InetAddress nexthop = ent.getIpRouteNextHop();
+
+				if (nexthop == null) {
+					log.warn("storeSnmpCollection: next hop null found skipping.");
+					continue;
+				}
+				
+				InetAddress routedest = ent.getIpRouteDest();
+				if (routedest == null) {
+					log.warn("storeSnmpCollection: route dest null found skipping.");
+					continue;
+				}
+				InetAddress routemask = ent.getIpRouteMask();
+				
+				if (routemask == null) {
+					log.warn("storeSnmpCollection: route dest null found skipping.");
+					continue;
+				}
 
 				if (log.isDebugEnabled()) {
 					log.debug("storeSnmpCollection: parsing routedest/routemask/nexthop: " 
@@ -596,38 +611,15 @@ public class DbEventWriter implements Runnable {
 					
 				}
 				
-				if (nexthop.isLoopbackAddress()) {
-					if (log.isInfoEnabled()) 
-						log.info("storeSnmpCollection: loopbackaddress found skipping.");
-					continue;
-				}
-				
-				if (nexthop.getHostAddress().equals("0.0.0.0")) {
-					if (log.isInfoEnabled()) 
-						log.info("storeSnmpCollection: broadcast address found skipping.");
-					continue;
-				}
-				
-				if (nexthop.isMulticastAddress()) {
-					if (log.isInfoEnabled()) 
-						log.info("storeSnmpCollection: multicast ddress found skipping.");
-					continue;
-				}
-				
-				Integer routemetric1 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
-				Integer routemetric2 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC2);
-				Integer routemetric3  =ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC3);
-				Integer routemetric4 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC4);
-				Integer routemetric5 = ent.getInt32(IpRouteTableEntry.IP_ROUTE_METRIC5);
-				Integer routetype = ent.getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
-				Integer routeproto = ent.getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
+
+				int routemetric1 = ent.getIpRouteMetric1();
 
 				/**
 				 *  FIXME: send routedest 0.0.0.0 to discoverylink  
 				 *  remeber that now nexthop 0.0.0.0 is not 
 				 *  parsed, anyway we should analize this case in link discovery
 				 *  so here is the place where you can have this info saved for
-				 * now is discarded. See DiscoveryLink for more details......
+				 *  now is discarded. See DiscoveryLink for more details......
 				 * 
 				**/
 				
@@ -649,12 +641,23 @@ public class DbEventWriter implements Runnable {
 				} else {
 					int snmpiftype = -2;
                     
-                    //Okay to autobox here, we checked for null
-					if (ifindex != null && ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
+					if (ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
 
 					if (snmpiftype == -1) {
 						log.warn("store: interface has wrong or null snmpiftype "
-								+ snmpiftype + " . Skip adding to DiscoverLink ");
+								+ snmpiftype + " . Skipping saving to discoverylink. ");
+					} else if (nexthop.isLoopbackAddress()) {
+						if (log.isInfoEnabled()) 
+							log.info("storeSnmpCollection: next hop loopbackaddress found. Skipping saving to discoverylink.");
+					} else if (nexthop.getHostAddress().equals("0.0.0.0")) {
+						if (log.isInfoEnabled()) 
+							log.info("storeSnmpCollection: next hop broadcast address found. Skipping saving to discoverylink.");
+					} else if (nexthop.isMulticastAddress()) {
+						if (log.isInfoEnabled()) 
+							log.info("storeSnmpCollection: next hop multicast address found. Skipping saving to discoverylink.");
+					} else if (routemetric1 < 0) {
+						if (log.isInfoEnabled()) 
+							log.info("storeSnmpCollection: route metric is invalid. Skipping saving to discoverylink.");
 					} else {
 						if (log.isDebugEnabled())
 							log.debug("store: interface has snmpiftype "
@@ -671,6 +674,13 @@ public class DbEventWriter implements Runnable {
 					}
 				}
 
+				int routemetric2 = ent.getIpRouteMetric2();
+				int routemetric3  =ent.getIpRouteMetric3();
+				int routemetric4 = ent.getIpRouteMetric4();
+				int routemetric5 = ent.getIpRouteMetric5();
+				int routetype = ent.getIpRouteType();
+				int routeproto = ent.getIpRouteProto();
+
 				// always save info to DB
 				DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry
 						.get(dbConn, nodeid, routedest.getHostAddress());
@@ -685,20 +695,13 @@ public class DbEventWriter implements Runnable {
 				iprouteInterfaceEntry.updateIfIndex(ifindex);
                 
                 //okay to autobox these since were checking for null
-				if (routemetric1 != null)
-					iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
-				if (routemetric2 != null)
-					iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
-				if (routemetric3 != null)
-					iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
-				if (routemetric4 != null)
-					iprouteInterfaceEntry.updateRouteMetric4(routemetric4);
-				if (routemetric5 != null)
-					iprouteInterfaceEntry.updateRouteMetric5(routemetric5);
-				if (routetype != null)
-					iprouteInterfaceEntry.updateRouteType(routetype);
-				if (routeproto != null)
-					iprouteInterfaceEntry.updateRouteProto(routeproto);
+				iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
+				iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
+				iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
+				iprouteInterfaceEntry.updateRouteMetric4(routemetric4);
+				iprouteInterfaceEntry.updateRouteMetric5(routemetric5);
+				iprouteInterfaceEntry.updateRouteType(routetype);
+				iprouteInterfaceEntry.updateRouteProto(routeproto);
 				iprouteInterfaceEntry
 						.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
 				iprouteInterfaceEntry.set_lastpolltime(now);
