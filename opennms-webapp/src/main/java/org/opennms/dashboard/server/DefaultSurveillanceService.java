@@ -285,6 +285,10 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     public String[][] getChildResources(String id) {
         OnmsResource parentResource = m_resourceDao.getResourceById(id);
+        if (parentResource == null) {
+            return null;
+        }
+        
         List<OnmsResource> resources = parentResource.getChildResources();
         
         List<String[]> labels = new ArrayList<String[]>(resources.size());
@@ -297,6 +301,10 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     public String[][] getPrefabGraphs(String id) {
         OnmsResource resource = m_resourceDao.getResourceById(id);
+        if (resource == null) {
+            return null;
+        }
+        
         PrefabGraph[] graphs = m_graphDao.getPrefabGraphsForResource(resource);
         
         List<String[]> labels = new ArrayList<String[]>(graphs.length);
