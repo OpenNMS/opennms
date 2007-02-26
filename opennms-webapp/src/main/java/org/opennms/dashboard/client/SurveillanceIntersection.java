@@ -38,6 +38,10 @@ public class SurveillanceIntersection extends SurveillanceSet implements IsSeria
     public String toString() {
         return m_rowGroup.getLabel() + " X " + m_columnGroup.getLabel();
     }
+
+    public void visit(Visitor v) {
+        v.visitIntersection(m_rowGroup, m_columnGroup);
+    }
     
     
 

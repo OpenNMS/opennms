@@ -117,7 +117,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
             
         };
 
-        getSurveillanceService().getNodeNames(cb);
+        getSurveillanceService().getNodeNames(null, cb);
 
         m_nodeStatus = nodeStatus;
         return m_nodeStatus;
