@@ -1,7 +1,9 @@
 package org.opennms.dashboard.server;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.IntegerType;
@@ -32,9 +34,27 @@ public class CriteriaAddingVisitor implements Visitor {
     }
 
     public void visitAll() {
-        // Add a set of restrictions that will match nothing 
-        m_criteria.add(Restrictions.eq("node.id", 1));
-        m_criteria.add(Restrictions.ne("node.id", 1));
+        View view = m_surveillanceViewConfigDao.getDefaultView();
+
+        List<Category> columnCategories = new ArrayList<Category>();
+        List<Category> rowCategories = new ArrayList<Category>();
+        
+        List<ColumnDef> columnDefs = getColumnDefs(view.getColumns());
+        for (ColumnDef columnDef : columnDefs) {
+            columnCategories.addAll(getCategories(columnDef));
+        }
+
+        List<RowDef> rowDefs = getRowDefs(view.getRows());
+        for (RowDef rowDef : rowDefs) {
+            rowCategories.addAll(getCategories(rowDef));
+        }
+        
+        Set<String> categoryNames = new HashSet<String>();
+        for (Category category : columnCategories) {
+            categoryNames.add(category.getName());
+        }
+        
+        addCriteriaForCategories(m_criteria, categoryNames.toArray(new String[categoryNames.size()]));
     }
 
     public void visitGroup(SurveillanceGroup group) {
