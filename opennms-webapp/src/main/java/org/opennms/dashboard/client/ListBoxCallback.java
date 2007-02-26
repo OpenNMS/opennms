@@ -12,6 +12,8 @@ public class ListBoxCallback implements AsyncCallback {
     private ListBox m_listBox;
     private String m_emptyListItemName = null;
     private String m_emptyListItemValue;
+    private String m_nullListItemName;
+    private String m_nullListItemValue;
     
     public ListBoxCallback(Dashlet dashlet, ListBox listBox) {
         m_dashlet = dashlet;
@@ -30,6 +32,11 @@ public class ListBoxCallback implements AsyncCallback {
         return m_direction;
     }
     
+    public void setNullListItem(String name, String value) {
+        m_nullListItemName = name;
+        m_nullListItemValue = value;
+    }
+    
     public void setEmptyListItem(String name, String value) {
         m_emptyListItemName = name;
         m_emptyListItemValue = value;
@@ -38,7 +45,11 @@ public class ListBoxCallback implements AsyncCallback {
     public void onDataLoaded(String[][] resources) {
         m_listBox.clear();
         
-        if (resources.length == 0) {
+        if (resources == null) {
+            if (m_nullListItemName != null) {
+                m_listBox.addItem(m_nullListItemName, m_nullListItemValue);
+            }
+        } else  if (resources.length == 0) {
             if (m_emptyListItemName != null) {
                 m_listBox.addItem(m_emptyListItemName, m_emptyListItemValue);
             }
