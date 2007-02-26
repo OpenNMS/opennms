@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 
@@ -51,5 +52,8 @@ public interface ResourceDao {
     public List<OnmsResource> findNodeResources();
 
     public List<OnmsResource> findDomainResources();
+    
+    public List<OnmsResource> findTopLevelResources();
 
+    public OnmsResource getResourceForNode(OnmsNode node);
 }

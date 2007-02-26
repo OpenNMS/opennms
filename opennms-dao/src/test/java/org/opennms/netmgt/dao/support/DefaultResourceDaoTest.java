@@ -354,7 +354,6 @@ public class DefaultResourceDaoTest extends TestCase {
         nodes.add(node);
         
         expect(m_nodeDao.findAll()).andReturn(nodes);
-        
 
         File snmp = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(snmp, "1");
@@ -368,5 +367,82 @@ public class DefaultResourceDaoTest extends TestCase {
         assertNotNull("resource list should not be null", resources);
         assertEquals("resource list size", 1, resources.size());
     }
+    
+    public void testGetResourceForNode() {
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
 
+        m_easyMockUtils.replayAll();
+        OnmsResource resource = m_resourceDao.getResourceForNode(node);
+        m_easyMockUtils.verifyAll();
+        
+        assertNotNull("Resource should not be null", resource);
+    }
+    
+    public void testGetResourceForNodeWithNullOnmsNode() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("node argument must not be null"));
+        
+        m_easyMockUtils.replayAll();
+        try {
+             m_resourceDao.getResourceForNode(null);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        m_easyMockUtils.verifyAll();
+        ta.verifyAnticipated();
+    }
+
+    public void testGetResourceForIpInterface() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        node.addIpInterface(ip);
+        
+        File response = m_fileAnticipator.tempDir("response");
+        File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
+        m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
+
+        expect(m_nodeDao.get(1)).andReturn(ip.getNode()).times(2);
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(1)).andReturn(new ArrayList<LocationMonitorIpInterface>());
+
+        m_easyMockUtils.replayAll();
+        OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip);
+        m_easyMockUtils.verifyAll();
+        
+        assertNotNull("Resource should not be null", resource);
+    }
+    
+    public void testGetResourceForIpInterfaceWithNullOnmsIpInterface() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("ipInterface argument must not be null"));
+        
+        m_easyMockUtils.replayAll();
+        try {
+             m_resourceDao.getResourceForIpInterface(null);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        m_easyMockUtils.verifyAll();
+        ta.verifyAnticipated();
+    }
+    
+
+    public void testGetResourceForIpInterfaceWithNullNodeOnOnmsIpInterface() {
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("getNode() on ipInterface must not return null"));
+        
+        m_easyMockUtils.replayAll();
+        try {
+             m_resourceDao.getResourceForIpInterface(ip);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        m_easyMockUtils.verifyAll();
+        ta.verifyAnticipated();
+    }
 }
