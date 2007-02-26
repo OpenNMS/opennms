@@ -548,7 +548,7 @@ public class OutageModel extends Object {
             }
 
             if (includesRegainedTime) {
-                Timestamp regainedService = rs.getTimestamp("iflostservice");
+                Timestamp regainedService = rs.getTimestamp("ifregainedservice");
                 if (!rs.wasNull()) {
                     outage.regainedServiceTime = new Date(regainedService.getTime());
                 }
