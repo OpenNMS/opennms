@@ -127,7 +127,7 @@ public class AlarmDashlet extends Dashlet {
 
         private void setRow(int row, Alarm alarm) {
             m_alarmTable.setText(row, 0, alarm.getNodeLabel());
-            m_alarmTable.setText(row, 1, alarm.getDescrption());
+            m_alarmTable.setHTML(row, 1, alarm.getDescrption());
             m_alarmTable.setText(row, 2, ""+alarm.getCount());
             m_alarmTable.getRowFormatter().setStyleName(row, alarm.getSeverity());
         }
