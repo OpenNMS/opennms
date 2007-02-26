@@ -111,7 +111,7 @@ implements VlanCollectorEntry {
 	 * <P>The TABLE_OID is the object identifier that represents
 	 * the root of the table vtpVlanTable in the MIB forest.</P>
 	 */
-	public static final String TABLE_OID = " 	1.3.6.1.4.1.43.10.1.14.1.2.1"; // start of table (GETNEXT)
+	public static final String TABLE_OID = " 1.3.6.1.4.1.43.10.1.14.1.2.1"; // start of table (GETNEXT)
 
 	/**
 	 * <P>The class constructor used to initialize the
