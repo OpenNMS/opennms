@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.Assert;
 
 /**
  * Encapsulates all SNMP performance reporting for the web user interface.
@@ -368,9 +370,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             throw new ObjectRetrievalFailureException(OnmsNode.class, resource, "Top-level resource of resource type node could not be found: " + resource, null);
         }
 
-        // FIXME check that we actually have data for this resource
-        
-        return m_nodeResourceType.createChildResource(node);
+        return getResourceForNode(node);
     }
 
     protected OnmsResource getDomainEntityResource(String domain) {
@@ -475,6 +475,41 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);
         }
+    }
+
+    public OnmsResource getResourceForNode(OnmsNode node) {
+        Assert.notNull(node, "node argument must not be null");
+        
+        // FIXME check that we actually have data for this resource
+        
+        return m_nodeResourceType.createChildResource(node);
+    }
+    
+    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {
+        Assert.notNull(ipInterface, "ipInterface argument must not be null");
+        
+        Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
+        OnmsResource nodeResource = getResourceForNode(ipInterface.getNode());
+        List<OnmsResource> childResources = nodeResource.getChildResources();
+
+        for (OnmsResource childResource : childResources) {
+            if (!"responseTime".equals(childResource.getResourceType().getName())) {
+                continue;
+            }
+            
+            if (ipInterface.getIpAddress().equals(childResource.getName())) {
+                return childResource;
+            }
+        }
+
+        return null;
+    }
+
+    public List<OnmsResource> findTopLevelResources() {
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
+        resources.addAll(findNodeResources());
+        resources.addAll(findDomainResources());
+        return resources;
     }
 
 }
