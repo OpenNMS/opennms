@@ -95,7 +95,7 @@ public class GraphDashlet extends Dashlet {
 
             public void load(SurveillanceSet surveillanceSet) {
                 setStatus("Loading...");
-                m_surveillanceService.getResources(this);
+                m_surveillanceService.getResources(surveillanceSet, this);
             }
 
             public void onDataLoaded(String[][] resources) {

@@ -7,20 +7,24 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.hibernate.criterion.Order;
 import org.opennms.dashboard.client.Alarm;
 import org.opennms.dashboard.client.SurveillanceData;
 import org.opennms.dashboard.client.SurveillanceGroup;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
+import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -31,6 +35,8 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
+    private org.opennms.web.svclayer.SurveillanceService m_webSurveillanceService;
+    private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
 
     private int m_count = 0;
     private Timer m_timer = new Timer();
@@ -38,7 +44,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private Random m_random = new Random();
     
     private SurveillanceData m_data;
-    private org.opennms.web.svclayer.SurveillanceService m_webSurveillanceService;
+    private CategoryDao m_categoryDao;
 
     
     public SurveillanceData getSurveillanceData() {
@@ -70,6 +76,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
             SurveillanceGroup columnGroup = new SurveillanceGroup();
             columnGroup.setId(columnHeader.getContent().toString());
             columnGroup.setLabel(columnHeader.getContent().toString());
+            columnGroup.setColumn(true);
             columnGroups.add(columnGroup);
         }
         data.setColumnGroups(columnGroups.toArray(new SurveillanceGroup[columnGroups.size()]));
@@ -191,7 +198,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         }
     }
 
-    public String[] getNodeNames() {
+    public String[] getNodeNames(SurveillanceSet set) {
 
         List<OnmsNode> nodes = m_nodeDao.findAll();
 
@@ -204,8 +211,13 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     }
 
-    public String[][] getResources() {
-        List<OnmsNode> nodes = m_nodeDao.findAll();
+    public String[][] getResources(SurveillanceSet set) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
+        addCriteriaForSurveillanceSet(criteria, set);
+        criteria.addOrder(Order.asc("node.label"));
+        
+        //List<OnmsNode> nodes = m_nodeDao.findAll();
+        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
         
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         for (OnmsNode node : nodes) {
@@ -223,6 +235,15 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return labels.toArray(new String[labels.size()][]);
     }
     
+
+    private void addCriteriaForSurveillanceSet(OnmsCriteria criteria, SurveillanceSet set) {
+        CriteriaAddingVisitor visitor = new CriteriaAddingVisitor(criteria);
+        visitor.setSurveillanceViewConfigDao(m_surveillanceViewConfigDao);
+        visitor.setCategoryDao(m_categoryDao);
+
+        set.visit(visitor);
+    }
+
 
     public String[][] getChildResources(String id) {
         OnmsResource parentResource = m_resourceDao.getResourceById(id);
@@ -252,7 +273,9 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
         Assert.state(m_resourceDao != null, "resourceDao property must be set and cannot be null");
         Assert.state(m_graphDao != null, "graphDao property must be set and cannot be null");
-        Assert.state(m_webSurveillanceService != null, "m_webSurveillanceService property must be set and cannot be null");
+        Assert.state(m_webSurveillanceService != null, "webSurveillanceService property must be set and cannot be null");
+        Assert.state(m_surveillanceViewConfigDao != null, "surveillanceViewConfigDao property must be set and cannot be null");
+        Assert.state(m_categoryDao != null, "categoryDao property must be set and cannot be null");
     }
 
     public void setNodeDao(NodeDao nodeDao) {
@@ -267,14 +290,32 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         m_graphDao = graphDao;
     }
 
-
     public org.opennms.web.svclayer.SurveillanceService getWebSurveillanceService() {
         return m_webSurveillanceService;
     }
 
-
     public void setWebSurveillanceService(org.opennms.web.svclayer.SurveillanceService webSurveillanceService) {
         m_webSurveillanceService = webSurveillanceService;
+    }
+
+
+    public SurveillanceViewConfigDao getSurveillanceViewConfigDao() {
+        return m_surveillanceViewConfigDao;
+    }
+
+
+    public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceViewConfigDao) {
+        m_surveillanceViewConfigDao = surveillanceViewConfigDao;
+    }
+
+
+    public CategoryDao getCategoryDao() {
+        return m_categoryDao;
+    }
+
+
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
     }
 
 

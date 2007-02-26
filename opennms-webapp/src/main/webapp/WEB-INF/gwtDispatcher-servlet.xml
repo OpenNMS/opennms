@@ -26,6 +26,8 @@
     <property name="resourceDao" ref="resourceDao" />
     <property name="graphDao" ref="graphDao" />
     <property name="webSurveillanceService" ref="surveillanceService" />
+    <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao" />
+    <property name="categoryDao" ref="categoryDao" />
   </bean>
   
 </beans>
