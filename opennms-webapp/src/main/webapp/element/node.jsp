@@ -232,7 +232,7 @@
 
         <% if (asset != null && asset.getBuilding() != null && asset.getBuilding().length() > 0) { %>
           <li>
-            <a href="siteStatusView.htm?statusSite=<%=asset.getBuilding()%>">Site Status</a>
+            <a href="siteStatusView.htm?statusSite=<%=Util.encode(asset.getBuilding())%>">Site Status</a>
           </li>
         <% } %>
         
