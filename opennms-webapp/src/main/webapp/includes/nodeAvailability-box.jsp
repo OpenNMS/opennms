@@ -52,60 +52,81 @@
 	session="true"
 	import="org.opennms.web.category.*,
 		org.opennms.web.element.*,
-		java.util.*
+		java.util.*,
+        org.springframework.util.Assert,
+        org.opennms.web.MissingParameterException
 	"
 %>
 
 
 <%!
-    protected CategoryModel model;
+    private CategoryModel m_model;
     
-    protected double normalThreshold;
-    protected double warningThreshold; 
+    private double m_normalThreshold;
+	private double m_warningThreshold;
+  
+    private ServiceNameComparator m_serviceComparator = new ServiceNameComparator();
+    private InterfaceIpAddressComparator m_interfaceComparator = new InterfaceIpAddressComparator();
+    
+    public Interface[] getInterfaces(int nodeId) throws java.sql.SQLException {
+        Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId);
+        
+        if (intfs != null) {
+            Arrays.sort(intfs, m_interfaceComparator); 
+        }
+
+        return intfs;
+    }
+
+    public Service[] getServices(Interface intf) throws java.sql.SQLException {
+        Assert.notNull(intf, "intf argument cannot be null");
+        
+        Service[] svcs = NetworkElementFactory.getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
+        
+        if (svcs != null) {
+            Arrays.sort(svcs, m_serviceComparator); 
+        }
+        
+        return svcs;
+    }
     
     public void init() throws ServletException {
         try {
-            this.model = CategoryModel.getInstance();
-            
-            this.normalThreshold = this.model.getCategoryNormalThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
-            this.warningThreshold = this.model.getCategoryWarningThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
+            m_model = CategoryModel.getInstance();
+        } catch (Exception e) {
+            throw new ServletException("Could not instantiate the CategoryModel: " + e, e);
         }
-        catch( java.io.IOException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.MarshalException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.ValidationException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }        
+        
+        m_normalThreshold = m_model.getCategoryNormalThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
+        m_warningThreshold = m_model.getCategoryWarningThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
+
     }
 %>
 
 <%
-    String nodeIdString = request.getParameter( "node" );
+    String nodeIdString = request.getParameter("node");
 
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node");
     }
 
-    int nodeId = Integer.parseInt( nodeIdString );
+    int nodeId = Integer.parseInt(nodeIdString);
 
     //get the database node info
-    Node node_db = NetworkElementFactory.getNode( nodeId );
-    if( node_db == null ) {
+    Node node_db = NetworkElementFactory.getNode(nodeId);
+    if (node_db == null) {
         //handle this WAY better, very awful
-        throw new ServletException( "No such node in database" );
+        throw new ServletException("No such node in database");
     }
 
     //get the child interfaces
     Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
-    if( intfs == null ) { 
+    if (intfs == null) { 
         intfs = new Interface[0]; 
     }
 
     //get the node's overall service level availiability for the last 24 hrs
-    double overallRtcValue = this.model.getNodeAvailability(nodeId);
+    double overallRtcValue = m_model.getNodeAvailability(nodeId);
 
     String availClass;
     String availValue;
@@ -122,7 +143,7 @@
     availClass = "Indeterminate";
     availValue = "Unmanaged";
   } else {
-    availClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
+    availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, overallRtcValue);
     availValue = CategoryUtil.formatValue(overallRtcValue) + "%";
   }
 %>
@@ -133,7 +154,7 @@
   </tr>
 
 <%  if (overallRtcValue >= 0) { %>
-       <% Interface[] availIntfs = this.getInterfaces(nodeId); %>
+       <% Interface[] availIntfs = getInterfaces(nodeId); %>
            
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
           <% Interface intf = availIntfs[i]; %>
@@ -141,8 +162,8 @@
                
           <% if( intf.isManaged() ) { %>
             <%-- interface is managed --%>
-            <% double intfValue = this.model.getInterfaceAvailability(nodeId, ipAddr); %>                              
-            <% Service[] svcs = this.getServices(intf); %>
+            <% double intfValue = m_model.getInterfaceAvailability(nodeId, ipAddr); %>                              
+            <% Service[] svcs = getServices(intf); %>
     
             <tr class="CellStatus">
 	      <%
@@ -150,7 +171,7 @@
                   availClass = "Indeterminate";
                   availValue = "Not Monitored";
                 } else {
-                  availClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, intfValue);
+                  availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, intfValue);
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
 	      %>
@@ -164,8 +185,8 @@
                 Service service = svcs[j];
 
                 if (service.isManaged()) {
-                  double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
-                  availClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
+                  double svcValue = m_model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+                  availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, svcValue);
                   availValue = CategoryUtil.formatValue(svcValue) + "%";
                 } else {
                   availClass = "Indeterminate";
@@ -197,69 +218,3 @@
 
 </div>
 
-<%!    
-    /** Convenient anonymous class for sorting Interface objects by IP address. */
-    protected Comparator interfaceComparator = new Comparator() {
-        public int compare(Object o1, Object o2) {
-            //for brevity's sake assume they're both Interfaces
-            Interface i1 = (Interface)o1;
-            Interface i2 = (Interface)o2;
-            
-            return i1.getIpAddress().compareTo(i2.getIpAddress());
-        }
-        
-        public boolean equals(Object o1, Object o2) {
-            //for brevity's sake assume they're both Interfaces
-            Interface i1 = (Interface)o1;
-            Interface i2 = (Interface)o2;
-            
-            return i1.getIpAddress().equals(i2.getIpAddress());
-        }        
-    };
-    
-    
-    /** Convenient anonymous class for sorting Service objects by service name. */
-    protected Comparator serviceComparator = new Comparator() {
-        public int compare(Object o1, Object o2) {
-            //for brevity's sake assume they're both Services
-            Service s1 = (Service)o1;
-            Service s2 = (Service)o2;
-            
-            return s1.getServiceName().compareTo(s2.getServiceName());
-        }
-        
-        public boolean equals(Object o1, Object o2) {
-            //for brevity's sake assume they're both Services
-            Service s1 = (Service)o1;
-            Service s2 = (Service)o2;
-            
-            return s1.getServiceName().equals(s2.getServiceName());
-        }        
-    };
-
-    
-    public Interface[] getInterfaces(int nodeId) throws java.sql.SQLException {
-        Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId);
-        
-        if( intfs != null ) {
-            Arrays.sort(intfs, this.interfaceComparator); 
-        }
-
-        return intfs;
-    }
-
-    
-    public Service[] getServices(Interface intf) throws java.sql.SQLException {
-        if( intf == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
-        }
-        
-        Service[] svcs = NetworkElementFactory.getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
-        
-        if( svcs != null ) {
-            Arrays.sort(svcs, this.serviceComparator); 
-        }
-        
-        return svcs;
-    }
-%>
