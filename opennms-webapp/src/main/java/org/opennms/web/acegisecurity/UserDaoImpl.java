@@ -74,9 +74,9 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class UserDaoImpl implements UserDao, InitializingBean {
-    private static final UpperCaseMd5PasswordEncoder s_encoder = new UpperCaseMd5PasswordEncoder();
+    private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
 
-    private static final GrantedAuthority s_roleUser = new GrantedAuthorityImpl(Authentication.USER_ROLE);
+    private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.USER_ROLE);
 
     private String m_usersConfigurationFile;
 	
@@ -186,7 +186,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
             org.opennms.web.acegisecurity.User newUser = new org.opennms.web.acegisecurity.User();
             newUser.setUsername(username);
-            newUser.setPassword(s_encoder.encodePassword(password, null));
+            newUser.setPassword(PASSWORD_ENCODER.encodePassword(password, null));
 
             magicUsers.put(username, newUser);
         }
@@ -248,7 +248,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         
         List<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
         if (addToDefaultGroup) {
-            authorities.add(s_roleUser);
+            authorities.add(ROLE_USER);
         }
 
         for (String role : roleList) {
@@ -262,7 +262,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         if (m_roles.containsKey(user)) {
             return m_roles.get(user);
         } else {
-            return new GrantedAuthority[] { s_roleUser };
+            return new GrantedAuthority[] { ROLE_USER };
         }
     }
 
