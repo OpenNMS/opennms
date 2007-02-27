@@ -132,10 +132,14 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     }
 
     public void error(Throwable e) {
+        error(e.toString());
+    }
+    
+    public void error(String err) {
         final DialogBox dialog = new DialogBox();
 
         VerticalPanel panel = new VerticalPanel();
-        HTMLPanel html = new HTMLPanel(e.toString());
+        HTMLPanel html = new HTMLPanel(err);
         panel.add(html);
         Button ok = new Button("OK");
         panel.add(ok);

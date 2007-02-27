@@ -23,12 +23,12 @@ public class SurveillanceDashlet extends Dashlet {
         }
 
         public void load() {
-            setStatus("Loading...");
+            loading();
             m_surveillanceService.getSurveillanceData(this);
         }
         
         public void onFailure(Throwable caught) {
-            setStatus("Error");
+            loadError(caught);
             error(caught);
         }
 
@@ -46,7 +46,7 @@ public class SurveillanceDashlet extends Dashlet {
                 };
                 timer.schedule(2000);
             } else {
-                setStatus("");
+                complete();
             }
         }
 
@@ -87,6 +87,7 @@ public class SurveillanceDashlet extends Dashlet {
             m_grid.resize(data.getRowCount()+1, data.getColumnCount()+1);
             
             // set row 0 to be column headings
+            m_grid.getRowFormatter().setStyleName(0, "header");
             for(int col = 0; col < data.getColumnCount(); col++) {
                 m_grid.setText(0, col+1, data.getColumnHeading(col));
             }

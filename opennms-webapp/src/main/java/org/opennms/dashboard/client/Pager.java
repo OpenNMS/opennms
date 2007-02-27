@@ -19,6 +19,7 @@ public class Pager extends Composite {
         
         PageControl(String text, int direction) {
             m_label = new Label(text);
+            m_label.addStyleName(direction > 0 ? "pagerRight" : "pagerLeft");
             m_direction = direction;
             
             m_label.addClickListener(new ClickListener() {
@@ -37,13 +38,15 @@ public class Pager extends Composite {
     
 
     private DockPanel m_panel = new DockPanel();
-    private Label m_label = new Label();;
+    private Label m_label = new Label();
     private Pageable m_pageable;
     
     public Pager(Pageable pageable) {
         
         m_pageable = pageable;
+        m_panel.addStyleName("pager");
         m_panel.add(createLeftPageControl(), DockPanel.WEST);
+        m_label.addStyleName("pagerText");
         m_panel.add(m_label, DockPanel.CENTER);
         m_panel.add(createRightPageControl(), DockPanel.EAST);
         

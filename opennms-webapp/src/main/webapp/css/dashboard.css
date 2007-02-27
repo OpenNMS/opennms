@@ -15,7 +15,16 @@ table.dashboard table {
 
 table.dashboard table > tbody > tr > td {
 	padding: 0;
-	margin: 0
+	margin: 0;
+}
+
+table.dashboard table > tbody > tr > td.divider {
+	border-top-width: 2px;
+	padding: 4px 5px;
+}
+
+table.dashboard table > tbody > tr > td.bright {
+	padding-left: 20px;
 }
 
 .gwt-Label {
@@ -23,11 +32,37 @@ table.dashboard table > tbody > tr > td {
 }
 
 .dashletLoader {
+	padding: 0px 5px;
+}
+
+.pagerLeft {
+	text-align: left;
+}
+
+.pagerText {
+	text-align: center;
+}
+
+.pagerRight {
 	text-align: right;
 }
 
+table.pager td {
+	border-style: none;
+}
+
+tr.header td {
+	line-height: normal;
+	background-color:#444444;
+	border:1px solid #999999;
+	color:#FFFFFF;
+	font-weight:bold;
+	padding:4px 5px;
+	text-align:left;
+}
+
 table.dashletTitlePanel td {
-	background-imabackground-color:#366903;
+	background-color:#366903;
     background-image:url(../images/headingbg.png);
     background-position:center;
     background-repeat:repeat-x;

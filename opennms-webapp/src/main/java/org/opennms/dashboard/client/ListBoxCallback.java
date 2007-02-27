@@ -7,7 +7,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ListBox;
 
 public class ListBoxCallback implements AsyncCallback {
-    private Dashlet m_dashlet;
+    private DashletLoader m_dashletLoader;
     private int m_direction = 1;
     private ListBox m_listBox;
     private String m_emptyListItemName = null;
@@ -15,8 +15,8 @@ public class ListBoxCallback implements AsyncCallback {
     private String m_nullListItemName;
     private String m_nullListItemValue;
     
-    public ListBoxCallback(Dashlet dashlet, ListBox listBox) {
-        m_dashlet = dashlet;
+    public ListBoxCallback(DashletLoader dashlet, ListBox listBox) {
+        m_dashletLoader = dashlet;
         m_listBox = listBox;
     }
     
@@ -66,12 +66,11 @@ public class ListBoxCallback implements AsyncCallback {
             m_listBox.setSelectedIndex(0);
         }
 
-        m_dashlet.setStatus("");
+        m_dashletLoader.complete();
     }
     
     public void onFailure(Throwable caught) {
-        m_dashlet.setStatus("Error");
-        m_dashlet.error(caught);
+        m_dashletLoader.loadError(caught);
     }
 
     public void onSuccess(Object result) {
