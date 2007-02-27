@@ -32,13 +32,13 @@ public class AlarmDashlet extends Dashlet {
         private SurveillanceServiceAsync m_suveillanceService;
         
         public void load(final SurveillanceSet surveillanceSet) {
-            setStatus("Loading...");
+            loading();
             m_suveillanceService.getAlarmsForSet(surveillanceSet, this);
         }
         
         public void onDataLoaded(Alarm[] alarms) {
             m_view.setAlarms(alarms);
-            setStatus("");
+            complete();
         }
 
         public void setSurveillanceService(SurveillanceServiceAsync svc) {
@@ -46,7 +46,7 @@ public class AlarmDashlet extends Dashlet {
         }
 
         public void onFailure(Throwable caught) {
-            setStatus("Error");
+            loadError(caught);
             error(caught);
         }
 
@@ -102,6 +102,8 @@ public class AlarmDashlet extends Dashlet {
             if (currStyle != null) {
                 m_alarmTable.getRowFormatter().removeStyleName(row, currStyle);
             }
+            formatCells(row);
+
         }
 
         public void setAlarms(Alarm[] alarms) {
@@ -130,6 +132,15 @@ public class AlarmDashlet extends Dashlet {
             m_alarmTable.setHTML(row, 1, alarm.getDescrption());
             m_alarmTable.setText(row, 2, ""+alarm.getCount());
             m_alarmTable.getRowFormatter().setStyleName(row, alarm.getSeverity());
+            formatCells(row);
+        }
+        
+        private void formatCells(int row) {
+            m_alarmTable.getCellFormatter().setStyleName(row, 0, "divider");
+            m_alarmTable.getCellFormatter().setStyleName(row, 1, "divider");
+            m_alarmTable.getCellFormatter().addStyleName(row, 1, "bright");
+            m_alarmTable.getCellFormatter().setStyleName(row, 2, "divider");
+            
         }
 
         public void setRows(int rows) {

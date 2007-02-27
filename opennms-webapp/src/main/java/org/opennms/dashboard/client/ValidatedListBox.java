@@ -31,7 +31,7 @@ public class ValidatedListBox extends ListBox {
     public String getSelectedValue() {
         int index = getSelectedIndex();
         if (index < 0 || index >= getItemCount()) {
-            m_dashlet.setStatus("Error: list box index " + index + " is out of range");
+            m_dashlet.error("Error: list box index " + index + " is out of range");
             return null;
         }
         

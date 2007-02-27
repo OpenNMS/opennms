@@ -90,12 +90,12 @@ public class GraphDashlet extends Dashlet {
         
         public class TopLevelResourceLoader extends ListBoxCallback {
             public TopLevelResourceLoader(ListBox listBox) {
-                super(GraphDashlet.this, listBox);
+                super(m_loader, listBox);
                 setEmptyListItem("No nodes found", "");
             }
 
             public void load(SurveillanceSet surveillanceSet) {
-                setStatus("Loading...");
+                m_loader.loading();
                 m_surveillanceService.getResources(surveillanceSet, this);
             }
 
@@ -121,7 +121,7 @@ public class GraphDashlet extends Dashlet {
 
         public class ChildResourceLoader extends ListBoxCallback {
             public ChildResourceLoader(ListBox listBox) {
-                super(GraphDashlet.this, listBox);
+                super(m_loader, listBox);
                 setNullListItem("No parent resource", "");
                 setEmptyListItem("Parent resource has no child resources--parent resource selected", "");
             }
@@ -129,7 +129,7 @@ public class GraphDashlet extends Dashlet {
             public void load(String resourceId, int direction) {
                 setDirection(direction);
 
-                setStatus("Loading data for resource...");
+                m_loader.loading("Loading data for resource...");
                 m_surveillanceService.getChildResources(resourceId, this);
             }
 
@@ -162,7 +162,7 @@ public class GraphDashlet extends Dashlet {
 
         public class PrefabGraphLoader extends ListBoxCallback {
             public PrefabGraphLoader(ListBox listBox) {
-                super(GraphDashlet.this, listBox);
+                super(m_loader, listBox);
                 setNullListItem("Nothing to graph", "");
                 setEmptyListItem("There are no graphs to display for this resource", "");
             }
@@ -170,7 +170,7 @@ public class GraphDashlet extends Dashlet {
             public void load(String resourceId, int direction) {
                 setDirection(direction);
 
-                setStatus("Loading data for child resource...");
+                m_loader.loading("Loading data for child resource...");
                 m_surveillanceService.getPrefabGraphs(resourceId, this);
             }
 

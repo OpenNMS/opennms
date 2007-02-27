@@ -15,11 +15,16 @@ public abstract class Dashlet extends Composite {
         DashletTitle(String title, DashletLoader loader) {
             
             m_label.setText(title);
+            
 
             m_label.addStyleName("dashletTitle");
             m_panel.addStyleName("dashletTitlePanel");
             m_panel.add(m_label, DockPanel.WEST);
             m_panel.add(m_loader, DockPanel.EAST);
+
+            m_panel.setCellVerticalAlignment(m_loader, DockPanel.ALIGN_MIDDLE);
+            m_panel.setCellHorizontalAlignment(m_loader, DockPanel.ALIGN_RIGHT);
+
             initWidget(m_panel);
         }
         
@@ -46,10 +51,6 @@ public abstract class Dashlet extends Composite {
         m_loader = loader;
     }
 
-    public void setStatus(String status) {
-        m_loader.setStatus(status);
-    }
-
     protected void onLoad() {
         if (m_loader == null) {
             m_loader = new DashletLoader();
@@ -65,6 +66,10 @@ public abstract class Dashlet extends Composite {
     
     protected void error(Throwable caught) {
         m_dashboard.error(caught);
+    }
+
+    public void error(String err) {
+        m_dashboard.error(err);
     }
     
     
