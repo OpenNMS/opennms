@@ -15,6 +15,9 @@ public abstract class Dashlet extends Composite {
         DashletTitle(String title, DashletLoader loader) {
             
             m_label.setText(title);
+
+            m_label.addStyleName("dashletTitle");
+            m_panel.addStyleName("dashletTitlePanel");
             m_panel.add(m_label, DockPanel.WEST);
             m_panel.add(m_loader, DockPanel.EAST);
             initWidget(m_panel);
@@ -52,6 +55,9 @@ public abstract class Dashlet extends Composite {
             m_loader = new DashletLoader();
         }
         m_titleWidget = new DashletTitle(m_title, m_loader);
+        
+        m_panel.setStyleName("dashletPanel");
+        
         m_panel.add(m_titleWidget);
         m_panel.add(m_view);
         

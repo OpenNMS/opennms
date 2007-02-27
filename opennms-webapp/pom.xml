@@ -99,6 +99,7 @@
         <artifactId>tomcat-maven-plugin</artifactId>
         <configuration>
           <path>/${artifactId}</path>
+          <port>${tomcat.port}</port>
         </configuration>
       </plugin>
       <plugin>

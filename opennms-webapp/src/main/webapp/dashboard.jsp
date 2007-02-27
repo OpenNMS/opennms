@@ -48,20 +48,30 @@
 	    <meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />
 	  </jsp:attribute>
 	</jsp:param>
+    <jsp:param name="meta">
+	  <jsp:attribute name="value">
+        <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
+	  </jsp:attribute>
+	</jsp:param>
+	
 </jsp:include>
 
 <script type="text/javascript" language='javascript' src='gwt.js'></script>
-<table style="normal" cellspacing="5" width="100%">
+<table class="dashboard" cellspacing="5" width="100%">
   <tbody>
     <tr>
-      <td id="surveillanceView"></td>
-      <td colspan="2" id="alarms"></td>
-      <td id="notifications"></td>
+      <td class="dashletCell" colspan="2" id="surveillanceView"></td>
     </tr>
     <tr>
-      <td id="outages"></td>
-      <td id="nodeStatus"></td>
-      <td colspan="2" id="graphs"></td>
+      <td class="dashletCell" colspan="2" id="alarms"></td>
+    </tr>
+    <tr>
+      <td class="dashletCell" id="graphs"></td>
+      <td class="dashletCell" id="notifications"></td>
+    </tr>
+    <tr>
+      <td class="dashletCell" id="outages"></td>
+      <td class="dashletCell" id="nodeStatus"></td>
     </tr>
   </tbody>
 </table>

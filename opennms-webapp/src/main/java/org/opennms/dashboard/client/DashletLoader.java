@@ -8,6 +8,7 @@ public class DashletLoader extends Composite {
     Label m_label = new Label();
     
     DashletLoader() {
+        m_label.addStyleName("dashletLoader");
         initWidget(m_label);
     }
 
