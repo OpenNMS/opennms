@@ -1,0 +1,42 @@
+table.dashboard {
+	border-collapse: separate;
+}
+
+td.dashletCell {
+	padding: 0;
+	margin: 0;
+}
+
+
+table.dashboard table {
+	margin: 0;
+	border-collapse: collapse;
+}
+
+table.dashboard table > tbody > tr > td {
+	padding: 0;
+	margin: 0
+}
+
+.gwt-Label {
+	padding: 4px 5px;
+}
+
+.dashletLoader {
+	text-align: right;
+}
+
+table.dashletTitlePanel td {
+	background-imabackground-color:#366903;
+    background-image:url(../images/headingbg.png);
+    background-position:center;
+    background-repeat:repeat-x;
+    border-style:none;
+    color:#FFFFFF;
+    margin-bottom:0pt;
+    margin-top:7px;
+    padding:6px;
+    line-height: normal;
+    font-weight: bold;
+}
+
