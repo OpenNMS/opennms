@@ -19,22 +19,22 @@ import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-public class CriteriaAddingVisitor implements Visitor {
+public class CriteriaAddingVisitor implements Visitor, InitializingBean {
     
     private OnmsCriteria m_criteria;
-    private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private CategoryDao m_categoryDao;
+    private View m_view;
 
     public CriteriaAddingVisitor(OnmsCriteria criteria) {
         m_criteria = criteria;
     }
 
     public void visitAll() {
-        View view = m_surveillanceViewConfigDao.getDefaultView();
+        View view = getView();
 
         List<Category> columnCategories = new ArrayList<Category>();
         List<Category> rowCategories = new ArrayList<Category>();
@@ -58,17 +58,19 @@ public class CriteriaAddingVisitor implements Visitor {
     }
 
     public void visitGroup(SurveillanceGroup group) {
-        addCriteriaForGroup(group);
+        View view = getView();
+
+        addCriteriaForGroup(group, view);
     }
     
     public void visitIntersection(SurveillanceGroup row, SurveillanceGroup column) {
-        addCriteriaForGroup(row);
-        addCriteriaForGroup(column);
+        View view = getView();
+
+        addCriteriaForGroup(row, view);
+        addCriteriaForGroup(column, view);
     }
 
-    private void addCriteriaForGroup(SurveillanceGroup group) {
-        View view = m_surveillanceViewConfigDao.getDefaultView();
-        
+    private void addCriteriaForGroup(SurveillanceGroup group, View view) {
         List<Category> categories = null;
         if (group.isColumn()) {
             List<ColumnDef> columnDefs = getColumnDefs(view.getColumns());
@@ -152,12 +154,22 @@ public class CriteriaAddingVisitor implements Visitor {
             criteria.add(Restrictions.sqlRestriction(sql, categoryIds.toArray(new Integer[categoryIds.size()]), types));
         }
     }
-    
-    public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceViewConfigDao) {
-        m_surveillanceViewConfigDao = surveillanceViewConfigDao;
+
+    public View getView() {
+        return m_view;
     }
+    
+    public void setView(View view) {
+        m_view = view;
+    }
+
     
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
+    }
+
+    public void afterPropertiesSet() {
+        Assert.state(m_view != null, "view property must be set");
+        Assert.state(m_categoryDao != null, "categoryDao property must be set");
     }
 }
