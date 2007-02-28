@@ -34,7 +34,6 @@ package org.opennms.test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -44,8 +43,8 @@ public class ThrowableAnticipator extends Assert {
     public final static String IGNORE_MESSAGE =
         "*** ThrowableAnticipator ignore Throwable.getMessage() ***";
     
-    private List m_anticipated;
-    private List m_unanticipated;
+    private List<Throwable> m_anticipated;
+    private List<Throwable> m_unanticipated;
     private boolean m_failFast;
 
     /**
@@ -68,8 +67,8 @@ public class ThrowableAnticipator extends Assert {
     }
     
     private void init() {
-        m_anticipated = new ArrayList();
-        m_unanticipated = new ArrayList();
+        m_anticipated = new ArrayList<Throwable>();
+        m_unanticipated = new ArrayList<Throwable>();
         m_failFast = true;
     }
    
@@ -98,8 +97,7 @@ public class ThrowableAnticipator extends Assert {
         
         boolean foundMatch = false;
 
-        for (Iterator i = m_anticipated.iterator(); i.hasNext(); ) {
-            Throwable our = (Throwable) i.next();
+        for (Throwable our : m_anticipated) {
             if (t.getClass().isAssignableFrom(our.getClass())) {
                 if (IGNORE_MESSAGE.equals(our.getMessage())
                         || (t.getMessage() == null && our.getMessage() == null)
@@ -199,11 +197,10 @@ public class ThrowableAnticipator extends Assert {
         return makeList(m_unanticipated, "Unanticipated Throwable: ", "\n");
     }
     
-    private StringBuffer makeList(List list, String before, String after) {
+    private StringBuffer makeList(List<Throwable> list, String before, String after) {
         StringBuffer output = new StringBuffer();
         
-        for (Iterator i = list.iterator(); i.hasNext(); ) {
-            Throwable t = (Throwable) i.next();
+        for (Throwable t : list) {
             output.append(before + t.toString() + after);
             StringWriter w = new StringWriter();
             PrintWriter pw = new PrintWriter(w);
