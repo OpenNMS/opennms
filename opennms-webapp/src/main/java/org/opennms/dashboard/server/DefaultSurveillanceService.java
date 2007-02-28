@@ -49,7 +49,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private CategoryDao m_categoryDao;
     private AlarmDao m_alarmDao;
     private GroupManager m_groupManager;
-
+    
     public SurveillanceData getSurveillanceData() {
         SurveillanceData data = new SurveillanceData();
 
