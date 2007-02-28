@@ -248,7 +248,7 @@ Comparable<OnmsMonitoredService> {
     @Transient
     public boolean isDown() {
         boolean down = true;
-        if (getStatus() != "A" || m_currentOutages.isEmpty()) {
+        if (!"A".equals(getStatus()) || m_currentOutages.isEmpty()) {
             return !down;
         }
 
