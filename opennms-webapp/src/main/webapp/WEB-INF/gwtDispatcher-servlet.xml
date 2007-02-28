@@ -29,6 +29,7 @@
     <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao" />
     <property name="categoryDao" ref="categoryDao" />
     <property name="alarmDao" ref="alarmDao" />
+    <property name="groupManager" ref="groupManager" />
   </bean>
   
 </beans>

@@ -1,26 +1,28 @@
 package org.opennms.dashboard.server;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
+import org.apache.log4j.Category;
 import org.hibernate.criterion.Order;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.dashboard.client.Alarm;
 import org.opennms.dashboard.client.SurveillanceData;
 import org.opennms.dashboard.client.SurveillanceGroup;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
@@ -43,38 +45,22 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private CategoryDao m_categoryDao;
     private AlarmDao m_alarmDao;
+    private GroupManager m_groupManager;
 
+    /*
     private int m_count = 0;
     private Timer m_timer = new Timer();
 
     private Random m_random = new Random();
     
     private SurveillanceData m_data;
+    */
 
     
     public SurveillanceData getSurveillanceData() {
-        /*
-        System.err.println("Request made!");
-        
-        if (m_data == null) {
-            System.err.println("Creating new data");
-            final SurveillanceData data = new SurveillanceData();
-            m_data = data;
-            
-            
-            
-        } else if (m_data.isComplete()) {
-            SurveillanceData data = m_data;
-            m_data = null;
-            return data;
-        }
-        
-        return m_data;
-        */
-
         SurveillanceData data = new SurveillanceData();
 
-        SimpleWebTable table = m_webSurveillanceService.createSurveillanceTable(null, new ProgressMonitor());
+        SimpleWebTable table = m_webSurveillanceService.createSurveillanceTable(getView().getName(), new ProgressMonitor());
         
         List<SurveillanceGroup> columnGroups = new ArrayList<SurveillanceGroup>();
         for (Cell columnHeader : table.getColumnHeaders().subList(1, table.getColumnHeaders().size())) {
@@ -276,10 +262,48 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     private void addCriteriaForSurveillanceSet(OnmsCriteria criteria, SurveillanceSet set) {
         CriteriaAddingVisitor visitor = new CriteriaAddingVisitor(criteria);
-        visitor.setSurveillanceViewConfigDao(m_surveillanceViewConfigDao);
+        visitor.setView(getView());
         visitor.setCategoryDao(m_categoryDao);
+        visitor.afterPropertiesSet();
 
         set.visit(visitor);
+    }
+
+    private View getView() {
+        String user = getUsername();
+        log().debug("Looking for surveillance view that matches user '" + user + "'");
+        
+        View userView = m_surveillanceViewConfigDao.getView(user);
+        if (userView != null) {
+            log().debug("Found surveillance view '" + userView.getName() + "' matching user name '" + user + "'");
+            return userView;
+        }
+        
+        List<Group> groups = GroupFactory.getInstance().findGroupsForUser(user);
+        for (Group group : groups) {
+            View groupView = m_surveillanceViewConfigDao.getView(group.getName());
+            if (groupView != null) {
+                log().debug("Found surveillance view '" + groupView.getName() + "' matching group '" + group.getName() + "' name for user '" + user + "'");
+                return groupView;
+            }
+        }
+        
+        log().debug("Did not find a surveillance view matching the user's user name or one of their group names.  Using the default view for user '" + user + "'");
+        return m_surveillanceViewConfigDao.getDefaultView();
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+
+    protected String getUsername() {
+        Object obj = SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
+        if (obj instanceof UserDetails) { 
+            return ((UserDetails)obj).getUsername(); 
+        } else { 
+            return obj.toString(); 
+        }
     }
 
 
@@ -323,6 +347,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_surveillanceViewConfigDao != null, "surveillanceViewConfigDao property must be set and cannot be null");
         Assert.state(m_categoryDao != null, "categoryDao property must be set and cannot be null");
         Assert.state(m_alarmDao != null, "alarmDao property must be set and cannot be null");
+        Assert.state(m_groupManager != null, "groupManager property must be set and cannot be null");
     }
 
     public void setNodeDao(NodeDao nodeDao) {
@@ -367,6 +392,14 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
+    }
+    
+    public GroupManager getGroupManager() {
+        return m_groupManager;
+    }
+    
+    public void setGroupManager(GroupManager groupManager) {
+        m_groupManager = groupManager;
     }
 
 }
