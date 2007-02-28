@@ -300,6 +300,10 @@
     <property name="resourceService" ref="resourceService"/>
   </bean>
   
+  <bean name="/rtc/category.htm" class="org.opennms.web.controller.rtc.ListNodes">
+    <property name="rtcService" ref="rtcService"/>
+  </bean>
+  
  
 	<!-- Examples
 		<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
