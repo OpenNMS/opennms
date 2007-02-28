@@ -41,7 +41,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +56,7 @@ import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
+import org.opennms.netmgt.config.users.Users;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -137,11 +137,9 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         long lastModified = new File(m_usersConfigurationFile).lastModified();
         Userinfo userinfo = unmarshallUsers();
 
-        Collection usersList = userinfo.getUsers().getUserCollection();
+        Collection<User> usersList = getUserCollection(userinfo.getUsers());
 
-        Iterator i = usersList.iterator();
-        while (i.hasNext()) {
-            User user = (User) i.next();
+        for (User user : usersList) {
             org.opennms.web.acegisecurity.User newUser = new org.opennms.web.acegisecurity.User();
             newUser.setUsername(user.getUserId());
             newUser.setPassword(user.getPassword());
@@ -154,6 +152,11 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
         m_usersLastModified = lastModified; 
         m_users = users;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<User> getUserCollection(Users users) {
+        return users.getUserCollection();
     }
 
     /**
