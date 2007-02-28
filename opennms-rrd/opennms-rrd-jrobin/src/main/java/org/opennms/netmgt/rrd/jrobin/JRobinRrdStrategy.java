@@ -475,6 +475,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
             RrdGraph graph = new RrdGraph(graphDef);
 
             byte[] bytes = graph.getRrdGraphInfo().getBytes();
+            if (bytes == null) {
+                String message = "JRobin: no graph was produced by JRobin for command '" + command + "'.  Does the command have any drawing commands (e.g.: LINE1, LINE2, LINE3, AREA, STACK, GPRINT)?";
+                log.error(message);
+                throw new org.opennms.netmgt.rrd.RrdException(message);
+            }
 
             tempIn = new ByteArrayInputStream(bytes);
 
