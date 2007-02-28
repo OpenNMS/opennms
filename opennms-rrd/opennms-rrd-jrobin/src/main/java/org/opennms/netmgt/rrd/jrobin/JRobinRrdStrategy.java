@@ -438,12 +438,12 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     //format = format.replaceAll("%s", "@s");
                     //format = format.replaceAll("%%", "%");
                     //log.debug("gprint: oldformat = " + gprint[2] + " newformat = " + format);
-                    format = format.replaceAll("\\n", "\n");
+                    format = format.replaceAll("\\n", "\\\\l");
                     graphDef.gprint(gprint[0], gprint[1], format);
 
                 } else if (arg.startsWith("COMMENT:")) {
                     String comments[] = tokenize(arg, ":", true);
-                    String format = comments[1].replaceAll("\\n", "\n");
+                    String format = comments[1].replaceAll("\\n", "\\\\l");
                     graphDef.comment(format);
                 } else if (arg.startsWith("AREA:")) {
                     String definition = arg.substring("AREA:".length());
