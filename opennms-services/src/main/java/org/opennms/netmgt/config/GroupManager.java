@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,7 +93,7 @@ public abstract class GroupManager {
     protected synchronized void parseXml(Reader reader) throws MarshalException, ValidationException {
         Groupinfo groupinfo = (Groupinfo) Unmarshaller.unmarshal(Groupinfo.class, reader);
         Groups groups = groupinfo.getGroups();
-        m_groups = new HashMap<String, Group>();
+        m_groups = new LinkedHashMap<String, Group>();
         Collection groupList = groups.getGroupCollection();
         m_oldHeader = groupinfo.getHeader();
         Iterator i = groupList.iterator();
@@ -103,7 +104,7 @@ public abstract class GroupManager {
         buildDutySchedules(m_groups);
         
         Roles roles = groupinfo.getRoles();
-        m_roles = new HashMap<String, Role>();
+        m_roles = new LinkedHashMap<String, Role>();
         if (roles != null) {
             Iterator it = roles.getRoleCollection().iterator();
             while(it.hasNext()) {
@@ -127,7 +128,7 @@ public abstract class GroupManager {
     
         update();
     
-        return new HashMap<String, Group>(m_groups);
+        return new LinkedHashMap<String, Group>(m_groups);
     
     }
 
@@ -414,7 +415,7 @@ public abstract class GroupManager {
         } else {
             Collection coll = (Collection) m_groups.values();
             Iterator iter = (Iterator) coll.iterator();
-            Map<String, Group> map = new HashMap<String, Group>();
+            Map<String, Group> map = new LinkedHashMap<String, Group>();
     
             while (iter.hasNext()) {
                 Group group = (Group) iter.next();
@@ -554,6 +555,16 @@ public abstract class GroupManager {
         
     }
 
+    public List<Group> findGroupsForUser(String user) {
+        List<Group> groups = new ArrayList<Group>();
+        
+        for (Group group : m_groups.values()) {
+            if (group.getUserCollection().contains(user)) {
+                groups.add(group);
+            }
+        }
 
+        return groups;
+    }
 
 }
