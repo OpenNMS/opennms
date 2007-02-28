@@ -222,5 +222,10 @@
     <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao" />
   </bean>
   
+  <bean id="rtcService" class="org.opennms.web.svclayer.support.DefaultRtcService">
+    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="outageDao" ref="outageDao" />
+  </bean>
+  
   
 </beans>
