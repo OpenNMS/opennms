@@ -88,6 +88,7 @@ public class SurveillanceDashlet extends Dashlet {
             
             // set row 0 to be column headings
             m_grid.getRowFormatter().setStyleName(0, "header");
+            m_grid.setText(0, 0, "Show all nodes");
             for(int col = 0; col < data.getColumnCount(); col++) {
                 m_grid.setText(0, col+1, data.getColumnHeading(col));
             }
