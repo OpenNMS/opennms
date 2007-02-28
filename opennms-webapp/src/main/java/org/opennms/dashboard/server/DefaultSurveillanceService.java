@@ -3,10 +3,13 @@ package org.opennms.dashboard.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.apache.log4j.Category;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.dashboard.client.Alarm;
 import org.opennms.dashboard.client.SurveillanceData;
@@ -47,16 +50,6 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private AlarmDao m_alarmDao;
     private GroupManager m_groupManager;
 
-    /*
-    private int m_count = 0;
-    private Timer m_timer = new Timer();
-
-    private Random m_random = new Random();
-    
-    private SurveillanceData m_data;
-    */
-
-    
     public SurveillanceData getSurveillanceData() {
         SurveillanceData data = new SurveillanceData();
 
@@ -101,6 +94,11 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     
     
     /*
+    private int m_count = 0;
+    private Timer m_timer = new Timer();
+    private Random m_random = new Random();
+    private SurveillanceData m_data;
+
     public SurveillanceData getSurveillanceData() {
         
         System.err.println("Request made!");
@@ -164,6 +162,8 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
         OnmsCriteria nodeCriteria = criteria.createCriteria("node");
         addCriteriaForSurveillanceSet(nodeCriteria, set);
+        criteria.add(Restrictions.ne("node.type", "D"));
+        criteria.addOrder(Order.desc("alarm.severity"));
         
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
@@ -178,37 +178,6 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return alarmArray;
     }
     
-    /*
-    public Alarm[] getAlarmsForSet(SurveillanceSet set) {
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        
-        int alarmCount = m_random.nextInt(30);
-        
-        Alarm[] alarms = new Alarm[alarmCount];
-        for(int i = 0; i < alarmCount; i++) {
-            alarms[i] = newAlarm();
-        }
-        
-        return alarms;
-        
-    }
-
-    private Alarm newAlarm() {
-        return new Alarm(getSeverity(m_random.nextInt(5)), "node"+m_random.nextInt(20), "An alarm", 2);
-    }
-    
-    private String getSeverity(int count) {
-        switch(count % 5) {
-        case 0: return "Normal";
-        case 1: return "Critical";
-        case 2: return "Major";
-        case 3: return "Minor";
-        case 4: return "Resolved";
-        default: return "Normal";
-        }
-    }
-    */
-
     private String getSeverityString(Integer severity) {
         switch(severity) {
         case 1: return "Indeterminate";
@@ -221,7 +190,6 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         default: return "Unknown";
         }
     }
-
 
     public String[] getNodeNames(SurveillanceSet set) {
 
@@ -239,6 +207,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     public String[][] getResources(SurveillanceSet set) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
         addCriteriaForSurveillanceSet(criteria, set);
+        criteria.add(Restrictions.ne("node.type", "D"));
         criteria.addOrder(Order.asc("node.label"));
         
         List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
@@ -298,7 +267,20 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
 
     protected String getUsername() {
-        Object obj = SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
+        /*
+         * This should never be null, as the strategy should create a
+         * SecurityContext if one doesn't exist, but let's check anyway.
+         */
+        SecurityContext context = SecurityContextHolder.getContext();
+        Assert.state(context != null, "No security context found when calling SecurityContextHolder.getContext()");
+        
+        Authentication auth = context.getAuthentication();
+        Assert.state(auth != null, "No Authentication object found when calling getAuthentication on our SecurityContext object");
+        
+        Object obj = auth.getPrincipal();
+        Assert.state(obj != null, "No principal object found when calling getPrinticpal on our Authentication object");
+        
+        
         if (obj instanceof UserDetails) { 
             return ((UserDetails)obj).getUsername(); 
         } else { 
