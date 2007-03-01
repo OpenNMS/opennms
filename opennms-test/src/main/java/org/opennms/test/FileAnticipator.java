@@ -45,6 +45,42 @@ import junit.framework.Assert;
 
 import org.opennms.core.utils.ProcessExec;
 
+/**
+ * File anticipator.
+ * 
+ * Example usage with late initialization:
+ * <pre>
+ * private FileAnticipator m_fileAnticipator;
+ *
+ * @Override
+ * protected void setUp() throws Exception {
+ *     super.setUp();
+ *       
+ *     // Don't initialize by default since not all tests need it.
+ *     m_fileAnticipator = new FileAnticipator(false);
+ *
+ *     ...
+ * }
+ *    
+ * @Override
+ * protected void runTest() throws Throwable {
+ *     super.runTest();
+ *
+ *     if (m_fileAnticipator.isInitialized()) {
+ *         m_fileAnticipator.deleteExpected();
+ *     }
+ * }
+ *  
+ * @Override
+ * protected void tearDown() throws Exception {
+ *     super.tearDown();
+ *     
+ *     m_fileAnticipator.tearDown();
+ * }
+ * </pre>
+ * 
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ */
 public class FileAnticipator extends Assert {
     private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
     
@@ -85,20 +121,32 @@ public class FileAnticipator extends Assert {
             if (m_tempDir != null) {
                 assertFalse(m_tempDir + " exists", m_tempDir.exists());
             }
-        } catch (UndeclaredThrowableException e) {
+        } catch (Throwable t) {
             if (m_tempDir != null && m_tempDir.exists()) {
                 ProcessExec ex = new ProcessExec(System.out, System.err);
                 String[] cmd = new String[3];
                 cmd[0] = "rm";
                 cmd[1] = "-r";
                 cmd[2] = m_tempDir.getAbsolutePath();
+                
                 try {
                     ex.exec(cmd);
-                } catch (Throwable t) {
-                    // ignore
+                } catch (Throwable innerThrowable) {
+                    StringBuffer command = new StringBuffer();
+                    command.append(cmd[0]);
+                    for (int i = 1; i < cmd.length; i++) {
+                        command.append(" ");
+                        command.append(cmd[i]);
+                    }
+                    System.err.println("Got throwable while forcibly removing temporary directory " + m_tempDir + " with '" + command + "': " + innerThrowable);
+                    innerThrowable.printStackTrace();
                 }
             }
-            throw e;
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            } else {
+                throw new UndeclaredThrowableException(t);
+            }
         }
     }
     

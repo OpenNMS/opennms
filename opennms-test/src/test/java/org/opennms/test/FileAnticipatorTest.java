@@ -38,39 +38,8 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
- * File anticipator.
- * 
- * Example usage with late initialization:
- * <pre>
- * private FileAnticipator m_fileAnticipator;
+ * File anticipator Junit test.
  *
- * @Override
- * protected void setUp() throws Exception {
- *     super.setUp();
- *       
- *     // Don't initialize by default since not all tests need it.
- *     m_fileAnticipator = new FileAnticipator(false);
- *
- *     ...
- * }
- *    
- * @Override
- * protected void runTest() throws Throwable {
- *     super.runTest();
- *
- *     if (m_fileAnticipator.isInitialized()) {
- *         m_fileAnticipator.deleteExpected();
- *     }
- * }
- *  
- * @Override
- * protected void tearDown() throws Exception {
- *     super.tearDown();
- *     
- *     m_fileAnticipator.tearDown();
- * }
- * </pre>
- * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class FileAnticipatorTest extends TestCase {
