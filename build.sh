@@ -46,7 +46,7 @@ if [ $VERBOSE -gt 0 ]; then
 fi
 
 if [ -z "$MAVEN_SKIP" ]; then
-    MAVEN_SKIP=maven.test.skip
+    MAVEN_SKIP=maven.test.skip.exec
 fi
 
 MAVEN_OPTS=-Xmx512m

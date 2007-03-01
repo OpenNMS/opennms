@@ -432,7 +432,7 @@ opennms.home = ${opennms.home}
   </reporting>
   <properties>
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.2</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>2.3</maven.surefire.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
