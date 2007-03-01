@@ -26,10 +26,13 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
         add(createSurveillanceDashlet(), "surveillanceView");
         add(createAlarmDashlet(),        "alarms");
-        add(createOutageDashlet(),       "outages");
-        add(createNodeStatusDashlet(),   "nodeStatus");
-        add(createNotificationDashlet(), "notifications");
         add(createGraphDashlet(),        "graphs");
+        add(createNotificationDashlet(), "notifications");
+        //add(createOutageDashlet(),       "outages");
+        //add(createNodeStatusDashlet(),   "nodeStatus");
+        
+        
+        setSurveillanceSet(SurveillanceSet.DEFAULT);
         
     }
 
@@ -52,6 +55,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     private AlarmDashlet createAlarmDashlet() {
         m_alarms = new AlarmDashlet(this);
         m_alarms.setSurveillanceService(getSurveillanceService());
+        m_alarms.setSurveillanceSet(SurveillanceSet.DEFAULT);
         return m_alarms;
     }
 
@@ -61,18 +65,15 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         SurveillanceListener listener = new SurveillanceListener() {
 
             public void onAllClicked(Dashlet viewer) {
-                m_alarms.setSurveillanceSet(SurveillanceSet.DEFAULT);
-                m_graphs.setSurveillanceSet(SurveillanceSet.DEFAULT);
+                setSurveillanceSet(SurveillanceSet.DEFAULT);
             }
 
             public void onIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection) {
-                m_alarms.setSurveillanceSet(intersection);
-                m_graphs.setSurveillanceSet(intersection);
+                setSurveillanceSet(intersection);
             }
 
             public void onSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group) {
-                m_alarms.setSurveillanceSet(group);
-                m_graphs.setSurveillanceSet(group);
+                setSurveillanceSet(group);
             }
             
         };
@@ -87,7 +88,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         m_surveillance = surveillance;
         return m_surveillance;
     }
-
+    
     private SurveillanceServiceAsync getSurveillanceService() {
         if (m_surveillanceService == null) {
             String serviceEntryPoint = GWT.getModuleBaseURL()+"surveillanceService.gwt";
@@ -156,6 +157,11 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         
         dialog.show();
         
+    }
+
+    private void setSurveillanceSet(SurveillanceSet set) {
+        m_alarms.setSurveillanceSet(set);
+        m_graphs.setSurveillanceSet(set);
     }
 
 }

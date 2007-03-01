@@ -69,10 +69,10 @@
       <td class="dashletCell" id="graphs"></td>
       <td class="dashletCell" id="notifications"></td>
     </tr>
-    <tr>
+    <!-- tr>
       <td class="dashletCell" id="outages"></td>
       <td class="dashletCell" id="nodeStatus"></td>
-    </tr>
+    </tr -->
   </tbody>
 </table>
 
