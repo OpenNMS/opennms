@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -138,12 +139,18 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     
     public void error(String err) {
         final DialogBox dialog = new DialogBox();
-
+        dialog.setText("Error Occurred");
+        
         VerticalPanel panel = new VerticalPanel();
         HTMLPanel html = new HTMLPanel(err);
+        html.setStyleName("Message");
         panel.add(html);
+        
         Button ok = new Button("OK");
-        panel.add(ok);
+        SimplePanel buttonPanel = new SimplePanel();
+        buttonPanel.setWidget(ok);
+        buttonPanel.setStyleName("Button");
+        panel.add(buttonPanel);
 
         dialog.setWidget(panel);
         

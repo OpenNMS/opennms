@@ -61,6 +61,47 @@ tr.header td {
 	text-align:left;
 }
 
+.gwt-DialogBox {
+	left: 200px;
+	top: 200px;
+	width: 50%;
+	border-style: outset;
+	border-width: 2;
+}
+
+.gwt-DialogBox table {
+	padding: 0;
+	margin: 0;
+}
+
+.gwt-DialogBox td {
+	padding: 0;
+	margin: 0;
+}
+
+.gwt-DialogBox .Caption {
+	background-color:#366903;
+    background-image:url(../images/headingbg.png);
+    background-position:center;
+    background-repeat:repeat-x;
+    border-style:none;
+    color:#FFFFFF;
+    margin-bottom:0pt;
+    margin-top:7px;
+    padding:6px;
+    line-height: normal;
+    font-weight: bold;
+}
+
+.gwt-DialogBox .Message {
+	padding: 4px 5px;
+}
+
+.gwt-DialogBox .Button {
+	text-align: right;
+	padding: 4px 5px;
+}
+
 table.dashletTitlePanel td {
 	background-color:#366903;
     background-image:url(../images/headingbg.png);
