@@ -480,16 +480,25 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public OnmsResource getResourceForNode(OnmsNode node) {
         Assert.notNull(node, "node argument must not be null");
         
-        // FIXME check that we actually have data for this resource
-        
-        return m_nodeResourceType.createChildResource(node);
+        OnmsResource resource = m_nodeResourceType.createChildResource(node);
+        if (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0) {
+            return resource;
+        } else {
+            return null;
+        }
     }
     
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
         
-        Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
-        OnmsResource nodeResource = getResourceForNode(ipInterface.getNode());
+        OnmsNode node = ipInterface.getNode();
+        Assert.notNull(node, "getNode() on ipInterface must not return null");
+        
+        OnmsResource nodeResource = getResourceForNode(node);
+        if (nodeResource == null) {
+            return null;
+        }
+        
         List<OnmsResource> childResources = nodeResource.getChildResources();
 
         for (OnmsResource childResource : childResources) {
