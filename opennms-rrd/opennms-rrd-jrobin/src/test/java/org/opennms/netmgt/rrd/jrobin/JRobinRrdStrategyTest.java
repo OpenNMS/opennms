@@ -1,46 +1,24 @@
 package org.opennms.netmgt.rrd.jrobin;
 
 import java.io.File;
-import java.io.InputStream;
 
 import junit.framework.TestCase;
 
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 
 public class JRobinRrdStrategyTest extends TestCase {
     
     private JRobinRrdStrategy m_strategy;
-    private FileAnticipator m_fileAnticipator;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         
-        // Don't initialize by default since not all tests need it.
-        m_fileAnticipator = new FileAnticipator(false);
-
         m_strategy = new JRobinRrdStrategy();
         m_strategy.initialize();
-    }
-    
-    @Override
-    protected void runTest() throws Throwable {
-        super.runTest();
-        
-        if (m_fileAnticipator.isInitialized()) {
-            m_fileAnticipator.deleteExpected();
-        }
-    }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        
-        m_fileAnticipator.tearDown();
     }
     
     public void testCommandWithoutDrawing() throws Exception {
