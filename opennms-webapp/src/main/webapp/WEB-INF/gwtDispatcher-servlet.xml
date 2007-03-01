@@ -13,7 +13,7 @@
         <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
       </map>
     </property>
-    <property name="unwrappingGWTExceptions" value="true" />
+    <!--  property name="unwrappingGWTExceptions" value="true" / -->
     <property name="order" value="0"/>
   </bean>	     
   
