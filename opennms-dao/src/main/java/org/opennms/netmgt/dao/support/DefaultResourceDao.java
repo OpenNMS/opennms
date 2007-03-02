@@ -370,7 +370,12 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             throw new ObjectRetrievalFailureException(OnmsNode.class, resource, "Top-level resource of resource type node could not be found: " + resource, null);
         }
 
-        return getResourceForNode(node);
+        OnmsResource onmsResource = getResourceForNode(node);
+//        if (onmsResource == null) {
+//            throw new ObjectRetrievalFailureException(OnmsNode.class, resource, "Top-level resource was found but has no child resources", null);
+//        }
+//        
+        return onmsResource;
     }
 
     protected OnmsResource getDomainEntityResource(String domain) {
@@ -481,11 +486,12 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Assert.notNull(node, "node argument must not be null");
         
         OnmsResource resource = m_nodeResourceType.createChildResource(node);
-        if (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0) {
-            return resource;
-        } else {
-            return null;
-        }
+//        if (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0) {
+//            return resource;
+//        } else {
+//            return null;
+//        }
+        return resource;
     }
     
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {

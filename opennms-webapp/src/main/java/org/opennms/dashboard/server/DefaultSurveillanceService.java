@@ -221,7 +221,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         for (OnmsNode node : nodes) {
             OnmsResource resource = m_resourceDao.getResourceForNode(node);
-            if (resource != null) {
+            if (resource != null && (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0)) {
                 resources.add(resource);
             }
         }

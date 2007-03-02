@@ -135,8 +135,8 @@ public class DefaultResourceDaoTest extends TestCase {
     public void testGetResourceByIdNewTopLevelOnly() throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(1);
-        expect(m_nodeDao.get(node.getId())).andReturn(node).times(2);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
+        //expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         
         File responseDir = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(responseDir, node.getId().toString());
@@ -174,8 +174,8 @@ public class DefaultResourceDaoTest extends TestCase {
     public void testGetTopLevelResourceNodeExists() throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(1);
-        expect(m_nodeDao.get(node.getId())).andReturn(node).times(2);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
+        //expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         
         File responseDir = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(responseDir, node.getId().toString());
@@ -201,6 +201,35 @@ public class DefaultResourceDaoTest extends TestCase {
         }
         m_easyMockUtils.verifyAll();
         ta.verifyAnticipated();
+    }
+    
+    public void testGetTopLevelResourceNodeExistsNoChildResources() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(2);
+
+        expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
+        //expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+
+        /*
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new ObjectRetrievalFailureException(OnmsNode.class, node.getId().toString(), "Top-level resource was found but has no child resources", null));
+
+        m_easyMockUtils.replayAll();
+        try {
+            m_resourceDao.getTopLevelResource("node", node.getId().toString());
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        m_easyMockUtils.verifyAll();
+        ta.verifyAnticipated();
+        */
+        
+        m_easyMockUtils.replayAll();
+        OnmsResource resource = m_resourceDao.getTopLevelResource("node", node.getId().toString());
+        m_easyMockUtils.verifyAll();
+        
+        assertNotNull("resource should not be null", resource);
+
     }
     
     public void testGetTopLevelResourceDomainExists() throws IOException {
@@ -382,8 +411,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         
-        expect(m_nodeDao.get(node.getId())).andReturn(node);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+//        expect(m_nodeDao.get(node.getId())).andReturn(node);
+//        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         
         File responseDir = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(responseDir, node.getId().toString());
@@ -467,8 +496,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         
-        expect(m_nodeDao.get(node.getId())).andReturn(node);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+//        expect(m_nodeDao.get(node.getId())).andReturn(node);
+//        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
 
         File responseDir = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(responseDir, node.getId().toString());
@@ -485,13 +514,13 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         
-        expect(m_nodeDao.get(node.getId())).andReturn(node);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+//        expect(m_nodeDao.get(node.getId())).andReturn(node);
+//        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceForNode(node);
         m_easyMockUtils.verifyAll();
         
-        assertNull("Resource should not exist", resource);
+        assertNotNull("Resource should exist", resource);
     }
 }
