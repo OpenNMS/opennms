@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 
 public abstract class Dashlet extends Composite {
     
@@ -28,12 +29,20 @@ public abstract class Dashlet extends Composite {
             initWidget(m_panel);
         }
         
+        public void setTitle(String title) {
+            m_label.setText(title);
+        }
+        
+        public void add(Widget widget, DockLayoutConstant constraint) {
+            m_panel.add(widget, constraint);
+        }
+        
     }
     
     private VerticalPanel m_panel = new VerticalPanel();
     private String m_title;
     private DashletTitle m_titleWidget;
-    private Widget m_view;
+    private DashletView m_view;
     private DashletLoader m_loader;
     private Dashboard m_dashboard;
 
@@ -43,8 +52,25 @@ public abstract class Dashlet extends Composite {
         initWidget(m_panel);
     }
 
-    protected void setView(Widget view) {
+    protected void setView(DashletView view) {
         m_view = view;
+    }
+    
+    protected void setView(Widget view) {
+        setView(new DashletView(this, view));
+    }
+    
+    public String getTitle() {
+        return m_title;
+    }
+    
+    public void setTitle(String title) {
+        m_title = title;
+        m_titleWidget.setTitle(m_title);
+    }
+    
+    public void addToTitleBar(Widget widget, DockLayoutConstant constraint) {
+        m_titleWidget.add(widget, constraint);
     }
     
     public void setLoader(DashletLoader loader) {
@@ -71,6 +97,7 @@ public abstract class Dashlet extends Composite {
     public void error(String err) {
         m_dashboard.error(err);
     }
+    
 
 	public void setSurveillanceSet(SurveillanceSet set) {
 		// TODO Auto-generated method stub

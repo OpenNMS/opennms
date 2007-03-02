@@ -6,11 +6,21 @@ public class SurveillanceData implements IsSerializable {
     
     private boolean m_complete = false;
     
+    private String m_name;
+    
     private SurveillanceGroup[] m_columnGroups;
     private SurveillanceGroup[] m_rowGroups;
     
     private SurveillanceIntersection[][] m_cells;
     
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(String name) {
+        m_name = name;
+    }
+
     public boolean isComplete() {
         return m_complete;
     }

@@ -1,9 +1,10 @@
 package org.opennms.dashboard.client;
 
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class NodeStatusDashlet extends Dashlet {
-
+    
     ListBox m_listBox = new ListBox();
     
     public NodeStatusDashlet(Dashboard dashboard) {

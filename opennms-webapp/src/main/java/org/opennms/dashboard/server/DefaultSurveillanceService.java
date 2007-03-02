@@ -61,6 +61,8 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
         SimpleWebTable table = m_webSurveillanceService.createSurveillanceTable(getView().getName(), new ProgressMonitor());
         
+        data.setName(getView().getName());
+        
         List<SurveillanceGroup> columnGroups = new ArrayList<SurveillanceGroup>();
         for (Cell columnHeader : table.getColumnHeaders().subList(1, table.getColumnHeaders().size())) {
             SurveillanceGroup columnGroup = new SurveillanceGroup();

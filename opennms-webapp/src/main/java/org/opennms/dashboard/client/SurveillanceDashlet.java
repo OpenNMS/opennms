@@ -60,10 +60,9 @@ public class SurveillanceDashlet extends Dashlet {
     class SurveillanceView extends DashletView {
         
         private Grid m_grid = new Grid();
-        private int m_selectedRow;
-        private int m_selectedCol;
         
-        public SurveillanceView() {
+        public SurveillanceView(Dashlet dashlet) {
+            super(dashlet);
             m_grid.addTableListener(new TableListener() {
 
                 public void onCellClicked(SourcesTableEvents table, int row, int col) {
@@ -87,12 +86,7 @@ public class SurveillanceDashlet extends Dashlet {
         }
         
         protected void cellClicked(int row, int col) {
-            
             clearSelection();
-            
-            m_selectedRow = row;
-            m_selectedCol = col;
-
             setSelection(row, col);
         }
 
@@ -121,6 +115,7 @@ public class SurveillanceDashlet extends Dashlet {
         }
 
         void populate(SurveillanceData data) {
+            setTitle(getTitle()+": "+data.getName());
             m_grid.resize(data.getRowCount()+1, data.getColumnCount()+1);
             
             // set row 0 to be column headings
@@ -157,7 +152,7 @@ public class SurveillanceDashlet extends Dashlet {
     
     public SurveillanceDashlet(Dashboard dashboard) {
         super(dashboard, "Surveillance View");
-        m_view = new SurveillanceView();
+        m_view = new SurveillanceView(this);
         m_loader = new SurveillanceLoader();
 
         setLoader(m_loader);

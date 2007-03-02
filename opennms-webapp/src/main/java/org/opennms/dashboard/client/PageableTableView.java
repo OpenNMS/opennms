@@ -12,7 +12,8 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 	private int m_pageSize = 5;
 	private int m_currentIndex = 0;
 	
-	PageableTableView(int pageSize, String[] headings) {
+	PageableTableView(Dashlet dashlet, int pageSize, String[] headings) {
+        super(dashlet);
         m_pageSize = pageSize;
         
         initializeTable(headings);

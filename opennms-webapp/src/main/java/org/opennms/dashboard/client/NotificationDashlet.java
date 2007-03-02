@@ -22,7 +22,7 @@ public class NotificationDashlet extends Dashlet {
 
      */
     
-    private NotificationView m_view = new NotificationView();
+    private NotificationView m_view = new NotificationView(this);
     private NotificationLoader m_loader = new NotificationLoader();
     
     class NotificationLoader extends DashletLoader implements AsyncCallback {
