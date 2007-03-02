@@ -37,6 +37,8 @@
  */
 package org.opennms.web.map.view;
 
+import org.opennms.web.map.MapsException;
+
 /**
  * @author antonio
  * 
@@ -45,66 +47,60 @@ package org.opennms.web.map.view;
  */
 final public class VLink {
 	VElement elem1;
-
 	VElement elem2;
 	
 	//the link typology defined in the map properties file
-	int typology;
-	
+	int linkTypeId;
+
+	int linkOperStatus;
+
 	//the link status
-	String status;
+	String linkOperStatusString;
 	
-
-	
-
-
 	public VLink(VElement elem1, VElement elem2) {
 		this.elem1 = elem1;
 		this.elem2 = elem2;
 	}
 	
-	public VLink(VElement elem1, VElement elem2, int typology) {
-		this.elem1 = elem1;
-		this.elem2 = elem2;
-		this.typology=typology;
-	}	
-
-	public VLink(VElement elem1, VElement elem2, int typology, String status) {
-		this.elem1 = elem1;
-		this.elem2 = elem2;
-		this.typology=typology;
-		this.status=status;
-	}	
-
-
-	public void setTypology(int typology){
-		this.typology=typology;
+	public String getLinkOperStatusString() {
+		if (linkOperStatus == 1 ) return "up";
+		else if (linkOperStatus == 2 ) return "down";
+		else return "testing";
 	}
-	
-	public void setStatus(String status){
-		this.status=status;
-	}
-	public String getStatus() {
-		return status;
-	}
-
-	public int getTypology() {
-		return typology;
-	}
-
 
 	/**
-	 * Asserts if the link links the same elements
+	 * Asserts if the links are linking the same elements without considering their statuses
 	 */
 	public boolean equals(Object otherLink) {
 		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;
 		if (
+		 (
 		 (this.elem1.hasSameIdentifier(link.getFirst()) && this.elem2.hasSameIdentifier(link.getSecond()))
 			||
-		(this.elem2.hasSameIdentifier(link.getFirst()) && this.elem1.hasSameIdentifier(link.getSecond()))
+		 (this.elem2.hasSameIdentifier(link.getFirst()) && this.elem1.hasSameIdentifier(link.getSecond()) ) 
+		 )
+		 	&&   
+		 this.linkTypeId==link.getLinkTypeId()
 		) return true;
 		return false;
+	}
+	
+	
+	public boolean equalsEndPoints(Object otherLink) {
+		if (!(otherLink instanceof VLink)) return false;
+		VLink link = (VLink) otherLink;
+		if (
+			 (this.elem1.hasSameIdentifier(link.getFirst()) && this.elem2.hasSameIdentifier(link.getSecond()))
+				||
+			 (this.elem2.hasSameIdentifier(link.getFirst()) && this.elem1.hasSameIdentifier(link.getSecond()) ) 
+			)
+		 return true;
+		return false;
+	}
+	
+	public int hashCode() {
+		return elem1.getId()*elem2.getId()*(linkTypeId+1);
 	}
 
 	/*
@@ -126,6 +122,26 @@ final public class VLink {
 
 	public VElement getSecond() {
 		return elem2;
+	}
+	
+	public int getLinkTypeId() {
+		return linkTypeId;
+	}
+	
+	public void setLinkTypeId(int typeId) {
+		linkTypeId = typeId;
+	}
+
+	public int getLinkOperStatus() {
+		return linkOperStatus;
+	}
+	
+	public void setLinkOperStatus(int operStatus) {
+		linkOperStatus = operStatus;
+	}
+	
+	public String toString() {
+			return ""+elem1.getId()+elem1.getType()+"-"+elem2.getId()+elem2.getType()+"-"+linkTypeId+"-"+linkOperStatus+" hashCode:"+this.hashCode();
 	}
 
 }

@@ -682,7 +682,7 @@ function handleAddElementResponse(data) {
 				counter++;
 			}
 		
-			var linkToAdd = id1+"-"+id2+"+"+LINKSTATUS_COLOR[status]+"+"+ LINK_WIDTH[typology]+"+"+LINK_DASHARRAY[typology]+"+"+LINKSTATUS_FLASH[status];
+			var linkToAdd = id1+"-"+id2+"-"+typology+"+"+LINKSTATUS_COLOR[status]+"+"+ LINK_WIDTH[typology]+"+"+LINK_DASHARRAY[typology]+"+"+LINKSTATUS_FLASH[status];
 			linksToAdd.push(linkToAdd);
 			
 			//map.addLink(id1,id2,"green",1);
@@ -745,11 +745,12 @@ function handleAddElementResponse(data) {
 		var elemIds = params[0].split('-');
 		var id1=elemIds[0];
 		var id2=elemIds[1];
+		var typo=elemIds[2];
 		var color = params[1];
 		var width = params[2];
 		var da = params[3];
 		var flash = params[4];
-		map.addLink(id1,id2,color,width,da,flash);
+		map.addLink(id1,id2,typo,color,width,da,flash);
 	}	
 	
 	map.render();
@@ -1017,7 +1018,7 @@ function handleLoadingMap(data) {
 
 				counter++;
 			}
-			map.addLink(id1,id2,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status]);
+			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status]);
 		}
 	}
 	map.render();
@@ -1589,7 +1590,7 @@ function handleRefreshNodesResponse(data) {
 				}
 				counter++;
 			}
-			map.addLink(id1,id2,LINKSTATUS_COLOR[status],LINK_WIDTH[typology],LINK_DASHARRAY[typology],LINKSTATUS_FLASH[status]);
+			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status],LINK_WIDTH[typology],LINK_DASHARRAY[typology],LINKSTATUS_FLASH[status]);
 		}
 		//map.render();
 		

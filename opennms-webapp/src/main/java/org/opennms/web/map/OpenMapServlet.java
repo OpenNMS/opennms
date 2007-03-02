@@ -168,7 +168,9 @@ public class OpenMapServlet extends HttpServlet {
 							strToSend += "&" + links[i].getFirst().getId()
 									+ links[i].getFirst().getType() + "+"
 									+ links[i].getSecond().getId()
-									+ links[i].getSecond().getType()+ links[i].getSecond().getType()+"+"+links[i].getTypology()+"+"+links[i].getStatus();
+									+ links[i].getSecond().getType()+ "+"
+									+links[i].getLinkTypeId() + "+"
+									+links[i].getLinkOperStatusString();
 						}
 					}
 				} else {

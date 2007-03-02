@@ -275,6 +275,10 @@
 	var currentMapBackGround="#"+DEFAULT_BG_COLOR;
 	var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserlast="", currentMapCreatetime="", currentMapLastmodtime="";
 	
+	// array containing the number of links existing between 2 elements
+	// the key of the array is like 'idElem1-idElem2' and the value is an integer representin the number of links between elem1 and elem2
+	var linksBetweenElements = new Array();
+	
 	// array containing the history of the maps opened
 	var mapHistory = new Array();
 	var mapHistoryName = new Array();

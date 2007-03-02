@@ -136,7 +136,7 @@ Map.prototype.setMapElement = function(mapElement) {
 	if ( mapElementLinked != null && mapElementLinked.length != 0) {
 		var elemToRender = null;
 		for (elemToRender in mapElementLinked) {
-			this.setLink(mapElement.id, elemToRender, mapElementLinked[elemToRender].getStroke(), mapElementLinked[elemToRender].getStrokeWidth());
+			this.setLink(mapElement.id, elemToRender, mapElementLinked[elemToRender].getTypology(),mapElementLinked[elemToRender].getStroke(), mapElementLinked[elemToRender].getStrokeWidth());
 		}
 	}
 	return elementAdded;
@@ -169,8 +169,7 @@ Map.prototype.addMapElement = function(mapElement) {
 	if ( mapElementLinked != null && mapElementLinked.length != 0) {
 		var elemToRender = null;
 		for (elemToRender in mapElementLinked) {
-			alert('adding link '+mapElement.id+' '+elemToRender);
-			this.addLink(mapElement.id, elemToRender, mapElementLinked[elemToRender].getStroke(), mapElementLinked[elemToRender].getStrokeWidth());
+			this.addLink(mapElement.id, elemToRender, mapElementLinked[elemToRender].getTypology(), mapElementLinked[elemToRender].getStroke(), mapElementLinked[elemToRender].getStrokeWidth());
 		}
 	}
 	return elementAdded;
@@ -212,13 +211,14 @@ Map.prototype.deleteMapElement = function(elemId)
 	return elementDeleted;
 }
 
-Map.prototype.getLinkId = function(id1,id2) {
+Map.prototype.getLinkId = function(id1,id2,typology) {
 
 	var a = id1.toString();
 	var b = id2.toString();
 	var id = a + "-" + b;
-	var na = a.substr(0,id1.length-2);
-	var nb = b.substr(0,id2.length-2);
+	var na = a.substr(0,id1.length-1);
+	var nb = b.substr(0,id2.length-1);
+	
 	if (na > nb) {
 		id = b + "-" + a;
 	}
@@ -226,12 +226,15 @@ Map.prototype.getLinkId = function(id1,id2) {
 	if (na == nb && id2.indexOf(MAP_TYPE)== -1) {
 		id = b + "-" + a;
 	}
+	id=id+"-"+typology;
+	//alert(id);
 	return id;
 } 
 
+//return the result of matching by links' ids, ignoring link type
 Map.prototype.matchLink = function(id,idlink) {
-
-	return ( idlink.substr(0,id.length+1)==id+"-" || idlink.substr(idlink.length-id.length-1,idlink.length)=="-"+id );
+	var idLinkSplitted = idlink.split("-");
+	return ( idLinkSplitted[0]==id || idLinkSplitted[1]==id );
 } 
 
 Map.prototype.getLinksOnElement = function(id)
@@ -249,81 +252,100 @@ Map.prototype.deleteLinksOnElement = function(id)
 {
 	var linksDeleted = false;
 	if(this.mapLinks!=null){
-		var elements = new Array();
+//		var elements = new Array();
 		var elemToRender = null;
 		var  i = 0;
 		for (elemToRender in this.mapLinks) {
 			if(this.matchLink(id,elemToRender)) {
-				var elem = this.mapLinks[elemToRender].getSvgNode();
+				var ids=elemToRender.split('-');
+				this.deleteLink(ids[0],ids[1],ids[2]);
+				/*var elem = this.mapLinks[elemToRender].getSvgNode();
 				if(elem.parentNode==this.svgNode){
 					this.svgNode.removeChild(elem);
 					linksDeleted = true;
 					//alert("removed"+elemToRender);
 				}
-			} else {
-				i++;
-				elements[elemToRender] = this.mapLinks[elemToRender];
-			}
+					*/
+				linksDeleted = true;
+			} 
 		}
-		this.mapLinks = elements;
-		this.mapLinkSize = i;
+//		this.mapLinks = elements;
+//		this.mapLinkSize = i;
 	}
 	return linksDeleted;
 }
 
 // add a new link to map
-Map.prototype.addLink = function(id1, id2, stroke, stroke_width, dash_array, flash)
+Map.prototype.addLink = function(id1, id2, typology, stroke, stroke_width, dash_array, flash)
 {
-//alert("Map::addLink("+id1+", "+id2+")");
-	// check parameter
-	var linkAdded = false;
-	if (id1 == id2 ) {
-		//alertDebug("id1 and id2 must be different");
-		return linkAdded;
-	}
-	
-	//gets elements
-	var first = null;
-	var second = null;
+	var id = this.getLinkId(id1,id2,typology);
+	if(this.mapLinks[id]==null){
+		// check parameter
+		var linkAdded = false;
 
-	//remove the element from the svg view	
-	if(this.mapElements !=null && id1 != null && id2 != null )
-	{
-		first = this.mapElements[id1];
-		second = this.mapElements[id2];
-	} else {
-		return linkAdded;
-	}
+	/*
+		if (id1 == id2 ) {
+			alertDebug("id1 and id2 must be different");
+			return linkAdded;
+		}
+	*/
 
-	if (first == undefined || second == undefined) {
-		//alert("Paramater id1 error: map doesn't contain mapnode with id=" + id1);
-		return linkAdded;
-	}
+		//gets elements
+		var first = null;
+		var second = null;
 
-	var id = this.getLinkId(id1,id2);
-	//alert(id);
-	if( (this.mapLinks[id] != undefined) ){
-		//alertDebug("Map already contains the element");
-		this.deleteLink(id1,id2);
-	}
+		//remove the element from the svg view	
+		if(this.mapElements !=null && id1 != null && id2 != null )
+		{
+			first = this.mapElements[id1];
+			second = this.mapElements[id2];
+		} else {
+			return linkAdded;
+		}
 
-	var link = new Link(id, first, second, stroke, stroke_width, dash_array, flash);
-	this.mapLinks[id] = link;
-	this.mapLinkSize++;
-	linkAdded = true;
-	//alert('link with id '+id+' added');
+		if (first == undefined || second == undefined) {
+			//alert("Paramater id1 error: map doesn't contain mapnode with id=" + id1);
+			return linkAdded;
+		}
+
+		
+		//alert(id+" " +this.mapLinks[id]);
+		if( (this.mapLinks[id] != undefined) ){
+			//alertDebug("Map already contains the element");
+			this.deleteLink(id1,id2,typology);
+		}
+
+		//calculate and mantains the number of links between the elements
+		var idSplitted = id.split("-");
+		var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
+		if(linksBetweenElements[idWithoutTypology]==undefined){
+			linksBetweenElements[idWithoutTypology]=new Array();
+			linksBetweenElements[idWithoutTypology][typology]=1;
+		}else{
+			linksBetweenElements[idWithoutTypology][typology]++;
+		}
+
+
+		var link = new Link(id, typology, first, second, stroke, stroke_width, dash_array, flash);
+
+
+		this.mapLinks[id] = link;
+		this.mapLinkSize++;
+		linkAdded = true;
+		//alert('link with id '+id+' added');
+	}
 	return linkAdded;
 }
 
-Map.prototype.setLink = function(id1, id2, stroke, stroke_width, dash_array, flash)
+Map.prototype.setLink = function(id1, id2, typology, stroke, stroke_width, dash_array, flash)
 {
 //alert("Map::addLink("+id1+", "+id2+")");
 	// check parameter
 	var linkAdded = false;
-	if (id1 == id2 ) {
+//	if (id1 == id2 ) {
 		//alertDebug("id1 and id2 must be different");
-		return linkAdded;
-	}
+//		return linkAdded;
+//	}
 	
 	//gets elements
 	var first = null;
@@ -343,14 +365,24 @@ Map.prototype.setLink = function(id1, id2, stroke, stroke_width, dash_array, fla
 		return linkAdded;
 	}
 
-	var id = this.getLinkId(id1,id2);
-	
+	var id = this.getLinkId(id1,id2,typology);
 	if( (this.mapLinks[id] != undefined) ){
 		//alertDebug("Map already contains the element");
-		this.deleteLink(id1,id2);
+		this.deleteLink(id1,id2,typology);
 	}
-
-	var link = new Link(id, first, second, stroke, stroke_width, dash_array, flash);
+	
+	//calculate and mantains the number of links between the elements
+	var idSplitted = id.split("-");
+	var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
+	if(linksBetweenElements[idWithoutTypology]==undefined){
+		linksBetweenElements[idWithoutTypology]=new Array();
+		linksBetweenElements[idWithoutTypology][typology]=1;
+	}else{
+		linksBetweenElements[idWithoutTypology][typology]++;
+	}
+	
+	var link = new Link(id, typology, first, second, stroke, stroke_width, dash_array, flash);
+			
 	this.mapLinks[id] = link;
 	this.mapLinkSize++;
 	this.svgNode.appendChild(link.getSvgNode());
@@ -359,26 +391,59 @@ Map.prototype.setLink = function(id1, id2, stroke, stroke_width, dash_array, fla
 }
 
 // delete the link with the id in input
-Map.prototype.deleteLink = function(id1,id2)
+Map.prototype.deleteLink = function(id1,id2,typology)
 {
+	var links="";
+	if(this.mapLinks!=null && this.mapLinkSize>0)
+	for (currLink in this.mapLinks){
+		links+=","+currLink;
+	}
+	//alert("deletelink:"+links+" " +this.mapLinkSize);
+	
 	var linkDeleted = false;
-	var linkId = this.getLinkId(id1,id2);
+	var linkId = this.getLinkId(id1,id2,typology);
+	if(this.mapLinks[linkId]==undefined){
+		linkId = this.getLinkId(id2,id1,typology);
+		if(this.mapLinks[linkId]==undefined){
+			alert("Warning: link between "+id1+" and "+id2+" not found.");
+			return linkDeleted;
+		}
+	}
 	if(this.mapLinks!=null && linkId !=null){
 		var elem = this.mapLinks[linkId].getSvgNode();
-		if(elem.parentNode==this.svgNode){
-			this.svgNode.removeChild(elem);
-			linkDeleted = true;
+		if(elem!=null){
+			if(elem.parentNode==this.svgNode){
+				this.svgNode.removeChild(elem);
+				linkDeleted = true;
+			}
+		}else{
+			return linkDeleted;
 		}
 	}
 
 	//remove the link from the links array
+	var counter=0;
 	var tempLinks = new Array();
 	for (currLink in this.mapLinks){
-		if(linkId !=currLink)
+		if(linkId !=currLink){
 			tempLinks[currLink]=this.mapLinks[currLink];
+			counter++;
+		}
+			
 	}
-	this.MapLinks=tempLinks;
-	this.mapLinkSize=tempLinks.length;	
+	this.mapLinks=tempLinks;
+	this.mapLinkSize=counter;	
+	
+	
+	//calculate and mantains the number of links between the elements
+	var idWithoutTypology = id1+"-"+id2;
+	if(linksBetweenElements[idWithoutTypology]==undefined){
+		linksBetweenElements[idWithoutTypology]=new Array();
+		linksBetweenElements[idWithoutTypology][typology]=0;
+	}else{
+		linksBetweenElements[idWithoutTypology][typology]--;
+	}
+	//alert("deletelink:"+links+" " +this.mapLinkSize);
 	return linkDeleted;
 }
 
@@ -398,7 +463,7 @@ Map.prototype.render = function()
 		this.svgNode.appendChild(this.mapElements[elemToRender].getSvgNode());
 }
 
-// delete all nodes from map view
+// delete all nodes and links from map view
 Map.prototype.clean = function()
 {
 	var elemToRender = null;
@@ -407,7 +472,7 @@ Map.prototype.clean = function()
 	
 	for (elemToRender in this.mapLinks){
 		//alert(elemToRender);
-		if(elemToRender!=null){
+		if(this.mapLinks[elemToRender]!=undefined){
 			var elem = this.mapLinks[elemToRender].getSvgNode();
 			if(elem.parentNode==this.svgNode){
 				this.svgNode.removeChild(elem);
@@ -437,17 +502,23 @@ Map.prototype.clear = function()
 
 	this.mapElements=new Array();
 	this.mapElementSize=0;
-
+	
+	//reset the array mantaining the number of links between the elements
+	linksBetweenElements=new Array();
 }
 
 //delete all  from map view
 Map.prototype.cleanLinks = function(){
-	
+	//alert("this.mapLinks:"+this.mapLinks+"    this.mapLinkSize:"+this.mapLinkSize);
 	if(this.mapLinks!=null && this.mapLinkSize>0)
 	for (currLink in this.mapLinks){
-		var elem = this.mapLinks[currLink].getSvgNode();
-		if(elem.parentNode==this.svgNode){
-			this.svgNode.removeChild(elem);
+		if(this.mapLinks[currLink]!=undefined){
+			var elem = this.mapLinks[currLink].getSvgNode();
+			//elem.parentNode.removeChild(elem);
+			//alert(currLink);
+			if(elem.parentNode==this.svgNode){
+				this.svgNode.removeChild(elem);
+			}
 		}
 	}
 }
@@ -459,6 +530,9 @@ Map.prototype.clearLinks = function(){
 	this.mapLinks=new Array();
 	this.mapLinkSize=0;
 
+		//reset the array mantaining the number of links between the elements
+	linksBetweenElements=new Array();
+	//alert('links cleaned');
 }
 
 Map.prototype.redrawLink = function()
@@ -472,7 +546,8 @@ Map.prototype.redrawLink = function()
 Map.prototype.redrawLinkOnElement = function(id)
 {
 	for (var i in this.mapLinks) {
-		if(i.substr(0,id.length)==id || i.substr(i.length-id.length,i.length)==id ) 
+		var splittedLinkId = i.split("-");
+		if(splittedLinkId[0]==id || splittedLinkId[1]==id ) 
 			this.mapLinks[i].update();
 	} 
 }

@@ -40,6 +40,8 @@ package org.opennms.web.map.view;
 import java.util.List;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -154,7 +156,7 @@ final public class VMap extends Map {
     	VElement second = link.getSecond();
     	addElement(first);
     	addElement(second);
-    	links.put(getLinkId(first.getId(),first.getType(),second.getId(),second.getType()),link);
+    	links.put(getLinkId(first.getId(),first.getType(),second.getId(),second.getType(),link.linkTypeId),link);
     }
 
     public void addLinks(VLink[] vl) {
@@ -173,37 +175,37 @@ final public class VMap extends Map {
         return ve;
     }
 
-    public VLink removeLink(int id1, String type1, int id2, String type2) {
-    	VLink vl = (VLink) links.remove(getLinkId(id1,type1,id2,type2));
+    public VLink removeLink(int id1, String type1, int id2, String type2,int typology) {
+    	VLink vl = (VLink) links.remove(getLinkId(id1,type1,id2,type2, typology));
     	return vl;
     }
     
     public VLink[] removeLinksOnElement(int id, String type) {
-    	VElement[] elems = getAllElements();
-    	List links = new ArrayList();
-    	if (elems != null) {
-    		for (int i=0; i< elems.length; i++) {
-    			VElement ve = (VElement) elems[i];
-    			if (containsLink(id,type,ve.getId(),ve.getType())) {
-    				links.add(removeLink(id,type,ve.getId(),ve.getType())); 
-    			}
-    		}
+     	VLink[] lnksToDelete = getLinksOnElement(id,type);
+    	ArrayList<VLink> links = new ArrayList<VLink>();
+    	for(int i=0; i<lnksToDelete.length;i++){
+    		links.add(removeLink(lnksToDelete[i].getFirst().getId(),lnksToDelete[i].getFirst().getType(),lnksToDelete[i].getSecond().getId(),lnksToDelete[i].getSecond().getType(),lnksToDelete[i].getLinkTypeId())); 
     	}
     	return (VLink[]) links.toArray(new VLink[0]);
     }
-
-    public List removeLinksOnElementList(int id, String type) {
-    	VElement[] elems = getAllElements();
-    	List links = new ArrayList();
-    	if (elems != null) {
-    		for (int i=0; i< elems.length; i++) {
-    			VElement ve = (VElement) elems[i];
-    			if (containsLink(id,type,ve.getId(),ve.getType())) {
-    				links.add(removeLink(id,type,ve.getId(),ve.getType())); 
-    			}
+    
+    
+    public VLink[] getLinksOnElement(int id, String type){
+    	Iterator<String> linksId =(Iterator<String>) (links.keySet().iterator());
+    	ArrayList<VLink> lns=new ArrayList<VLink>();
+    	while(linksId.hasNext()){
+    		String linkId = linksId.next();
+    		
+    		if(linkId.indexOf(""+id+type)!=-1){
+    			lns.add((VLink)links.get(linkId));
     		}
     	}
-    	return links;
+    	return (VLink[])lns.toArray(new VLink[0]);
+    }
+
+    public List removeLinksOnElementList(int id, String type) {
+    	VLink[] linksDeleted = removeLinksOnElement(id, type);
+    	return Arrays.asList(linksDeleted);
     }
 
     public void removeElements(int[] ids, String type) {
@@ -271,12 +273,28 @@ final public class VMap extends Map {
     	return elements.containsKey(elementId);
     }
 
-    public boolean containsLink(int id1, String type1, int id2, String type2) {
-     	return links.containsKey(getLinkId(id1,type1,id2,type2));
+    public boolean containsLink(int id1, String type1, int id2, String type2, int typology) {
+     	return links.containsKey(getLinkId(id1,type1,id2,type2,typology));
     }
 
-    private String getLinkId(int id1, String type1, int id2, String type2) {
-    	return (new Integer(id1).toString())+type1+"-"+(new Integer(id2).toString())+type2;
+    //like client function
+    private String getLinkId(int id1, String type1, int id2, String type2, int typology) {
+    	String  a = id1+type1;
+    	String  b = id2+type2;
+    	String id = a + "-" + b;
+    	int  na = id1;
+    	int  nb = id2;
+    	
+    	if (na > nb) {
+    		id = b + "-" + a;
+    	}
+    	
+    	if (na == nb && type2.equals(VElement.MAP_TYPE)) {
+    		id = b + "-" + a;
+    	}
+    	id=id+"-"+typology;
+    	//alert(id);
+    	return id;    	
     }
     
     public  void setAccessMode(String accessMode) {
