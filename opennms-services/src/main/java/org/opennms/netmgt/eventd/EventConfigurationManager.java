@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Mar 02: Remove some unneeded casts and format the code a bit. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 23: Added include files to eventconf.xml.
 //
@@ -268,7 +269,7 @@ public final class EventConfigurationManager {
      * @return The loaded event matching the UEI
      */
     public static Event getByUei(String uei) {
-        return (Event) m_eventConf.getEventByUEI(uei);
+        return m_eventConf.getEventByUEI(uei);
     }
 
     /**
@@ -279,16 +280,18 @@ public final class EventConfigurationManager {
      * @return The loaded event matching the event.
      */
     public static Event get(org.opennms.netmgt.xml.event.Event event) {
-        return (Event) m_eventConf.getEvent(event);
+        return m_eventConf.getEvent(event);
     }
 
     /**
      * Returns true if the tag is marked as secure.
      */
     public static boolean isSecureTag(String name) {
-        for (int i = 0; i < m_secureTags.length; i++)
-            if (m_secureTags[i].equals(name))
+        for (int i = 0; i < m_secureTags.length; i++) {
+            if (m_secureTags[i].equals(name)) {
                 return true;
+            }
+        }
 
         return false;
     }
