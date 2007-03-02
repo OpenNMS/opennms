@@ -10,8 +10,8 @@ class NotificationView extends PageableTableView {
     
     private Notification[] m_notifications;
     
-    NotificationView() {
-        super(8, new String[] { "Node", "Service", "Sent Time", "Responder", "Response Time" });
+    NotificationView(Dashlet dashlet) {
+        super(dashlet, 8, new String[] { "Node", "Service", "Sent Time", "Responder", "Response Time" });
     }
 
     public void setNotifications(Notification[] notifications) {

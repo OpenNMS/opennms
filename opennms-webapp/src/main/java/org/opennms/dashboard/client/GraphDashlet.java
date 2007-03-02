@@ -25,7 +25,7 @@ public class GraphDashlet extends Dashlet {
         super(dashboard, "Resource Graphs");
         setLoader(m_loader);
         
-        m_view = new GraphView();
+        m_view = new GraphView(this);
         setView(m_view);
     }
 
@@ -59,7 +59,8 @@ public class GraphDashlet extends Dashlet {
         
         private String m_selectedResourceId = null;
         
-        public GraphView() {
+        public GraphView(Dashlet dashlet) {
+            super(dashlet);
             m_panel.add(m_pager);
             m_panel.add(m_topLevelResourceListBox);
             m_panel.add(m_childResourceListBox);

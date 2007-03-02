@@ -22,7 +22,7 @@ public class AlarmDashlet extends Dashlet {
 
      */
     
-    private AlarmView m_view = new AlarmView();
+    private AlarmView m_view = new AlarmView(this);
     private AlarmLoader m_loader = new AlarmLoader();
     
     class AlarmLoader extends DashletLoader implements AsyncCallback {

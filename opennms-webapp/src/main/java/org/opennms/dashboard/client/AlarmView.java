@@ -10,8 +10,8 @@ class AlarmView extends PageableTableView {
     
     private Alarm[] m_alarms;
     
-    AlarmView() {
-		super(5, new String[] { "Node", "Description", "Count" });
+    AlarmView(Dashlet dashlet) {
+		super(dashlet, 5, new String[] { "Node", "Description", "Count" });
 	}
     
     public void setAlarms(Alarm[] alarms) {
