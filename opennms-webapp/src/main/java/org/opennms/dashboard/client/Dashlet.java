@@ -88,6 +88,8 @@ public abstract class Dashlet extends Composite {
         m_panel.add(m_titleWidget);
         m_panel.add(m_view);
         
+        m_view.onDashLoad();
+        
     }
     
     protected void error(Throwable caught) {
