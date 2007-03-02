@@ -71,6 +71,11 @@ public abstract class Dashlet extends Composite {
     public void error(String err) {
         m_dashboard.error(err);
     }
+
+	public void setSurveillanceSet(SurveillanceSet set) {
+		// TODO Auto-generated method stub
+		
+	}
     
     
     

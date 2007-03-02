@@ -10,6 +10,8 @@ public interface SurveillanceServiceAsync {
     
     public void getAlarmsForSet(SurveillanceSet set, AsyncCallback cb);
     
+    public void getNotificationsForSet(SurveillanceSet set, AsyncCallback cb);
+    
     public void getNodeNames(SurveillanceSet set, AsyncCallback cb);
     
     public void getResources(SurveillanceSet set, AsyncCallback cb);

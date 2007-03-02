@@ -45,6 +45,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
     private NotificationDashlet createNotificationDashlet() {
         m_notifications = new NotificationDashlet(this);
+        m_notifications.setSurveillanceService(getSurveillanceService());
         return m_notifications;
     }
 
@@ -167,8 +168,10 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     }
 
     private void setSurveillanceSet(SurveillanceSet set) {
+    	m_surveillance.setSurveillanceSet(set);
         m_alarms.setSurveillanceSet(set);
         m_graphs.setSurveillanceSet(set);
+        m_notifications.setSurveillanceSet(set);
     }
 
 }
