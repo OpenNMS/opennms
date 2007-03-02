@@ -26,7 +26,7 @@ class NotificationView extends PageableTableView {
         table.setText(row, 1, notif.getServiceName());
         table.setText(row, 2, ""+notif.getSentTime());
         table.setText(row, 3, notif.getResponder());
-        table.setText(row, 4, ""+notif.getRespondTime());
+        table.setText(row, 4, (notif.getRespondTime() != null) ? notif.getRespondTime().toString() : "");
         table.getRowFormatter().setStyleName(row, notif.getSeverity());
     }
     
