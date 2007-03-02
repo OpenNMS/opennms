@@ -1,6 +1,7 @@
 package org.opennms.dashboard.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.acegisecurity.Authentication;
@@ -8,10 +9,12 @@ import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.apache.log4j.Category;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.dashboard.client.Alarm;
+import org.opennms.dashboard.client.Notification;
 import org.opennms.dashboard.client.SurveillanceData;
 import org.opennms.dashboard.client.SurveillanceGroup;
 import org.opennms.dashboard.client.SurveillanceService;
@@ -24,10 +27,12 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.svclayer.ProgressMonitor;
@@ -44,6 +49,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
+    private NotificationDao m_notificationDao;
     private org.opennms.web.svclayer.SurveillanceService m_webSurveillanceService;
     private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private CategoryDao m_categoryDao;
@@ -329,11 +335,16 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_surveillanceViewConfigDao != null, "surveillanceViewConfigDao property must be set and cannot be null");
         Assert.state(m_categoryDao != null, "categoryDao property must be set and cannot be null");
         Assert.state(m_alarmDao != null, "alarmDao property must be set and cannot be null");
+        Assert.state(m_notificationDao != null, "notificationDao property must be set and cannot be null");
         Assert.state(m_groupManager != null, "groupManager property must be set and cannot be null");
     }
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+    
+    public void setNotificationDao(NotificationDao notifDao) {
+        m_notificationDao = notifDao;
     }
     
     public void setResourceDao(ResourceDao resourceDao) {
@@ -382,6 +393,39 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     
     public void setGroupManager(GroupManager groupManager) {
         m_groupManager = groupManager;
+    }
+
+
+    public Notification[] getNotificationsForSet(SurveillanceSet set) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class, "notification");
+        OnmsCriteria nodeCriteria = criteria.createCriteria("node");
+        addCriteriaForSurveillanceSet(nodeCriteria, set);
+        nodeCriteria.add(Restrictions.ne("type", "D"));
+        criteria.setFetchMode("notification.event", FetchMode.JOIN);
+        criteria.addOrder(Order.desc("notification.pageTime"));
+        
+        List<OnmsNotification> notifications = m_notificationDao.findMatching(criteria);
+
+        Notification[] notifArray = new Notification[notifications.size()];
+        
+        int index = 0;
+        for (OnmsNotification notification : notifications) {
+            notifArray[index++] = createNotification(notification);
+        }
+        
+        return notifArray;
+    }
+
+
+    private Notification createNotification(OnmsNotification onmsNotif) {
+        Notification notif = new Notification();
+        notif.setNodeLabel(onmsNotif.getNode().getLabel());
+        notif.setResponder(onmsNotif.getAnsweredBy());
+        notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
+        notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
+        notif.setServiceName(onmsNotif.getServiceType() == null ? "" : onmsNotif.getServiceType().getName());
+        notif.setSeverity(getSeverityString(onmsNotif.getEvent().getEventSeverity()));
+        return notif;
     }
 
 }

@@ -1,0 +1,118 @@
+package org.opennms.dashboard.client;
+
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+public abstract class PageableTableView extends DashletView implements Pageable {
+
+    private VerticalPanel m_panel = new VerticalPanel();
+	private FlexTable m_table = new FlexTable();
+	private Pager m_pager;
+	private String[] m_headings;
+	private int m_pageSize = 5;
+	private int m_currentIndex = 0;
+	
+	PageableTableView(String[] headings) {
+        initializeTable(headings);
+        
+        m_pager = new Pager(this);
+        
+        m_panel.add(m_table);
+        m_panel.add(m_pager);
+        initWidget(m_panel);
+    }
+
+	/**
+	 * Override this to set the details of the individual rows
+	 * 
+	 * @param table the table to set the data into
+	 * @param row that table row to set the element into
+	 * @param elementIndex the index of the element whose values should be set
+	 */
+	protected abstract void setRow(FlexTable table, int row, int elementIndex);
+
+
+	/**
+	 * The total number of elements being deplayed in this table
+	 */
+	public abstract int getElementCount();
+
+    protected void initializeTable(String[] headings) {
+	    
+	    setHeadings(headings);
+	    
+	    for(int i = 1; i <= getPageSize(); i++) {  
+	        clearRow(i);
+	    }
+	}
+
+	private void setHeadings(String[] headings) {
+		m_headings = headings;
+	    for(int i = 0; i < headings.length; i++) {
+	        m_table.setText(0, i, headings[i]);
+	    }
+	
+	    m_table.getRowFormatter().setStyleName(0, "header");
+	}
+
+	private int getColumnCount() {
+		return m_headings == null ? 0 : m_headings.length;
+	}
+
+	private void clearRow(int row) {
+	    if (row >= m_table.getRowCount()) {
+	        return;
+	    }
+	    
+	    for(int column = 0; column < getColumnCount(); column++) {
+	    	m_table.clearCell(row, column);
+	    }
+	
+	    String currStyle = m_table.getRowFormatter().getStyleName(row);
+	    if (currStyle != null) {
+	        m_table.getRowFormatter().removeStyleName(row, currStyle);
+	    }
+	    formatCells(m_table, row);
+	
+	}
+
+	protected void refresh() {
+	
+	    int rows = Math.min(m_currentIndex+getPageSize(), getElementCount());
+	    
+	    for(int i = m_currentIndex+1; i <= rows; i++) {
+	        setRow(m_table, i - m_currentIndex, i-1);
+	        formatCells(m_table, i - m_currentIndex);
+	    }
+	    
+	    for(int i = rows+1; i <= m_currentIndex+getPageSize(); i++) {
+	        clearRow(i - m_currentIndex);
+	    }
+	
+	    m_pager.update();
+	}
+
+	protected void formatCells(FlexTable table, int row) {
+		for(int column = 0; column < getColumnCount(); column++) {
+		    m_table.getCellFormatter().setStyleName(row, 0, "divider");
+		}
+	}
+
+	public int getCurrentElement() {
+	    return m_currentIndex;
+	}
+
+	public int getPageSize() {
+	    return m_pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		m_pageSize = pageSize;
+	}
+
+	public void setCurrentElement(int element) {
+	    m_currentIndex = element;
+	    refresh();
+	}
+
+}
