@@ -2,22 +2,69 @@
 
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
+var deltaLink=2;
+var borderPercentage=5;
 
-function Link(id, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash)
+
+function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash)
 {
-	if (arguments.length >= 5) { 
+	if (arguments.length >= 6) {
+		var idSplitted = id.split("-");
+		var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
+		
+		if(mapElement1.id==idSplitted[1]){
+			var tmp = mapElement1;
+			mapElement1=mapElement2;
+			mapElement2=tmp;
+		}
+		
+		this.typology=typology;
 		this.animateTag = null;
 		this.id = id;
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
-		var x1 = this.mapElement1.getCPoint().x;
-		var x2 = this.mapElement2.getCPoint().x;
-		var y1 = this.mapElement1.getCPoint().y;
-		var y2 = this.mapElement2.getCPoint().y;
+
+		var numOfSimilarLinks=0;
+
+
+		if(linksBetweenElements[idWithoutTypology]!=undefined){
+			for(type in linksBetweenElements[idWithoutTypology]){
+				if(linksBetweenElements[idWithoutTypology][type]!=undefined){
+					numOfSimilarLinks++;		
+				}
+			}
+		}	
+
+		var heightCapacity=this.mapElement1.height/deltaLink;		
+
+		var startY1=this.mapElement1.getCPoint().y-parseInt((heightCapacity-1)/2)*deltaLink;		
+		var x1=this.mapElement1.getCPoint().x;
+		var y1=this.mapElement1.getCPoint().y;
+		if(numOfSimilarLinks>1)
+			y1=startY1+deltaLink*numOfSimilarLinks;
+		//alert("after y1:"+y1+ "  startY1:"+startY1);
+		var startY2=this.mapElement2.getCPoint().y-parseInt((heightCapacity-1)/2)*deltaLink;		
+		var x2=this.mapElement2.getCPoint().x;
+		var y2=this.mapElement2.getCPoint().y;
+		if(numOfSimilarLinks>1)
+			y2=startY2+deltaLink*numOfSimilarLinks;
+
+		//alert("numOfSimilarLinks of "+id+":"+numOfSimilarLinks+"  y1="+y1+"  y2="+y2);
+		
+		this.deltaX1FromElem1Center=x1-this.mapElement1.getCPoint().x;
+		this.deltaY1FromElem1Center=y1-this.mapElement1.getCPoint().y;
+		this.deltaX2FromElem2Center=x2-this.mapElement2.getCPoint().x;
+		this.deltaY2FromElem2Center=y2-this.mapElement2.getCPoint().y;						
+			/*		var x1 = this.mapElement1.getCPoint().x;
+					var x2 = this.mapElement2.getCPoint().x;
+					var y1 = this.mapElement1.getCPoint().y;
+					var y2 = this.mapElement2.getCPoint().y;
+			*/
 		//Title.scale  = doc.getDocumentElement().getCurrentScale();     // scaling modified by zooming ..
 		//Title.offset = doc.getDocumentElement().getCurrentTranslate(); // offset modified by zooming ..
-		this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash);
-		//doc.getDocumentElement().addEventListener("zoom", Title.Zoom, false);
+
+		//if(map.mapLinks[idSplitted[0]+"-"+idSplitted[1]+"-"+typology]==undefined && map.mapLinks[idSplitted[1]+"-"+idSplitted[0]+"-"+typology]==undefined)
+			this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash);
 	}
 	else
 		alert("Link constructor call error");
@@ -34,8 +81,9 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 	this.svgNode.setAttribute("y2", y2);
 	this.svgNode.setAttribute("stroke", stroke);
 	this.svgNode.setAttribute("stroke-width", stroke_width);
-	if(dash_array!=-1 && dash_array!=0)
-		this.svgNode.setAttribute("dash-array", dash_array);
+	if(dash_array!=-1 && dash_array!=0){
+		this.svgNode.setAttribute("stroke-dasharray", dash_array);
+	}
 	this.svgNode.setAttribute("style", "z-index:0");
 	this.svgNode.addEventListener("click", this.onClick, false);
 
@@ -50,6 +98,10 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 	this.flash=false;
 	if(flash!=undefined && flash==true)
 		this.setFlash(true);
+}
+
+Link.prototype.getTypology = function() {
+	return this.typology;
 }
 
 Link.prototype.getStroke = function() {
@@ -101,10 +153,16 @@ Link.prototype.getSecondElementId = function()
 // update link
 Link.prototype.update = function()
 {
-	this.svgNode.setAttribute("x1", this.mapElement1.getCPoint().x);	
-	this.svgNode.setAttribute("x2", this.mapElement2.getCPoint().x);	
-	this.svgNode.setAttribute("y1", this.mapElement1.getCPoint().y);
-	this.svgNode.setAttribute("y2", this.mapElement2.getCPoint().y);	
+	var x1=this.mapElement1.getCPoint().x+this.deltaX1FromElem1Center;
+	var y1=this.mapElement1.getCPoint().y+this.deltaY1FromElem1Center;	
+	
+	var x2=this.mapElement2.getCPoint().x+this.deltaX2FromElem2Center;	
+	var y2=this.mapElement2.getCPoint().y+this.deltaY2FromElem2Center;	
+
+	this.svgNode.setAttribute("x1", x1);	
+	this.svgNode.setAttribute("x2", x2);	
+	this.svgNode.setAttribute("y1", y1);
+	this.svgNode.setAttribute("y2", y2);	
 }
 
 Link.prototype.getInfo = function(evt)

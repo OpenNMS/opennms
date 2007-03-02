@@ -46,7 +46,9 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	this.avail = avail;
 	this.status = status;
 	this.severity = severity;
-	//alert(nodes);
+	
+	//mantains the number of links on this elements
+	this.numOfLinks=0;
 
 	// renderize element
 	this.svgNode = mapSvgDocument.createElement("g");
@@ -193,6 +195,11 @@ MapElement.prototype.getInfo = function()
 	str+="</text>";
 	// get info 	
 	return str;
+}
+
+MapElement.prototype.getNumberOfLink = function()
+{
+return this.numOfLinks;
 }
 
 MapElement.prototype.onMouseDown = onMouseDownOnMapElement;

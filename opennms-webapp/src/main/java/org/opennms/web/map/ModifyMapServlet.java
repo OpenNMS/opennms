@@ -205,7 +205,7 @@ public class ModifyMapServlet extends HttpServlet {
 										strToSend += "&" + vl.getFirst().getId()
 												+ vl.getFirst().getType() + "+"
 												+ vl.getSecond().getId()
-												+ vl.getSecond().getType()+"+"+vl.getTypology()+"+"+vl.getStatus();
+												+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkOperStatusString();
 									}
 								}
 							} // end cicle on element found
@@ -293,7 +293,7 @@ public class ModifyMapServlet extends HttpServlet {
 									strToSend += "&" + vl.getFirst().getId()
 									+ vl.getFirst().getType() + "+"
 									+ vl.getSecond().getId()
-									+ vl.getSecond().getType()+"+"+vl.getTypology()+"+"+vl.getStatus();
+									+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkOperStatusString();
 							}
 						} 
 						
@@ -343,7 +343,7 @@ public class ModifyMapServlet extends HttpServlet {
 									strToSend += "&" + vl.getFirst().getId()
 									+ vl.getFirst().getType() + "+"
 									+ vl.getSecond().getId()
-									+ vl.getSecond().getType()+"+"+vl.getTypology()+"+"+vl.getStatus();
+									+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkOperStatusString();
 							}
 						} 
 						

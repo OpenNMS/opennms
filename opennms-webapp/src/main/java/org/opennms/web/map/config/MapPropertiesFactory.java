@@ -59,6 +59,7 @@ import org.opennms.web.map.MapsException;
 
 public class MapPropertiesFactory extends Object {
 
+	
 	private static boolean m_loaded = false;
 
 	/**
@@ -91,35 +92,45 @@ public class MapPropertiesFactory extends Object {
 
 	protected static Map[] propertiesMaps = null;
 
-	protected static Map statusesMap = null;
+	protected static Map<String,Status> statusesMap = null;
 
 	protected static Status[] orderedStatuses = null;
 
-	protected static Map severitiesMap = null;
+	protected static Map<String,Severity> severitiesMap = null;
 
 	protected static Severity[] orderedSeverities = null;
 
-	protected static Map availsMap = null;
+	protected static Map<String,Avail> availsMap = null;
 
 	protected static Avail[] orderedAvails = null;
 
-	protected static Map iconsMap = null;
+	protected static Map<String,String> iconsMap = null;
 
-	protected static Map bgImagesMap = null;
+	protected static Map<String,String> bgImagesMap = null;
 
-	protected static Map sourcesMap = null;
+	protected static Map<String,DataSource> sourcesMap = null;
 	
 	protected static Map nodesPerSource = null;
 	
-	protected static Map factoriesMap = null;
+	protected static Map<String,MapsFactory> factoriesMap = null;
 	
-	protected static Map linksMap = null;
+	protected static Map<Integer,Link> linksMap = null;
 	
-	protected static Map linkStatusesMap = null;
+	protected static Map<Integer,Set<Link>> linksBySnmpTypeMap = null;
+	
+	protected static Map<String,LinkStatus> linkStatusesMap = null;
 	
 	protected static String defaultFactory = null; 
 	
 	protected static String severityMapAs = "avg"; 
+	
+	public final static String MULTILINK_BEST_STATUS ="best"; 
+	
+	public final static String MULTILINK_WORST_STATUS ="worst";
+	
+	protected static String multilinkStatus = MULTILINK_BEST_STATUS;
+	
+	protected static int defaultLink = -1;
 
 	/**
 	 * Create a new instance.
@@ -429,15 +440,16 @@ public class MapPropertiesFactory extends Object {
 	protected static Map[] parseMapProperties() throws FileNotFoundException,
 			IOException {
 		log.debug("Parsing map.properties...");
-		severitiesMap = new HashMap();
-		statusesMap = new HashMap();
-		availsMap = new HashMap();
-		iconsMap = new HashMap();
-		bgImagesMap = new HashMap();
-		sourcesMap = new HashMap();
-		factoriesMap = new HashMap();
-		linksMap = new HashMap();
-		linkStatusesMap = new HashMap();
+		severitiesMap = new HashMap<String,Severity>();
+		statusesMap = new HashMap<String,Status>();
+		availsMap = new HashMap<String,Avail>();
+		iconsMap = new HashMap<String,String>();
+		bgImagesMap = new HashMap<String,String>();
+		sourcesMap = new HashMap<String,DataSource>();
+		factoriesMap = new HashMap<String,MapsFactory>();
+		linksMap = new HashMap<Integer,Link>();
+		linksBySnmpTypeMap = new HashMap<Integer,Set<Link>>();
+		linkStatusesMap = new HashMap<String,LinkStatus>();
 
 		// read the file
 		Properties props = new Properties();
@@ -643,12 +655,21 @@ public class MapPropertiesFactory extends Object {
 		//Links
 		String[] links = BundleLists.parseBundleList(props
 				.getProperty("links"));
+		
+		String defaultLinkStr = props.getProperty("link.default");
+		if(defaultLinkStr==null){
+			log.error("Mandatory property 'link.default' not found!");
+			throw new IllegalStateException("The property 'link.default' is mandatory");
+		}
+		defaultLink = Integer.parseInt(defaultLinkStr);
+
 		for (int i = 0; i < links.length; i++) {
 			String id = props.getProperty("link." + links[i] + ".id");
 			String text = props.getProperty("link." + links[i]+ ".text");
 			String speed = props.getProperty("link." + links[i]+ ".speed");
 			String width = props.getProperty("link." + links[i]+ ".width");
 			String dasharray = props.getProperty("link." + links[i]+ ".dash-array");			
+			String snmptype = props.getProperty("link." + links[i]+ ".snmptype");			
 			if(id==null){
 				log.error("param id for link cannot be null in map.properties: skipping link...");
 				continue;
@@ -669,12 +690,24 @@ public class MapPropertiesFactory extends Object {
 			int dash_arr=-1;
 			if(dasharray!=null)
 				dash_arr=Integer.parseInt(dasharray);
-			Link lnk = new Link(speed,text,width,dash_arr);
+			
+			int snmp_type=-1;
+			if(snmptype!=null)
+				snmp_type=Integer.parseInt(snmptype);
+
+			Link lnk = new Link(Integer.parseInt(id), speed,text,width,dash_arr,snmp_type);
 			
 			log.debug("found link " + links[i] + " with id=" + id
-					+ ", text=" + text+ ", speed=" + speed+ ", width=" + width+ ", dash-array=" + dasharray+ ". Adding it.");
+					+ ", text=" + text+ ", speed=" + speed+ ", width=" + width+ ", dash-array=" + dasharray+ "snmp-type=" + snmp_type+". Adding it.");
 			linksMap.put(new Integer(id), lnk);
+			Set<Link> linkbysnmptypeSet = linksBySnmpTypeMap.get(new Integer(snmp_type));
+			if(linkbysnmptypeSet==null)
+				linkbysnmptypeSet=new HashSet<Link>();
+			linkbysnmptypeSet.add(lnk);
+			linksBySnmpTypeMap.put(new Integer(snmp_type), linkbysnmptypeSet);
 		}
+		
+		
 		
 		//Links Statuses
 		String[] linkStatuses = BundleLists.parseBundleList(props
@@ -696,6 +729,16 @@ public class MapPropertiesFactory extends Object {
 		}		
 		
 		
+		if(props.getProperty("multilink.status")!=null){
+			multilinkStatus = props.getProperty("multilink.status"); 	
+		}
+		if(!multilinkStatus.equals("best") && !multilinkStatus.equals("worst")){
+			log.error("multilink.status property must be 'best' or 'worst'... using default ('best')");
+			multilinkStatus=MULTILINK_BEST_STATUS;
+		}
+		log.debug("found multilink.status:"+multilinkStatus);
+				
+			
 		// look up statuses and their properties
 		String[] statuses = BundleLists.parseBundleList(props
 				.getProperty("statuses"));
@@ -1081,14 +1124,52 @@ public class MapPropertiesFactory extends Object {
     }
     
     /**
-     * gets the config Link by Id defined in the map properties config file
+     * gets the config Link by snmpType defined in the map properties config file
      * @param linkTypologyId
      * @return 
      */
-    public Link getLink(int linkTypologyId){
-    	return (Link)linksMap.get(new Integer(linkTypologyId));
+    public Set<Link> getLinkBySnmpType(int linkTypologyId){
+    	return linksBySnmpTypeMap.get(new Integer(linkTypologyId));
     }
+    
+    /**
+     * gets the id corresponding to the link defined in configuration file. The match is performed first by snmptype, 
+     * then by speed (if more are defined). If there is no match, the default link id is returned. 
+     * @param snmpiftype
+     * @param snmpifspeed
+     * @return the id corresponding to the link defined in configuration file. If there is no match, the default link id is returned.
+     */
+    public int getLinkTypeId(int snmpiftype, long snmpifspeed) {
+    	Link link=null;
+    	Set<Link> linkSet = getLinkBySnmpType(snmpiftype);
+    	if(linkSet==null)
+    		link=getDefaultLink();
+    	else{
+    		if(linkSet.size()>1){
+	    		Iterator<Link> it = linkSet.iterator();
+	    		while(it.hasNext()){
+	    			Link next = it.next();
+	    			if(Long.parseLong(next.getSpeed())==snmpifspeed){
+	    				link=next;
+	    				break;
+	    			}
+	    		}
+    		}else{
+    			Iterator<Link> it=linkSet.iterator();
+    			if(it.hasNext()){
+	    			link = it.next();
+	    		}
+    		}
+    	}
+    	if(link==null)	
+    		link=getDefaultLink();
+    	return link.getId();
+    }    
 
+    public Link getLink(int id){
+    	return (Link)linksMap.get(new Integer(id));
+    }
+    
     /**
      * gets the config LinkStatus by label defined in the map properties config file
      * @param linkStatusLabel
@@ -1096,6 +1177,10 @@ public class MapPropertiesFactory extends Object {
      */
     public LinkStatus getLinkStatus(String linkStatusLabel){
     	return (LinkStatus)linkStatusesMap.get(linkStatusLabel);
+    }
+    
+    public Link getDefaultLink(){
+    	return (Link) linksMap.get(defaultLink);
     }
 
 	public Map getLinksMap() {
@@ -1106,5 +1191,8 @@ public class MapPropertiesFactory extends Object {
 		return linkStatusesMap;
 	}
     
+	public static String getMultilinkStatus() {
+		return multilinkStatus;
+	}
 	
 }
