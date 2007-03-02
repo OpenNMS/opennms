@@ -29,4 +29,8 @@ public class DashletView extends Composite {
         m_dashlet.addToTitleBar(widget, constraint);
     }
 
+    public void onDashLoad() {
+        
+    }
+
 }

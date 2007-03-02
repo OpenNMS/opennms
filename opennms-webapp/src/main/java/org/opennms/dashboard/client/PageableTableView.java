@@ -26,10 +26,15 @@ public abstract class PageableTableView extends DashletView implements Pageable 
         m_panel.add(m_table);
         initWidget(m_panel);
         
+    }
+    
+    public void onDashLoad() {
         addToTitleBar(m_pager, DockPanel.CENTER);
     }
 
-	/**
+
+
+    /**
 	 * Override this to set the details of the individual rows
 	 * 
 	 * @param table the table to set the data into

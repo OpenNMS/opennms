@@ -1,5 +1,6 @@
 package org.opennms.dashboard.client;
 
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -28,6 +29,8 @@ public class GraphDashlet extends Dashlet {
         m_view = new GraphView(this);
         setView(m_view);
     }
+    
+    
 
     public void setSurveillanceService(SurveillanceServiceAsync surveillanceService) {
         m_surveillanceService = surveillanceService;
@@ -61,7 +64,7 @@ public class GraphDashlet extends Dashlet {
         
         public GraphView(Dashlet dashlet) {
             super(dashlet);
-            m_panel.add(m_pager);
+            //m_panel.add(m_pager);
             m_panel.add(m_topLevelResourceListBox);
             m_panel.add(m_childResourceListBox);
             m_panel.add(m_prefabGraphListBox);
@@ -85,6 +88,13 @@ public class GraphDashlet extends Dashlet {
             initWidget(m_panel);
         }
         
+        
+        public void onDashLoad() {
+            addToTitleBar(m_pager, DockPanel.CENTER);
+        }
+
+
+
         public TopLevelResourceLoader getTopLevelResourceLoader() {
             return m_topLevelResourceLoader;
         }
