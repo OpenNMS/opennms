@@ -96,7 +96,7 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 
 	protected void formatCells(FlexTable table, int row) {
 		for(int column = 0; column < getColumnCount(); column++) {
-		    m_table.getCellFormatter().setStyleName(row, 0, "divider");
+		    m_table.getCellFormatter().setStyleName(row, column, "divider");
 		}
 	}
 
