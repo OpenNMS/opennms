@@ -60,11 +60,14 @@ public class SurveillanceDashlet extends Dashlet {
     class SurveillanceView extends DashletView {
         
         private Grid m_grid = new Grid();
+        private int m_selectedRow;
+        private int m_selectedCol;
         
         public SurveillanceView() {
             m_grid.addTableListener(new TableListener() {
 
                 public void onCellClicked(SourcesTableEvents table, int row, int col) {
+                    cellClicked(row, col);
                     if (row == 0 && col == 0) {
                         onAllClicked();
                     } else if (row == 0) {
@@ -83,6 +86,40 @@ public class SurveillanceDashlet extends Dashlet {
             
         }
         
+        protected void cellClicked(int row, int col) {
+            
+            clearSelection();
+            
+            m_selectedRow = row;
+            m_selectedCol = col;
+
+            setSelection(row, col);
+        }
+
+        private void setSelection(int row, int col) {
+            if (row == 0 && col == 0) {
+                // nothing to do just be cleared
+            } else if (row == 0) {
+                for(int r = 0; r < m_grid.getRowCount(); r++) {
+                    m_grid.getCellFormatter().addStyleName(r, col, "selected");
+                }
+            } else if (col == 0) {
+                for(int c = 0; c < m_grid.getColumnCount(); c++) {
+                    m_grid.getCellFormatter().addStyleName(row, c, "selected");
+                }
+            } else {
+                m_grid.getCellFormatter().addStyleName(row, col, "selected");
+            }
+        }
+
+        private void clearSelection() {
+            for(int r = 0; r < m_grid.getRowCount(); r++) {
+                for(int c = 0; c < m_grid.getColumnCount(); c++) {
+                    m_grid.getCellFormatter().removeStyleName(r, c, "selected");
+                }
+            }
+        }
+
         void populate(SurveillanceData data) {
             m_grid.resize(data.getRowCount()+1, data.getColumnCount()+1);
             
@@ -108,6 +145,8 @@ public class SurveillanceDashlet extends Dashlet {
                 
                 m_grid.getRowFormatter().setStyleName(row+1, "CellStatus");
             }
+            
+            
             
         }
 
