@@ -17,6 +17,7 @@ public class SimplePager extends Composite {
     public SimplePager(SimplePageable pageable) {
         m_pageable = pageable;
         
+        m_pager.addStyleName("pager");
         m_pager.add(createLeftPageControl(), DockPanel.WEST);
         //m_pager.add(m_label, DockPanel.CENTER);
         m_pager.add(createRightPageControl(), DockPanel.EAST);
@@ -40,6 +41,7 @@ public class SimplePager extends Composite {
         
         PageControl(String text, int direction) {
             m_label = new Label(text);
+            m_label.addStyleName(direction > 0 ? "pagerRight" : "pagerLeft");
             m_direction = direction;
             
             m_label.addClickListener(new ClickListener() {
