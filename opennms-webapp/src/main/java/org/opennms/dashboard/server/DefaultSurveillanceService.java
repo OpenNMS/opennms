@@ -9,7 +9,7 @@ import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.apache.log4j.Category;
-import org.hibernate.FetchMode;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
@@ -396,12 +396,13 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
 
 
+    /*
     public Notification[] getNotificationsForSet(SurveillanceSet set) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class, "notification");
         OnmsCriteria nodeCriteria = criteria.createCriteria("node");
         addCriteriaForSurveillanceSet(nodeCriteria, set);
         nodeCriteria.add(Restrictions.ne("type", "D"));
-        criteria.setFetchMode("notification.event", FetchMode.JOIN);
+        criteria.addOrder(Order.desc("notification.respondTime"));
         criteria.addOrder(Order.desc("notification.pageTime"));
         
         List<OnmsNotification> notifications = m_notificationDao.findMatching(criteria);
@@ -415,16 +416,76 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         return notifArray;
     }
-
-
-    private Notification createNotification(OnmsNotification onmsNotif) {
+    
+     private Notification createNotification(OnmsNotification onmsNotif) {
         Notification notif = new Notification();
         notif.setNodeLabel(onmsNotif.getNode().getLabel());
         notif.setResponder(onmsNotif.getAnsweredBy());
         notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
         notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
         notif.setServiceName(onmsNotif.getServiceType() == null ? "" : onmsNotif.getServiceType().getName());
-        notif.setSeverity(getSeverityString(onmsNotif.getEvent().getEventSeverity()));
+
+        if (onmsNotif.getRespondTime() == null) {
+            if (onmsNotif.getPageTime().before(new Date(System.currentTimeMillis() - (15 * 60 * 1000)))) {
+                notif.setSeverity("Critical");
+            } else {
+                notif.setSeverity("Minor");
+            }
+        } else {
+            notif.setSeverity("Normal");
+        }
+        
+        return notif;
+    }
+    */
+    
+    public Notification[] getNotificationsForSet(SurveillanceSet set) {
+        List<Notification> notifications = new ArrayList<Notification>();
+        
+        Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
+        Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
+        
+        notifications.addAll(convertOnmsNotificationToNotification(getNotificationsWithCriterion(set, Order.desc("notification.pageTime"), Restrictions.isNull("notification.respondTime"), Restrictions.le("notification.pageTime", fifteenMinutesAgo)), "Critical"));
+        notifications.addAll(convertOnmsNotificationToNotification(getNotificationsWithCriterion(set, Order.desc("notification.pageTime"), Restrictions.isNull("notification.respondTime"), Restrictions.gt("notification.pageTime", fifteenMinutesAgo)), "Minor"));
+        notifications.addAll(convertOnmsNotificationToNotification(getNotificationsWithCriterion(set, Order.desc("notification.pageTime"), Restrictions.isNotNull("notification.respondTime"), Restrictions.gt("notification.pageTime", oneWeekAgo)), "Normal"));
+
+        
+        return notifications.toArray(new Notification[notifications.size()]);
+    }
+    
+    public List<OnmsNotification> getNotificationsWithCriterion(SurveillanceSet set, Order order, Criterion... criterions) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class, "notification");
+        OnmsCriteria nodeCriteria = criteria.createCriteria("node");
+        addCriteriaForSurveillanceSet(nodeCriteria, set);
+        nodeCriteria.add(Restrictions.ne("type", "D"));
+        for (Criterion criterion : criterions) {
+            criteria.add(criterion);
+        }
+        criteria.addOrder(order);
+        
+        return m_notificationDao.findMatching(criteria);
+    }
+    
+    public List<Notification> convertOnmsNotificationToNotification(List<OnmsNotification> notifications, String severity) {
+        List<Notification> notifs = new ArrayList<Notification>(notifications.size());
+        
+        for (OnmsNotification notification : notifications) {
+            notifs.add(createNotification(notification, severity));
+        }
+        
+        return notifs;
+    }
+
+
+    private Notification createNotification(OnmsNotification onmsNotif, String severity) {
+        Notification notif = new Notification();
+        notif.setNodeLabel(onmsNotif.getNode().getLabel());
+        notif.setResponder(onmsNotif.getAnsweredBy());
+        notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
+        notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
+        notif.setServiceName(onmsNotif.getServiceType() == null ? "" : onmsNotif.getServiceType().getName());
+        notif.setSeverity(severity);
+        
         return notif;
     }
 
