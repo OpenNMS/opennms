@@ -1,7 +1,9 @@
 package org.opennms.dashboard.client;
 
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 
 public abstract class PageableTableView extends DashletView implements Pageable {
 
@@ -20,9 +22,11 @@ public abstract class PageableTableView extends DashletView implements Pageable 
         
         m_pager = new Pager(this);
         
-        m_panel.add(m_pager);
+        //m_panel.add(m_pager);
         m_panel.add(m_table);
         initWidget(m_panel);
+        
+        addToTitleBar(m_pager, DockPanel.CENTER);
     }
 
 	/**
