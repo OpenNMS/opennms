@@ -166,10 +166,13 @@ Link.prototype.update = function()
 }
 
 Link.prototype.getInfo = function(evt)
-{	
+{
 	var str ="<text id=\"TopInfoText\" x=\"3\" y=\"20\">Link "+
-		"<tspan x=\"3\" dy=\"30\" font-size=\"9\">from: " + this.mapElement1.label.text + "</tspan>"+
-		"<tspan x=\"3\" dy=\"10\" font-size=\"9\"> to: "+this.mapElement2.label.text + "</tspan>" +
+		"<tspan x=\"3\" dy=\"30\" font-size=\"9\"> links: " + this.mapElement1.label.text + "</tspan>"+
+		"<tspan x=\"3\" dy=\"10\" font-size=\"9\">    to: "+this.mapElement2.label.text + "</tspan>" +
+		"<tspan x=\"3\" dy=\"10\" font-size=\"9\"> type: "+LINK_TEXT[this.typology] + "</tspan>" +
+		"<tspan x=\"3\" dy=\"10\" font-size=\"9\"> speed: "+LINK_SPEED[this.typology] + "</tspan>" +
+				
 		"</text>";
 	return str;
 }
