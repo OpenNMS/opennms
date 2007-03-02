@@ -9,22 +9,14 @@ public class SurveillanceData implements IsSerializable {
     private SurveillanceGroup[] m_columnGroups;
     private SurveillanceGroup[] m_rowGroups;
     
-    private String[][] m_data;
-
+    private SurveillanceIntersection[][] m_cells;
+    
     public boolean isComplete() {
         return m_complete;
     }
 
     public void setComplete(boolean complete) {
         m_complete = complete;
-    }
-
-    public String[][] getData() {
-        return m_data;
-    }
-
-    public void setData(String[][] data) {
-        m_data = data;
     }
 
     public int getColumnCount() {
@@ -53,24 +45,42 @@ public class SurveillanceData implements IsSerializable {
         return m_rowGroups[rowIndex].getLabel();
     }
 
-    public String getCell(int row, int col) {
+    public SurveillanceIntersection getCell(int row, int col) {
         ensureData();
-        return m_data[row][col] == null ? "N/A" :  m_data[row][col];
+        return m_cells[row][col];
     }
+    
+    
 
     private void ensureData() {
-        if (m_data == null) {
-            m_data = new String[getRowCount()][getColumnCount()];
+        if (m_cells == null) {
+            m_cells = new SurveillanceIntersection[getRowCount()][getColumnCount()];
+            for(int row = 0; row < getRowCount(); row++) {
+                for(int col = 0; col < getColumnCount(); col++) {
+                    m_cells[row][col] = new SurveillanceIntersection(m_rowGroups[row], m_columnGroups[col]);
+                }
+            }
         }
     }
-
-    public void setCell(int row, int col, String value) {
+    
+    public void setCell(int row, int col, SurveillanceIntersection cell) {
         ensureData();
-        m_data[row][col] = value;
+        cell.setRowGroup(m_rowGroups[col]);
+        cell.setColumnGroup(m_columnGroups[col]);
+        m_cells[row][col] = cell;
+    }
+    
+    public void setCell(int row, int col, String data, String status) {
+        ensureData();
+        m_cells[row][col].setData(data);
+        m_cells[row][col].setStatus(status);
+    }
+    public void setCell(int row, int col, String value) {
+        setCell(row, col, value, null);
     }
     
     public SurveillanceIntersection getIntersection(int row, int col) {
-        return new SurveillanceIntersection(m_rowGroups[row], m_columnGroups[col]);
+        return m_cells[row][col];
     }
 
     public SurveillanceGroup[] getColumnGroups() {

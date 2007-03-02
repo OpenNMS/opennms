@@ -86,7 +86,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         for (List<Cell> row : table.getRows()) {
             int columnIndex = 0;
             for (Cell cell : row.subList(1, row.size())) {
-                data.setCell(rowIndex, columnIndex, cell.getContent().toString());
+                data.setCell(rowIndex, columnIndex, cell.getContent().toString(), cell.getStyleClass());
                 
                 columnIndex++;
             }

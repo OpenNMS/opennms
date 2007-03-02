@@ -6,6 +6,8 @@ public class SurveillanceIntersection extends SurveillanceSet implements IsSeria
     
     private SurveillanceGroup m_rowGroup;
     private SurveillanceGroup m_columnGroup;
+    private String m_data;
+    private String m_status;
     
     /**
      * Default constructor used for serialization
@@ -36,11 +38,27 @@ public class SurveillanceIntersection extends SurveillanceSet implements IsSeria
     }
     
     public String toString() {
-        return m_rowGroup.getLabel() + " X " + m_columnGroup.getLabel();
+        return m_columnGroup.getLabel() + " " + m_rowGroup.getLabel();
     }
 
     public void visit(Visitor v) {
         v.visitIntersection(m_rowGroup, m_columnGroup);
+    }
+
+    public String getData() {
+        return m_data == null ? "N/A" : m_data;
+    }
+
+    public void setData(String data) {
+        m_data = data;
+    }
+
+    public String getStatus() {
+        return m_status == null ? "Unknown" : m_status;
+    }
+
+    public void setStatus(String status) {
+        m_status = status;
     }
     
     
