@@ -141,6 +141,7 @@ public class SurveillanceDashlet extends Dashlet {
                     SurveillanceIntersection cell = data.getCell(row, col);
                     m_grid.setText(row+1, col+1, cell.getData());
                     m_grid.getCellFormatter().setStyleName(row+1, col+1, cell.getStatus());
+                    m_grid.getCellFormatter().addStyleName(row+1, col+1, "divider");
                 }
                 
                 m_grid.getRowFormatter().setStyleName(row+1, "CellStatus");
