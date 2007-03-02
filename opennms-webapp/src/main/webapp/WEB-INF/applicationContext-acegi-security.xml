@@ -154,18 +154,18 @@
         /rtc/post/**=ROLE_RTC
         /webstart/**=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
         /frontpage.htm=ROLE_USER,ROLE_DASHBOARD
-        /dashboard.jsp=ROLE_DASHBOARD
-        /gwt.js=ROLE_DASHBOARD
-        /surveillanceservice.gwt=ROLE_DASHBOARD
-        /org.opennms.dashboard.dashboard.nocache.html=ROLE_DASHBOARD
-        /*.cache.html=ROLE_DASHBOARD
-        /*.cache.html?*=ROLE_DASHBOARD
-        /css/dashboard.css=ROLE_DASHBOARD
-        /images/bg*.png=ROLE_DASHBOARD
-        /images/error.png=ROLE_DASHBOARD
-        /images/progress.gif=ROLE_DASHBOARD
-        /images/rrd/error.png=ROLE_DASHBOARD
-        /graph/graph.png=ROLE_DASHBOARD
+        /dashboard.jsp=ROLE_USER,ROLE_DASHBOARD
+        /gwt.js=ROLE_USER,ROLE_DASHBOARD
+        /surveillanceservice.gwt=ROLE_USER,ROLE_DASHBOARD
+        /org.opennms.dashboard.dashboard.nocache.html=ROLE_USER,ROLE_DASHBOARD
+        /*.cache.html=ROLE_USER,ROLE_DASHBOARD
+        /*.cache.html?*=ROLE_USER,ROLE_DASHBOARD
+        /css/dashboard.css=ROLE_USER,ROLE_DASHBOARD
+        /images/bg*.png=ROLE_USER,ROLE_DASHBOARD
+        /images/error.png=ROLE_USER,ROLE_DASHBOARD
+        /images/progress.gif=ROLE_USER,ROLE_DASHBOARD
+        /images/rrd/error.png=ROLE_USER,ROLE_DASHBOARD
+        /graph/graph.png=ROLE_USER,ROLE_DASHBOARD
         /**=ROLE_USER
       </value>
     </property>
