@@ -10,7 +10,8 @@
 //
 // Modifications:
 //
-// Jul 8, 2004: Created this file.
+// 02 Mar 2007: Add support for --base and fix some log messages. - dj@opennms.org
+// 08 Jul 2004: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -386,13 +387,23 @@ public class JRobinRrdStrategy implements RrdStrategy {
             } else if (arg.startsWith("--upper-limit=")) {
                 String[] argParm = tokenize(arg, "=", true);
                 upperLimit = Double.parseDouble(argParm[1]);
-                log().debug("JRobin upp limit: "+lowerLimit);
+                log().debug("JRobin upp limit: "+upperLimit);
             } else if (arg.equals("--upper-limit")) {
                 if (i + 1 < commandArray.length) {
                     upperLimit = Double.parseDouble(commandArray[++i]);
-                    log().debug("JRobin upper limit: "+lowerLimit);
+                    log().debug("JRobin upper limit: "+upperLimit);
                 } else {
                     throw new IllegalArgumentException("--upper-limit must be followed by a number");
+                }
+            
+            } else if (arg.startsWith("--base=")) {
+                String[] argParm = tokenize(arg, "=", true);
+                graphDef.setBase(Double.parseDouble(argParm[1]));
+            } else if (arg.equals("--base")) {
+                if (i + 1 < commandArray.length) {
+                    graphDef.setBase(Double.parseDouble(commandArray[++i]));
+                } else {
+                    throw new IllegalArgumentException("--base must be followed by a number");
                 }
             
             } else if (arg.startsWith("--font=")) {
