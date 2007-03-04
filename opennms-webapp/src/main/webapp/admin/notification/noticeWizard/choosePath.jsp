@@ -64,6 +64,18 @@
 <%
     HttpSession user = request.getSession(true);
     Notification newNotice = (Notification)user.getAttribute("newNotice");
+    Varbind varbind=newNotice.getVarbind();
+    String varbindName="";
+    String varbindValue="";
+    if(varbind!=null) {
+        
+        if(varbind.getVbname()!=null) {
+            varbindName=varbind.getVbname();
+		}
+        if(varbind.getVbvalue()!=null) {
+         	varbindValue=varbind.getVbvalue();
+        }
+    }
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -137,6 +149,15 @@
           </td>
           <td valign="top" align="left">
             <input type="text" size="100" name="description" value='<%=(newNotice.getDescription()!=null ? newNotice.getDescription() : "")%>'/>
+          </td>
+        </tr>
+        <tr>
+          <td width="10%" valign="top" align="left">
+            Varbind:
+          </td>
+          <td valign="top" align="left">
+            Name: <input type="text" size="30" name="varbindName" value='<%=varbindName%>'/>
+			Value: <input type="text" size="30" name="varbindValue" value='<%=varbindValue%>'/>
           </td>
         </tr>
         <tr>

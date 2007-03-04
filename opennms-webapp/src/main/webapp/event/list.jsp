@@ -50,7 +50,8 @@
 		java.util.*,
 		java.sql.SQLException,
 		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.event.filter.*
+		org.opennms.web.event.filter.*,
+		org.opennms.web.admin.notification.noticeWizard.*
 	"
 %>
 
@@ -167,6 +168,11 @@
             }
         }
     }
+    
+    function submitNewNotificationForm(uei) {
+    	document.getElementById("uei").value=uei;
+    	document.add_notification_form.submit();
+    }
 
   </script>
 
@@ -189,7 +195,12 @@
       </div>
       <!-- end menu -->
 
-
+	  <!-- hidden form for adding a new Notification -->
+	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
+	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_EVENTS_VIEW%>" />
+	  	<input type="hidden" name="uei" value="" /> <!-- Set by java script -->
+	  </form>
+	  
       <!-- hidden form for acknowledging the result set --> 
       <form action="event/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
         <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
@@ -358,7 +369,10 @@
                   <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI"><%=addPositiveFilterString%></a>
                   <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(events[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI"><%=addNegativeFilterString%></a>
                 </nobr>
-              <% } %>                            
+              <% } %>
+              <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+               	  <a href="javascript: void  submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
+              <% } %>
             <% } else { %>
               &nbsp;
             <% } %>

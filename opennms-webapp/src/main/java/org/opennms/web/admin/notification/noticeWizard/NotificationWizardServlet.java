@@ -55,10 +55,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
+import org.opennms.netmgt.config.notifications.Varbind;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.web.Util;
@@ -70,7 +73,13 @@ import org.opennms.web.Util;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class NotificationWizardServlet extends HttpServlet {
+   
+    //SOURCE_PAGE_EVENTS_VIEW is more of a tag than an actual page - can't be used for navigation as is
+    public static final String SOURCE_PAGE_EVENTS_VIEW = "eventslist";
+    
     public static final String SOURCE_PAGE_NOTICES = "eventNotices.jsp";
+    
+    public static final String SOURCE_PAGE_NOTIFS_FOR_UEI = "notifsForUEI.jsp";
 
     public static final String SOURCE_PAGE_UEIS = "chooseUeis.jsp";
 
@@ -96,6 +105,12 @@ public class NotificationWizardServlet extends HttpServlet {
 
         StringBuffer rule = new StringBuffer("");
         StringBuffer redirectString = new StringBuffer();
+        
+        try {
+            NotificationFactory.init();
+        } catch (Exception e) {
+            throw new ServletException("Failed to initialize NotificationFactory:",e);
+        }
 
         if (sourcePage.equals(SOURCE_PAGE_NOTICES)) {
             String userAction = request.getParameter("userAction");
@@ -108,20 +123,7 @@ public class NotificationWizardServlet extends HttpServlet {
                     throw new ServletException("Couldn't save/reload notifications configuration file.", e);
                 }
             } else if (userAction.equals("edit")) {
-                // get the path that was choosen in the select
-                Notification oldNotice = null;
-
-                try {
-                    oldNotice = NotificationFactory.getInstance().getNotification(request.getParameter("notice"));
-                } catch (Exception e) {
-                    throw new ServletException("couldn't get a copy of the notification to edit.", e);
-                }
-
-                // copy the old path into the new path
-                Notification newNotice = copyNotice(oldNotice);
-                user.setAttribute("newNotice", newNotice);
-
-                redirectString.append(SOURCE_PAGE_UEIS);
+                edit(request, user, redirectString);
             } else if (userAction.equals("new")) {
                 Notification newNotice = new Notification();
                 newNotice.setRule("IPADDR IPLIKE *.*.*.*");
@@ -256,6 +258,19 @@ public class NotificationWizardServlet extends HttpServlet {
             String oldName = newNotice.getName();
             newNotice.setName(request.getParameter("name"));
 
+            String varbindName=request.getParameter("varbindName");
+            String varbindValue=request.getParameter("varbindValue");
+            
+            if(varbindName!=null && !varbindName.trim().equals("") && varbindValue!=null && !varbindValue.trim().equals("")) {
+                Varbind varbind=newNotice.getVarbind();
+                if(varbind==null) {
+                    varbind=new Varbind();
+                    newNotice.setVarbind(varbind);
+                }
+                varbind.setVbname(varbindName);
+                varbind.setVbvalue(varbindValue);
+            }
+            
             try {
                     // replacing a path with a new name.
                     NotificationFactory.getInstance().replaceNotification(oldName, newNotice);
@@ -324,6 +339,34 @@ public class NotificationWizardServlet extends HttpServlet {
                 }
             }
             redirectString.append(redirectPage).append(makeQueryString(params));
+        } else if (sourcePage.equals(SOURCE_PAGE_EVENTS_VIEW)) {
+            //We've come from the event view page, and will have a UEI.  
+            //If there are existing notices for this UEI, then go to a page listing them allowing editing.  
+            //If there are none, then create a notice, populate the UEI, and go to the buildRule page.
+            String uei=request.getParameter("uei");
+            try {
+                if(NotificationFactory.getInstance().hasUei(uei)) {
+                    //There are existing notifications for this UEI - goto a listing page
+                    Map params = new HashMap();
+                    params.put("uei", uei);                   
+                    redirectString.append(SOURCE_PAGE_NOTIFS_FOR_UEI).append(makeQueryString(params));
+                } else {
+                    newNotifWithUEI(request, user, redirectString,rule);
+                }
+            } catch (IOException e) {
+                throw new ServletException("IOException while checking if there is an existing notification for UEI "+uei, e);
+            } catch (MarshalException e) {
+                throw new ServletException("Marshalling Exception while checking if there is an existing notification for UEI "+uei, e);
+            } catch (ValidationException e) {
+                throw new ServletException("Validation Exception while checking if there is an existing notification for UEI "+uei, e);
+            } 
+        } else if (sourcePage.equals(SOURCE_PAGE_NOTIFS_FOR_UEI)) {
+            String userAction=request.getParameter("userAction");
+            if("edit".equals(userAction)) {
+                edit(request, user, redirectString);
+            } else if ("new".equals(userAction)) {
+                newNotifWithUEI(request, user, redirectString, rule);
+            }
         }
 
         if (redirectString.toString().equals(""))
@@ -331,7 +374,40 @@ public class NotificationWizardServlet extends HttpServlet {
 
         response.sendRedirect(redirectString.toString());
     }
+    private void newNotifWithUEI(HttpServletRequest request, HttpSession user, StringBuffer redirectString, StringBuffer rule) throws ServletException {
+        String uei=request.getParameter("uei");
+        Notification newNotice = new Notification();
+        newNotice.setRule("IPADDR IPLIKE *.*.*.*");
+        newNotice.setNumericMessage("111-%noticeid%");
+        newNotice.setSubject("Notice #%noticeid%");
+        newNotice.setStatus("on");
+        newNotice.setUei(uei);
 
+        Map params = new HashMap();
+        rule.append(newNotice.getRule());
+        rule = toSingleQuote(rule);
+        params.put("newRule", rule.toString());
+
+        user.setAttribute("newNotice", newNotice);
+        redirectString.append(SOURCE_PAGE_RULE).append(makeQueryString(params));                         
+    }
+    
+    //Common code for two source pages that can't really be considered the same
+    private void edit(HttpServletRequest request, HttpSession user, StringBuffer redirectString) throws ServletException {
+        Notification oldNotice = null;
+
+        try {
+            oldNotice = NotificationFactory.getInstance().getNotification(request.getParameter("notice"));
+        } catch (Exception e) {
+            throw new ServletException("couldn't get a copy of the notification to edit.", e);
+        }
+
+        // copy the old path into the new path
+        Notification newNotice = copyNotice(oldNotice);
+        user.setAttribute("newNotice", newNotice);
+
+        redirectString.append(SOURCE_PAGE_UEIS);    
+    }
     /**
      * 
      */
@@ -422,6 +498,9 @@ public class NotificationWizardServlet extends HttpServlet {
     }
 
     private static StringBuffer checkParens(StringBuffer buffer) {
+        if(buffer.length()==0) {
+            return buffer;
+        }
         if ((buffer.charAt(0) != '(') || (buffer.charAt(buffer.length() - 1) != ')')) {
             buffer.append(")");
             buffer.insert(0, "(");
@@ -450,7 +529,7 @@ public class NotificationWizardServlet extends HttpServlet {
     private void updatePaths(String rule, String criticalIp, String criticalSvc)
                                  throws FilterParseException, SQLException {
         Connection conn = Vault.getDbConnection();
-        StringBuffer buffer = new StringBuffer();
+        //StringBuffer buffer = new StringBuffer();
 	SortedMap nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
         try {
             Iterator i = nodes.keySet().iterator();
