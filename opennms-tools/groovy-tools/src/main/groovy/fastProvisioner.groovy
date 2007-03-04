@@ -22,6 +22,18 @@ import org.w3c.dom.Comment;
 
 import org.xml.sax.InputSource;
 
+def propConfig = new PropertiesConfigurationFile(new File("response-graph.properties"));
+
+propConfig.addComment("Hello!!!");
+propConfig.addComment("# There");
+assert null == propConfig.getProp("key");
+propConfig.setProp("key", "val");
+assert "val" == propConfig.getProp("key");
+assert "image/png" == propConfig.getProp("output.mime");
+propConfig.setProp("output.mime", "totallyInvalid");
+assert "totallyInvalid" == propConfig.getProp("output.mime");
+
+
 
 def pdb = ProvisioningDatabase.load(new File("config-ext.txt"), new File("config-int.txt"));
 
@@ -33,7 +45,6 @@ pdb.forEachService { svc -> pollerConfig.process(svc) }
 
 capsdConfig.save();
 pollerConfig.save();
-
 
 class ProvisioningDatabase {
     def comment = ~/^\s*#.*$/;
@@ -306,6 +317,69 @@ class PollerConfiguration extends XMLConfigurationFile {
         }
     }
     
+}
+
+class PropertiesConfigurationFile {
+    def comment = ~/^\s*#.*$/;
+    def blank = ~/^\s*$/;
+    def data = ~/^\s*(\S+)\s*+=\s*(.+)$/;
+
+    def file;
+    def lines = [];
+    def index = [:];
+
+    PropertiesConfigurationFile(File file) {
+        this.file = file;
+
+        file.eachLine { line -> addLine(line); }
+    }
+
+    public void save() {
+        file.withPrintWriter { out -> lines.each { line -> out.println line } }
+    }
+
+    private void addLine(String line) {
+        lines.add(line);
+        if (line =~ blank) {
+            return;
+        }
+        if (line =~ comment) {
+            return;
+        }
+        def matcher = line =~ data;
+        if (matcher) {
+            def key = matcher.group(1);
+            def val = matcher.group(2);
+
+            index[key] = [lineno:lines.size()-1, val:val];
+        }
+
+    }
+
+    public void addComment(String line) {
+        if (line =~ comment) {
+            lines.add(line);
+        }
+        else {
+            lines.add('# '+line);
+        }
+    }
+
+    public String getProp(String key) {
+        return index[key]?.val;
+    }
+
+    public void setProp(String key, String val) {
+        if (index.containsKey(key)) {
+            int lineno = index[key].lineno;
+            lines[lineno]="$key=$val"
+            index[key]=[lineno:lineno, val:val];
+        } else {
+            index[key] = [lineno:lines.size(), val:val];
+            lines.add("$key=$val");
+        }
+    }
+
 }
 
 /**
