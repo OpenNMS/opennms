@@ -39,6 +39,10 @@ public class RtcNodeModel {
         public double getAvailability() {
             return m_availability;
         }
+        
+        public String getAvailabilityAsString() {
+            return AVAILABILITY_FORMAT.format(m_availability);
+        }
 
         public int getDownServiceCount() {
             return m_downServiceCount;
@@ -53,7 +57,7 @@ public class RtcNodeModel {
         }
         
         public String toString() {
-            return m_node.getLabel() + ": " + m_downServiceCount + " of " + m_serviceCount + ": " + AVAILABILITY_FORMAT.format(m_availability);
+            return m_node.getLabel() + ": " + m_downServiceCount + " of " + m_serviceCount + ": " + getAvailabilityAsString();
         }
     }
 }

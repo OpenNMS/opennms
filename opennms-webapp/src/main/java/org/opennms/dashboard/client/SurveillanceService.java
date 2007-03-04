@@ -17,4 +17,6 @@ public interface SurveillanceService extends RemoteService {
     public String[][] getChildResources(String resourceId);
     
     public String[][] getPrefabGraphs(String resourceId);
+    
+    public NodeRtc[] getRtcForSet(SurveillanceSet set);
 }

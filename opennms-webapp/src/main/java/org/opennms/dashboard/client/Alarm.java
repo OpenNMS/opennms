@@ -1,5 +1,7 @@
 package org.opennms.dashboard.client;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Alarm implements IsSerializable {
@@ -11,16 +13,20 @@ public class Alarm implements IsSerializable {
     private int m_nodeId;
     private String m_ipAddress;
     private String m_svcName;
+    private Date m_firstEventTime;
+    private Date m_lastEventTime;
     
     public Alarm() {
         
     }
     
-    public Alarm(String severity, String nodeLabel, String description, int count) {
+    public Alarm(String severity, String nodeLabel, String description, int count, Date firstEventTime, Date lastEventTime) {
         m_severity = severity;
         m_nodeLabel = nodeLabel;
         m_descrption = description;
         m_count = count;
+        m_firstEventTime = firstEventTime;
+        m_lastEventTime = lastEventTime;
     }
     public int getCount() {
         return m_count;
@@ -63,6 +69,22 @@ public class Alarm implements IsSerializable {
     }
     public void setSvcName(String svcName) {
         m_svcName = svcName;
+    }
+
+    public Date getFirstEventTime() {
+        return m_firstEventTime;
+    }
+
+    public void setFirstEventTime(Date firstEventTime) {
+        m_firstEventTime = firstEventTime;
+    }
+
+    public Date getLastEventTime() {
+        return m_lastEventTime;
+    }
+
+    public void setLastEventTime(Date lastEventTime) {
+        m_lastEventTime = lastEventTime;
     }
     
     
