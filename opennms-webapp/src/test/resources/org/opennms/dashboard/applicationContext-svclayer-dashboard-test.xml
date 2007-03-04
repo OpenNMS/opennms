@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:tx="http://www.springframework.org/schema/tx" 
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:tx="http://www.springframework.org/schema/tx" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <tx:annotation-driven />
-
-  <bean id="urlMapping"   class="org.gwtwidgets.server.spring.GWTHandler">
-    <property name="mapping">
-      <map>
-        <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
-      </map>
-    </property>
-    <!--  property name="unwrappingGWTExceptions" value="true" / -->
-    <property name="order" value="0"/>
-  </bean>	     
-  
-  <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
-  	<property name="order" value="1" />
-  </bean>
   
   <bean name="gwtSurveillanceService" class="org.opennms.dashboard.server.DefaultSurveillanceService">
     <property name="nodeDao" ref="nodeDao" />

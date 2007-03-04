@@ -24,40 +24,31 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     private OutageDao m_outageDao;
 
     public RtcNodeModel getNodeList() {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class, "monitoredService");
-        criteria.add(Restrictions.eq("monitoredService.status", "A"));
-        criteria.createAlias("ipInterface", "ipInterface", CriteriaSpecification.INNER_JOIN);
-        criteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
-        criteria.createAlias("ipInterface.node", "node", CriteriaSpecification.INNER_JOIN);
-        criteria.add(Restrictions.ne("node.type", "D"));
-        criteria.createAlias("serviceType", "serviceType", CriteriaSpecification.INNER_JOIN);
-        criteria.createAlias("currentOutages", "currentOutages", CriteriaSpecification.LEFT_JOIN);
-        criteria.addOrder(Order.asc("node.label"));
-        criteria.addOrder(Order.asc("node.id"));
-        criteria.addOrder(Order.asc("ipInterface.ipAddress"));
-        criteria.addOrder(Order.asc("serviceType.name"));
+        OnmsCriteria serviceCriteria = createServiceCriteria();
+        OnmsCriteria outageCriteria = createOutageCriteria();
         
-        OnmsCriteria outageCriteria = new OnmsCriteria(OnmsOutage.class, "outage");
-        outageCriteria.createAlias("monitoredService", "monitoredService", CriteriaSpecification.INNER_JOIN);
-        outageCriteria.add(Restrictions.eq("monitoredService.status", "A"));
-        outageCriteria.createAlias("monitoredService.ipInterface", "ipInterface", CriteriaSpecification.INNER_JOIN);
-        outageCriteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
-        outageCriteria.createAlias("monitoredService.ipInterface.node", "node", CriteriaSpecification.INNER_JOIN);
-        outageCriteria.add(Restrictions.ne("node.type", "D"));
-        
+        return getNodeListForCriteria(serviceCriteria, outageCriteria);
+    }
+    
+    public RtcNodeModel getNodeListForCriteria(OnmsCriteria serviceCriteria, OnmsCriteria outageCriteria) {
+        serviceCriteria.addOrder(Order.asc("node.label"));
+        serviceCriteria.addOrder(Order.asc("node.id"));
+        serviceCriteria.addOrder(Order.asc("ipInterface.ipAddress"));
+        serviceCriteria.addOrder(Order.asc("serviceType.name"));
+
         Date periodEnd = new Date(System.currentTimeMillis());
         Date periodStart = new Date(periodEnd.getTime() - (24 * 60 * 60 * 1000));
         
         Disjunction disjunction = Restrictions.disjunction();
         disjunction.add(Restrictions.isNull("ifRegainedService"));
-        disjunction.add(Restrictions.gt("ifLostService", periodStart));
-        disjunction.add(Restrictions.gt("ifRegainedService", periodStart));
+        disjunction.add(Restrictions.ge("ifLostService", periodStart));
+        disjunction.add(Restrictions.ge("ifRegainedService", periodStart));
         outageCriteria.add(disjunction);
         
         outageCriteria.addOrder(Order.asc("monitoredService"));
         outageCriteria.addOrder(Order.asc("ifLostService"));
         
-        List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
+        List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(serviceCriteria);
         List<OnmsOutage> outages = m_outageDao.findMatching(outageCriteria);
         
         Map<OnmsMonitoredService, Long> serviceDownTime = calculateServiceDownTime(periodEnd, periodStart, outages);
@@ -100,6 +91,33 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         return model;
     }
 
+    public OnmsCriteria createOutageCriteria() {
+        OnmsCriteria outageCriteria = new OnmsCriteria(OnmsOutage.class, "outage");
+
+        outageCriteria.createAlias("monitoredService", "monitoredService", CriteriaSpecification.INNER_JOIN);
+        outageCriteria.add(Restrictions.eq("monitoredService.status", "A"));
+        outageCriteria.createAlias("monitoredService.ipInterface", "ipInterface", CriteriaSpecification.INNER_JOIN);
+        outageCriteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
+        outageCriteria.createAlias("monitoredService.ipInterface.node", "node", CriteriaSpecification.INNER_JOIN);
+        outageCriteria.add(Restrictions.ne("node.type", "D"));
+        
+        return outageCriteria;
+    }
+
+    public OnmsCriteria createServiceCriteria() {
+        OnmsCriteria serviceCriteria = new OnmsCriteria(OnmsMonitoredService.class, "monitoredService");
+
+        serviceCriteria.add(Restrictions.eq("monitoredService.status", "A"));
+        serviceCriteria.createAlias("ipInterface", "ipInterface", CriteriaSpecification.INNER_JOIN);
+        serviceCriteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
+        serviceCriteria.createAlias("ipInterface.node", "node", CriteriaSpecification.INNER_JOIN);
+        serviceCriteria.add(Restrictions.ne("node.type", "D"));
+        serviceCriteria.createAlias("serviceType", "serviceType", CriteriaSpecification.INNER_JOIN);
+        serviceCriteria.createAlias("currentOutages", "currentOutages", CriteriaSpecification.LEFT_JOIN);
+        
+        return serviceCriteria;
+    }
+
     private Map<OnmsMonitoredService, Long> calculateServiceDownTime(Date periodEnd, Date periodStart, List<OnmsOutage> outages) {
         Map<OnmsMonitoredService, Long> map = new HashMap<OnmsMonitoredService, Long>();
         for (OnmsOutage outage : outages) {
@@ -115,7 +133,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
             }
             
             Date end;
-            if (outage.getIfRegainedService() == null || outage.getIfRegainedService().after(periodEnd)) {
+            if (outage.getIfRegainedService() == null || !outage.getIfRegainedService().before(periodEnd)) {
                 end = periodEnd;
             } else {
                 end = outage.getIfRegainedService();

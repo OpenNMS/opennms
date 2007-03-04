@@ -2,7 +2,6 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -30,7 +29,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         add(createGraphDashlet(),        "graphs");
         add(createNotificationDashlet(), "notifications");
         //add(createOutageDashlet(),       "outages");
-        //add(createNodeStatusDashlet(),   "nodeStatus");
+        add(createNodeStatusDashlet(),   "nodeStatus");
         
         
         setSurveillanceSet(SurveillanceSet.DEFAULT);
@@ -105,24 +104,9 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     }
 
     private NodeStatusDashlet createNodeStatusDashlet() {
-
-        final NodeStatusDashlet nodeStatus = new NodeStatusDashlet(this);
-        
-        AsyncCallback cb = new AsyncCallback() {
-
-            public void onFailure(Throwable e) {
-               error(e);
-            }
-
-            public void onSuccess(Object arg) {
-                nodeStatus.setNodes((String[])arg);
-            }
-            
-        };
-
-        getSurveillanceService().getNodeNames(null, cb);
-
-        m_nodeStatus = nodeStatus;
+        m_nodeStatus = new NodeStatusDashlet(this);
+        m_nodeStatus.setSurveillanceService(getSurveillanceService());
+        m_nodeStatus.setSurveillanceSet(SurveillanceSet.DEFAULT);
         return m_nodeStatus;
     }
     

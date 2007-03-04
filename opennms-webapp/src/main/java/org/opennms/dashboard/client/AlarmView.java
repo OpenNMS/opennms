@@ -11,7 +11,7 @@ class AlarmView extends PageableTableView {
     private Alarm[] m_alarms;
     
     AlarmView(Dashlet dashlet) {
-		super(dashlet, 5, new String[] { "Node", "Description", "Count" });
+		super(dashlet, 5, new String[] { "Node", "Description", "Count", "First Time", "Last Time" });
 	}
     
     public void setAlarms(Alarm[] alarms) {
@@ -25,6 +25,8 @@ class AlarmView extends PageableTableView {
         table.setText(row, 0, alarm.getNodeLabel());
         table.setHTML(row, 1, alarm.getDescrption());
         table.setText(row, 2, ""+alarm.getCount());
+        table.setText(row, 3, alarm.getFirstEventTime().toString());
+        table.setText(row, 4, alarm.getLastEventTime().toString());
         table.getRowFormatter().setStyleName(row, alarm.getSeverity());
     }
     

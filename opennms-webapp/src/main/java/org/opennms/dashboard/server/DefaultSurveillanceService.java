@@ -14,13 +14,13 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.dashboard.client.Alarm;
+import org.opennms.dashboard.client.NodeRtc;
 import org.opennms.dashboard.client.Notification;
 import org.opennms.dashboard.client.SurveillanceData;
 import org.opennms.dashboard.client.SurveillanceGroup;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -36,9 +36,12 @@ import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.svclayer.ProgressMonitor;
+import org.opennms.web.svclayer.RtcService;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
+import org.opennms.web.svclayer.support.RtcNodeModel;
+import org.opennms.web.svclayer.support.RtcNodeModel.RtcNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -54,7 +57,8 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private CategoryDao m_categoryDao;
     private AlarmDao m_alarmDao;
-    private GroupManager m_groupManager;
+    private RtcService m_rtcService;
+    private GroupDao m_groupDao;
     
     public SurveillanceData getSurveillanceData() {
         SurveillanceData data = new SurveillanceData();
@@ -179,7 +183,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         int index = 0;
         for (OnmsAlarm alarm : alarms) {
-            alarmArray[index] = new Alarm(getSeverityString(alarm.getSeverity()), alarm.getNode().getLabel(), alarm.getDescription(), alarm.getCounter());
+            alarmArray[index] = new Alarm(getSeverityString(alarm.getSeverity()), alarm.getNode().getLabel(), alarm.getDescription(), alarm.getCounter(), new Date(alarm.getFirstEventTime().getTime()), new Date(alarm.getLastEventTime().getTime()));
             index++;
         }
         
@@ -256,7 +260,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
             return userView;
         }
         
-        List<Group> groups = GroupFactory.getInstance().findGroupsForUser(user);
+        List<Group> groups = m_groupDao.findGroupsForUser(user);
         for (Group group : groups) {
             View groupView = m_surveillanceViewConfigDao.getView(group.getName());
             if (groupView != null) {
@@ -265,8 +269,10 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
             }
         }
         
+        View defaultView = m_surveillanceViewConfigDao.getDefaultView();
+        Assert.state(defaultView != null, "there is no default surveillance view and we could not find a surviellance view for the user's username or any of their groups");
         log().debug("Did not find a surveillance view matching the user's user name or one of their group names.  Using the default view for user '" + user + "'");
-        return m_surveillanceViewConfigDao.getDefaultView();
+        return defaultView;
     }
     
     private Category log() {
@@ -328,6 +334,95 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
         return labels.toArray(new String[labels.size()][]);
     }
+    
+    public Notification[] getNotificationsForSet(SurveillanceSet set) {
+        List<Notification> notifications = new ArrayList<Notification>();
+        
+        Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
+        Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
+        
+        notifications.addAll(getNotificationsWithCriterion(set, "Critical", Restrictions.isNull("notification.respondTime"), Restrictions.le("notification.pageTime", fifteenMinutesAgo)));
+        notifications.addAll(getNotificationsWithCriterion(set, "Minor", Restrictions.isNull("notification.respondTime"), Restrictions.gt("notification.pageTime", fifteenMinutesAgo)));
+        notifications.addAll(getNotificationsWithCriterion(set, "Normal", Restrictions.isNotNull("notification.respondTime"), Restrictions.gt("notification.pageTime", oneWeekAgo)));
+
+        
+        return notifications.toArray(new Notification[notifications.size()]);
+    }
+    
+    private List<Notification> getNotificationsWithCriterion(SurveillanceSet set, String severity, Criterion... criterions) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class, "notification");
+        
+        OnmsCriteria nodeCriteria = criteria.createCriteria("node");
+        addCriteriaForSurveillanceSet(nodeCriteria, set);
+        
+        nodeCriteria.add(Restrictions.ne("type", "D"));
+        for (Criterion criterion : criterions) {
+            criteria.add(criterion);
+        }
+        
+        criteria.addOrder(Order.desc("notification.pageTime"));
+        
+        List<OnmsNotification> notifications = m_notificationDao.findMatching(criteria);
+        
+        return convertOnmsNotificationsToNotifications(notifications, severity);
+    }
+
+    private List<Notification> convertOnmsNotificationsToNotifications(List<OnmsNotification> notifications, String severity) {
+        List<Notification> notifs = new ArrayList<Notification>(notifications.size());
+        for (OnmsNotification notification : notifications) {
+            notifs.add(createNotification(notification, severity));
+        }
+        return notifs;
+    }
+
+    private Notification createNotification(OnmsNotification onmsNotif, String severity) {
+        Notification notif = new Notification();
+        notif.setNodeLabel(onmsNotif.getNode().getLabel());
+        notif.setResponder(onmsNotif.getAnsweredBy());
+        notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
+        notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
+        notif.setServiceName(onmsNotif.getServiceType() == null ? "" : onmsNotif.getServiceType().getName());
+        notif.setSeverity(severity);
+        
+        return notif;
+    }
+    
+    public NodeRtc[] getRtcForSet(SurveillanceSet set) {
+        OnmsCriteria serviceCriteria = m_rtcService.createServiceCriteria();
+        OnmsCriteria outageCriteria = m_rtcService.createOutageCriteria();
+        addCriteriaForSurveillanceSet(serviceCriteria, set);
+        addCriteriaForSurveillanceSet(outageCriteria, set);
+        
+        RtcNodeModel model = m_rtcService.getNodeListForCriteria(serviceCriteria, outageCriteria);
+        
+        NodeRtc[] nodeRtc = new NodeRtc[model.getNodeList().size()];
+        
+        int index = 0;
+        for (RtcNode node : model.getNodeList()) {
+            NodeRtc n = new NodeRtc();
+            
+            n.setNodeLabel(node.getNode().getLabel());
+            
+            n.setDownServiceCount(node.getDownServiceCount());
+            n.setServiceCount(node.getServiceCount());
+            if (node.getDownServiceCount() == 0) {
+                n.setServiceStyle("Normal");
+            } else {
+                n.setServiceStyle("Critical");
+            }
+            
+            n.setAvailability(node.getAvailabilityAsString());
+            if (node.getAvailability() == 1.0) {
+                n.setAvailabilityStyle("Normal");
+            } else {
+                n.setAvailabilityStyle("Critical");
+            }
+            
+            nodeRtc[index++] = n;
+        }
+        
+        return nodeRtc;
+    }
 
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
@@ -338,7 +433,8 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_categoryDao != null, "categoryDao property must be set and cannot be null");
         Assert.state(m_alarmDao != null, "alarmDao property must be set and cannot be null");
         Assert.state(m_notificationDao != null, "notificationDao property must be set and cannot be null");
-        Assert.state(m_groupManager != null, "groupManager property must be set and cannot be null");
+        Assert.state(m_rtcService != null, "rtcService property must be set and cannot be null");
+        Assert.state(m_groupDao != null, "groupDao property must be set and cannot be null");
     }
 
     public void setNodeDao(NodeDao nodeDao) {
@@ -389,106 +485,21 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         m_alarmDao = alarmDao;
     }
     
-    public GroupManager getGroupManager() {
-        return m_groupManager;
-    }
-    
-    public void setGroupManager(GroupManager groupManager) {
-        m_groupManager = groupManager;
+    public RtcService getRtcService() {
+        return m_rtcService;
     }
 
-
-    /*
-    public Notification[] getNotificationsForSet(SurveillanceSet set) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class, "notification");
-        OnmsCriteria nodeCriteria = criteria.createCriteria("node");
-        addCriteriaForSurveillanceSet(nodeCriteria, set);
-        nodeCriteria.add(Restrictions.ne("type", "D"));
-        criteria.addOrder(Order.desc("notification.respondTime"));
-        criteria.addOrder(Order.desc("notification.pageTime"));
-        
-        List<OnmsNotification> notifications = m_notificationDao.findMatching(criteria);
-
-        Notification[] notifArray = new Notification[notifications.size()];
-        
-        int index = 0;
-        for (OnmsNotification notification : notifications) {
-            notifArray[index++] = createNotification(notification);
-        }
-        
-        return notifArray;
+    public void setRtcService(RtcService rtcService) {
+        m_rtcService = rtcService;
     }
-    
-     private Notification createNotification(OnmsNotification onmsNotif) {
-        Notification notif = new Notification();
-        notif.setNodeLabel(onmsNotif.getNode().getLabel());
-        notif.setResponder(onmsNotif.getAnsweredBy());
-        notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
-        notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
-        notif.setServiceName(onmsNotif.getServiceType() == null ? "" : onmsNotif.getServiceType().getName());
 
-        if (onmsNotif.getRespondTime() == null) {
-            if (onmsNotif.getPageTime().before(new Date(System.currentTimeMillis() - (15 * 60 * 1000)))) {
-                notif.setSeverity("Critical");
-            } else {
-                notif.setSeverity("Minor");
-            }
-        } else {
-            notif.setSeverity("Normal");
-        }
-        
-        return notif;
-    }
-    */
-    
-    public Notification[] getNotificationsForSet(SurveillanceSet set) {
-        List<Notification> notifications = new ArrayList<Notification>();
-        
-        Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
-        Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
-        
-        notifications.addAll(convertOnmsNotificationToNotification(getNotificationsWithCriterion(set, Order.desc("notification.pageTime"), Restrictions.isNull("notification.respondTime"), Restrictions.le("notification.pageTime", fifteenMinutesAgo)), "Critical"));
-        notifications.addAll(convertOnmsNotificationToNotification(getNotificationsWithCriterion(set, Order.desc("notification.pageTime"), Restrictions.isNull("notification.respondTime"), Restrictions.gt("notification.pageTime", fifteenMinutesAgo)), "Minor"));
-        notifications.addAll(convertOnmsNotificationToNotification(getNotificationsWithCriterion(set, Order.desc("notification.pageTime"), Restrictions.isNotNull("notification.respondTime"), Restrictions.gt("notification.pageTime", oneWeekAgo)), "Normal"));
-
-        
-        return notifications.toArray(new Notification[notifications.size()]);
-    }
-    
-    public List<OnmsNotification> getNotificationsWithCriterion(SurveillanceSet set, Order order, Criterion... criterions) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class, "notification");
-        OnmsCriteria nodeCriteria = criteria.createCriteria("node");
-        addCriteriaForSurveillanceSet(nodeCriteria, set);
-        nodeCriteria.add(Restrictions.ne("type", "D"));
-        for (Criterion criterion : criterions) {
-            criteria.add(criterion);
-        }
-        criteria.addOrder(order);
-        
-        return m_notificationDao.findMatching(criteria);
-    }
-    
-    public List<Notification> convertOnmsNotificationToNotification(List<OnmsNotification> notifications, String severity) {
-        List<Notification> notifs = new ArrayList<Notification>(notifications.size());
-        
-        for (OnmsNotification notification : notifications) {
-            notifs.add(createNotification(notification, severity));
-        }
-        
-        return notifs;
+    public GroupDao getGroupDao() {
+        return m_groupDao;
     }
 
 
-    private Notification createNotification(OnmsNotification onmsNotif, String severity) {
-        Notification notif = new Notification();
-        notif.setNodeLabel(onmsNotif.getNode().getLabel());
-        notif.setResponder(onmsNotif.getAnsweredBy());
-        notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
-        notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
-        notif.setServiceName(onmsNotif.getServiceType() == null ? "" : onmsNotif.getServiceType().getName());
-        notif.setSeverity(severity);
-        
-        return notif;
+    public void setGroupDao(GroupDao groupDao) {
+        m_groupDao = groupDao;
     }
 
 }

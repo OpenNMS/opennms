@@ -19,4 +19,6 @@ public interface SurveillanceServiceAsync {
     public void getChildResources(String resourceId, AsyncCallback cb);
 
     public void getPrefabGraphs(String resourceId, AsyncCallback cb);
+    
+    public void getRtcForSet(SurveillanceSet set, AsyncCallback cb);
 }

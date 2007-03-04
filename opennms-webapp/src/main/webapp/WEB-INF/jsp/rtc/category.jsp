@@ -70,7 +70,7 @@
         </c:url>
         
         <c:choose>
-          <c:when test="${node.downServiceCount == node.serviceCount}">
+          <c:when test="${node.downServiceCount == 0}">
             <c:set var="outageClass" value="Normal"/>
           </c:when>
           
