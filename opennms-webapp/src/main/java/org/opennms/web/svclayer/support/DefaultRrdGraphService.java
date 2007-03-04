@@ -373,8 +373,11 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             }
 
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                String value=entry.getValue().toString();
+                //Replace any single backslashes in the value with escaped backslashes so other parsing won't barf
+                value=value.replace("\\","\\\\");
                 translationMap.put(RE.simplePatternToFullRegularExpression("{" + entry.getKey() + "}"),
-                                   entry.getValue().toString());
+                                   value);
             }
         }
         
