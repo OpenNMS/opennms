@@ -23,6 +23,18 @@ import org.w3c.dom.Comment;
 import org.xml.sax.InputSource;
 
 
+def pdb = ProvisioningDatabase.load(new File("config-ext.txt"), new File("config-int.txt"));
+
+def capsdConfig = new CapsdConfiguration(new File("capsd-configuration.xml"));
+def pollerConfig = new PollerConfiguration(new File("poller-configuration.xml"));
+
+pdb.forEachService { svc -> capsdConfig.process(svc) }
+pdb.forEachService { svc -> pollerConfig.process(svc) }
+
+capsdConfig.save();
+pollerConfig.save();
+
+
 class ProvisioningDatabase {
     def comment = ~/^\s*#.*$/;
     def blank = ~/^\s*$/;
@@ -239,10 +251,25 @@ class PollerConfiguration extends XMLConfigurationFile {
     }
 
     public void process(ProvisionedService svc) {
-        if (alreadyConfigured(svc)) {
-            return;
+        if (!alreadyConfigured(svc)) {
+            createNewConfiguration(svc);
         }
-        createNewConfiguration(svc);
+        if (!monitorConfigured(svc)) {
+            createNewMonitor(svc);
+        }
+    }
+
+    public boolean monitorConfigured(ProvisionedService svc) {
+        boolean result;
+        use(DOMCategory) {
+            result = (null != document.documentElement.monitor.find{ it['@service'] == svc.serviceName });
+        }
+        return result;
+    }
+
+    public boolean createNewMonitor(ProvisionedService svc) {
+        def xml = new DomBuilder(document, document.documentElement);
+        xml.monitor(service:svc.serviceName, 'class-name':'org.opennms.netmgt.poller.monitors.PageSequenceMonitor');
     }
 
     public boolean alreadyConfigured(ProvisionedService svc) {
@@ -280,17 +307,6 @@ class PollerConfiguration extends XMLConfigurationFile {
     }
     
 }
-
-def pdb = ProvisioningDatabase.load(new File("config-ext.txt"), new File("config-int.txt"));
-
-def capsdConfig = new CapsdConfiguration(new File("capsd-configuration.xml"));
-def pollerConfig = new PollerConfiguration(new File("poller-configuration.xml"));
-
-pdb.forEachService { svc -> capsdConfig.process(svc) }
-pdb.forEachService { svc -> pollerConfig.process(svc) }
-
-capsdConfig.save();
-pollerConfig.save();
 
 /**
  * This class reprsents a base class for XML configuration files that need to 
