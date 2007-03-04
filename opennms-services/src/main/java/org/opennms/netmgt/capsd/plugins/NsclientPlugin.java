@@ -37,6 +37,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.netmgt.poller.nsclient.NsclientManager;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
@@ -112,6 +113,7 @@ public class NsclientPlugin extends AbstractPlugin {
      * <UL>
      * <LI>command - the command to be executed on this node.
      * <LI>port - used to override the default NSClient port.
+     * <LI>password - used to override the default NSClient password
      * <LI>retry - overrides the number of times to retry connecting to the
      * service.
      * <LI>timeout - tcp port timeout.
@@ -138,6 +140,7 @@ public class NsclientPlugin extends AbstractPlugin {
         int timeout = DEFAULT_TIMEOUT;
         int port = NsclientManager.DEFAULT_PORT;
 
+        String password = NSClientAgentConfig.DEFAULT_PASSWORD;
         String parameter = null;
         String command = null;
         int critPerc = 0, warnPerc = 0;
@@ -159,6 +162,8 @@ public class NsclientPlugin extends AbstractPlugin {
                                                     "criticalPercent", 0);
             warnPerc = ParameterMap.getKeyedInteger(qualifiers,
                                                     "warningPercent", 0);
+            password = ParameterMap.getKeyedString(qualifiers, "password",
+                                                   NSClientAgentConfig.DEFAULT_PASSWORD);
         }
 
         // set up my check params.
@@ -167,7 +172,7 @@ public class NsclientPlugin extends AbstractPlugin {
                                                              parameter);
         // and perform the check, we'll get a packet back containing the check
         // data.
-        NsclientPacket pack = isServer(address, port, command, retries,
+        NsclientPacket pack = isServer(address, port, password, command, retries,
                                        timeout, params);
 
         if (pack == null) {
@@ -208,7 +213,7 @@ public class NsclientPlugin extends AbstractPlugin {
      *         to contain the proper result code based on the params passed.
      */
     private NsclientPacket isServer(InetAddress host, int port,
-            String command, int retries, int timeout,
+            String password, String command, int retries, int timeout,
             NsclientCheckParams params) {
         boolean isAServer = false;
 
@@ -219,7 +224,7 @@ public class NsclientPlugin extends AbstractPlugin {
             try {
                 NsclientManager client = new NsclientManager(
                                                              host.getHostAddress(),
-                                                             port);
+                                                             port, password);
                 NsclientPacket response = null;
 
                 client.setTimeout(timeout);

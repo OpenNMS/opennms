@@ -152,4 +152,32 @@
       </sequence>
     </complexType>
   </element>
+  
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="^RRA:(AVERAGE|MIN|MAX|LAST):.*$"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+
+      <attribute name="step" type="integer" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 </schema>

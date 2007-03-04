@@ -43,6 +43,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
 
+import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
@@ -118,6 +119,8 @@ public class NsclientMonitor extends IPv4Monitor {
                                                      NsclientManager.convertTypeToString(NsclientManager.CHECK_CLIENTVERSION));
         int port = ParameterMap.getKeyedInteger(parameters, "port",
                                                 NsclientManager.DEFAULT_PORT);
+        
+        String password = ParameterMap.getKeyedString(parameters, "password", NSClientAgentConfig.DEFAULT_PASSWORD);
         String params = ParameterMap.getKeyedString(parameters, "parameter",
                                                     null);
         int critPerc = ParameterMap.getKeyedInteger(parameters,
@@ -130,9 +133,6 @@ public class NsclientMonitor extends IPv4Monitor {
                                                  DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout",
                                                    DEFAULT_TIMEOUT);
-        
-        // Get the password for the NSClients
-        String password = ParameterMap.getKeyedString(parameters, "password", "None");
 
 
         // Get the address we're going to poll.
@@ -148,7 +148,7 @@ public class NsclientMonitor extends IPv4Monitor {
                 // Create a client, set up details and connect.
                 NsclientManager client = new NsclientManager(
                                                              ipv4Addr.getHostAddress(),
-                                                             port);
+                                                             port, password);
                 client.setTimeout(timeout);
                 client.setPassword(password);
                 client.init();
