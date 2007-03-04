@@ -9,33 +9,7 @@
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
-//
-// 2005 Mar 08: Added saveCurrent, optimize, and define methods.
-// 2003 Jan 31: Cleaned up some unused imports.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
+
 
 package org.opennms.netmgt.config;
 
@@ -62,16 +36,16 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
-import org.opennms.netmgt.config.snmp.Definition;
-import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.config.nsclient.Definition;
+import org.opennms.netmgt.config.nsclient.NsclientConfig;
+import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
 
 /**
- * This class is the main respository for SNMP configuration information used by
- * the capabilities daemon. When this class is loaded it reads the snmp
+ * This class is the main respository for NSCLient configuration information used by
+ * the capabilities daemon. When this class is loaded it reads the nsclient
  * configuration into memory, and uses the configuration to find the
- * {@link org.opennms.netmgt.snmp.SnmpAgentConfig SnmpAgentConfig} objects for specific
+ * {@link org.opennms.netmgt.nsclient.NSClientAgentConfig NSClientAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
  * 
@@ -85,23 +59,21 @@ import org.opennms.protocols.ip.IPv4Address;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public final class SnmpPeerFactory extends PeerFactory {
+public final class NSClientPeerFactory extends PeerFactory {
     /**
      * The singleton instance of this factory
      */
-    private static SnmpPeerFactory m_singleton = null;
+    private static NSClientPeerFactory m_singleton = null;
 
     /**
      * The config class loaded from the config file
      */
-    private static SnmpConfig m_config;
+    private static NsclientConfig m_config;
 
     /**
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-
-    private static final int VERSION_UNSPECIFIED = -1;
 
     /**
      * Private constructor
@@ -113,16 +85,16 @@ public final class SnmpPeerFactory extends PeerFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private SnmpPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
+    private NSClientPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
         InputStream cfgIn = new FileInputStream(configFile);
 
-        m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, new InputStreamReader(cfgIn));
+        m_config = (NsclientConfig) Unmarshaller.unmarshal(NsclientConfig.class, new InputStreamReader(cfgIn));
         cfgIn.close();
 
     }
     
-    public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
+    public NSClientPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+        m_config = (NsclientConfig) Unmarshaller.unmarshal(NsclientConfig.class, rdr);
     }
     
     /**
@@ -143,17 +115,17 @@ public final class SnmpPeerFactory extends PeerFactory {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_CONFIG_FILE_NAME);
 
         log().debug("init: config file path: " + cfgFile.getPath());
 
-        m_singleton = new SnmpPeerFactory(cfgFile.getPath());
+        m_singleton = new NSClientPeerFactory(cfgFile.getPath());
 
         m_loaded = true;
     }
 
     private static Category log() {
-        return ThreadCategory.getInstance(SnmpPeerFactory.class);
+        return ThreadCategory.getInstance(NSClientPeerFactory.class);
     }
 
     /**
@@ -185,7 +157,7 @@ public final class SnmpPeerFactory extends PeerFactory {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME));
+            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_CONFIG_FILE_NAME));
             fileWriter.write(stringWriter.toString());
             fileWriter.flush();
             fileWriter.close();
@@ -195,8 +167,10 @@ public final class SnmpPeerFactory extends PeerFactory {
     }
 
     /**
-     * Combine specific and range elements so that SnmpPeerFactory has to spend
+     * Combine specific and range elements so that NSClientPeerFactory has to spend
      * less time iterating all these elements.
+     * TODO This really should be pulled up into PeerFactory somehow, but I'm not sure how (given that "Definition" is different for both
+     * Snmp and NSClient.  Maybe some sort of visitor methodology would work.  The basic logic should be fine as it's all IP address manipulation
      */
     private static void optimize() throws UnknownHostException {
         Category log = log();
@@ -383,23 +357,24 @@ public final class SnmpPeerFactory extends PeerFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized SnmpPeerFactory getInstance() {
+    public static synchronized NSClientPeerFactory getInstance() {
         if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
+            throw new IllegalStateException("The NSClientPeerFactory has not been initialized");
 
         return m_singleton;
     }
     
-    public static synchronized void setInstance(SnmpPeerFactory singleton) {
+    public static synchronized void setInstance(NSClientPeerFactory singleton) {
         m_singleton = singleton;
         m_loaded = true;
     }
 
     /**
-     * Puts a specific IP address with associated read-community string into
-     * the currently loaded snmp-config.xml.
+     * Puts a specific IP address with associated password into
+     * the currently loaded nsclient-config.xml.
+     *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
      */
-    public void define(InetAddress ip, String community) throws UnknownHostException {
+    public void define(InetAddress ip, String password) throws UnknownHostException {
         Category log = log();
 
         // Convert IP to long so that it easily compared in range elements
@@ -418,14 +393,14 @@ public final class SnmpPeerFactory extends PeerFactory {
             Definition currentDefinition =
                 (Definition) definitionsIterator.next();
 
-            if ((currentDefinition.getReadCommunity() != null
-                 && currentDefinition.getReadCommunity().equals(community))
-                || (currentDefinition.getReadCommunity() == null
-                    && m_config.getReadCommunity() != null
-                    && m_config.getReadCommunity().equals(community))) {
+            if ((currentDefinition.getPassword() != null
+                 && currentDefinition.getPassword().equals(password))
+                || (currentDefinition.getPassword() == null
+                    && m_config.getPassword() != null
+                    && m_config.getPassword().equals(password))) {
                 if (log.isDebugEnabled())
                     log.debug("define: Found existing definition "
-                              + "with read-community " + community);
+                              + "with read-community " + password);
                 definition = currentDefinition;
                 break;
             }
@@ -435,7 +410,7 @@ public final class SnmpPeerFactory extends PeerFactory {
                 log.debug("define: Creating new definition");
 
             definition = new Definition();
-            definition.setReadCommunity(community);
+            definition.setPassword(password);
             definitions.add(definition);
         }
         definition.addSpecific(ip.getHostAddress());
@@ -511,27 +486,17 @@ public final class SnmpPeerFactory extends PeerFactory {
         m_config.setDefinitionCollection(definitions);
     }
     
-    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
-        return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
-    }
-    
-    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
+    public synchronized NSClientAgentConfig getAgentConfig(InetAddress agentInetAddress) {
 
         if (m_config == null) {
-            SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
-            if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
-                agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
-            } else {
-                agentConfig.setVersion(requestedSnmpVersion);
-            }
-            
+            NSClientAgentConfig agentConfig = new NSClientAgentConfig(agentInetAddress);
             return agentConfig;
         }
         
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
+        NSClientAgentConfig agentConfig = new NSClientAgentConfig(agentInetAddress);
         
         //Now set the defaults from the m_config
-        setSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
+        setNSClientAgentConfig(agentConfig, new Definition());
 
         // Attempt to locate the node
         //
@@ -547,12 +512,12 @@ public final class SnmpPeerFactory extends PeerFactory {
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
-                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                        setNSClientAgentConfig(agentConfig, def);
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
                     Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                    log.warn("NSClientPeerFactory: could not convert host " + saddr + " to InetAddress", e);
                 }
             }
 
@@ -570,12 +535,12 @@ public final class SnmpPeerFactory extends PeerFactory {
                     long stop = toLong(end);
 
                     if (start <= lhost && lhost <= stop) {
-                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                        setNSClientAgentConfig(agentConfig, def );
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
                     Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                    log.warn("NSClientPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }
             
@@ -585,7 +550,7 @@ public final class SnmpPeerFactory extends PeerFactory {
             while (eMatch.hasMoreElements()) {
                 String ipMatch = (String)eMatch.nextElement();
                 if (verifyIpMatch(agentInetAddress.getHostAddress(), ipMatch)) {
-                    setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                    setNSClientAgentConfig(agentConfig, def);
                     break DEFLOOP;
                 }
             }
@@ -595,30 +560,16 @@ public final class SnmpPeerFactory extends PeerFactory {
         if (agentConfig == null) {
 
             Definition def = new Definition();
-            setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+            setNSClientAgentConfig(agentConfig, def);
         }
 
         return agentConfig;
 
     }
-
-    private void setSnmpAgentConfig(SnmpAgentConfig agentConfig, Definition def, int requestedSnmpVersion) {
-        
-        int version = determineVersion(def, requestedSnmpVersion);
-        
-        setCommonAttributes(agentConfig, def, version);
-        agentConfig.setSecurityLevel(determineSecurityLevel(def));
-        agentConfig.setSecurityName(determineSecurityName(def));
-        agentConfig.setAuthProtocol(determineAuthProtocol(def));
-        agentConfig.setAuthPassPhrase(determineAuthPassPhrase(def));
-        agentConfig.setPrivPassPhrase(determinePrivPassPhrase(def));
-        agentConfig.setPrivProtocol(determinePrivProtocol(def));
-        agentConfig.setReadCommunity(determineReadCommunity(def));
-        agentConfig.setWriteCommunity(determineWriteCommunity(def));
-        
-        //TODO: need to work on the Proxy flag.  Probalby should add a proxy host field
-        //to the SnmpAgentConfig.
-        
+    
+    private void setNSClientAgentConfig(NSClientAgentConfig agentConfig, Definition def) {
+        setCommonAttributes(agentConfig, def);
+        agentConfig.setPassword(determinePassword(def));       
     }
     
     /**
@@ -628,177 +579,23 @@ public final class SnmpPeerFactory extends PeerFactory {
      * @param def
      * @param version
      */
-    private void setCommonAttributes(SnmpAgentConfig agentConfig, Definition def, int version) {
-        agentConfig.setVersion(version);
+    private void setCommonAttributes(NSClientAgentConfig agentConfig, Definition def) {
         agentConfig.setPort(determinePort(def));
         agentConfig.setRetries(determineRetries(def));
         agentConfig.setTimeout((int)determineTimeout(def));
-        agentConfig.setMaxRequestSize(determineMaxRequestSize(def));
-        agentConfig.setMaxVarsPerPdu(determineMaxVarsPerPdu(def));
-        InetAddress proxyHost = determineProxyHost(def);
-        
-        if (proxyHost != null) {
-            agentConfig.setProxyFor(agentConfig.getAddress());
-            agentConfig.setAddress(determineProxyHost(def));
-        }
     }
 
-    private InetAddress determineProxyHost(Definition def) {
-        InetAddress inetAddr = null;
-        String address = def.getProxyHost() == null ? 
-                (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
-        if (address != null) {
-            try {
-                inetAddr =  InetAddress.getByName(address);
-            } catch (UnknownHostException e) {
-                log().error("determineProxyHost: Problem converting proxy host string to InetAddress", e);
-            }
-        }
-        return inetAddr;
-    }
-
-    private int determineMaxVarsPerPdu(Definition def) {
-        return (def.getMaxVarsPerPdu() == 0 ? 
-                (m_config.getMaxVarsPerPdu() == 0 ?
-                  SnmpAgentConfig.DEFAULT_MAX_VARS_PER_PDU : m_config.getMaxVarsPerPdu()) : def.getMaxVarsPerPdu());
-    }
-    /**
-     * Helper method to search the snmp-config for the appropriate read
-     * community string.
+     /**
+     * Helper method to search the nsclient-config for the appropriate password
      * @param def
      * @return
      */
-    private String determineReadCommunity(Definition def) {
-        return (def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? SnmpAgentConfig.DEFAULT_READ_COMMUNITY :m_config.getReadCommunity()) : def.getReadCommunity());
+    private String determinePassword(Definition def) {
+        return (def.getPassword() == null ? (m_config.getPassword() == null ? NSClientAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
     }
 
     /**
-     * Helper method to search the snmp-config for the appropriate write
-     * community string.
-     * @param def
-     * @return
-     */
-    private String determineWriteCommunity(Definition def) {
-        return (def.getWriteCommunity() == null ? (m_config.getWriteCommunity() == null ? SnmpAgentConfig.DEFAULT_WRITE_COMMUNITY :m_config.getWriteCommunity()) : def.getWriteCommunity());
-    }
-
-    /**
-     * Helper method to search the snmp-config for the appropriate maximum
-     * request size.  The default is the minimum necessary for a request.
-     * @param def
-     * @return
-     */
-    private int determineMaxRequestSize(Definition def) {
-        return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : def.getMaxRequestSize());
-    }
-
-    /**
-     * Helper method to find a security name to use in the snmp-config.  If v3 has
-     * been specified and one can't be found, then a default is used for this
-     * is a required option for v3 operations.
-     * @param def
-     * @return
-     */
-    private String determineSecurityName(Definition def) {
-        String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
-        if (securityName == null) {
-            securityName = SnmpAgentConfig.DEFAULT_SECURITY_NAME;
-        }
-        return securityName;
-    }
-
-    /**
-     * Helper method to find a security name to use in the snmp-config.  If v3 has
-     * been specified and one can't be found, then a default is used for this
-     * is a required option for v3 operations.
-     * @param def
-     * @return
-     */
-    private String determineAuthProtocol(Definition def) {
-        String authProtocol = (def.getAuthProtocol() == null ? m_config.getAuthProtocol() : def.getAuthProtocol());
-        if (authProtocol == null) {
-            authProtocol = SnmpAgentConfig.DEFAULT_AUTH_PROTOCOL;
-        }
-        return authProtocol;
-    }
-    
-    /**
-     * Helper method to find a authentication passphrase to use from the snmp-config.  If v3 has
-     * been specified and one can't be found, then a default is used for this
-     * is a required option for v3 operations.
-     * @param def
-     * @return
-     */
-    private String determineAuthPassPhrase(Definition def) {
-        String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
-        if (authPassPhrase == null) {
-            authPassPhrase = SnmpAgentConfig.DEFAULT_AUTH_PASS_PHRASE;
-        }
-        return authPassPhrase;
-    }
-
-    /**
-     * Helper method to find a privacy passphrase to use from the snmp-config.  If v3 has
-     * been specified and one can't be found, then a default is used for this
-     * is a required option for v3 operations.
-     * @param def
-     * @return
-     */
-    private String determinePrivPassPhrase(Definition def) {
-        String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
-        if (privPassPhrase == null) {
-            privPassPhrase = SnmpAgentConfig.DEFAULT_PRIV_PASS_PHRASE;
-        }
-        return privPassPhrase;
-    }
-
-    /**
-     * Helper method to find a privacy protocol to use from the snmp-config.  If v3 has
-     * been specified and one can't be found, then a default is used for this
-     * is a required option for v3 operations.
-     * @param def
-     * @return
-     */
-    private String determinePrivProtocol(Definition def) {
-        String authPrivProtocol = (def.getPrivacyProtocol() == null ? m_config.getPrivacyProtocol() : def.getPrivacyProtocol());
-        if (authPrivProtocol == null) {
-            authPrivProtocol = SnmpAgentConfig.DEFAULT_PRIV_PROTOCOL;
-        }
-        return authPrivProtocol;
-    }
-
-    /**
-     * Helper method to set the security level in v3 operations.  The default is
-     * noAuthNoPriv if there is no authentication passphrase.  From there, if
-     * there is a privacy passphrase supplied, then the security level is set to
-     * authPriv else it falls out to authNoPriv.  There are only these 3 possible
-     * security levels.
-     * default 
-     * @param def
-     * @return
-     */
-    private int determineSecurityLevel(Definition def) {
-
-        int securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
-
-        String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
-        String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
-        
-        if (authPassPhrase == null) {
-            securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
-        } else {
-            if (privPassPhrase == null) {
-                securityLevel = SnmpAgentConfig.AUTH_NOPRIV;
-            } else {
-                securityLevel = SnmpAgentConfig.AUTH_PRIV;
-            }
-        }
-        
-        return securityLevel;
-    }
-
-    /**
-     * Helper method to search the snmp-config for a port
+     * Helper method to search the nsclient-config for a port
      * @param def
      * @return
      */
@@ -808,68 +605,26 @@ public final class SnmpPeerFactory extends PeerFactory {
     }
 
     /**
-     * Helper method to search the snmp-config 
+     * Helper method to search the nsclient-config 
      * @param def
      * @return
      */
     private long determineTimeout(Definition def) {
-        long timeout = SnmpAgentConfig.DEFAULT_TIMEOUT;
+        long timeout = NSClientAgentConfig.DEFAULT_TIMEOUT;
         return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
     }
 
     private int determineRetries(Definition def) {        
-        int retries = SnmpAgentConfig.DEFAULT_RETRIES;
+        int retries = NSClientAgentConfig.DEFAULT_RETRIES;
         return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
     }
 
-    /**
-     * This method determines the configured SNMP version.
-     * the order of operations is:
-     * 1st: return a valid requested version
-     * 2nd: return a valid version defined in a definition within the snmp-config
-     * 3rd: return a valid version in the snmp-config
-     * 4th: return the default version
-     * 
-     * @param def
-     * @param requestedSnmpVersion
-     * @return
-     */
-    private int determineVersion(Definition def, int requestedSnmpVersion) {
-        
-        int version = SnmpAgentConfig.VERSION1;
-        
-        String cfgVersion = "v1";
-        if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
-            if (def.getVersion() == null) {
-                if (m_config.getVersion() == null) {
-                    return version;
-                } else {
-                    cfgVersion = m_config.getVersion();
-                }
-            } else {
-                cfgVersion = def.getVersion();
-            }
-        } else {
-            return requestedSnmpVersion;
-        }
-        
-        if (cfgVersion.equals("v1")) {
-            version = SnmpAgentConfig.VERSION1;
-        } else if (cfgVersion.equals("v2c")) {
-            version = SnmpAgentConfig.VERSION2C;
-        } else if (cfgVersion.equals("v3")) {
-            version = SnmpAgentConfig.VERSION3;
-        }
-        
-        return version;
-    }
-
-    public static SnmpConfig getSnmpConfig() {
+    public static NsclientConfig getNSClientConfig() {
         return m_config;
     }
 
-    public static synchronized void setSnmpConfig(SnmpConfig m_config) {
-        SnmpPeerFactory.m_config = m_config;
+    public static synchronized void setNSClientConfig(NsclientConfig m_config) {
+        NSClientPeerFactory.m_config = m_config;
     }
 
 }
