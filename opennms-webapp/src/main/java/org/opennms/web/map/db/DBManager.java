@@ -228,7 +228,7 @@ public class DBManager extends Manager {
 		    	undefinedAvail = mpf.getUndefinedAvail();
 		    	unknownStatusId = mpf.getUnknownUeiStatus().getId();
 		    	availEnabled = mpf.enableAvail();
-		    	if (!availEnabled) defaultEnableFalseAvail = mpf.getDisabledAvail();
+		    	defaultEnableFalseAvail = mpf.getDisabledAvail();
 		    	calculateSeverityAs = mpf.getSeverityMapAs();
 			}catch(Exception e){
 				log.error("Error while reloading MapPropertiesFactory " +e);
