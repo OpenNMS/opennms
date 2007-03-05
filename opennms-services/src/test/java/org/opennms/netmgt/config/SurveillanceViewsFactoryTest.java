@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Mar 04: Get rid of unneeded MockDatabase data DataSourceFactory initialization.  Use ConfigurationTestUtils to get Reader for config file. - dj@opennms.org
 // 2007 Mar 04: Indent code. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -37,7 +38,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import junit.framework.TestCase;
@@ -45,31 +45,20 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.test.ConfigurationTestUtils;
 
 public class SurveillanceViewsFactoryTest extends TestCase {
 
     private SurveillanceViewsFactory m_factory;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        MockNetwork network = new MockNetwork();
-
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-
-        DataSourceFactory.setInstance(db);
-
-        Reader rdr = new InputStreamReader(getClass().getResourceAsStream("/org/opennms/netmgt/config/surveillance-views.testdata.xml"));
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(getClass(), "/org/opennms/netmgt/config/surveillance-views.testdata.xml");
         m_factory = new SurveillanceViewsFactory(rdr);
         rdr.close();
 
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void testGetName() throws MarshalException, ValidationException, IOException {
