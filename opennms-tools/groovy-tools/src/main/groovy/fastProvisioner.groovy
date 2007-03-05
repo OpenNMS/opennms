@@ -29,14 +29,37 @@ def pdb = ProvisioningDatabase.load(new File("config-ext.txt"), new File("config
 def capsdConfig = new CapsdConfiguration(new File("capsd-configuration.xml"));
 def pollerConfig = new PollerConfiguration(new File("poller-configuration.xml"));
 def respGraphProps = new ResponseGraphProperties(new File("response-graph.properties"));
-//def httpCollectionConfig = new HttpCollectionConfig(new File("http-collection-config.xml")); 
+def httpCollectionConfig = new HttpCollectionConfig(new File("http-datacollection-config.xml")); 
 
-def processService = { configFile, svc -> configFile.load(); configFile.process(svc); configFile.save() }
+def createConfigFile(configFile) {
+    return createConfigFile(configFile) { true }
+}
+def createConfigFile(configFile, matcher) {
+    return new Expando(
+            configFile:configFile, 
+            load:{ configFile.load() }, 
+            process:{ svcs -> svcs.findAll(matcher).each { configFile.process(it) } },
+            save:{ configFile.save() }
+            )
+}
 
-def configFiles = [capsdConfig, pollerConfig, respGraphProps];
+def dbgHttp = createConfigFile(httpCollectionConfig) { svc -> svc.internal }
+dbgHttp.save = { httpCollectionConfig.save(new File('hdc.xml')) }
 
-pdb.forEachService { svc ->  configFiles.each { configFile -> processService(configFile, svc) } } 
+def configFiles = [
+      createConfigFile(capsdConfig), 
+      createConfigFile(pollerConfig), 
+      createConfigFile(respGraphProps),
+      dbgHttp
+    ];
 
+configFiles.each { it.load() }
+
+pdb.services.each { svc -> configFiles.each { configFile -> configFile.process([svc]) } }
+
+
+configFiles.each { it.save() }
+    
 
 class HttpCollectionConfig extends XMLConfigurationFile {
     
@@ -47,19 +70,11 @@ class HttpCollectionConfig extends XMLConfigurationFile {
     }
 
     public void intializeNewDocument(Document document) {
-        new DomBuilder(document).'capsd-configuration'();
+
     }
 
     public void process(ProvisionedService svc) {
-        if (alreadyConfigured(svc)) {
-            return;
-        }
-        def plugin = getExistingConfiguration(svc);
-        if (plugin == null) {
-            createNewConfiguration(svc);
-        } else {
-            addToExistingConfiguration(plugin, svc);
-        }
+		println "${svc}: HTTP ${file.name} w00t"
     }
 
     public alreadyConfigured(ProvisionedService svc) {
@@ -371,11 +386,7 @@ class ProvisioningDatabase {
        }
    }
 
-    public void forEachService(Closure c) {
-        for(svc in services) {
-            c(svc);
-        }
-    }
+   
 }
 
 class ServiceThreshold {
