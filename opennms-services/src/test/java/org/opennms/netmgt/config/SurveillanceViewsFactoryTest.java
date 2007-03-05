@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Mar 04: Indent code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,37 +49,37 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 
 public class SurveillanceViewsFactoryTest extends TestCase {
-	
-	private SurveillanceViewsFactory m_factory;
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		MockNetwork network = new MockNetwork();
-		
-		MockDatabase db = new MockDatabase();
-		db.populate(network);
-		
-		DataSourceFactory.setInstance(db);
+    private SurveillanceViewsFactory m_factory;
 
-		Reader rdr = new InputStreamReader(getClass().getResourceAsStream("/org/opennms/netmgt/config/surveillance-views.testdata.xml"));
-		m_factory = new SurveillanceViewsFactory(rdr);
-		rdr.close();
-		
-	}
+    protected void setUp() throws Exception {
+        super.setUp();
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-	
-	public void testGetName() throws MarshalException, ValidationException, IOException {
-		String viewName = "default";
-		 View view = m_factory.getView(viewName);
-		assertNotNull(view);
-		assertEquals(viewName, view.getName());
-        
+        MockNetwork network = new MockNetwork();
+
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+
+        DataSourceFactory.setInstance(db);
+
+        Reader rdr = new InputStreamReader(getClass().getResourceAsStream("/org/opennms/netmgt/config/surveillance-views.testdata.xml"));
+        m_factory = new SurveillanceViewsFactory(rdr);
+        rdr.close();
+
+    }
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    public void testGetName() throws MarshalException, ValidationException, IOException {
+        String viewName = "default";
+        View view = m_factory.getView(viewName);
+        assertNotNull(view);
+        assertEquals(viewName, view.getName());
+
         assertEquals(3, view.getRows().getRowDefCount());
         assertEquals(3, view.getColumns().getColumnDefCount());
-	}
+    }
 
 }
