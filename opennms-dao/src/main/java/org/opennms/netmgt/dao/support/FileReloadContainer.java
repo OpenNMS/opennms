@@ -36,6 +36,7 @@ import java.io.File;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -110,17 +111,9 @@ public class FileReloadContainer<T> {
      */
     public FileReloadContainer(T object, File file,
                                FileReloadCallback<T> callback) {
-        if (object == null) {
-            throw new IllegalArgumentException("object cannot be null");
-        }
-        
-        if (file == null) {
-            throw new IllegalArgumentException("file cannot be null");
-        }
-        
-        if (callback == null) {
-            throw new IllegalArgumentException("callback cannot be null");
-        }
+        Assert.notNull(object, "argument object cannot be null");
+        Assert.notNull(file, "argument file cannot be null");
+        Assert.notNull(callback, "argument callback cannot be null");
         
         m_object = object;
         m_file = file;
@@ -137,9 +130,7 @@ public class FileReloadContainer<T> {
      * @throws IllegalArgumentException if object is null
      */
     public FileReloadContainer(T object) {
-        if (object == null) {
-            throw new IllegalArgumentException("object cannot be null");
-        }
+        Assert.notNull(object, "argument object cannot be null");
         
         m_object = object;
     }
