@@ -35,20 +35,18 @@
 //
 package org.opennms.web.svclayer;
 
-import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.opennms.core.utils.JdbcSet;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -115,17 +113,17 @@ public class DefaultOutageServiceTest extends TestCase {
 	}
 
 	public void testCurrentOutages() {
-
-		Collection<OnmsOutage> expectedOutages = new JdbcSet();
+		Collection<OnmsOutage> expectedOutages = new HashSet<OnmsOutage>();
 		OnmsOutage expectedCurrent = new OnmsOutage();
 		expectedCurrent.setId(1);
 		expectedOutages.add(expectedCurrent);
 
 		expect(outageDao.currentOutages()).andReturn(expectedOutages);
+        
 		replay(outageDao);
-
-		Set current = (Set) outageService.getCurrentOutages();
+		Collection<OnmsOutage> current = outageService.getCurrentOutages();
 		verify(outageDao);
+        
 		assertTrue("Current Outages", current.equals(expectedOutages));
 	}
 
