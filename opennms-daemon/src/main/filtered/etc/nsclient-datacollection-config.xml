@@ -38,7 +38,7 @@
       	<attrib name="\Web Service(_Total)\Maximum Connections" alias="iismaxconn" type="Gauge"/>
       </wpm>
 
-      <wpm name="Exchange" keyvalue="\MSExchangeMTA\Inbound Messages Total" recheckInterval="86400000">
+      <wpm name="Exchange" keyvalue="\SMTP Server(_Total)\Message Bytes Sent Total" recheckInterval="86400000">
 	<attrib name="\SMTP Server(_Total)\Message Bytes Sent Total" alias="exchangebytessent" type="Counter"/>
 	<attrib name="\SMTP Server(_Total)\Message Bytes Received Total" alias="exchangebytesrecv" type="Counter"/>
 	<attrib name="\SMTP Server(_Total)\Messages Sent Total" alias="exchangemsgsent" type="Counter"/>
@@ -65,6 +65,22 @@
 	<attrib name="\SQLServer:Memory Manager\SQL Cache Memory (KB)" alias="sqlsqlcachememory" type="Gauge"/>
 	<attrib name="\SQLServer:Memory Manager\Target Server Memory(KB)" alias="sqltargetmemory" type="Gauge"/>
 	<attrib name="\SQLServer:Memory Manager\Total Server Memory (KB)" alias="sqltotalmemory" type="Gauge"/>
+      </wpm>
+           <wpm name="Biztalk" keyvalue="\Biztalk Server\Interchanges Received" recheckInterval="86400000">
+	<attrib name="\Biztalk Server\Interchanges Received" alias="biztalkicrecv" type="Counter"/>
+	<attrib name="\Biztalk Server\Synchronous Submissions" alias="biztalksyncsub" type="Counter"/>
+	<attrib name="\Biztalk Server\Asynchronous Submissions" alias="biztalkasyncsub" type="Counter"/>
+      </wpm>
+
+      <wpm name="LiveCommsServer" keyvalue="\LC:SIP - 03 - Requests\SIP - 010 - Incoming MESSAGE Requests" recheckInterval="86400000">
+	<attrib name="\LC:SIP - 00 - Networking\SIP - 014 - Unique users connected directly" alias="lcsusers" type="Gauge"/>
+	<attrib name="\LC:SIP - 03 - Requests\SIP - 010 - Incoming MESSAGE Requests" alias="lcsmessages" type="Counter"/>		
+      </wpm>
+
+      <wpm name="Mailmarshal" keyvalue="\MailMarshal:Engine\Active Threads" recheckInterval="86400000">
+	<attrib name="\MailMarshal:Engine\Viruses Detected" alias="mmvirusdetect" type="Counter"/>
+	<attrib name="\MailMarshal:Receiver\Refused - Rule Imposed" alias="mmruleimposed" type="Counter"/>
+	<attrib name="\MailMarshal:Receiver\Relay Attempts" alias="relayattempts" type="Counter"/>
       </wpm>
     </wpms>
   </nsclient-collection>
