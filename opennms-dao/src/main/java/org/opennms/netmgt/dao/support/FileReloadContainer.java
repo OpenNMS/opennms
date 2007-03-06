@@ -174,9 +174,9 @@ public class FileReloadContainer<T> {
             object = m_callback.reload(m_object, m_file);
         } catch (Throwable t) {
             String message = 
-                "Failed reloading data for object '" + m_object
-                + "' from file '" + m_file.getAbsolutePath()
-                + ".  Unexpected Throwable received while "
+                "Failed reloading data for object '" + m_object + "' "
+                + "from file '" + m_file.getAbsolutePath() + "'.  "
+                + "Unexpected Throwable received while "
                 + "issuing reload: " + t.getMessage();
             log().error(message, t);
             throw new DataAccessResourceFailureException(message, t);
