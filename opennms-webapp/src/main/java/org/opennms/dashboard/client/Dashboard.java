@@ -156,6 +156,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         m_alarms.setSurveillanceSet(set);
         m_graphs.setSurveillanceSet(set);
         m_notifications.setSurveillanceSet(set);
+        m_nodeStatus.setSurveillanceSet(set);
     }
 
 }
