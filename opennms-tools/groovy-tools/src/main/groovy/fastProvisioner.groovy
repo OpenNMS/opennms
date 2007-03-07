@@ -29,14 +29,14 @@ def createConfigFile(configFile) {
 }
 def createConfigFile(configFile, matcher) {
     def e = new Expando(
-            configFile:configFile, 
-            load:{ configFile.load() }, 
-            process:{ svcs -> svcs.findAll(matcher).each { configFile.process(it) } },
-            save:{ configFile.save() },
-           );
+                        configFile:configFile, 
+                        load:{ configFile.load() }, 
+                        process:{ svcs -> svcs.findAll(matcher).each { configFile.process(it) } },
+                        save:{ configFile.save() },
+                        );
     e['override'] = { map -> map.each { key, val -> e[key] = val; }; return e }
     return e
-
+    
 }
 
 def pdb = ProvisioningDatabase.load(new File("config-ext.txt"), new File("config-int.txt"));
@@ -55,15 +55,15 @@ def thresholds = new Thresholds(new File("thresholds.xml"));
 def internalOnly = { svc -> svc.internal }
 
 def configFiles = [
-      createConfigFile(capsdConfig), 
-      createConfigFile(pollerConfig), 
-      createConfigFile(respGraphProps),
-      createConfigFile(httpCollectionConfig, internalOnly),
-      createConfigFile(collectdConfig, internalOnly),
-      createConfigFile(snmpGraphProps, internalOnly),
-      createConfigFile(threshdConfig, internalOnly),
-      createConfigFile(thresholds, internalOnly)
-    ];
+    createConfigFile(capsdConfig), 
+    createConfigFile(pollerConfig), 
+    createConfigFile(respGraphProps),
+    createConfigFile(httpCollectionConfig, internalOnly),
+    createConfigFile(collectdConfig, internalOnly),
+    createConfigFile(snmpGraphProps, internalOnly),
+    createConfigFile(threshdConfig, internalOnly),
+    createConfigFile(thresholds, internalOnly)
+];
 
 configFiles.each { it.load() }
 
@@ -76,49 +76,66 @@ configFiles.each { it.save() }
 class ThreshdConfiguration extends XMLConfigurationFile {
     
     def comment = { svc -> " ${svc.name} ${svc.url} ${svc.threshold} ${svc.email} " }
-	def packageName
+    def packageName
     
     ThreshdConfiguration(File file, String packageName) {
         super(file);
         this.packageName = packageName;
     }
-
+    
     public void intializeNewDocument(Document document) {
-		new DomBuilder(document).'threshd-configuration'()
+        new DomBuilder(document).'threshd-configuration'()
     }
-
+    
     private boolean packageExists() {
        	boolean result;
        	use(DOMCategory) {
-       		result = (null != document.documentElement.'package'.find { it['@name'] == packageName });    
+            result = (null != document.documentElement.'package'.find { it['@name'] == packageName });    
        	}
        	return result;
     }
     
     private void createPackage() {
-		def xml = new DomBuilder(document, document.documentElement)
-		xml.'package'(name:packageName) {
-			filter("IPADDR IPLIKE *.*.*.*")	 
-			specific("0.0.0.0")
-			'include-range'(begin:"1.1.1.1", end:"254.254.254.254")
-			'include-url'("file:/space/svn/trunk/target/opennms-1.3.3-SNAPSHOT/etc/include")
-			'outage-calendar'("zzz from poll-outages.xml zzz")
-		}
+        def xml = new DomBuilder(document, document.documentElement)
+        xml.'package'(name:packageName) {
+            filter("IPADDR IPLIKE *.*.*.*")	 
+            specific("0.0.0.0")
+            'include-range'(begin:"1.1.1.1", end:"254.254.254.254")
+            'include-url'("file:/space/svn/trunk/target/opennms-1.3.3-SNAPSHOT/etc/include")
+            'outage-calendar'("zzz from poll-outages.xml zzz")
+        }
     }
 
+    private boolean thresholderExists(ProvisionedService svc) {
+        boolean result;
+        use(DOMCategory) {
+            result = (null != document.documentElement.thresholder?.find { it['@service'] == svc.serviceName })
+        }
+        return result;
+    }
+
+    public void createThresholder(ProvisionedService svc) {
+        def xml = new DomBuilder(document, document.documentElement);
+        xml.thresholder(service:svc.serviceName, 'class-name':'org.opennms.netmgt.threshd.SnmpThresholder')
+    }
+    
     public void process(ProvisionedService svc) {
         if (!packageExists()) {
             println "${svc}: Creating package ${packageName} in ${file.name}."
             createPackage();
         }
-		if (alreadyConfigured(svc)) {
-		    println "${svc}: Threshold service ${svc.serviceName} already exists in ${file.name}. skipping."
-		} else {
-		    println "${svc}: Creating threshold service ${svc.serviceName} in ${file.name}."
-		    createNewConfiguration(svc);
-		}
+        if (alreadyConfigured(svc)) {
+            println "${svc}: Threshold service ${svc.serviceName} already exists in ${file.name}. skipping."
+        } else {
+            println "${svc}: Creating threshold service ${svc.serviceName} in ${file.name}."
+            createNewConfiguration(svc);
+        }
+        if (!thresholderExists(svc)) {
+            println "${svc}: Creating thresholder for ${svc.serviceName} in ${file.name}."
+            createThresholder(svc);
+        }
     }
-
+    
     private findPackage() {
         def result;
         use(DOMCategory) {
@@ -127,65 +144,68 @@ class ThreshdConfiguration extends XMLConfigurationFile {
         return result;
     }
 
+    
     public alreadyConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
-			result = (null != document.documentElement.'package'.find { it['@name'] == packageName }?.service?.find { it['@name'] == svc.serviceName });
+            result = (null != document.documentElement.'package'.find { it['@name'] == packageName }?.service?.find { it['@name'] == svc.serviceName });
         }
         return result;
     }
     
     public void createNewConfiguration(ProvisionedService svc) {
         def xml = new DomBuilder(document, findPackage());
-
-		xml.service(name:svc.serviceName, interval:"300000", 'user-defined':false, status:"on") {
-          parameter(key:"thresholding-group", value:svc.serviceName)
-		}
-
+        
+        xml.service(name:svc.serviceName, interval:"300000", 'user-defined':false, status:"on") {
+            parameter(key:"thresholding-group", value:svc.serviceName)
+        }
+        
     }
-
-
-}
     
+    
+}
+
 
 class Thresholds extends XMLConfigurationFile {
     
     def comment = { svc -> " ${svc.name} ${svc.url} ${svc.threshold} ${svc.email} " }
-
+    
     Thresholds(File file) {
         super(file);
     }
-
+    
     public void intializeNewDocument(Document document) {
-		new DomBuilder(document).'thresholding-config'()
+        new DomBuilder(document).'thresholding-config'()
     }
-
+    
     public void process(ProvisionedService svc) {
-		if (alreadyConfigured(svc)) {
-		    println "${svc}: Threshold group already exists for service ${svc.serviceName} in ${file.name}. skipping."
-		} else {
-		    println "${svc}: Creating threshold grouop for service ${svc.serviceName} in ${file.name}."
-		    createNewConfiguration(svc);
-		}
+        if (alreadyConfigured(svc)) {
+            println "${svc}: Threshold group already exists for service ${svc.serviceName} in ${file.name}. skipping."
+        } else {
+            println "${svc}: Creating threshold grouop for service ${svc.serviceName} in ${file.name}."
+            createNewConfiguration(svc);
+        }
     }
-
+    
     public alreadyConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
-			result = (null != document.documentElement.group.find { it['@name'] == svc.serviceName });
+            result = (null != document.documentElement.group.find { it['@name'] == svc.serviceName });
         }
         return result;
     }
-
+    
     public void createNewConfiguration(ProvisionedService svc) {
         def xml = new DomBuilder(document, document.documentElement);
         xml.comment(comment(svc));
         xml.group(name:svc.serviceName, rrdRepository:"/opt/opennms/share/rrd/snmp/") {
             threshold(type:'high', 'ds-name':svc.serviceName, 'ds-type':'node', value:5, rearm:3, trigger:2)
         }
+        
+
     }
 }
-    
+
 class SnmpGraphProperties extends PropertiesConfigurationFile {
     
     SnmpGraphProperties(File file) {
@@ -193,24 +213,24 @@ class SnmpGraphProperties extends PropertiesConfigurationFile {
     }
     
     public void process (ProvisionedService svc) {
-		 if (!alreadyConfigured(svc)) {
-		     println "${svc}: Creating report ${svc.reportName} in ${file.name}"
-		     addReport(svc);
-		 } else {
-		     println "${svc}: Report ${svc.reportName} already exists. skipping."
-		 }
+        if (!alreadyConfigured(svc)) {
+            println "${svc}: Creating report ${svc.reportName} in ${file.name}"
+            addReport(svc);
+        } else {
+            println "${svc}: Report ${svc.reportName} already exists. skipping."
+        }
     }
     
     public boolean alreadyConfigured(ProvisionedService svc) {
-		return getReportList().contains('fast.'+svc.reportName);
+        return getReportList().contains('fast.'+svc.reportName);
     }
     
     private List getReportList() {
-		def reports = get("reports");
-		if (reports == null) {
-		    return [];
-		}
-		return reports.split(/\s*,\s*/).toList();
+        def reports = get("reports");
+        if (reports == null) {
+            return [];
+        }
+        return reports.split(/\s*,\s*/).toList();
     }
     
     private putReportList(reports) {
@@ -226,20 +246,20 @@ class SnmpGraphProperties extends PropertiesConfigurationFile {
     public boolean addReport(ProvisionedService svc) {
         def reportName = 'fast.'+svc.reportName;
         addToReportList(reportName);
-
+        
         put("report.${reportName}.name", "${svc.serviceName} Document Count")
      	put("report.${reportName}.columns", "${svc.serviceName}")
      	put("report.${reportName}.type", "nodeSnmp")
      	def prop = put("report.${reportName}.command")
      	prop << "--title=\"${svc.serviceName} Document Count\" " 
-		prop << " DEF:cnt={rrd1}:${svc.serviceName}:AVERAGE "
+        prop << " DEF:cnt={rrd1}:${svc.serviceName}:AVERAGE "
         prop << " LINE2:cnt#0000ff:\"Document Count\" "
-		prop << " GPRINT:cnt:AVERAGE:\" Avg  \\\\: %8.2lf %s\" " 
+        prop << " GPRINT:cnt:AVERAGE:\" Avg  \\\\: %8.2lf %s\" " 
         prop << " GPRINT:cnt:MIN:\"Min  \\\\: %8.2lf %s\" "
         prop << " GPRINT:cnt:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" "
      	
      	addBlankLine();
-
+        
     }
 }
 
@@ -248,41 +268,41 @@ class SnmpGraphProperties extends PropertiesConfigurationFile {
 class CollectdConfiguration extends XMLConfigurationFile {
     
     def comment = { svc -> " ${svc.name} ${svc.url} ${svc.threshold} ${svc.email} " }
-
+    
     def packageName
     CollectdConfiguration(File file, String packageName) {
         super(file);
         this.packageName = packageName
     }
-
+    
     public void intializeNewDocument(Document document) {
-		new DomBuilder(document).'collectd-configuration'(threads:50)
+        new DomBuilder(document).'collectd-configuration'(threads:50)
     }
     
     private boolean packageExists() {
        	boolean result;
        	use(DOMCategory) {
-       		result = (null != document.documentElement.'package'.find { it['@name'] == packageName });    
+            result = (null != document.documentElement.'package'.find { it['@name'] == packageName });    
        	}
        	return result;
     }
     
     private void createPackage() {
-		def xml = new DomBuilder(document, document.documentElement)
-		xml.'package'(name:packageName) {
-			filter("IPADDR IPLIKE *.*.*.*")	 
-			specific("0.0.0.0")
-			'include-range'(begin:"1.1.1.1", end:"254.254.254.254")
-			'include-url'("file:/space/svn/trunk/target/opennms-1.3.3-SNAPSHOT/etc/include")
-			'outage-calendar'("zzz from poll-outages.xml zzz")
-		}
+        def xml = new DomBuilder(document, document.documentElement)
+        xml.'package'(name:packageName) {
+            filter("IPADDR IPLIKE *.*.*.*")	 
+            specific("0.0.0.0")
+            'include-range'(begin:"1.1.1.1", end:"254.254.254.254")
+            'include-url'("file:/space/svn/trunk/target/opennms-1.3.3-SNAPSHOT/etc/include")
+            'outage-calendar'("zzz from poll-outages.xml zzz")
+        }
     }
-
+    
     public boolean createNewCollector(ProvisionedService svc) {
         def xml = new DomBuilder(document, document.documentElement);
         xml.collector(service:svc.serviceName, 'class-name':'org.opennms.netmgt.collectd.HttpCollector');
     }
-
+    
     public boolean collectorConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
@@ -316,74 +336,74 @@ class CollectdConfiguration extends XMLConfigurationFile {
         }
         return result;
     }
-
+    
     public alreadyConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
-			result = (null != document.documentElement.'package'.find { it['@name'] == packageName }?.service?.find { it['@name'] == svc.serviceName });
+            result = (null != document.documentElement.'package'.find { it['@name'] == packageName }?.service?.find { it['@name'] == svc.serviceName });
         }
         return result;
     }
-
+    
     public void createNewConfiguration(ProvisionedService svc) {
         def xml = new DomBuilder(document, findPackage());
-
-		xml.service(name:svc.serviceName, interval:"300000", 'user-defined':false, status:"on") {
-          parameter(key:"http-collection", value:svc.serviceName)
-		}
-
+        
+        xml.service(name:svc.serviceName, interval:"300000", 'user-defined':false, status:"on") {
+            parameter(key:"http-collection", value:svc.serviceName)
+        }
+        
     }
 }
-    
+
 
 class HttpCollectionConfig extends XMLConfigurationFile {
     
     def comment = { svc -> " ${svc.name} ${svc.url} ${svc.threshold} ${svc.email} " }
-
+    
     HttpCollectionConfig(File file) {
         super(file);
     }
-
+    
     public void intializeNewDocument(Document document) {
-		new DomBuilder(document).'http-datacollection-config'()
+        new DomBuilder(document).'http-datacollection-config'()
     }
-
+    
     public void process(ProvisionedService svc) {
-		if (alreadyConfigured(svc)) {
-		    println "${svc}: Collection already exists for service ${svc.name} in http-datacollection-config.xml. skipping."
-		} else {
-		    println "${svc}: Creating collection for service ${svc.name} in http-datacollection-config.xml."
-		    createNewConfiguration(svc);
-		}
+        if (alreadyConfigured(svc)) {
+            println "${svc}: Collection already exists for service ${svc.name} in http-datacollection-config.xml. skipping."
+        } else {
+            println "${svc}: Creating collection for service ${svc.name} in http-datacollection-config.xml."
+            createNewConfiguration(svc);
+        }
     }
-
+    
     public alreadyConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
-			result = (null != document.documentElement.'http-collection'.find { it['@name'] == svc.serviceName });
+            result = (null != document.documentElement.'http-collection'.find { it['@name'] == svc.serviceName });
         }
         return result;
     }
-
+    
     public void createNewConfiguration(ProvisionedService svc) {
         def xml = new DomBuilder(document, document.documentElement);
         xml.comment(comment(svc));
         xml.'http-collection'(name:svc.serviceName) {
-        	rrd(step:300) {
-          		rra("RRA:AVERAGE:0.5:1:8928")
-          		rra("RRA:AVERAGE:0.5:12:8784")
-          		rra("RRA:MIN:0.5:12:8784")
-          		rra("RRA:MAX:0.5:12:8784")
-        	}
-			uris {
-          		uri {
-            		url(scheme:"http", 'http-version':"1.1", host:svc.url.address, port:svc.url.port, 
-            		    path:svc.url.path, query:svc.url.query,  matches:/(?s).*#CNT\s+([0-9]+).*/, 'response-range':"100-399")
-          		}
+            rrd(step:300) {
+                rra("RRA:AVERAGE:0.5:1:8928")
+                rra("RRA:AVERAGE:0.5:12:8784")
+                rra("RRA:MIN:0.5:12:8784")
+                rra("RRA:MAX:0.5:12:8784")
+            }
+            uris {
+                uri {
+                    url(scheme:"http", 'http-version':"1.1", host:svc.url.address, port:svc.url.port, 
+                        path:svc.url.path, query:svc.url.query,  matches:/(?s).*#CNT\s+([0-9]+).*/, 'response-range':"100-399")
+                }
             	attributes {
-              		attrib (alias:svc.serviceName, 'match-group':"1", type:"gauge32")
+                    attrib (alias:svc.serviceName, 'match-group':"1", type:"gauge32")
             	}
-			}
+            }
         }
     }
     
@@ -398,24 +418,24 @@ class ResponseGraphProperties extends PropertiesConfigurationFile {
     }
     
     public void process (ProvisionedService svc) {
-		 if (!alreadyConfigured(svc)) {
-		     println "${svc}: Creating report ${svc.reportName} in ${file.name}"
-		     addReport(svc);
-		 } else {
-		     println "${svc}: Report ${svc.reportName} already exists. skipping."
-		 }
+        if (!alreadyConfigured(svc)) {
+            println "${svc}: Creating report ${svc.reportName} in ${file.name}"
+            addReport(svc);
+        } else {
+            println "${svc}: Report ${svc.reportName} already exists. skipping."
+        }
     }
     
     public boolean alreadyConfigured(ProvisionedService svc) {
-		return getReportList().contains(svc.reportName);
+        return getReportList().contains(svc.reportName);
     }
     
     private List getReportList() {
-		def reports = get("reports");
-		if (reports == null) {
-		    return [];
-		}
-		return reports.split(/\s*,\s*/).toList();
+        def reports = get("reports");
+        if (reports == null) {
+            return [];
+        }
+        return reports.split(/\s*,\s*/).toList();
     }
     
     private putReportList(reports) {
@@ -431,7 +451,7 @@ class ResponseGraphProperties extends PropertiesConfigurationFile {
     public boolean addReport(ProvisionedService svc) {
         
         addToReportList(svc.reportName);
-
+        
         put("report.${svc.reportName}.name", "${svc.serviceName} Latency")
      	put("report.${svc.reportName}.columns", "${svc.serviceName}")
      	put("report.${svc.reportName}.type", "responseTime, distributedStatus")
@@ -440,17 +460,17 @@ class ResponseGraphProperties extends PropertiesConfigurationFile {
      	prop << " --vertical-label=\"Seconds\" "
      	prop << " DEF:rtMills={rrd1}:${svc.serviceName}:AVERAGE "
      	prop << " CDEF:rt=rtMills,1000,/ "
-		prop << " LINE1:rt#0000ff:\"Response Time\" "
+        prop << " LINE1:rt#0000ff:\"Response Time\" "
      	prop << " GPRINT:rt:AVERAGE:\" Avg  \\\\: %8.2lf %s\" "
      	prop << " GPRINT:rt:MIN:\"Min  \\\\: %8.2lf %s\" "
      	prop << " GPRINT:rt:MAX:\"Max  \\\\: %8.2lf %s\\\\n\""
      	
      	addBlankLine();
-
+        
      	
     }
     
-	
+    
     
     
 }
@@ -458,15 +478,15 @@ class ResponseGraphProperties extends PropertiesConfigurationFile {
 class CapsdConfiguration extends XMLConfigurationFile {
     
     def comment = { svc -> " ${svc.name} ${svc.url} ${svc.threshold} ${svc.email} " }
-
+    
     CapsdConfiguration(File file) {
         super(file);
     }
-
+    
     public void intializeNewDocument(Document document) {
         new DomBuilder(document).'capsd-configuration'();
     }
-
+    
     public void process(ProvisionedService svc) {
         if (alreadyConfigured(svc)) {
             println "${svc}: Capsd plugin ${svc.serviceName} already configured for address ${svc.url.address}. skipping."
@@ -481,7 +501,7 @@ class CapsdConfiguration extends XMLConfigurationFile {
             addToExistingConfiguration(plugin, svc);
         }
     }
-
+    
     public alreadyConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
@@ -489,7 +509,7 @@ class CapsdConfiguration extends XMLConfigurationFile {
         }
         return result;
     }
-
+    
     public Object getExistingConfiguration(ProvisionedService svc) {
         // handle a bug in groovy that doesnt properly return from 'use' cks
         def p;
@@ -498,17 +518,17 @@ class CapsdConfiguration extends XMLConfigurationFile {
         }
         return p;
     }
-
+    
     public void addToExistingConfiguration(Element plugin, ProvisionedService svc) {
         def protoConfig;
         use(DOMCategory) {
-           protoConfig = plugin['protocol-configuration'][0];
+            protoConfig = plugin['protocol-configuration'][0];
         }
         addLeadingComment(plugin, comment(svc));
         def xml = new DomBuilder(document, protoConfig);
         xml.specific(svc.url.address);
     }
-
+    
     
     
     public void createNewConfiguration(ProvisionedService svc) {
@@ -532,11 +552,11 @@ class PollerConfiguration extends XMLConfigurationFile {
     PollerConfiguration(File file) {
         super(file);
     }
-
+    
     public void intializeNewDocument(Document document) {
         new DomBuilder(document).'poller-configuration'() {
             ['internal','external'].each {
-                'package'(name:it) {
+                'package'(name:it, remote:true) {
                     filter("IPADDR IPLIKE *.*.*.*")
                     'include-range'(begin:'1.1.1.1', end:'254.254.254.254')
                     rrd(step:300) {
@@ -549,13 +569,13 @@ class PollerConfiguration extends XMLConfigurationFile {
             }
         };
     }
-
+    
     public void process(ProvisionedService svc) {
         if (!monitorConfigured(svc)) {
             println "${svc}: Adding Monitor for service ${svc.serviceName} to ${file.name}."
             createNewMonitor(svc);
         } else {
-			println "${svc}: Monitor for service ${svc.serviceName} already exists in ${file.name}. skipping."            
+            println "${svc}: Monitor for service ${svc.serviceName} already exists in ${file.name}. skipping."            
         }
         if (!alreadyConfigured(svc)) {
             println "${svc}: Creating service ${svc.serviceName} in polling package '${svc.pollingPackageName}'."
@@ -564,7 +584,7 @@ class PollerConfiguration extends XMLConfigurationFile {
             println "${svc}: Service ${svc.serviceName} already configured for package '${svc.pollingPackageName}'. skipping."
         }
     }
-
+    
     public boolean monitorConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
@@ -572,12 +592,12 @@ class PollerConfiguration extends XMLConfigurationFile {
         }
         return result;
     }
-
+    
     public boolean createNewMonitor(ProvisionedService svc) {
         def xml = new DomBuilder(document, document.documentElement);
         xml.monitor(service:svc.serviceName, 'class-name':'org.opennms.netmgt.poller.monitors.PageSequenceMonitor');
     }
-
+    
     public boolean alreadyConfigured(ProvisionedService svc) {
         boolean result;
         use(DOMCategory) {
@@ -585,11 +605,20 @@ class PollerConfiguration extends XMLConfigurationFile {
         }
         return result;
     }
-
-    public Node findPackage(ProvisionedService svc) {
+    
+    public Node findPackageIfExists(ProvisionedService svc) {
         Node pkg;
         use (DOMCategory) {
             pkg = document.documentElement.'package'.find{ it['@name'] == svc.pollingPackageName };
+        }
+        return pkg;
+    }
+    
+    public Node findPackage(ProvisionedService svc) {
+        Node pkg = findPackageIfExists(svc);
+        if (pkg == null) {
+            def xml = new DomBuilder(document, document.documentElement);
+            pkg = xml.'package'(name:svc.pollingPackageName, remote:true);
         }
         return pkg;
     }
@@ -618,19 +647,19 @@ class ProvisioningDatabase {
     def comment = ~/^\s*#.*$/;
     def blank = ~/^\s*$/;
     def data = ~/^\s*(\S*)\s+(\S*)\s+(\S*)\s+(\S*)\s*$/;
-
+    
     def services = [];
-
+    
     public static ProvisioningDatabase load(externalFile, internalFile) {
         ProvisioningDatabase pdb = new ProvisioningDatabase();
         pdb.parse(false, externalFile);
         pdb.parse(true, internalFile);
         return pdb;
     }
-
+    
     public void parse(internal, r) {
         r.eachLine { line ->
-            if (line =~ blank) {
+                if (line =~ blank) {
                 return;
             }
             if (line =~ comment) {
@@ -646,20 +675,20 @@ class ProvisioningDatabase {
                 services.add(svc);
             }
         }
-   }
-
-   public void print() {
-       for(svc in services) {
-           println svc;
-       }
-   }
-
-   
+    }
+    
+    public void print() {
+        for(svc in services) {
+            println svc;
+        }
+    }
+    
+    
 }
 
 class ServiceThreshold {
     String thresholdSpec;
-
+    
     public String toString() {
         return thresholdSpec;
     }
@@ -669,36 +698,36 @@ class ServiceURL {
     String url;
     private addr = null;
     
-
+    
     public String toString() {
         return url;
     }
-
+    
     public int getPort() {
         return new URL(url).getPort();
     }
-
+    
     public String getPath() {
         return new URL(url).getPath();
     }
-
+    
     public String getHost() {
         return new URL(url).getHost();
     }
-
+    
     public String getQuery() {
         return new URL(url).getQuery();
     }
-
+    
     public String getFile() {
         return new URL(url).getFile();
     }
-
+    
     public String getAddress() {
         if (addr != null) {
             return addr;
         }
-
+        
         String host = getHost();
         try {
             addr = InetAddress.getByName(host).getHostAddress();
@@ -706,7 +735,7 @@ class ServiceURL {
             System.err.println e
             addr = host;
         }
-
+        
         return addr;
     }
 }
@@ -717,7 +746,7 @@ class ProvisionedService {
     ServiceURL url;
     ServiceThreshold threshold;
     String email;
-
+    
     public String getServiceName() {
         return name.replace('-','_');
     }
@@ -725,14 +754,14 @@ class ProvisionedService {
     public String getReportName() {
         return getServiceName().toLowerCase();
     }
-
+    
     public String getPollingPackageName() {
         return internal ? "internal" : "external";
     }
-
+    
     public String toString() {
-		def descr = internal ? "Internal" : "External"        
-		return "${name} (${descr})"
+        def descr = internal ? "Internal" : "External"        
+        return "${name} (${descr})"
     }
 }
 
@@ -773,30 +802,30 @@ class PropertiesConfigurationFile {
     def comment = ~/^\s*#.*$/;
     def blank = ~/^\s*$/;
     def data = ~/^\s*([^=\s]+)\s*=\s*(.+)$/;
-
+    
     def file;
     def index = new LinkedHashMap();
-
+    
     public PropertiesConfigurationFile(File file) {
         this.file = file;
     }
-
+    
     public void save() {
-		save(file);
+        save(file);
     }
     
     public void save(File f) {
-		f.withPrintWriter { writer -> index.each { key, value -> value.save(writer) } }	
+        f.withPrintWriter { writer -> index.each { key, value -> value.save(writer) } }	
     }
     
     public void load() {
         if (!file.exists()) {
             return;
         }
-		int lineno = 0;
-		def continuation = null;
+        int lineno = 0;
+        def continuation = null;
         file.eachLine { line ->
-            lineno++;
+                lineno++;
             if (continuation != null) {
                 if (line.endsWith('\\')) {
                     continuation << line.substring(0, line.length()-1);
@@ -805,44 +834,44 @@ class PropertiesConfigurationFile {
                     continuation = null;
                 }
             }
-            else if (line =~ blank || line =~ comment) {
-			    index["_line-"+lineno] =  createLineHolder(line);
-			}
-			else {
-			    def match = line =~ data;
-			    if (match) {
-			        def key = match.group(1);
-			        def val = match.group(2);
-			        Property prop = new Property(key);
-			        if (val.endsWith('\\')) {
-			            prop << val.substring(0, val.length()-1);
-			            continuation = prop;
-			        } else {
-			            prop << val;
-			        }
-			        index[key] = prop;
-			    }
-			}
-             
+        else if (line =~ blank || line =~ comment) {
+                index["_line-"+lineno] =  createLineHolder(line);
+            }
+        else {
+                def match = line =~ data;
+                if (match) {
+                    def key = match.group(1);
+                    def val = match.group(2);
+                    Property prop = new Property(key);
+                    if (val.endsWith('\\')) {
+                        prop << val.substring(0, val.length()-1);
+                        continuation = prop;
+                    } else {
+                        prop << val;
+                    }
+                    index[key] = prop;
+                }
+            }
+            
         }
     }
     
     private createLineHolder(String line) {
         new Expando(line:line, save:{ w -> w.println(line) }, toString:{ return line });
     }
-
+    
     public void addComment(String cmt) {
-		index["_line-"+index.size()] = createLineHolder("# ${cmt}"); 
+        index["_line-"+index.size()] = createLineHolder("# ${cmt}"); 
     }
     
     public void addBlankLine() {
-		index["_line-"+index.size()] = createLineHolder("");
+        index["_line-"+index.size()] = createLineHolder("");
     }
     
     public String get(String key) {
         return getAt(key);
     }
-
+    
     public String getAt(String key) {
         return index[key]?.toString();
     }
@@ -857,11 +886,11 @@ class PropertiesConfigurationFile {
         return index[key];
         
     }
-
+    
     public void putAt(String key, String val) {
-		put(key, val);
+        put(key, val);
     }
-
+    
 }
 
 /**
@@ -872,12 +901,12 @@ abstract class XMLConfigurationFile {
     DocumentBuilder bldr;
     File file;
     Document document;
-
+    
     XMLConfigurationFile(File file) {
         bldr = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         this.file = file;
     }
-
+    
     public void load() {
         if (file.exists()) {
             document = bldr.parse(file);
@@ -886,9 +915,9 @@ abstract class XMLConfigurationFile {
             intializeNewDocument(document);
         }
     }
-
+    
     public abstract void intializeNewDocument(Document document);
-
+    
     public void addLeadingComment(Node node, String comment) {
         DomBuilder.addLeadingComment(node, comment);
     }
@@ -912,18 +941,18 @@ abstract class XMLConfigurationFile {
 class DomBuilder extends BuilderSupport {
     private static final String START_TAG_INDENT = "start-tag-indent";
     private static final String END_TAG_INDENT = "end-tag-indent";
-
+    
     Document document;
-
+    
     public DomBuilder(Document doc) {
         this(doc, doc);
     }
-
+    
     public DomBuilder(Document doc, Node node) {
         document = doc;
         setCurrent(node);
     }
-
+    
     public static String addLeadingComment(Node node, String comment) {
         Document d = node.ownerDocument;
         Node parent = node.parentNode;
@@ -935,13 +964,13 @@ class DomBuilder extends BuilderSupport {
         parent.insertBefore(createIndent(d, nodeDepth(d, node)), insertionPoint);
         parent.insertBefore(d.createComment(comment), insertionPoint);
     }
-
+    
     public static String indentString(int depth) {
         StringBuilder buf = new StringBuilder(depth*4 + 1);
         (depth*4).times { buf.append(' '); }
         return buf.toString();
     }
-
+    
     protected void setParent(Object parent, Object child) {
         Node lastChild = parent.lastChild;
         if (DomBuilder.isIndent(lastChild)) {
@@ -950,20 +979,20 @@ class DomBuilder extends BuilderSupport {
             parent.appendChild(child);
         }
     }
-
+    
     private static boolean isIndent(Node lastChild) {
         if (lastChild == null) {
             return false;
         }
-
+        
         if (lastChild.nodeType != Node.TEXT_NODE) {
             return false;
         }
-
+        
         if (lastChild.textContent =~ /^\s*$/) {
             return true;
         }
-
+        
         return false;
     }
     protected Object createNode(Object name) {
@@ -998,30 +1027,30 @@ class DomBuilder extends BuilderSupport {
         if (depth > 0) {
             parent.insertBefore(createIndentForStartTag(depth), node);
         }
-
+        
         if (!isOneLiner(node)) {
             node.appendChild(document.createTextNode('\n'+indentString(depth)));
         }
     }
-
+    
     public Node createIndentForStartTag(int depth) {
         createIndent(document, depth);
     }
-
+    
     public static Node createIndent(Document d, int depth) {
         Node text = d.createTextNode('\n'+indentString(depth));
         return text;
     }
-
-
+    
+    
     public Node createIndentForEndTag(int depth) {
         createIndent(document, depth);
     }
-
+    
     public int nodeDepth(Node node) {
         nodeDepth(document, node);
     }
-
+    
     public static int nodeDepth(Document d, Node node) {
         Node n = node;
         int depth = 0;
@@ -1032,20 +1061,20 @@ class DomBuilder extends BuilderSupport {
         return depth;
         
     }
-
+    
     public boolean isOneLiner(Node node) {
         if (!node.hasChildNodes()) {
             return true;
         }
-
+        
         NodeList children = node.getChildNodes();
         if (children.getLength() == 1 && children.item(0).getNodeType() == Node.TEXT_NODE) {
             return true;
         }
-
+        
         return false;
         
     }
-
+    
 }
 
