@@ -50,8 +50,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.CatFactory;
+import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.rtc.DataManager;
+import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.element.Node;
 import org.opennms.web.map.db.MapMenu;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
@@ -120,6 +126,35 @@ public class ModifyMapServlet extends HttpServlet {
 							nodeids[i] = new Integer(snodeids[i]);
 						}
 					}
+					
+					if (action.equals(MapsConstants.ADDNODES_BY_CATEGORY_ACTION)) {
+						log.debug("Adding nodes by category "+ elems);
+						actionfound = true;
+						String categoryName = elems;
+						CategoryFactory.init();
+						CatFactory cf = CategoryFactory.getInstance();
+						String rule = cf.getEffectiveRule(categoryName);
+						List nodeIPs = FilterDaoFactory.getInstance().getIPList(rule);
+						log.debug("ips found: "+nodeIPs.toString());
+						org.opennms.netmgt.config.categories.Category category = cf.getCategory(categoryName);
+						nodeids = new Integer[nodeIPs.size()];
+						for (int i = 0; i<nodeIPs.size();i++) {
+							String nodeIp= (String)nodeIPs.get(i);
+							List<Integer> ids = NetworkElementFactory.getNodeIdsWithIpLike(nodeIp);
+							log.debug("Ids by ipaddress "+nodeIp+": "+ids);
+							nodeids[i] = ids.get(0);
+						}
+					}	
+					
+					
+					if (action.equals(MapsConstants.ADDNODES_BY_LABEL_ACTION)) {
+						actionfound = true;
+						Node[] nodes = NetworkElementFactory.getNodesLike(elems);
+						nodeids = new Integer[nodes.length];
+						for (int i = 0; i<nodes.length;i++) {
+							nodeids[i] = new Integer(nodes[i].getNodeId());
+						}
+					}	
 
 					if (action.equals(MapsConstants.ADDRANGE_ACTION)) {
 						actionfound = true;

@@ -408,6 +408,49 @@ function addMapElementList()
 	selNodes.selectionBoxGroup.appendChild(groupCB);	
 }
 
+
+function addCategoryList()
+{
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+	selCategories = new selectionList("categories",categories,150,2,19,4,0,mycategoriesResult);
+	selCategories.sortList("asc");
+
+
+	//add confirm button to the select list		
+	var groupCB = menuSvgDocument.createElementNS(svgNS,"g");
+	groupCB.setAttributeNS(null,"id", "confirmButton");
+	var cb = menuSvgDocument.createElementNS(svgNS,"rect");
+	cb.setAttributeNS(null,"x", (selCategories.width-23));
+	cb.setAttributeNS(null,"y",0);
+	cb.setAttributeNS(null,"width", 25);
+	cb.setAttributeNS(null,"height", 17);
+	cb.setAttributeNS(null,"style","fill:blue;stroke:pink;stroke-width:1;fill-opacity:0.5;stroke-opacity:0.9");
+	var cbText = menuSvgDocument.createElementNS(svgNS,"text");
+	cbText.setAttributeNS(null,"x", (selCategories.width-23));
+	cbText.setAttributeNS(null,"y",12);
+	cbText.setAttributeNS(null,"style","fill:white");
+	var contentText = menuSvgDocument.createTextNode("Add");		
+	cbText.appendChild(contentText);
+	groupCB.appendChild(cb);
+	groupCB.appendChild(cbText);
+	var cb2 = menuSvgDocument.createElementNS(svgNS,"rect");
+	cb2.setAttributeNS(null,"x", (selCategories.width-23));
+	cb2.setAttributeNS(null,"y",0);
+	cb2.setAttributeNS(null,"width", 25);
+	cb2.setAttributeNS(null,"height", 17);
+	cb2.setAttributeNS(null,"style","fill:blue;fill-opacity:0");
+	groupCB.appendChild(cb2);
+	groupCB.addEventListener("click", addNodesByCategory, false);
+	selCategories.selectionBoxGroup.appendChild(groupCB);	
+}
+
+
 function addMapAsNodeList(){
 	clearTopInfo();
 	clearDownInfo();
@@ -796,6 +839,53 @@ function addRangeBox(){
         }
 }
 
+function addNodeLabelBox(){
+	if(currentMapId!=MAP_NOT_OPENED){
+		clearTopInfo();
+		clearDownInfo();
+
+		var topInfoNode = menuSvgDocument.getElementById("TopInfo");
+		var labelBox = menuSvgDocument.createElementNS(svgNS,"g");
+		labelBox.setAttributeNS(null,"id", "NodeLabelBox");
+		
+		//first a few styling parameters:
+		var textStyles = {"font-family":"Arial,Helvetica","font-size":12,"fill":"dimgray"};
+		var boxStyles = {"fill":"white","stroke":"dimgray","stroke-width":1.5};
+		var cursorStyles = {"stroke":"black","stroke-width":1.5};
+		var selBoxStyles = {"fill":"blue","opacity":0.5};
+		textbox1 = new textbox("NodeLabelBox",labelBox,"",32,3,20,150,22,textStyles,boxStyles,cursorStyles,selBoxStyles,"[^ ]",undefined);
+
+		var groupCB = menuSvgDocument.createElementNS(svgNS,"g");
+		groupCB.setAttributeNS(null,"id", "addByLabelButton");
+		var cb = menuSvgDocument.createElementNS(svgNS,"rect");
+		cb.setAttributeNS(null,"x", 125);
+		cb.setAttributeNS(null,"y", 4);
+		cb.setAttributeNS(null,"width", 28);
+		cb.setAttributeNS(null,"height", 15);
+		cb.setAttributeNS(null,"style","fill:blue;stroke:pink;stroke-width:1;fill-opacity:0.5;stroke-opacity:0.9");
+		var cbText = menuSvgDocument.createElementNS(svgNS,"text");
+		cbText.setAttributeNS(null,"x", 128);
+		cbText.setAttributeNS(null,"y", 16);
+		cbText.setAttributeNS(null,"style","fill:white");
+		var contentText = menuSvgDocument.createTextNode("Add");		
+		cbText.appendChild(contentText);
+		groupCB.appendChild(cb);
+		groupCB.appendChild(cbText);
+		var cb2 = menuSvgDocument.createElementNS(svgNS,"rect");
+		cb2.setAttributeNS(null,"x", 124);
+		cb2.setAttributeNS(null,"y", 3);
+		cb2.setAttributeNS(null,"width", 29);
+		cb2.setAttributeNS(null,"height", 16);
+		cb2.setAttributeNS(null,"style","fill:blue;fill-opacity:0;cursor:pointer");
+		groupCB.appendChild(cb2);
+		groupCB.addEventListener("click", addNodesByLabel, false);
+		labelBox.appendChild(groupCB);
+		topInfoNode.appendChild(labelBox);
+ 	}else{
+		alert('No maps opened');
+        }
+}
+
 
 /*
 function testRangeLength(evt){
@@ -864,6 +954,13 @@ function clearTopInfo(){
 			selectedMapInList=0;
 			}
 	}
+	
+	if(selCategories!=null){
+	if(selCategories.exists==true){
+		selCategories.removeSelectionList();
+		selectedCategoryInList=0;
+		}
+	}
 
 	if(selBGImages!=null){
 		if(selBGImages.exists==true){
@@ -896,6 +993,9 @@ function clearTopInfo(){
 	childNode = menuSvgDocument.getElementById("NodeRangeBox");
 	if (childNode)
 		childNode.parentNode.removeChild(childNode);
+	childNode = menuSvgDocument.getElementById("NodeLabelBox");
+	if (childNode)
+		childNode.parentNode.removeChild(childNode);		
 
 } 
 
