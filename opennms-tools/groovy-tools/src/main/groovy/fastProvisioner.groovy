@@ -278,17 +278,35 @@ class CollectdConfiguration extends XMLConfigurationFile {
 		}
     }
 
+    public boolean createNewCollector(ProvisionedService svc) {
+        def xml = new DomBuilder(document, document.documentElement);
+        xml.collector(service:svc.serviceName, 'class-name':'org.opennms.netmgt.collectd.HttpCollector');
+    }
+
+    public boolean collectorConfigured(ProvisionedService svc) {
+        boolean result;
+        use(DOMCategory) {
+            result = (null != document.documentElement.collector.find{ it['@service'] == svc.serviceName });
+        }
+        return result;
+    }
     public void process(ProvisionedService svc) {
+        if (!collectorConfigured(svc)) {
+            println "${svc}: Adding Collector for service ${svc.serviceName} to ${file.name}."
+            createNewCollector(svc);
+        } else {
+	    println "${svc}: Monitor for service ${svc.serviceName} already exists in ${file.name}. skipping."            
+        }
         if (!packageExists()) {
             println "${svc}: Creating package ${packageName} in ${file.name}."
             createPackage();
         }
-		if (alreadyConfigured(svc)) {
-		    println "${svc}: Collection service ${svc.serviceName} already exists ${file.name}. skipping."
-		} else {
-		    println "${svc}: Creating collection service ${svc.serviceName} in ${file.name}."
-		    createNewConfiguration(svc);
-		}
+	if (alreadyConfigured(svc)) {
+	    println "${svc}: Collection service ${svc.serviceName} already exists ${file.name}. skipping."
+	} else {
+	    println "${svc}: Creating collection service ${svc.serviceName} in ${file.name}."
+	    createNewConfiguration(svc);
+	}
     }
     
     private findPackage() {
