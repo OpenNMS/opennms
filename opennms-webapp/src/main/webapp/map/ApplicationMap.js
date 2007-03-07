@@ -369,6 +369,29 @@ function addRangeOfNodes(){
 	postURL ( "ModifyMap?action="+ADDRANGE_ACTION+"&elems="+range, null, handleAddElementResponse, "text/xml", null );
 }
 
+function addNodesByLabel(){
+	var label = menuSvgDocument.getElementById("NodeLabelBoxText").firstChild.nodeValue;
+	if(label==""){
+		alert('Label not valid!');
+		return;
+		}
+	loading++;
+	assertLoading();
+	disableMenu();
+	postURL ( "ModifyMap?action="+ADDNODES_BY_LABEL_ACTION+"&elems="+label, null, handleAddElementResponse, "text/xml", null );
+}
+
+function addNodesByCategory(){
+	if(selectedCategoryInList==0 )  {
+		return;
+	}
+	loading++;
+	assertLoading();
+	disableMenu();
+	var catLabel = categorySortAss[selectedCategoryInList];
+	postURL ( "ModifyMap?action="+ADDNODES_BY_CATEGORY_ACTION+"&elems="+escape(catLabel), null, handleAddElementResponse, "text/xml", null );
+}
+
 function addMapElemNeigh(id){
 	loading++;
 	assertLoading();
@@ -553,14 +576,23 @@ function handleAddElementResponse(data) {
 					if(testResponse(ADDNODES_WITH_NEIG_ACTION, str)){
 						str=str.substring(ADDNODES_WITH_NEIG_ACTION.length+2,str.length);
 						selectedMapElemInList=0;
-					}else{				
-						if(testResponse(ADDMAPS_ACTION, str)){
-							str=str.substring(ADDMAPS_ACTION.length+2,str.length);
+					}else{	
+						if(testResponse(ADDNODES_BY_CATEGORY_ACTION, str)){
+							str=str.substring(ADDNODES_BY_CATEGORY_ACTION.length+2,str.length);
+							selectedCategoryInList=0;
 						}else{
-							alert('Adding Element/s failed!');
-							loading--;
-							assertLoading();
-							return;
+							if(testResponse(ADDNODES_BY_LABEL_ACTION, str)){
+								str=str.substring(ADDNODES_BY_LABEL_ACTION.length+2,str.length);
+							}else{																
+								if(testResponse(ADDMAPS_ACTION, str)){
+									str=str.substring(ADDMAPS_ACTION.length+2,str.length);
+								}else{
+									alert('Adding Element/s failed!');
+									loading--;
+									assertLoading();
+									return;
+								}
+							}								
 						}
 					}
 				}

@@ -58,6 +58,12 @@
 <%@page import="java.util.Map.Entry"%>
 <%@page import="java.util.List"%>
 <%@page import="org.opennms.web.map.config.ContextMenu.CMEntry"%>
+<%@page import="org.opennms.netmgt.config.CategoryFactory"%>
+<%@page import="org.opennms.netmgt.config.CatFactory"%>
+<%@page import="org.opennms.netmgt.config.categories.Catinfo"%>
+<%@page import="java.util.Enumeration"%>
+<%@page import="org.opennms.netmgt.config.categories.Categorygroup"%>
+<%@page import="org.opennms.netmgt.config.categories.Category"%>
 <html>
 <head>
   <title>Map | OpenNMS Web Console</title>
@@ -222,6 +228,8 @@
 	var RELOAD_ACTION = "Reload";
 	var ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
 	var ADDMAPS_WITH_NEIG_ACTION = "AddMapsWithNeig";
+    var ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
+	var ADDNODES_BY_LABEL_ACTION = "AddNodesByLabel";	
 	var ADDNODES_NEIG_ACTION = "AddNodesNeig";
 	var ADDMAPS_NEIG_ACTION = "AddMapsNeig";
 	var DELETENODES_ACTION = "DeleteNodes";
@@ -294,7 +302,7 @@
 	//string containing a string form of the current map saved. this is used to test if the map is changed
 	var savedMapString=new String(); 
 	
-	//global selectionLists for NODES and MAPS
+	//global selectionLists for NODES, MAPS and CATEGORIES
 	var selectedMapElemInList=0;
 	var selNodes; 
 
@@ -311,6 +319,39 @@
 	var mymapsResult;		
 	var myMapApp;
 	
+	var selectedCategoryInList=0;
+	var selCategories; 
+
+	var categories;
+	var categorySorts; 
+	var categorySortAss;
+	var mycategoriesResult;
+	
+	categories= [" "];
+	categorySorts = [null];
+		
+	<%
+	CategoryFactory.init();
+	CatFactory cf = CategoryFactory.getInstance();
+	Catinfo cinfo=cf.getConfig();
+	Enumeration catGroupEnum = cinfo.enumerateCategorygroup();
+	while(catGroupEnum.hasMoreElements())
+	{
+		Categorygroup cg= (Categorygroup)catGroupEnum.nextElement();
+		Enumeration catEnum = 	cg.getCategories().enumerateCategory();
+		while(catEnum.hasMoreElements())
+		{
+			Category category = (Category) catEnum.nextElement();
+			String categoryName = category.getLabel();
+			%>
+			categories.push('<%=categoryName%>');
+			categorySorts.push('<%=categoryName%>');
+			<%
+
+		}
+	}
+	%>
+	categorySortAss = assArrayPopulate(categories,categorySorts);
 	
 	//global selectionList for MAP BACKGROUND IMAGES
 	var selectedBGImageInList=0;

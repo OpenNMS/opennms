@@ -65,6 +65,10 @@ public final class MapsConstants {
 	
 	public static final String ADDNODES_ACTION = "AddNodes";
 	
+	public static final String ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
+	
+	public static final String ADDNODES_BY_LABEL_ACTION = "AddNodesByLabel";
+	
 	public static final String ADDRANGE_ACTION = "AddRange";
 	
 	public static final String ADDMAPS_ACTION = "AddMaps";
