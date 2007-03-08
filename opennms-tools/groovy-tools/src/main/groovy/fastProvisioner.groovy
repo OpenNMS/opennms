@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy
+#!/usr/bin/env groovy 
 
 import groovy.xml.DOMBuilder;
 import groovy.xml.dom.DOMCategory;
@@ -50,7 +50,6 @@ def collectdConfig = new CollectdConfiguration(new File("collectd-configuration.
 def snmpGraphProps = new SnmpGraphProperties(new File("snmp-graph.properties"));
 def threshdConfig = new ThreshdConfiguration(new File("threshd-configuration.xml"), "http");
 def thresholds = new Thresholds(new File("thresholds.xml"));
-
 
 def internalOnly = { svc -> svc.internal }
 
@@ -120,6 +119,9 @@ class ThreshdConfiguration extends XMLConfigurationFile {
     }
     
     public void process(ProvisionedService svc) {
+        if (!svc.threshold.enabled) {
+            return;
+        }
         if (!packageExists()) {
             println "${svc}: Creating package ${packageName} in ${file.name}."
             createPackage();
@@ -161,8 +163,6 @@ class ThreshdConfiguration extends XMLConfigurationFile {
         }
         
     }
-    
-    
 }
 
 
@@ -179,6 +179,9 @@ class Thresholds extends XMLConfigurationFile {
     }
     
     public void process(ProvisionedService svc) {
+        if (!svc.threshold.enabled) {
+            return;
+        }
         if (alreadyConfigured(svc)) {
             println "${svc}: Threshold group already exists for service ${svc.serviceName} in ${file.name}. skipping."
         } else {
@@ -199,7 +202,14 @@ class Thresholds extends XMLConfigurationFile {
         def xml = new DomBuilder(document, document.documentElement);
         xml.comment(comment(svc));
         xml.group(name:svc.serviceName, rrdRepository:"/opt/opennms/share/rrd/snmp/") {
-            threshold(type:'high', 'ds-name':svc.serviceName, 'ds-type':'node', value:5, rearm:3, trigger:2)
+            svc.threshold.configs.each { t ->
+                    threshold(type:t.type, 
+                              'ds-name':svc.serviceName, 
+                              'ds-type':'node', 
+                              value:t.value, 
+                              rearm:t.rearm, 
+                              trigger:t.trigger)
+            }
         }
         
 
@@ -669,7 +679,7 @@ class ProvisioningDatabase {
             if (matcher) {
                 def name = matcher.group(1);
                 def url = new ServiceURL(url:matcher.group(2));
-                def threshold = new ServiceThreshold(thresholdSpec:matcher.group(3));
+                def threshold = new ThresholdSpecification(matcher.group(3));
                 def email = matcher.group(4);
                 def svc = new ProvisionedService(internal:internal, name:name, url:url, threshold:threshold, email:email);
                 services.add(svc);
@@ -686,11 +696,71 @@ class ProvisioningDatabase {
     
 }
 
-class ServiceThreshold {
-    String thresholdSpec;
-    
+/*
+  Threshold criteria:
+	A value with a "-\.[9]+" is a plus or minus percent change with .05 being 5 percent so this 
+        represents a negative decimal number call it x
+        The corresponding thresholds.xml configuation where 0.95 = 1.0 + x (x is negative) and 1.05 = 1.0 - x
+        <!-- Note: the "rearm" and "trigger" values are not currently used. -->
+       <threshold type="relativeChange" ds-name="Vodafone"  ds-type="node" value="0.95" rearm="1.0" trigger="1"/>
+       <threshold type="relativeChange" ds-name="Vodafone"  ds-type="node" value="1.05" rearm="1.0" trigger="1"/>
+
+	A "-1" is thresholding disabled
+        no configuration here
+
+	A "0" is plus or minus 10 percent change
+        <!-- Note: the "rearm" and "trigger" values are not currently used. -->
+       <threshold type="relativeChange" ds-name="Vodafone"  ds-type="node" value="0.9" rearm="1.0" trigger="1"/>
+       <threshold type="relativeChange" ds-name="Vodafone"  ds-type="node" value="1.1" rearm="1.0" trigger="1"/>
+        
+	A "+[9]+" is a hard threshold and the threshold is triggered when it falls below the specified value
+        <threshold type="low" ds-name="${svc.serviceName}"  ds-type="node" value="X" rearm="X" trigger="3"/>
+        
+   
+ */
+
+class ThresholdSpecification {
+    static PCT_SPEC = ~/-\.\d+/;
+    def boolean legacy = false;
+    def configs;
+
+    ThresholdSpecification(String spec) {
+        if (spec == '-1') {
+            configs = [];
+        } else if (spec == "0") {
+            legacy = true;
+            configs = [
+                [type:'relativeChange', value:'0.9', rearm:'1.0', trigger:1],
+                [type:'relativeChange', value:'1.1', rearm:'1.0', trigger:1]
+            ];
+        } else if (spec =~ PCT_SPEC) {
+            def d = spec.toBigDecimal();
+            configs = [
+                [type:'relativeChange', value:1.0+d, rearm:'1.0', trigger:1],
+                [type:'relativeChange', value:1.0-d, rearm:'1.0', trigger:1]
+            ];
+        } else {
+            def v = spec.toBigInteger();
+            configs = [
+                [type:'low', value:v, rearm:v, trigger:3]
+            ];
+        }
+    }
+
+    public boolean isEnabled() {
+        return configs.size() > 0
+    }
+
     public String toString() {
-        return thresholdSpec;
+        if (configs.size() == 0) {
+            return "-1";
+        } else if (configs.size() == 1) {
+            return configs[0].value.toString();
+        } else if (legacy) {
+            return "0"
+        } else {
+            return (configs[0].value - 1.0).toString();
+        }        
     }
 }
 
@@ -744,7 +814,7 @@ class ProvisionedService {
     boolean internal;
     String name;
     ServiceURL url;
-    ServiceThreshold threshold;
+    ThresholdSpecification threshold;
     String email;
     
     public String getServiceName() {
@@ -1075,6 +1145,6 @@ class DomBuilder extends BuilderSupport {
         return false;
         
     }
-    
 }
+
 
