@@ -628,7 +628,19 @@ class PollerConfiguration extends XMLConfigurationFile {
         Node pkg = findPackageIfExists(svc);
         if (pkg == null) {
             def xml = new DomBuilder(document, document.documentElement);
-            pkg = xml.'package'(name:svc.pollingPackageName, remote:true);
+            pkg = xml.'package'(name:svc.pollingPackageName, remote:true) {
+                   filter("IPADDR IPLIKE *.*.*.*")
+                    'include-range'(begin:'1.1.1.1', end:'254.254.254.254')
+                    rrd(step:300) {
+                        rra('RRA:AVERAGE:0.5:1:2016')
+                        rra('RRA:AVERAGE:0.5:12:4464')
+                        rra('RRA:MIN:0.5:12:4464')
+                        rra('RRA:MAX:0.5:12:4464')
+                    }
+                    downtime(interval:30000, begin:0, end:300000)
+                    downtime(interval:300000, begin:300000, end:43200000)
+                    downtime(interval:600000, begin:43200000)
+            }
         }
         return pkg;
     }
@@ -645,7 +657,7 @@ class PollerConfiguration extends XMLConfigurationFile {
             parameter(key:'ds-name', value:svc.serviceName);
             parameter(key:'page-sequence') {
                 'page-sequence' {
-                    page('user-agent':"FASTMonitor/v1.3.2 (${agentInfo})", host:svc.url.address, port:svc.url.port, path:svc.url.file)
+                    page('user-agent':"FASTMonitor/v1.3.2 (${agentInfo})", host:svc.url.host, port:svc.url.port, path:svc.url.file)
                 }
             }
         }
