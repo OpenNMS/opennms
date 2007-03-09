@@ -138,7 +138,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             SnmpObjId virtualDiskRollUpStatusSnmpObject = new SnmpObjId(virtualDiskRollUpStatus + "." + virtualDiskNumber);
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
             
-            if(virtualDiskRollUpStatus.isNull()) {
+            if(virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
                 log().debug("SNMP poll failed: no results, addr=" + ipaddr.getHostAddress() + " oid=" + virtualDiskRollUpStatusSnmpObject);
                 return PollStatus.unavailable();
             }
