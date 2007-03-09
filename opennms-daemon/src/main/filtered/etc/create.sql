@@ -979,7 +979,7 @@ create table alarms (
 	applicationDN           VARCHAR(512),
 	ossPrimaryKey           VARCHAR(512),
 	x733AlarmType           VARCHAR(31),
-	x733ProbableCause       INTEGER default(0) not null,
+	x733ProbableCause       INTEGER,
 	qosAlarmState           VARCHAR(31)
 	
 );
