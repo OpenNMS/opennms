@@ -157,7 +157,7 @@ public class SnmpMonitorTest extends TestCase {
         testOrderOperations(resultV3, 1);
     }
 
-    public void testMeetsCriteriaWithGuage32() {
+    public void testMeetsCriteriaWithGauge32() {
         monitor = new SnmpMonitor();
         SnmpGauge32 result = new SnmpGauge32(1);
         testSyntaxEquals(result, "1", "2");
