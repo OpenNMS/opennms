@@ -438,12 +438,12 @@ public class SnmpTrapHelper {
     }
 
     /**
-     * Variable binding factory for SnmpGuage32
+     * Variable binding factory for SnmpGauge32
      */
     private class SnmpGauge32Factory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
-         * value will be encoded as an SnmpGuage32. The value is assumed to have
+         * value will be encoded as an SnmpGauge32. The value is assumed to have
          * been encoded with the specified encoding (only XML_ENCODING_TEXT is
          * supported).
          * @param name

@@ -853,7 +853,7 @@
  </mask>
  <uei>uei.opennms.org/vendor/3Com/traps/configurationChanged</uei>
  <event-label>LBHUB-ECS-MIB defined trap event: configurationChanged</event-label>
- <descr>&lt;p&gt;The LinkBuilder ECS configuartion has changed. Either a card has
+ <descr>&lt;p&gt;The LinkBuilder ECS configuration has changed. Either a card has
  been added or removed, a port disabled or enabled from the front
  panel or a AUI port has been selected/deselected.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
@@ -951,7 +951,7 @@
  </mask>
  <uei>uei.opennms.org/vendor/3Com/traps/rateTrap</uei>
  <event-label>LBHUB-ECS-MIB defined trap event: rateTrap</event-label>
- <descr>&lt;p&gt;A Guage threshold has been exceeded.
+ <descr>&lt;p&gt;A Gauge threshold has been exceeded.
  Slot: %parm[#1]%, Port: %parm[#2]%, Error State: %parm[#3]%.&lt;/p&gt;
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ecsInfoSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
