@@ -39,6 +39,7 @@ package org.opennms.netmgt.dao.db;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -47,12 +48,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.test.ThrowableAnticipator;
+import org.springframework.util.StringUtils;
 
 public class InstallerDbTest extends TemporaryDatabaseTestCase {
     private static final String s_constraint = "fk_nodeid6";
@@ -147,34 +150,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         resetOutputStream();
         getInstallerDb().createTables();
 
-        ByteArrayInputStream in = new ByteArrayInputStream(m_outputStream.toByteArray());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.matches("- creating tables\\.\\.\\.")) {
-                continue;
-            }
-            if (line.matches("  - checking table \"\\S+\"\\.\\.\\. ")) {
-                continue;
-            }
-            if (line.matches("  - checking table \"\\S+\"\\.\\.\\. UPTODATE")) {
-                continue;
-            }
-            if (line.matches("    - checking trigger '\\S+' on this table\\.\\.\\. DONE")) {
-                continue;
-            }
-            if (line.matches("    - checking trigger '\\S+' on this table\\.\\.\\. DONE")) {
-                continue;
-            }
-            if (line.matches("    - checking index '\\S+' on this table\\.\\.\\. DONE")) {
-                continue;
-            }
-            if (line.matches("- creating tables\\.\\.\\. DONE")) {
-                continue;
-            }
-            fail("Unexpected line output by createTables(): \"" + line + "\"");
-        }
+        assertNoTablesHaveChanged();
     }
 
     public void testUpgradeRevision3952ToCurrent() throws Exception {
@@ -891,6 +867,52 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                      "job_group character varying(80) NOT NULL",
                      columns.get(1).toString());
     }
+    
+
+    public void testGetColumnsFromDBWithDefaultIntegerConstant() throws Exception {
+        String command = "CREATE TABLE alarms (\n"
+                + "  x733ProbableCause INTEGER DEFAULT -1 NOT NULL\n"
+                + ")";
+        executeSQL(command);
+
+        List<Column> columns = getInstallerDb().getColumnsFromDB("alarms");
+        assertNotNull("column list not null", columns);
+        assertEquals("column list size", 1, columns.size());
+        assertEquals("column zero toString()",
+                     "x733probablecause integer(4) DEFAULT -1 NOT NULL",
+                     columns.get(0).toString());
+    }
+
+
+    public void testGetColumnsFromDBWithDefaultTextConstant() throws Exception {
+        String command = "CREATE TABLE alarms (\n"
+                + "  someColumn VARCHAR(20) DEFAULT 'HeLlO!' NOT NULL\n"
+                + ")";
+        executeSQL(command);
+
+        List<Column> columns = getInstallerDb().getColumnsFromDB("alarms");
+        assertNotNull("column list not null", columns);
+        assertEquals("column list size", 1, columns.size());
+        assertEquals("column zero toString()",
+                     "somecolumn character varying(20) DEFAULT 'HeLlO!' NOT NULL",
+                     columns.get(0).toString());
+    }
+
+    public void testGetColumnsFromDBWithDefaultNextVal() throws Exception {
+        executeSQL("create sequence opennmsNxtId minvalue 1");
+        String command = "CREATE TABLE alarms (\n"
+                + "  x733ProbableCause INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL\n"
+                + ")";
+        executeSQL(command);
+
+        List<Column> columns = getInstallerDb().getColumnsFromDB("alarms");
+        assertNotNull("column list not null", columns);
+        assertEquals("column list size", 1, columns.size());
+        assertEquals("column zero toString()",
+                     "x733probablecause integer(4) DEFAULT nextval('opennmsnxtid') NOT NULL",
+                     columns.get(0).toString());
+    }
+
 
     public void testGetConstraintsFromDB() throws Exception {
         String command = "CREATE TABLE qrtz_job_details (\n"
@@ -1976,6 +1998,35 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                      id2);
     }
 
+    public void testUpgradeColumnToNotNullWithDefault() throws Exception {
+        
+        final String[] commands = { "CREATE TABLE alarms ( id integer, x733ProbableCause integer )",
+                "INSERT INTO alarms ( id, x733ProbableCause ) VALUES ( 1, 1 )",
+                "INSERT INTO alarms ( id, x733ProbableCause ) VALUES ( 2, NULL )" };
+        final String newSql = "CREATE TABLE alarms ( id integer, x733ProbableCause integer DEFAULT 0 NOT NULL );\n";
+
+        executeSQL(commands);
+
+        getInstallerDb().readTables(new StringReader(newSql));
+        getInstallerDb().createTables();
+        
+        assertEquals("x733ProbableCause for id = 1 should have its original value", 1, jdbcTemplate.queryForInt("SELECT x733ProbableCause FROM alarms WHERE id = 1"));
+        assertEquals("x733ProbableCause for id = 2 should have the DEFAULT value", new Integer(0), jdbcTemplate.queryForObject("SELECT x733ProbableCause FROM alarms WHERE id = 2", Integer.class));
+
+    }
+    
+   public void testColumnNoChangeWithDefault() throws Exception {
+        final String sql = "CREATE TABLE alarms ( id integer, x733ProbableCause integer DEFAULT -1 NOT NULL );\n";
+
+        executeSQL(sql);
+
+        getInstallerDb().readTables(new StringReader(sql));
+        getInstallerDb().createTables();
+        
+        assertNoTablesHaveChanged();
+    }
+
+
     public void addTableFromSQL(String tableName) throws SQLException {
         String partialSQL = null;
         try {
@@ -2098,6 +2149,43 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     public void resetOutputStream() {
         m_outputStream = new ByteArrayOutputStream();
         getInstallerDb().setOutputStream(new PrintStream(m_outputStream));
+    }
+
+    private void assertNoTablesHaveChanged() throws IOException {
+        ByteArrayInputStream in = new ByteArrayInputStream(m_outputStream.toByteArray());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+        String line;
+        List<String> unanticipatedOutput = new ArrayList<String>();
+        while ((line = reader.readLine()) != null) {
+            if (line.matches("- creating tables\\.\\.\\.")) {
+                continue;
+            }
+            if (line.matches("  - checking table \"\\S+\"\\.\\.\\. ")) {
+                continue;
+            }
+            if (line.matches("  - checking table \"\\S+\"\\.\\.\\. UPTODATE")) {
+                continue;
+            }
+            if (line.matches("    - checking trigger '\\S+' on this table\\.\\.\\. DONE")) {
+                continue;
+            }
+            if (line.matches("    - checking trigger '\\S+' on this table\\.\\.\\. DONE")) {
+                continue;
+            }
+            if (line.matches("    - checking index '\\S+' on this table\\.\\.\\. DONE")) {
+                continue;
+            }
+            if (line.matches("- creating tables\\.\\.\\. DONE")) {
+                continue;
+            }
+            
+            unanticipatedOutput.add(line);
+        }
+        
+        if (unanticipatedOutput.size() > 0) {
+            fail(unanticipatedOutput.size() + "unexpected line(s) output by createTables(): \n\t" + StringUtils.collectionToDelimitedString(unanticipatedOutput, "\n\t") + "\nAll output:\n" + m_outputStream);
+        }
     }
 
 }
