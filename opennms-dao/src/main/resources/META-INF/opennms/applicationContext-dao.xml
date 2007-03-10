@@ -146,7 +146,7 @@
     <property name="monitoringLocationConfigResource" value="file:${opennms.home}/etc/monitoring-locations.xml" />
   </bean>
   
-  <bean id="surveillanceViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSurveillanceViewConfigDao">
+  <bean id="surveillanceViewConfigDao" class="org.opennms.web.svclayer.dao.castor.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml" />
   </bean>
 
