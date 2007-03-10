@@ -144,7 +144,7 @@ public class PageSequenceMonitorTest extends TestCase {
 				"</page-sequence>\n");
 		
 		
-		PollStatus status = m_monitor.poll(getHttpService("www.opennms.org"), m_params);
+		PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
 		assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
 		
 	}
