@@ -146,4 +146,21 @@
     <property name="monitoringLocationConfigResource" value="file:${opennms.home}/etc/monitoring-locations.xml" />
   </bean>
   
+  <bean id="surveillanceViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSurveillanceViewConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml" />
+  </bean>
+
+  <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="databaseSchemaConfigFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="databaseSchemaConfigFactory-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="filterDao" class="org.opennms.netmgt.dao.support.JdbcFilterDao">
+    <property name="dataSource" ref="dataSource" />
+    <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
+  </bean>
+  
 </beans>

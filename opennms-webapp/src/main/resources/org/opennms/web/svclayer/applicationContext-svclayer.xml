@@ -10,8 +10,6 @@
     
 
   <!-- Surveillance View beans -->
-  <bean id="surveillanceViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSurveillanceViewConfigDao" />
-  
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService" >
     <property name="nodeDao" ref="nodeDao" />
     <property name="categoryDao" ref="categoryDao" />

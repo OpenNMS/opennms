@@ -18,6 +18,12 @@
     <property name="notificationDao" ref="notificationDao" />
     <property name="groupDao" ref="groupDao" />
     <property name="rtcService" ref="rtcService" />
+    <property name="outageDao" ref="outageDao" />
+  </bean>
+  
+  <!-- Override the configResource location in applicationContext-dao.xml -->
+  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+    <property name="configResource" value="classpath:/org/opennms/web/svclayer/surveillance-views-gwtSurveillanceService.xml" />
   </bean>
   
 </beans>
