@@ -800,7 +800,6 @@ public class InstallerDb {
         LinkedList<Column> columns = new LinkedList<Column>();
 
         Statement st = getConnection().createStatement();
-        ResultSet rs;
 
         String query = "SELECT "
                 + "        attname, "
@@ -809,17 +808,17 @@ public class InstallerDb {
                 + "FROM "
                 + "        pg_attribute "
                 + "WHERE "
-                + "        attrelid = "
-                + "                (SELECT oid FROM pg_class WHERE relname = '"
-                + tableName.toLowerCase() + "') AND " + "        attnum > 0";
+                + "        attrelid = (SELECT oid FROM pg_class WHERE relname = '" + tableName.toLowerCase() + "') "
+                + "    AND "
+                + "        attnum > 0";
 
         if (m_pg_version >= 7.3) {
             query = query + " AND attisdropped = false";
         }
 
-        query = query + " ORDER BY " + "        attnum";
+        query = query + " ORDER BY attnum";
 
-        rs = st.executeQuery(query);
+        ResultSet rs = st.executeQuery(query);
 
         while (rs.next()) {
             Column c = new Column();
@@ -841,6 +840,49 @@ public class InstallerDb {
         rs.close();
         st.close();
 
+        st = getConnection().createStatement();
+
+        query = "SELECT "
+                + "        attr.attname, "
+                + "        pg_get_expr(def.adbin, def.adrelid) "
+                + "FROM "
+                + "        pg_attribute attr, "
+                + "        pg_attrdef def "
+                + "WHERE "
+                + "        attr.attrelid = (SELECT oid FROM pg_class WHERE relname = '" + tableName.toLowerCase() + "') "
+                + "    AND "
+                + "        attr.attnum > 0"
+                + "    AND "
+                + "        attr.atthasdef = 't' "
+                + "    AND "
+                + "        attr.attrelid = def.adrelid";
+
+
+        if (m_pg_version >= 7.3) {
+            query = query + " AND attr.attisdropped = false";
+        }
+
+        rs = st.executeQuery(query);
+
+        while (rs.next()) {
+            Column column = null;
+            for (Column c : columns) {
+                if (c.getName().equals(rs.getString(1))) {
+                    column = c;
+                    break;
+                }
+            }
+            
+            if (column == null) {
+                throw new Exception("Could not find column '" + rs.getString(1) + "' in original column list when adding default values");
+            }
+            
+            column.setDefaultValue(rs.getString(2).replaceAll("'(.*)'::([a-zA-Z ]+)", "'$1'"));
+        }
+
+        rs.close();
+        st.close();
+        
         return columns;
 
     }
@@ -2271,6 +2313,8 @@ public class InstallerDb {
         addColumnReplacement("usersnotified.id",
                                  new NextValReplacement("userNotifNxtId",
                                                         getDataSource()));
+        
+        addColumnReplacement("alarms.x733probablecause", new FixedIntegerReplacement(0));
         
     }
     

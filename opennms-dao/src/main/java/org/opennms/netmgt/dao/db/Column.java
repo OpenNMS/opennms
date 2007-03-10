@@ -46,6 +46,8 @@ public class Column {
     private int m_size = 0;
 
     private boolean m_notNull = false;
+    
+    private String m_defaultValue = null;
 
     public boolean equals(Object other_o) {
         Column other = (Column) other_o;
@@ -62,9 +64,20 @@ public class Column {
         if (m_type != null && other.getType() != null && !m_type.equals(other.getType())) {
             return false;
         }
-        if (m_size != other.getSize() || m_notNull != other.isNotNull()) {
+        if (m_size != other.getSize()) {
             return false;
         }
+        if (m_notNull != other.isNotNull()) {
+            return false;
+        }
+        if ((m_defaultValue == null && other.getDefaultValue() != null) || (m_defaultValue != null && other.getDefaultValue() == null)) {
+            return false;
+        }
+        if (m_defaultValue != null && other.getDefaultValue() != null && !m_defaultValue.equals(other.getDefaultValue())) {
+            return false;
+        }
+        
+        
         return true;
     }
 
@@ -86,6 +99,10 @@ public class Column {
                 b.append(",2");
             }
             b.append(")");
+        }
+
+        if (hasDefaultValue()) {
+            b.append(" DEFAULT " + getDefaultValue());
         }
 
         if (m_notNull) {
@@ -129,6 +146,22 @@ public class Column {
     public void setType(String type) {
         m_type = type;
     }
+    
+    public String getDefaultValue() {
+        return m_defaultValue;
+    }
+    
+    public boolean hasDefaultValue() {
+        return m_defaultValue != null;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        if (defaultValue != null && defaultValue.matches("nextval\\('[^']+'\\)")) {
+            m_defaultValue = defaultValue.toLowerCase();
+        } else {
+            m_defaultValue = defaultValue;
+        }
+    }
 
     public void parse(String column) throws Exception {
         Matcher m;
@@ -144,6 +177,7 @@ public class Column {
         m = Pattern.compile("(?i)(.*?)\\s*\\bdefault (.+)").matcher(column);
         if (m.matches()) {
             column = m.group(1);
+            setDefaultValue(m.group(2));
         }
 
         String col_name = null;
