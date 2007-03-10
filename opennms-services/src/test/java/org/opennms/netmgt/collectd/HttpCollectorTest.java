@@ -35,6 +35,7 @@ package org.opennms.netmgt.collectd;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -48,7 +49,6 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdConfig;
-import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
 
@@ -116,9 +116,10 @@ public class HttpCollectorTest extends OpenNMSTestCase {
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.utils.EventProxy, java.util.Map)}.
-     * @throws RrdException 
      */
-    public final void testCollect() throws RrdException {
+    public final void testCollect() throws Exception {
+        
+        InetAddress opennmsDotOrg = InetAddress.getByName("www.opennms.org");
         
         RrdConfig.setProperties(new Properties());
         RrdUtils.setStrategy(new NullRrdStrategy());
@@ -126,7 +127,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
         HttpCollector collector = new HttpCollector();
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
         OnmsNode node = new OnmsNode(distPoller );
-        OnmsIpInterface iface = new OnmsIpInterface("209.61.128.9", node );
+        OnmsIpInterface iface = new OnmsIpInterface(opennmsDotOrg.getHostAddress(), node );
         CollectionAgent agent = new CollectionAgent(iface );
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("http-collection", "default");
