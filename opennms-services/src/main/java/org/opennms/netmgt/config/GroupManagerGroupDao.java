@@ -10,7 +10,7 @@ import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
-import org.opennms.netmgt.dao.support.CastorExceptionTranslator;
+import org.opennms.netmgt.dao.castor.CastorExceptionTranslator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;

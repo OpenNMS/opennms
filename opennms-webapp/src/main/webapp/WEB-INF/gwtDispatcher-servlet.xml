@@ -32,6 +32,7 @@
     <property name="notificationDao" ref="notificationDao" />
     <property name="groupDao" ref="groupDao" />
     <property name="rtcService" ref="rtcService" />
+    <property name="outageDao" ref="outageDao" />
   </bean>
   
 </beans>

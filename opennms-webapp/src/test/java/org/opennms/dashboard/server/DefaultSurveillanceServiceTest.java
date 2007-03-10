@@ -22,12 +22,12 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
 import org.opennms.web.svclayer.support.DefaultRtcService;
 import org.opennms.web.svclayer.support.RtcNodeModel;
 
@@ -135,6 +135,10 @@ public class DefaultSurveillanceServiceTest extends TestCase {
         mock.verifyAll();
         
         assertNotNull("rtcs should not be null", rtcs);
+    }
+    
+    public void NOTYETWORKINGtestGetOutagesForSet() {
+        m_service.getOutagesForSet(SurveillanceSet.DEFAULT);
     }
     
     private UserDetails populateSecurityContext() {

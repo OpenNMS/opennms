@@ -40,10 +40,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
 import org.opennms.web.Util;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.navigate.NavBarEntry;
-import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 

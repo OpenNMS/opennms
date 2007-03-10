@@ -28,7 +28,9 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.NotificationDao;
+import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
@@ -39,10 +41,10 @@ import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.RtcService;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
-import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
 import org.opennms.web.svclayer.support.RtcNodeModel;
 import org.opennms.web.svclayer.support.RtcNodeModel.RtcNode;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -57,8 +59,9 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private CategoryDao m_categoryDao;
     private AlarmDao m_alarmDao;
-    private RtcService m_rtcService;
+    private RtcService m_rtcService;;
     private GroupDao m_groupDao;
+    private OutageDao m_outageDao;
     
     public SurveillanceData getSurveillanceData() {
         SurveillanceData data = new SurveillanceData();
@@ -270,7 +273,12 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         }
         
         View defaultView = m_surveillanceViewConfigDao.getDefaultView();
-        Assert.state(defaultView != null, "there is no default surveillance view and we could not find a surviellance view for the user's username or any of their groups");
+        if (defaultView == null) {
+            String message = "There is no default surveillance view and we could not find a surviellance view for the user's username ('" + user + "') or any of their groups";
+            log().warn(message);
+            throw new ObjectRetrievalFailureException(View.class, message);
+        }
+        
         log().debug("Did not find a surveillance view matching the user's user name or one of their group names.  Using the default view for user '" + user + "'");
         return defaultView;
     }
@@ -423,6 +431,10 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         return nodeRtc;
     }
+    
+    public void getOutagesForSet(SurveillanceSet set) {
+        throw new UnsupportedOperationException("method not implemented");
+    }
 
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
@@ -435,6 +447,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_notificationDao != null, "notificationDao property must be set and cannot be null");
         Assert.state(m_rtcService != null, "rtcService property must be set and cannot be null");
         Assert.state(m_groupDao != null, "groupDao property must be set and cannot be null");
+        Assert.state(m_outageDao != null, "outageDao property must be set and cannot be null");
     }
 
     public void setNodeDao(NodeDao nodeDao) {
@@ -497,9 +510,15 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return m_groupDao;
     }
 
-
     public void setGroupDao(GroupDao groupDao) {
         m_groupDao = groupDao;
     }
 
+    public OutageDao getOutageDao() {
+        return m_outageDao;
+    }
+
+    public void setOutageDao(OutageDao outageDao) {
+        m_outageDao = outageDao;
+    }
 }

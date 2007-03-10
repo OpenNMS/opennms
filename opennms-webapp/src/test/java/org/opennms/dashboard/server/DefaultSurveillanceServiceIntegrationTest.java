@@ -13,7 +13,6 @@ import org.opennms.dashboard.client.NodeRtc;
 import org.opennms.dashboard.client.SurveillanceService;
 import org.opennms.dashboard.client.SurveillanceSet;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.SurveillanceViewsFactory;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.test.ConfigurationTestUtils;
 
@@ -36,9 +35,6 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
         
         Reader schemaReader = ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(schemaReader));
-        
-        Reader surveillanceReader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/web/svclayer/surveillance-views-gwtSurveillanceService.xml");
-        SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory(surveillanceReader));
     }
 
     @Override
@@ -83,5 +79,4 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
     public void setGwtSurveillanceService(SurveillanceService gwtSurveillanceService) {
         m_gwtSurveillanceService = gwtSurveillanceService;
     }
-
 }

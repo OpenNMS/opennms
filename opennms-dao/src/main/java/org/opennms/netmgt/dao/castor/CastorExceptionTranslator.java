@@ -1,4 +1,4 @@
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.dao.castor;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.springframework.dao.DataAccessException;
 
 /**
- * This is modelled after the Spring SQLExceptionTrnaslator.
+ * This is modeled after the Spring SQLExceptionTrnaslator.
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
