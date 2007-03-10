@@ -130,10 +130,13 @@ public class HttpCollector implements ServiceCollector {
                 try {
                     doCollection(this);
                 } catch (HttpCollectorException e) {
-                    log().error("collect: http collection problem: ", e);
+                    log().error("collect: http collection failed: " + e, e);
 
-                    //this doesn't make sense since everything is SNMP collection centric
-                    //should probably let the exception pass through
+                    /*
+                     * FIXME: This doesn't make sense since everything is SNMP
+                     * collection-centric.  Should probably let the exception
+                     * pass through.
+                     */
                     return ServiceCollector.COLLECTION_FAILED;
                 }
             }
@@ -184,8 +187,8 @@ public class HttpCollector implements ServiceCollector {
             List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet);
             
             if (butes.isEmpty()) {
-                log().warn("doCollection: no attributes defined for collection where found in response text.");
-                throw new HttpCollectorException("No attributes specified were found: ",client);
+                log().warn("doCollection: no attributes defined for collection were found in response text matching regular expression '" + collectionSet.getUriDef().getUrl().getMatches() + "'");
+                throw new HttpCollectorException("No attributes specified were found: ", client);
             }
             String collectionName = collectionSet.getParameters().get("http-collection");
             RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
