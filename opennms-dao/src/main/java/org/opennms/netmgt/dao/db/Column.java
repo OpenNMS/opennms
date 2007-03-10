@@ -35,9 +35,6 @@
 package org.opennms.netmgt.dao.db;
 
 import java.sql.Types;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
