@@ -62,7 +62,7 @@ public class PageSequenceMonitorTest extends TestCase {
     	m_monitor.initialize(Collections.EMPTY_MAP);
     	
 		m_params = new HashMap<String, String>();
-		m_params.put("timeout", "2000");
+		m_params.put("timeout", "10000");
 		m_params.put("retries", "1");
 		
 	}
