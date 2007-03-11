@@ -49,6 +49,9 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
 public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
+    private static final String CONFIG_WITH_VIEWS_RESOURCE = "/surveillance-views.testdata.xml";
+    private static final String CONFIG_NO_VIEWS_RESOURCE = "/surveillance-views.testdata.noviews.xml";
+    
     private DefaultSurveillanceViewConfigDao m_dao;
     
     @Override
@@ -57,7 +60,7 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
         
-        final String configResource = "/surveillance-views.testdata.xml";
+        final String configResource = CONFIG_WITH_VIEWS_RESOURCE;
         createDaoWithResource(configResource);
     }
     
@@ -140,11 +143,11 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
     }
     
     public void testInitNoViews() throws MarshalException, ValidationException, IOException {
-        createDaoWithResource("/org/opennms/netmgt/config/surveillance-views.testdata.noviews.xml");
+        createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
     }
     
     public void testGetDefaultViewNoViews() throws MarshalException, ValidationException, IOException {
-        createDaoWithResource("/org/opennms/netmgt/config/surveillance-views.testdata.noviews.xml");
+        createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         View view = m_dao.getDefaultView();
         assertNull("default view should be null", view);
@@ -152,7 +155,7 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
     }
     
     public void testGetViewByNameNoViews() throws MarshalException, ValidationException, IOException {
-        createDaoWithResource("/org/opennms/netmgt/config/surveillance-views.testdata.noviews.xml");
+        createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         View view = m_dao.getView("default");
         assertNull("view by name 'default' should be null", view);
@@ -160,7 +163,7 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
     }
     
     public void testGetViewsNoViews() throws MarshalException, ValidationException, IOException {
-        createDaoWithResource("/org/opennms/netmgt/config/surveillance-views.testdata.noviews.xml");
+        createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         Views views = m_dao.getViews();
         assertNotNull("views should not be null", views);
@@ -168,7 +171,7 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
     }
     
     public void testGetViewMapNoViews() throws MarshalException, ValidationException, IOException {
-        createDaoWithResource("/org/opennms/netmgt/config/surveillance-views.testdata.noviews.xml");
+        createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         Map<String, View> viewMap = m_dao.getViewMap();
         assertNotNull("viewMap should not be null", viewMap);
@@ -191,8 +194,8 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
     }
 
 
-    private void createDaoWithConfigFile(final String configResource) throws IOException {
-        Resource resource = new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile("surveillance-views.xml"));
+    private void createDaoWithConfigFile(final String configFileName) throws IOException {
+        Resource resource = new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile(configFileName));
         m_dao = new DefaultSurveillanceViewConfigDao();
         m_dao.setConfigResource(resource);
         m_dao.afterPropertiesSet();
