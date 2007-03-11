@@ -35,6 +35,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 
 import javax.sql.DataSource;
 
@@ -282,14 +283,34 @@ public class TemporaryDatabaseTestCase extends TestCase {
          * doesn't seem to notice immediately clients have disconnected. Yeah,
          * it's a hack.
          */
-        Thread.sleep(500);
+        Thread.sleep(100);
 
         Connection adminConnection = getAdminDataSource().getConnection();
 
         try {
-            Statement st = adminConnection.createStatement();
-            st.execute("DROP DATABASE " + getTestDatabase());
-            st.close();
+            int maxDropAttempts = 10;
+            for (int dropAttempt = 0; dropAttempt < maxDropAttempts; dropAttempt++) {
+                Statement st = null;
+            
+                try {
+                    st = adminConnection.createStatement();
+                    st.execute("DROP DATABASE " + getTestDatabase());
+                    break;
+                } catch (SQLException e) {
+                    if ((dropAttempt + 1) >= maxDropAttempts) {
+                        System.err.println(new Date().toString() + ": Failed to drop test database on last attempt " + (dropAttempt + 1) + ": " + e);
+                        throw e;
+                    } else {
+                        System.err.println(new Date().toString() + ": Failed to drop test database on attempt " + (dropAttempt + 1) + ": " + e);
+                        Thread.sleep(1000);
+                    }
+                } finally {
+                    if (st != null) {
+                        st.close();
+                        st = null;
+                    }
+                }
+            }
         } finally {
             /*
              * Since we are already going to be throwing an exception at this
