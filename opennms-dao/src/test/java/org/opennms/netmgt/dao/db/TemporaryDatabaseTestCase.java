@@ -282,7 +282,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
          * doesn't seem to notice immediately clients have disconnected. Yeah,
          * it's a hack.
          */
-        Thread.sleep(100);
+        Thread.sleep(500);
 
         Connection adminConnection = getAdminDataSource().getConnection();
 
