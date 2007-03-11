@@ -409,10 +409,10 @@ class HttpCollectionConfig extends XMLConfigurationFile {
                 uri {
                     url(scheme:"http", 'http-version':"1.1", host:svc.url.address, port:svc.url.port, 
                         path:svc.url.path, query:svc.url.query,  matches:/(?s).*#CNT\s+([0-9]+).*/, 'response-range':"100-399")
+            	    attributes {
+                        attrib (alias:svc.serviceName, 'match-group':"1", type:"gauge32")
+            	    }
                 }
-            	attributes {
-                    attrib (alias:svc.serviceName, 'match-group':"1", type:"gauge32")
-            	}
             }
         }
     }
@@ -544,7 +544,7 @@ class CapsdConfiguration extends XMLConfigurationFile {
     public void createNewConfiguration(ProvisionedService svc) {
         def xml = new DomBuilder(document, document.documentElement);
         xml.comment(comment(svc));
-        xml.'protocol-plugin'(protocol:svc.serviceName, 'class-name':'org.opennms.netmgt.capsd.LoopPlugin', scan:'off', 'user-defined':false) {
+        xml.'protocol-plugin'(protocol:svc.serviceName, 'class-name':'org.opennms.netmgt.capsd.plugins.LoopPlugin', scan:'off', 'user-defined':false) {
             'protocol-configuration'(scan:'enable', 'user-defined':false) {
                 specific(svc.url.address)
             }
