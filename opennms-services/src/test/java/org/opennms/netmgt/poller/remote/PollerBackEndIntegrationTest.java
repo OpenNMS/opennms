@@ -37,16 +37,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-public class PollerBackEndIntegrationTest extends
-        AbstractTransactionalDataSourceSpringContextTests {
+public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
     private PollerBackEnd m_backEnd;
     private SessionFactory m_sessionFactory;
@@ -153,6 +152,10 @@ public class PollerBackEndIntegrationTest extends
 
     
     public void testReportResults() {
+        jdbcTemplate.execute("INSERT INTO node (nodeId, nodeCreateTime) VALUES (1, now())");
+        jdbcTemplate.execute("INSERT INTO ipInterface (id, nodeId, ipAddr)  VALUES (1, 1, '192.168.1.1')");
+        jdbcTemplate.execute("INSERT INTO service (serviceId, serviceName) VALUES (1, 'HTTP')");
+        jdbcTemplate.execute("INSERT INTO ifServices (id, nodeId, ipAddr, serviceId, ipInterfaceId) VALUES (1, 1, '192.168.1.1', 1, 1)");
         
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         int serviceId = findServiceId();
@@ -161,8 +164,9 @@ public class PollerBackEndIntegrationTest extends
         
         // make sure there is no rrd data
         File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ipAddr+"/http.rrd");
-        if (rrdFile.exists())
+        if (rrdFile.exists()) {
             rrdFile.delete();
+        }
         
         assertFalse(rrdFile.exists());
         
