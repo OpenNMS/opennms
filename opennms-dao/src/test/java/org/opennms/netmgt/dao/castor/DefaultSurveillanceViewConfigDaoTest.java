@@ -187,7 +187,7 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
     }
 
     private void createDaoWithResource(final String configResource) throws IOException {
-        Resource resource = new InputStreamResource(ConfigurationTestUtils.getInputStreamForResource(getClass(), configResource));
+        Resource resource = new InputStreamResource(ConfigurationTestUtils.getInputStreamForResource(this, configResource));
         m_dao = new DefaultSurveillanceViewConfigDao();
         m_dao.setConfigResource(resource);
         m_dao.afterPropertiesSet();
