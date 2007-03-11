@@ -52,7 +52,7 @@ public class ConfigurationTestUtils extends Assert {
     public static InputStream getInputStreamForResource(Object obj,
             String resource) {
         InputStream is = obj.getClass().getResourceAsStream(resource);
-        assertNotNull("could not get file resource '" + resource + "'", is);
+        assertNotNull("could not get resource '" + resource + "' as an input stream", is);
         return is;
     }
     
