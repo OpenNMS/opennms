@@ -39,7 +39,6 @@ import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SiteStatusViewsFactory;
-import org.opennms.netmgt.config.SurveillanceViewsFactory;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
