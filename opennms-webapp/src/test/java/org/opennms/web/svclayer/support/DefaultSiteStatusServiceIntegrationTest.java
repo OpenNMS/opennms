@@ -37,17 +37,12 @@
 package org.opennms.web.svclayer.support;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.SiteStatusViewsFactory;
-import org.opennms.netmgt.config.SurveillanceViewsFactory;
-import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
