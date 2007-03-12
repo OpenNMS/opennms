@@ -33,6 +33,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -83,6 +85,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 	private void storeResponseTime(MonitoredService svc, long responseTime, Map parameters) {
         String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
         String dsName = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_DSNAME);
+        String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
 
         if (rrdPath == null) {
             log().info("poll: RRD repository not specified in parameters, latency data will not be stored.");
@@ -92,7 +95,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         // Store response time in RRD
         if (responseTime >= 0 && rrdPath != null) {
             try {
-                updateRRD(rrdPath, svc.getAddress(), dsName, responseTime);
+                updateRRD(rrdPath, svc.getAddress(), rrdBaseName, dsName, responseTime);
             } catch (RuntimeException rex) {
                 log().debug("There was a problem writing the RRD:" + rex);
             }
@@ -111,22 +114,23 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      *            path to the RRD file repository
      * @param addr
      *            interface address
+     * @param dsName2 
      * @param value
      *            value to update the RRD file with
      * 
      * @return true if RRD file successfully created, false otherwise
      */
-    public void updateRRD(String repository, InetAddress addr, String dsName, long value) {
+    public void updateRRD(String repository, InetAddress addr, String rrdBaseName, String dsName, long value) {
         Category log = ThreadCategory.getInstance(this.getClass());
 
         try {
             // Create RRD if it doesn't already exist
-            createRRD(repository, addr, dsName);
+            createRRD(repository, addr, rrdBaseName, dsName);
 
             // add interface address to RRD repository path
             String path = repository + File.separator + addr.getHostAddress();
 
-            RrdUtils.updateRRD(addr.getHostAddress(), path, dsName, Long.toString(value));
+            RrdUtils.updateRRD(addr.getHostAddress(), path, rrdBaseName, Long.toString(value));
 
         } catch (RrdException e) {
             if (log.isEnabledFor(Level.ERROR)) {
@@ -148,17 +152,19 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      *            interface address
      * @param dsName
      *            data source/RRD file name
+     * @param dsName2 
      * 
      * @return true if RRD file successfully created, false otherwise
      */
-    public boolean createRRD(String repository, InetAddress addr, String dsName) throws RrdException {
+    public boolean createRRD(String repository, InetAddress addr, String rrdBaseName, String dsName) throws RrdException {
 
         List rraList = m_pollerConfig.getRRAList(m_pkg);
 
         // add interface address to RRD repository path
         String path = repository + File.separator + addr.getHostAddress();
 
-        return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, m_pollerConfig.getStep(m_pkg), "GAUGE", m_pollerConfig.getStep(m_pkg)*2, "U", "U", rraList);
+        List<RrdDataSource> dsList = Collections.singletonList(new RrdDataSource(dsName, "GAUGE", m_pollerConfig.getStep(m_pkg)*2, "U", "U"));
+        return RrdUtils.createRRD(addr.getHostAddress(), path, rrdBaseName, m_pollerConfig.getStep(m_pkg), dsList, rraList);
 
     }
 

@@ -104,12 +104,16 @@
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="http-8000"/>
-                </service>
-                <service name="HTTPS" interval="300000" user-defined="false" status="on">
+        </service>
+        <service name="HTTPS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="5000"/>
 			<parameter key="port" value="443"/>
 			<parameter key="url" value="/"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
+			<!--  an example of using a different dsName and rrd file name -->
+			<parameter key="rrd-base-name" value="https" />
+			<parameter key="ds-name" value="responseTime"/>
 		</service>
 		<service name="MySQL" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
