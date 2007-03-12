@@ -657,7 +657,7 @@ class PollerConfiguration extends XMLConfigurationFile {
             parameter(key:'ds-name', value:svc.serviceName);
             parameter(key:'page-sequence') {
                 'page-sequence' {
-                    page('user-agent':"FASTMonitor/v1.3.2 (${agentInfo})", host:svc.url.host, port:svc.url.port, path:svc.url.file)
+                    page('user-agent':"FASTMonitor/v1.3.2 (${agentInfo})", host:svc.url.host, path:svc.url.file, port:svc.url.port)
                 }
             }
         }
@@ -786,7 +786,8 @@ class ServiceURL {
     }
     
     public int getPort() {
-        return new URL(url).getPort();
+	URL u = new URL(url);
+	return (u.port < 0 ? u.defaultPort : u.port);
     }
     
     public String getPath() {
