@@ -802,7 +802,7 @@ class ServiceURL {
     }
     
     public String getPath() {
-        return new URL(url).getPath();
+        return decode(new URL(url).getPath());
     }
     
     public String getHost() {
@@ -810,11 +810,15 @@ class ServiceURL {
     }
     
     public String getQuery() {
-        return new URL(url).getQuery();
+        return decode(new URL(url).getQuery());
     }
     
     public String getFile() {
-        return new URL(url).getFile();
+        return decode(new URL(url).getFile());
+    }
+
+    public String decode(String s) {
+        return (s == null ? "" : URLDecoder.decode(s));
     }
     
     public String getAddress() {
