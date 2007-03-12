@@ -64,6 +64,17 @@ def configFiles = [
     createConfigFile(thresholds, internalOnly)
 ];
 
+def check = pdb.services.groupBy{ it.pollingPackageName + '-' + it.dsName }
+
+def duplicates = check.grep{ entry -> entry.value.size() > 1 }.sort{ entry -> entry.value[0].serviceName.size() }
+
+if (duplicates) {
+    println 'Found entries whose dsNames are not unique'
+    duplicates.each { println "$it.key -> $it.value" }
+    System.exit 1
+}
+
+
 configFiles.each { it.load() }
 
 pdb.services.each { svc -> configFiles.each { configFile -> configFile.process([svc]) } }
@@ -204,7 +215,7 @@ class Thresholds extends XMLConfigurationFile {
         xml.group(name:svc.serviceName, rrdRepository:"/opt/opennms/share/rrd/snmp/") {
             svc.threshold.configs.each { t ->
                     threshold(type:t.type, 
-                              'ds-name':svc.serviceName, 
+                              'ds-name':svc.dsName, 
                               'ds-type':'node', 
                               value:t.value, 
                               rearm:t.rearm, 
@@ -258,11 +269,11 @@ class SnmpGraphProperties extends PropertiesConfigurationFile {
         addToReportList(reportName);
         
         put("report.${reportName}.name", "${svc.serviceName} Document Count")
-     	put("report.${reportName}.columns", "${svc.serviceName}")
+     	put("report.${reportName}.columns", "${svc.dsName}")
      	put("report.${reportName}.type", "nodeSnmp")
      	def prop = put("report.${reportName}.command")
      	prop << "--title=\"${svc.serviceName} Document Count\" " 
-        prop << " DEF:cnt={rrd1}:${svc.serviceName}:AVERAGE "
+        prop << " DEF:cnt={rrd1}:${svc.dsName}:AVERAGE "
         prop << " LINE2:cnt#0000ff:\"Document Count\" "
         prop << " GPRINT:cnt:AVERAGE:\" Avg  \\\\: %8.2lf %s\" " 
         prop << " GPRINT:cnt:MIN:\"Min  \\\\: %8.2lf %s\" "
@@ -410,7 +421,7 @@ class HttpCollectionConfig extends XMLConfigurationFile {
                     url(scheme:"http", 'http-version':"1.1", host:svc.url.address, port:svc.url.port, 
                         path:svc.url.path, query:svc.url.query,  matches:/(?s).*#CNT\s+([0-9]+).*/, 'response-range':"100-399")
             	    attributes {
-                        attrib (alias:svc.serviceName, 'match-group':"1", type:"gauge32")
+                        attrib (alias:svc.dsName, 'match-group':"1", type:"gauge32")
             	    }
                 }
             }
@@ -463,12 +474,12 @@ class ResponseGraphProperties extends PropertiesConfigurationFile {
         addToReportList(svc.reportName);
         
         put("report.${svc.reportName}.name", "${svc.serviceName} Latency")
-     	put("report.${svc.reportName}.columns", "${svc.serviceName}")
+     	put("report.${svc.reportName}.columns", "${svc.dsName}")
      	put("report.${svc.reportName}.type", "responseTime, distributedStatus")
      	def prop = put("report.${svc.reportName}.command")
      	prop << "--title=\"${svc.serviceName} Response Time\" " 
      	prop << " --vertical-label=\"Seconds\" "
-     	prop << " DEF:rtMills={rrd1}:${svc.serviceName}:AVERAGE "
+     	prop << " DEF:rtMills={rrd1}:${svc.dsName}:AVERAGE "
      	prop << " CDEF:rt=rtMills,1000,/ "
         prop << " LINE1:rt#0000ff:\"Response Time\" "
      	prop << " GPRINT:rt:AVERAGE:\" Avg  \\\\: %8.2lf %s\" "
@@ -654,7 +665,7 @@ class PollerConfiguration extends XMLConfigurationFile {
             parameter(key:'retry', value:1);
             parameter(key:'timeout', value:3000);
             parameter(key:'rrd-repository', value:'/opt/opennms/share/rrd/response');
-            parameter(key:'ds-name', value:svc.serviceName);
+            parameter(key:'ds-name', value:svc.dsName);
             parameter(key:'page-sequence') {
                 'page-sequence' {
                     page('user-agent':"FASTMonitor/v1.3.2 (${agentInfo})", host:svc.url.host, path:svc.url.file, port:svc.url.port)
@@ -832,6 +843,17 @@ class ProvisionedService {
     
     public String getServiceName() {
         return name.replace('-','_');
+    }
+
+    public String getDsName() {
+        def words = getServiceName().split('_').toList();
+        def camelCase = words.inject(""){ result, word -> result + word[0].toUpperCase() + (word.size() > 1 ? word[1..-1].toLowerCase() : "") }
+        def dsName = camelCase;
+        if (camelCase.size() > 19) {
+            dsName = words.inject(""){ result, word -> result + word[0].toUpperCase() + (word.size() > 1 ? word[1..-1].toLowerCase().replaceAll(/[aeiou]/, "") : "") }
+        }
+        int len = Math.min(dsName.size(), 19);
+        return dsName.substring(0, len);
     }
     
     public String getReportName() {
