@@ -89,10 +89,7 @@ import org.springframework.util.Assert;
 public final class SnmpThresholder implements ServiceThresholder {
     private static final String STRINGS_PROPERTIES = "strings.properties";
 
-    /**
-     * Name of monitored service.
-     */
-    private static final String SERVICE_NAME = "SNMP";
+    private String m_serviceName;
     
     private ThresholdsDao m_thresholdsDao;
     
@@ -106,7 +103,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * @return The service that the plug-in collects.
      */
     public String serviceName() {
-        return SERVICE_NAME;
+        return m_serviceName;
     }
 
     /**
@@ -123,6 +120,9 @@ public final class SnmpThresholder implements ServiceThresholder {
      * 
      */
     public void initialize(Map parameters) {
+        
+        m_serviceName = (String)parameters.get("svcName");
+        
         DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
         
         try {
@@ -227,7 +227,7 @@ public final class SnmpThresholder implements ServiceThresholder {
 
         // Get configuration parameters
         if (log().isDebugEnabled()) {
-        	log().debug("check: service= " + SERVICE_NAME + " address= " + snmpThresholdNetworkInterface.getIpAddress() + " thresholding-group=" + config.getGroupName() + " interval=" + config.getInterval() + "ms range=" + config.getRange() + " mS");
+        	log().debug("check: service= " + serviceName() + " address= " + snmpThresholdNetworkInterface.getIpAddress() + " thresholding-group=" + config.getGroupName() + " interval=" + config.getInterval() + "ms range=" + config.getRange() + " mS");
         }
 
         // RRD Repository attribute
