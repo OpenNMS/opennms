@@ -34,12 +34,7 @@ package org.opennms.web.svclayer;
 import static org.easymock.EasyMock.createMock;
 
 import java.io.File;
-import java.io.FileReader;
 
-import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.SiteStatusViewsFactory;
-import org.opennms.netmgt.config.SurveillanceViewsFactory;
-import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
