@@ -112,7 +112,7 @@
         <property key="retry" value="2" />
     </protocol-plugin>
     <protocol-plugin protocol="Router" class-name="org.opennms.netmgt.capsd.plugins.SnmpPlugin" scan="on" user-defined="false">
-        <property key="vbname" value=".1.3.6.1.2.1.4.1" />
+        <property key="vbname" value=".1.3.6.1.2.1.4.1.0" />
         <property key="vbvalue" value="1" />
         <property key="timeout" value="2000" />
         <property key="retry" value="2" />
