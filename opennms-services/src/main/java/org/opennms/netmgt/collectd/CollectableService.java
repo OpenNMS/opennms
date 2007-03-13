@@ -220,7 +220,7 @@ final class CollectableService implements ReadyRunnable {
         event.setUei(uei);
         event.setNodeid((long) m_nodeId);
         event.setInterface(getHostAddress());
-        event.setService("SNMP");
+        event.setService(m_spec.getServiceName());
         event.setSource("OpenNMS.Collectd");
         try {
             event.setHost(InetAddress.getLocalHost().getHostAddress());
