@@ -312,8 +312,9 @@ public class VacuumdTest extends OpenNMSTestCase {
         MockUtil.println("Running trigger query: "+triggerSql);
         q = new Querier(m_db, triggerSql);
         q.execute();
+        AutomationProcessor ap = new AutomationProcessor(null);
         assertFalse("Testing the result rows:"+q.getCount()+" with the trigger operator "+trigger.getOperator()+" against the required rows:"+trigger.getRowCount(),
-                AutomationProcessor.triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), q.getCount()));
+                ap.triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), q.getCount()));
         assertEquals(0, q.getCount());
         
     }
@@ -452,7 +453,8 @@ public class VacuumdTest extends OpenNMSTestCase {
     
     public final void testGetTriggerSqlWithNoTriggerDefined() {
         Automation auto = VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms");
-        assertEquals(null, AutomationProcessor.getTriggerSQL(auto));
+        AutomationProcessor ap = new AutomationProcessor(auto);
+        assertEquals(null, ap.getTriggerSQL());
         
     }
     
