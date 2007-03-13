@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.Querier;
@@ -238,7 +239,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("select * from events");
         Collection columns = new ArrayList();
-        AutomationProcessor ap = new AutomationProcessor(null);
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         assertTrue(ap.resultSetHasRequiredActionColumns(rs, columns));
     }
     /**
@@ -263,7 +264,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetActions() {
-        AutomationProcessor ap = new AutomationProcessor(null);
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         assertEquals(6,VacuumdConfigFactory.getInstance().getActions().size());
         assertEquals(2, ap.getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
@@ -312,7 +313,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         MockUtil.println("Running trigger query: "+triggerSql);
         q = new Querier(m_db, triggerSql);
         q.execute();
-        AutomationProcessor ap = new AutomationProcessor(null);
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         assertFalse("Testing the result rows:"+q.getCount()+" with the trigger operator "+trigger.getOperator()+" against the required rows:"+trigger.getRowCount(),
                 ap.triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), q.getCount()));
         assertEquals(0, q.getCount());
@@ -427,7 +428,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      */
     public void testGetTokenizedColumns() {
         
-        AutomationProcessor ap = new AutomationProcessor(null);
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
         ArrayList actions = (ArrayList)VacuumdConfigFactory.getInstance().getActions();
         Collection tokens = ap.getTokenizedColumns(((Action)actions.get(0)).getStatement().getContent());

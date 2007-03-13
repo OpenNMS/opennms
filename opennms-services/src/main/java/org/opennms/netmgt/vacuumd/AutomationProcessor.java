@@ -50,7 +50,10 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.netmgt.config.vacuumd.Action;
+import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
+import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
@@ -77,6 +80,53 @@ public class AutomationProcessor implements ReadyRunnable {
     private ResultSet m_triggerResultSet;
     private Collection m_actionColumns;
     private Connection m_conn;
+    
+    private TriggerProcessor m_trigger;
+    private ActionProcessor m_action;
+    private AutoEventProcessor m_autoEvent;
+    
+    private static class TriggerProcessor {
+        private Trigger m_trigger;
+
+        public TriggerProcessor(Trigger trigger) {
+            m_trigger = trigger;
+        }
+
+        public Trigger getTrigger() {
+            return m_trigger;
+        }
+        
+        
+        
+    }
+    
+    private static class ActionProcessor {
+        
+        Action m_action;
+
+        public ActionProcessor(Action action) {
+            m_action = action;
+        }
+
+        public Action getAction() {
+            return m_action;
+        }
+        
+    }
+    
+    private static class AutoEventProcessor {
+
+        private AutoEvent m_autoEvent;
+        
+        public AutoEventProcessor(AutoEvent autoEvent) {
+            m_autoEvent = autoEvent;
+        }
+
+        public AutoEvent getAutoEvent() {
+            return m_autoEvent;
+        }
+        
+    }
 
     /**
      * Public constructor.
@@ -85,8 +135,11 @@ public class AutomationProcessor implements ReadyRunnable {
     public AutomationProcessor(Automation automation) {
         m_ready = true;
         m_automation = automation;
+        m_trigger = new TriggerProcessor(VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()));
+        m_action = new ActionProcessor(VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
+        m_autoEvent = new AutoEventProcessor(VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName()));
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
@@ -293,7 +346,7 @@ public class AutomationProcessor implements ReadyRunnable {
 
     private String getUei() {
         if (hasEvent()) {
-            return VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName()).getUei().getContent();
+            return m_autoEvent.getAutoEvent().getUei().getContent();
         } else {
             return null;
         }
@@ -316,8 +369,8 @@ public class AutomationProcessor implements ReadyRunnable {
         //met by the trigger query, if so we'll run the action
         resultRows = countRows(triggerResultSet);
         
-        int triggerRowCount = VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()).getRowCount();
-        String triggerOperator = VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()).getOperator();
+        int triggerRowCount = m_trigger.getTrigger().getRowCount();
+        String triggerOperator = m_trigger.getTrigger().getOperator();
 
         log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+triggerOperator+" than "+triggerRowCount);
 
@@ -335,12 +388,12 @@ public class AutomationProcessor implements ReadyRunnable {
     }
 
     private String getActionSQL() {
-        return VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()).getStatement().getContent();
+        return m_action.getAction().getStatement().getContent();
     }
 
     public String getTriggerSQL() {
         if (hasTrigger()) {
-            return VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()).getStatement().getContent();
+            return m_trigger.getTrigger().getStatement().getContent();
         } else {
             return null;
         }
