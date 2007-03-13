@@ -962,6 +962,8 @@ create table alarms (
 	lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
 	firstEventTime          TIMESTAMP WITHOUT TIME ZONE,
 	lastEventTime           TIMESTAMP WITHOUT TIME ZONE,
+	firstAutomationTime     TIMESTAMP WITHOUT TIME ZONE,
+	lastAutomationTime      TIMESTAMP WITHOUT TIME ZONE,
 	description             VARCHAR(4000),
 	logMsg                  VARCHAR(256),
 	operInstruct            VARCHAR(1024),

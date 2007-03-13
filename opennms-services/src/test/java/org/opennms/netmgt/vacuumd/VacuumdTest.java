@@ -166,7 +166,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * This is an attempt at testing scheduled automations.
      * @throws InterruptedException
      */
-    public final void FIXMEtestConcurrency() throws InterruptedException {
+    public final void testConcurrency() throws InterruptedException {
         
         /*
          * Test status of threads
@@ -238,7 +238,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("select * from events");
         Collection columns = new ArrayList();
-        AutomationProcessor ap = new AutomationProcessor();
+        AutomationProcessor ap = new AutomationProcessor(null);
         assertTrue(ap.resultSetHasRequiredActionColumns(rs, columns));
     }
     /**
@@ -263,7 +263,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetActions() {
-        AutomationProcessor ap = new AutomationProcessor();
+        AutomationProcessor ap = new AutomationProcessor(null);
         assertEquals(6,VacuumdConfigFactory.getInstance().getActions().size());
         assertEquals(2, ap.getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
@@ -323,7 +323,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * @throws SQLException
      * @throws InterruptedException 
      */
-    public final void FIXMEtestRunAutomation() throws SQLException, InterruptedException {
+    public final void testRunAutomation() throws SQLException, InterruptedException {
 
         final int major = 6;
         
@@ -336,46 +336,45 @@ public class VacuumdTest extends OpenNMSTestCase {
         bringNodeDownCreatingEvent(1);
         Thread.sleep(500);
 
-        AutomationProcessor ap = new AutomationProcessor();
-        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
         Thread.sleep(500);
-        assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate")));        
+        assertTrue(ap.runAutomation());        
         assertEquals(major+1, getSingleResultSeverity());
         
     }
     
-    public final void FIXMEtestRunAutomationWithNoTrigger() throws InterruptedException, SQLException {
+    public final void testRunAutomationWithNoTrigger() throws InterruptedException, SQLException {
         
         bringNodeDownCreatingEvent(1);
         Thread.sleep(500);
         
         assertEquals(1, verifyInitialAlarmState());
 
-        AutomationProcessor ap = new AutomationProcessor();
-        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms"));
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms"));
         Thread.sleep(2000);
-        assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms")));
+        assertTrue(ap.runAutomation());
     }
     
-    public final void FIXMEtestRunAutomationWithZeroResultsFromTrigger() throws InterruptedException, SQLException {
+    public final void testRunAutomationWithZeroResultsFromTrigger() throws InterruptedException, SQLException {
         bringNodeDownCreatingEvent(1);
         Thread.sleep(500);
         assertEquals(1, verifyInitialAlarmState());
-        AutomationProcessor ap = new AutomationProcessor();
-        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("testZeroResults"));
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("testZeroResults"));
         Thread.sleep(200);
-        assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("testZeroResults")));        
+        assertTrue(ap.runAutomation());        
     }
     
     /**
      * This tests the capabilities of the cosmicClear autmation as shipped in the standard build.
      * @throws InterruptedException 
      */
-    public final void FIXMEtestCosmicClearAutomation() throws InterruptedException {
-                
+    public final void testCosmicClearAutomation() throws InterruptedException {
+
+        // create node down events with severity 6
         bringNodeDownCreatingEvent(1);
         bringNodeDownCreatingEvent(2);
         Thread.sleep(500);
+        // create node up event with severity 3
         bringNodeUpCreatingEvent(1);
         Thread.sleep(500);
         
@@ -385,35 +384,40 @@ public class VacuumdTest extends OpenNMSTestCase {
         MockUtil.println(result);
         assertTrue("uei.opennms.org/nodes/nodeDown".equals(result));
         
+        // should have three alarms, one for each event
         srq = new SingleResultQuerier(m_db, "select count(*) from alarms");
         srq.execute();
         Integer rows = (Integer)srq.getResult();
         assertEquals(3, rows.intValue());
 
+        // the automation should have cleared the nodeDown for node 1 so it should now have severity CLEARED == 2
         srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity = 2");
         srq.execute();
         rows = (Integer)srq.getResult();
         assertEquals(1, rows.intValue());
 
+        // There should still be a nodeUp alarm and an uncleared nodeDown alarm
         srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity > 2");
         srq.execute();
         rows = (Integer)srq.getResult();
         assertEquals(2, rows.intValue());
 
-        AutomationProcessor ap = new AutomationProcessor();
-        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
+        // run this automation again and make sure nothing happens since we've already processed the clear
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         ap.run();
         Thread.sleep(1000);
         
+        // same as above
         srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity = 2");
         srq.execute();
         rows = (Integer)srq.getResult();
-        assertEquals(2, rows.intValue());
+        assertEquals(1, rows.intValue());
 
+        // save as above
         srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity > 2");
         srq.execute();
         rows = (Integer)srq.getResult();
-        assertEquals(1, rows.intValue());
+        assertEquals(2, rows.intValue());
         
     }
 
@@ -422,7 +426,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      */
     public void testGetTokenizedColumns() {
         
-        AutomationProcessor ap = new AutomationProcessor();
+        AutomationProcessor ap = new AutomationProcessor(null);
         
         ArrayList actions = (ArrayList)VacuumdConfigFactory.getInstance().getActions();
         Collection tokens = ap.getTokenizedColumns(((Action)actions.get(0)).getStatement().getContent());
