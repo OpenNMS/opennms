@@ -60,18 +60,22 @@
 <table class="dashboard" cellspacing="5" width="100%">
   <tbody>
     <tr>
-      <td class="dashletCell" colspan="2" id="surveillanceView"></td>
+      <td class="dashletCell"id="surveillanceView"></td>
     </tr>
     <tr>
-      <td class="dashletCell" colspan="2" id="alarms"></td>
+      <td class="dashletCell" id="alarms"></td>
     </tr>
     <tr>
-      <td class="dashletCell" id="graphs"></td>
       <td class="dashletCell" id="notifications"></td>
     </tr>
     <tr>
-      <td class="dashletCell" id="outages"></td>
       <td class="dashletCell" id="nodeStatus"></td>
+    </tr>
+    <tr>
+      <td class="dashletCell" id="graphs"></td>
+    </tr>
+    <tr>
+      <td class="dashletCell" id="outages"></td>
     </tr>
   </tbody>
 </table>
