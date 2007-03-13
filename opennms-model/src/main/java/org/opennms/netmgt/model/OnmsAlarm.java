@@ -94,6 +94,12 @@ public class OnmsAlarm implements Serializable {
     /** persistent field */
     private Date m_lastEventTime;
 
+    /** persistent field */
+    private Date m_firstAutomationTime;
+    
+    /** persistent field */
+    private Date m_lastAutomationTime;
+
     /** nullable persistent field */
     private String m_description;
 
@@ -508,6 +514,26 @@ public class OnmsAlarm implements Serializable {
     }
     public void setQosAlarmState(String alarmState) {
         m_qosAlarmState = alarmState;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="firstAutomationTime")
+    public Date getFirstAutomationTime() {
+        return m_firstAutomationTime;
+    }
+
+    public void setFirstAutomationTime(Date firstAutomationTime) {
+        m_firstAutomationTime = firstAutomationTime;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastAutomationTime")
+    public Date getLastAutomationTime() {
+        return m_lastAutomationTime;
+    }
+
+    public void setLastAutomationTime(Date lastAutomationTime) {
+        m_lastAutomationTime = lastAutomationTime;
     }
 
 }
