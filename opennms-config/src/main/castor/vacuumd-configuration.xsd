@@ -4,7 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:this="http://xmlns.opennms.org/xsd/config/vacuumd"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
-        xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML Schema for the vacuumd-configuration.xml configuration
@@ -67,6 +66,15 @@
             </sequence>
           </complexType>
         </element>
+
+        <element name="action-events">
+          <complexType>
+            <sequence>
+              <element ref="this:action-event"  minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+          </complexType>
+        </element>
+        
       </sequence>
 
       <attribute name="period" type="positiveInteger" use="required">
@@ -114,6 +122,12 @@
       <attribute name="auto-event-name" type="string" use="optional">
         <annotation>
           <documentation>specify an event UEI to send</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="action-event" type="string" use="optional">
+        <annotation>
+          <documentation>Create an Event from Result of Trigger</documentation>
         </annotation>
       </attribute>
 
@@ -172,7 +186,7 @@
 
   <element name="auto-event">
     <annotation>
-      <documentation>actions modify the database based on results of a
+      <documentation>(THIS IS BEING DEPRECATED) actions modify the database based on results of a
       trigger</documentation>
     </annotation>
 
@@ -199,7 +213,26 @@
       </simpleContent>
     </complexType>
   </element>
-
+  
+  <element name="action-event">
+    <complexType>
+      <sequence>
+        <element ref="this:assignment" minOccurs="1" maxOccurs="unbounded" >
+        </element>
+      </sequence>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="for-each-result" type="boolean" use="optional" default="false" />
+    </complexType>
+  </element>
+  
+  <element name="assignment">
+    <complexType>
+      <attribute name="type" type="string" use="required" />
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
+    </complexType>
+  </element>
+  
   <element name="statement">
     <annotation>
       <documentation>Just a generic string used for SQL
