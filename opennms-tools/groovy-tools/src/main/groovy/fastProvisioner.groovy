@@ -50,6 +50,8 @@ def collectdConfig = new CollectdConfiguration(new File("collectd-configuration.
 def snmpGraphProps = new SnmpGraphProperties(new File("snmp-graph.properties"));
 def threshdConfig = new ThreshdConfiguration(new File("threshd-configuration.xml"), "http");
 def thresholds = new Thresholds(new File("thresholds.xml"));
+def notifications = new Notifications(new File("notifications.xml"));
+def destinationPaths = new DestinationPaths(new File("destinationPaths.xml"));
 
 def internalOnly = { svc -> svc.internal }
 
@@ -61,7 +63,9 @@ def configFiles = [
     createConfigFile(collectdConfig, internalOnly),
     createConfigFile(snmpGraphProps, internalOnly),
     createConfigFile(threshdConfig, internalOnly),
-    createConfigFile(thresholds, internalOnly)
+    createConfigFile(thresholds, internalOnly),
+    createConfigFile(notifications),
+    createConfigFile(destinationPaths)
 ];
 
 def check = pdb.services.groupBy{ it.pollingPackageName + '-' + it.dsName }
@@ -82,6 +86,159 @@ pdb.services.each { svc -> configFiles.each { configFile -> configFile.process([
 
 configFiles.each { it.save() }
 
+
+class DestinationPaths extends XMLConfigurationFile {
+    
+    def comment = { svc -> " ${svc.name} ${svc.url} ${svc.threshold} ${svc.email} " }
+    
+    DestinationPaths(File file) {
+        super(file);
+    }
+    
+    public void intializeNewDocument(Document document) {
+        new DomBuilder(document).destinationPaths {
+            header {
+                rev("1.2")
+                created(new Date().toString())
+                mstation("localhost")
+            }
+            path(name:"Email-Admin") {
+                target {
+                    name("Admin")
+                    command("javaEmail")
+                }
+            }
+        }
+    }
+    
+    private boolean pathExists(ProvisionedService svc) {
+       	boolean result;
+       	use(DOMCategory) {
+            result = (null != document.documentElement.path.find { it['@name'] == svc.serviceName });    
+       	}
+       	return result;
+    }
+    
+    private void createPath(ProvisionedService svc) {
+        def xml = new DomBuilder(document, document.documentElement)
+        xml.path(name:svc.serviceName, 'initial-delay':"2m") {
+            for(email in svc.emailList) {
+                target(interval:"0s") {
+                    name(email)
+                    autoNotify("auto")
+                    command("javaEmail")
+                }
+            }
+        }
+    }
+
+    public void process(ProvisionedService svc) {
+        if (pathExists(svc)) {
+            println "${svc}: DestinationPath for service ${svc.serviceName} already exists in ${file.name}. skipping."
+        } else {
+            println "${svc}: Creating destinationPath for ${svc.serviceName} in ${file.name}."
+            createPath(svc);
+        }
+    }
+    
+}
+
+class Notifications extends XMLConfigurationFile {
+    
+    def comment = { svc -> " ${svc.name} ${svc.url} ${svc.threshold} ${svc.email} " }
+    
+    Notifications(File file) {
+        super(file);
+    }
+    
+    public void intializeNewDocument(Document document) {
+        new DomBuilder(document).notifications(xmlns:"http://xmlns.opennms.org/xsd/notifications") {
+            header {
+                rev("1.2")
+                created(new Date().toString())
+                mstation("localhost")
+            }
+        }
+        
+    }
+    
+    public void process(ProvisionedService svc) {
+        if (alreadyConfigured(svc)) {
+            println "${svc}: Notications for ${svc.serviceName} already exists in ${file.name}. skipping."
+        } else {
+            println "${svc}: Creating notifications for service ${svc.serviceName} in ${file.name}."
+            createNewConfiguration(svc);
+        }
+    }
+    
+    public alreadyConfigured(ProvisionedService svc) {
+        boolean result;
+        use(DOMCategory) {
+            result = (null != document.documentElement.notification?.rule?.find{ it.text() == filterRule(svc) });
+        }
+        return result;
+    }
+
+    public String filterRule(ProvisionedService svc) {
+        return "IPADDR IPLIKE ${svc.url.address} & is${svc.serviceName}";
+    }
+    
+    public void createNewConfiguration(ProvisionedService svc) {
+        def xml = new DomBuilder(document, document.documentElement);
+
+        if (svc.internal) {
+            xml.notification(name:"$svc.serviceName High Threshold", status:"off") {
+                uei("uei.opennms.org/threshold/highThresholdExceeded")
+                description("A monitored device has hit a high threshold")
+                rule(filterRule(svc))
+                destinationPath(svc.serviceName)
+                'text-message'('A Threshold has been exceeded on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% while the threshold is %parm[threshold]%. This alert will be rearmed when %parm[ds]% reaches %parm[rearm]%.')
+                subject('Notice #%noticeid%: High Threshold for %parm[ds]% on node %nodelabel%.')
+            }
+            xml.notification(name:"$svc.serviceName Low Threshold", status:"off") {
+                uei('uei.opennms.org/threshold/lowThresholdExceeded')
+                description('A monitored device has hit a low threshold')
+                rule(filterRule(svc))
+                destinationPath(svc.serviceName)
+                'text-message'('A Threshold has been exceeded on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% while the threshold is %parm[threshold]%. This alert will be rearmed when %parm[ds]% reaches %parm[rearm]%.')
+                subject('Notice #%noticeid%: Low Threshold for %parm[ds]% on node %nodelabel%.')
+            }
+            xml.notification(name:"$svc.serviceName Low Threshold Rearmed", status:"off") {
+                uei('uei.opennms.org/threshold/lowThresholdRearmed')
+                description('A monitored device has recovered from a low threshold')
+                rule(filterRule(svc))
+                destinationPath(svc.serviceName)
+                'text-message'('A Threshold has returned to normal on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% with a rearm threshold of %parm[rearm]%. This threshold for this alert was %parm[threshold]%.')
+                subject('Notice #%noticeid%: Low Threshold Rearmed for %parm[ds]% on node %nodelabel%.')
+            }
+            xml.notification(name:"$svc.serviceName High Threshold Rearmed" , status:"off") {
+                uei('uei.opennms.org/threshold/highThresholdRearmed')
+                description('A monitored device has recovered from a high threshold')
+                rule(filterRule(svc))
+                destinationPath(svc.serviceName)
+                'text-message'('A Threshold has returned to normal on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% with a rearm threshold of %parm[rearm]%. This threshold for this alert was %parm[threshold]%.')
+                subject('Notice #%noticeid%: High Threshold Rearmed for %parm[ds]% on node %nodelabel%.')
+            }
+            xml.notification(name:"$svc.serviceName Relative Threshold Exceeded", status:"off") {
+                uei('uei.opennms.org/threshold/relativeChangeExceeded')
+                description("REED Threshold Notification")
+                rule(filterRule(svc))
+                destinationPath(svc.serviceName)
+                'text-message'('The relative threshold for %service% document count on node: %nodelabel% with nodeid: %nodeid% has been exceeded.')
+                subject('Notice #%noticeid%: Relative Threshold Exceeded for %parm[ds]% on node %nodelabel%.')
+            }
+        }
+        xml.notification(name:"$svc.serviceName Down", status:"off") {
+            uei('uei.opennms.org/nodes/nodeLostService')
+            rule(filterRule(svc))
+            destinationPath(svc.serviceName)
+            'text-message'('The %service% service poll on interface %interfaceresolve% (%interface%) on node %nodelabel% failed at %time%.')
+            subject('Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.')
+            'numeric-message'('111-%noticeid%')
+        }
+        
+    }
+}
 
 class ThreshdConfiguration extends XMLConfigurationFile {
     
@@ -859,6 +1016,10 @@ class ProvisionedService {
         int len = Math.min(dsName.size(), 19);
         return dsName.substring(0, len);
     }
+
+    public List getEmailList() {
+        return email.split(/\s*,\s*/).toList();
+    }
     
     public String getReportName() {
         return getServiceName().toLowerCase();
@@ -873,8 +1034,6 @@ class ProvisionedService {
         return "${name} (${descr})"
     }
 }
-
-
 
 class Property {
     def key;
