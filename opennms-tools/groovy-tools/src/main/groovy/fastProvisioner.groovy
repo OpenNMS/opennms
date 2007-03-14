@@ -236,6 +236,14 @@ class Notifications extends XMLConfigurationFile {
             subject('Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.')
             'numeric-message'('111-%noticeid%')
         }
+        xml.notification(name:"Wide Spread Outage for $svc.serviceName", status:"off") {
+            uei('uei.opennms.org/correlation/remote/wideSpreadOutage')
+            rule(filterRule(svc))
+            destinationPath(svc.serviceName)
+            'text-message'('A wide spread outage has occurred for the %service% on interface %interfaceresolve% (%interface%) on node %nodelabel% at %time%.')
+            subject('Notice #%noticeid%: Wide Spread Outage for %service% on %interfaceresolve% (%interface%) on node %nodelabel%.')
+            'numeric-message'('111-%noticeid%')
+        }
         
     }
 }
