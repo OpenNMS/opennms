@@ -42,6 +42,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 public class EventBuilder {
     
@@ -176,5 +178,10 @@ public class EventBuilder {
 		return this;
 		
 	}
+
+    public void setField(String name, String val) {
+        BeanWrapper w = new BeanWrapperImpl(m_event);
+        w.setPropertyValue(name, val);
+    }
 
 }
