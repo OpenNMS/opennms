@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Mar 14: Create a public constructor that takes a reader, add a
+//              setInstance method, eliminate setConfigReader method and
+//              m_singleton, and indent a bit. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -52,6 +58,7 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
+import org.springframework.util.Assert;
 
 
 /**
@@ -78,24 +85,13 @@ public final class VacuumdConfigFactory {
     private VacuumdConfiguration m_config;
 
     /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
-
-    private static Reader m_configReader;
-
-    /**
      * Private constructor
      * @param rdr Reader
      * @throws MarshalException
      * @throws ValidationException
      */
-    private VacuumdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+    public VacuumdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         m_config = (VacuumdConfiguration) Unmarshaller.unmarshal(VacuumdConfiguration.class, rdr);
-    }
-    
-    public static void setConfigReader(Reader rdr) {
-        m_configReader = rdr;
     }
 
     /**
@@ -110,19 +106,19 @@ public final class VacuumdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
-        if (m_loaded) {
+        if (m_singleton != null) {
             // init already called - return
             // to reload, reload() will need to be called
             return;
         }
 
-        if (m_configReader == null) {
-            m_configReader = new InputStreamReader(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME)));
-        }
+        Reader reader = new InputStreamReader(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME)));
 
-        m_singleton = new VacuumdConfigFactory(m_configReader);
-        m_configReader.close();
-        m_loaded = true;
+        try {
+            setInstance(new VacuumdConfigFactory(reader));
+        } finally {
+            reader.close();
+        }
     }
 
     /**
@@ -136,8 +132,7 @@ public final class VacuumdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
+        setInstance(null);
 
         init();
     }
@@ -151,11 +146,20 @@ public final class VacuumdConfigFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized VacuumdConfigFactory getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
+        Assert.state(m_singleton != null, "The factory has not been initialized");
 
         return m_singleton;
     }
+    
+    /**
+     * Set the singleton instance of this factory.
+     * 
+     * @param instance The factory instance to set.
+     */
+    public static synchronized void setInstance(VacuumdConfigFactory instance) {
+        m_singleton = instance;
+    }
+    
     
     /**
      * Returns a Collection of automations defined in the config
@@ -182,9 +186,10 @@ public final class VacuumdConfigFactory {
         Collection triggers = m_config.getTriggers().getTriggerCollection();
         Iterator it = triggers.iterator();
         while (it.hasNext()) {
-            Trigger trig = (Trigger)it.next();
-            if (trig.getName().equals(triggerName))
+            Trigger trig = (Trigger) it.next();
+            if (trig.getName().equals(triggerName)) {
                 return trig;
+            }
         }
         return null;
     }
@@ -198,9 +203,10 @@ public final class VacuumdConfigFactory {
         Collection actions = m_config.getActions().getActionCollection();
         Iterator it = actions.iterator();
         while (it.hasNext()) {
-            Action act = (Action)it.next();
-            if (act.getName().equals(actionName))
+            Action act = (Action) it.next();
+            if (act.getName().equals(actionName)) {
                 return act;
+            }
         }
         return null;
     }
@@ -214,9 +220,10 @@ public final class VacuumdConfigFactory {
         Collection autos = m_config.getAutomations().getAutomationCollection();
         Iterator it = autos.iterator();
         while (it.hasNext()) {
-            Automation auto = (Automation)it.next();
-            if (auto.getName().equals(autoName))
+            Automation auto = (Automation) it.next();
+            if (auto.getName().equals(autoName)) {
                 return auto;
+            }
         }
         return null;
     }
@@ -247,9 +254,10 @@ public final class VacuumdConfigFactory {
         Collection actions = getAutoEvents();
         Iterator it = actions.iterator();
         while (it.hasNext()) {
-            AutoEvent ae = (AutoEvent)it.next();
-            if (ae.getName().equals(name))
+            AutoEvent ae = (AutoEvent) it.next();
+            if (ae.getName().equals(name)) {
                 return ae;
+            }
         }
         return null;
     }
@@ -270,8 +278,8 @@ public final class VacuumdConfigFactory {
     public ActionEvent getActionEvent(String name) {
         Collection actionEvents = m_config.getActionEvents().getActionEventCollection();
         Iterator it = actionEvents.iterator();
-        while(it.hasNext()) {
-            ActionEvent actionEvent = (ActionEvent)it.next();
+        while (it.hasNext()) {
+            ActionEvent actionEvent = (ActionEvent) it.next();
             if (actionEvent.getName().equals(name)) {
                 return actionEvent;
             }

@@ -10,7 +10,8 @@
 //
 // Modifications:
 //
-// Aug 28, 2004: Created this file.
+// 2007 Mar 13: Call VacuumdConfigFactory.init(), not reload(). - dj@opennms.org
+// 2004 Aug 28: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -99,7 +100,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
 
         try {
             log().info("Loading the configuration file.");
-            VacuumdConfigFactory.reload();
+            VacuumdConfigFactory.init();
         } catch (MarshalException ex) {
             log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
