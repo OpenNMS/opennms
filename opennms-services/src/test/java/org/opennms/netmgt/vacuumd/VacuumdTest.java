@@ -84,6 +84,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         "    </statement>\n" +
         "    <automations>\n" + 
         "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" auto-event-name=\"escalationEvent\" action-name=\"escalate\" active=\"true\" />\n" + 
+        "           <automation name=\"testActionEvent\" interval=\"10000\" trigger-name=\"selectAll\" action-event=\"escalationEvent\" action-name=\"escalate\" active=\"true\" />\n" + 
         "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" active=\"true\" />\n" +
         "           <automation name=\"cosmicClear\" interval=\"30000\" trigger-name=\"selectResolvers\" action-name=\"clearProblems\" active=\"true\" />\n" + 
         "           <automation name=\"stormDetect\" interval=\"60000\" trigger-name=\"stormTrigger\" action-name=\"null\" auto-event-name=\"stormAlert\" active=\"true\" />" +
@@ -134,7 +135,16 @@ public class VacuumdTest extends OpenNMSTestCase {
         "        <auto-event name=\"stormAlert\" >\n" + 
         "            <uei>FOXTEL/System/OpenNMS/MessageStormDetected</uei>\n" + 
         "        </auto-event>\n" + 
-        "    </auto-events>\n" +
+        "    </auto-events>" +
+        "   <action-events>" +
+        "       <action-event name=\"escalationEvent\" for-each-result=\"true\">" +
+        "           <assignment type=\"field\" name=\"uei\" value=\"uei.opennms.org/vacuumd/alarmEscalated\" />" +
+        "           <assignment type=\"field\" name=\"nodeid\" value=\"${nodeid}\" />" +
+        "           <assignment type=\"field\" name=\"interface\" value=\"${ipaddr}\" />" +
+        "           <assignment type=\"field\" name=\"service\" value=\"TEST\" />" +
+        "           <assignment type=\"parameter\" name=\"alarmId\" value=\"${alarmId}\" />" +
+        "       </action-event>" +
+        "   </action-events>\n" +
         "" + 
         "</VacuumdConfiguration>";
     
@@ -246,7 +256,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetAutomations() {
-        assertEquals(5, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(6, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
     public final void testGetAutoEvents() {
@@ -265,8 +275,9 @@ public class VacuumdTest extends OpenNMSTestCase {
      */
     public final void testGetActions() {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
+        
         assertEquals(6,VacuumdConfigFactory.getInstance().getActions().size());
-        assertEquals(2, ap.getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
+        assertEquals(2, ap.getAction().getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
     
     /**
@@ -431,7 +442,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
         ArrayList actions = (ArrayList)VacuumdConfigFactory.getInstance().getActions();
-        Collection tokens = ap.getTokenizedColumns(((Action)actions.get(0)).getStatement().getContent());
+        Collection tokens = ap.getAction().getTokenizedColumns(((Action)actions.get(0)).getStatement().getContent());
 
         //just this for now
         assertFalse(tokens.isEmpty());
@@ -455,7 +466,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     public final void testGetTriggerSqlWithNoTriggerDefined() {
         Automation auto = VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms");
         AutomationProcessor ap = new AutomationProcessor(auto);
-        assertEquals(null, ap.getTriggerSQL());
+        assertEquals(null, ap.getTrigger().getTriggerSQL());
         
     }
     

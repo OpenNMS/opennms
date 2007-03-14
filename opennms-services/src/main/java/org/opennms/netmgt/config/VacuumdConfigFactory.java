@@ -46,6 +46,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.vacuumd.Action;
+import org.opennms.netmgt.config.vacuumd.ActionEvent;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
@@ -264,5 +265,17 @@ public final class VacuumdConfigFactory {
             sql[i] = stmts[i].getContent();
         }
         return sql;
+    }
+
+    public ActionEvent getActionEvent(String name) {
+        Collection actionEvents = m_config.getActionEvents().getActionEventCollection();
+        Iterator it = actionEvents.iterator();
+        while(it.hasNext()) {
+            ActionEvent actionEvent = (ActionEvent)it.next();
+            if (actionEvent.getName().equals(name)) {
+                return actionEvent;
+            }
+        }
+        return null;
     }
 }
