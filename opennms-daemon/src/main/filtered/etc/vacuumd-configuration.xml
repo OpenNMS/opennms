@@ -1,65 +1,82 @@
 <VacuumdConfiguration period="86400000" >
-   <statement>
-       <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
-       DELETE FROM node WHERE node.nodeType = 'D';
-   </statement>
-   <statement>
-       <!-- this deletes all the interfaces that have been marked as deleted - it relies on cascading deletes -->
-       DELETE FROM ipInterface WHERE ipInterface.isManaged = 'D';
-   </statement>
-   <statement>
-      <!-- this deletes all the services that have been marked as deleted - it relies on cascading deletes -->
-      DELETE FROM ifServices WHERE ifServices.status = 'D';
-   </statement>
-    <statement>
-       <!-- this deletes any events that are not associated with outages - Thanks to Chris Fedde for this -->
-      DELETE FROM events WHERE NOT EXISTS 
-          (SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid  
-        UNION 
-          SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid 
-        UNION 
-          SELECT eventid FROM notifications WHERE eventid = events.eventid) 
-       AND eventtime &lt; now() - interval '6 weeks';
-    </statement>
-    <automations>
+  <statement>
+    <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
+    DELETE FROM node WHERE node.nodeType = 'D';
+  </statement>
+   
+  <statement>
+    <!-- this deletes all the interfaces that have been marked as deleted - it relies on cascading deletes -->
+    DELETE FROM ipInterface WHERE ipInterface.isManaged = 'D';
+  </statement>
+   
+  <statement>
+    <!-- this deletes all the services that have been marked as deleted - it relies on cascading deletes -->
+    DELETE FROM ifServices WHERE ifServices.status = 'D';
+  </statement>
+   
+  <statement>
+    <!-- this deletes any events that are not associated with outages - Thanks to Chris Fedde for this -->
+    DELETE FROM events WHERE NOT EXISTS 
+      (SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid  
+    UNION 
+      SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid 
+    UNION 
+      SELECT eventid FROM notifications WHERE eventid = events.eventid) 
+    AND eventtime &lt; now() - interval '6 weeks';
+  </statement>
+    
+  <automations>
 <!-- Remark these for now until I get them right.
            <automation name="autoEscalate" interval="10000" trigger-name="selectWithCounter" auto-event-name="escalationEvent" action-name="escalate" active="true" />
            <automation name="cleanUpAlarms" interval="300000" action-name="deleteDayOldAlarms" active="true" />
 -->
-           <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
-    </automations>
-    <triggers>
-           <trigger name="selectAll" operator="&gt;=" row-count="1" >
-               <statement>SELECT * FROM alarms</statement>
-           </trigger>
-           <trigger name="selectWithCounter" >
-               <statement>SELECT alarmid FROM alarms WHERE counter &gt;= 2</statement>
-           </trigger>
-    		  <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
-        	      <statement>SELECT * FROM alarms WHERE alarmType=2</statement>
-          </trigger>
-    </triggers>
-    <actions>
-           <action name="clear" >
-               <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>
-           </action>
-           <action name="clearProblems" >
-               <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND lastEventTime &lt;=  ${lastEventTime} AND severity > 2 AND eventUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> 
-               <!-- <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> -->
-           </action>
-           <action name="escalate" >
-               <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and severity &lt; 7 and alarmAckUser is null</statement>
-           </action>
-           <action name="delete" >
-               <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>
-           </action>
-           <action name="deleteDayOldAlarms" >
-               <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>
-           </action>
-    </actions>
-    <auto-events>
-        <auto-event name="escalationEvent" >
-            <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
-        </auto-event>
-    </auto-events>
+    <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
+  </automations>
+    
+  <triggers>
+    <trigger name="selectAll" operator="&gt;=" row-count="1" >
+      <statement>SELECT * FROM alarms</statement>
+    </trigger>
+           
+    <trigger name="selectWithCounter" >
+      <statement>SELECT alarmid FROM alarms WHERE counter &gt;= 2</statement>
+    </trigger>
+           
+    <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
+      <statement>SELECT * FROM alarms WHERE alarmType=2</statement>
+    </trigger>
+  </triggers>
+    
+  <actions>
+    <action name="clear" >
+      <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>
+    </action>
+    
+    <action name="clearProblems" >
+      <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND lastEventTime &lt;=  ${lastEventTime} AND severity > 2 AND eventUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> 
+      <!-- <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> -->
+    </action>
+    
+    <action name="escalate" >
+      <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and severity &lt; 7 and alarmAckUser is null</statement>
+    </action>
+           
+    <action name="delete" >
+      <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>
+    </action>
+          
+    <action name="deleteDayOldAlarms" >
+      <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>
+    </action>
+  </actions>
+    
+  <auto-events>
+    <auto-event name="escalationEvent" >
+      <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
+    </auto-event>
+  </auto-events>
+    
+  <action-events>
+  </action-events>
+    
 </VacuumdConfiguration>
