@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Mar 14: Work around ordering issue in testGetUsersNotified. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,9 +43,11 @@ import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationManager;
@@ -201,7 +207,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         m_db.acknowledgeNoticesForEvent(e);
         
-	verifyAnticipated(0, 0, 5000);
+        verifyAnticipated(0, 0, 5000);
     }
 
     public void testManualAcknowledge2() throws Exception {
@@ -369,23 +375,36 @@ public class NotifdTest extends NotificationsTestCase {
         }
         
         Collection<Integer> notifIds = m_db.findNoticesForEvent(event);
+        assertEquals("notification ID size", 1, notifIds.size());
         
-        for (Integer notifId : notifIds) {
-            final Collection<List<String>> actualResults = new LinkedList<List<String>>();
-            RowProcessor rp = new RowProcessor() {
-                public void processRow(ResultSet rs) throws SQLException {
-                    List<String> cmdList = new LinkedList<String>();
-                    cmdList.add(rs.getString("userID"));
-                    cmdList.add(rs.getString("media"));
-                    actualResults.add(cmdList);
-                }
-            };
-            m_notificationManager.forEachUserNotification(notifId.intValue(), rp);
-	   
-            assertEquals(expectedResults, actualResults);
-        }
+        Integer notifId = notifIds.iterator().next();
+        assertNotNull("first notifId should not be null", notifId);
+        
+        final Collection<List<String>> actualResults = new LinkedList<List<String>>();
+        RowProcessor rp = new RowProcessor() {
+            public void processRow(ResultSet rs) throws SQLException {
+                List<String> cmdList = new LinkedList<String>();
+                cmdList.add(rs.getString("userID"));
+                cmdList.add(rs.getString("media"));
+                actualResults.add(cmdList);
+            }
+        };
+        m_notificationManager.forEachUserNotification(notifId.intValue(), rp);
+
+        /*
+         * This test does not work reliably because notifications within a
+         * group are not guaranteed to be in a certain order.
+         */
+        //assertEquals("Notifications", expectedResults, actualResults);
+        
+        // Use a set instead so we don't care about ordering.
+        Set<List<String>> expectedSet = new HashSet<List<String>>(expectedResults);
+        Set<List<String>> actualSet = new HashSet<List<String>>(actualResults);
+
+        assertEquals("Notifications as a set", expectedSet, actualSet);
+
     }
-    
+
     public void testRoleNotification() throws Exception {
         
         MockNode node = m_network.getNode(1);
