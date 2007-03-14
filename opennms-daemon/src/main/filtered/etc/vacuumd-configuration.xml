@@ -75,8 +75,15 @@
       <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
     </auto-event>
   </auto-events>
-    
+
   <action-events>
+    <action-event name="eventEscalated">
+      <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
+      <assignment type="field" name="nodeid" value="${nodeid}" />
+      <assignment type="field" name="interface" value="${ipaddr}" />
+      <assignment type="field" name="service" value="TEST" />
+      <assignment type="parameter" name="alarmId" value="${alarmId}" />
+    </action-event>
   </action-events>
-    
+
 </VacuumdConfiguration>
