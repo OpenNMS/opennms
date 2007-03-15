@@ -78,6 +78,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private static final String DEFAULT_ADMIN_USER = "postgres";
     private static final String DEFAULT_ADMIN_PASSWORD = "";
 
+    private static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
+
     private String m_testDatabase;
 
     private boolean m_leaveDatabase = false;
@@ -288,8 +290,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         Connection adminConnection = getAdminDataSource().getConnection();
 
         try {
-            int maxDropAttempts = 10;
-            for (int dropAttempt = 0; dropAttempt < maxDropAttempts; dropAttempt++) {
+            for (int dropAttempt = 0; dropAttempt < MAX_DATABASE_DROP_ATTEMPTS; dropAttempt++) {
                 Statement st = null;
             
                 try {
@@ -297,9 +298,12 @@ public class TemporaryDatabaseTestCase extends TestCase {
                     st.execute("DROP DATABASE " + getTestDatabase());
                     break;
                 } catch (SQLException e) {
-                    if ((dropAttempt + 1) >= maxDropAttempts) {
-                        System.err.println(new Date().toString() + ": Failed to drop test database on last attempt " + (dropAttempt + 1) + ": " + e);
-                        throw e;
+                    if ((dropAttempt + 1) >= MAX_DATABASE_DROP_ATTEMPTS) {
+                        final String message = "Failed to drop test database on last attempt " + (dropAttempt + 1) + ": " + e;
+                        System.err.println(new Date().toString() + ": " + message);
+                        SQLException newException = new SQLException(message);
+                        newException.initCause(e);
+                        throw newException;
                     } else {
                         System.err.println(new Date().toString() + ": Failed to drop test database on attempt " + (dropAttempt + 1) + ": " + e);
                         Thread.sleep(1000);
@@ -320,7 +324,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
             try {
                 adminConnection.close();
             } catch (SQLException e) {
-                System.out.println("Error closing administrative database "
+                System.err.println("Error closing administrative database "
                                    + "connection after attempting ot drop "
                                    + "test database");
                 e.printStackTrace();
@@ -372,7 +376,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
                 try {
                     st.close();
                 } catch (SQLException e) {
-                    System.out.println("Could not close statement in executeSQL");
+                    System.err.println("Could not close statement in executeSQL");
                     e.printStackTrace();
                 }
             }
@@ -380,7 +384,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    System.out.println("Could not close connection in executeSQL");
+                    System.err.println("Could not close connection in executeSQL");
                     e.printStackTrace();
                 }
             }
