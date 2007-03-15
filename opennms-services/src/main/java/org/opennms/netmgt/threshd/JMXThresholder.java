@@ -48,6 +48,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,6 +59,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -178,6 +180,9 @@ public abstract class JMXThresholder implements ServiceThresholder {
         return;
     }
 
+    public void reinitialize() {
+        //Nothing to do 
+    }
     /**
      * Responsible for freeing up any resources held by the thresholder.
      */
@@ -235,41 +240,44 @@ public abstract class JMXThresholder implements ServiceThresholder {
         Map nodeMap   = new HashMap();
         Map baseIfMap = new HashMap();
         try {
-            Iterator iter = ThresholdingConfigFactory.getInstance().getThresholds(groupName).iterator();
-            while (iter.hasNext()) {
-                Threshold thresh = (Threshold) iter.next();
-
+            for (Basethresholddef thresh : ThresholdingConfigFactory.getInstance().getThresholds(groupName)) {
                 // See if map entry already exists for this datasource
                 // If not, create a new one.
                 boolean newEntity = false;
                 ThresholdEntity thresholdEntity = null;
-                if (thresh.getDsType().equals("node")) {
-                    thresholdEntity = (ThresholdEntity) nodeMap.get(thresh.getDsName());
-                } else if (thresh.getDsType().equals("if")) {
-                    thresholdEntity = (ThresholdEntity) baseIfMap.get(thresh.getDsName());
-                }
-
-                // Found entry?
-                if (thresholdEntity == null) {
-                    // Nope, create a new one
-                    newEntity = true;
-                    thresholdEntity = new ThresholdEntity();
-                }
-
                 try {
-                    thresholdEntity.addThreshold(thresh);
-                } catch (IllegalStateException e) {
-                    log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + thresh.getDsName(), e);
+                    BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
+                    if (wrapper.getDsType().equals("node")) {
+                        thresholdEntity = (ThresholdEntity) nodeMap.get(wrapper.getDatasourceExpression());
+                    } else if (wrapper.getDsType().equals("if")) {
+                        thresholdEntity = (ThresholdEntity) baseIfMap.get(wrapper.getDatasourceExpression());
+                    }
+    
+                    // Found entry?
+                    if (thresholdEntity == null) {
+                        // Nope, create a new one
+                        newEntity = true;
+                        thresholdEntity = new ThresholdEntity();
+                    }
+    
+                    try {
+                        thresholdEntity.addThreshold(wrapper);
+                    } catch (IllegalStateException e) {
+                        log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression(), e);
+                    }
+ 
+                    // Add new entity to the map
+                    if (newEntity) {
+                        if (thresh.getDsType().equals("node")) {
+                            nodeMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
+                        } else if (thresh.getDsType().equals("if")) {
+                            baseIfMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
+                        }
+                    }
+                } catch (ThresholdExpressionException e) {
+                    log().warn("Could not parse threshold expression: "+e.getMessage(), e);
                 }
 
-                // Add new entity to the map
-                if (newEntity) {
-                    if (thresh.getDsType().equals("node")) {
-                        nodeMap.put(thresh.getDsName(), thresholdEntity);
-                    } else if (thresh.getDsType().equals("if")) {
-                        baseIfMap.put(thresh.getDsName(), thresholdEntity);
-                    }
-                }
             }
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Thresholding group '" + groupName + "' does not exist.");
@@ -496,6 +504,40 @@ public abstract class JMXThresholder implements ServiceThresholder {
         return THRESHOLDING_SUCCEEDED;
         
     }
+    
+    private Map<String, Double> getThresholdValues(File directory, int range, int interval, Collection<String> requiredDatasources) {
+        Category log = log();
+        Map<String, Double> values=new HashMap<String,Double>();
+        for(String ds: requiredDatasources) {
+            File dsFile=new File(directory,ds+RrdUtils.getExtension());
+            Double thisValue=null;
+            if(dsFile.exists()) {
+                try {
+                    if (range != 0) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("checking values within " + range + " mS of last possible PDP");
+                        }
+                        thisValue = RrdUtils.fetchLastValueInRange(dsFile.getAbsolutePath(), interval, range);
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("checking value of last possible PDP only");
+                        }
+                        thisValue = RrdUtils.fetchLastValue(dsFile.getAbsolutePath(), interval);
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("Unable to convert retrieved value for datasource '" + ds + "' to a double, skipping evaluation.");
+                } catch (RrdException e) {
+                    log.info("An error occurred retriving the last value for datasource '" + ds + "': " + e, e);
+                }
+            }
+        
+            if (thisValue == null || thisValue.isNaN()) {
+                return null;
+            }
+            values.put(ds,thisValue);
+        }
+        return values;
+    }
 
     /**
      * Performs threshold checking on an SNMP RRD node directory.
@@ -533,60 +575,24 @@ public abstract class JMXThresholder implements ServiceThresholder {
         if (log.isDebugEnabled()) {
             log.debug("checkNodeDir: threshold checking node dir: " + directory.getAbsolutePath());
         }
-
-        // Iterate over directory contents and threshold
-        // check any RRD files which represent datasources
-        // in the threshold maps.
-        File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-
-        if (files == null) {
-            return;
-        }
-
-        for (int i = 0; i < files.length; i++) {
-            // File name has format: <datsource><extension>
-            // Must strip off extension portion.
-            String filename = files[i].getName();
-            String datasource = filename.substring(0, filename.indexOf(RrdUtils.getExtension()));
-
-            // Lookup the ThresholdEntity object corresponding
-            // to this datasource.
-            ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
-            if (threshold != null) {
-                // Use RRD strategy to "fetch" value of the
-                // datasource from the RRD file
-                Double dsValue = null;
-                try {
-                	if (range != 0) {
-                		if (log.isDebugEnabled()) {
-                            log.debug("checking values within " + range + " mS of last possible PDP");
-                        }
-                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
-                	} else {
-                		if (log.isDebugEnabled()) {
-                            log.debug("checking value of last possible PDP only");
-                        }
-                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
-                	}
-                } catch (NumberFormatException e) {
-                    log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
-                } catch (RrdException e) {
-                    log.info("An error occurred retriving the last value for datasource '" + datasource + "': " + e, e);
-                }
-                
-                if (dsValue == null || dsValue.isNaN()) {
-                    continue;
-                }
-                
-                List<Event> eventList = threshold.evaluateAndCreateEvents(dsValue, date);
-                if (eventList.size() == 0) {
-                    // Nothing to do, so continue
-                    continue;
-                }
-                
-                completeEventListAndAddToEvents(events, eventList, nodeId, primary, null);
+        
+        for(Object threshKey  :thresholdMap.keySet()) {
+            ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(threshKey);
+            Collection<String> requiredDatasources=threshold.getRequiredDatasources();
+            Map<String, Double> values=getThresholdValues(directory, range, interval, requiredDatasources);
+            if(values==null) {
+                continue; //Not all values were available
             }
+            List<Event> eventList = threshold.evaluateAndCreateEvents(values, date);
+            if (eventList.size() == 0) {
+                // Nothing to do, so continue
+                continue;
+            }
+            
+            completeEventListAndAddToEvents(events, eventList, nodeId, primary, null);
         }
+        
+ 
     }
 
 
@@ -657,75 +663,31 @@ public abstract class JMXThresholder implements ServiceThresholder {
             Iterator iter = baseIfThresholdMap.values().iterator();
             while (iter.hasNext()) {
                 ThresholdEntity entity = (ThresholdEntity) iter.next();
-                thresholdMap.put(entity.getDatasourceName(), entity.clone());
+                thresholdMap.put(entity.getDataSourceExpression(), entity.clone());
             }
 
             // Add the new threshold map for this interface
             // to the all interfaces map.
             allIfThresholdMap.put(ifLabel, thresholdMap);
         }
-
-        // Iterate over directory contents and threshold
-        // check any RRD files which represent datasources
-        // in the threshold maps.
-        File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-
-        if (files == null || files.length == 0) {
-            if (log().isDebugEnabled()) {
-                log().debug("checkIfDir: no RRD files in dir: " + directory);
-            }
-            return;
-        }
-
+        
         Map<String, String> ifDataMap = new HashMap<String, String>();
-        for (int i = 0; i < files.length; i++) {
-            // File name has format: <datsource><extension>
-            // Must strip off <extension> portion.
-            String filename = files[i].getName();
-            String datasource = filename.substring(0, filename.indexOf(RrdUtils.getExtension()));
-
-            // Lookup the ThresholdEntity object corresponding
-            // to this datasource.
-            if (log().isDebugEnabled()) {
-                log().debug("checkIfDir: looking up datasource: " + datasource);
+        for(Object threshKey  :thresholdMap.keySet()) {
+            ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(threshKey);
+            Collection<String> requiredDatasources=threshold.getRequiredDatasources();
+            Map<String, Double> values=getThresholdValues(directory, range, interval, requiredDatasources);
+            if(values==null) {
+                continue; //Not all values were available
             }
-            ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
-            if (threshold != null) {
-                // Use RRD strategy to "fetch" value of the
-                // datasource from the RRD file
-                Double dsValue = null;
-                try {
-                	if (range != 0) {
-                		if (log().isDebugEnabled()) {
-                            log().debug("checking values within " + range + " mS of last possible PDP");
-                        }
-                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
-                	} else {
-                        log().debug("checking value of last possible PDP only");
-                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
-                	}
-                } catch (NumberFormatException e) {
-                    log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
-                } catch (RrdException e) {
-                    log().info("An error occurred retriving the last value for datasource '" + datasource + "': " + e, e);
-                }
-
-                if (dsValue == null || dsValue.isNaN()) {
-                    continue;
-                }
-                
-                List<Event> eventList = threshold.evaluateAndCreateEvents(dsValue, date);
-                if (eventList.size() == 0) {
-                    // Nothing to do, so continue
-                    continue;
-                }
-
-                if (ifDataMap.size() == 0 && ifLabel != null) {
-                    populateIfDataMap(nodeId, ifLabel, ifDataMap);
-                }
-                
-                completeEventListAndAddToEvents(events, eventList, nodeId, primary, ifDataMap);
+            List<Event> eventList = threshold.evaluateAndCreateEvents(values, date);
+            if (eventList.size() == 0) {
+                // Nothing to do, so continue
+                continue;
             }
+            if (ifDataMap.size() == 0 && ifLabel != null) {
+                populateIfDataMap(nodeId, ifLabel, ifDataMap);
+            }
+            completeEventListAndAddToEvents(events, eventList, nodeId, primary, ifDataMap);
         }
     }
 

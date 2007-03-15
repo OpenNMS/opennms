@@ -149,6 +149,7 @@
         <li><a href="admin/categories.htm">Manage Node Categories</a></li>
         <li><a href="admin/applications.htm">Manage Applications</a></li>
         <li><a href="admin/provisioningGroups.htm">Manage Provisioning Groups</a></li>
+        <li><a href="admin/thresholds/index.htm">Manage Thresholds</a></li>
         <li><a href="distributed/locationMonitorList.htm">Manage Location Monitors</a></li>
       </ul>
       <!-- security link -->
@@ -254,6 +255,7 @@
             corner of every OpenNMS screen with either a <em>Notices On</em> or <em>Notices
             Off</em> banner.  
         </p>
+     <p><b>Manage thresholds</b> allows you to configure (add/remove/modify) thresholds.  
       </div>
   </div>
   <hr />

@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;

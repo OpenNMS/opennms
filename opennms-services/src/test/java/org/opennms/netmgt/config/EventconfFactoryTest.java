@@ -31,9 +31,6 @@
 //
 /*
  * Created on Nov 11, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.opennms.netmgt.config;
 
@@ -41,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
@@ -52,11 +50,20 @@ import org.opennms.netmgt.xml.eventconf.Event;
  */
 public class EventconfFactoryTest extends OpenNMSTestCase {
 
+    private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
+    private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
+    private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
+    private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
+    private static final String knownSubSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/topologyChange";
+    private static final String knownSubSubfileLabel1="BRIDGE-MIB defined trap event: topologyChange";
+    
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception {
         super.setUp();
+        System.setProperty("opennms.home", "src/test/resources");
+        EventconfFactory.init();
     }
 
     /*
@@ -65,12 +72,8 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
-    public void testDoNothing() {
-        // FIXME: This is because the below test is commented out
-    }
 
-    public void xtestGetEventsByLabel() {
+    public void testGetEventsByLabel() {
         List events = EventconfFactory.getInstance().getEventsByLabel();
 
         ArrayList beforeSort = new ArrayList(events.size());
@@ -91,6 +94,58 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
 
     }
     
+    public void testGetEventByUEI() {
+        EventconfFactory factory=EventconfFactory.getInstance();
+        List result=factory.getEvents(knownUEI1);
+        assertEquals("Should only be one result", 1, result.size());
+        Event firstEvent=(Event)result.get(0);
+        assertEquals("UEI should be "+knownUEI1, knownUEI1, firstEvent.getUei());
+        
+        result=factory.getEvents("uei.opennms.org/internal/capsd/nonexistent");
+        assertNull("Should be null list for non-existent URI", result);
+        
+        //Find an event that's in a sub-file
+        result=factory.getEvents(knownSubfileUEI1);
+        assertEquals("Should only be one result", 1, result.size());
+        firstEvent=(Event)result.get(0);
+        assertEquals("UEI should be "+knownSubfileUEI1,knownSubfileUEI1, firstEvent.getUei());
+ 
+        //Find an event that's in a nested-sub-file
+        result=factory.getEvents(knownSubSubfileUEI1);
+        assertNotNull(result);
+        assertEquals("Should only be one result", 1, result.size());
+        firstEvent=(Event)result.get(0);
+        assertEquals("UEI should be "+knownSubSubfileUEI1,knownSubSubfileUEI1, firstEvent.getUei());
+
+    }
+    
+    public void testGetEventUEIS() {
+        List ueis=EventconfFactory.getInstance().getEventUEIs();
+        //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
+        assertEquals("Count must be correct", 3, ueis.size());
+        assertTrue("Must contain known UEI", ueis.contains(knownUEI1));
+        assertTrue("Must contain known UEI", ueis.contains(knownSubfileUEI1));
+        assertTrue("Must contain known UEI", ueis.contains(knownSubSubfileUEI1));
+    }
+    
+    public void testGetLabels() {
+        Map labels=EventconfFactory.getInstance().getEventLabels();
+        //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
+        assertEquals("Count must be correct", 3, labels.size());
+        assertTrue("Must contain known UEI", labels.containsKey(knownUEI1));
+        assertEquals("Must have known Label", labels.get(knownUEI1), knownLabel1);
+        assertTrue("Must contain known UEI", labels.containsKey(knownSubfileUEI1));
+        assertEquals("Must have known Label", labels.get(knownSubfileUEI1), knownSubfileLabel1);
+        assertTrue("Must contain known UEI", labels.containsKey(knownSubSubfileUEI1));
+        assertEquals("Must have known Label", labels.get(knownSubSubfileUEI1), knownSubSubfileLabel1);
+     }
+    public void testGetLabel() {
+        EventconfFactory factory = EventconfFactory.getInstance();
+        assertEquals("Must have correct label"+knownLabel1, knownLabel1, factory.getEventLabel(knownUEI1));
+        assertEquals("Must have correct label"+knownSubfileLabel1, knownSubfileLabel1, factory.getEventLabel(knownSubfileUEI1));
+        assertEquals("Must have correct label"+knownSubSubfileLabel1, knownSubSubfileLabel1, factory.getEventLabel(knownSubSubfileUEI1));
+    }
+    
     public void testGetAlarmType() {
         Event event = new Event();
         AlarmData data = new AlarmData();
@@ -104,5 +159,41 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
         assertTrue("uei.opennms.org.testUei".equals(event.getAlarmData().getClearUei()));
         assertTrue("reduceme".equals(event.getAlarmData().getReductionKey()));
     }
+    
+    //Ensure reload does indeed reload fresh data
+    public void testReload() {
+        String newUEI="uei.opennms.org/custom/newTestUEI";
+        EventconfFactory factory=EventconfFactory.getInstance();
+        
+        List events=factory.getEvents(knownUEI1);
+        Event event=(Event)events.get(0);
+        event.setUei(newUEI);
+        
+        //Check that the new UEI is there
+        List events2=factory.getEvents(newUEI);
+        Event event2=((Event)events2.get(0));
+        assertNotNull("Must have some events", event2);
+        assertEquals("Must be exactly 1 event", 1, events2.size());
+        assertEquals("uei must be the new one", newUEI, event2.getUei());
+        
+
+        //Now reload without saving - should not find the new one, but should find the old one
+        try {
+            EventconfFactory.reload();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Should not have had exception while reloading factory "+e.getMessage());
+        }
+        List events3=factory.getEvents(knownUEI1);
+        assertNotNull("Must have some events", events3);
+        assertEquals("Must be exactly 1 event", 1, events3.size());
+        Event event3=(Event)events3.get(0);
+        assertEquals("uei must be the new one", knownUEI1, event3.getUei());       
+        
+        //Check that the new UEI is *not* there this time
+        List events4=factory.getEvents(newUEI);
+        assertNull("Must be no events by that name", events4);
+    }
+    
 
 }

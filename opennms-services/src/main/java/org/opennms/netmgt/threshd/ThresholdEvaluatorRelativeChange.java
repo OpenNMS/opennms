@@ -66,7 +66,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
     
     private static final String TYPE = "relativeChange";
 
-    public ThresholdEvaluatorState getThresholdEvaluatorState(Threshold threshold) {
+    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateRelativeChange(threshold);
     }
 
@@ -75,27 +75,27 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
     }
     
     public static class ThresholdEvaluatorStateRelativeChange implements ThresholdEvaluatorState {
-        private Threshold m_thresholdConfig;
+        private BaseThresholdDefConfigWrapper m_thresholdConfig;
         private double m_multiplier;
 
         private double m_lastSample = 0.0;
         private double m_previousTriggeringSample;
 
-        public ThresholdEvaluatorStateRelativeChange(Threshold threshold) {
+        public ThresholdEvaluatorStateRelativeChange(BaseThresholdDefConfigWrapper threshold) {
             Assert.notNull(threshold, "threshold argument cannot be null");
 
             setThresholdConfig(threshold);
         }
 
-        public void setThresholdConfig(Threshold thresholdConfig) {
+        public void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
             Assert.notNull(thresholdConfig.getType(), "threshold must have a 'type' value set");
-            Assert.notNull(thresholdConfig.getDsName(), "threshold must have a 'ds-name' value set");
+            Assert.notNull(thresholdConfig.getDatasourceExpression(), "threshold must have a 'ds-name' value set");
             Assert.notNull(thresholdConfig.getDsType(), "threshold must have a 'ds-type' value set");
             Assert.isTrue(thresholdConfig.hasValue(), "threshold must have a 'value' value set");
             Assert.isTrue(thresholdConfig.hasRearm(), "threshold must have a 'rearm' value set");
             Assert.isTrue(thresholdConfig.hasTrigger(), "threshold must have a 'trigger' value set");
 
-            Assert.isTrue(TYPE.equals(thresholdConfig.getType()), "threshold for ds-name '" + thresholdConfig.getDsName() + "' has type of '" + thresholdConfig.getType() + "', but this evaluator only supports thresholds with a 'type' value of '" + TYPE + "'");
+            Assert.isTrue(TYPE.equals(thresholdConfig.getType()), "threshold for ds-name '" + thresholdConfig.getDatasourceExpression() + "' has type of '" + thresholdConfig.getType() + "', but this evaluator only supports thresholds with a 'type' value of '" + TYPE + "'");
 
             Assert.isTrue(thresholdConfig.getValue() != Double.NaN, "threshold must have a 'value' value that is a number");
             Assert.isTrue(thresholdConfig.getValue() != Double.POSITIVE_INFINITY && thresholdConfig.getValue() != Double.NEGATIVE_INFINITY, "threshold must have a 'value' value that is not positive or negative infinity");
@@ -105,7 +105,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             setMultiplier(thresholdConfig.getValue());
         }
 
-        public Threshold getThresholdConfig() {
+        public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
 
@@ -144,20 +144,23 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
 
         public Event getEventForState(Status status, Date date, double dsValue) {
             if (status == Status.TRIGGERED) {
-                return createBasicEvent(EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, date, dsValue);
+                String uei=getThresholdConfig().getTriggeredUEI();
+                if(uei==null || "".equals(uei)) {
+                    uei=EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI;
+                }
+                return createBasicEvent(uei, date, dsValue);
             } else {
                 return null;
             }
         }
         
-
         private Event createBasicEvent(String uei, Date date, double dsValue) {
             // create the event to be sent
             Event event = new Event();
             event.setUei(uei);
 
             // set the source of the event to the datasource name
-            event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDsName());
+            event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression());
 
             // Set event host
             try {
@@ -179,7 +182,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             eventParm = new Parm();
             eventParm.setParmName("ds");
             parmValue = new Value();
-            parmValue.setContent(getThresholdConfig().getDsName());
+            parmValue.setContent(getThresholdConfig().getDatasourceExpression());
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 

@@ -38,7 +38,6 @@ package org.opennms.netmgt.threshd;
 
 import java.util.Date;
 
-import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -59,6 +58,6 @@ public interface ThresholdEvaluatorState {
 
     public Event getEventForState(Status status, Date date, double dsValue);
     
-    public Threshold getThresholdConfig();
+    public BaseThresholdDefConfigWrapper getThresholdConfig();
 
 }

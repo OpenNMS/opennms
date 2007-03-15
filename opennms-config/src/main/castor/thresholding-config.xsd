@@ -63,31 +63,7 @@
   </element>
 
   <!-- Expression definitions -->
-	<element name="expression">
-		<annotation>
-          <documentation>Currently unused, this will be for doing mathematical 
-          operations on thresholds</documentation>
-        </annotation>
-		<complexType>
-			<attribute name="ds-name" type="string" use="required">
-               <annotation>
-                 <documentation>RRD datasource name.</documentation>
-               </annotation>
-            </attribute>
-			<attribute name="formula" type="string" use="required">
-               <annotation>
-                 <documentation>Formula to be applied to the ds</documentation>
-               </annotation>
-            </attribute>
-		</complexType>
-    </element>
-
-  <element name="threshold">
-    <annotation>
-      <documentation>Threshold definition</documentation>
-    </annotation>
-
-    <complexType>
+    <complexType name="basethresholddef" abstract="true">
       <attribute name="type" type="string" use="required">
         <annotation>
           <documentation>Threshold type. If "high", a 'highThresholdExceeded'
@@ -96,11 +72,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="ds-name" type="string" use="required">
-        <annotation>
-          <documentation>RRD datasource name.</documentation>
-        </annotation>
-      </attribute>
+
 
       <attribute name="ds-type" type="string" use="required">
         <annotation>
@@ -146,6 +118,49 @@
           <documentation>Value to retrieve from strings.properties to label this datasource.</documentation>
         </annotation>
       </attribute>
-    </complexType>
-  </element>
+      <attribute name="triggeredUEI" type="string" use="optional">
+		<annotation>
+          <documentation>The UEI to send when this threshold is triggered.  If not specified, defaults to standard threshold UEIs</documentation>
+        </annotation>     
+      </attribute>
+      <attribute name="rearmedUEI" type="string" use="optional">
+		<annotation>
+          <documentation>The UEI to send when this threshold is re-armed.  If not specified, defaults to standard threshold UEIs</documentation>
+        </annotation>     
+      </attribute>
+	</complexType>
+  
+ 	<element name="threshold">
+ 		<annotation>
+			<documentation>Threshold definition</documentation>
+		</annotation>
+		<complexType>
+		<complexContent>
+		<extension base="basethresholddef">
+				<attribute name="ds-name" type="string">
+					<annotation>
+							<documentation>RRD datasource name. Mutually exclusive with expression, but one of them must be specified</documentation>
+					</annotation>
+				</attribute>
+		</extension>
+		</complexContent>
+		</complexType>
+	</element>   
+	<element name="expression">
+ 		<annotation>
+			<documentation>Threshold definition</documentation>
+		</annotation>
+		<complexType>
+		<complexContent>
+		<extension base="basethresholddef">
+				<attribute name="expression" type="string">
+					<annotation>
+							<documentation>An expression of Datasource names and constants to be evaluate</documentation>
+					</annotation>
+				</attribute>
+		</extension>
+		</complexContent>
+		</complexType>
+	</element>   	 
+ 
 </schema>

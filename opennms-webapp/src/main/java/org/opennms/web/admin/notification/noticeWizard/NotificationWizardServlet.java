@@ -75,7 +75,7 @@ import org.opennms.web.Util;
 public class NotificationWizardServlet extends HttpServlet {
    
     //SOURCE_PAGE_EVENTS_VIEW is more of a tag than an actual page - can't be used for navigation as is
-    public static final String SOURCE_PAGE_EVENTS_VIEW = "eventslist";
+    public static final String SOURCE_PAGE_OTHER_WEBUI = "eventslist";
     
     public static final String SOURCE_PAGE_NOTICES = "eventNotices.jsp";
     
@@ -261,14 +261,18 @@ public class NotificationWizardServlet extends HttpServlet {
             String varbindName=request.getParameter("varbindName");
             String varbindValue=request.getParameter("varbindValue");
             
+            Varbind varbind=newNotice.getVarbind();           
             if(varbindName!=null && !varbindName.trim().equals("") && varbindValue!=null && !varbindValue.trim().equals("")) {
-                Varbind varbind=newNotice.getVarbind();
+
                 if(varbind==null) {
                     varbind=new Varbind();
                     newNotice.setVarbind(varbind);
                 }
                 varbind.setVbname(varbindName);
                 varbind.setVbvalue(varbindValue);
+            } else {
+                //Must do this to allow clearing out varbind definitions
+                newNotice.setVarbind(null);
             }
             
             try {
@@ -277,8 +281,12 @@ public class NotificationWizardServlet extends HttpServlet {
             } catch (Exception e) {
                 throw new ServletException("Couldn't save/reload notification configuration file.", e);
             }
-
-            redirectString.append(SOURCE_PAGE_NOTICES);
+            String suppliedReturnPage=(String)user.getAttribute("noticeWizardReturnPage");
+            if(suppliedReturnPage!=null && !suppliedReturnPage.equals("")) {
+                redirectString.append(suppliedReturnPage);
+            } else {
+                redirectString.append(SOURCE_PAGE_NOTICES);
+            }
         } else if (sourcePage.equals(SOURCE_PAGE_PATH_OUTAGE)) {
             rule.append(request.getParameter("newRule"));
             rule = toSingleQuote(rule);
@@ -339,10 +347,12 @@ public class NotificationWizardServlet extends HttpServlet {
                 }
             }
             redirectString.append(redirectPage).append(makeQueryString(params));
-        } else if (sourcePage.equals(SOURCE_PAGE_EVENTS_VIEW)) {
-            //We've come from the event view page, and will have a UEI.  
+        } else if (sourcePage.equals(SOURCE_PAGE_OTHER_WEBUI)) {
+            //We've come from elsewhere in the Web UI page, and will have a UEI.  
             //If there are existing notices for this UEI, then go to a page listing them allowing editing.  
             //If there are none, then create a notice, populate the UEI, and go to the buildRule page.
+            String returnPage=request.getParameter("returnPage");
+            user.setAttribute("noticeWizardReturnPage", returnPage);
             String uei=request.getParameter("uei");
             try {
                 if(NotificationFactory.getInstance().hasUei(uei)) {

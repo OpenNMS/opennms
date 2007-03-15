@@ -55,6 +55,7 @@ import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
@@ -177,6 +178,10 @@ final class LatencyThresholder implements ServiceThresholder {
             log().debug("initialize: successfully instantiated JNI interface to RRD...");
 
         return;
+    }
+
+    public void reinitialize() {
+        //Nothing to do 
     }
 
     /**
@@ -303,7 +308,7 @@ final class LatencyThresholder implements ServiceThresholder {
         Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
 
         try {
-            for (Threshold thresh : ThresholdingConfigFactory.getInstance().getThresholds(groupName)) {
+            for (Basethresholddef thresh : ThresholdingConfigFactory.getInstance().getThresholds(groupName)) {
                 // See if map entry already exists for this datasource
                 // If not, create a new one.
                 boolean newEntity = false;
@@ -316,26 +321,30 @@ final class LatencyThresholder implements ServiceThresholder {
                     log().warn("initialize: invalid datasource type, latency thresholder only supports interface level datasources.");
                     continue; // continue with the next threshold...
                 }
-
-                // First attempt to lookup the entry in the map
-                thresholdEntity = thresholdMap.get(thresh.getDsName());
-
-                // Found entry?
-                if (thresholdEntity == null) {
-                    // Nope, create a new one
-                    newEntity = true;
-                    thresholdEntity = new ThresholdEntity();
-                }
-
                 try {
-                    thresholdEntity.addThreshold(thresh);
-                } catch (IllegalStateException e) {
-                    log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + thresh.getDsName() + ": " + e, e);
-                }
+                    BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
+                    // First attempt to lookup the entry in the map
+                    thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
 
-                // Add new entity to the map
-                if (newEntity) {
-                    thresholdMap.put(thresh.getDsName(), thresholdEntity);
+                    // Found entry?
+                    if (thresholdEntity == null) {
+                        // Nope, create a new one
+                        newEntity = true;
+                        thresholdEntity = new ThresholdEntity();
+                    }
+
+                    try {
+                        thresholdEntity.addThreshold(wrapper);
+                    } catch (IllegalStateException e) {
+                        log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                    }
+
+                    // Add new entity to the map
+                    if (newEntity) {
+                        thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
+                    }
+                } catch (ThresholdExpressionException e) {
+                    log().warn("Could not parse threshold expression: "+e.getMessage(), e);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -469,8 +478,9 @@ final class LatencyThresholder implements ServiceThresholder {
             ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
             if (threshold != null) {
                 Double dsValue = threshold.fetchLastValue(latIface, latParms);
-
-                List<Event> eventList = threshold.evaluateAndCreateEvents(dsValue, date);
+                Map<String, Double> dsValues=new HashMap<String, Double>();
+                dsValues.put(datasource, dsValue);
+                List<Event> eventList = threshold.evaluateAndCreateEvents(dsValues, date);
                 if (eventList.size() == 0) {
                     // Nothing to do, so continue
                     continue;

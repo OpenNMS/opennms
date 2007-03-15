@@ -38,6 +38,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -47,8 +48,11 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -70,6 +74,7 @@ final class BroadcastEventProcessor implements EventListener {
 
     /**
      * The scheduler assocated with this receiver
+     * 
      */
     private Scheduler m_scheduler;
 
@@ -92,7 +97,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     BroadcastEventProcessor(Threshd threshd, List thresholdableServices) {
-        Category log = ThreadCategory.getInstance(getClass());
 
         // Set the configuration for this event
         // receiver.
@@ -145,6 +149,9 @@ final class BroadcastEventProcessor implements EventListener {
 
 	// scheduled outage configuration change
 	ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
+        
+        //thresholds configuration change
+        ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
         EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
     }
@@ -195,6 +202,8 @@ final class BroadcastEventProcessor implements EventListener {
         }
 	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
 		m_threshd.refreshServicePackages();
+        } else if (event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
+            thresholdConfigurationChangedHandler(event);
 	} else if(!event.hasNodeid()) {
 	    // For all other events, if the event doesn't have a nodeId it can't be processed.
             log.info("no database node id found, discarding event");
@@ -289,7 +298,6 @@ final class BroadcastEventProcessor implements EventListener {
             log.error("reinitializePrimarySnmpInterface event is missing an interface.");
             return;
         }
-
         // Mark the primary SNMP interface for reinitialization in
         // order to update any modified attributes associated with
         // the collectable service..
@@ -310,12 +318,63 @@ final class BroadcastEventProcessor implements EventListener {
                         // associated
                         // with this ThresholdableService.
                         ThresholderUpdates updates = tSvc.getThresholderUpdates();
-
                         // Now set the reinitialization flag
                         updates.markForReinitialization();
                         if (log.isDebugEnabled())
-                            log.debug("reinitializePrimarySnmpInterfaceHandler: marking " + event.getInterface() + " for reinitialization for service SNMP.");
+                            log.debug("markServicesForReinit: marking " + event.getInterface() + " for reinitialization for service SNMP.");
                     }
+                }
+            }
+        }
+ 
+    }
+
+    /**
+     * Process the event.
+     * 
+     * This event is generated when the threshold configuration files are modified.
+     * In this situation the ThresholdableService object
+     * representing the primary SNMP interface of the node must be
+     * reinitialized.
+     * 
+     * The ThresholdableService object associated with the primary SNMP
+     * interface for the node will be marked for reinitialization.
+     * Reinitializing the ThresholdableService object consists of calling the
+     * ServiceThresholder.release() method followed by the
+     * ServiceThresholder.initialize() method which will refresh various attributes
+     * 
+     * Reinitialization will take place the next time the ThresholdableService
+     * is popped from an interval queue for thresholding.
+     * 
+     * If any errors occur scheduling the service no error is returned.
+     * 
+     * @param event
+     *            The event to process.
+     */
+    private void thresholdConfigurationChangedHandler(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
+        //Force a reload of the configuration, then tell the thresholders to reinitialize
+        try {
+            ThresholdingConfigFactory.reload();
+        } catch (Exception e) {
+            log.error("thresholdConfigurationChangedHandler: Failed to reload threshold configuration because "+e.getMessage(), e);
+            return; //Do nothing else - the config is borked, so we carry on with what we've got which should still be relatively ok
+        }
+        //Tell the service thresholders to reinit 
+        m_threshd.reinitializeThresholders();
+        
+       //Mark *all* thresholdable Services for reinit (very similar to reinitializePrimarySnmpInterfaceHandler but without the interface check)
+        synchronized (m_thresholdableServices) {
+            Iterator iter = m_thresholdableServices.iterator();
+            while (iter.hasNext()) {
+                ThresholdableService tSvc = (ThresholdableService) iter.next();
+
+                InetAddress addr = (InetAddress) tSvc.getAddress();
+                synchronized (tSvc) {
+                    ThresholderUpdates updates = tSvc.getThresholderUpdates();
+                    updates.markForReinitialization();
+                    if (log.isDebugEnabled())
+                        log.debug("thresholdConfigurationChangedHandler: marking " + addr.getHostAddress() + " for reinitialization for service SNMP.");
                 }
             }
         }
@@ -333,7 +392,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void nodeGainedServiceHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
 
         // Currently only support SNMP data thresholding.
         //
@@ -519,7 +577,9 @@ final class BroadcastEventProcessor implements EventListener {
         // SnmpMonitor.NodeInfo attribute to reflect the new nodeId. All
         // subsequent thresholdings will then be updating the appropriate RRDs.
         //
-        boolean isPrimarySnmpInterface = false;
+        
+        //unused - commented out
+        //boolean isPrimarySnmpInterface = false;
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
             Iterator iter = m_thresholdableServices.iterator();
