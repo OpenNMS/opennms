@@ -63,6 +63,15 @@ public interface ServiceThresholder {
     public static final String[] statusType = { "Unknown", "THRESHOLDING_SUCCEEDED", "THRESHOLDING_FAILED" };
 
     public void initialize(Map parameters);
+    
+    /**
+     * Called when configurations have changed and need to be refreshed at the ServiceThresolder level.  
+     * Should not do a "full" initialization, but just reload any config objects that might have 
+     * incorrect cached data.  It is up to the caller to call "release/initialize" for any interfaces
+     * that need reinitialization, and it is recommended to do so *after* calling reinitialize(), so that
+     * any objects that might be used in initializing the interfaces have been reloaded.   
+     */
+    public void reinitialize();
 
     public void release();
 

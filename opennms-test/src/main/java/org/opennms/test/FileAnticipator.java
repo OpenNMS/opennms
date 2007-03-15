@@ -40,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Random;
 
 import junit.framework.Assert;
 
@@ -161,7 +162,7 @@ public class FileAnticipator extends Assert {
         File f = new File(systemTempDir); 
         assertTrue("path specified in system property " + JAVA_IO_TMPDIR + ", \"" +
                  systemTempDir + "\" is not a directory", f.isDirectory());
-        
+
         String tempFileName = "FileAnticipator_temp_" + System.currentTimeMillis() + "_" + generateRandomHexString(8);
         m_tempDir = internalTempDir(f, tempFileName);
         
@@ -173,12 +174,18 @@ public class FileAnticipator extends Assert {
             throw new IllegalArgumentException("length argument is " + length + " and cannot be below zero");
         }
         
+        Random random=new Random();
+        /*
+        SecureRandom sometimes gets tied up in knots in testing (the test process goes off into lala land and never returns from .nextBytes)
+        Slow debugging (with pauses) seems to work most of the time, but manual Thread.sleeps doesn't
+        Using Random instead of SecureRandom (which should be fine in this context) works much better.  Go figure
+        
         SecureRandom random = null;
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
         } catch (NoSuchAlgorithmException e) {
             fail("Could not initialize SecureRandom: " + e);
-        }
+        }*/
         
         byte bytes[] = new byte[length];
         random.nextBytes(bytes);

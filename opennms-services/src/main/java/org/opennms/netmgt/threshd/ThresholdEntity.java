@@ -40,13 +40,14 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
@@ -76,9 +77,9 @@ public final class ThresholdEntity implements Cloneable {
     /**
      * Get datasource name
      */
-    public String getDatasourceName() {
+    public String getDataSourceExpression() {
         if (getThresholdEvaluatorStates().size() > 0) {
-            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDsName();
+            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDatasourceExpression();
         } else {
             throw new IllegalStateException("No thresholds have been added.");
         }
@@ -106,6 +107,18 @@ public final class ThresholdEntity implements Cloneable {
         }
     }
 
+    /**
+     * Returns the names of the dataousrces required to evaluate this threshold entity
+     * 
+     * @return Collection of the names of datasources 
+     */
+    public Collection<String> getRequiredDatasources() {
+        if (getThresholdEvaluatorStates().size() > 0) {
+            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getRequiredDatasources();
+        } else {
+            throw new IllegalStateException("No thresholds have been added.");
+        }
+    }
     /**
      * Returns a copy of this ThresholdEntity object.
      * 
@@ -137,11 +150,11 @@ public final class ThresholdEntity implements Cloneable {
 
         StringBuffer buffer = new StringBuffer();
 
-        buffer.append("dsName=").append(this.getDatasourceName());
+        buffer.append("dsName=").append(this.getDataSourceExpression());
         buffer.append(", dsType=").append(this.getDatasourceType());
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
-            buffer.append(", ds=").append(item.getThresholdConfig().getDsName());
+            buffer.append(", ds=").append(item.getThresholdConfig().getDatasourceExpression());
             buffer.append(", value=").append(item.getThresholdConfig().getValue());
             buffer.append(", rearm=").append(item.getThresholdConfig().getRearm());
             buffer.append(", trigger=").append(item.getThresholdConfig().getTrigger());
@@ -159,12 +172,24 @@ public final class ThresholdEntity implements Cloneable {
 
      * @return List of events
      */
-    public List<Event> evaluateAndCreateEvents(double dsValue, Date date) {
+    public List<Event> evaluateAndCreateEvents(Map<String, Double> values, Date date) {
+        List<Event> events = new LinkedList<Event>();
+        double dsValue=0.0;
+        
+        try {
+            if (getThresholdEvaluatorStates().size() > 0) {
+                dsValue=getThresholdEvaluatorStates().get(0).getThresholdConfig().evaluate(values);
+            } else {
+                throw new IllegalStateException("No thresholds have been added.");
+            }
+        } catch (ThresholdExpressionException e) {
+            log().warn("Failed to evaluate: ", e);
+            return events; //No events to report
+        }
+        
         if (log().isDebugEnabled()) {
             log().debug("evaluate: value= " + dsValue + " against threshold: " + this);
-        }
-
-        List<Event> events = new LinkedList<Event>();
+        }        
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
             Status status = item.evaluate(dsValue);
@@ -182,7 +207,11 @@ public final class ThresholdEntity implements Cloneable {
     }
 
     public Double fetchLastValue(LatencyInterface latIface, LatencyParameters latParms) throws ThresholdingException {
-        String datasource = getDatasourceName();
+        //Assume that this only happens on a simple "Threshold", not an "Expression"
+        //If it is an Expression, then we don't yet know what to do - this will likely just fail with some sort of exception.
+        //perhaps we should figure out how to expand it (or at least use code elsewhere to do so sensibly)
+        String datasource=getDataSourceExpression();
+  
 
         // Use RRD strategy to "fetch" value of the datasource from the RRD file
         Double dsValue = null;
@@ -224,7 +253,7 @@ public final class ThresholdEntity implements Cloneable {
         return dsValue;
     }
 
-    public void addThreshold(Threshold threshold) {
+    public void addThreshold(BaseThresholdDefConfigWrapper threshold) {
         ThresholdEvaluator evaluator = getEvaluatorForThreshold(threshold);
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
@@ -236,14 +265,15 @@ public final class ThresholdEntity implements Cloneable {
         m_thresholdEvaluatorStates.add(evaluator.getThresholdEvaluatorState(threshold));
     }
 
-    private ThresholdEvaluator getEvaluatorForThreshold(Threshold threshold) {
+    private ThresholdEvaluator getEvaluatorForThreshold(BaseThresholdDefConfigWrapper threshold) {
         for (ThresholdEvaluator evaluator : getThresholdEvaluators()) {
             if (evaluator.supportsType(threshold.getType())) {
                 return evaluator;
             }
         }
 
-        String message = "Threshold type '" + threshold.getType().toString() + "' for datasource " + threshold.getDsName() + " is not supported"; 
+ 
+        String message = "Threshold type '" + threshold.getType().toString() + "' for "+ threshold.getDatasourceExpression() + " is not supported"; 
         log().warn(message);
         throw new IllegalArgumentException(message);
     }
@@ -255,4 +285,6 @@ public final class ThresholdEntity implements Cloneable {
     public static final List<ThresholdEvaluator> getThresholdEvaluators() {
         return s_thresholdEvaluators;
     }
+    
+
 }

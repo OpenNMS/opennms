@@ -42,7 +42,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -71,27 +71,34 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
 	private Map<String, ThresholdEntity> createThresholdStateMap(String type, String groupName) {
 	    Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
         
-	    for (Threshold thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
-	        // See if map entry already exists for this datasource
-	        // If not, create a new one.
-	        if (thresh.getDsType().equals(type)) {
-	            ThresholdEntity thresholdEntity = thresholdMap.get(thresh.getDsName());
-	    
-	            // Found entry?
-	            if (thresholdEntity == null) {
-	                // Nope, create a new one
-	                thresholdEntity = new ThresholdEntity();
-	                thresholdMap.put(thresh.getDsName(), thresholdEntity);
-	            }
-	    
-	            try {
-	                thresholdEntity.addThreshold(thresh);
-	            } catch (IllegalStateException e) {
-	                log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + thresh.getDsName() + ": " + e, e);
-	            }
-	    
-	        }
-	    }
+            for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
+                // See if map entry already exists for this datasource
+                // If not, create a new one.
+                if (thresh.getDsType().equals(type)) {
+                    try {
+                        BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
+                        ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
+                
+                        // Found entry?
+                        if (thresholdEntity == null) {
+                            // Nope, create a new one
+                            thresholdEntity = new ThresholdEntity();
+                            thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
+                        }
+                
+                        try {
+                            thresholdEntity.addThreshold(wrapper);
+                        } catch (IllegalStateException e) {
+                            log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                        } 
+                    }
+                    catch (ThresholdExpressionException e) {
+                        log().warn("Could not parse threshold expression: "+e.getMessage(), e);
+                    }
+
+                }
+            }
+            
 	    return thresholdMap;
 	}
     

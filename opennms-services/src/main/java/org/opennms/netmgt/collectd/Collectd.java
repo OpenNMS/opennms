@@ -432,7 +432,7 @@ public final class Collectd extends AbstractServiceDaemon implements
                 sb.append('/');
                 sb.append(svcName);
                 sb.append(", reason: ");
-                sb.append(rE);
+                sb.append(rE.getMessage());
                 log().warn(sb.toString(), rE);
             } catch (Throwable t) {
                 sb = new StringBuffer();

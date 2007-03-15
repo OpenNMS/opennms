@@ -247,6 +247,17 @@ public final class Threshd extends AbstractServiceDaemon {
         }
     }
 
+    public void reinitializeThresholders() {
+        for(String key: m_svcThresholders.keySet()) {
+            ServiceThresholder thresholder=m_svcThresholders.get(key);
+
+            if(log().isDebugEnabled()) {
+                log().debug("reinitializeThresholders: About to reinitialize thresholder "+key);
+            }
+            thresholder.reinitialize();
+        }
+    }
+    
     protected void onStart() {
 
         log().debug("start: Initializing thresholding daemon");

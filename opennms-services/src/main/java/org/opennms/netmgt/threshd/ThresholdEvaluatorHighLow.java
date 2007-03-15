@@ -43,7 +43,6 @@ import java.util.Date;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -60,7 +59,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         return "low".equals(type) || "high".equals(type);
     }
     
-    public ThresholdEvaluatorState getThresholdEvaluatorState(Threshold threshold) {
+    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateHighLow(threshold);
     }
     
@@ -68,7 +67,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         /**
          * Castor Threshold object containing threshold configuration data.
          */
-        private Threshold m_thresholdConfig;
+        private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
         /**
          * Threshold exceeded count
@@ -87,7 +86,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
          */
         private boolean m_armed;
 
-        public ThresholdEvaluatorStateHighLow(Threshold threshold) {
+        public ThresholdEvaluatorStateHighLow(BaseThresholdDefConfigWrapper threshold) {
             Assert.notNull(threshold, "threshold argument cannot be null");
             
             setThresholdConfig(threshold);
@@ -111,13 +110,13 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             m_exceededCount = exceededCount;
         }
 
-        public Threshold getThresholdConfig() {
+        public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
 
-        public void setThresholdConfig(Threshold thresholdConfig) {
+        public void setThresholdConfig(BaseThresholdDefConfigWrapper thresholdConfig) {
             Assert.notNull(thresholdConfig.getType(), "threshold must have a 'type' value set");
-            Assert.notNull(thresholdConfig.getDsName(), "threshold must have a 'ds-name' value set");
+            Assert.notNull(thresholdConfig.getDatasourceExpression(), "threshold must have a 'ds-name' value set");
             Assert.notNull(thresholdConfig.getDsType(), "threshold must have a 'ds-type' value set");
             Assert.isTrue(thresholdConfig.hasValue(), "threshold must have a 'value' value set");
             Assert.isTrue(thresholdConfig.hasRearm(), "threshold must have a 'rearm' value set");
@@ -186,21 +185,36 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         }
         
         public Event getEventForState(Status status, Date date, double dsValue) {
+            String uei;
             switch (status) {
             case TRIGGERED:
+                uei=getThresholdConfig().getTriggeredUEI();
                 if ("low".equals(getThresholdConfig().getType())) {
-                    return createBasicEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, date, dsValue);
+                    if(uei==null || "".equals(uei)) {
+                        uei=EventConstants.LOW_THRESHOLD_EVENT_UEI;
+                    }
+                    return createBasicEvent(uei, date, dsValue);
                 } else if ("high".equals(getThresholdConfig().getType())) {
-                    return createBasicEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, date, dsValue);
+                    if(uei==null || "".equals(uei)) {
+                        uei=EventConstants.HIGH_THRESHOLD_EVENT_UEI;
+                    }
+                    return createBasicEvent(uei, date, dsValue);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
                 } 
                 
             case RE_ARMED:
+                uei=getThresholdConfig().getRearmedUEI();
                 if ("low".equals(getThresholdConfig().getType())) {
-                    return createBasicEvent(EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date, dsValue);
+                    if(uei==null || "".equals(uei)) {
+                        uei=EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
+                    }
+                    return createBasicEvent(uei, date, dsValue);
                 } else if ("high".equals(getThresholdConfig().getType())) {
-                    return createBasicEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date, dsValue);
+                    if(uei==null || "".equals(uei)) {
+                        uei=EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
+                    }
+                    return createBasicEvent(uei, date, dsValue);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
                 } 
@@ -219,7 +233,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             event.setUei(uei);
 
             // set the source of the event to the datasource name
-            event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDsName());
+            event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression());
 
             // Set event host
             try {
@@ -241,7 +255,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             eventParm = new Parm();
             eventParm.setParmName("ds");
             parmValue = new Value();
-            parmValue.setContent(getThresholdConfig().getDsName());
+            parmValue.setContent(getThresholdConfig().getDatasourceExpression());
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 

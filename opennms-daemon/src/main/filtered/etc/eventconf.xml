@@ -1455,7 +1455,29 @@
     <severity>Minor</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false" />
   </event>
-    
+   <event>
+    <descr>
+      This event is sent by the WebUI or the user when scheduled outage configuration has changed and shoule be reloaded
+    </descr>
+    <uei>uei.opennms.org/internal/schedOutagesChanged</uei>
+    <event-label>OpenNMS-defined internal event: scehduled outage configuration changed</event-label>
+    <logmsg dest='logndisplay'>
+      The scheduled outage configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+    <event>
+    <descr>
+      This event is sent by the WebUI or the user when threshold  configuration has changed and should be reloaded
+    </descr>
+    <uei>uei.opennms.org/internal/thresholdConfigChanged</uei>
+    <event-label>OpenNMS-defined internal event: threshold configuration changed</event-label>
+    <logmsg dest='logndisplay'>
+      The thresholds configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event> 
+  
   <event-file>@install.etc.dir@/events/default.events.xml</event-file>
   
 </events>

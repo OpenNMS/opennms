@@ -157,13 +157,15 @@ public class SnmpThresholderTest extends TestCase {
         ta.verifyAnticipated();
     }
     
-    public void testCheckNodeDirNullFoo() {
+    public void testCheckNodeDirNullFoo() throws Exception {
         /*
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("directory argument cannot be null"));
         
         try {
         */
+        setUpRrdStrategy();
+           
                 m_snmpThresholder.checkNodeDir(new File(""), m_thresholdInterface, new Date(), new Events());
             /*
         } catch (Throwable t) {

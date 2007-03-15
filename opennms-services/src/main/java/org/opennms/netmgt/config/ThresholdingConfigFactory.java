@@ -40,8 +40,11 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,12 +52,13 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Group;
-import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 /**
@@ -251,8 +255,48 @@ public final class ThresholdingConfigFactory {
      *             if group name does not exist in the group map.
      */
     @SuppressWarnings("unchecked")
-    public Collection<Threshold> getThresholds(String groupName) {
-        return getGroup(groupName).getThresholdCollection();
+    public Collection<Basethresholddef> getThresholds(String groupName) {
+        Group group=getGroup(groupName);
+        Collection<Basethresholddef> result=new ArrayList<Basethresholddef>();
+        result.addAll(group.getThresholdCollection());
+        result.addAll(group.getExpressionCollection());
+        return result;
+    }
+    
+    public Collection<String> getGroupNames() {
+        return m_groupMap.keySet();
+    }
+    
+    /**
+     * Saves the current in-memory configuration to disk and reloads
+     */
+    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
+        // marshall to a string first, then write the string to the file. This
+        // way the original config
+        // isn't lost if the xml from the marshall is hosed.
+        StringWriter stringWriter = new StringWriter();
+        Marshaller.marshal(m_config, stringWriter);
+
+        String xmlString = stringWriter.toString();
+        if (xmlString != null) {
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
+
+            FileWriter fileWriter = new FileWriter(cfgFile);
+            fileWriter.write(xmlString);
+            fileWriter.flush();
+            fileWriter.close();
+        }
+        
+        update();
+
+    }
+    public void update() throws IOException, MarshalException, ValidationException {
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
+
+        Reader r = new FileReader(cfgFile);
+        parseXML(r);
+
+        r.close();
     }
     
     private static Category log() {

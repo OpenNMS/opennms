@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Threshold;
 
 /**
@@ -43,6 +44,6 @@ public interface ThresholdEvaluator {
 
     public boolean supportsType(String type);
 
-    public ThresholdEvaluatorState getThresholdEvaluatorState(Threshold threshold);
+    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold);
 
 }
