@@ -57,7 +57,7 @@
   		class="org.opennms.web.controller.CategoryController">
   	<property name="adminCategoryService" ref="adminCategoryService"/>
   </bean>
-
+  
   <bean name="/admin/groups/list.htm"
   		class="org.opennms.web.controller.admin.group.GroupListController">
   	<property name="groupManager" ref="groupManager"/>
@@ -197,6 +197,9 @@
     <property name="distributedPollerService" ref="distributedPollerService" />
   </bean>
 
+  <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
+  </bean>
+  
   <!--  "includes" -->  
   <bean name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
     <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
@@ -299,11 +302,7 @@
     <property name="kscReportService" ref="kscReportService"/>
     <property name="resourceService" ref="resourceService"/>
   </bean>
-  
-  <bean name="/rtc/category.htm" class="org.opennms.web.controller.rtc.ListNodes">
-    <property name="rtcService" ref="rtcService"/>
-  </bean>
-  
+
  
 	<!-- Examples
 		<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
