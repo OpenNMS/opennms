@@ -84,8 +84,9 @@ public class JRobinRrdStrategy implements RrdStrategy {
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         
-        if (new File(fileName).exists())
+        if (new File(fileName).exists()) {
             return null;
+        }
 
         RrdDef def = new RrdDef(fileName);
 
@@ -117,7 +118,9 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * opened.
      */
     public void createFile(Object rrdDef) throws Exception {
-        if (rrdDef == null) return;
+        if (rrdDef == null) {
+            return;
+        }
         
         RrdDb rrd = new RrdDb((RrdDef) rrdDef);
         rrd.close();
@@ -512,23 +515,20 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * @param colorArg Should have the form COLORTAG#RRGGBB
      * @see http://www.jrobin.org/support/man/rrdgraph.html
      */
-    private void parseGraphColor(RrdGraphDef graphDef, String colorArg) throws IllegalArgumentException
-    {
+    private void parseGraphColor(RrdGraphDef graphDef, String colorArg) throws IllegalArgumentException {
         // Parse for format COLORTAG#RRGGBB
         String[] colorArgParts = tokenize(colorArg, "#", false);
-        if (colorArgParts.length != 2)
-            throw new IllegalArgumentException
-                 ("--color must be followed by value with format "
-                  + "COLORTAG#RRGGBB");
+        if (colorArgParts.length != 2) {
+            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB");
+        }
 
         String colorTag = colorArgParts[0].toUpperCase();
         String colorHex = colorArgParts[1].toUpperCase();
 
         // validate hex color input is actually an RGB hex color value
-        if (colorHex.length() != 6)
-            throw new IllegalArgumentException
-                 ("--color must be followed by value with format "
-                  + "COLORTAG#RRGGBB");
+        if (colorHex.length() != 6) {
+            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB");
+        }
 
         // this might throw NumberFormatException, but whoever wrote
         // createGraph didn't seem to care, so I guess I don't care either.
@@ -536,45 +536,44 @@ public class JRobinRrdStrategy implements RrdStrategy {
         Color color = getColor(colorHex);
 
         // These are the documented RRD color tags
-	try {
-        if (colorTag.equals("BACK")) {
-            graphDef.setColor("BACK", color);
-        }
-        else if (colorTag.equals("CANVAS")) {
-            graphDef.setColor("CANVAS", color);
-        }
-        else if (colorTag.equals("SHADEA")) {
-            graphDef.setColor("SHADEA", color);
-        }
-        else if (colorTag.equals("SHADEB")) {
-            graphDef.setColor("SHADEB", color);
-        }
-        else if (colorTag.equals("GRID")) {
-            graphDef.setColor("GRID", color);
-        }
-        else if (colorTag.equals("MGRID")) {
-            graphDef.setColor("MGRID", color);
-        }
-        else if (colorTag.equals("FONT")) {
-            graphDef.setColor("FONT", color);
-        }
-        else if (colorTag.equals("FRAME")) {
-            graphDef.setColor("FRAME", color);
-        }
-        else if (colorTag.equals("ARROW")) {
-            graphDef.setColor("ARROW", color);
-        }
-        else {
-            throw new org.jrobin.core.RrdException
-                 ("Unknown color tag " + colorTag);
-        }
+        try {
+            if (colorTag.equals("BACK")) {
+                graphDef.setColor("BACK", color);
+            }
+            else if (colorTag.equals("CANVAS")) {
+                graphDef.setColor("CANVAS", color);
+            }
+            else if (colorTag.equals("SHADEA")) {
+                graphDef.setColor("SHADEA", color);
+            }
+            else if (colorTag.equals("SHADEB")) {
+                graphDef.setColor("SHADEB", color);
+            }
+            else if (colorTag.equals("GRID")) {
+                graphDef.setColor("GRID", color);
+            }
+            else if (colorTag.equals("MGRID")) {
+                graphDef.setColor("MGRID", color);
+            }
+            else if (colorTag.equals("FONT")) {
+                graphDef.setColor("FONT", color);
+            }
+            else if (colorTag.equals("FRAME")) {
+                graphDef.setColor("FRAME", color);
+            }
+            else if (colorTag.equals("ARROW")) {
+                graphDef.setColor("ARROW", color);
+            }
+            else {
+                throw new org.jrobin.core.RrdException("Unknown color tag " + colorTag);
+            }
         } catch (Exception e) {
-            log().error("JRobin:exception occurred creating graph", e);
+            log().error("JRobin: exception occurred creating graph: " + e, e);
         }
     }
 
     /**
-     * This implementation does not track and stats.
+     * This implementation does not track any stats.
      */
     public String getStats() {
         return "";
