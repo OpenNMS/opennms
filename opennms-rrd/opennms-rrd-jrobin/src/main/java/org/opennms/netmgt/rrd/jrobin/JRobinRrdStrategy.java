@@ -182,12 +182,13 @@ public class JRobinRrdStrategy implements RrdStrategy {
         } catch (RrdException e) {
             throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
         } finally {
-            if (rrd != null)
+            if (rrd != null) {
                 try {
                     rrd.close();
                 } catch (IOException e) {
                     log().error("Failed to close rrd file: " + fileName, e);
                 }
+            }
         }
     }
     
@@ -227,12 +228,13 @@ public class JRobinRrdStrategy implements RrdStrategy {
         } catch (RrdException e) {
             throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
         } finally {
-            if (rrd != null)
+            if (rrd != null) {
                 try {
                     rrd.close();
                 } catch (IOException e) {
                     log().error("Failed to close rrd file: " + fileName, e);
                 }
+            }
         }
     }
 
