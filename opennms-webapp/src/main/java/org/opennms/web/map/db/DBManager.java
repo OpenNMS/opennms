@@ -12,14 +12,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import java.util.Set;
@@ -35,12 +33,12 @@ import org.opennms.web.event.EventUtil;
 import org.opennms.web.map.MapsException;
 import org.opennms.web.map.config.Avail;
 import org.opennms.web.map.config.DataSource;
-import org.opennms.web.map.config.Link;
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.datasources.DataSourceInterface;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
+
 
 /**
  * @author maumig
@@ -86,8 +84,7 @@ public class DBManager extends Manager {
 		}
 		
 		public int hashCode() {
-			int speed = (int)(snmpifspeed/1000);
-			return (((nodeid*(ifindex+1)*(parentifindex+1))/(nodeparentid))*(snmpiftype+1)/snmpifoperstatus)*speed;
+			return (3*nodeid)+(5*ifindex)+(7*nodeparentid)+(11*parentifindex)+(13*snmpiftype)+(17*snmpifoperstatus);
 		}
 
 	}
