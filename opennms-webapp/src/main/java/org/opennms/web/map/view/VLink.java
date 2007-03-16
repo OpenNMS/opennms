@@ -37,7 +37,9 @@
  */
 package org.opennms.web.map.view;
 
-import org.opennms.web.map.MapsException;
+import com.google.gwt.user.client.Element;
+
+
 
 /**
  * @author antonio
@@ -100,7 +102,14 @@ final public class VLink {
 	}
 	
 	public int hashCode() {
-		return elem1.getId()*elem2.getId()*(linkTypeId+1);
+		int molt1 = 11;
+		if(elem1.getType().equals(VElement.NODE_TYPE))
+			molt1 = 13;
+		int molt2 = 15;
+		if(elem2.getType().equals(VElement.NODE_TYPE))
+			molt2 = 17;
+
+		return (3*elem1.getId())+(5*elem2.getId())+(7*(linkTypeId+1))*molt1*molt2;
 	}
 
 	/*
