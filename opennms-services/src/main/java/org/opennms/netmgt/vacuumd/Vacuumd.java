@@ -43,12 +43,10 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -57,15 +55,19 @@ import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Implements a daemon whose job it is to run periodic updates against the
  * database for database maintenance work.
  */
-public class Vacuumd extends AbstractServiceDaemon implements Runnable {
+public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener {
+
+    private static final String RELOAD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
 
     private static Vacuumd m_singleton;
 
@@ -101,6 +103,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
         try {
             log().info("Loading the configuration file.");
             VacuumdConfigFactory.init();
+            getEventManager().addEventListener(this, RELOAD_CONFIG_UEI);
         } catch (MarshalException ex) {
             log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
@@ -148,29 +151,28 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
      */
     public void run() {
         ThreadCategory.setPrefix(getName());
-        Category log = ThreadCategory.getInstance(getClass());
-        log.info("Vacuumd scheduling started");
+        log().info("Vacuumd scheduling started");
         setStatus(RUNNING);
 
         long now = System.currentTimeMillis();
         long period = VacuumdConfigFactory.getInstance().getPeriod();
 
-        log.info("Vacuumd sleeping until time to execute statements period = " + period);
+        log().info("Vacuumd sleeping until time to execute statements period = " + period);
 
         long waitTime = 500L;
 
         while (!m_stopped) {
 
             try {
-                now = waitPeriod(log, now, period, waitTime);
+                now = waitPeriod(now, period, waitTime);
 
-                log.info("Vacuumd beginning to execute statements");
+                log().info("Vacuumd beginning to execute statements");
                 executeStatements();
 
                 m_startTime = System.currentTimeMillis();
 
             } catch (Exception e) {
-                log.error("Unexpected exception: ", e);
+                log().error("Unexpected exception: ", e);
             }
         }
     }
@@ -189,19 +191,18 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
     }
 
     /**
-     * @param log
      * @param now
      * @param period
      * @param waitTime
      * @return
      */
-    private long waitPeriod(Category log, long now, long period, long waitTime) {
+    private long waitPeriod(long now, long period, long waitTime) {
         int count = 0;
         while (!m_stopped && ((now - m_startTime) < period)) {
             try {
 
                 if (count % 100 == 0) {
-                    log.debug("Vacuumd: " + (period - now + m_startTime) + " millis remaining to execution.");
+                    log().debug("Vacuumd: " + (period - now + m_startTime) + " millis remaining to execution.");
                 }
                 Thread.sleep(waitTime);
                 now = System.currentTimeMillis();
@@ -213,18 +214,8 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
         return now;
     }
     
-    private ResultSet runTrigger(String sql) {
-        return null;
-    }
-    
-    private void runAction(String sql) {
-        runUpdate(sql);
-    }
-
     private void runUpdate(String sql) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        log.info("Vacuumd executing statement: " + sql);
+        log().info("Vacuumd executing statement: " + sql);
         // update the database
         Connection dbConn = null;
         boolean commit = false;
@@ -236,12 +227,12 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
             int count = stmt.executeUpdate();
             stmt.close();
 
-            if (log.isDebugEnabled())
-                log.debug("Vacuumd: Ran update " + sql + ": this affected " + count + " rows");
+            if (log().isDebugEnabled())
+                log().debug("Vacuumd: Ran update " + sql + ": this affected " + count + " rows");
 
             commit = true;
         } catch (SQLException ex) {
-            log.error("Vacuumd:  Database error execuating statement  " + sql, ex);
+            log().error("Vacuumd:  Database error execuating statement  " + sql, ex);
         } finally {
 
             if (dbConn != null)
@@ -264,14 +255,13 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
     }
     
     private void createScheduler() {
-        Category log = ThreadCategory.getInstance(getClass());
         // Create a scheduler
         //
         try {
-            log.debug("init: Creating Vacuumd scheduler");
+            log().debug("init: Creating Vacuumd scheduler");
             m_scheduler = new LegacyScheduler("Vacuumd", 2);
         } catch (RuntimeException e) {
-            log.fatal("init: Failed to create Vacuumd scheduler", e);
+            log().fatal("init: Failed to create Vacuumd scheduler", e);
             throw e;
         }
     }
@@ -308,6 +298,22 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable {
 
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
+    }
+
+    public void onEvent(Event e) {
+        if (RELOAD_CONFIG_UEI.equals(e.getUei())) {
+            try {
+                m_scheduler.pause();
+                VacuumdConfigFactory.reload();
+                m_scheduler.resume();
+            } catch (MarshalException e1) {
+                log().error("onEvent: problem marshaling vacuumd configuration", e1);
+            } catch (ValidationException e1) {
+                log().error("onEvent: problem validating vacuumd configuration", e1);
+            } catch (IOException e1) {
+                log().error("onEvent: IO problem reading vacuumd configuration", e1);
+            }
+        }
     }
 
 }
