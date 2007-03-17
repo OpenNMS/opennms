@@ -501,6 +501,18 @@
 		</logmsg>
 		<severity>Minor</severity>
 	</event>
+    <event>
+      <uei>uei.opennms.org/internal/reloadVacuumdConfig</uei>
+      <event-label>OpenNMS-defined internal event: reloadVacuumdConfig</event-label>
+      <descr>
+        &lt;p&gt;The administrator has changed the Vacuumd
+        configuration. Vacuumd will load the new configuration.&lt;/p&gt;
+      </descr>
+      <logmsg dest='logndisplay'>
+        &lt;p&gt;The Vacuumd configuration files have changed.&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+    </event>
 	<event>
 		<uei>uei.opennms.org/internal/configureSNMP</uei>
 		<event-label>OpenNMS-defined internal event: configureSNMP</event-label>
