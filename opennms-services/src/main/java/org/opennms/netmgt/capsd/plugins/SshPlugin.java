@@ -80,7 +80,7 @@ public final class SshPlugin extends AbstractPlugin {
     /**
      * The protocol supported by the plugin
      */
-    private final static String PROTOCOL_NAME = "TCP";
+    private final static String PROTOCOL_NAME = "SSH";
 
     /**
      * Default number of retries for TCP requests
@@ -233,7 +233,7 @@ public final class SshPlugin extends AbstractPlugin {
      *             This is always thrown by this plugin.
      */
     public boolean isProtocolSupported(InetAddress address) {
-        throw new UnsupportedOperationException("Undirected TCP checking not supported");
+        throw new UnsupportedOperationException("Undirected SSH checking not supported");
     }
 
     /**
