@@ -26,50 +26,67 @@
   </statement>
     
   <automations>
-<!-- Remark these for now until I get them right.
-           <automation name="autoEscalate" interval="10000" trigger-name="selectWithCounter" auto-event-name="escalationEvent" action-name="escalate" active="true" />
-           <automation name="cleanUpAlarms" interval="300000" action-name="deleteDayOldAlarms" active="true" />
--->
     <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
+    <automation name="cleanUp" interval="30000" action-name="deletePastAlarms" active="true" />
+    <automation name="GC" interval="300000" action-name="garbageCollect" active="true" />
   </automations>
-    
+  
   <triggers>
-    <trigger name="selectAll" operator="&gt;=" row-count="1" >
-      <statement>SELECT * FROM alarms</statement>
-    </trigger>
-           
-    <trigger name="selectWithCounter" >
-      <statement>SELECT alarmid FROM alarms WHERE counter &gt;= 2</statement>
-    </trigger>
-           
+  
     <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
-      <statement>SELECT * FROM alarms WHERE alarmType=2</statement>
+      <statement>
+        SELECT *, now() as _ts 
+          FROM alarms 
+         WHERE alarmType=2
+      </statement>
     </trigger>
   </triggers>
     
   <actions>
-    <action name="clear" >
-      <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>
+
+    <!-- action used for postgres 7.4 compatibility -->
+    <action name="garbageCollect" >
+      <statement>
+        DELETE FROM alarms
+         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '1 day'
+      </statement>
     </action>
-    
+  
+    <!-- a better action when using postgres 8.1 
+    <action name="garbageCollect" >
+      <statement>
+        DELETE FROM alarms
+         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '1 day'
+      </statement>
+    </action>
+    -->
+  
+    <action name="deletePastAlarms" >
+      <statement>
+        DELETE from alarms
+         WHERE severity &lt;= 3
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '10 minutes'
+      </statement>
+    </action>
+  
     <action name="clearProblems" >
-      <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND lastEventTime &lt;=  ${lastEventTime} AND severity > 2 AND eventUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> 
-      <!-- <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> -->
+      <statement>
+        UPDATE alarms 
+           SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
+         WHERE alarmType=1 
+           AND severity &gt; 2 
+           AND lastEventTime &lt;  ${lastEventTime} 
+           AND eventUei = ${clearUei} 
+           AND COALESCE(dpName, '') = COALESCE(${dpName}, '') 
+           AND COALESCE(nodeID, 0) = COALESCE(${nodeID}, 0) 
+           AND COALESCE(ipaddr, '') = COALESCE(${ipaddr}, '') 
+           AND COALESCE(serviceID, 0) = COALESCE(${serviceID}, 0)
+      </statement> 
     </action>
-    
-    <action name="escalate" >
-      <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and severity &lt; 7 and alarmAckUser is null</statement>
-    </action>
-           
-    <action name="delete" >
-      <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>
-    </action>
-          
-    <action name="deleteDayOldAlarms" >
-      <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>
-    </action>
+
   </actions>
-    
+
+  <!--  Deprecating this element... see the new <action-events> element -->    
   <auto-events>
     <auto-event name="escalationEvent" >
       <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
@@ -77,7 +94,7 @@
   </auto-events>
 
   <action-events>
-    <action-event name="eventEscalated">
+    <action-event name="eventEscalated" >
       <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
       <assignment type="field" name="nodeid" value="${nodeid}" />
       <assignment type="field" name="interface" value="${ipaddr}" />
@@ -85,5 +102,5 @@
       <assignment type="parameter" name="alarmId" value="${alarmId}" />
     </action-event>
   </action-events>
-
+  
 </VacuumdConfiguration>
