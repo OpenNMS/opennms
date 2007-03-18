@@ -308,6 +308,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                 log().info("onEvent: reloading configuration.");
                 log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
                 log().debug("onEvent: calling stop on scheduler.");
+                
                 onStop();
                 while (m_scheduler.m_runner.getStatus() != STOPPED || m_scheduler.getStatus() != STOPPED) {
                     log().debug("onEvent: waiting for scheduler to stop." +
@@ -317,16 +318,16 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                 log().debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.m_runner.getStatus());
                 log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
                 log().debug("onEvent: reloading vacuumd configuration.");
+                
                 VacuumdConfigFactory.reload();
                 log().debug("onEvent: creating new schedule and rescheduling automations.");
+                
                 onInit();
                 log().debug("onEvent: restarting vacuumd and scheduler.");
+                
                 onStart();
                 log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
-                log().info("onEvent: restarting scheduler.");
-                m_scheduler.m_runner.start();
-                log().debug("onEvent: waiting for scheduler to stop." +
-                        " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.m_runner.getStatus());
+                
             } catch (MarshalException e1) {
                 log().error("onEvent: problem marshaling vacuumd configuration.", e1);
             } catch (ValidationException e1) {
