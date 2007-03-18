@@ -573,7 +573,7 @@ class Persist {
         m_insStmt.setString(23, null);
         
         //Column 24, alarmAckTime
-        set(m_insStmt, 24, eventTime);
+        m_insStmt.setTimestamp(24, null);
         
         //Column 25, clearUie
         //Column 26, x733AlarmType
