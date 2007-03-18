@@ -55,8 +55,10 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.SingleResultQuerier;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockUtil;
 
 public class VacuumdTest extends OpenNMSTestCase {
@@ -236,6 +238,12 @@ public class VacuumdTest extends OpenNMSTestCase {
          */
         Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval()+100);
         assertEquals(7, verifyAlarmEscalated());
+        
+        EventBuilder builder = new EventBuilder(Vacuumd.RELOAD_CONFIG_UEI, "test");
+        Event e = builder.getEvent();
+        m_eventdIpcMgr.sendNow(e);
+        
+        Thread.sleep(2000);
                 
         //Stop what you start.
         m_vacuumd.stop();
