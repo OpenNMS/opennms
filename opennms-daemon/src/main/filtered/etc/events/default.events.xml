@@ -82,7 +82,7 @@
         </descr>
         <logmsg dest='logndisplay'>Incorrect Community Name (authenticationFailure Trap) enterprise:%id% (%id%) args(%parm[##]%):%parm[all]%</logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true" />
     </event>
     <event>
         <mask>
