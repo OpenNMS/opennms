@@ -79,6 +79,8 @@ public final class VacuumdConfigFactory {
      */
     private static VacuumdConfigFactory m_singleton = null;
 
+    private static boolean m_loadedFromFile = false;
+
     /**
      * The config class loaded from the config file
      */
@@ -119,6 +121,7 @@ public final class VacuumdConfigFactory {
         } finally {
             reader.close();
         }
+        m_loadedFromFile = true;
     }
 
     /**
@@ -132,9 +135,11 @@ public final class VacuumdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        setInstance(null);
+        if (m_loadedFromFile ) {
+            setInstance(null);
 
-        init();
+            init();
+        }
     }
 
     /**
