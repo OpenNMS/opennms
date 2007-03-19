@@ -62,6 +62,7 @@
           JOIN events e 
             ON e.eventid = a.lasteventid
          WHERE severity = 2
+           AND alarmtype = 1
            AND a.lasteventtime > a.lastautomationtime
       </statement>
     </trigger>
@@ -97,7 +98,7 @@
     <action name="garbageCollect" >
       <statement>
         DELETE FROM alarms
-         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '1 day'
+         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 days'
            AND alarmacktime IS NULL
       </statement>
     </action>
@@ -106,7 +107,7 @@
     <action name="garbageCollect" >
       <statement>
         DELETE FROM alarms
-         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '1 day'
+         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '5 days'
            AND alarmacktime IS NULL
       </statement>
     </action>
@@ -116,7 +117,7 @@
       <statement>
         DELETE from alarms
          WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '10 minutes'
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '2 minutes'
            AND alarmacktime IS NULL
       </statement>
     </action>
@@ -145,6 +146,7 @@
     </auto-event>
   </auto-events>
 
+  <!-- Note: action events that have ${} tokens require the for-each-result attribute to be set to true -->
   <action-events>
     <action-event name="eventEscalated" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
