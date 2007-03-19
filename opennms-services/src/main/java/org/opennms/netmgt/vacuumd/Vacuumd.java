@@ -309,7 +309,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                 log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
                 log().debug("onEvent: calling stop on scheduler.");
                 
-                onStop();
+                stop();
                 while (m_scheduler.m_runner.getStatus() != STOPPED || m_scheduler.getStatus() != STOPPED) {
                     log().debug("onEvent: waiting for scheduler to stop." +
                             " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.m_runner.getStatus());
@@ -322,10 +322,10 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                 VacuumdConfigFactory.reload();
                 log().debug("onEvent: creating new schedule and rescheduling automations.");
                 
-                onInit();
+                init();
                 log().debug("onEvent: restarting vacuumd and scheduler.");
                 
-                onStart();
+                start();
                 log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
                 
             } catch (MarshalException e1) {
