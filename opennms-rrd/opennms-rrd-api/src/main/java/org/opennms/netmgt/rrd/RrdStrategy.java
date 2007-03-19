@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// Mar 19, 2007: Added createGraphReturnDetails. - dj@opennms.org
 // Jul 8, 2004: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -194,6 +195,25 @@ public interface RrdStrategy {
      *             if an RRD error occurs
      */
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException;
+    
+    /**
+     * Creates an RrdGraphDetails object representing the graph created from
+     * round robin data. It accepts an rrdtool graph command. The underlying
+     * implementation converts this command to a format appropriate for it .
+     * 
+     * @param command
+     *            the command needed to create the graph
+     * @param workDir
+     *            the directory that all referenced files are relative to
+     * @return details for the graph including an InputStream, any PRINTed
+     *      lines, and graph dimensions.
+     * @throws IOException
+     *             if an IOError occurs
+     * @throws RrdException
+     *             if an RRD error occurs
+     */
+    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException;
+    
     
     /**
      * Returns the number of pixels that the right-hand side of the graph is

@@ -8,6 +8,10 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ *
+ * 2007 Mar 19: Add a test for creating a graph.  Doesn't seem to work yet, though. - dj@opennms.org
+ *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,10 +38,10 @@ package org.opennms.netmgt.rrd.rrdtool;
 import java.io.File;
 import java.io.FileFilter;
 
+import junit.framework.TestCase;
+
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.util.StringUtils;
-
-import junit.framework.TestCase;
 
 /**
  * Unit tests for the JniRrdStrategy.  This requires that the shared object
@@ -65,6 +69,21 @@ public class JniRrdStrategyTest extends TestCase {
         // Do nothing; just checking to see if setUp() worked.
     }
     
+    public void NORUNtestGraph() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        String[] command = new String[] {
+                "rrdtool",
+                "graph", 
+                "-",
+                "--start=" + start,
+                "--end=" + end,
+                "CDEF:a=1",
+                "GPRINT:a:AVERAGE:\"%8.2lf\\n\""
+        };
+        
+        m_strategy.createGraph(StringUtils.arrayToDelimitedString(command, " "), new File(""));
+    }
 
     private File findJrrdLibrary() {
         File parentDir = new File("..");

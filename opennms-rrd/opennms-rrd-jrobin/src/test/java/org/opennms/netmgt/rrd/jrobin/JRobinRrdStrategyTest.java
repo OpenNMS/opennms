@@ -8,6 +8,12 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ *
+ * 2007 Mar 19: Adjust for changes with exceptions and add test
+ *              for a graph with only PRINT commands through the
+ *              RrdStrategy interface with createGraphReturnDetails. - dj@opennms.org
+ *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,8 +45,10 @@ import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.jrobin.graph.RrdGraphInfo;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.util.StringUtils;
 
 /**
  * Unit tests for the JrobinRrdStrategy.
@@ -77,16 +85,12 @@ public class JRobinRrdStrategyTest extends TestCase {
         } catch (Throwable t) {
             ta.throwableReceived(t);
             
-            // Do some additional checks that ThrowableAnticipator doesn't support.
-            Throwable cause = t.getCause();
-            assertNotNull("throwable should have a cause", cause);
-            assertEquals("cause class", RrdException.class, cause.getClass());
-            
+            // We don't care about the exact message, just a few details
             String problemText = "no graph was produced";
-            assertTrue("cause message should contain '" + problemText + "'", cause.getMessage().contains(problemText));
+            assertTrue("cause message should contain '" + problemText + "'", t.getMessage().contains(problemText));
             
             String suggestionText = "Does the command have any drawing commands";
-            assertTrue("cause message should contain '" + suggestionText + "'", cause.getMessage().contains(suggestionText));
+            assertTrue("cause message should contain '" + suggestionText + "'", t.getMessage().contains(suggestionText));
         }
         ta.verifyAnticipated();
     }
@@ -172,6 +176,34 @@ public class JRobinRrdStrategyTest extends TestCase {
         assertNotNull("graph info object", info);
         
         String[] printLines = info.getPrintLines();
+        assertNotNull("graph printLines", printLines);
+        assertEquals("graph printLines size", 1, printLines.length);
+        assertEquals("graph printLines item 0", "1.000000e+00", printLines[0]);
+        double d = Double.parseDouble(printLines[0]);
+        assertEquals("graph printLines item 0 as a double", 1.0, d);
+    }
+    
+
+    public void testPrintThroughInterface() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        String[] command = new String[] {
+                "--start=" + start,
+                "--end=" + end,
+                "CDEF:something=1",
+                "PRINT:something:AVERAGE:\"%le\""
+        };
+
+        RrdGraphDetails graphDetails = m_strategy.createGraphReturnDetails(StringUtils.arrayToDelimitedString(command, " "), new File(""));
+        assertNotNull("graph details object", graphDetails);
+        
+//        RrdGraph graph = new RrdGraph(graphDef);
+//      assertNotNull("graph object", graph);
+//        
+//        RrdGraphInfo info = graph.getRrdGraphInfo();
+//        assertNotNull("graph info object", info);
+        
+        String[] printLines = graphDetails.getPrintLines();
         assertNotNull("graph printLines", printLines);
         assertEquals("graph printLines size", 1, printLines.length);
         assertEquals("graph printLines item 0", "1.000000e+00", printLines[0]);

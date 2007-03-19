@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// Mar 19, 2007: Added createGraphReturnDetails. - dj@opennms.org
 // Jul 8, 2004: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -980,6 +981,10 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     public String getDefaultFileExtension() {
         return m_delegate.getDefaultFileExtension();
+    }
+
+    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException {
+        return m_delegate.createGraphReturnDetails(command, workDir);
     }
 
 
