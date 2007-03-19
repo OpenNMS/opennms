@@ -27,11 +27,44 @@
     
   <automations>
     <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
-    <automation name="cleanUp" interval="30000" action-name="deletePastAlarms" active="true" />
+    <automation name="cleanUp" interval="30000" action-name="deletePastClearedAlarms" active="true" />
     <automation name="GC" interval="300000" action-name="garbageCollect" active="true" />
+    <automation name="unclear" interval="30000" trigger-name="selectClearedAlarms" action-name="resetSeverity" active="true" />
+    <automation name="escalation" interval="30000" trigger-name="selectSuspectAlarms" action-name="escalateAlarm" action-event="eventEscalated" for-each-result="true" active="true" />
   </automations>
   
   <triggers>
+  
+    <trigger name="selectSuspectAlarms" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT a.alarmid as _alarmid, 
+               a.eventuei as _eventuei, 
+               a.nodeid as _nodeid, 
+               a.ipaddr as _ipaddr, 
+               a.serviceid as _serviceid,
+               s.servicename as _servicename,
+               now() as _ts
+          FROM alarms a
+          JOIN service s
+            ON s.serviceid = a.serviceid
+         WHERE alarmType = 1
+           AND severity &gt; 3
+           AND severity &lt; 7
+           AND alarmacktime IS NULL
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '60 minutes'
+      </statement>
+    </trigger>
+  
+    <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT a.alarmid as _id, e.eventseverity AS _sev, now() as _ts
+          FROM alarms a
+          JOIN events e 
+            ON e.eventid = a.lasteventid
+         WHERE severity = 2
+           AND a.lasteventtime > a.lastautomationtime
+      </statement>
+    </trigger>
   
     <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
       <statement>
@@ -43,12 +76,29 @@
   </triggers>
     
   <actions>
+  
+    <action name="escalateAlarm" >
+      <statement>
+        UPDATE alarms
+           SET severity = severity +1, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
+         WHERE alarmid = ${_alarmid}
+      </statement>
+    </action>
+  
+    <action name="resetSeverity" >
+      <statement>
+        UPDATE alarms
+           SET severity = ${_sev}, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
+         WHERE alarmid = ${_id}
+      </statement>
+    </action>
 
     <!-- action used for postgres 7.4 compatibility -->
     <action name="garbageCollect" >
       <statement>
         DELETE FROM alarms
          WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '1 day'
+           AND alarmacktime IS NULL
       </statement>
     </action>
   
@@ -57,15 +107,17 @@
       <statement>
         DELETE FROM alarms
          WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '1 day'
+           AND alarmacktime IS NULL
       </statement>
     </action>
     -->
   
-    <action name="deletePastAlarms" >
+    <action name="deletePastClearedAlarms" >
       <statement>
         DELETE from alarms
          WHERE severity &lt;= 3
            AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '10 minutes'
+           AND alarmacktime IS NULL
       </statement>
     </action>
   
@@ -94,12 +146,13 @@
   </auto-events>
 
   <action-events>
-    <action-event name="eventEscalated" >
+    <action-event name="eventEscalated" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
-      <assignment type="field" name="nodeid" value="${nodeid}" />
-      <assignment type="field" name="interface" value="${ipaddr}" />
-      <assignment type="field" name="service" value="TEST" />
-      <assignment type="parameter" name="alarmId" value="${alarmId}" />
+      <assignment type="field" name="nodeid" value="${_nodeid}" />
+      <assignment type="field" name="interface" value="${_ipaddr}" />
+      <assignment type="field" name="service" value="${_servicename}" />
+      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
+      <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
     </action-event>
   </action-events>
   
