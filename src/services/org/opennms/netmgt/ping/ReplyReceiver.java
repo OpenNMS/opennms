@@ -183,8 +183,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
             if (reply.isEchoReply() && reply.getIdentity() == m_filterID) {
                 Category log = ThreadCategory.getInstance(getClass());
                 m_replyQ.add(reply);
-                if (log.isDebugEnabled())
-                    log.debug("process: received matching echo reply from host " + pkt.getAddress().getHostAddress());
+		// This is an annoying, useless log in the field, disabling
+                // if (log.isDebugEnabled())
+                //     log.debug("process: received matching echo reply from host " + pkt.getAddress().getHostAddress());
             }
         }
     }
