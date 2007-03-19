@@ -55,18 +55,18 @@ public interface RrdStrategy {
      * @throws Exception
      *             if an Error occurs
      */
-    void initialize() throws Exception;
+    public void initialize() throws Exception;
 
     /**
      * This Initializes the graphics subsystem only. This is used by the web
      * application to avoid the need for the JNI infrastructure in the webapp.
      */
-    void graphicsInitialize() throws Exception;
+    public void graphicsInitialize() throws Exception;
     
     /**
      * Get the file extension appropriate for files of this type
      */
-    String getDefaultFileExtension();
+    public String getDefaultFileExtension();
 
     /**
      * Create a round robin database definition from the supplied parameters.
@@ -89,7 +89,7 @@ public interface RrdStrategy {
      * @throws Exception
      *             If an error occurs while creating the definition
      */
-    Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception;
+    public Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception;
 
     /**
      * Creates the round robin database defined by the supplied definition.
@@ -100,7 +100,7 @@ public interface RrdStrategy {
      * @throws Exception
      *             if an error occurs create the file
      */
-    void createFile(Object rrdDef) throws Exception;
+    public void createFile(Object rrdDef) throws Exception;
 
     /**
      * Opens the round robin database with the supplied name. It is assumed the
@@ -114,7 +114,7 @@ public interface RrdStrategy {
      * @throws Exception
      *             if an error occurs opening the file
      */
-    Object openFile(String fileName) throws Exception;
+    public Object openFile(String fileName) throws Exception;
 
     /**
      * Updates the supplied round robin database with the given timestamp:value
@@ -129,7 +129,7 @@ public interface RrdStrategy {
      * @throws Exception
      *             if an error occurs updating the file
      */
-    void updateFile(Object rrd, String owner, String data) throws Exception;
+    public void updateFile(Object rrd, String owner, String data) throws Exception;
 
     /**
      * This closes the supplied round robin database
@@ -139,7 +139,7 @@ public interface RrdStrategy {
      * @throws Exception
      *             if an error occurs closing the file
      */
-    void closeFile(Object rrd) throws Exception;
+    public void closeFile(Object rrd) throws Exception;
 
     /**
      * Fetches the last value from the round robin database with the given name.
