@@ -102,7 +102,7 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests
         onTearDownInTransactionIfEnabled();
     }
     
-    protected void onTearDownInTransactionIfEnabled() {
+    protected void onTearDownInTransactionIfEnabled() throws Exception {
         // Empty by default
     }
     
