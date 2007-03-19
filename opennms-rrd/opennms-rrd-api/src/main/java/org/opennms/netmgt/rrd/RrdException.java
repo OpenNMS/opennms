@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// Mar 19, 2007: Add serialVersionUID. - dj@opennms.org
 // Jun 24, 2004: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -45,6 +46,11 @@ package org.opennms.netmgt.rrd;
  * @author brozow
  */
 public class RrdException extends Exception {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5251168945484451493L;
 
     /**
      * 
