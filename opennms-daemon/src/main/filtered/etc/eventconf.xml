@@ -631,7 +631,7 @@
 			failed and has been restored.
 		</logmsg>
 		<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clearUei="uei.opennms.org/nodes/dataCollectionFailed" auto-clean="true"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-uei="uei.opennms.org/nodes/dataCollectionFailed" auto-clean="true"/>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/deleteService</uei>
@@ -1424,7 +1424,7 @@
       The disconnected remote location monitor: %parm[locationMonitorId]% has reconnected.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2" clearUei="uei.opennms.org/remote/locationMonitorDisconnected" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2" clear-uei="uei.opennms.org/remote/locationMonitorDisconnected" auto-clean="false"/>
   </event>
   
   <event>
