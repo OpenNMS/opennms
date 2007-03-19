@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 19 Mar 2007: Add createGraphReturnDetails and move assertion of a graph being created to JRobinRrdGraphDetails. - dj@opennms.org
  * 19 Mar 2007: Indent, add support for PRINT in graphs. - dj@opennms.org
  * 02 Mar 2007: Add support for --base and fix some log messages. - dj@opennms.org
  * 08 Jul 2004: Created this file.
@@ -39,7 +40,6 @@ package org.opennms.netmgt.rrd.jrobin;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +57,7 @@ import org.jrobin.graph.RrdGraphDef;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
+import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -241,6 +242,10 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return new Color(colorVal);
     }
 
+    public InputStream createGraph(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+        return createGraphReturnDetails(command, workDir).getInputStream();
+    }
+
     /**
      * This constructs a graphDef by parsing the rrdtool style command and using
      * the values to create the JRobin graphDef. It does not understand the 'AT
@@ -249,25 +254,28 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * used to construct an RrdGraph and a PNG image will be created. An input
      * stream returning the bytes of the PNG image is returned.
      */
-    public InputStream createGraph(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+
+    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+
         try {
-            InputStream tempIn = null;
             String[] commandArray = tokenize(command, " \t", false);
 
             RrdGraphDef graphDef = createGraphDef(workDir, commandArray);
 
             RrdGraph graph = new RrdGraph(graphDef);
             
-            byte[] bytes = graph.getRrdGraphInfo().getBytes();
-            if (bytes == null) {
-                String message = "JRobin: no graph was produced by JRobin for command '" + command + "'.  Does the command have any drawing commands (e.g.: LINE1, LINE2, LINE3, AREA, STACK, GPRINT)?";
-                log().error(message);
-                throw new org.opennms.netmgt.rrd.RrdException(message);
-            }
-
-            tempIn = new ByteArrayInputStream(bytes);
-
-            return tempIn;
+            /*
+             * We use a custom RrdGraphDetails object here instead of the
+             * DefaultRrdGraphDetails because we won't have an InputStream
+             * available if no graphing commands were used, e.g.: if we only
+             * use PRINT or if the user goofs up a graph definition.
+             * 
+             * We want to throw an RrdException if the caller calls
+             * RrdGraphDetails.getInputStream and no graphing commands were
+             * used.  If they just call RrdGraphDetails.getPrintLines, though,
+             * we don't want to throw an exception.
+             */
+            return new JRobinRrdGraphDetails(graph, command);
         } catch (Exception e) {
             log().error("JRobin: exception occurred creating graph: " + e.getMessage(), e);
             throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph: " + e.getMessage(), e);
@@ -610,4 +618,5 @@ public class JRobinRrdStrategy implements RrdStrategy {
     private final Category log() {
         return ThreadCategory.getInstance(getClass());
     }
+
 }

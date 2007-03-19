@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Mar 19: Added createGraphReturnDetails. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,6 +41,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
 public class NullRrdStrategy implements RrdStrategy {
@@ -56,11 +61,16 @@ public class NullRrdStrategy implements RrdStrategy {
 	public void createFile(Object rrdDef) throws Exception {
 	}
 
-	public InputStream createGraph(String command, File workDir)
-			throws IOException, RrdException {
-		return null;
-	}
-
+    public InputStream createGraph(String command, File workDir)
+            throws IOException, RrdException {
+        return null;
+    }
+    
+    public RrdGraphDetails createGraphReturnDetails(String command, File workDir)
+            throws IOException, RrdException {
+        return null;
+    }
+    
 	public Double fetchLastValue(String rrdFile, int interval)
 			throws NumberFormatException, RrdException {
 		return null;

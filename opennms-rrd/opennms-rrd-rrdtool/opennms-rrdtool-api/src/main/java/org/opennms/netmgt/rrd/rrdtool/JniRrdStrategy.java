@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// Mar 19, 2007: Added createGraphReturnDetails (just throws UnsupportedOperationException for now).  Improved exception message in createGraph if we can't run the command. - dj@opennms.org
 // Jul 8, 2004: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -55,6 +56,7 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -386,7 +388,14 @@ public class JniRrdStrategy implements RrdStrategy {
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         InputStream tempIn;
         String[] commandArray = StringUtils.createCommandArray(command, '@');
-        Process process = Runtime.getRuntime().exec(commandArray, null, workDir);
+        Process process;
+        try {
+             process = Runtime.getRuntime().exec(commandArray, null, workDir);
+        } catch (IOException e) {
+            IOException newE = new IOException("IOException thrown while executing command '" + command + "' in " + workDir.getAbsolutePath() + ": " + e);
+            newE.initCause(e);
+            throw newE;
+        }
 
         ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
         BufferedInputStream in = new BufferedInputStream(process.getInputStream());
@@ -436,5 +445,9 @@ public class JniRrdStrategy implements RrdStrategy {
 
     public String getDefaultFileExtension() {
         return ".rrd";
+    }
+    
+    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+        throw new UnsupportedOperationException("method not yet implemented");
     }
 }
