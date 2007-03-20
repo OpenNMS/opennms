@@ -248,6 +248,16 @@ maintained
                 <invoke at="stop" pass="0" method="stop"/>
     </service>
 -->
+<!-- Only uncomment this service if proper rules correlation files have been implemented
+  <service>
+    <name>OpenNMS:Name=Correlator</name>
+    <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+-->
 
 </service-configuration>
 
