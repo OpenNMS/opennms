@@ -7,4 +7,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-util</artifactId>
   <name>OpenNMS Utilities</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+    </dependency>
+  </dependencies>
 </project>
