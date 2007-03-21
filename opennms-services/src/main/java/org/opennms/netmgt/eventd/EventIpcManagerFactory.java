@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Mar 21: Added assertions. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,6 +38,8 @@
 
 package org.opennms.netmgt.eventd;
 
+import org.springframework.util.Assert;
+
 /**
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
@@ -56,10 +62,12 @@ public class EventIpcManagerFactory {
      * Returns an implementation of the default EventIpcManager class
      */
     public static EventIpcManager getIpcManager() {
+        Assert.state(m_defIpcManager != null, "this factory has not been initialized");
         return m_defIpcManager;
     }
 
     public static void setIpcManager(EventIpcManager manager) {
+        Assert.notNull(manager, "argument manager must not be null");
         m_defIpcManager = manager;
     }
 
