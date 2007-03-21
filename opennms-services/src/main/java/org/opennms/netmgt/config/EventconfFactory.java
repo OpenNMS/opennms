@@ -293,7 +293,7 @@ public class EventconfFactory {
                 fileWriter.close();
             }
         }
-        //Delete the programmatic store if it exists on disk, but isn't in the main store.  THis is for cleanliness
+        //Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
         if(m_programmaticStoreFile.exists() && (!m_eventFiles.containsKey(m_programmaticStoreFile))) {
             m_programmaticStoreFile.delete(); 
         }
@@ -335,7 +335,7 @@ public class EventconfFactory {
         //Check for, and possibly add, the programmatic store event-file entry to the in-memory structure of the root config file
         Events root=m_eventFiles.get(m_rootConfigFile);
         String programmaticStorePath=m_programmaticStoreFile.getAbsolutePath();
-        if(!root.getEventCollection().contains(programmaticStorePath)) {
+        if(!root.getEventFileCollection().contains(programmaticStorePath)) {
             root.addEventFile(programmaticStorePath);
         }
         

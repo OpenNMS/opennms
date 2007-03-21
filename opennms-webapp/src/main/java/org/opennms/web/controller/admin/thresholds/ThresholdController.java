@@ -217,26 +217,29 @@ public class ThresholdController extends AbstractController implements Initializ
         return modelAndView;
     }
     
+    private void sendNotifEvent(String uei) throws ServletException {
+        Event event = new Event();
+        event.setSource("Web UI");
+        event.setUei(uei);
+        try {
+                event.setHost(InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException uhE) {
+                event.setHost("unresolved.host");
+        }
+        
+        event.setTime(EventConstants.formatToString(new java.util.Date()));
+        try {
+                Util.createEventProxy().send(event);
+        } catch (Exception e) {
+                throw new ServletException("Could not send event " + event.getUei(), e);
+        }
+       
+    }
     private void saveChanges() throws ServletException {
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         try {
             configFactory.saveCurrent();
-      
-            Event event = new Event();
-            event.setSource("Web UI");
-            event.setUei(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
-            try {
-                    event.setHost(InetAddress.getLocalHost().getHostName());
-            } catch (UnknownHostException uhE) {
-                    event.setHost("unresolved.host");
-            }
-            
-            event.setTime(EventConstants.formatToString(new java.util.Date()));
-            try {
-                    Util.createEventProxy().send(event);
-            } catch (Exception e) {
-                    throw new ServletException("Could not send event " + event.getUei(), e);
-            }
+            sendNotifEvent(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
         } catch (Exception e) {
             throw new ServletException("Could not save the changes to the threshold because "+e.getMessage(),e);
         }
@@ -244,6 +247,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(eventConfChanged) {
             try {
                 EventconfFactory.getInstance().saveCurrent();
+                sendNotifEvent(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI);
             } catch (Exception e) {
                 throw new ServletException("Could not save the changes to the event configuration because "+e.getMessage(),e);
             }
