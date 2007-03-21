@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://xmlns.opennms.org/xsd/config/thresholding-config"
-        xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:this="http://xmlns.opennms.org/xsd/config/thresholding-config"
-        xmlns:ns2="http://www.w3.org/1999/xhtml"
-        xmlns:ns="http://www.w3.org/2001/XMLSchema"
-        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+<schema
+  targetNamespace="http://xmlns.opennms.org/xsd/config/thresholding-config"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:this="http://xmlns.opennms.org/xsd/config/thresholding-config"
+  xmlns:ns2="http://www.w3.org/1999/xhtml"
+  xmlns:ns="http://www.w3.org/2001/XMLSchema"
+  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
-    <documentation>XML Schema for the thresholds.xml configuration file.
-    Version: $Id$</documentation>
+    <documentation>
+      XML Schema for the thresholds.xml configuration file. Version:
+      $Id: thresholding-config.xsd 5960 2007-03-15 03:01:15 +0000 (Thu,
+      15 Mar 2007) cmiskell $
+    </documentation>
   </annotation>
 
   <element name="thresholding-config">
     <annotation>
-      <documentation>Top-level element for the thresholds.xml configuration
-      file.</documentation>
+      <documentation>
+        Top-level element for the thresholds.xml configuration file.
+      </documentation>
     </annotation>
 
     <complexType>
@@ -30,17 +35,21 @@
 
   <element name="group">
     <annotation>
-      <documentation>Grouping of related threshold definitions</documentation>
+      <documentation>
+        Grouping of related threshold definitions
+      </documentation>
     </annotation>
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:threshold">
+        <element maxOccurs="unbounded" minOccurs="0"
+          ref="this:threshold">
           <annotation>
             <documentation>Threshold definition</documentation>
           </annotation>
         </element>
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:expression">
+        <element maxOccurs="unbounded" minOccurs="0"
+          ref="this:expression">
           <annotation>
             <documentation>Expression definition</documentation>
           </annotation>
@@ -55,112 +64,137 @@
 
       <attribute name="rrdRepository" type="string" use="required">
         <annotation>
-          <documentation>Full path to the RRD repository where the data is
-          stored</documentation>
+          <documentation>
+            Full path to the RRD repository where the data is stored
+          </documentation>
         </annotation>
       </attribute>
     </complexType>
   </element>
 
   <!-- Expression definitions -->
-    <complexType name="basethresholddef" abstract="true">
-      <attribute name="type" type="string" use="required">
-        <annotation>
-          <documentation>Threshold type. If "high", a 'highThresholdExceeded'
-          event will be generated. If "low", a 'lowThresholdExceeded'
-          event.</documentation>
-        </annotation>
-      </attribute>
+  <complexType name="basethresholddef" abstract="true">
+    <attribute name="type" type="string" use="required">
+      <annotation>
+        <documentation>
+          Threshold type. If "high", a 'highThresholdExceeded' event
+          will be generated. If "low", a 'lowThresholdExceeded' event.
+        </documentation>
+      </annotation>
+    </attribute>
 
+    <attribute name="ds-type" type="string" use="required">
+      <annotation>
+        <documentation>
+          RRD datasource type. "node" indicates a node level datasource.
+          "if" indicates an interface level datasource.
+        </documentation>
+      </annotation>
+    </attribute>
 
+    <attribute name="value" type="double" use="required">
+      <annotation>
+        <documentation>
+          Threshold value. If the datasource value rises above this
+          value, in the case of a "high" threshold, or drops below this
+          value, in the case of a "low" threshold the threshold is
+          considered to have been exceeded and the exceeded count will
+          be incremented. Any time that the datasource value drops below
+          this value, in the case of a "high" threshold, or rises above
+          this value, in the case of a "low" threshold the exceeded
+          count is reset back to zero. Whenever the exceeded count
+          reaches the trigger value then a threshold event is generated.
+        </documentation>
+      </annotation>
+    </attribute>
 
-      <attribute name="ds-type" type="string" use="required">
-        <annotation>
-          <documentation>RRD datasource type. "node" indicates a node level
-          datasource. "if" indicates an interface level
-          datasource.</documentation>
-        </annotation>
-      </attribute>
+    <attribute name="rearm" type="double" use="required">
+      <annotation>
+        <documentation>
+          Rearm value. Identifies the value that the datasource must
+          fall below, in the case of a "high" threshold or rise above,
+          in the case of a "low" threshold, before the threshold will
+          rearm, and once again be eligible to generate an event.
+        </documentation>
+      </annotation>
+    </attribute>
 
-      <attribute name="value" type="double" use="required">
-        <annotation>
-          <documentation>Threshold value. If the datasource value rises above
-          this value, in the case of a "high" threshold, or drops below this
-          value, in the case of a "low" threshold the threshold is considered
-          to have been exceeded and the exceeded count will be incremented.
-          Any time that the datasource value drops below this value, in the
-          case of a "high" threshold, or rises above this value, in the case
-          of a "low" threshold the exceeded count is reset back to zero.
-          Whenever the exceeded count reaches the trigger value then a
-          threshold event is generated.</documentation>
-        </annotation>
-      </attribute>
+    <attribute name="trigger" type="positiveInteger" use="required">
+      <annotation>
+        <documentation>
+          Trigger value. Identifies the number of consecutive polls that
+          the datasource value must exceed the defined threshold value
+          before a threshold event is generated.
+        </documentation>
+      </annotation>
+    </attribute>
 
-      <attribute name="rearm" type="double" use="required">
-        <annotation>
-          <documentation>Rearm value. Identifies the value that the datasource
-          must fall below, in the case of a "high" threshold or rise above, in
-          the case of a "low" threshold, before the threshold will rearm, and
-          once again be eligible to generate an event.</documentation>
-        </annotation>
-      </attribute>
+    <attribute name="ds-label" type="string" use="optional">
+      <annotation>
+        <documentation>
+          Value to retrieve from strings.properties to label this
+          datasource.
+        </documentation>
+      </annotation>
+    </attribute>
+    
+    <attribute name="triggeredUEI" type="string" use="optional">
+      <annotation>
+        <documentation>
+          The UEI to send when this threshold is triggered. If not
+          specified, defaults to standard threshold UEIs
+        </documentation>
+      </annotation>
+    </attribute>
+    
+    <attribute name="rearmedUEI" type="string" use="optional">
+      <annotation>
+        <documentation>
+          The UEI to send when this threshold is re-armed. If not
+          specified, defaults to standard threshold UEIs
+        </documentation>
+      </annotation>
+    </attribute>
+  </complexType>
 
-      <attribute name="trigger" type="positiveInteger" use="required">
-        <annotation>
-          <documentation>Trigger value. Identifies the number of consecutive
-          polls that the datasource value must exceed the defined threshold
-          value before a threshold event is generated.</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="ds-label" type="string" use="optional">
-        <annotation>
-          <documentation>Value to retrieve from strings.properties to label this datasource.</documentation>
-        </annotation>
-      </attribute>
-      <attribute name="triggeredUEI" type="string" use="optional">
-		<annotation>
-          <documentation>The UEI to send when this threshold is triggered.  If not specified, defaults to standard threshold UEIs</documentation>
-        </annotation>     
-      </attribute>
-      <attribute name="rearmedUEI" type="string" use="optional">
-		<annotation>
-          <documentation>The UEI to send when this threshold is re-armed.  If not specified, defaults to standard threshold UEIs</documentation>
-        </annotation>     
-      </attribute>
-	</complexType>
+  <element name="threshold">
+    <annotation>
+      <documentation>Threshold definition</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="this:basethresholddef">
+          <attribute name="ds-name" type="string">
+            <annotation>
+              <documentation>
+                RRD datasource name. Mutually exclusive with expression,
+                but one of them must be specified
+              </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
   
- 	<element name="threshold">
- 		<annotation>
-			<documentation>Threshold definition</documentation>
-		</annotation>
-		<complexType>
-		<complexContent>
-		<extension base="basethresholddef">
-				<attribute name="ds-name" type="string">
-					<annotation>
-							<documentation>RRD datasource name. Mutually exclusive with expression, but one of them must be specified</documentation>
-					</annotation>
-				</attribute>
-		</extension>
-		</complexContent>
-		</complexType>
-	</element>   
-	<element name="expression">
- 		<annotation>
-			<documentation>Threshold definition</documentation>
-		</annotation>
-		<complexType>
-		<complexContent>
-		<extension base="basethresholddef">
-				<attribute name="expression" type="string">
-					<annotation>
-							<documentation>An expression of Datasource names and constants to be evaluate</documentation>
-					</annotation>
-				</attribute>
-		</extension>
-		</complexContent>
-		</complexType>
-	</element>   	 
- 
+  <element name="expression">
+    <annotation>
+      <documentation>Threshold definition</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="this:basethresholddef">
+          <attribute name="expression" type="string">
+            <annotation>
+              <documentation>
+                An expression of Datasource names and constants to be
+                evaluate
+              </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
 </schema>
