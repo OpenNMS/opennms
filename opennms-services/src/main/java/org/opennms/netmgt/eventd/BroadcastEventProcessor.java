@@ -7,6 +7,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Mar 21: Format code, remove outdated references to JMS, create log()
+//      method, and keep around the EventIpcManager when we are instantiated
+//      so we can use it when we close up shop. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,90 +39,83 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.util.Assert;
 
 public class BroadcastEventProcessor implements EventListener {
-       
-        Category m_log;
+    private EventIpcManager m_eventIpcManager;
+    
+    public BroadcastEventProcessor(EventIpcManager eventIpcManager) {
+        Assert.notNull(eventIpcManager, "argument eventIpcManager must not be null");
         
-        BroadcastEventProcessor(EventIpcManager manager) {
-           // Create the jms message selector
-           installMessageSelector(manager);
-           m_log = ThreadCategory.getInstance(getClass());
+        m_eventIpcManager = eventIpcManager;
+        
+        addEventListener();
+    }
+
+    /**
+     * Create message selector to set to the subscription
+     */
+    private void addEventListener() {
+        m_eventIpcManager.addEventListener(this, EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI);
+    }
+
+    /**
+     * </p>
+     * Closes the current connections to the event manager if they are
+     * still active. This call may be invoked more than once safely and may be
+     * invoked during object finalization.
+     * </p>
+     * 
+     */
+    public synchronized void close() {
+        m_eventIpcManager.removeEventListener(this);
+    }
+
+    /**
+     * This method may be invoked by the garbage thresholding. Once invoked it
+     * ensures that the <code>close</code> method is called <em>at least</em>
+     * once during the cycle of this object.
+     * 
+     */
+    protected void finalize() throws Throwable {
+        close();
+    }
+
+    public String getName() {
+        return "Eventd:BroadcastEventProcessor";
+    }
+
+    /**
+     * This method is invoked by the event manager when a new event is
+     * available for processing.  Each message is examined for its Universal
+     * Event Identifier and the appropriate action is taking based on each UEI.
+     * 
+     * @param event
+     *            The event message.
+     * 
+     */
+    public void onEvent(Event event) {
+        if (log().isDebugEnabled()) {
+            log().debug("received event, UEI = " + event.getUei());
         }
+        
+        if (event.getUei().equals(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI)) {
+            try {
+                EventConfigurationManager.reload();
+            } catch (Exception e) {
+                log().error("Could not reload events config: " + e, e);
+            }
+        } else {
+            log().warn("Received unanticipated event with UEI '" + event.getUei() + "': " + event);
+        }
+    }
 
-       /**
-        * Create message selector to set to the subscription
-        */
-       private void installMessageSelector(EventIpcManager manager) {
-           // Create the JMS selector for the ueis this service is interested in
-           //
-           List ueiList = new ArrayList();
-
-           // events config changed 
-           ueiList.add(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI);
- 
-           manager.addEventListener(this, ueiList);
-       }
-
-       /**
-        * </p>
-        * Closes the current connections to the Java Message Queue if they are
-        * still active. This call may be invoked more than once safely and may be
-        * invoked during object finalization.
-        * </p>
-        * 
-        */
-       synchronized void close() {
-           EventIpcManagerFactory.getIpcManager().removeEventListener(this);
-       }
-
-       /**
-        * This method may be invoked by the garbage thresholding. Once invoked it
-        * ensures that the <code>close</code> method is called <em>at least</em>
-        * once during the cycle of this object.
-        * 
-        */
-       protected void finalize() throws Throwable {
-           close(); // ensure it's closed
-       }
-
-       public String getName() {
-           return "Eventd:BroadcastEventProcessor";
-       }
-
-       /**
-        * This method is invoked by the JMS topic session when a new event is
-        * available for processing. Currently only text based messages are
-        * processed by this callback. Each message is examined for its Universal
-        * Event Identifier and the appropriate action is taking based on each UEI.
-        * 
-        * @param event
-        *            The event message.
-        * 
-        */
-       public void onEvent(Event event) {
-           Category log = ThreadCategory.getInstance(getClass());
-
-           // print out the uei
-           //
-           if (log.isDebugEnabled()) {
-               log.debug("received event, uei = " + event.getUei());
-           }
-           if(event.getUei().equals(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI)) {
-               try {
-                   EventConfigurationManager.reload();
-               } catch (Exception e) {
-                   m_log.error("Could not reload events config because "+e.getMessage(), e);
-               }
-           }       
-       } // end onEvent()
-
-} // end class
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+}
 
