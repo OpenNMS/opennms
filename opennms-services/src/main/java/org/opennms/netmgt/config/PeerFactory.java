@@ -1,10 +1,7 @@
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
 import java.net.InetAddress;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 /*
  * Convenience superclass for NSClientPeerFactory and SnmpPeerFactory, with common code used in both

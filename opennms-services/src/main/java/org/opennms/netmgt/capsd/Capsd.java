@@ -46,7 +46,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
@@ -57,7 +56,6 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.utils.JDBCTemplate;
 
 /**
  * <P>
