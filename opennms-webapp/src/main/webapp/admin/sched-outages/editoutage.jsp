@@ -42,6 +42,7 @@ public void sendOutagesChangedEvent() throws ServletException {
 
 %>
 <%
+NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
 HashMap shortDayNames=new HashMap();
 shortDayNames.put("sunday","Sun");
 shortDayNames.put("monday","Mon");
