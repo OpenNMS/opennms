@@ -36,6 +36,7 @@ public void sendOutagesChangedEvent() throws ServletException {
 
 %>
 <%
+NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
 PollOutagesConfigFactory.init(); //Force a reload (includes init if necessary)
 PollOutagesConfigFactory pollFactory=PollOutagesConfigFactory.getInstance();
 String deleteName=request.getParameter("deleteOutage");
@@ -61,6 +62,7 @@ if(deleteName!=null) {
 	}
 
 	NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(deleteName);	
+
 	
 	pollFactory.saveCurrent();
 	NotifdConfigFactory.getInstance().saveCurrent();
