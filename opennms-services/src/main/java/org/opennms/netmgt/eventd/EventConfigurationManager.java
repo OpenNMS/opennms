@@ -117,6 +117,17 @@ public final class EventConfigurationManager {
     }
 
     /**
+     * Reloads the configuration off disk
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     */
+    public static void reload() throws MarshalException, ValidationException, IOException {
+        //just calls init at the moment because it's safe to do so in this case
+        //is a separate method to match the signature of other config managers in other packages
+        init();
+    }
+    /**
      * This method is used to load the passed configuration into the currently
      * managed configuration instance. Any events that previously existed are
      * cleared.

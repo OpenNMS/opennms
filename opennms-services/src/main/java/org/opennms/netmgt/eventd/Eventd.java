@@ -53,6 +53,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -124,6 +125,10 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     private EventReceiver m_udpReceiver;
 
     /**
+     * Reference to the event processor
+     */
+    private BroadcastEventProcessor m_receiver;
+    /**
      * Contains dotted-decimal representation of the IP address where Eventd is
      * running. Used when eventd broadcasts events.
      */
@@ -156,6 +161,7 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
             log.warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
         }
 
+
     }
 
     protected void onStop() {
@@ -166,7 +172,8 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
         m_tcpReceiver.stop();
         m_udpReceiver.stop();
-
+        m_receiver.close();
+        
         if (log().isDebugEnabled()) {
             log().debug("shutdown on tcp/udp listener threads returned");
         }
@@ -240,7 +247,20 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
         }
 	}
 
-	/**
+    private void createBroadcastEventProcessor(EventIpcManager manager) {
+        try {
+            if (log().isDebugEnabled())
+                log().debug("start: Creating event broadcast event processor");
+
+            m_receiver = new BroadcastEventProcessor(manager);
+        } catch (Throwable t) {
+            if (log().isEnabledFor(Level.FATAL))
+                log().fatal("start: Failed to initialized the broadcast event receiver", t);
+
+            throw new UndeclaredThrowableException(t);
+        }
+    }
+    /**
      * Used to retrieve the local host address. The address of the machine on
      * which Eventd is running.
      * 
@@ -303,6 +323,7 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     
     public void setEventIpcManager(EventIpcManager manager) {
         m_eventIpcManager = manager;
+        this.createBroadcastEventProcessor(manager);
     }
     
     public void setEventDao(EventDao dao) {
