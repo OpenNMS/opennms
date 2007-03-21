@@ -253,6 +253,7 @@ public final class Collectd extends AbstractServiceDaemon implements
         }
     }
 
+    @Override
     protected void onStart() {
         // start the scheduler
         try {
@@ -265,6 +266,7 @@ public final class Collectd extends AbstractServiceDaemon implements
         }
     }
 
+    @Override
     protected void onStop() {
         getScheduler().stop();
         deinstallMessageSelectors();
@@ -272,10 +274,12 @@ public final class Collectd extends AbstractServiceDaemon implements
         setScheduler(null);
     }
 
+    @Override
     protected void onPause() {
         getScheduler().pause();
     }
 
+    @Override
     protected void onResume() {
         getScheduler().resume();
     }
