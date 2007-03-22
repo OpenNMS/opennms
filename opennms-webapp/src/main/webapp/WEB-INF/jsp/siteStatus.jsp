@@ -49,7 +49,6 @@
 <h3>Site outages</h3>
 <div class="boxWrapper">
   <c:url var="outagesLink" value="outage/list.htm">
-    <c:param name="currentOutages" value="true"/>
     <c:param name="building" value="${view.columnValue}"/>
   </c:url>
   <p>
