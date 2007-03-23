@@ -89,7 +89,7 @@ import org.apache.log4j.Category;
  * org.opennms.rrd.queuing.writethreads: (default 2) The number of rrd write
  * threads that process the queue
  * 
- * org.opennms.rrd.queuing.queueCreates: (default true) indicates whether rrd
+ * org.opennms.rrd.queuing.queueCreates: (default false) indicates whether rrd
  * file creates should be queued or processed synchronously
  * 
  * org.opennms.rrd.queuing.maxInsigUpdateSeconds: (default 0) the number of
@@ -125,7 +125,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     private static final boolean QUEUE_CREATES = RrdConfig.getProperty("org.opennms.rrd.queuing.queuecreates", false);
     
-    private static final boolean PRIORITIZE_SIGS = RrdConfig.getProperty("org.opennms.rrd.queuing.prioritizeSignificatUpdates", true);
+    private static final boolean PRIORITIZE_SIGS = RrdConfig.getProperty("org.opennms.rrd.queuing.prioritizeSignificantUpdates", false);
 
     private static final long INSIG_HIGH_WATER_MARK = RrdConfig.getProperty("org.opennms.rrd.queuing.inSigHighWaterMark", 0L);
 
