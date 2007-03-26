@@ -330,7 +330,9 @@ public class JavaMailer {
             throw new JavaMailerException("Java Mailer messaging exception: ", e);
         } finally {
             try {
-                t.close();
+                if (t != null) {
+                    t.close();
+                }
             } catch (MessagingException e1) {
                 throw new JavaMailerException("Java Mailer messaging exception on transport close: ", e1);
             }
