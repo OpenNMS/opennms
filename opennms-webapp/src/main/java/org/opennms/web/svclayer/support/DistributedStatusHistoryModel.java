@@ -31,11 +31,7 @@
 //
 package org.opennms.web.svclayer.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +39,6 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.web.Util;
 import org.opennms.web.graph.RelativeTimePeriod;
 
 public class DistributedStatusHistoryModel {
@@ -82,7 +76,6 @@ public class DistributedStatusHistoryModel {
         m_chosenPeriod = chosenPeriod;
         m_errors = errors;
         
-        initHttpGraphUrls();
     }
 
     public List<OnmsApplication> getApplications() {
@@ -129,59 +122,8 @@ public class DistributedStatusHistoryModel {
         return m_httpGraphUrls;
     }
     
-    // We need to init when we are constructed so lazy loading happens during our transaction
-    private void initHttpGraphUrls() {
-        if (m_chosenMonitor == null) {
-            // nothing to create graphs for
-            return;
-        }
-        
-        Collection<OnmsMonitoredService> services =
-            getChosenApplicationMemberServices();
-        List<OnmsMonitoredService> sortedServices =
-            new ArrayList<OnmsMonitoredService>(services);
-        Collections.sort(sortedServices, new Comparator<OnmsMonitoredService>() {
-            public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
-                int diff;
-                diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
-                if (diff != 0) {
-                    return diff;
-                }
-                
-                diff = o1.getIpAddress().compareTo(o2.getIpAddress());
-                if (diff != 0) {
-                    return diff;
-                }
-                
-                return o1.getServiceName().compareToIgnoreCase(o2.getServiceName());
-            }
-        });
-        
-        Map<OnmsMonitoredService, String> list =
-            new LinkedHashMap<OnmsMonitoredService,String>(services.size());
-        
-        long[] times = getChosenPeriod().getStartAndEndTimes();
-        
-        for (OnmsMonitoredService service : sortedServices) {
-            list.put(service, getHttpGraphUrlForService(service, times));
-        }
-        
+    public void setHttpGraphUrls(Map<OnmsMonitoredService, String> list) {
         m_httpGraphUrls = list;
-    }
-
-    private String getHttpGraphUrlForService(OnmsMonitoredService service,
-            long[] times) {
-        int nodeId = service.getIpInterface().getNode().getId();
-        String resourceString = getChosenMonitor().getId()
-            + "/" + service.getIpAddress();
-
-        String resourceId = OnmsResource.createResourceId("node", Integer.toString(nodeId),
-                                                          "distributedStatus", resourceString);
-        return "graph/graph.png"
-            + "?report=" + service.getServiceName().toLowerCase()
-            + "&resourceId=" + Util.encode(resourceId)
-            + "&start=" + times[0]
-            + "&end=" + times[1];
     }
     
 }
