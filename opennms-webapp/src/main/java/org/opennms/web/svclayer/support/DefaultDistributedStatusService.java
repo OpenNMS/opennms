@@ -40,22 +40,28 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ApplicationDao;
+import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.web.Util;
 import org.opennms.web.command.DistributedStatusDetailsCommand;
@@ -72,6 +78,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     private MonitoredServiceDao m_monitoredServiceDao;
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
+    private ResourceDao m_resourceDao;
+    private GraphDao m_graphDao;
     private boolean m_layoutApplicationsVertically = false;
 
     public enum Severity {
@@ -657,7 +665,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
 
         Collection<OnmsMonitoredService> applicationMemberServices = m_monitoredServiceDao.findByApplication(application);
-        return new DistributedStatusHistoryModel(locationDefinitions,
+        DistributedStatusHistoryModel model = new DistributedStatusHistoryModel(locationDefinitions,
                                                  sortedApplications,
                                                  sortedMonitors,
                                                  periods,
@@ -667,6 +675,72 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                                                  monitor,
                                                  period,
                                                  errors);
+        initializeGraphUrls(model);
+        return model;
+    }
+
+    private void initializeGraphUrls(DistributedStatusHistoryModel model) {
+        if (model.getChosenMonitor() != null) {
+        
+            Collection<OnmsMonitoredService> services =
+                model.getChosenApplicationMemberServices();
+            List<OnmsMonitoredService> sortedServices =
+                new ArrayList<OnmsMonitoredService>(services);
+            Collections.sort(sortedServices, new Comparator<OnmsMonitoredService>() {
+                public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
+                    int diff;
+                    diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
+                    if (diff != 0) {
+                        return diff;
+                    }
+        
+                    diff = o1.getIpAddress().compareTo(o2.getIpAddress());
+                    if (diff != 0) {
+                        return diff;
+                    }
+        
+                    return o1.getServiceName().compareToIgnoreCase(o2.getServiceName());
+                }
+            });
+        
+            Map<OnmsMonitoredService, String> list =
+                new LinkedHashMap<OnmsMonitoredService,String>(services.size());
+        
+            long[] times = model.getChosenPeriod().getStartAndEndTimes();
+        
+            for (OnmsMonitoredService service : sortedServices) {
+                list.put(service, getGraphUrlForService(model.getChosenMonitor(), service, times));
+            }
+        
+            model.setHttpGraphUrls(list);
+
+        }
+    }
+
+    private String getGraphUrlForService(OnmsLocationMonitor locMon, OnmsMonitoredService service, long[] times) {
+//        int nodeId = service.getIpInterface().getNode().getId();
+//        String resourceString = locMon.getId()
+//            + "/" + service.getIpAddress();
+//        
+//        String resourceId = OnmsResource.createResourceId("node", Integer.toString(nodeId),
+//                                                          "distributedStatus", resourceString);
+        
+        OnmsResource resource = m_resourceDao.getResourceForIpInterface(service.getIpInterface(), locMon);
+        if (resource == null) {
+            return null;
+        }
+        
+        PrefabGraph[] prefabGraphs = m_graphDao.getPrefabGraphsForResource(resource);
+        for (PrefabGraph graph : prefabGraphs) {
+            if (graph.getName().equalsIgnoreCase(service.getServiceName())) {
+                return "graph/graph.png"
+                + "?report=" + Util.encode(graph.getName())
+                + "&resourceId=" + Util.encode(resource.getId())
+                + "&start=" + times[0] + "&end=" + times[1];
+            }
+        }
+        
+        return null;
     }
 
     public void setLayoutApplicationsVertically(boolean layoutApplicationsVertically) {
@@ -681,5 +755,23 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao cannot be null");
         Assert.state(m_locationMonitorDao != null, "property locationMonitorDao cannot be null");
         Assert.state(m_applicationDao != null, "property applicationDao cannot be null");
+        Assert.state(m_resourceDao != null, "property resourceDao cannot be null");
+        Assert.state(m_graphDao != null, "property graphDao cannot be null");
+    }
+
+    public ResourceDao getResourceDao() {
+        return m_resourceDao;
+    }
+
+    public void setResourceDao(ResourceDao resourceDao) {
+        m_resourceDao = resourceDao;
+    }
+
+    public GraphDao getGraphDao() {
+        return m_graphDao;
+    }
+
+    public void setGraphDao(GraphDao graphDao) {
+        m_graphDao = graphDao;
     }
 }

@@ -48,8 +48,10 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.dao.ApplicationDao;
+import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
@@ -57,8 +59,11 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -77,6 +82,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private MonitoredServiceDao m_monitoredServiceDao = m_easyMockUtils.createMock(MonitoredServiceDao.class);
     private LocationMonitorDao m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class); 
     private ApplicationDao m_applicationDao = m_easyMockUtils.createMock(ApplicationDao.class);
+    private ResourceDao m_resourceDao = m_easyMockUtils.createMock(ResourceDao.class);
+    private GraphDao m_graphDao = m_easyMockUtils.createMock(GraphDao.class);
 
     private OnmsMonitoringLocationDefinition m_locationDefinition1;
     private OnmsMonitoringLocationDefinition m_locationDefinition2;
@@ -107,6 +114,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_service.setMonitoredServiceDao(m_monitoredServiceDao);
         m_service.setLocationMonitorDao(m_locationMonitorDao);
         m_service.setApplicationDao(m_applicationDao);
+        m_service.setResourceDao(m_resourceDao);
+        m_service.setGraphDao(m_graphDao);
         m_service.afterPropertiesSet();
         
         m_locationDefinition1 = new OnmsMonitoringLocationDefinition("Raleigh", "raleigh", "OpenNMS NC");
@@ -732,6 +741,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(2);
         
+        expectResourceDaoCall(m_locationMonitor2_1, m_applicationServices2);
+        
         m_easyMockUtils.replayAll();
         DistributedStatusHistoryModel summary =  m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
         m_easyMockUtils.verifyAll();
@@ -758,6 +769,20 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         // And verify that they are in the lists in the right place
         assertEquals("summary chosen location matches list", summary.getLocations().get(1), summary.getChosenLocation());
         assertEquals("summary chosen application matches list", summary.getApplications().get(1), summary.getChosenApplication());
+        
+        assertEquals("graph URL map size", 1, summary.getHttpGraphUrls().size());
+        assertNotNull("graph 0 URL should not be null", summary.getHttpGraphUrls().entrySet().iterator().next().getValue());
+    }
+
+    private void expectResourceDaoCall(OnmsLocationMonitor monitor, Collection<OnmsMonitoredService> services) {
+        for (OnmsMonitoredService service : services) {
+            OnmsResource resource = new OnmsResource("foo", "even more foo", new BogusResourceType(), null);
+            expect(m_resourceDao.getResourceForIpInterface(service.getIpInterface(), monitor)).andReturn(resource);
+            
+            PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
+            PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
+            expect(m_graphDao.getPrefabGraphsForResource(resource)).andReturn(new PrefabGraph[] { httpGraph, httpsGraph });
+        }
     }
     
     public void testWrongLocationDetails() {
@@ -791,6 +816,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         String timeSpan = "";
         
         expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(2);
+        
+        expectResourceDaoCall(m_locationMonitor1_1, m_applicationServices2);
         
         m_easyMockUtils.replayAll();
         DistributedStatusHistoryModel summary = m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
@@ -856,6 +883,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         String timeSpan = "";
         
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1).times(2);
+
+        expectResourceDaoCall(m_locationMonitor2_1, m_applicationServices1);
 
         m_easyMockUtils.replayAll();
         DistributedStatusHistoryModel summary = m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
@@ -969,6 +998,41 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         // This will never be reached due to the above fail()
         return null;
+    }
+    
+    public class BogusResourceType implements OnmsResourceType {
+
+        public String getLabel() {
+            return "even more foo";
+        }
+
+        public String getLinkForResource(OnmsResource resource) {
+            return null;
+        }
+
+        public String getName() {
+            return "nothing but foo";
+        }
+
+        public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
+            return "we don't need no stinkin' relative paths!";
+        }
+
+        public List<OnmsResource> getResourcesForDomain(String domain) {
+            return null;
+        }
+
+        public List<OnmsResource> getResourcesForNode(int nodeId) {
+            return null;
+        }
+
+        public boolean isResourceTypeOnDomain(String domain) {
+            return false;
+        }
+
+        public boolean isResourceTypeOnNode(int nodeId) {
+            return false;
+        }
     }
 
 }
