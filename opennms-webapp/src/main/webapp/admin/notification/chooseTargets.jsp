@@ -300,9 +300,9 @@ public Map getUsers(Collection targets) throws ServletException {
         Map<String, Boolean> allUsers = null;
 
         try {
-            allUsers = new TreeMap<String, Boolean>(new Comparator<String>() {
-                public int compare(String o1, String o2) {
-                    return o1.compareToIgnoreCase(o2);
+            allUsers = new TreeMap<String, Boolean>(new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    return ((String)o1).compareToIgnoreCase((String)o2);
                 }
 
             });
