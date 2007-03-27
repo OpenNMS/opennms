@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -485,21 +486,10 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public OnmsResource getResourceForNode(OnmsNode node) {
         Assert.notNull(node, "node argument must not be null");
         
-        OnmsResource resource = m_nodeResourceType.createChildResource(node);
-//        if (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0) {
-//            return resource;
-//        } else {
-//            return null;
-//        }
-        return resource;
+        return m_nodeResourceType.createChildResource(node);
     }
-    
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {
-        Assert.notNull(ipInterface, "ipInterface argument must not be null");
-        
-        OnmsNode node = ipInterface.getNode();
-        Assert.notNull(node, "getNode() on ipInterface must not return null");
-        
+
+    private OnmsResource getChildResourceForNode(OnmsNode node, String resourceTypeName, String resourceName) {
         OnmsResource nodeResource = getResourceForNode(node);
         if (nodeResource == null) {
             return null;
@@ -508,11 +498,11 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         List<OnmsResource> childResources = nodeResource.getChildResources();
 
         for (OnmsResource childResource : childResources) {
-            if (!"responseTime".equals(childResource.getResourceType().getName())) {
+            if (!resourceTypeName.equals(childResource.getResourceType().getName())) {
                 continue;
             }
             
-            if (ipInterface.getIpAddress().equals(childResource.getName())) {
+            if (resourceName.equals(childResource.getName())) {
                 return childResource;
             }
         }
@@ -520,11 +510,26 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return null;
     }
 
+    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {
+        Assert.notNull(ipInterface, "ipInterface argument must not be null");
+        Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
+        
+        return getChildResourceForNode(ipInterface.getNode(), "responseTime", ipInterface.getIpAddress());
+    }
+
+    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locMon) {
+        Assert.notNull(ipInterface, "ipInterface argument must not be null");
+        Assert.notNull(locMon, "locMon argument must not be null");
+        Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
+        
+        return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + "/" + ipInterface.getIpAddress());
+    }
+    
     public List<OnmsResource> findTopLevelResources() {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         resources.addAll(findNodeResources());
         resources.addAll(findDomainResources());
         return resources;
     }
-
+    
 }
