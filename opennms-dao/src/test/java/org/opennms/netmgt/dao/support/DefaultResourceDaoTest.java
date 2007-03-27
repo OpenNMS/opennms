@@ -56,6 +56,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -492,6 +493,36 @@ public class DefaultResourceDaoTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    public void testGetResourceForIpInterfaceWithLocationMonitor() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        node.addIpInterface(ip);
+
+        OnmsLocationMonitor locMon = new OnmsLocationMonitor();
+        locMon.setId(12345);
+
+        // Create distributed/9850/209.61.128.9
+        File response = m_fileAnticipator.tempDir("response");
+        File distributed = m_fileAnticipator.tempDir(response, "distributed");
+        File locMonDir = m_fileAnticipator.tempDir(distributed, locMon.getId().toString());
+        File ipDir = m_fileAnticipator.tempDir(locMonDir, ip.getIpAddress());
+        m_fileAnticipator.tempFile(ipDir, "http" + RrdUtils.getExtension());
+        
+        ArrayList<LocationMonitorIpInterface> locationMonitorInterfaces = new ArrayList<LocationMonitorIpInterface>();
+        locationMonitorInterfaces.add(new LocationMonitorIpInterface(locMon, ip));
+
+        expect(m_nodeDao.get(node.getId())).andReturn(ip.getNode()).times(1);
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(locationMonitorInterfaces).times(2);
+
+        m_easyMockUtils.replayAll();
+        OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip, locMon);
+        m_easyMockUtils.verifyAll();
+        
+        assertNotNull("Resource should not be null", resource);
+    }
+
     public void testGetResourceForNodeWithData() throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(1);
