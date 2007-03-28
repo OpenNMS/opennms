@@ -49,7 +49,8 @@ public class DistPollerDaoTest extends BaseDaoTestCase {
          * Note: I'm using the opennms-database.xml file in target/classes/etc
          * so that it has been filtered first.
          */
-        DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+
+        DataSourceFactory.setInstance(new C3P0ConnectionFactory("src/test/opennms-home/opennms-database.xml"));
     }
 
 	public void testCreate() {
