@@ -50,7 +50,7 @@ public class DistPollerDaoTest extends BaseDaoTestCase {
          * so that it has been filtered first.
          */
 
-        DataSourceFactory.setInstance(new C3P0ConnectionFactory("src/test/opennms-home/opennms-database.xml"));
+        DataSourceFactory.setInstance(new C3P0ConnectionFactory("src/test/opennms-home/etc/opennms-database.xml"));
     }
 
 	public void testCreate() {
