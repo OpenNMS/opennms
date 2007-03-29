@@ -8,7 +8,7 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Copyright (C) 2006 The OpenNMS Group, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,10 +44,12 @@ import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
 import org.opennms.web.Util;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.navigate.NavBarEntry;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-public class NavBarController extends AbstractController {
+public class NavBarController extends AbstractController implements InitializingBean {
 
     private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private LocationMonitorDao m_locationMonitorDao;
@@ -55,7 +57,6 @@ public class NavBarController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        assertPropertiesSet();
         return new ModelAndView("navBar", "model", createNavBarModel(request));
     }
     
@@ -67,17 +68,10 @@ public class NavBarController extends AbstractController {
         m_locationMonitorDao = dao;
     }
     
-    private void assertPropertiesSet() {
-        if (m_surveillanceViewConfigDao == null) {
-            throw new IllegalStateException("surveillanceViewConfigDao "
-                                            + "property has not been set");
-        }
-        if (m_locationMonitorDao == null) {
-            throw new IllegalStateException("locationMonitorDao "
-                                            + "property has not been set");
-        }
+    public void afterPropertiesSet() {
+        Assert.state(m_surveillanceViewConfigDao != null, "surveillanceViewConfigDao property has not been set");
+        Assert.state(m_locationMonitorDao != null, "locationMonitorDao property has not been set");
     }
-    
 
     private NavBarModel createNavBarModel(HttpServletRequest request) {
         String mapEnableLocation = Vault.getHomeDir() + File.separator
