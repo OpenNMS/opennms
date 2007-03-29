@@ -116,6 +116,9 @@ ul.error li {
 	line-height:1.6em;
 	color: #F00;
 }
+span.error { 
+	color: #F00;
+}
 div.boxWrapper {
 	background-color: #FFF;
 	border: 1px solid #999;
