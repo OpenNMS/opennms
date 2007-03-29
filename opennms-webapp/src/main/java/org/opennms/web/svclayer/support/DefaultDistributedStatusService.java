@@ -778,9 +778,23 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
     
 
+    /**
+     * Comparator for ServiceGraph objects. 
+     * Orders objects with no errors and then those with errors and orders within
+     * each of these groups by the service ordering (see MonitoredServiceComparator).
+     * 
+     * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+     */
     public static class ServiceGraphComparator implements Comparator<ServiceGraph> {
         public int compare(ServiceGraph o1, ServiceGraph o2) {
-            return MONITORED_SERVICE_COMPARATOR.compare(o1.getService(), o2.getService());
+            if ((o1.getErrors().length == 0 && o2.getErrors().length == 0)
+                    || (o1.getErrors().length > 0 && o2.getErrors().length > 0)) {
+                return MONITORED_SERVICE_COMPARATOR.compare(o1.getService(), o2.getService());
+            } else if (o1.getErrors().length > 0) {
+                return 1;
+            } else {
+                return -1;
+            }
         }
     }
 }
