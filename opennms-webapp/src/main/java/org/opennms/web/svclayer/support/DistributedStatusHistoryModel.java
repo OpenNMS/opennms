@@ -33,7 +33,7 @@ package org.opennms.web.svclayer.support;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedSet;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
@@ -52,7 +52,7 @@ public class DistributedStatusHistoryModel {
     private RelativeTimePeriod m_chosenPeriod;
     private List<OnmsLocationMonitor> m_monitors;
     private OnmsLocationMonitor m_chosenMonitor;
-    private Map<OnmsMonitoredService, String> m_httpGraphUrls;
+    private SortedSet<ServiceGraph> m_serviceGraphs;
     
     public DistributedStatusHistoryModel(
             List<OnmsMonitoringLocationDefinition> locations,
@@ -118,12 +118,41 @@ public class DistributedStatusHistoryModel {
         return m_monitors;
     }
     
-    public Map<OnmsMonitoredService, String> getHttpGraphUrls() {
-        return m_httpGraphUrls;
+    public SortedSet<ServiceGraph >getServiceGraphs() {
+        return m_serviceGraphs;
     }
     
-    public void setHttpGraphUrls(Map<OnmsMonitoredService, String> list) {
-        m_httpGraphUrls = list;
+    public void setServiceGraphs(SortedSet<ServiceGraph> serviceGraphs) {
+        m_serviceGraphs = serviceGraphs;
     }
     
+    public static class ServiceGraph {
+        private OnmsMonitoredService m_service;
+        private String m_url;
+        private String[] m_errors;
+        
+        public ServiceGraph(OnmsMonitoredService service, String url) {
+            m_service = service;
+            m_url = url;
+            m_errors = new String[0];
+        }
+        
+        public ServiceGraph(OnmsMonitoredService service, String[] errors) {
+            m_service = service;
+            m_url = null;
+            m_errors = errors;
+        }
+        
+        public String[] getErrors() {
+            return m_errors;
+        }
+        
+        public OnmsMonitoredService getService() {
+            return m_service;
+        }
+        
+        public String getUrl() {
+            return m_url;
+        }
+    }
 }

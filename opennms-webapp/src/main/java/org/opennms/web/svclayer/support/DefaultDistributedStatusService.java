@@ -40,11 +40,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -69,7 +69,9 @@ import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
+import org.opennms.web.svclayer.support.DistributedStatusHistoryModel.ServiceGraph;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -81,6 +83,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
     private boolean m_layoutApplicationsVertically = false;
+    
+    private static final MonitoredServiceComparator MONITORED_SERVICE_COMPARATOR = new MonitoredServiceComparator(); 
+    private static final ServiceGraphComparator SERVICE_GRAPH_COMPARATOR = new ServiceGraphComparator(); 
 
     public enum Severity {
         INDETERMINATE("Indeterminate"),
@@ -678,69 +683,49 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         initializeGraphUrls(model);
         return model;
     }
-
+    
     private void initializeGraphUrls(DistributedStatusHistoryModel model) {
         if (model.getChosenMonitor() != null) {
         
-            Collection<OnmsMonitoredService> services =
-                model.getChosenApplicationMemberServices();
-            List<OnmsMonitoredService> sortedServices =
-                new ArrayList<OnmsMonitoredService>(services);
-            Collections.sort(sortedServices, new Comparator<OnmsMonitoredService>() {
-                public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
-                    int diff;
-                    diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
-                    if (diff != 0) {
-                        return diff;
-                    }
-        
-                    diff = o1.getIpAddress().compareTo(o2.getIpAddress());
-                    if (diff != 0) {
-                        return diff;
-                    }
-        
-                    return o1.getServiceName().compareToIgnoreCase(o2.getServiceName());
-                }
-            });
-        
-            Map<OnmsMonitoredService, String> list =
-                new LinkedHashMap<OnmsMonitoredService,String>(services.size());
+            Collection<OnmsMonitoredService> services = model.getChosenApplicationMemberServices();
         
             long[] times = model.getChosenPeriod().getStartAndEndTimes();
         
-            for (OnmsMonitoredService service : sortedServices) {
-                list.put(service, getGraphUrlForService(model.getChosenMonitor(), service, times));
+            SortedSet<ServiceGraph> serviceGraphs = new TreeSet<ServiceGraph>(SERVICE_GRAPH_COMPARATOR);
+            for (OnmsMonitoredService service : services) {
+                serviceGraphs.add(getServiceGraphForService(model.getChosenMonitor(), service, times));
             }
         
-            model.setHttpGraphUrls(list);
+            model.setServiceGraphs(serviceGraphs);
 
         }
     }
 
-    private String getGraphUrlForService(OnmsLocationMonitor locMon, OnmsMonitoredService service, long[] times) {
-//        int nodeId = service.getIpInterface().getNode().getId();
-//        String resourceString = locMon.getId()
-//            + "/" + service.getIpAddress();
-//        
-//        String resourceId = OnmsResource.createResourceId("node", Integer.toString(nodeId),
-//                                                          "distributedStatus", resourceString);
-        
+    private ServiceGraph getServiceGraphForService(OnmsLocationMonitor locMon, OnmsMonitoredService service, long[] times) {
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(service.getIpInterface(), locMon);
         if (resource == null) {
-            return null;
+            return new ServiceGraph(service, new String[] { "Resource could not be found.  Has any response time data been collected for this service from this location monitor?" });
+        }
+        
+        String graphName = service.getServiceName().toLowerCase();
+        try {
+            m_graphDao.getPrefabGraph(graphName);
+        } catch (ObjectRetrievalFailureException e) {
+            return new ServiceGraph(service, new String[] { "Graph definition could not be found for '" + graphName + "'.  A graph definition needs to be created for this service." });
         }
         
         PrefabGraph[] prefabGraphs = m_graphDao.getPrefabGraphsForResource(resource);
         for (PrefabGraph graph : prefabGraphs) {
-            if (graph.getName().equalsIgnoreCase(service.getServiceName())) {
-                return "graph/graph.png"
-                + "?report=" + Util.encode(graph.getName())
-                + "&resourceId=" + Util.encode(resource.getId())
-                + "&start=" + times[0] + "&end=" + times[1];
+            if (graph.getName().equals(graphName)) {
+                String url = "graph/graph.png"
+                    + "?report=" + Util.encode(graph.getName())
+                    + "&resourceId=" + Util.encode(resource.getId())
+                    + "&start=" + times[0] + "&end=" + times[1];
+                return new ServiceGraph(service, url);
             }
         }
         
-        return null;
+        return new ServiceGraph(service, new String[] { "Graph could not be found for '" + graphName + "' on this resource.  Has any response time data been collected for this service from this location monitor and is the graph definition correct?" });
     }
 
     public void setLayoutApplicationsVertically(boolean layoutApplicationsVertically) {
@@ -773,5 +758,29 @@ public class DefaultDistributedStatusService implements DistributedStatusService
 
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
+    }
+    
+    public static class MonitoredServiceComparator implements Comparator<OnmsMonitoredService> {
+        public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
+            int diff;
+            diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
+            if (diff != 0) {
+                return diff;
+            }
+
+            diff = o1.getIpAddress().compareTo(o2.getIpAddress());
+            if (diff != 0) {
+                return diff;
+            }
+
+            return o1.getServiceName().compareToIgnoreCase(o2.getServiceName());
+        }
+    }
+    
+
+    public static class ServiceGraphComparator implements Comparator<ServiceGraph> {
+        public int compare(ServiceGraph o1, ServiceGraph o2) {
+            return MONITORED_SERVICE_COMPARATOR.compare(o1.getService(), o2.getService());
+        }
     }
 }
