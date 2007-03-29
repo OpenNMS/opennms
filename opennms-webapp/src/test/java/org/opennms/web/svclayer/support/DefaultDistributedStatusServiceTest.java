@@ -770,19 +770,23 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         assertEquals("summary chosen location matches list", summary.getLocations().get(1), summary.getChosenLocation());
         assertEquals("summary chosen application matches list", summary.getApplications().get(1), summary.getChosenApplication());
         
-        assertEquals("graph URL map size", 1, summary.getHttpGraphUrls().size());
-        assertNotNull("graph 0 URL should not be null", summary.getHttpGraphUrls().entrySet().iterator().next().getValue());
+        assertEquals("graph URL map size", 1, summary.getServiceGraphs().size());
+        assertNotNull("graph 0 URL should not be null", summary.getServiceGraphs().iterator().next().getUrl());
     }
 
     private void expectResourceDaoCall(OnmsLocationMonitor monitor, Collection<OnmsMonitoredService> services) {
+        PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
+        PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
+        
         for (OnmsMonitoredService service : services) {
             OnmsResource resource = new OnmsResource("foo", "even more foo", new BogusResourceType(), null);
             expect(m_resourceDao.getResourceForIpInterface(service.getIpInterface(), monitor)).andReturn(resource);
             
-            PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
-            PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
             expect(m_graphDao.getPrefabGraphsForResource(resource)).andReturn(new PrefabGraph[] { httpGraph, httpsGraph });
         }
+        
+        expect(m_graphDao.getPrefabGraph(httpGraph.getName())).andReturn(httpGraph).anyTimes();
+        expect(m_graphDao.getPrefabGraph(httpsGraph.getName())).andReturn(httpsGraph).atLeastOnce();
     }
     
     public void testWrongLocationDetails() {
