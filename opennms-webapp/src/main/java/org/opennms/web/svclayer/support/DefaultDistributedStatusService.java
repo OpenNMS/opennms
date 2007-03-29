@@ -58,7 +58,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -84,8 +83,15 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     private GraphDao m_graphDao;
     private boolean m_layoutApplicationsVertically = false;
     
-    private static final MonitoredServiceComparator MONITORED_SERVICE_COMPARATOR = new MonitoredServiceComparator(); 
-    private static final ServiceGraphComparator SERVICE_GRAPH_COMPARATOR = new ServiceGraphComparator(); 
+    private static final MonitoredServiceComparator MONITORED_SERVICE_COMPARATOR = new MonitoredServiceComparator();
+    private static final ServiceGraphComparator SERVICE_GRAPH_COMPARATOR = new ServiceGraphComparator();
+    private static final LocationStatusComparator LOCATION_STATUS_COMPARATOR = new LocationStatusComparator();
+    private static final PollStatus NO_RECORDED_STATUS;
+    
+    static {
+        NO_RECORDED_STATUS = PollStatus.unknown("No status recorded for this service from this location");
+        NO_RECORDED_STATUS.setTimestamp(null);
+    }
 
     public enum Severity {
         INDETERMINATE("Indeterminate"),
@@ -101,6 +107,56 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         public String getStyle() {
             return m_style;
+        }
+    }
+    
+    public static class MonitoredServiceComparator implements Comparator<OnmsMonitoredService> {
+        public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
+            int diff;
+            diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
+            if (diff != 0) {
+                return diff;
+            }
+
+            diff = o1.getIpAddress().compareTo(o2.getIpAddress());
+            if (diff != 0) {
+                return diff;
+            }
+
+            return o1.getServiceName().compareToIgnoreCase(o2.getServiceName());
+        }
+    }
+
+    /**
+     * Comparator for ServiceGraph objects. 
+     * Orders objects with no errors and then those with errors and orders within
+     * each of these groups by the service ordering (see MonitoredServiceComparator).
+     * 
+     * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+     */
+    public static class ServiceGraphComparator implements Comparator<ServiceGraph> {
+        public int compare(ServiceGraph o1, ServiceGraph o2) {
+            if ((o1.getErrors().length == 0 && o2.getErrors().length == 0)
+                    || (o1.getErrors().length > 0 && o2.getErrors().length > 0)) {
+                return MONITORED_SERVICE_COMPARATOR.compare(o1.getService(), o2.getService());
+            } else if (o1.getErrors().length > 0) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
+    
+    public static class LocationStatusComparator implements Comparator<OnmsLocationSpecificStatus> {
+        public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
+            if ((o1.getPollResult().isUnknown() && o2.getPollResult().isUnknown())
+                    || (!o1.getPollResult().isUnknown() && !o2.getPollResult().isUnknown())) {
+                return o1.getMonitoredService().compareTo(o2.getMonitoredService());
+            } else if (o1.getPollResult().isUnknown()) {
+                return 1;
+            } else {
+                return -1;
+            }
         }
     }
     
@@ -120,8 +176,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         table.setTitle("Distributed poller view for " + command.getApplication() + " from " + command.getLocation() + " location");
 
-        List<OnmsLocationSpecificStatus> status =
-            findLocationSpecificStatus(command, table.getErrors());
+        List<OnmsLocationSpecificStatus> status = findLocationSpecificStatus(command, table.getErrors());
         
         // No data was found, and an error was probably added, so just return
         if (status == null) {
@@ -135,13 +190,13 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         table.addColumn("Response", "");
         table.addColumn("Last Update", "");
         
-        for (OnmsLocationSpecificStatus s : status) {
-            OnmsNode node = s.getMonitoredService().getIpInterface().getNode();
-            
+        SortedSet<OnmsLocationSpecificStatus> sortedStatus = new TreeSet<OnmsLocationSpecificStatus>(LOCATION_STATUS_COMPARATOR);
+        sortedStatus.addAll(status);        
+        for (OnmsLocationSpecificStatus s : sortedStatus) {
             table.newRow();
-            table.addCell(node.getLabel(), 
+            table.addCell(s.getMonitoredService().getIpInterface().getNode().getLabel(), 
                           getStyleForPollResult(s.getPollResult()),
-                          "element/node.jsp?node=" + node.getId());
+                          "element/node.jsp?node=" + s.getMonitoredService().getIpInterface().getNode().getId());
             table.addCell(s.getLocationMonitor().getDefinitionName() + "-"
                           + s.getLocationMonitor().getId(),
                           "",
@@ -151,21 +206,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                           + s.getMonitoredService().getId());
             table.addCell(s.getPollResult().getStatusName(),
                           "bright");
-            
-            String responseValue;
-            if (s.getPollResult().isAvailable()) {
-                long responseTime = s.getPollResult().getResponseTime();
-                if (responseTime >= 0) {
-                    responseValue = responseTime + "ms"; 
-                } else {
-                    responseValue = "";
-                }
-            } else {
-                responseValue = s.getPollResult().getReason(); 
-            }
-            
-            table.addCell(responseValue, "");
-            table.addCell(new Date(s.getPollResult().getTimestamp().getTime()), "");
+            table.addCell(getResponseText(s.getPollResult()), "");
+            table.addCell(reDateify(s.getPollResult().getTimestamp()), "");
         }
         
         return table;
@@ -176,22 +218,48 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             return "Normal";
         } else if (status.isUnresponsive()) {
             return "Warning";
+        } else if (status.isUnknown()) {
+            return "Indeterminate";
         } else {
             return "Critical";
         }
     }
 
+    private String getResponseText(PollStatus status) {
+        if (status.isAvailable()) {
+            if (status.getResponseTime() >= 0) {
+                return status.getResponseTime() + "ms"; 
+            } else {
+                return "";
+            }
+        } else {
+            return status.getReason(); 
+        }
+    }
+    
+    /**
+     * Convert any Date into a fresh, brand-new java.util.Date.
+     * We use this so that we get reliable results from Date.toString(),
+     * since things like java.sql.Date have a different toString() format.
+     * 
+     * @param date input date
+     * @return brand spankin' new java.util.Date
+     */
+    private Date reDateify(Date date) {
+        if (date == null) {
+            return null;
+        } else {
+            return new Date(date.getTime());
+        }
+    }
+
+
     protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(DistributedStatusDetailsCommand command, Errors errors) {
         String locationName = command.getLocation();
         String applicationName = command.getApplication();
 
-        if (locationName == null) {
-            throw new IllegalArgumentException("location cannot be null");
-        }
-        
-        if (applicationName == null) {
-            throw new IllegalArgumentException("application cannot be null");
-        }
+        Assert.notNull(locationName, "location cannot be null");
+        Assert.notNull(applicationName, "application cannot be null");
         
         OnmsMonitoringLocationDefinition location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
         if (location == null) {
@@ -230,7 +298,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             for (OnmsLocationMonitor locationMonitor : sortedLocationMonitors) {
                 OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
                 if (currentStatus == null) {
-                    status.add(new OnmsLocationSpecificStatus(locationMonitor, service, PollStatus.unknown("No status recorded for this service from this location")));
+                    status.add(new OnmsLocationSpecificStatus(locationMonitor, service, NO_RECORDED_STATUS));
                 } else {
                     status.add(currentStatus);
                 }
@@ -238,21 +306,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
 
         return status;
-    }
-
-    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
-        m_monitoredServiceDao = monitoredServiceDao;
-        
-    }
-
-    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
-        
-    }
-    
-    public void setApplicationDao(ApplicationDao applicationDao) {
-        m_applicationDao = applicationDao;
-        
     }
 
     public SimpleWebTable createFacilityStatusTable(Date start, Date end) {
@@ -453,7 +506,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         for (PollStatus pollStatus : pollStatuses) {
             if (pollStatus.isAvailable()) {
                 goodStatuses++;
-            } else if (pollStatus.getStatusCode() != PollStatus.SERVICE_UNKNOWN) {
+            } else if (!pollStatus.isUnknown()) {
                 badStatuses++;
             }
         }
@@ -732,20 +785,28 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return new ServiceGraph(service, new String[] { "Graph could not be found for '" + graphName + "' on this resource.  Has any response time data been collected for this service from this location monitor and is the graph definition correct?" });
     }
 
-    public void setLayoutApplicationsVertically(boolean layoutApplicationsVertically) {
-        m_layoutApplicationsVertically = layoutApplicationsVertically;
-    }
-    
-    public boolean isLayoutApplicationsVertically() {
-        return m_layoutApplicationsVertically;
-    }
-
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao cannot be null");
         Assert.state(m_locationMonitorDao != null, "property locationMonitorDao cannot be null");
         Assert.state(m_applicationDao != null, "property applicationDao cannot be null");
         Assert.state(m_resourceDao != null, "property resourceDao cannot be null");
         Assert.state(m_graphDao != null, "property graphDao cannot be null");
+    }
+    
+
+    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+        m_monitoredServiceDao = monitoredServiceDao;
+        
+    }
+
+    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
+        m_locationMonitorDao = locationMonitorDao;
+        
+    }
+    
+    public void setApplicationDao(ApplicationDao applicationDao) {
+        m_applicationDao = applicationDao;
+        
     }
 
     public ResourceDao getResourceDao() {
@@ -764,41 +825,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         m_graphDao = graphDao;
     }
     
-    public static class MonitoredServiceComparator implements Comparator<OnmsMonitoredService> {
-        public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
-            int diff;
-            diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
-            if (diff != 0) {
-                return diff;
-            }
-
-            diff = o1.getIpAddress().compareTo(o2.getIpAddress());
-            if (diff != 0) {
-                return diff;
-            }
-
-            return o1.getServiceName().compareToIgnoreCase(o2.getServiceName());
-        }
+    public void setLayoutApplicationsVertically(boolean layoutApplicationsVertically) {
+        m_layoutApplicationsVertically = layoutApplicationsVertically;
     }
     
-
-    /**
-     * Comparator for ServiceGraph objects. 
-     * Orders objects with no errors and then those with errors and orders within
-     * each of these groups by the service ordering (see MonitoredServiceComparator).
-     * 
-     * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
-     */
-    public static class ServiceGraphComparator implements Comparator<ServiceGraph> {
-        public int compare(ServiceGraph o1, ServiceGraph o2) {
-            if ((o1.getErrors().length == 0 && o2.getErrors().length == 0)
-                    || (o1.getErrors().length > 0 && o2.getErrors().length > 0)) {
-                return MONITORED_SERVICE_COMPARATOR.compare(o1.getService(), o2.getService());
-            } else if (o1.getErrors().length > 0) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
+    public boolean isLayoutApplicationsVertically() {
+        return m_layoutApplicationsVertically;
     }
+
 }
