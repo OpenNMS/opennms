@@ -224,6 +224,11 @@ public class PollStatus implements Serializable {
         return this.m_statusCode == SERVICE_UNAVAILABLE;
     }
 
+    @Transient
+    public boolean isUnknown() {
+        return this.m_statusCode == SERVICE_UNKNOWN;
+    }
+
     public String toString() {
         return getStatusName();
     }
