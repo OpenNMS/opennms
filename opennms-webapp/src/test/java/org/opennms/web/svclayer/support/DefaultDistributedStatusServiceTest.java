@@ -305,8 +305,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1);
         
         m_easyMockUtils.replayAll();
-        SimpleWebTable table =
-            m_service.createStatusTable(command, errors);
+        SimpleWebTable table = m_service.createStatusTable(command, errors);
         
         m_easyMockUtils.verifyAll();
         
@@ -329,7 +328,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell(IGNORE_MATCH, "");
         
         expectedTable.newRow();
-        expectedTable.addCell("Node 1", "Critical", "element/node.jsp?node=1");
+        expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
         expectedTable.addCell("Raleigh-1", "", "distributed/locationMonitorDetails.htm?monitorId=1");
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
@@ -339,6 +338,61 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         assertTableEquals(expectedTable, table);
     }
 
+
+    public void testCreateStatusPutUnreportedServicesLast() {
+        DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
+        Errors errors = new BindException(command, "command");
+
+        command.setLocation(m_locationDefinition1.getName());
+        command.setApplication(m_application1.getName());
+
+        expect(m_applicationDao.findByName("Application 1")).andReturn(m_application1);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
+        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
+
+        OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
+        OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
+
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpService)).andReturn(null);
+        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpsService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1_1, httpsService, PollStatus.available()));
+        
+        expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1);
+        
+        m_easyMockUtils.replayAll();
+        SimpleWebTable table = m_service.createStatusTable(command, errors);
+        
+        m_easyMockUtils.verifyAll();
+        
+        SimpleWebTable expectedTable = new SimpleWebTable();
+        expectedTable.setTitle("Distributed poller view for Application 1 from Raleigh location");
+        
+        expectedTable.addColumn("Node", "");
+        expectedTable.addColumn("Monitor", "");
+        expectedTable.addColumn("Service", "");
+        expectedTable.addColumn("Status", "");
+        expectedTable.addColumn("Response", "");
+        expectedTable.addColumn("Last Update", "");
+        
+        expectedTable.newRow();
+        expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=1");
+        expectedTable.addCell("Raleigh-1", "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
+        expectedTable.addCell("Up", "bright");
+        expectedTable.addCell("", "");
+        expectedTable.addCell(IGNORE_MATCH, "");
+        
+        expectedTable.newRow();
+        expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
+        expectedTable.addCell("Raleigh-1", "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
+        expectedTable.addCell("Unknown", "bright");
+        expectedTable.addCell("No status recorded for this service from this location", "");
+        expectedTable.addCell(IGNORE_MATCH, "");
+        
+        assertTableEquals(expectedTable, table);
+    }
+
+    
     
     public void testCreateStatusNoLocationMonitor() {
         DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
