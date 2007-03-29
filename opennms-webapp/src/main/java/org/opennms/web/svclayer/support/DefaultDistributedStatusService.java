@@ -142,10 +142,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             table.addCell(node.getLabel(), 
                           getStyleForPollResult(s.getPollResult()),
                           "element/node.jsp?node=" + node.getId());
-
             table.addCell(s.getLocationMonitor().getDefinitionName() + "-"
                           + s.getLocationMonitor().getId(),
-                          "");
+                          "",
+                          "distributed/locationMonitorDetails.htm?monitorId=" + s.getLocationMonitor().getId()); 
             table.addCell(s.getMonitoredService().getServiceName(), "",
                           "element/service.jsp?ifserviceid="
                           + s.getMonitoredService().getId());
@@ -670,6 +670,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
 
         Collection<OnmsMonitoredService> applicationMemberServices = m_monitoredServiceDao.findByApplication(application);
+        if (applicationMemberServices.size() == 0) {
+            errors.add("There are no services in the application '" + applicationName + "'");
+        }
+        
         DistributedStatusHistoryModel model = new DistributedStatusHistoryModel(locationDefinitions,
                                                  sortedApplications,
                                                  sortedMonitors,
