@@ -2243,8 +2243,8 @@ public class InstallerDb {
                                            new DoNotAddColumn());
         addColumnReplacement("ifservices.id",
                                            new DoNotAddColumn());
-        addColumnReplacement("assets.id",
-                                           new DoNotAddColumn());
+        addColumnReplacement("assets.id", new DoNotAddColumn());
+        addColumnReplacement("pathoutage.id", new DoNotAddColumn());
         addColumnReplacement("atinterface.id", new DoNotAddColumn());
 
         // Triggers will take care of these surrogate foreign keys
