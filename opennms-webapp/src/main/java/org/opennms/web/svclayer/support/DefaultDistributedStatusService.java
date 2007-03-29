@@ -160,11 +160,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
     }
     
-    /*
-     * XXX No unit tests
-     * XXX Not sorting by category
-     * XXX not dealing with the case where a node has multiple categories
-     */
     public SimpleWebTable createStatusTable(DistributedStatusDetailsCommand command, Errors errors) {
         SimpleWebTable table = new SimpleWebTable(); 
         table.setErrors(errors);
@@ -443,7 +438,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             
             Severity status = calculateCurrentStatus(monitor, applicationServices, statuses);
             
-            // FIXME: "Normal", etc. should be done with static variables
             if (status == Severity.NORMAL) {
                 goodMonitors++;
             } else if (status != Severity.INDETERMINATE) {
@@ -494,12 +488,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }       
     
     public Severity calculateStatus(Collection<PollStatus> pollStatuses) {
-        /*
-         * XXX We aren't doing anything for warning, because we don't
-         * have a warning state available, right now.  Should unknown
-         * be a warning state?
-         */
-        
         int goodStatuses = 0;
         int badStatuses = 0;
         
@@ -698,10 +686,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                     monitor = m;
                     break;
                 }
-            }
-            
-            if (monitor == null) {
-                // XXX should I do anything?
             }
         }
         
