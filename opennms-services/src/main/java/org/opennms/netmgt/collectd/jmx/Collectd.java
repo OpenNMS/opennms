@@ -57,7 +57,7 @@ public class Collectd implements CollectdMBean {
     }
 
     public void init() {
-        BeanFactoryReference bf = BeanUtils.getFactory("daoContext");
+        BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         MonitoredServiceDao monitoredServiceDao = BeanUtils.getBean(bf, "monitoredServiceDao", MonitoredServiceDao.class);
         IpInterfaceDao ipInterfaceDao = BeanUtils.getBean(bf, "ipInterfaceDao", IpInterfaceDao.class);
         NodeDao nodeDao = BeanUtils.getBean(bf, "nodeDao", NodeDao.class);
