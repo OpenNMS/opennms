@@ -53,7 +53,7 @@ public class BeanUtils {
      * @param contextId the context ID of the BeanFactory to fetch
      * @return the BeanFactory
      */
-    public static BeanFactoryReference getFactory(String contextId) {
+    public static BeanFactoryReference getBeanFactory(String contextId) {
         BeanFactoryLocator beanFactoryLoader = DefaultLocatorFactory.getInstance();
         return beanFactoryLoader.useBeanFactory(contextId);
     }
@@ -74,7 +74,7 @@ public class BeanUtils {
     }
     
     /**
-     * Helper method that combines getFactory and getBean.
+     * Helper method that combines getBeanFactory and getBean.
      * 
      * @param <T> class for the returned bean
      * @param contextId the context ID of the BeanFactory from which to fetch
@@ -84,6 +84,20 @@ public class BeanUtils {
      * @return bean for given bean ID casted to the appropriate class
      */
     public static <T> T getBean(String contextId, String beanId, Class<T> clazz) {
-        return getBean(getFactory(contextId), beanId, clazz);
+        return getBean(getBeanFactory(contextId), beanId, clazz);
+    }
+    
+    /**
+     * Helper method that calls getBeanFactory(contextId).getFactory()
+     * and casts the result.
+     * 
+     * @param <T> class for the returned factory
+     * @param contextId the context ID of the BeanFactory to fetch
+     * @param clazz class representing the type for the returned factory
+     * @return the factory casted to <T>
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getFactory(String contextId, Class<T> clazz) {
+        return (T) getBeanFactory(contextId).getFactory();
     }
 }
