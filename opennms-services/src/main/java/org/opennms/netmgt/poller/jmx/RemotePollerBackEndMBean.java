@@ -31,17 +31,8 @@
 //
 package org.opennms.netmgt.poller.jmx;
 
-public interface RemotePollerBackEndMBean {
-    public void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String status();
-
-    public String getStatusText();
+public interface RemotePollerBackEndMBean extends BaseOnmsMBean {
 
 }
