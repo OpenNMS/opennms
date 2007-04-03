@@ -61,6 +61,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -567,5 +568,25 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public int compareTo(OnmsNode o) {
         return getLabel().compareToIgnoreCase(o.getLabel());
     }
+
+    @Transient
+	public OnmsIpInterface getPrimaryInterface() {
+		for(OnmsIpInterface iface : getIpInterfaces()) {
+			if (iface.getIsSnmpPrimary() == CollectionType.PRIMARY) {
+				return iface;
+			}
+		}
+		return null;
+	}
+
+    @Transient
+	public OnmsIpInterface getInterfaceWithService(String svcName) {
+		for(OnmsIpInterface iface : getIpInterfaces()) {
+			if (iface.getMonitoredServiceByServiceType(svcName) != null) {
+				return iface;
+			}	
+		}
+		return null;
+	}
 
 }

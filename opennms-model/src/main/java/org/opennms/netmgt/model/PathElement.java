@@ -19,6 +19,14 @@ public class PathElement implements Serializable {
 	private String m_ipAddress;
 	private String m_serviceName;
 	
+	public PathElement() {
+		
+	}
+
+	public PathElement(String ipAddress, String serviceName) {
+		m_ipAddress = ipAddress;
+		m_serviceName = serviceName;
+	}
 
 	@Column(name="criticalPathIp")
 	public String getIpAddress() {
