@@ -339,7 +339,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_categories = categoryCache;
     }
 
-    private Category log() {
+    protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 

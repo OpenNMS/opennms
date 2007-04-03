@@ -56,7 +56,9 @@ import org.opennms.netmgt.importer.operations.UpdateOperation;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.TransactionStatus;
@@ -243,15 +245,35 @@ public class BaseImporter implements ImportOperationFactory {
         public void visitNode(final Node node) {
 			m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					
 					OnmsNode dbNode = findNodeByForeignId(m_foreignSource, node.getForeignId());
 					if (dbNode == null) {
 					    log().error("Error setting parent on node: "+node.getForeignId()+" node not in database");
 					    return;
 					}
 					OnmsNode parent = findParent(node);
+					
+					OnmsIpInterface critIface = null;
+					if (parent != null) {
+						critIface = getCriticalInterface(parent);
+					}
+					
 					log().info("Setting parent of node: "+dbNode+" to: "+parent);
 					dbNode.setParent(parent);
+					log().info("Setting criticalInterface of node: "+dbNode+" to: "+critIface);
+					dbNode.setPathElement(critIface == null ? null : new PathElement(critIface.getIpAddress(), "ICMP"));
 					getNodeDao().update(dbNode);
+				}
+
+				private OnmsIpInterface getCriticalInterface(OnmsNode parent) {
+					
+					OnmsIpInterface critIface = parent.getPrimaryInterface();
+					if (critIface != null) {
+						return critIface;
+					}
+					
+					return parent.getInterfaceWithService("ICMP");
+					
 				}
 
 			});

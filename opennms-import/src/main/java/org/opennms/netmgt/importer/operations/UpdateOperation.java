@@ -47,6 +47,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
+import sun.util.logging.resources.logging;
+
 public class UpdateOperation extends AbstractSaveOrUpdateOperation {
     
     public class ServiceUpdater {
@@ -86,7 +88,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 
         private void addNewServices(List events) {
             Collection<OnmsMonitoredService> newServices = getNewServices();
-            System.err.println(getNode().getLabel()+" has "+newServices.size()+" new services.");
+            log().debug(getNode().getLabel()+" has "+newServices.size()+" new services.");
             for (OnmsMonitoredService svc : newServices) {
                 svc.setIpInterface(m_iface);
                 m_iface.getMonitoredServices().add(svc);

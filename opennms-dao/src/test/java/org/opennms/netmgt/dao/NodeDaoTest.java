@@ -54,6 +54,34 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
         getNodeDao().save(node);
+        
+        getNodeDao().flush();
+    }
+
+    public void testSaveWithPathElement() {
+        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        OnmsNode node = new OnmsNode(distPoller);
+        node.setLabel("MyFirstNode");
+        PathElement p = new PathElement("192.168.7.7", "ICMP");
+        node.setPathElement(p);
+        getNodeDao().save(node);
+        
+        getNodeDao().flush();
+    }
+
+    public void testSaveWithNullPathElement() {
+        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        OnmsNode node = new OnmsNode(distPoller);
+        node.setLabel("MyFirstNode");
+        PathElement p = new PathElement("192.168.7.7", "ICMP");
+        node.setPathElement(p);
+        getNodeDao().save(node);
+        
+        OnmsNode myNode = getNodeDao().get(node.getId());
+        myNode.setPathElement(null);
+        getNodeDao().save(myNode);
+        
+        getNodeDao().flush();
     }
 
     public void testCreate() throws InterruptedException {
@@ -62,9 +90,7 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
         node.getAssetRecord().setDisplayCategory("MyCategory");
-        PathElement p = new PathElement();
-        p.setIpAddress("192.168.7.7");
-        p.setServiceName("ICMP");
+        PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         
         getNodeDao().save(node);
