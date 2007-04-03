@@ -204,7 +204,7 @@ public class BaseImporter implements ImportOperationFactory {
         
         stats.beginRelateNodes();
         
-        relateNodes(opsMgr, specFile);
+        relateNodes(specFile);
         
         stats.finishRelateNodes();
     
@@ -234,14 +234,16 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
 	class NodeRelator extends AbstractImportVisitor {
-		public NodeRelator(ImportOperationsManager opsMgr) {
-            m_opsMgr = opsMgr;
-        }
+		String m_foreignSource;
+		
+		public NodeRelator(String foreignSource) {
+			m_foreignSource = foreignSource;
+		}
 
         public void visitNode(final Node node) {
 			m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					OnmsNode dbNode = findNodeByForeignId(node.getForeignId());
+					OnmsNode dbNode = findNodeByForeignId(m_foreignSource, node.getForeignId());
 					if (dbNode == null) {
 					    log().error("Error setting parent on node: "+node.getForeignId()+" node not in database");
 					    return;
@@ -257,7 +259,7 @@ public class BaseImporter implements ImportOperationFactory {
 		
 		private OnmsNode findParent(Node node) {
 			if (node.getParentForeignId() != null)
-				return findNodeByForeignId(node.getParentForeignId());
+				return findNodeByForeignId(m_foreignSource, node.getParentForeignId());
 			else if (node.getParentNodeLabel() != null)
 				return findNodeByNodeLabel(node.getParentNodeLabel());
 			
@@ -273,14 +275,14 @@ public class BaseImporter implements ImportOperationFactory {
 			return null;
 		}
 
-		private OnmsNode findNodeByForeignId(String foreignId) {
-            return getNodeDao().findByForeignId(m_opsMgr.getForeignSource(), foreignId);
+		private OnmsNode findNodeByForeignId(String foreignSource, String foreignId) {
+            return getNodeDao().findByForeignId(foreignSource, foreignId);
 		}
 
 	};
 
-	private void relateNodes(ImportOperationsManager opsMgr, SpecFile specFile) {
-		specFile.visitImport(new NodeRelator(opsMgr));
+	private void relateNodes(SpecFile specFile) {
+		specFile.visitImport(new NodeRelator(specFile.getForeignSource()));
 	}
 
     public Category log() {

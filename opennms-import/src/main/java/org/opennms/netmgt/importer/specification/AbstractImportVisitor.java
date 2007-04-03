@@ -40,8 +40,6 @@ import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 
 public class AbstractImportVisitor implements ImportVisitor {
 
-    protected ImportOperationsManager m_opsMgr;
-
     public void visitModelImport(ModelImport mi) {
     }
 

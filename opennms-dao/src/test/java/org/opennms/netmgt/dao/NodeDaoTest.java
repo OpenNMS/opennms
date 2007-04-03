@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.PathElement;
 
 //public class NodeDaoTest extends AbstractDaoTestCase {
 public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
@@ -61,6 +62,11 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
         node.getAssetRecord().setDisplayCategory("MyCategory");
+        PathElement p = new PathElement();
+        p.setIpAddress("192.168.7.7");
+        p.setServiceName("ICMP");
+        node.setPathElement(p);
+        
         getNodeDao().save(node);
         
         
@@ -77,6 +83,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
             if (node.getId().intValue() == 5) {
                 assertEquals("MyFirstNode", retrieved.getLabel());
                 assertEquals("MyCategory", retrieved.getAssetRecord().getDisplayCategory());
+                assertEquals("192.168.7.7", retrieved.getPathElement().getIpAddress());
+                
             }
         }
         System.out.println("AFTER Loop");
