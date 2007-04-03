@@ -37,8 +37,11 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -49,6 +52,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.PrimaryKeyJoinColumns;
+import javax.persistence.SecondaryTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -67,6 +73,7 @@ import org.springframework.core.style.ToStringCreator;
 */
 @Entity
 @Table(name="node")
+@SecondaryTable(name="pathOutage")
 public class OnmsNode extends OnmsEntity implements Serializable,
         Comparable<OnmsNode> {
 
@@ -137,6 +144,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<OnmsArpInterface>();
 
     private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
+
+	private PathElement m_pathElement;
 
     public OnmsNode() {
         this(null);
@@ -374,7 +383,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
     }
-
+    
     /**
      * Distributed Poller responsible for this node
      * 
@@ -399,6 +408,19 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 
     public void setAssetRecord(OnmsAssetRecord asset) {
         m_assetRecord = asset;
+    }
+    
+    @Embedded
+    @AttributeOverrides({
+    	@AttributeOverride(name="ipAddress", column=@Column(name="criticalPathIp", table="pathOutage")),
+    	@AttributeOverride(name="serviceName", column=@Column(name="criticalPathServiceName", table="pathOutage"))
+    })
+    public PathElement getPathElement() {
+    	return m_pathElement;
+    }
+    
+    public void setPathElement(PathElement pathElement) {
+    	m_pathElement = pathElement;
     }
 
 

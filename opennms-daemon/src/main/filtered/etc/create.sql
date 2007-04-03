@@ -1152,7 +1152,6 @@ CREATE INDEX catnode_idx on category_node(nodeId);
 --########################################################################
 
 create table pathOutage (
-	id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer,
 	criticalPathIp		varchar(16) not null,
 	criticalPathServiceName	varchar(32),

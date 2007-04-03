@@ -41,7 +41,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -58,7 +57,6 @@ import org.springframework.core.style.ToStringCreator;
  */
 @Entity
 @Table(name="assets")
-@PrimaryKeyJoinColumn()
 public class OnmsAssetRecord implements Serializable {
 
     private static final long serialVersionUID = 509128305684814487L;
