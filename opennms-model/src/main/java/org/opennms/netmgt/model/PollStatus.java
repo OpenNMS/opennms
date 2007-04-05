@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Add serialVersionUID, mark fields private, suppress warnings from unused method. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,18 +49,18 @@ import javax.persistence.Transient;
  */
 @Embeddable
 public class PollStatus implements Serializable {
-    
-    
-    Date m_timestamp = new Date();
+    private static final long serialVersionUID = 1L;
+
+    private Date m_timestamp = new Date();
 
     /**
      * Status of the pollable object.
      */
-    int m_statusCode;
+    private int m_statusCode;
     
-    String m_reason;
+    private String m_reason;
     
-    long m_responseTime = -1L;
+    private long m_responseTime = -1L;
 
     /**
      * <P>
@@ -265,6 +269,7 @@ public class PollStatus implements Serializable {
         return m_statusCode;
     }
 
+    @SuppressWarnings("unused")
     private void setStatusCode(int statusCode) {
         m_statusCode = statusCode;
     }
