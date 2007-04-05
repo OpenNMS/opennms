@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Implement InitializingBean, make m_periods static, and eliminate
+//              RrdStrategy (the needed data is in GraphResults). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,22 +41,20 @@ import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.GraphResultsService;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 
-public class GraphResultsController extends AbstractController {
+public class GraphResultsController extends AbstractController implements InitializingBean {
     private GraphResultsService m_graphResultsService;
     
-    private RelativeTimePeriod[] m_periods =
-        RelativeTimePeriod.getDefaultPeriods();
-
-    private RrdStrategy m_rrdStrategy;
+    private static RelativeTimePeriod[] s_periods = RelativeTimePeriod.getDefaultPeriods();
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -153,13 +156,13 @@ public class GraphResultsController extends AbstractController {
             endLong = endCal.getTime().getTime();
         } else {
             if (relativeTime == null) {
-                relativeTime = m_periods[0].getId();
+                relativeTime = s_periods[0].getId();
             }
 
             RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(
-                                                                                  m_periods,
+                                                                                  s_periods,
                                                                                   relativeTime,
-                                                                                  m_periods[0]);
+                                                                                  s_periods[0]);
 
             long[] times = period.getStartAndEndTimes();
             startLong = times[0];
@@ -171,11 +174,7 @@ public class GraphResultsController extends AbstractController {
                                               reports, startLong,
                                               endLong, relativeTime);
 
-        ModelAndView modelAndView = new ModelAndView("/graph/results",
-                                                     "results",
-                                                     model);
-        modelAndView.addObject("rrdStrategy", m_rrdStrategy);
-        return modelAndView;
+        return new ModelAndView("/graph/results", "results", model);
     }
 
     public GraphResultsService getGraphResultsService() {
@@ -186,11 +185,12 @@ public class GraphResultsController extends AbstractController {
         m_graphResultsService = graphResultsService;
     }
 
-    public RrdStrategy getRrdStrategy() {
-        return m_rrdStrategy;
-    }
-
-    public void setRrdStrategy(RrdStrategy rrdStrategy) {
-        m_rrdStrategy = rrdStrategy;
+    /**
+     * Ensures that required properties are set to valid values.
+     * 
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_graphResultsService != null, "graphResultsService property must be set to a non-null value");
     }
 }

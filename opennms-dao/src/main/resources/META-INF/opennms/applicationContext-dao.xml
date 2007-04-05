@@ -164,4 +164,43 @@
     <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
   </bean>
   
+  <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="collectdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="collectdConfig-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="dataCollectionConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dataCollectionConfig-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
+    <property name="nodeDao" ref="nodeDao"/>
+    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+    <property name="collectdConfig" ref="collectdConfig"/>
+    <property name="dataCollectionConfig" ref="dataCollectionConfig"/>
+    <property name="rrdDirectory" value="${rrd.base.dir}"/>
+  </bean>
+  
+  <bean id="rrdStrategy-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.graphicsInitialize</value></property>
+  </bean>
+
+  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rrdStrategy-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.getStrategy</value></property>
+  </bean>
+  
+  <bean id="rrdDao" class="org.opennms.netmgt.dao.support.DefaultRrdDao">
+    <property name="rrdStrategy" ref="rrdStrategy"/>
+    <property name="rrdBaseDirectory" value="${rrd.base.dir}"/>
+    <property name="rrdBinaryPath" value="${rrd.binary}"/>
+  </bean>
+  
+  
 </beans>

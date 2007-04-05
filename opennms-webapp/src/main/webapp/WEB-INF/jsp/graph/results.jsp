@@ -70,8 +70,8 @@
 </c:if>
 
 <script type="text/javascript">
-  var cZoomBoxTopOffsetWText = ${rrdStrategy.graphTopOffsetWithText} + ${topOffset};
-  var cZoomBoxRightOffset = ${rrdStrategy.graphRightOffset} + ${rightOffset};
+  var cZoomBoxTopOffsetWText = ${results.graphTopOffsetWithText} + ${topOffset};
+  var cZoomBoxRightOffset = ${results.graphRightOffset} + ${rightOffset};
 </script>
 
 <div id="graph-results">

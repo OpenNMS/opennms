@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Make getPrefabGraphsForResource consider string properties
+//              and external values from the OnmsAttribute. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,9 +44,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -60,6 +63,7 @@ import org.opennms.netmgt.model.PrefabGraphType;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 public class PropertiesGraphDao implements GraphDao {
@@ -165,9 +169,7 @@ public class PropertiesGraphDao implements GraphDao {
     }
 
     private Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties properties) {
-        if (properties == null) {
-            throw new IllegalArgumentException("properties cannot be null");
-        }
+        Assert.notNull(properties, "properties argument cannot be null");
 
         String listString = getProperty(properties, DEFAULT_GRAPH_LIST_KEY);
 
@@ -186,12 +188,8 @@ public class PropertiesGraphDao implements GraphDao {
     }
     
     private static PrefabGraph makePrefabGraph(String key, Properties props, int order) {
-        if (key == null) {
-            throw new IllegalArgumentException("key cannot be null");
-        }
-        if (props == null) {
-            throw new IllegalArgumentException("props cannot be null");
-        }
+        Assert.notNull(key, "key argument cannot be null");
+        Assert.notNull(props, "props argument cannot be null");
 
         String title = getReportProperty(props, key, "name", true);
 
@@ -332,11 +330,8 @@ public class PropertiesGraphDao implements GraphDao {
     }
     
     public List<PrefabGraph> getAllPrefabGraphs() {
-        LinkedList<PrefabGraph> graphs = new LinkedList<PrefabGraph>();
+        List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
         for (FileReloadContainer<PrefabGraphType> container : m_types.values()) {
-//            for (Map.Entry<String, PrefabGraph> entry : container.getObject().getReportMap().entrySet()) {
-//                graphs.add(entry.getValue());
-//            }
             graphs.addAll(container.getObject().getReportMap().values());
         }
         return graphs;
@@ -354,40 +349,48 @@ public class PropertiesGraphDao implements GraphDao {
     
     public PrefabGraph[] getPrefabGraphsForResource(OnmsResource resource) {
         Set<OnmsAttribute> attributes = resource.getAttributes();
-        // Check if there are no attriutes to graph
+        // Check if there are no attributes
         if (attributes.size() == 0) {
             log().debug("returning empty graph list for resource " + resource + " because its attribute list is empty");
             return new PrefabGraph[0];
         }
 
-        Set<String> availDataSourceList = new HashSet<String>(attributes.size());
-        for (OnmsAttribute attribute : attributes) {
-            availDataSourceList.add(attribute.getName());
+        Set<String> availableRrdAttributes = resource.getRrdGraphAttributes().keySet();
+        Set<String> availableStringAttributes = resource.getStringPropertyAttributes().keySet();
+        Set<String> availableExternalAttributes = resource.getExternalValueAttributes().keySet();
+
+        // Check if there are no RRD attributes
+        if (availableRrdAttributes.size() == 0) {
+            log().debug("returning empty graph list for resource " + resource + " because it has no RRD attributes");
+            return new PrefabGraph[0];
         }
 
         String resourceType = resource.getResourceType().getName();
 
-        List<PrefabGraph> returnList = new LinkedList<PrefabGraph>();
+        List<PrefabGraph> returnList = new ArrayList<PrefabGraph>();
         for (PrefabGraph query : getAllPrefabGraphs()) {
             if (resourceType != null && !query.hasMatchingType(resourceType)) {
-//                if (log().isDebugEnabled()) {
-//                    log().debug("skipping " + query.getName() + " because its types \"" + StringUtils.arrayToDelimitedString(query.getTypes(), ", ") + "\" does not match resourceType \"" + resourceType + "\"");
-//                }
+                if (log().isDebugEnabled()) {
+                    log().debug("skipping " + query.getName() + " because its types \"" + StringUtils.arrayToDelimitedString(query.getTypes(), ", ") + "\" does not match resourceType \"" + resourceType + "\"");
+                }
                 continue;
             }
             
-            List<String> requiredList = Arrays.asList(query.getColumns());
-
-            if (availDataSourceList.containsAll(requiredList)) {
-//                if (log().isDebugEnabled()) {
-//                    log().debug("adding " + query.getName() + " to query list");
-//                }
-                returnList.add(query);
-            } else {
-//                if (log().isDebugEnabled()) {
-//                    log().debug("not adding " + query.getName() + " to query list because the required list of attributes (" + StringUtils.collectionToDelimitedString(requiredList, ", ") + ") is not in the list of attributes on the resource (" + StringUtils.collectionToDelimitedString(availDataSourceList, ", ")+ ")");
-//                }
+            if (!verifyAttributesExist(query, "RRD", Arrays.asList(query.getColumns()), availableRrdAttributes)) {
+                continue;
             }
+            if (!verifyAttributesExist(query, "string property", Arrays.asList(query.getPropertiesValues()), availableStringAttributes)) {
+                continue;
+            }
+            if (!verifyAttributesExist(query, "external value", Arrays.asList(query.getExternalValues()), availableExternalAttributes)) {
+                continue;
+            }
+            
+            if (log().isDebugEnabled()) {
+                log().debug("adding " + query.getName() + " to query list");
+            }
+            
+            returnList.add(query);
         }
 
         if (log().isDebugEnabled()) {
@@ -397,9 +400,21 @@ public class PropertiesGraphDao implements GraphDao {
             }
             log().debug("found " + nameList.size() + " prefabricated graphs for resource " + resource + ": " + StringUtils.collectionToDelimitedString(nameList, ", "));
         }
-        PrefabGraph[] availQueries = returnList.toArray(new PrefabGraph[returnList.size()]);
         
-        return availQueries;
+        return returnList.toArray(new PrefabGraph[returnList.size()]);
+    }
+
+
+    private boolean verifyAttributesExist(PrefabGraph query, String type, List<String> requiredList, Set<String> availableRrdAttributes) {
+        if (availableRrdAttributes.containsAll(requiredList)) {
+            return true;
+        } else {
+            if (log().isDebugEnabled()) {
+                String name = query.getName();
+                log().debug("not adding " + name + " to prefab graph list because the required list of " + type + " attributes (" + StringUtils.collectionToDelimitedString(requiredList, ", ") + ") is not in the list of " + type + " attributes on the resource (" + StringUtils.collectionToDelimitedString(availableRrdAttributes, ", ")+ ")");
+            }
+            return false;
+        }
     }
     
     private class AdhocGraphTypeCallback implements FileReloadCallback<AdhocGraphType> {

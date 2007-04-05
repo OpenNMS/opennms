@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// 2007 Apr 05: Remove getRelativePathForAttribute and move attribute loading to
+//              ResourceTypeUtils.getAttributesAtRelativePath. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +37,6 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +44,6 @@ import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class NodeSnmpResourceType implements OnmsResourceType {
@@ -77,34 +78,17 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     }
     
     public List<OnmsResource> getResourcesForNode(int nodeId) {
-        ArrayList<OnmsResource> resources =
-            new ArrayList<OnmsResource>();
+        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
-        List<String> dataSources =
-            ResourceTypeUtils.getDataSourcesInDirectory(getResourceDirectory(nodeId, true));
-        Set<OnmsAttribute> attributes =
-            new HashSet<OnmsAttribute>(dataSources.size());
+        Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(nodeId));
         
-        for (String dataSource : dataSources) {
-            attributes.add(new RrdGraphAttribute(dataSource));
-        }
-        
-        OnmsResource resource =
-            new OnmsResource("", "Node-level Performance Data",
-                                     this, attributes);
+        OnmsResource resource = new OnmsResource("", "Node-level Performance Data", this, attributes);
         resources.add(resource);
         return resources;
     }
-
-    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(DefaultResourceDao.SNMP_DIRECTORY);
-        buffer.append(File.separator);
-        buffer.append(resourceParent);
-        buffer.append(File.separator);
-        buffer.append(attribute);
-        buffer.append(RrdFileConstants.getRrdSuffix());
-        return buffer.toString();
+    
+    private String getRelativePathForResource(int nodeId) {
+        return DefaultResourceDao.SNMP_DIRECTORY + File.separator + Integer.toString(nodeId);
     }
 
     /**

@@ -10,11 +10,9 @@
  *
  * Modifications:
  *
- * 2007 Apr 05: Remove getRelativePathForAttribute. - dj@opennms.org
- * 2007 Apr 05: Created this file based on BogusResourceType from
- *              DefaultDistributedStatusServiceTest. - dj@opennms.org
+ * 2007 Apr 05: Created this file. - dj@opennms.org
  *
- * Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,55 +33,52 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.model;
 
-import java.util.List;
+/**
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ */
+public class ExternalValueAttribute implements OnmsAttribute {
+    private String m_name;
+    private String m_value;
+    private OnmsResource m_resource;
 
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.OnmsResourceType;
-
-public class MockResourceType implements OnmsResourceType {
-    private String m_name = "nothing but foo";
-    private String m_label = "even more foo";
-    private String m_link = "http://www.google.com/search?q=opennms";
-
-    public String getLabel() {
-        return m_label;
+    /**
+     * @param string
+     * @param string2
+     */
+    public ExternalValueAttribute(String name, String value) {
+        m_name = name;
+        m_value = value;
     }
 
-    public String getLinkForResource(OnmsResource resource) {
-        return m_link;
-    }
-
+    /**
+     * Get the name for this attribute.  This is the name for
+     * this type of external value.
+     * 
+     * @see org.opennms.netmgt.model.OnmsAttribute#getName()
+     */
     public String getName() {
         return m_name;
     }
-
-    public List<OnmsResource> getResourcesForDomain(String domain) {
-        return null;
+    
+    public String getValue() {
+        return m_value;
     }
 
-    public List<OnmsResource> getResourcesForNode(int nodeId) {
-        return null;
+    /**
+     * @see org.opennms.netmgt.model.OnmsAttribute#getResource()
+     */
+    public OnmsResource getResource() {
+        return m_resource;
     }
 
-    public boolean isResourceTypeOnDomain(String domain) {
-        return false;
+    /**
+     * @see org.opennms.netmgt.model.OnmsAttribute#setResource(org.opennms.netmgt.model.OnmsResource)
+     */
+    public void setResource(OnmsResource resource) {
+        m_resource = resource;
+
     }
 
-    public boolean isResourceTypeOnNode(int nodeId) {
-        return false;
-    }
-
-    public void setLink(String link) {
-        m_link = link;
-    }
-
-    public void setLabel(String label) {
-        m_label = label;
-    }
-
-    public void setName(String name) {
-        m_name = name;
-    }
 }

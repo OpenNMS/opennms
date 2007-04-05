@@ -1,0 +1,117 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 Apr 05: Created this file. - dj@opennms.org
+ *
+ * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
+package org.opennms.netmgt.dao.support;
+
+import static org.easymock.EasyMock.expect;
+
+import java.io.File;
+import java.util.HashSet;
+
+import junit.framework.TestCase;
+
+import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.DefaultRrdGraphDetails;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.util.StringUtils;
+
+/**
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ */
+public class DefaultRrdDaoTest extends TestCase {
+    private EasyMockUtils m_mocks = new EasyMockUtils();
+    private RrdStrategy m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+    
+    private DefaultRrdDao m_dao;
+    
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        
+        RrdTestUtils.initialize();
+        
+        m_dao = new DefaultRrdDao();
+        m_dao.setRrdStrategy(m_rrdStrategy);
+        m_dao.setRrdBaseDirectory(new File(System.getProperty("java.io.tmpdir")));
+        m_dao.setRrdBinaryPath("/bin/true");
+        m_dao.afterPropertiesSet();
+    }
+    
+    public void testInit() {
+        // Don't do anything... test that the setUp method works
+    }
+
+    public void testPrintValue() throws Exception {
+        String rrdDir = "snmp/1/eth0";
+        String rrdFile = "ifInOctets.jrb";
+        
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        String[] command = new String[] {
+                m_dao.getRrdBinaryPath(),
+                "graph",
+                "-",
+                "--start=" + (start / 1000),
+                "--end=" + (end / 1000),
+                "DEF:ds=" + rrdDir + "/" + rrdFile + ":ifInOctets:AVERAGE",
+                "PRINT:ds:AVERAGE:\"%le\""
+        };
+        String commandString = StringUtils.arrayToDelimitedString(command, " ");
+        
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+
+        OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
+        HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
+        attributeSet.add(attribute);
+        
+        MockResourceType childResourceType = new MockResourceType();
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        childResource.setParent(topResource);
+        
+        DefaultRrdGraphDetails details = new DefaultRrdGraphDetails();
+        details.setPrintLines(new String[] { "1" });
+        expect(m_rrdStrategy.createGraphReturnDetails(commandString, m_dao.getRrdBaseDirectory())).andReturn(details);
+
+        m_mocks.replayAll();
+        Double value = m_dao.getPrintValue(childResource.getAttributes().iterator().next(), "AVERAGE", start, end);
+        m_mocks.verifyAll();
+        
+        assertNotNull("value should not be null", value);
+        assertEquals("value", 1.0, value);
+    }
+}

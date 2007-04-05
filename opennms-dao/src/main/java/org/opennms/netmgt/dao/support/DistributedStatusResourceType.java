@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Remove getRelativePathForAttribute and move attribute loading to
+//              ResourceTypeUtils.getAttributesAtRelativePath. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,7 +40,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -43,13 +47,12 @@ import java.util.Set;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.LocationMonitorIpInterface;
-import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -72,20 +75,6 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         return "distributedStatus";
     }
 
-    public String getRelativePathForAttribute(String resourceParent,
-            String resource, String attribute) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(DefaultResourceDao.RESPONSE_DIRECTORY);
-        buffer.append(File.separator);
-        buffer.append(DISTRIBUTED_DIRECTORY);
-        buffer.append(File.separator);
-        buffer.append(resource);
-        buffer.append(File.separator);
-        buffer.append(attribute);
-        buffer.append(RrdFileConstants.getRrdSuffix());
-        return buffer.toString();
-    }
-
     @SuppressWarnings("unchecked")
     public List<OnmsResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
@@ -105,8 +94,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
             File iface = getInterfaceDirectory(id, ipAddr);
             
             if (iface.isDirectory()) {
-                resources.add(createResource(definitionName, id,
-                                             ipAddr));
+                resources.add(createResource(definitionName, id, ipAddr));
             }
         }
         
@@ -215,10 +203,14 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
     
     public File getInterfaceDirectory(int id, String ipAddr) {
-        File response = new File(m_resourceDao.getRrdDirectory(), DefaultResourceDao.RESPONSE_DIRECTORY);
-        File distributed = new File(response, DISTRIBUTED_DIRECTORY);
-        File monitor = new File(distributed, Integer.toString(id));
-        return new File(monitor, ipAddr);
+        return new File(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(id, ipAddr));
+    }
+    
+    public String getRelativeInterfacePath(int id, String ipAddr) {
+        return DefaultResourceDao.RESPONSE_DIRECTORY
+            + File.separator + DISTRIBUTED_DIRECTORY
+            + File.separator + Integer.toString(id)
+            + File.separator + ipAddr;
     }
 
 
@@ -245,37 +237,19 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         private int m_locationMonitorId;
         private String m_intf;
 
-        public AttributeLoader(String definitionName, int locationMonitorId,
-                String intf) {
+        public AttributeLoader(String definitionName, int locationMonitorId, String intf) {
             m_definitionName = definitionName;
             m_locationMonitorId = locationMonitorId;
             m_intf = intf;
         }
 
         public Set<OnmsAttribute> load() {
-            String resource = m_definitionName + "-" + m_locationMonitorId
-                + "/" + m_intf;
-            
-            File directory = getInterfaceDirectory(m_locationMonitorId,
-                                                   m_intf);
-            log().debug("lazy-loading attributes for resource \"" + resource
-                        + "\" from directory " + directory);
-            List<String> dataSources =
-                ResourceTypeUtils.getDataSourcesInDirectory(directory);
-
-            Set<OnmsAttribute> attributes =
-                new HashSet<OnmsAttribute>(dataSources.size());
-            
-            for (String dataSource : dataSources) {
-                log().debug("Found data source \"" + dataSource + "\" on "
-                            + resource);
-                            
-                attributes.add(new RrdGraphAttribute(dataSource));
+            if (log().isDebugEnabled()) {
+                log().debug("lazy-loading attributes for distributed status resource " + (m_definitionName + "-" + m_locationMonitorId + "/" + m_intf));
             }
             
-            return attributes;
+            return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(m_locationMonitorId, m_intf));
         }
-        
     }
 
     public String getLinkForResource(OnmsResource resource) {

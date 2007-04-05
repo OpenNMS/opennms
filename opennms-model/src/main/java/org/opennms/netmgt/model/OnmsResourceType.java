@@ -8,7 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
+// 2007 Apr 05: Remove getRelativePathAttribute. - dj@opennms.org
+//
+// Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -63,18 +67,6 @@ public interface OnmsResourceType {
      * @return list of resources
      */
     public List<OnmsResource> getResourcesForNode(int nodeId);
-    
-    /**
-     * Gets a relative path for an attribute on a resource of this resource
-     * type.
-     * 
-     * @param resourceParent path to the parent of this resource
-     * @param resource the resource on this resource type
-     * @param attribute the attribute on the specific resource
-     * @return relative path
-     */
-    public String getRelativePathForAttribute(String resourceParent,
-            String resource, String attribute);
     
     /**
      * Checks whether this resource type is on a specific domain.  If possible,

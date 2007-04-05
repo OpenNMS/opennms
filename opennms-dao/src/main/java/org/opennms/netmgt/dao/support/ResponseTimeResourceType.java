@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Remove getRelativePathForAttribute and move attribute loading to
+//              ResourceTypeUtils.getAttributesAtRelativePath. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +38,6 @@ package org.opennms.netmgt.dao.support;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -41,14 +45,13 @@ import java.util.Set;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class ResponseTimeResourceType implements OnmsResourceType {
@@ -66,18 +69,6 @@ public class ResponseTimeResourceType implements OnmsResourceType {
 
     public String getName() {
         return "responseTime";
-    }
-
-    public String getRelativePathForAttribute(String resourceParent,
-            String resource, String attribute) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(DefaultResourceDao.RESPONSE_DIRECTORY);
-        buffer.append(File.separator);
-        buffer.append(resource);
-        buffer.append(File.separator);
-        buffer.append(attribute);
-        buffer.append(RrdFileConstants.getRrdSuffix());
-        return buffer.toString();
     }
 
     @SuppressWarnings("unchecked")
@@ -117,12 +108,15 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         return intfDir;
     }
     
+    private String getRelativeInterfacePath(String ipAddr) {
+        return DefaultResourceDao.RESPONSE_DIRECTORY + File.separator + ipAddr;
+    }
+    
     private OnmsResource createResource(String intf) {
         String label = intf;
         String resource = intf;
 
-        Set<OnmsAttribute> set =
-            new LazySet<OnmsAttribute>(new AttributeLoader(intf));
+        Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(intf));
         return new OnmsResource(resource, label, this, set);
     }
 
@@ -147,23 +141,9 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         }
 
         public Set<OnmsAttribute> load() {
-            File directory = getInterfaceDirectory(m_intf, true);
-            log().debug("lazy-loading attributes for resource \"" + m_intf
-                        + "\" from directory " + directory);
-            List<String> dataSources =
-                ResourceTypeUtils.getDataSourcesInDirectory(directory);
-
-            Set<OnmsAttribute> attributes =
-                new HashSet<OnmsAttribute>(dataSources.size());
+            log().debug("lazy-loading attributes for response time resource '" + m_intf + "'");
             
-            for (String dataSource : dataSources) {
-                log().debug("Found data source \"" + dataSource + "\" on "
-                            + m_intf);
-                            
-                attributes.add(new RrdGraphAttribute(dataSource));
-            }
-            
-            return attributes;
+            return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(m_intf));
         }
     }
 

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Add public constant for the strings.properties file name. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -52,14 +56,16 @@ import org.opennms.core.utils.IntSet;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.StorageStrategy;
-import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -70,8 +76,14 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DefaultResourceDao implements ResourceDao, InitializingBean {
+    /**
+     * File name to look for in a resource directory for string attributes.
+     */
+    static final String STRINGS_PROPERTIES_FILE_NAME = "strings.properties";
+
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 
     public static final String RESPONSE_DIRECTORY = "response";
@@ -531,5 +543,4 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resources.addAll(findDomainResources());
         return resources;
     }
-    
 }
