@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Move string property loading here from RrdGraphService. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,30 +36,102 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Map.Entry;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.util.Assert;
 
 public class ResourceTypeUtils {
-    // This class has only static methods
+    /**
+     * This class has only static methods.
+     */
     private ResourceTypeUtils() {
     }
 
-    public static List<String> getDataSourcesInDirectory(File directory) {
+    public static Set<OnmsAttribute> getAttributesAtRelativePath(File rrdDirectory, String relativePath) {
         int suffixLength = RrdFileConstants.getRrdSuffix().length();
+        
+        File directory = new File(rrdDirectory, relativePath);
+        File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
+        
+        Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>(files.length);
+        for (File file : files) {
+            String fileName = file.getName();
+            String dsName = fileName.substring(0, fileName.length() - suffixLength);
     
-        // get the interface data sources
-        File[] files =
-            directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-    
-        ArrayList<String> dataSources = new ArrayList<String>(files.length);
-        for (int i = 0; i < files.length; i++) {
-            String fileName = files[i].getName();
-            String dsName =
-                fileName.substring(0, fileName.length() - suffixLength);
-    
-            dataSources.add(dsName);
+            attributes.add(new RrdGraphAttribute(dsName, relativePath, file.getName()));
+        }
+        
+        Properties properties = getProperties(rrdDirectory, relativePath);
+        if (properties != null) {
+            for (Entry<Object,Object> entry : properties.entrySet()) {
+                attributes.add(new StringPropertyAttribute(entry.getKey().toString(), entry.getValue().toString()));
+            }
+        }
+        
+        return attributes;
+    }
+
+
+    public static Properties getProperties(File rrdDirectory, String relativePath) {
+        Assert.notNull(rrdDirectory, "rrdDirectory argument must not be null");
+        Assert.notNull(relativePath, "relativePath argument must not be null");
+        
+        return getProperties(new File(rrdDirectory, relativePath + File.separator + DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME));
+    }
+
+    public static Properties getProperties(File file) {
+        if (!file.exists()) {
+            return null;
+        }
+        
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+        } catch (IOException e) {
+            String message = "loadProperties: Error opening properties file "
+                + file.getAbsolutePath() + ": " + e;
+            log().warn(message, e);
+            throw new DataAccessResourceFailureException(message, e);
         }
     
-        return dataSources;
+        Properties properties = new Properties();
+        
+        try {
+            properties.load(fileInputStream);
+        } catch (IOException e) {
+            String message = "loadProperties: Error loading properties file "
+                + file.getAbsolutePath() + ": " + e;
+            log().warn(message, e);
+            throw new DataAccessResourceFailureException(message, e);
+        } finally {
+            try {
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+            } catch (IOException e) {
+                String message = 
+                    "loadProperties: Error closing properties file "
+                    + file.getAbsolutePath() + ": " + e;
+                log().warn(message, e);
+                throw new DataAccessResourceFailureException(message, e);
+            }
+        }
+                
+        return properties;
+    }
+    
+    private static Category log() {
+        return ThreadCategory.getInstance();
     }
 }

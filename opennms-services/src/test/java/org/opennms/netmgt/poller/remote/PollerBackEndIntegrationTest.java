@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Set rrd.base.dir property. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -55,6 +59,7 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
         System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
+        System.setProperty("rrd.base.dir", System.getProperty("java.io.tmpdir"));
         return new String[] { 
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
                 "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",

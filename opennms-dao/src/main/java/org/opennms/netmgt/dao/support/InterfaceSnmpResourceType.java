@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Remove getRelativePathForAttribute, move attribute loading to
+//              ResourceTypeUtils.getAttributesAtRelativePath, and add ifSpeed
+//              and ifSpeedFriendly as external values. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +40,6 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,14 +48,14 @@ import java.util.regex.Pattern;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
-import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -100,17 +105,6 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         
         return parent;
     }
-        
-    private File getResourceDirectory(String parentResource, String intf, boolean verify) {
-        File parent = getParentResourceDirectory(parentResource, verify);
-        
-        File intfDir = new File(parent, intf);
-        if (verify && !parent.isDirectory()) {
-            throw new ObjectRetrievalFailureException(File.class, "No interface directory exists for " + intf + ": " + intfDir);
-        }
-        
-        return intfDir;
-    }
     
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
@@ -118,8 +112,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             throw new ObjectRetrievalFailureException(OnmsNode.class, Integer.toString(nodeId), "Could not find node with node ID " + nodeId, null);
         }
             
-        ArrayList<OnmsResource> resources =
-            new ArrayList<OnmsResource>();
+        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
         File parent = getParentResourceDirectory(Integer.toString(nodeId), true);
         File[] intfDirs = parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
@@ -176,6 +169,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             OnmsSnmpInterface snmpInterface = intfMap.get(key);
             
             String label;
+            Long ifSpeed = null;
+            String ifSpeedFriendly = null;
             if (snmpInterface == null) {
                 label = name + " (Not Currently Updated)";
             } else {
@@ -193,12 +188,12 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                     parenString.append(ipaddr);
                 }
                 if ((snmpInterface.getIfSpeed() != null) && (snmpInterface.getIfSpeed() != 0)) {
-                    long ifSpeed = snmpInterface.getIfSpeed();
-                    String speed = SIUtils.getHumanReadableIfSpeed(ifSpeed);
+                    ifSpeed = snmpInterface.getIfSpeed();
+                    ifSpeedFriendly = SIUtils.getHumanReadableIfSpeed(ifSpeed);
                     if (parenString.length() > 0) {
                         parenString.append(", ");
                     }
-                    parenString.append(speed);
+                    parenString.append(ifSpeedFriendly);
                 }
 
                 if (snmpInterface.getIfName() != null) {
@@ -225,53 +220,48 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 label = descr.toString();
             }
 
-            OnmsResource resource = getResourceByNodeAndInterface(nodeId, intfDir.getName(), label);
+            OnmsResource resource = getResourceByNodeAndInterface(nodeId, intfDir.getName(), label, ifSpeed, ifSpeedFriendly);
             resources.add(resource);
         }
 
         return OnmsResource.sortIntoResourceList(resources);
     }
 
-    private OnmsResource getResourceByNodeAndInterface(int nodeId,
-            String intf, String label) throws DataAccessException {
-        Set<OnmsAttribute> set =
-            new LazySet<OnmsAttribute>(new AttributeLoader(getResourceDirectory(Integer.toString(nodeId), intf, true)));
+    private OnmsResource getResourceByNodeAndInterface(int nodeId, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
+        Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(Integer.toString(nodeId), intf, ifSpeed, ifSpeedFriendly));
         return new OnmsResource(intf, label, this, set);
     }
 
     public class AttributeLoader implements LazySet.Loader<OnmsAttribute> {
-        private File m_intfDir;
+        private String m_parent;
+        private String m_resource;
+        private Long m_ifSpeed;
+        private String m_ifSpeedFriendly;
 
-        public AttributeLoader(File intfDir) {
-            m_intfDir = intfDir;
+        public AttributeLoader(String parent, String resource, Long ifSpeed, String ifSpeedFriendly) {
+            m_parent = parent;
+            m_resource = resource;
+            m_ifSpeed = ifSpeed;
+            m_ifSpeedFriendly = ifSpeedFriendly;
         }
 
         public Set<OnmsAttribute> load() {
-            List<String> dataSources =
-                ResourceTypeUtils.getDataSourcesInDirectory(m_intfDir);
-            Set<OnmsAttribute> attributes =
-                new HashSet<OnmsAttribute>(dataSources.size());
-            
-            for (String dataSource : dataSources) {
-                attributes.add(new RrdGraphAttribute(dataSource));
+            Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(m_parent, m_resource));
+            if (m_ifSpeed != null) {
+                attributes.add(new ExternalValueAttribute("ifSpeed", m_ifSpeed.toString()));
             }
-            
+            if (m_ifSpeedFriendly != null) {
+                attributes.add(new ExternalValueAttribute("ifSpeedFriendly", m_ifSpeedFriendly));
+            }
             return attributes;
         }
         
     }
-
-    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(DefaultResourceDao.SNMP_DIRECTORY);
-        buffer.append(File.separator);
-        buffer.append(resourceParent);
-        buffer.append(File.separator);
-        buffer.append(resource);
-        buffer.append(File.separator);
-        buffer.append(attribute);
-        buffer.append(RrdFileConstants.getRrdSuffix());
-        return buffer.toString();
+    
+    private String getRelativePathForResource(String parent, String resource) {
+        return DefaultResourceDao.SNMP_DIRECTORY
+            + File.separator + parent 
+            + File.separator + resource;
     }
 
     /**
@@ -320,8 +310,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     }
 
     private OnmsResource getResourceByDomainAndInterface(String domain, String intf) {
-        Set<OnmsAttribute> set =
-            new LazySet<OnmsAttribute>(new AttributeLoader(getResourceDirectory(domain, intf, true)));
+        Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(domain, intf, null, null));
         return new OnmsResource(intf, intf, this, set);
     }
 

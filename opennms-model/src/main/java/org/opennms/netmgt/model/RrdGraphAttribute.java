@@ -8,7 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
+// 2007 Apr 05: Store a reference to the OnmsResource and add a
+//              getRrdRelativePath method. - dj@opennms.org
+//
+// Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,16 +36,42 @@
 //
 package org.opennms.netmgt.model;
 
+import java.io.File;
+
+
 public class RrdGraphAttribute implements OnmsAttribute {
 
     private String m_name;
+    private String m_relativePath;
+    private String m_rrdFile;
+    private OnmsResource m_resource;
     
-    public RrdGraphAttribute(String name) {
+    public RrdGraphAttribute(String name, String relativePath, String rrdFile) {
         m_name = name;
+        m_relativePath = relativePath;
+        m_rrdFile = rrdFile;
     }
 
     public String getName() {
         return m_name;
     }
 
+    /**
+     * Retrieve the resource for this attribute.
+     */
+    public OnmsResource getResource() {
+        return m_resource;
+    }
+
+    /**
+     * Set the resource for this attribute.  This is called
+     * when the attribute is added to a resource.
+     */
+    public void setResource(OnmsResource resource) {
+        m_resource = resource;
+    }
+
+    public String getRrdRelativePath() {
+        return m_relativePath + File.separator + m_rrdFile;
+    }
 }

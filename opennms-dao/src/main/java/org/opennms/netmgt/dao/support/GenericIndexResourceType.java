@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Remove getRelativePathForAttribute and move attribute loading to
+//              ResourceTypeUtils.getAttributesAtRelativePath. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +39,6 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +49,6 @@ import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericIndexResourceType implements OnmsResourceType {
@@ -93,19 +96,8 @@ public class GenericIndexResourceType implements OnmsResourceType {
         return generic;
     }
     
-    private File getResourceDirectory(int nodeId, String index) {
-        return getResourceDirectory(nodeId, index, false);
-    }
-    
-    private File getResourceDirectory(int nodeId, String index, boolean verify) {
-        return new File(getResourceTypeDirectory(nodeId, verify), index);
-
-    }
-    
-    
     public List<OnmsResource> getResourcesForNode(int nodeId) {
-        ArrayList<OnmsResource> resources =
-            new ArrayList<OnmsResource>();
+        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
         List<String> indexes = getQueryableIndexesForNode(nodeId);
         for (String index : indexes) {
@@ -155,24 +147,15 @@ public class GenericIndexResourceType implements OnmsResourceType {
         }
 
         public Set<OnmsAttribute> load() {
-            File resourceDirectory = getResourceDirectory(m_nodeId, m_index); 
-            List<String> dataSources =
-                ResourceTypeUtils.getDataSourcesInDirectory(resourceDirectory);
-
-            Set<OnmsAttribute> attributes =
-                new HashSet<OnmsAttribute>(dataSources.size());
-        
-            for (String dataSource : dataSources) {
-                attributes.add(new RrdGraphAttribute(dataSource));
-            }
-
-            return attributes;
+            return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(m_nodeId, m_index)); 
         }
-
     }
 
-    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
-        return m_storageStrategy.getRelativePathForAttribute(DefaultResourceDao.SNMP_DIRECTORY + File.separator + resourceParent, resource, attribute);
+    public String getRelativePathForResource(int nodeId, String index) {
+        return DefaultResourceDao.SNMP_DIRECTORY
+            + File.separator + Integer.toString(nodeId)
+            + File.separator + getName()
+            + File.separator + index;
     }
     
     /**

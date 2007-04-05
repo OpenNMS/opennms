@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Remove getRelativePathForAttribute. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -59,10 +63,6 @@ public class NodeResourceType implements OnmsResourceType {
 
     public String getName() {
         return "node";
-    }
-
-    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
-        throw new UnsupportedOperationException("method not implemented");
     }
 
     public List<OnmsResource> getResourcesForDomain(String domain) {

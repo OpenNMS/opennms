@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Deduplicate constructors, set the resource reference for
+//              attributes, and add get*Attributes methods for different
+//              attribute types. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,8 +42,9 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class OnmsResource implements Comparable<OnmsResource> {
@@ -51,11 +58,7 @@ public class OnmsResource implements Comparable<OnmsResource> {
     
     public OnmsResource(String name, String label,
             OnmsResourceType resourceType, Set<OnmsAttribute> attributes) {
-        m_name = name;
-        m_label = label;
-        m_resourceType = resourceType;
-        m_attributes = attributes;
-        m_resources = new LinkedList<OnmsResource>();
+        this(name, label, resourceType, attributes, new ArrayList<OnmsResource>());
     }
     
     public OnmsResource(String name, String label,
@@ -66,6 +69,10 @@ public class OnmsResource implements Comparable<OnmsResource> {
         m_resourceType = resourceType;
         m_attributes = attributes;
         m_resources = resources;
+        
+        for (OnmsAttribute attribute : m_attributes) {
+            attribute.setResource(this);
+        }
     }
 
     public String getName() {
@@ -153,6 +160,51 @@ public class OnmsResource implements Comparable<OnmsResource> {
         return buf.toString();
     }
 
+    /**
+     * Get the RRD graph attributes for this resource, if any.
+     */
+    public Map<String, RrdGraphAttribute> getRrdGraphAttributes() {
+        Map<String, RrdGraphAttribute> attributes = new HashMap<String, RrdGraphAttribute>();
+        for (OnmsAttribute attribute : getAttributes()) {
+            if (RrdGraphAttribute.class.isAssignableFrom(attribute.getClass())) {
+                RrdGraphAttribute graphAttribute = (RrdGraphAttribute) attribute;
+                attributes.put(graphAttribute.getName(), graphAttribute);
+            }
+        }
+        
+        return attributes;
+    }
+
+    /**
+     * Get the string property attributes for this resource, if any.
+     */
+    public Map<String, String> getStringPropertyAttributes() {
+        Map<String, String> properties = new HashMap<String, String>();
+        for (OnmsAttribute attribute : getAttributes()) {
+            if (StringPropertyAttribute.class.isAssignableFrom(attribute.getClass())) {
+                StringPropertyAttribute stringAttribute = (StringPropertyAttribute) attribute;
+                properties.put(stringAttribute.getName(), stringAttribute.getValue());
+            }
+        }
+        
+        return properties;
+    }
+    
+    /**
+     * Get the external value attributes for this resource, if any.
+     */
+    public Map<String, String> getExternalValueAttributes() {
+        Map<String, String> properties = new HashMap<String, String>();
+        for (OnmsAttribute attribute : getAttributes()) {
+            if (ExternalValueAttribute.class.isAssignableFrom(attribute.getClass())) {
+                ExternalValueAttribute externalValueAttribute = (ExternalValueAttribute) attribute;
+                properties.put(externalValueAttribute.getName(), externalValueAttribute.getValue());
+            }
+        }
+        
+        return properties;
+    }
+    
     private static String encode(String string) {
         try {
             return URLEncoder.encode(string, "UTF-8");
@@ -160,6 +212,10 @@ public class OnmsResource implements Comparable<OnmsResource> {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);
         }
+    }
+    
+    public String toString() {
+        return getId();
     }
 
 }

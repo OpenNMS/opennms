@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Move properties loading code into ResourceTypeUtils, move
+//              ifSpeed loading to InterfaceSnmpResourceType, reorganize
+//              to use OnmsAttributes to get this data, and use RrdDao
+//              instead of RrdStrategy create graph. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,17 +40,13 @@ package org.opennms.web.svclayer.support;
 
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.apache.regexp.RE;
@@ -51,21 +54,16 @@ import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.AdhocGraphType;
-import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.utils.IfLabel;
+import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -77,8 +75,8 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     private GraphDao m_graphDao;
 
     private ResourceDao m_resourceDao;
-
-    private RrdStrategy m_rrdStrategy;
+    
+    private RrdDao m_rrdDao;
 
     public InputStream getAdhocGraph(String resourceId, String title,
             String[] dataSources, String[] aggregateFunctions,
@@ -119,22 +117,11 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             log().debug("Executing RRD command in directory '" + workDir
                         + "': " + command);
 
-            tempIn = m_rrdStrategy.createGraph(command, workDir);
-        } catch (RrdException e) {
-            String message = "RrdException received while creating graph: "
-                + e.getMessage(); 
-            log().warn(message, e);
+            tempIn = m_rrdDao.createGraph(command, workDir);
+        } catch (DataAccessException e) {
+            log().warn(e);
             if (debug) {
-                throw new DataRetrievalFailureException(message, e);
-            } else {
-                return returnErrorImage(s_rrdError);
-            }
-        } catch (IOException e) {
-            String message = "IOException received while creating graph: "
-                + e.getMessage(); 
-            log().warn(message, e);
-            if (debug) {
-                throw new DataRetrievalFailureException(message, e);
+                throw e;
             } else {
                 return returnErrorImage(s_rrdError);
             }
@@ -173,24 +160,9 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         String command = createPrefabCommand(graph,
                                              t.getCommandPrefix(),
                                              m_resourceDao.getRrdDirectory(true),
-                                             report,
-                                             getRelativePropertiesPath(r));
+                                             report);
         
         return getInputStreamForCommand(command);
-    }
-
-    private String getRelativePropertiesPath(OnmsResource r) {
-        String attributePath = r.getResourceType().getRelativePathForAttribute(r.getParent().getName(), r.getName(), "bogusAttribute");
-        int lastSeparator = attributePath.lastIndexOf(File.separatorChar);
-        String relativePropertiesPath = attributePath.substring(0, lastSeparator)
-            + File.separator + "strings.properties";
-        return relativePropertiesPath;
-    }
-    
-    public void afterPropertiesSet() {
-        Assert.state(m_resourceDao != null, "resourceDao property has not been set");
-        Assert.state(m_graphDao != null, "graphDao property has not been set");
-        Assert.state(m_rrdStrategy != null, "rrdStrategy property has not been set");
     }
     
     protected String createAdHocCommand(AdhocGraphType adhocType,
@@ -218,55 +190,40 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         buf.append(commandPrefix);
         buf.append(" ");
         buf.append(title);
+        
+        String[] rrdFiles = getRrdNames(resource, dsNames);
 
-        Set<String> attributeNames = new HashSet<String>();
-        for (OnmsAttribute attribute : resource.getAttributes()) {
-            attributeNames.add(attribute.getName());
-        }
-
-        for (String dsName : dsNames) {
-            if (!attributeNames.contains(dsName)) {
-                throw new IllegalArgumentException("dsName \"" + dsName
-                                                   + "\" is not available "
-                                                   + "on this resource.  "
-                                                   + "Available: "
-                                                   + StringUtils.collectionToDelimitedString(attributeNames, ", "));
-            }
-        }
-
+        List<String> defs = new ArrayList<String>(dsNames.length);
+        List<String> lines = new ArrayList<String>(dsNames.length);
         for (int i = 0; i < dsNames.length; i++) {
             String dsAbbrev = "ds" + Integer.toString(i);
 
             String dsName = dsNames[i];
-            String rrd = resource.getResourceType().getRelativePathForAttribute(resource.getParent().getName(), resource.getName(), dsName);
+            String rrd = rrdFiles[i];
             String dsAggregFxn = dsAggregFxns[i];
             String color = colors[i];
             String dsTitle = dsTitles[i];
             String dsStyle = dsStyles[i];
 
-            buf.append(" ");
-            buf.append(MessageFormat.format(ds, rrd, starttime,
+            defs.add(MessageFormat.format(ds, rrd, starttime,
                                             endtime, graphtitle,
                                             dsAbbrev, dsName,
                                             dsAggregFxn, dsStyle,
                                             color, dsTitle));
-        }
-
-        for (int i = 0; i < dsNames.length; i++) {
-            String dsAbbrev = "ds" + Integer.toString(i);
-
-            String dsName = dsNames[i];
-            String rrd = resource.getResourceType().getRelativePathForAttribute(resource.getParent().getName(), resource.getName(), dsName);
-            String dsAggregFxn = dsAggregFxns[i];
-            String color = colors[i];
-            String dsTitle = dsTitles[i];
-            String dsStyle = dsStyles[i];
-
-            buf.append(" ");
-            buf.append(MessageFormat.format(graphline, rrd,
+            
+            lines.add(MessageFormat.format(graphline, rrd,
                                             starttime, endtime, graphtitle,
                                             dsAbbrev, dsName, dsAggregFxn,
                                             dsStyle, color, dsTitle));
+        }
+        
+        for (String def : defs) {
+            buf.append(" ");
+            buf.append(def);
+        }
+        for (String line : lines) {
+            buf.append(" ");
+            buf.append(line);
         }
 
         log().debug("formatting: " + buf + ", bogus-rrd, " + starttime + ", "
@@ -275,28 +232,51 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                     starttime, endtime, graphtitle);
     }
 
+    private String[] getRrdNames(OnmsResource resource, String[] dsNames) {
+        String[] rrds = new String[dsNames.length];
+        
+        Map<String, RrdGraphAttribute> attributes = resource.getRrdGraphAttributes();
 
-    private String[] getRRDNames(Graph graph) {
-        String[] columns = graph.getPrefabGraph().getColumns();
-        String[] rrds = new String[columns.length];
+        for (int i=0; i < dsNames.length; i++) {
+            RrdGraphAttribute attribute = attributes.get(dsNames[i]);
+            if (attribute == null) {
+                throw new IllegalArgumentException("RRD attribute '" + dsNames[i] + "' is not available on this resource.  Available RRD attributes: " + StringUtils.collectionToDelimitedString(attributes.keySet(), ", "));
+            }
 
-        for (int i=0; i < columns.length; i++) {
-            rrds[i] = graph.getResource().getResourceType().getRelativePathForAttribute(
-                                                          graph.getResource().getParent().getName(),
-                                                          graph.getResource().getName(),
-                                                          columns[i]);
+            rrds[i] = attribute.getRrdRelativePath(); 
         }
 
         return rrds;
     }
+    
+    private Map<String, String> getTranslationsForAttributes(Map<String, String> attributes, String[] requiredAttributes, String type) {
+        if (requiredAttributes == null) {
+            // XXX Nothing to do; not sure if we need this check
+            return new HashMap<String, String>(0);
+        }
+        
+        Map<String, String> translations = new HashMap<String, String>(requiredAttributes.length);
+        
+        for (String requiredAttribute : requiredAttributes) {
+            String attributeValue = attributes.get(requiredAttribute);
+            if (attributeValue == null) {
+                throw new IllegalArgumentException(type + " '" + requiredAttribute + "' is not available on this resource.  Available " + type + "s: " + StringUtils.collectionToDelimitedString(attributes.keySet(), ", "));
+            }
+
+            // Replace any single backslashes in the value with escaped backslashes so other parsing won't barf
+            String replacedValue = attributeValue.replace("\\", "\\\\");
+            translations.put(RE.simplePatternToFullRegularExpression("{" + requiredAttribute + "}"), replacedValue);
+        }
+
+        return translations;
+    }
 
     protected String createPrefabCommand(Graph graph,
             String commandPrefix,
-            File workDir, String reportName,
-            String relativePropertiesPath) {
+            File workDir, String reportName) {
         PrefabGraph prefabGraph = graph.getPrefabGraph();
 
-        String[] rrds = getRRDNames(graph);
+        String[] rrds = getRrdNames(graph.getResource(), graph.getPrefabGraph().getColumns());
         
         StringBuffer buf = new StringBuffer();
         buf.append(commandPrefix);
@@ -328,58 +308,9 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
 
-        for (String externalValue : prefabGraph.getExternalValues()) { 
-            if ("ifSpeed".equals(externalValue)) {
-                if (!"node".equals(graph.getResource().getParent().getResourceType().getName())) {
-                    throw new IllegalStateException("Report requires an "
-                                                    + "external value of "
-                                                    + externalValue
-                                                    + ", but this requires "
-                                                    + "the parent resource "
-                                                    + "to be a node, but "
-                                                    + "parent of this "
-                                                    + "resource is not a "
-                                                    + "node");
-                }
-                
-                // XXX error checking
-                int nodeId = Integer.parseInt(graph.getResource().getParent().getName());
-                String speed = getIfSpeed(nodeId, graph.getResource().getName());
-                if (speed == null) {
-                    throw new IllegalStateException("Report requires an "
-                                                    + "external value of "
-                                                    + externalValue
-                                                    + ", but it is not "
-                                                    + "available for this "
-                                                    + "resource");
-                }
-                
-                translationMap.put(RE.simplePatternToFullRegularExpression("{" + externalValue + "}"), speed);
-            } else {
-                throw new IllegalStateException("Unsupported external value name: " + externalValue);
-            }                
-        }
+        translationMap.putAll(getTranslationsForAttributes(graph.getResource().getExternalValueAttributes(), prefabGraph.getExternalValues(), "external value attribute"));
+        translationMap.putAll(getTranslationsForAttributes(graph.getResource().getStringPropertyAttributes(), prefabGraph.getPropertiesValues(), "string property attribute"));
         
-        String[] propertiesValues = prefabGraph.getPropertiesValues();
-        if (propertiesValues != null && propertiesValues.length > 0) {
-            Properties properties;
-            try {
-                properties = loadProperties(workDir,
-                                            relativePropertiesPath);
-            } catch (DataAccessException e) {
-                String message = "Could not load properties file but prefab graph has propertiesValues, so the properties file is required.  Chained exception: " + e;
-                log().warn(message, e);
-                throw new IllegalArgumentException(message, e);
-            }
-
-            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                String value=entry.getValue().toString();
-                //Replace any single backslashes in the value with escaped backslashes so other parsing won't barf
-                value=value.replace("\\","\\\\");
-                translationMap.put(RE.simplePatternToFullRegularExpression("{" + entry.getKey() + "}"),
-                                   value);
-            }
-        }
         
         try {
             for (Map.Entry<String, String> translation : translationMap.entrySet()) {
@@ -395,76 +326,16 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         
         return command;
     }
-    
 
-    private String getIfSpeed(int nodeId, String resource) {
-        String speed = null;
-        
-        Map intfInfo;
-        try {
-            intfInfo = IfLabel.getInterfaceInfoFromIfLabel(nodeId, resource);
-        } catch (SQLException e) {
-            SQLErrorCodeSQLExceptionTranslator translator =
-                new SQLErrorCodeSQLExceptionTranslator();
-            throw translator.translate("Getting interface info for resource '"
-                                       + resource + "' on node " + nodeId,
-                                       null, e);
-        }
-
-        // if the extended information was found correctly
-        if (intfInfo != null) {
-            speed = (String) intfInfo.get("snmpifspeed");
-        }
-
-        return speed;
-    }
-    
-    protected Properties loadProperties(File workDir, String propertiesFile) {
-        Assert.notNull(workDir, "workDir argument cannot be null");
-        Assert.notNull(propertiesFile, "propertiesFile argument cannot be null");
-        
-        Properties externalProperties = new Properties();
-        
-        File file = new File(workDir, propertiesFile);
-        if (!file.exists()) {
-            log().warn("loadProperties: Properties file does not exist: " + file.getAbsolutePath());
-            throw new ObjectRetrievalFailureException(Properties.class, "strings.properties", "This resource does not have a string properties file: " + file.getAbsolutePath(), null);
-        }
-        
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
-        } catch (IOException e) {
-            String message = "loadProperties: Error opening properties file "
-                + file.getAbsolutePath() + ": " + e.getMessage();
-            log().warn(message, e);
-            throw new DataAccessResourceFailureException(message, e);
-        }
-
-        try {
-            externalProperties.load(fileInputStream);
-        } catch (IOException e) {
-            String message = "loadProperties: Error loading properties file "
-                + file.getAbsolutePath() + ": " + e.getMessage();
-            log().warn(message, e);
-            throw new DataAccessResourceFailureException(message, e);
-        } finally {
-            try {
-                if (fileInputStream != null) {
-                    fileInputStream.close();
-                }
-            } catch (IOException e) {
-                String message = 
-                    "loadProperties: Error closing properties file "
-                    + file.getAbsolutePath() + ": " + e.getMessage();
-                log().warn(message, e);
-                throw new DataAccessResourceFailureException(message, e);
-            }
-        }
-                
-        return externalProperties;
+    private Category log() {
+        return ThreadCategory.getInstance();
     }
 
+    public void afterPropertiesSet() {
+        Assert.state(m_resourceDao != null, "resourceDao property has not been set");
+        Assert.state(m_graphDao != null, "graphDao property has not been set");
+        Assert.state(m_rrdDao != null, "rrdDao property has not been set");
+    }
 
     public ResourceDao getResourceDao() {
         return m_resourceDao;
@@ -482,16 +353,12 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         m_graphDao = graphDao;
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance();
+    public RrdDao getRrdDao() {
+        return m_rrdDao;
     }
 
-    public RrdStrategy getRrdStrategy() {
-        return m_rrdStrategy;
-    }
-
-    public void setRrdStrategy(RrdStrategy rrdStrategy) {
-        m_rrdStrategy = rrdStrategy;
+    public void setRrdDao(RrdDao rrdDao) {
+        m_rrdDao = rrdDao;
     }
 
 }

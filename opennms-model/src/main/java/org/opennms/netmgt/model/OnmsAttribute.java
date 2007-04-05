@@ -8,7 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
+// 2007 Apr 05: Add getResource/setResource. - dj@opennms.org
+//
+// Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,4 +37,6 @@ package org.opennms.netmgt.model;
 
 public interface OnmsAttribute {
     public String getName();
+    public OnmsResource getResource();
+    public void setResource(OnmsResource resource);
 }

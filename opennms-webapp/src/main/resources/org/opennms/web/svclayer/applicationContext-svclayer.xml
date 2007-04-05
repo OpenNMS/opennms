@@ -106,30 +106,6 @@
     </constructor-arg>  	  
   </bean>
   
-  <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="collectdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="collectdConfig-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.getInstance</value></property>
-  </bean>
-  
-  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="dataCollectionConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dataCollectionConfig-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.getInstance</value></property>
-  </bean>
-  
-  <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    <property name="collectdConfig" ref="collectdConfig"/>
-    <property name="dataCollectionConfig" ref="dataCollectionConfig"/>
-  	<property name="rrdDirectory" value="${rrd.base.dir}"/>
-  </bean>
-  
   <!-- Admin applications bean -->
   <bean id="adminApplicationService" class="org.opennms.web.svclayer.support.DefaultAdminApplicationService">
     <property name="applicationDao" ref="applicationDao"/>
@@ -162,25 +138,18 @@
   <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
     <property name="resourceDao" ref="resourceDao"/>
   </bean>
-
-  <bean id="rrdStrategy-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.graphicsInitialize</value></property>
-  </bean>
-
-  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rrdStrategy-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.getStrategy</value></property>
-  </bean>
   
   <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
     <property name="nodeDao" ref="nodeDao"/>
+    <property name="rrdDao" ref="rrdDao"/>
   </bean>
   
   <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
-    <property name="rrdStrategy" ref="rrdStrategy"/>
+    <property name="rrdDao" ref="rrdDao"/>
   </bean>
 
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

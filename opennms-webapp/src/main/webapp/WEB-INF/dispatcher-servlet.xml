@@ -240,7 +240,6 @@
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
-    <property name="rrdStrategy" ref="rrdStrategy"/>
   </bean>
   
   <bean name="/graph/graph.png" class="org.opennms.web.controller.RrdGraphController">

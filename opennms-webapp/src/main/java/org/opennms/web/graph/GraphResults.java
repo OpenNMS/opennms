@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Add graph offset values. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -71,6 +75,9 @@ public class GraphResults {
     
     private List<GraphResultSet> m_graphResultSets =
         new LinkedList<GraphResultSet>();
+    
+    private int m_graphTopOffsetWithText;
+    private int m_graphRightOffset;
     
     // FIXME: this is very US-centric; can we have it use the system locale?
     static {
@@ -219,5 +226,21 @@ public class GraphResults {
         public int getHourOfDay() {
             return get(Calendar.HOUR_OF_DAY); 
         }
+    }
+
+    public int getGraphRightOffset() {
+        return m_graphRightOffset;
+    }
+
+    public void setGraphRightOffset(int graphRightOffset) {
+        m_graphRightOffset = graphRightOffset;
+    }
+
+    public int getGraphTopOffsetWithText() {
+        return m_graphTopOffsetWithText;
+    }
+
+    public void setGraphTopOffsetWithText(int graphTopOffsetWithText) {
+        m_graphTopOffsetWithText = graphTopOffsetWithText;
     }
 }

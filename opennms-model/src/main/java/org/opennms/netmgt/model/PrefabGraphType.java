@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Remove unused/deprecated getQueries and supporting
+//              code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,13 +36,9 @@
 //
 package org.opennms.netmgt.model;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 public class PrefabGraphType {
-    private PrefabGraph[] m_queries;
-
     private Map<String, PrefabGraph> m_reportMap;
 
     private String m_defaultReport;
@@ -98,31 +99,6 @@ public class PrefabGraphType {
 
     public String getGraphHeight() {
         return m_graphHeight;
-    }
-
-    /**
-     * Return a list of all known prefabricated graph definitions.
-     */
-    @Deprecated
-    public PrefabGraph[] getQueries() {
-        if (m_queries == null) {
-            initQueries();
-        }
-
-        return m_queries;
-    }
-
-    private void initQueries() {
-        Collection<PrefabGraph> values = m_reportMap.values();
-        Iterator<PrefabGraph> iter = values.iterator();
-
-        PrefabGraph[] graphs = new PrefabGraph[values.size()];
-
-        for (int i = 0; i < graphs.length; i++) {
-            graphs[i] = iter.next();
-        }
-
-        m_queries = graphs;
     }
 
     public void setCommandPrefix(String commandPrefix) {

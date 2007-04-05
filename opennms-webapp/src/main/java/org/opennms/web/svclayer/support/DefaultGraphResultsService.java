@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Add the graph offets to the model object. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,6 +43,7 @@ import java.util.List;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.graph.Graph;
@@ -47,6 +52,7 @@ import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.graph.GraphResults.GraphResultSet;
 import org.opennms.web.svclayer.GraphResultsService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 public class DefaultGraphResultsService implements GraphResultsService, InitializingBean {
 
@@ -55,6 +61,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     private GraphDao m_graphDao;
 
     private NodeDao m_nodeDao;
+    
+    private RrdDao m_rrdDao;
 
     private RelativeTimePeriod[] m_periods;
 
@@ -85,6 +93,9 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         for (String resourceId : resourceIds) {
             graphResults.addGraphResultSet(createGraphResultSet(resourceId, reports, graphResults));
         }
+        
+        graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
+        graphResults.setGraphRightOffset(m_rrdDao.setGraphRightOffset());
         
         return graphResults;
     }
@@ -123,15 +134,10 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     }
 
     public void afterPropertiesSet() {
-        if (m_nodeDao == null) {
-            throw new IllegalStateException("nodeDao property has not been set");
-        }
-        if (m_resourceDao == null) {
-            throw new IllegalStateException("resourceDao property has not been set");
-        }
-        if (m_graphDao == null) {
-            throw new IllegalStateException("graphDao property has not been set");
-        }
+        Assert.state(m_nodeDao != null, "nodeDao property has not been set");
+        Assert.state(m_resourceDao != null, "resourceDao property has not been set");
+        Assert.state(m_graphDao != null, "graphDao property has not been set");
+        Assert.state(m_rrdDao != null, "rrdDao property has not been set");
     }
 
     public ResourceDao getResourceDao() {
@@ -156,5 +162,13 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
+    }
+
+    public RrdDao getRrdDao() {
+        return m_rrdDao;
+    }
+
+    public void setRrdDao(RrdDao rrdDao) {
+        m_rrdDao = rrdDao;
     }
 }
