@@ -197,12 +197,6 @@ public class JRobinRrdStrategyTest extends TestCase {
         RrdGraphDetails graphDetails = m_strategy.createGraphReturnDetails(StringUtils.arrayToDelimitedString(command, " "), new File(""));
         assertNotNull("graph details object", graphDetails);
         
-//        RrdGraph graph = new RrdGraph(graphDef);
-//      assertNotNull("graph object", graph);
-//        
-//        RrdGraphInfo info = graph.getRrdGraphInfo();
-//        assertNotNull("graph info object", info);
-        
         String[] printLines = graphDetails.getPrintLines();
         assertNotNull("graph printLines", printLines);
         assertEquals("graph printLines size", 1, printLines.length);
