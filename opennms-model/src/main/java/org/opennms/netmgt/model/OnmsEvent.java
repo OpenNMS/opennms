@@ -33,6 +33,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -162,13 +163,13 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private org.opennms.netmgt.model.OnmsNode m_node;
 
 	/** persistent field */
-	private Set<OnmsNotification> m_notifications;
+	private Set<OnmsNotification> m_notifications = new HashSet<OnmsNotification>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceRegainedOutages;
+	private Set<OnmsOutage> m_associatedServiceRegainedOutages = new HashSet<OnmsOutage>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceLostOutages;
+	private Set<OnmsOutage> m_associatedServiceLostOutages = new HashSet<OnmsOutage>();
 
 	/** full constructor */
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
