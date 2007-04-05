@@ -270,6 +270,6 @@ public class SnmpCollectorTest extends TestCase {
     }
 
     private void initializeAgent() throws InterruptedException {
-        initializeAgent("/org/opennms/netmgt/snmp/loadSnmpDataTest.properties");
+        initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
     }
 }

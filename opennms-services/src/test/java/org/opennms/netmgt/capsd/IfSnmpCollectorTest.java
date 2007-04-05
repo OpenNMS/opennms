@@ -44,6 +44,7 @@ import java.util.List;
 
 import junit.framework.TestSuite;
 
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
@@ -52,12 +53,15 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.PropertySettingTestSuite;
 import org.opennms.test.VersionSettingTestSuite;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.core.io.ClassPathResource;
 
 public class IfSnmpCollectorTest extends OpenNMSTestCase {
     private static final String s_runProperty = "mock.runSnmpTests";
     private static final String s_hostProperty = "mock.snmpHost";
 
     private static final InetAddress s_addr;
+    
+    private static final MockSnmpAgent s_agent;
 
     private IfSnmpCollector m_ifSnmpc;
 
@@ -69,12 +73,14 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         try {
             String property = System.getProperty(s_hostProperty);
             if (property != null) {
+                s_agent = null;
                 s_addr = InetAddress.getByName(property);
             } else {
                 s_addr = InetAddress.getLocalHost();
+                s_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), s_addr.getHostAddress()+"/9161");
                 //s_addr = InetAddress.getByName(InetAddress.getLocalHost().getHostAddress());
             }
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             throw new UndeclaredThrowableException(e, "Could not lookup local host name when initializing class: " + e.getMessage());
         }
     };
@@ -117,6 +123,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         if (!shouldWeRun()) {
             return;
         }
+        
         
         super.setUp();
         m_runSupers = true;
@@ -174,7 +181,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         SystemGroup sg = m_ifSnmpc.getSystemGroup();
         assertNotNull(sg);
         assertFalse(sg.failed());
-        // assertEquals("brozow.local", sg.getSysName());
+        assertEquals("brozow.local", sg.getSysName());
     }
 
     public final void testHasIfTable() {
@@ -200,7 +207,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
                      ipAddrTable.getIfIndex(InetAddress.getByName("127.0.0.1")));
         List entries = ipAddrTable.getEntries();
         List addresses = IpAddrTable.getIpAddresses(entries);
-        assertTrue(addresses.contains(InetAddress.getByName(myLocalHost())));
+        assertTrue(addresses.contains(InetAddress.getByName("172.20.1.201")));
         assertTrue(addresses.contains(InetAddress.getByName("127.0.0.1")));
     }
 
@@ -238,8 +245,8 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void testGetIfIndex() throws UnknownHostException {
-        int ifIndex = m_ifSnmpc.getIfIndex(InetAddress.getLocalHost());
-        assertTrue(0 < ifIndex);
+        int ifIndex = m_ifSnmpc.getIfIndex(InetAddress.getByName("172.20.1.201"));
+        assertEquals(5, ifIndex);
     }
 
     public final void xtestGetIfName() {
@@ -257,15 +264,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     private boolean shouldWeRun() {
-        String property = System.getProperty(s_runProperty);
-        boolean enabled = "true".equals(property);
-        if (!enabled && !m_toldDisabled) {
-            System.out.println("Test '" + getName() + "' disabled.  Set '"
-                               + s_runProperty
-                               + "' property to 'true' to enable.");
-            m_toldDisabled = true;
-        }
-        return enabled;
+    	return true;
     }
 
     private void runCollection() {

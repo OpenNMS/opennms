@@ -57,6 +57,7 @@ import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogFactory;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.MessageProcessingModel;
+import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
@@ -184,7 +185,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 		
 		while (m_running) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				break;
 			}
@@ -251,6 +252,10 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 		vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
 				new OctetString("TEST"),
 				new OctetString("v3test"),
+				StorageType.nonVolatile);
+		vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
+				new OctetString("opennmsUser"),
+				new OctetString("v3group"),
 				StorageType.nonVolatile);
 		vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
 				new OctetString("SHA"),
@@ -368,6 +373,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 				PrivDES.ID,
 				new OctetString("maplesyrup"));
 		usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
+		user = new UsmUser(new OctetString("opennmsUser"),
+				AuthMD5.ID,
+				new OctetString("0p3nNMSv3"),
+				PrivDES.ID,
+				new OctetString("0p3nNMSv3"));
+		usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
 		user = new UsmUser(new OctetString("SHA"),
 				AuthSHA.ID,
 				new OctetString("SHAAuthPassword"),
@@ -380,6 +391,20 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	    transportMappings = new TransportMapping[1];
 	    transportMappings[0] =
 	    		new DefaultUdpTransportMapping(new UdpAddress(m_address));
+	}
+	
+	
+
+	// override the agent defaults since we are providing all the agent data
+	@Override
+	protected void registerSnmpMIBs() {
+		registerManagedObjects();
+	}
+	
+
+
+	@Override
+	protected void unregisterSnmpMIBs() {
 	}
 
 	@Override

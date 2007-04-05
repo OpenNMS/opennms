@@ -42,17 +42,31 @@ import junit.framework.TestSuite;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 import org.opennms.test.VersionSettingTestSuite;
 
 
 public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     
-    public static TestSuite suite() {
+    private final class IfInfoVisitor extends ResourceVisitor {
+    	
+    	public int ifInfoCount = 0;
+    	
+		public void visitResource(CollectionResource resource) {
+		    if (!(resource instanceof IfInfo)) return;
+		    
+		    ifInfoCount++;
+		    IfInfo ifInfo = (IfInfo) resource;
+		    assertMibObjectsPresent(ifInfo, getAttributeList());
+		        
+		}
+	}
+
+	public static TestSuite suite() {
         Class testClass = SnmpIfCollectorTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
         suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpAgentConfig.VERSION1));
         suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpAgentConfig.VERSION2C));
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv3 Tests", SnmpAgentConfig.VERSION3));
         return suite;
     }
 
@@ -71,26 +85,20 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
             waitForSignal();
 
 
-            assertInterfaceMibObjectsPresent(collector.getCollectionSet());
+            assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 1);
     }
 
-    private void assertInterfaceMibObjectsPresent(CollectionSet collectionSet) {
+    private void assertInterfaceMibObjectsPresent(CollectionSet collectionSet, int expectedIfCount) {
         assertNotNull(collectionSet);
       
         if (getAttributeList().isEmpty()) return;
         
-        collectionSet.visit(new ResourceVisitor() {
 
-            public void visitResource(CollectionResource resource) {
-                if (!(resource instanceof IfInfo)) return;
-                
-                IfInfo ifInfo = (IfInfo) resource;
-                assertMibObjectsPresent(ifInfo, getAttributeList());
-                    
-            }
-            
-        });
-
+        IfInfoVisitor ifInfoVisitor = new IfInfoVisitor();
+		collectionSet.visit(ifInfoVisitor);
+		
+		assertEquals("Unexpected number of interfaces", expectedIfCount, ifInfoVisitor.ifInfoCount);
+		
     }
 
     private Set getSnmpInterfaces() {
@@ -110,6 +118,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     public void testInvalidVar() throws Exception {
         addAttribute("invalid", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
         
+        assertFalse(getAttributeList().isEmpty());
+
         createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
@@ -117,7 +127,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         // remove the failing element.  Now entries should match
         getAttributeList().remove(0);
-        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 1);
     }
     
     public void testBadApple() throws Exception {
@@ -130,6 +140,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         addIfOutErrors();
         addIfInDiscards();
         
+        assertFalse(getAttributeList().isEmpty());
+        
         createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
@@ -137,18 +149,20 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         // remove the bad apple before compare
         getAttributeList().remove(2);
-        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 1);
     }
     
     public void testManyVars() throws Exception {
         addIfTable();
         
+        assertFalse(getAttributeList().isEmpty());
+
         createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
         
-        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 1);
     }
 
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
@@ -174,6 +188,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     public void testManyIfs() throws Exception {
         addIfTable();
         
+        assertFalse(getAttributeList().isEmpty());
+
         createSnmpInterface(1, 24, "lo0", CollectionType.PRIMARY);
         createSnmpInterface(2, 55, "gif0", CollectionType.SECONDARY);
         createSnmpInterface(3, 57, "stf0", CollectionType.COLLECT);
@@ -181,7 +197,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
         
-        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 3);
     }
 
     // TODO: add test for very large v2 request

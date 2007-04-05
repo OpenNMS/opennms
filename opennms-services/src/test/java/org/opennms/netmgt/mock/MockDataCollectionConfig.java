@@ -43,7 +43,6 @@ import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 
 public class MockDataCollectionConfig implements DataCollectionConfig {
     
@@ -71,6 +70,7 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         {
             "sysDescr", ".1.3.6.1.2.1.1.1", "0", "string"
         },
+        
         { 
             "ifNumber",    ".1.3.6.1.2.1.2.1", "0", "integer" 
         },
@@ -168,7 +168,7 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         return (MibObject)getAttrMap().get(aliasOrOid);
     }
 
-    public void addAttributeType(SnmpCollectorTestCase case1, String alias, String oid, String inst, String type) {
+    public void addAttributeType(String alias, String oid, String inst, String type) {
         MibObject attrType = getAttributeType(alias, oid,    inst, type);
         getAttrList().add(attrType);
     }
