@@ -454,7 +454,9 @@ opennms.home = ${opennms.home}
     <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
-    <install.pid.file>${install.dir}/logs/opennms.pid</install.pid.file>
+    <install.daemonlogs.dir>${install.logs.dir}/daemon</install.daemonlogs.dir>
+    <install.webapplogs.dir>${install.logs.dir}/webapp</install.webapplogs.dir>
+    <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
 
     <!-- install.prefix: a prefix used for installation in or chroot -->
     <install.prefix />
