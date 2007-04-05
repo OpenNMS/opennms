@@ -137,7 +137,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>native-maven-plugin</artifactId>
-        <version>1.0-alpha-1</version>
+        <version>1.0-alpha-2</version>
       </plugin>
     </plugins>
   </pluginManagement>
