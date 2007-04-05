@@ -47,7 +47,7 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
-import org.opennms.netmgt.snmp.TestSnmpValue;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
@@ -182,7 +182,7 @@ public class BasePersisterTest extends TestCase {
         
         AttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
         
-        return new Attribute(resource, attributeType, new TestSnmpValue.StringSnmpValue("foo"));
+        return new Attribute(resource, attributeType, SnmpUtils.getValueFactory().getOctetString("foo".getBytes()));
     }
 
     private void initPersister() throws IOException {

@@ -43,7 +43,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.opennms.netmgt.snmp.VersionSettingTestSuite;
+import org.opennms.test.VersionSettingTestSuite;
 
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     

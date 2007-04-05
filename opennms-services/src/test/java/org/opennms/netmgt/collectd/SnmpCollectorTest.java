@@ -41,6 +41,7 @@ import java.util.LinkedList;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -54,7 +55,6 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdConfig;
-import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgent;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;

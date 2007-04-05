@@ -43,7 +43,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
-import org.opennms.netmgt.snmp.VersionSettingTestSuite;
+import org.opennms.test.VersionSettingTestSuite;
 
 
 public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
