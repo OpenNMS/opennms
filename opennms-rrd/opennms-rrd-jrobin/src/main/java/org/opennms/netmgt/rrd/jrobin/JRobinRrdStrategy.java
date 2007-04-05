@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 05 Apr 2007: Java 5 generics and loops. - dj@opennms.org
  * 19 Mar 2007: Add createGraphReturnDetails and move assertion of a graph being created to JRobinRrdGraphDetails. - dj@opennms.org
  * 19 Mar 2007: Indent, add support for PRINT in graphs. - dj@opennms.org
  * 02 Mar 2007: Add support for --base and fix some log messages. - dj@opennms.org
@@ -43,7 +44,6 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -77,7 +77,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         ((RrdDb) rrdFile).close();
     }
 
-    public Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception {
+    public Object createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
 
@@ -93,8 +93,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         def.setStartTime(1000);
         def.setStep(step);
         
-        for (Iterator iter = dataSources.iterator(); iter.hasNext();) {
-            RrdDataSource dataSource = (RrdDataSource) iter.next();
+        for (RrdDataSource dataSource : dataSources) {
             String dsMin = dataSource.getMin();
             String dsMax = dataSource.getMax();
             double min = (dsMin == null || "U".equals(dsMin) ? Double.NaN : Double.parseDouble(dsMin));
@@ -102,8 +101,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
             def.addDatasource(dataSource.getName(), dataSource.getType(), dataSource.getHeartBeat(), min, max);
         }
 
-        for (Iterator it = rraList.iterator(); it.hasNext();) {
-            String rra = (String) it.next();
+        for (String rra : rraList) {
             def.addArchive(rra);
         }
 

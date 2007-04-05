@@ -1,42 +1,40 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// Mar 19, 2007: Added createGraphReturnDetails (just throws UnsupportedOperationException for now).  Improved exception message in createGraph if we can't run the command. - dj@opennms.org
-// Jul 8, 2004: Created this file.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified 
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 Apr 05: Code formatting, implement log(), Java 5 generics and loops. - dj@opennms.org
+ * 2007 Mar 19: Added createGraphReturnDetails (just throws UnsupportedOperationException for now).  Improved exception message in createGraph if we can't run the command. - dj@opennms.org
+ * 2004 Jul 08: Created this file.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *       
+ * For more information contact: 
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.rrd.rrdtool;
 
 import java.io.BufferedInputStream;
@@ -47,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -101,11 +98,12 @@ public class JniRrdStrategy implements RrdStrategy {
      *             exception of intialize has not been called.
      */
     private void checkState(String methodName) {
-        if (!initialized)
+        if (!initialized) {
             throw new IllegalStateException("the " + methodName + " method cannot be called before initialize");
+        }
     }
 
-    public Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception {
+    public Object createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         checkState("createDefinition");
 
         File f = new File(directory);
@@ -113,8 +111,9 @@ public class JniRrdStrategy implements RrdStrategy {
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         
-        if (new File(fileName).exists())
+        if (new File(fileName).exists()) {
             return null;
+        }
 
         StringBuffer createCmd = new StringBuffer("create");
 
@@ -124,8 +123,7 @@ public class JniRrdStrategy implements RrdStrategy {
 
         createCmd.append(" --step=" + step);
         
-        for (Iterator iter = dataSources.iterator(); iter.hasNext();) {
-            RrdDataSource dataSource = (RrdDataSource) iter.next();
+        for (RrdDataSource dataSource : dataSources) {
             createCmd.append(" DS:");
             createCmd.append(dataSource.getName()).append(':');
             createCmd.append(dataSource.getType()).append(":");
@@ -135,8 +133,7 @@ public class JniRrdStrategy implements RrdStrategy {
         }
 
 
-        for (Iterator it = rraList.iterator(); it.hasNext();) {
-            String rra = (String) it.next();
+        for (String rra : rraList) {
             createCmd.append(' ');
             createCmd.append(rra);
         }
@@ -204,58 +201,55 @@ public class JniRrdStrategy implements RrdStrategy {
      */
     public Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException {
         checkState("fetchLastValue");
-        // Log4j category
-        //
-        Category log = ThreadCategory.getInstance(getClass());
 
-        // Generate rrd_fetch() command through jrrd JNI interface in order to
-        // retrieve
-        // LAST pdp for the datasource stored in the specified RRD file
-        //
-        // String array returned from launch() native method format:
-        // String[0] - If success is null, otherwise contains reason for failure
-        // String[1] - All data source names contained in the RRD (space
-        // delimited)
-        // String[2]...String[n] - RRD fetch data in the following format:
-        // <timestamp> <value1> <value2> ... <valueX> where X is
-        // the total number of data sources
-        //
-        // NOTE: Specifying start time of 'now-<interval>' and
-        // end time of 'now-<interval>' where <interval> is the
-        // configured thresholding interval (and should be the
-        // same as the RRD step size) in order to guarantee that
-        // we don't get a 'NaN' value from the fetch command. This
-        // is necessary because the collection is being done by collectd
-        // and there is nothing keeping us in sync.
-        // 
-        // interval argument is in milliseconds so must convert to seconds
-        //
+        /*
+         * Generate rrd_fetch() command through jrrd JNI interface in order to
+         * retrieve LAST pdp for the datasource stored in the specified RRD
+         * file.
+         *
+         * String array returned from launch() native method format:
+         *      String[0] - If success is null, otherwise contains reason
+         *                  for failure
+         *      String[1] - All data source names contained in the RRD (space
+         *                  delimited)
+         *      String[2 ... n] - RRD fetch data in the following format:
+         *                      <timestamp> <value1> <value2> ... <valueX>
+         *                  X is the total number of data sources.
+         *
+         * NOTE: Specifying start time of 'now-<interval>' and end time of
+         * 'now-<interval>' where <interval> is the configured thresholding
+         * interval (and should be the same as the RRD step size) in order to
+         * guarantee that we don't get a 'NaN' value from the fetch command.
+         * This is necessary because the collection is being done by collectd at
+         * effectively random times and there is nothing keeping us in sync.
+         * 
+         * interval argument is in milliseconds so must convert to seconds
+         */
         
         // TODO: Combine fetchLastValueInRange and fetchLastValue
-        
         String fetchCmd = "fetch " + rrdFile + " AVERAGE -s now-" + interval / 1000 + " -e now-" + interval / 1000;
 
-        if (log.isDebugEnabled()) {
-            log.debug("fetch: Issuing RRD command: " + fetchCmd);
+        if (log().isDebugEnabled()) {
+            log().debug("fetch: Issuing RRD command: " + fetchCmd);
         }
 
         String[] fetchStrings = Interface.launch(fetchCmd);
 
         // Sanity check the returned string array
         if (fetchStrings == null) {
-            log.error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
+            log().error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
             return null;
         }
 
         // Check error string at index 0, will be null if 'fetch' was successful
         if (fetchStrings[0] != null) {
-            log.error("fetch: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
+            log().error("fetch: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
             return null;
         }
 
         // Sanity check
         if (fetchStrings[1] == null || fetchStrings[2] == null) {
-            log.error("fetch: RRD database 'fetch' failed, no data retrieved.");
+            log().error("fetch: RRD database 'fetch' failed, no data retrieved.");
             return null;
         }
 
@@ -273,13 +267,13 @@ public class JniRrdStrategy implements RrdStrategy {
             try {
                 dsValue = new Double(fetchStrings[2].trim());
             } catch (NumberFormatException nfe) {
-                log.warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                log().warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
                 throw nfe;
             }
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("fetch: fetch successful: " + dsName + "= " + dsValue);
+        if (log().isDebugEnabled()) {
+            log().debug("fetch: fetch successful: " + dsName + "= " + dsValue);
         }
 
         return dsValue;
@@ -287,9 +281,6 @@ public class JniRrdStrategy implements RrdStrategy {
 
     public Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException {
         checkState("fetchLastValue");
-        // Log4j category
-        //
-        Category log = ThreadCategory.getInstance(getClass());
 
         // Generate rrd_fetch() command through jrrd JNI interface in order to
         // retrieve
@@ -320,8 +311,8 @@ public class JniRrdStrategy implements RrdStrategy {
         long latestUpdateTime = (now - (now % interval)) / 1000L;
         long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
         
-        if (log.isDebugEnabled()) {
-        	log.debug("fetchInRange: fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
+        if (log().isDebugEnabled()) {
+        	log().debug("fetchInRange: fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
         }
         
         String fetchCmd = "fetch " + rrdFile + " AVERAGE -s " + earliestUpdateTime + " -e " + latestUpdateTime;
@@ -330,26 +321,26 @@ public class JniRrdStrategy implements RrdStrategy {
 
         // Sanity check the returned string array
         if (fetchStrings == null) {
-            log.error("fetchInRange: Unexpected error issuing RRD 'fetch' command, no error text available.");
+            log().error("fetchInRange: Unexpected error issuing RRD 'fetch' command, no error text available.");
             return null;
         }
 
         // Check error string at index 0, will be null if 'fetch' was successful
         if (fetchStrings[0] != null) {
-            log.error("fetchInRange: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
+            log().error("fetchInRange: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
             return null;
         }
 
         // Sanity check
         if (fetchStrings[1] == null || fetchStrings[2] == null) {
-            log.error("fetchInRange: RRD database 'fetch' failed, no data retrieved.");
+            log().error("fetchInRange: RRD database 'fetch' failed, no data retrieved.");
             return null;
         }
         
         int numFetched = fetchStrings.length;
         
-        if (log.isDebugEnabled()) {
-        	log.debug("fetchInRange: got " + numFetched + " strings from RRD");
+        if (log().isDebugEnabled()) {
+        	log().debug("fetchInRange: got " + numFetched + " strings from RRD");
         }
 
         // String at index 1 contains the RRDs datasource names
@@ -362,16 +353,16 @@ public class JniRrdStrategy implements RrdStrategy {
         
         for(int i = fetchStrings.length - 2; i > 1; i--) {
         	if ( fetchStrings[i].trim().equalsIgnoreCase("nan") ) {
-        	    log.debug("fetchInRange: Got a NaN value - continuing back in time");
+        	    log().debug("fetchInRange: Got a NaN value - continuing back in time");
         	} else {
         		try {
                     dsValue = new Double(fetchStrings[i].trim());
-                    if (log.isDebugEnabled()) {
-                        log.debug("fetchInRange: fetch successful: " + dsName + "= " + dsValue);
+                    if (log().isDebugEnabled()) {
+                        log().debug("fetchInRange: fetch successful: " + dsName + "= " + dsValue);
                     }
                     return dsValue;
                 } catch (NumberFormatException nfe) {
-                    log.warn("fetchInRange: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                    log().warn("fetchInRange: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
                     throw nfe;
                 }
           	}

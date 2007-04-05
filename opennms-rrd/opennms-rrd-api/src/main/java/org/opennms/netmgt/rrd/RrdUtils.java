@@ -10,7 +10,8 @@
 //
 // Modifications:
 //
-// Jun 24, 2004: Created this file.
+// 2007 Apr 05: Use Java 5 generics.
+// 2004 Jun 24: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -176,11 +177,11 @@ public class RrdUtils {
      *            a List of the round robin archives to create in the database
      * @return true if the file was actually created, false otherwise
      */
-    public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws RrdException {
+    public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List<String> rraList) throws RrdException {
         return createRRD(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
     }
 
-    public static boolean createRRD(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws RrdException {
+    public static boolean createRRD(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws RrdException {
         String fileName = rrdName + getExtension();
 
         String completePath = directory + File.separator + fileName;
