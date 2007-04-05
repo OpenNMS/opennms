@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Use ConfigurationFileUtils.getTopProjectDirectory() to get the top-level project directory and merge two regular expressions for matching iplike.{so,dylib} that were nearly identical. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,6 +40,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.PrintStream;
 
+import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.util.StringUtils;
 
 public class PopulatedTemporaryDatabaseTestCase extends
@@ -90,11 +95,7 @@ public class PopulatedTemporaryDatabaseTestCase extends
     }
 
     protected File findIpLikeLibrary() {
-        File topDir = new File("..");
-        assertTrue("top-level build directory exists at ..: " + topDir.getAbsolutePath(), topDir.exists());
-        
-        File topDirPomXml = new File(topDir, "pom.xml");
-        assertTrue("top-level build directory exists at ../pom.xml: " + topDirPomXml.getAbsolutePath(), topDirPomXml.exists());
+        File topDir = ConfigurationTestUtils.getTopProjectDirectory();
         
         File ipLikeDir = new File(topDir, "opennms-iplike");
         assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
@@ -122,9 +123,7 @@ public class PopulatedTemporaryDatabaseTestCase extends
           
             File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
                 public boolean accept(File file) {
-                    if (file.isFile()
-                        && (file.getName().matches("opennms-iplike-.*\\.so")
-                            || file.getName().matches("opennms-iplike-.*\\.dylib"))) {
+                    if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
                         return true;
                     } else {
                         return false;

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Convert to use AbstractTransactionalDaoTestCase, reorganized testSave(), added a test for the case where distPoller is not set. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,17 +40,11 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.test.ThrowableAnticipator;
+import org.springframework.dao.DataIntegrityViolationException;
 
-public class AlarmDaoTest extends AbstractDaoTestCase {
-
-    public void setUp() throws Exception {
-        //setPopulate(false);
-        super.setUp();
-    }
-    
+public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
     public void testSave() {
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");
         event.setEventDisplay("Y");
@@ -58,7 +56,42 @@ public class AlarmDaoTest extends AbstractDaoTestCase {
         event.setEventSource("test");
         getEventDao().save(event);
         
-        OnmsNode node = (OnmsNode) getNodeDao().findAll().iterator().next();
+        OnmsNode node = getNodeDao().findAll().iterator().next();
+
+        OnmsAlarm alarm = new OnmsAlarm();
+        
+        alarm.setNode(node);
+        alarm.setUei(event.getEventUei());
+        alarm.setSeverity(event.getEventSeverity());
+        alarm.setFirstEventTime(event.getEventTime());
+        alarm.setLastEvent(event);
+        alarm.setCounter(new Integer(1));
+        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        
+        getAlarmDao().save(alarm);
+        // It works we're so smart! hehe
+        
+        OnmsAlarm newAlarm = getAlarmDao().load(alarm.getId());
+        assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
+        assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
+    }
+    
+    public void testWithoutDistPoller() {
+        OnmsEvent event = new OnmsEvent();
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setEventCreateTime(new Date());
+        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setEventTime(new Date());
+        event.setEventSeverity(new Integer(7));
+        event.setEventUei("uei://org/opennms/test/EventDaoTest");
+        event.setEventSource("test");
+        getEventDao().save(event);
+        
+        OnmsNode node = getNodeDao().findAll().iterator().next();
+
+        OnmsAlarm alarm = new OnmsAlarm();
+        
         alarm.setNode(node);
         alarm.setUei(event.getEventUei());
         alarm.setSeverity(event.getEventSeverity());
@@ -66,10 +99,15 @@ public class AlarmDaoTest extends AbstractDaoTestCase {
         alarm.setLastEvent(event);
         alarm.setCounter(new Integer(1));
         
-        getAlarmDao().save(alarm);
-        //it works we're so smart! hehe
-        OnmsAlarm newAlarm = getAlarmDao().load(alarm.getId());
-        assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
-        assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new DataIntegrityViolationException("not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller"));
+        
+        try {
+            getAlarmDao().save(alarm);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        
+        ta.verifyAnticipated();
     }
 }

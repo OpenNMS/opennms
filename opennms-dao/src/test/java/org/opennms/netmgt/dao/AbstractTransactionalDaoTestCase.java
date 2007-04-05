@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Use DaoTestConfigBean to set system properties. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,12 +40,15 @@ import java.util.Date;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.test.DaoTestConfigBean;
 
 public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
@@ -65,7 +72,8 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private boolean m_populate = true;
     
     public AbstractTransactionalDaoTestCase() {
-        System.setProperty("opennms.home", "../opennms-daemon/src/main/filtered");
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.afterPropertiesSet();
     }
     
     @Override
@@ -196,6 +204,20 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
         OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
+        
+        OnmsCategory category = new OnmsCategory();
+        category.setName("some category");
+        getCategoryDao().save(category);
+        getCategoryDao().flush();
+        
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setUei(event.getEventUei());
+        alarm.setCounter(1);
+        alarm.setSeverity(0);
+        alarm.setLastEvent(event);
+        getAlarmDao().save(alarm);
+        getAlarmDao().flush();
     }
     
     private OnmsServiceType getServiceType(String svcName) {
