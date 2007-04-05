@@ -1,45 +1,25 @@
 package org.opennms.netmgt.correlation.drools;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.easymock.EasyMock.expect;
 
-import org.easymock.EasyMock;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.EasyMockUtils;
 
 
 public class NodeParentRulesTest extends CorrelationRulesTestCase {
-    
-    List<Object> mocks = new ArrayList<Object>();
-    
-    public <T> T createMock(Class<T> mockClass) {
-        T mock = EasyMock.createMock(mockClass);
-        mocks.add(mock);
-        return mock;
-    }
-    
-    public void replay() {
-        EasyMock.replay(mocks.toArray());
-    }
-    
-    public void verify(DroolsCorrelationEngine engine) {
-        EasyMock.verify(mocks.toArray());
-        EasyMock.reset(mocks.toArray());
-        super.verify(engine);
-    }
+    private EasyMockUtils m_mocks = new EasyMockUtils();
     
     public void testParentNodeDown() throws Exception {
         
         //anticipate(createRootCauseEvent(1, 1));
         
-        NodeService nodeService = createMock(NodeService.class);
+        NodeService nodeService = m_mocks.createMock(NodeService.class);
         
         expect(nodeService.getParentNode(1L)).andReturn(null);
         
-        replay();
+        m_mocks.replayAll();
         
         DroolsCorrelationEngine engine = findEngineByName("nodeParentRules");
         engine.setGlobal("nodeService", nodeService);
@@ -49,6 +29,7 @@ public class NodeParentRulesTest extends CorrelationRulesTestCase {
         // event + root cause
         m_anticipatedMemorySize = 2;
         
+        m_mocks.verifyAll();
         verify(engine);
         
         anticipate(createRootCauseResolvedEvent(1, 1));
@@ -60,9 +41,10 @@ public class NodeParentRulesTest extends CorrelationRulesTestCase {
 
     }
 
-    private Event createRootCauseEvent(int symptom, int cause) {
-        return new EventBuilder(createNodeEvent("rootCauseEvent", cause)).getEvent();
-    }
+    // Currently unused
+//    private Event createRootCauseEvent(int symptom, int cause) {
+//        return new EventBuilder(createNodeEvent("rootCauseEvent", cause)).getEvent();
+//    }
 
 
     public Event createNodeDownEvent(int nodeid) {
