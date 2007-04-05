@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Add the ipInterface reference to an snmpInterface when we create the snmpInterface.  This should possibly be done in SnmpInterface, instead. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -120,6 +124,8 @@ public class NetworkBuilder {
 		public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
 		    OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
 		    m_iface.setSnmpInterface(snmpIf);
+            // TODO: Should this be done in setSnmpInterface?
+            snmpIf.getIpInterfaces().add(m_iface);
 		    return new SnmpInterfaceBuilder(snmpIf);
 
 		}
