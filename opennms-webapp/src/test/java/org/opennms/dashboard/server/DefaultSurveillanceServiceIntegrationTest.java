@@ -30,7 +30,7 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
         System.setProperty("distributed.layoutApplicationsVertically", "false");
         
         // FIXME: We should never modify anything under src... this should be under target
-        System.setProperty("opennms.logs.dir", "src/test/opennms-home/logs");
+        System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
         System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
         
         Reader schemaReader = ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml");

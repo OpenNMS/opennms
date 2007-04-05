@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Change the property for the logs directory. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -53,7 +57,8 @@ public class DefaultPollServiceIntegrationTest extends AbstractTransactionalData
 		if (!rrdDir.exists()) {
 			rrdDir.mkdirs();
 		}
-		System.setProperty("opennms.logs.dir", "src/test/opennms-home/logs");
+		// FIXME we should never write data to src... this should go in target
+		System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
 		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
 	}
 	

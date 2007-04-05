@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 05: Change the property for the logs directory. - dj@opennms.org
 // 2007 Feb 01: Add new property that is needed and make testGetRangeOutages work. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -61,7 +62,7 @@ public class DefaultOutageServiceIntegrationTest extends
 		}
                 System.setProperty("distributed.layoutApplicationsVertically", "false");
                 // FIXME: We should never modify anything under src... this should be under target
-		System.setProperty("opennms.logs.dir", "src/test/opennms-home/logs");
+		System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
 		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
 	}
 

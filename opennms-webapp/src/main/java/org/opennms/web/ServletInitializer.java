@@ -10,7 +10,9 @@
 //
 // Modifications:
 //
-// 2003 Feb 2: Changed Log4J initialization.
+// 2007 Apr 05: Don't initialize log4j ourselves; let it happen in web.xml at
+//              the hands of Spring's log4j initializer. - dj@opennms.org
+// 2003 Feb 02: Changed Log4J initialization.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -47,7 +49,6 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;
@@ -143,10 +144,10 @@ public class ServletInitializer extends Object {
                 Vault.setHomeDir(homeDir);
 
                 // initialize Log4J for use inside the webapp
-                org.apache.log4j.LogManager.resetConfiguration();
-                PropertyConfigurator.configure(homeDir + "/etc/log4j.properties");
+//                org.apache.log4j.LogManager.resetConfiguration();
+//                PropertyConfigurator.configure(homeDir + "/etc/log4j.properties");
 
-                // get the database parameters from the bluebird properties
+                // get the database parameters
                 String dbUrl = properties.getProperty("opennms.db.url");
                 String dbDriver = properties.getProperty("opennms.db.driver");
                 String username = properties.getProperty("opennms.db.user");
