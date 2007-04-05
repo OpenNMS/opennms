@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Make annotation nullability and default values match what's in create.sql. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -154,7 +158,7 @@ public class OnmsAlarm implements Serializable {
 
     private String m_qosAlarmState;
 
-    private int m_x733ProbableCause;
+    private int m_x733ProbableCause = 0;
 
     /** full constructor */
     public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, org.opennms.netmgt.model.OnmsEvent event) {
@@ -229,7 +233,7 @@ public class OnmsAlarm implements Serializable {
      *         
      */
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="dpName")
+    @JoinColumn(name="dpName", nullable=false)
     public OnmsDistPoller getDistPoller() {
         return this.m_distPoller;
     }
@@ -498,7 +502,7 @@ public class OnmsAlarm implements Serializable {
         m_x733AlarmType = alarmType;
     }
     
-    @Column(name="x733ProbableCause")
+    @Column(name="x733ProbableCause", nullable=false)
     public int getX733ProbableCause() {
         return m_x733ProbableCause;
     }
