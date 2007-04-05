@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Remove a comment from when we switched to AbstractTransactionalDaoTestCase. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,7 +51,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
 
-//public class NodeDaoTest extends AbstractDaoTestCase {
 public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
     public void testSave() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
