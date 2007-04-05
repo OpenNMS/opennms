@@ -29,12 +29,11 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.dao.support;
 
 import java.io.File;
 
 import org.opennms.netmgt.config.StorageStrategy;
-import org.opennms.netmgt.dao.support.RrdFileConstants;
 
 public class IndexStorageStrategy implements StorageStrategy {
     private String m_resourceTypeName;

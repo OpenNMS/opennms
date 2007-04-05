@@ -10,12 +10,12 @@
 
     <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collectd.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collectd.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
     <groups>

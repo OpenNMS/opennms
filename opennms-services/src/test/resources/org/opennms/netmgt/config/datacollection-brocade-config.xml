@@ -9,7 +9,7 @@
     </rrd>
     <resourceType name="brocadeFCPortIndex" label="Brocade Fibre Channel Port">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collectd.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
     <groups>
       <!-- data from standard (mib-2) sources -->
