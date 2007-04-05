@@ -29,13 +29,14 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.collectd;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.concurrent.BarrierSignaler;
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.collectd.Attribute;
 import org.opennms.netmgt.collectd.AttributeVisitor;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -51,10 +52,29 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
+import org.springframework.core.io.ClassPathResource;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
-    protected BarrierSignaler m_signaler;
+    private final class AttributeVerifier extends AttributeVisitor {
+		private final List list;
+
+		public int attributeCount = 0;
+		private AttributeVerifier(List list) {
+			this.list = list;
+		}
+
+		public void visitAttribute(Attribute attribute) {
+			attributeCount++;
+		    assertMibObjectPresent(attribute, list);
+		}
+	}
+
+	protected BarrierSignaler m_signaler;
     public MockDataCollectionConfig m_config;
     
     protected SnmpObjId m_sysNameOid;
@@ -62,19 +82,21 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected SnmpObjId m_ifOutOctets;
     protected SnmpObjId m_invalid;
     
-    private int m_version = SnmpAgentConfig.VERSION1;
     protected CollectionAgent m_agent;
     private SnmpWalker m_walker;
     protected CollectionSet m_collectionSet;
     
+    protected MockSnmpAgent m_mockAgent;
+    
     public void setVersion(int version) {
         super.setVersion(version);
-        m_version = version;
     }
 
     protected void setUp() throws Exception {
         setStartEventd(false);
         super.setUp();
+        
+        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), myLocalHost()+"/9161");
         
         m_config = new MockDataCollectionConfig();
         DataCollectionConfigFactory.setInstance(m_config);
@@ -91,19 +113,19 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     protected void tearDown() throws Exception {
+    	m_mockAgent.shutDown();
+    	while(!m_mockAgent.isStopped()) {
+    		Thread.sleep(10);
+    	}
         super.tearDown();
     }
     
     protected void assertMibObjectsPresent(CollectionResource resource, final List attrList) {
         assertNotNull(resource);
         
-        resource.visit(new AttributeVisitor() {
-
-            public void visitAttribute(Attribute attribute) {
-                assertMibObjectPresent(attribute, attrList);
-            }
-            
-        });
+        AttributeVerifier attributeVerifier = new AttributeVerifier(attrList);
+		resource.visit(attributeVerifier);
+		assertEquals("Unexpected number of attributes", attrList.size(), attributeVerifier.attributeCount);
     }
 
     protected void assertMibObjectPresent(Attribute attribute, List attrList) {
@@ -152,7 +174,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     protected void addAttribute(String alias, String oid, String inst, String type) {
-        m_config.addAttributeType(this, alias, oid, inst, type);
+        m_config.addAttributeType(alias, oid, inst, type);
     }
 
     protected void addIfTable() {
@@ -247,7 +269,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
     
     protected void initializeAgent() {
-        ServiceParameters params = new ServiceParameters(new HashMap());
+        ServiceParameters params = new ServiceParameters(new HashMap<String, String>());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(m_agent, params);
         m_collectionSet = snmpCollection.createCollectionSet(m_agent);
         m_agent.validateAgent();

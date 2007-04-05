@@ -31,7 +31,11 @@
 //
 package org.opennms.netmgt.snmp;
 
-public class InstanceTrackerTest extends SnmpCollectorTestCase {
+import junit.framework.TestCase;
+
+public class InstanceTrackerTest extends TestCase {
+	
+	private SnmpObjId m_sysNameOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
 
     public class MyColumnTracker extends ColumnTracker {
 

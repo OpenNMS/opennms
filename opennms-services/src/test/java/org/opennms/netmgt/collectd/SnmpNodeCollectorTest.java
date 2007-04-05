@@ -33,16 +33,10 @@ package org.opennms.netmgt.collectd;
 
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.test.VersionSettingTestSuite;
 
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
@@ -52,6 +46,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         TestSuite suite = new TestSuite(testClass.getName());
         suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpAgentConfig.VERSION1));
         suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpAgentConfig.VERSION2C));
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv3 Tests", SnmpAgentConfig.VERSION3));
         return suite;
     }
 

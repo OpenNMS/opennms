@@ -1310,9 +1310,10 @@ public class OpenNMSTestCase extends TestCase {
                 " port=\"161\"\n" +
                 " version=\"v1\">\n" +
                 "\n" +
-                "   <definition version=\""+myVersion()+"\" " +
+                "   <definition port=\"9161\" version=\""+myVersion()+"\" " +
                 "       security-name=\"opennmsUser\" \n" + 
-                "       auth-passphrase=\"0p3nNMSv3\" >\n" +
+                "       auth-passphrase=\"0p3nNMSv3\" \n" +
+                "       privacy-passphrase=\"0p3nNMSv3\" >\n" +
                 "       <specific>"+myLocalHost()+"</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
