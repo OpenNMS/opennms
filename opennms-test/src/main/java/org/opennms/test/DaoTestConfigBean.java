@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2007 Apr 05: Add the ability to set an absolute home directory and
+ *              have a sane default if neither is set. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -36,6 +38,7 @@
 package org.opennms.test;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * Support class to help with configuration that needs to happen in
@@ -47,7 +50,8 @@ import org.springframework.beans.factory.InitializingBean;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DaoTestConfigBean implements InitializingBean {
-    private String m_relativeHomeDirectory = "src/test/opennms-home";
+    private String m_relativeHomeDirectory = null;
+    private String m_absoluteHomeDirectory = null; 
     private String m_rrdBinary = "/bin/true";
     private String m_relativeRrdBaseDirectory = "target/test/opennms-home/share/rrd";
 
@@ -55,7 +59,16 @@ public class DaoTestConfigBean implements InitializingBean {
     }
 
     public void afterPropertiesSet() {
-        ConfigurationTestUtils.setRelativeHomeDirectory(m_relativeHomeDirectory);
+        Assert.state(m_relativeHomeDirectory == null || m_absoluteHomeDirectory == null, "Only one of the properties relativeHomeDirectory and absoluteHomeDirectory can be set.");
+        
+        if (m_absoluteHomeDirectory != null) {
+            ConfigurationTestUtils.setAbsoluteHomeDirectory(m_absoluteHomeDirectory);
+        } else if (m_relativeHomeDirectory != null) {
+            ConfigurationTestUtils.setRelativeHomeDirectory(m_relativeHomeDirectory);
+        } else {
+            ConfigurationTestUtils.setAbsoluteHomeDirectory(ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
+        }
+        
         ConfigurationTestUtils.setRrdBinary(m_rrdBinary);
         ConfigurationTestUtils.setRelativeRrdBaseDirectory(m_relativeRrdBaseDirectory);
     }
