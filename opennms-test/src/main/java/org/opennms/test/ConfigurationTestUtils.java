@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 05: Add methods to get the current directory, top-level project directory,
+//              and daemon directory.  Add methods to set some common system properties
+//              used in tests. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,6 +51,9 @@ import java.io.StringReader;
 import junit.framework.Assert;
 
 public class ConfigurationTestUtils extends Assert {
+    private static final String POM_FILE = "pom.xml";
+    private static final String DAEMON_DIRECTORY = "opennms-daemon";
+
     public static Reader getReaderForResource(Object obj, String resource) {
         return new InputStreamReader(getInputStreamForResource(obj, resource));
     }
@@ -99,11 +108,73 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     public static InputStream getInputStreamForConfigFile(String configFile) throws FileNotFoundException {
-        String path = "../opennms-daemon/src/main/filtered/etc/" + configFile;
-        File file = new File(path);
-        assertTrue("configuration file '" + configFile + "' does not exist at " + path, file.exists());
+        File file = new File(getDaemonProjectDirectory(), "src/main/filtered/etc/" + configFile);
+        assertTrue("configuration file '" + configFile + "' does not exist at " + file.getAbsolutePath(), file.exists());
         InputStream is = new FileInputStream(file);
         return is;
+    }
+    
+    public static void setRelativeHomeDirectory(String relativeHomeDirectory) {
+        System.setProperty("opennms.home", new File(getCurrentDirectory().getAbsolutePath(), relativeHomeDirectory).getAbsolutePath());
+    }
+
+    public static File getTopProjectDirectory() {
+        File currentDirectory = getCurrentDirectory();
+
+        File pomFile = new File(currentDirectory, POM_FILE);
+        assertTrue("pom.xml in current directory should exist: " + pomFile.getAbsolutePath(), pomFile.exists());
+        
+        return findTopProjectDirectory(currentDirectory);
+    }
+
+    private static File getCurrentDirectory() {
+        File currentDirectory = new File(System.getProperty("user.dir"));
+        assertTrue("current directory should exist: " + currentDirectory.getAbsolutePath(), currentDirectory.exists());
+        assertTrue("current directory should be a directory: " + currentDirectory.getAbsolutePath(), currentDirectory.isDirectory());
+        return currentDirectory;
+    }
+
+    public static File getDaemonProjectDirectory() {
+        File topLevelDirectory = getTopProjectDirectory();
+        File daemonDirectory = new File(topLevelDirectory, DAEMON_DIRECTORY);
+        if (!daemonDirectory.exists()) {
+            throw new IllegalStateException("Could not find a " + DAEMON_DIRECTORY + " in the location top-level directory: " + topLevelDirectory);
+        }
+        
+        File pomFile = new File(daemonDirectory, POM_FILE);
+        assertTrue("pom.xml in " + DAEMON_DIRECTORY + " directory should exist: " + pomFile.getAbsolutePath(), pomFile.exists());
+        
+        return daemonDirectory;
+    }
+
+    private static File findTopProjectDirectory(File currentDirectory) {
+        File buildFile = new File(currentDirectory, "build.sh");
+        if (buildFile.exists()) {
+            File pomFile = new File(currentDirectory, POM_FILE);
+            assertTrue("pom.xml in " + DAEMON_DIRECTORY + " directory should exist: " + pomFile.getAbsolutePath(), pomFile.exists());
+            
+            return currentDirectory;
+        } else {
+            File parentDirectory = currentDirectory.getParentFile();
+            
+            if (parentDirectory == null || parentDirectory == currentDirectory) {
+                return null;
+            } else {
+                return findTopProjectDirectory(parentDirectory);
+            }
+        }
+    }
+
+    public static void setRrdBinary(String path) {
+        System.setProperty("rrd.binary", path);
+    }
+
+    public static void setRelativeRrdBaseDirectory(String relativePath) {
+        File rrdDir = new File(getCurrentDirectory(), relativePath);
+        if (!rrdDir.exists()) {
+            rrdDir.mkdirs();
+        }
+        System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
     }
 
 }
