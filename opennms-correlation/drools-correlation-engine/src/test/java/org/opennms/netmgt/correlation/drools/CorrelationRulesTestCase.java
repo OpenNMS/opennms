@@ -2,7 +2,6 @@ package org.opennms.netmgt.correlation.drools;
 
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
