@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 05: Change the property for the logs directory. - dj@opennms.org
 // 2006 Sep 10: Don't require config files to be in /opt/OpenNMS/etc. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -66,7 +67,8 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
 		if (!rrdDir.exists()) {
 			rrdDir.mkdirs();
 		}
-		System.setProperty("opennms.logs.dir", "src/test/opennms-home/logs");
+		// FIXME: We should never modify anything under src... this should be under target
+		System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
 		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
     }
     

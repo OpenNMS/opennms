@@ -43,7 +43,7 @@ OPENNMS_HOME="@install.dir@"
 OPENNMS_PIDFILE="@install.pid.file@"
 
 # Log directory for OpenNMS
-LOG_DIRECTORY="@install.logs.dir@"
+LOG_DIRECTORY="@install.daemonlogs.dir@"
 
 # Directory where init functions are likely stored (we also check a few other
 # directories, just in case)
