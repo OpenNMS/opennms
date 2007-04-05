@@ -2,21 +2,20 @@ package org.opennms.netmgt.correlation.drools;
 
 import java.util.List;
 
-import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.opennms.test.DaoTestConfigBean;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
-import org.springframework.util.StringUtils;
 
 public class DroolsCorrelationEngineBuilderTest extends AbstractDependencyInjectionSpringContextTests {
 
     public DroolsCorrelationEngineBuilderTest() {
-        System.setProperty("opennms.home", PropertiesUtils.substitute("${user.dir}/src/test/opennms-home", System.getProperties()));
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
+        daoTestConfig.afterPropertiesSet();
         
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
     }
