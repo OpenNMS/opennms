@@ -12,5 +12,6 @@
     <module>opennms-snmp-api</module>
     <module>opennms-snmp-joesnmp</module>
     <module>opennms-snmp-snmp4j</module>
+    <module>opennms-snmp-test</module>
   </modules>
 </project>
