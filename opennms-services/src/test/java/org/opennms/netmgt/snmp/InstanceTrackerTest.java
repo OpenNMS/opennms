@@ -31,8 +31,6 @@
 //
 package org.opennms.netmgt.snmp;
 
-import org.opennms.netmgt.snmp.TestSnmpValue;
-
 public class InstanceTrackerTest extends SnmpCollectorTestCase {
 
     public class MyColumnTracker extends ColumnTracker {
@@ -115,7 +113,7 @@ public class InstanceTrackerTest extends SnmpCollectorTestCase {
         assertEquals(expectedOids.length, builder.getCount());
         rp.processErrors(0, 0);
         for(int i = 0; i < receivedOids.length; i++)
-            rp.processResponse(receivedOids[i], new TestSnmpValue(SnmpValue.SNMP_OCTET_STRING, "Value"));
+            rp.processResponse(receivedOids[i], SnmpUtils.getValueFactory().getOctetString("Value".getBytes()));
         
         
     }

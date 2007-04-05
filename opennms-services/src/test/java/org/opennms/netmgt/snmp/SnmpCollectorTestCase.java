@@ -51,12 +51,10 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
-import org.opennms.netmgt.snmp.mock.TestAgent;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
     protected BarrierSignaler m_signaler;
-    public TestAgent m_testAgent = new TestAgent();
     public MockDataCollectionConfig m_config;
     
     protected SnmpObjId m_sysNameOid;

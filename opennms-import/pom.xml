@@ -77,9 +77,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-snmp4j</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
+      <artifactId>mock-snmp-agent</artifactId>
       <scope>test</scope>
     </dependency>
 

@@ -77,6 +77,7 @@
   <modules>
     <module>dependencies</module>
     <module>opennms-test</module>
+    <module>mock-snmp-agent</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-joesnmp</module>
@@ -893,6 +894,12 @@ opennms.home = ${opennms.home}
         <groupId>org.opennms</groupId>
         <artifactId>drools-correlation-engine</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>mock-snmp-agent</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
