@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Apr 05: Add methods to get the opennms-daemon src/main/filtered/etc directory
+//              and to set an absolute home directory. - dj@opennms.org
 // 2007 Apr 05: Add methods to get the current directory, top-level project directory,
 //              and daemon directory.  Add methods to set some common system properties
 //              used in tests. - dj@opennms.org
@@ -108,14 +110,22 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     public static InputStream getInputStreamForConfigFile(String configFile) throws FileNotFoundException {
-        File file = new File(getDaemonProjectDirectory(), "src/main/filtered/etc/" + configFile);
+        File file = new File(getDaemonEtcDirectory(), configFile);
         assertTrue("configuration file '" + configFile + "' does not exist at " + file.getAbsolutePath(), file.exists());
         InputStream is = new FileInputStream(file);
         return is;
     }
     
+    public static File getDaemonEtcDirectory() {
+        return new File(getDaemonProjectDirectory(), "src/main/filtered/etc");
+    }
+    
     public static void setRelativeHomeDirectory(String relativeHomeDirectory) {
-        System.setProperty("opennms.home", new File(getCurrentDirectory().getAbsolutePath(), relativeHomeDirectory).getAbsolutePath());
+        setAbsoluteHomeDirectory(new File(getCurrentDirectory().getAbsolutePath(), relativeHomeDirectory).getAbsolutePath());
+    }
+
+    public static void setAbsoluteHomeDirectory(final String absoluteHomeDirectory) {
+        System.setProperty("opennms.home", absoluteHomeDirectory);
     }
 
     public static File getTopProjectDirectory() {
