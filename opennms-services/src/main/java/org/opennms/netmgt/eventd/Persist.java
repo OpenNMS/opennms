@@ -379,7 +379,9 @@ class Persist {
             /*
              * This removes all previous events that have been reduced.
              */
+            log().debug("insertOrUpdate: auto-clean is: "+event.getAlarmData().getAutoClean());
             if (event.getAlarmData().getAutoClean() == true) {
+                log().debug("insertOrUpdate: deleting previous events.");
                 cleanPreviousEvents(alarmId, event.getDbid());
             }
             
@@ -398,7 +400,7 @@ class Persist {
             stmt = m_dsConn.prepareStatement("DELETE FROM events WHERE alarmId = ? AND eventId != ?");
             stmt.setInt(1, alarmId);
             stmt.setInt(2, eventId);
-            stmt.execute();
+            stmt.executeUpdate();
         } catch (SQLException e) {
             log().error("cleanPreviousEvents: Couldn't remove old events.", e);
         }
