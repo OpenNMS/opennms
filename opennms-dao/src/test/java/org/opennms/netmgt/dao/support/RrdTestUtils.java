@@ -10,7 +10,8 @@ import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 
 public class RrdTestUtils {
     // Reference the class name this way so that it is refactoring resistant
-    private static final String RRD_CONFIG = "org.opennms.rrd.strategyClass=" + JRobinRrdStrategy.class.getName();
+    private static final String RRD_CONFIG = "org.opennms.rrd.strategyClass=" + JRobinRrdStrategy.class.getName()
+        + "\norg.opennms.rrd.usequeue=false";
 
     /**
      * This class cannot be instantiated.  Use static methods.
