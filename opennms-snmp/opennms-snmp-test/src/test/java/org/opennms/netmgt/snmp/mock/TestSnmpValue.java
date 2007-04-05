@@ -241,6 +241,8 @@ public class TestSnmpValue implements SnmpValue {
             return new NumberSnmpValue(SnmpValue.SNMP_GAUGE32, mibVal.substring("Gauge32:".length()).trim());
         else if (mibVal.startsWith("Counter32:"))
             return new NumberSnmpValue(SnmpValue.SNMP_COUNTER32, mibVal.substring("Counter32:".length()).trim());
+        else if (mibVal.startsWith("Counter64:"))
+            return new NumberSnmpValue(SnmpValue.SNMP_COUNTER64, mibVal.substring("Counter64:".length()).trim());
         else if (mibVal.startsWith("IpAddress:"))
             return new IpAddressSnmpValue(mibVal.substring("IpAddress:".length()).trim());
         else if (mibVal.startsWith("Hex-STRING:"))

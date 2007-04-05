@@ -47,8 +47,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.test.PropertySettingTestSuite;
 
 public class SnmpPluginTest extends OpenNMSTestCase {
 

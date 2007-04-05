@@ -106,7 +106,7 @@ public class TestAgentTest extends TestCase {
     
     public void testLoadSnmpData() throws Exception {
         TestAgent agent = new TestAgent();
-        agent.loadSnmpTestData(getClass(), "loadSnmpDataTest.properties");
+        agent.loadSnmpTestData(getClass(), "/loadSnmpDataTest.properties");
         SnmpObjId z1 = SnmpObjId.get(zeroInst1Base, "0");
         assertEquals("TestData", agent.getValueFor(z1).toString());
         

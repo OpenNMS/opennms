@@ -34,11 +34,11 @@ package org.opennms.netmgt.trapd;
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.test.PropertySettingTestSuite;
 
 public class SyntaxToEventTest extends OpenNMSTestCase {
     public static TestSuite suite() {

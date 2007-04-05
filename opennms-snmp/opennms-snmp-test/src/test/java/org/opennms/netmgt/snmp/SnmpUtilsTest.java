@@ -35,11 +35,12 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.test.PropertySettingTestSuite;
+
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.mock.OpenNMSTestCase;
-
-public class SnmpUtilsTest extends OpenNMSTestCase implements TrapProcessorFactory {
+public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     
     private TestTrapListener m_trapListener;
 
@@ -110,7 +111,6 @@ public class SnmpUtilsTest extends OpenNMSTestCase implements TrapProcessorFacto
 
 
     protected void setUp() throws Exception {
-        super.setStartEventd(false);
         super.setUp();
         
         m_trapListener = new TestTrapListener();
