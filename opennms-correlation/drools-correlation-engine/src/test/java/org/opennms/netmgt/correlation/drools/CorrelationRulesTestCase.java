@@ -1,16 +1,15 @@
 package org.opennms.netmgt.correlation.drools;
 
-import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-public class CorrelationRulesTestCase extends
-        AbstractDependencyInjectionSpringContextTests {
+public class CorrelationRulesTestCase extends AbstractDependencyInjectionSpringContextTests {
 
     private MockEventIpcManager m_eventIpcMgr;
     protected EventAnticipator m_anticipator;
@@ -18,7 +17,7 @@ public class CorrelationRulesTestCase extends
     private CorrelationEngineRegistrar m_correlator;
     
     protected CorrelationRulesTestCase() {
-        System.setProperty("opennms.home", PropertiesUtils.substitute("${user.dir}/src/test/opennms-home", System.getProperties()));
+        ConfigurationTestUtils.setRelativeHomeDirectory("src/test/opennms-home");
     }
 
     @Override
