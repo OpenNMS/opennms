@@ -31,13 +31,14 @@
 //
 package org.opennms.netmgt.collectd;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.LinkedList;
+
+import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -50,22 +51,20 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 
-import junit.framework.TestCase;
-
 public class SnmpCollectorTest extends TestCase {
-    private static final String s_rrdConfig ="org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
-
     private SnmpCollector m_snmpCollector;
 
     private MockSnmpAgent m_agent;
@@ -120,7 +119,6 @@ public class SnmpCollectorTest extends TestCase {
         initialize();
     }
 
-    // FIXME: This test doesn't seem to store any RRD data
     public void testCollect() throws Exception {
         String svcName = "SNMP";
 
@@ -151,13 +149,19 @@ public class SnmpCollectorTest extends TestCase {
         pkg.addService(service);
 
         CollectdPackage wpkg = new CollectdPackage(pkg, "foo", false);
-        CollectionSpecification spec = new CollectionSpecification(
-                                                                   wpkg,
+        CollectionSpecification spec = new CollectionSpecification(wpkg,
                                                                    svcName,
                                                                    outageCalendars,
                                                                    m_snmpCollector);
 
         CollectionAgent agent = new CollectionAgent(iface);
+        
+        File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
+        for (String file : new String[] { "tcpActiveOpens", "tcpAttemptFails", "tcpCurrEstab",
+                "tcpEstabResets", "tcpInErrors", "tcpInSegs", "tcpOutRsts", "tcpOutSegs",
+                "tcpPassiveOpens", "tcpRetransSegs" }) {
+            m_fileAnticipator.expecting(nodeDir, file + RrdUtils.getExtension());
+        }
 
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
@@ -176,15 +180,6 @@ public class SnmpCollectorTest extends TestCase {
                 + "               version=\"v1\">\n" + "</snmp-config>\n";
 
         initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
-        
-        File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
-        File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");
-        for (int i = 1; i <= 8; i++) {
-            File brocadeIndexDir = m_fileAnticipator.expecting(brocadeDir, Integer.toString(i));
-            for (String file : new String[] { "strings.properties", "swFCPortTxWords.jrb", "swFCPortRxWords.jrb" }) {
-                m_fileAnticipator.expecting(brocadeIndexDir, file);
-            }
-        }
 
         Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-brocade-config.xml");
 
@@ -207,13 +202,22 @@ public class SnmpCollectorTest extends TestCase {
         pkg.addService(service);
 
         CollectdPackage wpkg = new CollectdPackage(pkg, "foo", false);
-        CollectionSpecification spec = new CollectionSpecification(
-                                                                   wpkg,
+        CollectionSpecification spec = new CollectionSpecification(wpkg,
                                                                    svcName,
                                                                    outageCalendars,
                                                                    m_snmpCollector);
 
         CollectionAgent agent = new CollectionAgent(iface);
+        
+        File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
+        File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");
+        for (int i = 1; i <= 8; i++) {
+            File brocadeIndexDir = m_fileAnticipator.expecting(brocadeDir, Integer.toString(i));
+            m_fileAnticipator.expecting(brocadeIndexDir, "strings.properties");
+            for (String file : new String[] { "swFCPortTxWords", "swFCPortRxWords" }) {
+                m_fileAnticipator.expecting(brocadeIndexDir, file + RrdUtils.getExtension());
+            }
+        }
 
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
@@ -224,26 +228,22 @@ public class SnmpCollectorTest extends TestCase {
     }
 
     public void initialize(Reader snmpConfig, Reader dataCollectionConfig)
-            throws MarshalException, ValidationException, IOException {
-        RrdConfig.loadProperties(new ByteArrayInputStream(
-                                                          s_rrdConfig.getBytes()));
+            throws MarshalException, ValidationException, IOException, RrdException {
+        //RrdConfig.loadProperties(new ByteArrayInputStream(s_rrdConfig.getBytes()));
+        RrdTestUtils.initialize();
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfig));
-        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(
-                                                                                dataCollectionConfig));
+        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(dataCollectionConfig));
 
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this,
-                                                                 "/org/opennms/netmgt/config/test-database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(
-                                                                                rdr));
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
         rdr.close();
 
         m_snmpCollector = new SnmpCollector();
         m_snmpCollector.initialize(null); // no properties are passed
     }
 
-    public void initialize() throws IOException, MarshalException,
-            ValidationException {
+    public void initialize() throws IOException, MarshalException, ValidationException, RrdException {
         Reader snmpConfig = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/snmp-config.xml");
         Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-config.xml");
 
