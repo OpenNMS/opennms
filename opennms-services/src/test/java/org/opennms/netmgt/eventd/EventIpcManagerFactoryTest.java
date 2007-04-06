@@ -8,6 +8,11 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ * 
+ * 2007 Apr 06: Reset the factory before each test and add a test for the
+ *              non-error case. - dj@opennms.org
+ * 
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,6 +36,8 @@
  */
 package org.opennms.netmgt.eventd;
 
+import static org.easymock.EasyMock.createMock;
+
 import org.opennms.test.ThrowableAnticipator;
 
 import junit.framework.TestCase;
@@ -41,10 +48,32 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class EventIpcManagerFactoryTest extends TestCase {
-    /**
-     * This test must be first before any tests that initialize the factory,
-     * since it's a static factory.
-     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        EventIpcManagerFactory.reset();
+    }
+    
+    public void testSetIpcManager() {
+        EventIpcManager manager = createMock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(manager);
+        assertNotNull("manager should not be null", EventIpcManagerFactory.getIpcManager());
+        assertEquals("manager", manager, EventIpcManagerFactory.getIpcManager());
+    }
+    
+    public void testSetIpcManagerNull() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("argument ipcManager must not be null"));
+        
+        try {
+            EventIpcManagerFactory.setIpcManager(null);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        
+        ta.verifyAnticipated();
+    }
+    
     public void testGetIpcManagerNotInitialized() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("this factory has not been initialized"));
@@ -57,18 +86,5 @@ public class EventIpcManagerFactoryTest extends TestCase {
         
         ta.verifyAnticipated();
     }
-    
-    public void testSetIpcManagerNull() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("argument manager must not be null"));
-        
-        try {
-            EventIpcManagerFactory.setIpcManager(null);
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        
-        ta.verifyAnticipated();
-    }
-    
+
 }
