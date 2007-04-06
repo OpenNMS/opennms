@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2007 Apr 06: Use getResponseBodyAsStream to get the response from the HTTP
+//              client to avoid a possible WARN message.  Also eliminate a
+//              compile warning. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +38,9 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +61,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -211,9 +218,26 @@ public class PageSequenceMonitor extends IPv4Monitor {
                 if (!getRange().contains(code)) {
                     throw new PageSequenceMonitorException("response code out of range for uri:"+uri+". Expected "+getRange()+" but received "+code);
                 }
-                
-                String responseString = method.getResponseBodyAsString();
-                
+
+                /*
+                 * We do the work below so we don't get this message logged
+                 * by the HTTP client at the WARN level:
+                 *  
+                 *      org.apache.commons.httpclient.HttpMethodBase: Going to
+                 *      buffer response body of large or unknown size. Using
+                 *      getResponseBodyAsStream instead is recommended.
+                 *      
+                 * Note: that warning message doesn't get presented if the
+                 * server reports the size of the document, but oftentimes
+                 * during an error (or in other cases) it will not report the
+                 * size of the result.  Using the code below we ensure that
+                 * no matter what the size is, a warning won't be generated.
+                 */
+                InputStream inputStream = method.getResponseBodyAsStream();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                IOUtils.copy(inputStream, outputStream);
+                String responseString = outputStream.toString();
+
                 if (getFailurePattern() != null) {
                 	Matcher matcher = getFailurePattern().matcher(responseString);
                 	if (matcher.find()) {
@@ -322,6 +346,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
         
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
         
+        @SuppressWarnings("unchecked")
         static synchronized PageSequenceMonitorParameters get(Map paramterMap) {
             PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters)paramterMap.get(KEY);
             if (parms == null) {
