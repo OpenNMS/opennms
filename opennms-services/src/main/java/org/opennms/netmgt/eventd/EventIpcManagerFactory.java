@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 06: Add a reset method for unit tests and clean up a bit. - dj@opennms.org
 // 2007 Mar 21: Added assertions. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -46,11 +47,16 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class EventIpcManagerFactory {
-
 	/**
-     * The default EventIpcManager
+     * The EventIpcManager instance.
      */
-    protected static EventIpcManager m_defIpcManager;
+    private static EventIpcManager m_ipcManager;
+
+    /**
+     * This class only has static methods.
+     */
+    private EventIpcManagerFactory() {
+    }
 
     /**
      * Create the singleton instance of this factory
@@ -62,13 +68,21 @@ public class EventIpcManagerFactory {
      * Returns an implementation of the default EventIpcManager class
      */
     public static EventIpcManager getIpcManager() {
-        Assert.state(m_defIpcManager != null, "this factory has not been initialized");
-        return m_defIpcManager;
+        Assert.state(m_ipcManager != null, "this factory has not been initialized");
+        return m_ipcManager;
     }
 
-    public static void setIpcManager(EventIpcManager manager) {
-        Assert.notNull(manager, "argument manager must not be null");
-        m_defIpcManager = manager;
+    public static void setIpcManager(EventIpcManager ipcManager) {
+        Assert.notNull(ipcManager, "argument ipcManager must not be null");
+        m_ipcManager = ipcManager;
+    }
+    
+    /**
+     * This is here for unit testing so we can reset this class before
+     * every test.
+     */
+    protected static void reset() {
+        m_ipcManager = null;
     }
 
 }
