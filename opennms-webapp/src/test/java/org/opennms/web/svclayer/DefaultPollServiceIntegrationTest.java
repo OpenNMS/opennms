@@ -37,29 +37,19 @@ package org.opennms.web.svclayer;
 
 import static org.easymock.EasyMock.createMock;
 
-import java.io.File;
-
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.model.DemandPoll;
+import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
-import org.springframework.transaction.annotation.Transactional;
 
-public class DefaultPollServiceIntegrationTest extends AbstractTransactionalDataSourceSpringContextTests{
+public class DefaultPollServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
 	private DemandPollService m_demandPollService;
         
 	public DefaultPollServiceIntegrationTest() throws Exception {
-		File f = new File("src/test/opennms-home");
-		System.setProperty("opennms.home", f.getAbsolutePath());
-
-		File rrdDir = new File("target/test/opennms-home/share/rrd");
-		if (!rrdDir.exists()) {
-			rrdDir.mkdirs();
-		}
-		// FIXME we should never write data to src... this should go in target
-		System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
-		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
+        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
+        webAppTestConfig.afterPropertiesSet();
 	}
 	
 	@Override
@@ -77,12 +67,12 @@ public class DefaultPollServiceIntegrationTest extends AbstractTransactionalData
 	public void setDemandPollService(DemandPollService pollService) {
 		m_demandPollService = pollService;
 	}
-        
-        public void testBogus() {
-            // Empty test to keep JUnit from complaining about no tests
-        }
-	
-	@Transactional(readOnly=false)
+
+	public void testBogus() {
+	    // Empty test to keep JUnit from complaining about no tests
+	}
+    
+    // FIXME
 	public void FIXMEtestPollMonitoredService() {
 		PollerService api = createMock(PollerService.class);
 		((DefaultDemandPollService)m_demandPollService).setPollerAPI(api);

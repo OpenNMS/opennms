@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 05: Need to pass a Set<OnmsAttribute> to OnmsResource. - dj@opennms.org
  * 2007 Apr 05: Move BogusResourceType to its own top-level class,
  *              MockResourceType. - dj@opennms.org
  *
@@ -59,6 +60,7 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.support.MockResourceType;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -838,7 +840,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
         
         for (OnmsMonitoredService service : services) {
-            OnmsResource resource = new OnmsResource("foo", "even more foo", new MockResourceType(), null);
+            OnmsResource resource = new OnmsResource("foo", "even more foo", new MockResourceType(), new HashSet<OnmsAttribute>(0));
             expect(m_resourceDao.getResourceForIpInterface(service.getIpInterface(), monitor)).andReturn(resource);
             
             expect(m_graphDao.getPrefabGraphsForResource(resource)).andReturn(new PrefabGraph[] { httpGraph, httpsGraph });
