@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 06: Make sure we close {Input,Output}Streams. - dj@opennms.org
 // 2007 Apr 06: Use getResponseBodyAsStream to get the response from the HTTP
 //              client to avoid a possible WARN message.  Also eliminate a
 //              compile warning. - dj@opennms.org
@@ -235,7 +236,12 @@ public class PageSequenceMonitor extends IPv4Monitor {
                  */
                 InputStream inputStream = method.getResponseBodyAsStream();
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                IOUtils.copy(inputStream, outputStream);
+                try {
+                    IOUtils.copy(inputStream, outputStream);
+                } finally {
+                    IOUtils.closeQuietly(inputStream);
+                    IOUtils.closeQuietly(outputStream);
+                }
                 String responseString = outputStream.toString();
 
                 if (getFailurePattern() != null) {
