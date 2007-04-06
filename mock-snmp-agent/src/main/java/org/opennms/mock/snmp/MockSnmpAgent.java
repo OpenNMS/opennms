@@ -1,34 +1,34 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.mock.snmp;
 
 import java.io.File;
@@ -84,350 +84,350 @@ import org.springframework.core.io.Resource;
  */
 public class MockSnmpAgent extends BaseAgent implements Runnable {
 
-	// initialize Log4J logging
-	static {
-		LogFactory.setLogFactory(new Log4jLogFactory());
-	}
+    // initialize Log4J logging
+    static {
+        LogFactory.setLogFactory(new Log4jLogFactory());
+    }
 
-	protected String m_address;
-	private Resource m_moFile;
-	private boolean m_running;
-	private boolean m_stopped;
+    protected String m_address;
+    private Resource m_moFile;
+    private boolean m_running;
+    private boolean m_stopped;
 
-	/*
-	 * Creates the mock agent with files to read and store the boot counter,
-	 * to read and store the agent configuration, and to read the mocked
-	 * managed objects (MOs), plus a string describing the address and port
-	 * to bind to.
-	 * 
-	 * @param bootFile
-	 * 		a file containing the boot counter in serialized form (as expected by BaseAgent).
-	 * @param confFile
-	 * 		a configuration file with serialized management information.
-	 * @param moFile
-	 * 		a MIB dump file describing the managed objects to be mocked.  The current implementation
-	 * 		expects a Java properties file, which can conveniently be generated using the Net-SNMP
-	 * 		utility <code>snmpwalk</code> with the <code>-One</code> option set.
-	 */
-	public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
-		super(bootFile, confFile,
-				new CommandProcessor(new OctetString(MPv3.createLocalEngineID())));
-		m_address = bindAddress;
-		m_moFile = moFile;
-		agent.setThreadPool(ThreadPool.create("RequestPool", 4));
-	}
-	
-	public static MockSnmpAgent createAgentAndRun(Resource moFile, String bindAddress) throws InterruptedException {
+    /*
+     * Creates the mock agent with files to read and store the boot counter,
+     * to read and store the agent configuration, and to read the mocked
+     * managed objects (MOs), plus a string describing the address and port
+     * to bind to.
+     * 
+     * @param bootFile
+     * 		a file containing the boot counter in serialized form (as expected by BaseAgent).
+     * @param confFile
+     * 		a configuration file with serialized management information.
+     * @param moFile
+     * 		a MIB dump file describing the managed objects to be mocked.  The current implementation
+     * 		expects a Java properties file, which can conveniently be generated using the Net-SNMP
+     * 		utility <code>snmpwalk</code> with the <code>-One</code> option set.
+     */
+    public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
+        super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID())));
+        m_address = bindAddress;
+        m_moFile = moFile;
+        agent.setThreadPool(ThreadPool.create("RequestPool", 4));
+    }
+
+    public static MockSnmpAgent createAgentAndRun(Resource moFile, String bindAddress) throws InterruptedException {
         try {
             if (moFile.getInputStream() == null) {
-            	throw new IllegalArgumentException("could not get InputStream mock object resource; does it exist?  Resource: " + moFile);
+                throw new IllegalArgumentException("could not get InputStream mock object resource; does it exist?  Resource: " + moFile);
             }
         } catch (IOException e) {
             throw new RuntimeException("Got IOException while checking for existence of mock object file: " + e, e);
         }
-		MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
-		Thread thread = new Thread(agent);
-		thread.start();
+        
+        MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
+        Thread thread = new Thread(agent);
+        thread.start();
 
-		try {
-			while (!agent.isRunning() && thread.isAlive()) {
-				Thread.sleep(100);
-			} 
-		} catch (InterruptedException e) {
-			agent.shutDownAndWait();
-			throw e;
-		}
-		
-		if (!thread.isAlive()) {
-			agent.m_running = false;
-			agent.m_stopped = true;
-			throw new IllegalStateException("agent failed to start--check logs");
-		}
-		
-		return agent;
-	}
-	
-	public void shutDownAndWait() throws InterruptedException {
-		if (!isRunning()) {
-			return;
-		}
-		
-		shutDown();
-		
-		while (!isStopped()) {
-			Thread.sleep(100);
-		} 
-	}
-	
-	/*
-	 * Starts the <code>MockSnmpAgent</code> running.  Meant to be called from the
-	 * <code>start</code> method of class <code>Thread</code>, but could also be
-	 * used to bring up a standalone mock agent.
-	 * @see org.snmp4j.agent.BaseAgent#run()
-	 * 
-	 * @author Jeff Gehlbach
-	 * @version 1.0
-	 */
-	// XXX fix catch blocks
-	public void run() {
-		try {
-			init();
-			loadConfig(ImportModes.UPDATE_CREATE);
-			addShutdownHook();
-			super.run();
-			m_running = true;
-		} catch (BindException be) {
-			be.printStackTrace();
-			System.out.println("You probably specified an invalid address or a port < 1024");
-		} catch (IOException ie) {
-			ie.printStackTrace();
-		}
-		
-		while (m_running) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				break;
-			}
-		}
-		
-		try {
-			for (TransportMapping transportMapping : transportMappings) {
-				transportMapping.close();
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-		}
-		
-		m_stopped = true;
-	}
-	
-	/*
-	 * 
-	 */
-	public void shutDown() {
-		m_running = false;
-		m_stopped = false;
-	}
-	
-	public boolean isRunning() {
-		return m_running;
-	}
-	
-	public boolean isStopped() {
-		return m_stopped;
-	}
-	
-	@Override
-	protected void addCommunities(SnmpCommunityMIB communityMIB) {
-		Variable[] com2sec = new Variable[] {
-				new OctetString("public"),              // community name
-				new OctetString("public"),              // security name
-				getAgent().getContextEngineID(),        // local engine ID
-				new OctetString(),                      // default context name
-				new OctetString(),                      // transport tag
-				new Integer32(StorageType.nonVolatile), // storage type
-				new Integer32(RowStatus.active)         // row status
-		};
-		MOTableRow row =
-			communityMIB.getSnmpCommunityEntry().createRow(
-					new OctetString("public2public").toSubIndex(true), com2sec);
-		communityMIB.getSnmpCommunityEntry().addRow(row);
-	}
+        try {
+            while (!agent.isRunning() && thread.isAlive()) {
+                Thread.sleep(10);
+            } 
+        } catch (InterruptedException e) {
+            agent.shutDownAndWait();
+            throw e;
+        }
 
-	@Override
-	protected void addViews(VacmMIB vacm) {
-		vacm.addGroup(SecurityModel.SECURITY_MODEL_SNMPv1,
-				new OctetString("public"),
-				new OctetString("v1v2group"),
-				StorageType.nonVolatile);
-		vacm.addGroup(SecurityModel.SECURITY_MODEL_SNMPv2c,
-				new OctetString("public"),
-				new OctetString("v1v2group"),
-				StorageType.nonVolatile);
-		vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
-				new OctetString("SHADES"),
-				new OctetString("v3group"),
-				StorageType.nonVolatile);
-		vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
-				new OctetString("TEST"),
-				new OctetString("v3test"),
-				StorageType.nonVolatile);
-		vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
-				new OctetString("opennmsUser"),
-				new OctetString("v3group"),
-				StorageType.nonVolatile);
-		vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
-				new OctetString("SHA"),
-				new OctetString("v3restricted"),
-				StorageType.nonVolatile);
+        if (!thread.isAlive()) {
+            agent.m_running = false;
+            agent.m_stopped = true;
+            throw new IllegalStateException("agent failed to start--check logs");
+        }
 
-		vacm.addAccess(new OctetString("v1v2group"), new OctetString(),
-				SecurityModel.SECURITY_MODEL_ANY,
-				SecurityLevel.NOAUTH_NOPRIV, VacmMIB.vacmExactMatch,
-				new OctetString("fullReadView"),
-				new OctetString("fullWriteView"),
-				new OctetString("fullNotifyView"),
-				StorageType.nonVolatile);
-		vacm.addAccess(new OctetString("v3group"), new OctetString(),
-				SecurityModel.SECURITY_MODEL_USM,
-				SecurityLevel.AUTH_PRIV, VacmMIB.vacmExactMatch,
-				new OctetString("fullReadView"),
-				new OctetString("fullWriteView"),
-				new OctetString("fullNotifyView"),
-				StorageType.nonVolatile);
-		vacm.addAccess(new OctetString("v3restricted"), new OctetString(),
-				SecurityModel.SECURITY_MODEL_USM,
-				SecurityLevel.AUTH_NOPRIV, VacmMIB.vacmExactMatch,
-				new OctetString("restrictedReadView"),
-				new OctetString("restrictedWriteView"),
-				new OctetString("restrictedNotifyView"),
-				StorageType.nonVolatile);
-		vacm.addAccess(new OctetString("v3test"), new OctetString(),
-				SecurityModel.SECURITY_MODEL_USM,
-				SecurityLevel.AUTH_PRIV, VacmMIB.vacmExactMatch,
-				new OctetString("testReadView"),
-				new OctetString("testWriteView"),
-				new OctetString("testNotifyView"),
-				StorageType.nonVolatile);
+        return agent;
+    }
 
-		vacm.addViewTreeFamily(new OctetString("fullReadView"), new OID("1.3"),
-				new OctetString(), VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
-		vacm.addViewTreeFamily(new OctetString("fullWriteView"), new OID("1.3"),
-				new OctetString(), VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
-		vacm.addViewTreeFamily(new OctetString("fullNotifyView"), new OID("1.3"),
-				new OctetString(), VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
+    public void shutDownAndWait() throws InterruptedException {
+        if (!isRunning()) {
+            return;
+        }
 
-		vacm.addViewTreeFamily(new OctetString("restrictedReadView"),
-				new OID("1.3.6.1.2"),
-				new OctetString(), VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
-		vacm.addViewTreeFamily(new OctetString("restrictedWriteView"),
-				new OID("1.3.6.1.2.1"),
-				new OctetString(),
-				VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
-		vacm.addViewTreeFamily(new OctetString("restrictedNotifyView"),
-				new OID("1.3.6.1.2"),
-				new OctetString(), VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
+        shutDown();
 
-		vacm.addViewTreeFamily(new OctetString("testReadView"),
-				new OID("1.3.6.1.2"),
-				new OctetString(), VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
-		vacm.addViewTreeFamily(new OctetString("testReadView"),
-				new OID("1.3.6.1.2.1.1"),
-				new OctetString(), VacmMIB.vacmViewExcluded,
-				StorageType.nonVolatile);
-		vacm.addViewTreeFamily(new OctetString("testWriteView"),
-				new OID("1.3.6.1.2.1"),
-				new OctetString(),
-				VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
-		vacm.addViewTreeFamily(new OctetString("testNotifyView"),
-				new OID("1.3.6.1.2"),
-				new OctetString(), VacmMIB.vacmViewIncluded,
-				StorageType.nonVolatile);
+        while (!isStopped()) {
+            Thread.sleep(10);
+        } 
+    }
 
-	}
+    /*
+     * Starts the <code>MockSnmpAgent</code> running.  Meant to be called from the
+     * <code>start</code> method of class <code>Thread</code>, but could also be
+     * used to bring up a standalone mock agent.
+     * @see org.snmp4j.agent.BaseAgent#run()
+     * 
+     * @author Jeff Gehlbach
+     * @version 1.0
+     */
+    // XXX fix catch blocks
+    public void run() {
+        try {
+            init();
+            loadConfig(ImportModes.UPDATE_CREATE);
+            addShutdownHook();
+            super.run();
+            m_running = true;
+        } catch (BindException be) {
+            be.printStackTrace();
+            System.err.println("You probably specified an invalid address or a port < 1024 and are not running as root");
+        } catch (IOException ie) {
+            ie.printStackTrace();
+        }
 
-	@Override
-	protected void addNotificationTargets(SnmpTargetMIB targetMIB,
-			SnmpNotificationMIB notificationMIB) {
-		targetMIB.addDefaultTDomains();
+        while (m_running) {
+            try {
+                Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
 
-		targetMIB.addTargetAddress(new OctetString("notification"),
-				TransportDomains.transportDomainUdpIpv4,
-				new OctetString(new UdpAddress("127.0.0.1/162").getValue()),
-				200, 1,
-				new OctetString("notify"),
-				new OctetString("v2c"),
-				StorageType.permanent);
-		targetMIB.addTargetParams(new OctetString("v2c"),
-				MessageProcessingModel.MPv2c,
-				SecurityModel.SECURITY_MODEL_SNMPv2c,
-				new OctetString("public"),
-				SecurityLevel.NOAUTH_NOPRIV,
-				StorageType.permanent);
-		notificationMIB.addNotifyEntry(new OctetString("default"),
-				new OctetString("notify"),
-				SnmpNotificationMIB.SnmpNotifyTypeEnum.trap,
-				StorageType.permanent);
-	}
+        try {
+            for (TransportMapping transportMapping : transportMappings) {
+                transportMapping.close();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
 
-	@Override
-	protected void addUsmUser(USM usm) {
-		UsmUser user = new UsmUser(new OctetString("SHADES"),
-				AuthSHA.ID,
-				new OctetString("SHADESAuthPassword"),
-				PrivDES.ID,
-				new OctetString("SHADESPrivPassword"));
-		usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
-		user = new UsmUser(new OctetString("TEST"),
-				AuthSHA.ID,
-				new OctetString("maplesyrup"),
-				PrivDES.ID,
-				new OctetString("maplesyrup"));
-		usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
-		user = new UsmUser(new OctetString("opennmsUser"),
-				AuthMD5.ID,
-				new OctetString("0p3nNMSv3"),
-				PrivDES.ID,
-				new OctetString("0p3nNMSv3"));
-		usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
-		user = new UsmUser(new OctetString("SHA"),
-				AuthSHA.ID,
-				new OctetString("SHAAuthPassword"),
-				null,
-				null);
-		usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
-	}
-	
-	protected void initTransportMappings() throws IOException {
-	    transportMappings = new TransportMapping[1];
-	    transportMappings[0] =
-	    		new DefaultUdpTransportMapping(new UdpAddress(m_address));
-	}
-	
-	
+        m_stopped = true;
+    }
 
-	// override the agent defaults since we are providing all the agent data
-	@Override
-	protected void registerSnmpMIBs() {
-		registerManagedObjects();
-	}
-	
+    /*
+     * 
+     */
+    public void shutDown() {
+        m_running = false;
+        m_stopped = false;
+    }
+
+    public boolean isRunning() {
+        return m_running;
+    }
+
+    public boolean isStopped() {
+        return m_stopped;
+    }
+
+    @Override
+    protected void addCommunities(SnmpCommunityMIB communityMIB) {
+        Variable[] com2sec = new Variable[] {
+                new OctetString("public"),              // community name
+                new OctetString("public"),              // security name
+                getAgent().getContextEngineID(),        // local engine ID
+                new OctetString(),                      // default context name
+                new OctetString(),                      // transport tag
+                new Integer32(StorageType.nonVolatile), // storage type
+                new Integer32(RowStatus.active)         // row status
+        };
+        MOTableRow row =
+            communityMIB.getSnmpCommunityEntry().createRow(
+                                                           new OctetString("public2public").toSubIndex(true), com2sec);
+        communityMIB.getSnmpCommunityEntry().addRow(row);
+    }
+
+    @Override
+    protected void addViews(VacmMIB vacm) {
+        vacm.addGroup(SecurityModel.SECURITY_MODEL_SNMPv1,
+                      new OctetString("public"),
+                      new OctetString("v1v2group"),
+                      StorageType.nonVolatile);
+        vacm.addGroup(SecurityModel.SECURITY_MODEL_SNMPv2c,
+                      new OctetString("public"),
+                      new OctetString("v1v2group"),
+                      StorageType.nonVolatile);
+        vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
+                      new OctetString("SHADES"),
+                      new OctetString("v3group"),
+                      StorageType.nonVolatile);
+        vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
+                      new OctetString("TEST"),
+                      new OctetString("v3test"),
+                      StorageType.nonVolatile);
+        vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
+                      new OctetString("opennmsUser"),
+                      new OctetString("v3group"),
+                      StorageType.nonVolatile);
+        vacm.addGroup(SecurityModel.SECURITY_MODEL_USM,
+                      new OctetString("SHA"),
+                      new OctetString("v3restricted"),
+                      StorageType.nonVolatile);
+
+        vacm.addAccess(new OctetString("v1v2group"), new OctetString(),
+                       SecurityModel.SECURITY_MODEL_ANY,
+                       SecurityLevel.NOAUTH_NOPRIV, VacmMIB.vacmExactMatch,
+                       new OctetString("fullReadView"),
+                       new OctetString("fullWriteView"),
+                       new OctetString("fullNotifyView"),
+                       StorageType.nonVolatile);
+        vacm.addAccess(new OctetString("v3group"), new OctetString(),
+                       SecurityModel.SECURITY_MODEL_USM,
+                       SecurityLevel.AUTH_PRIV, VacmMIB.vacmExactMatch,
+                       new OctetString("fullReadView"),
+                       new OctetString("fullWriteView"),
+                       new OctetString("fullNotifyView"),
+                       StorageType.nonVolatile);
+        vacm.addAccess(new OctetString("v3restricted"), new OctetString(),
+                       SecurityModel.SECURITY_MODEL_USM,
+                       SecurityLevel.AUTH_NOPRIV, VacmMIB.vacmExactMatch,
+                       new OctetString("restrictedReadView"),
+                       new OctetString("restrictedWriteView"),
+                       new OctetString("restrictedNotifyView"),
+                       StorageType.nonVolatile);
+        vacm.addAccess(new OctetString("v3test"), new OctetString(),
+                       SecurityModel.SECURITY_MODEL_USM,
+                       SecurityLevel.AUTH_PRIV, VacmMIB.vacmExactMatch,
+                       new OctetString("testReadView"),
+                       new OctetString("testWriteView"),
+                       new OctetString("testNotifyView"),
+                       StorageType.nonVolatile);
+
+        vacm.addViewTreeFamily(new OctetString("fullReadView"), new OID("1.3"),
+                               new OctetString(), VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+        vacm.addViewTreeFamily(new OctetString("fullWriteView"), new OID("1.3"),
+                               new OctetString(), VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+        vacm.addViewTreeFamily(new OctetString("fullNotifyView"), new OID("1.3"),
+                               new OctetString(), VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+
+        vacm.addViewTreeFamily(new OctetString("restrictedReadView"),
+                               new OID("1.3.6.1.2"),
+                               new OctetString(), VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+        vacm.addViewTreeFamily(new OctetString("restrictedWriteView"),
+                               new OID("1.3.6.1.2.1"),
+                               new OctetString(),
+                               VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+        vacm.addViewTreeFamily(new OctetString("restrictedNotifyView"),
+                               new OID("1.3.6.1.2"),
+                               new OctetString(), VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+
+        vacm.addViewTreeFamily(new OctetString("testReadView"),
+                               new OID("1.3.6.1.2"),
+                               new OctetString(), VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+        vacm.addViewTreeFamily(new OctetString("testReadView"),
+                               new OID("1.3.6.1.2.1.1"),
+                               new OctetString(), VacmMIB.vacmViewExcluded,
+                               StorageType.nonVolatile);
+        vacm.addViewTreeFamily(new OctetString("testWriteView"),
+                               new OID("1.3.6.1.2.1"),
+                               new OctetString(),
+                               VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+        vacm.addViewTreeFamily(new OctetString("testNotifyView"),
+                               new OID("1.3.6.1.2"),
+                               new OctetString(), VacmMIB.vacmViewIncluded,
+                               StorageType.nonVolatile);
+
+    }
+
+    @Override
+    protected void addNotificationTargets(SnmpTargetMIB targetMIB,
+            SnmpNotificationMIB notificationMIB) {
+        targetMIB.addDefaultTDomains();
+
+        targetMIB.addTargetAddress(new OctetString("notification"),
+                                   TransportDomains.transportDomainUdpIpv4,
+                                   new OctetString(new UdpAddress("127.0.0.1/162").getValue()),
+                                   200, 1,
+                                   new OctetString("notify"),
+                                   new OctetString("v2c"),
+                                   StorageType.permanent);
+        targetMIB.addTargetParams(new OctetString("v2c"),
+                                  MessageProcessingModel.MPv2c,
+                                  SecurityModel.SECURITY_MODEL_SNMPv2c,
+                                  new OctetString("public"),
+                                  SecurityLevel.NOAUTH_NOPRIV,
+                                  StorageType.permanent);
+        notificationMIB.addNotifyEntry(new OctetString("default"),
+                                       new OctetString("notify"),
+                                       SnmpNotificationMIB.SnmpNotifyTypeEnum.trap,
+                                       StorageType.permanent);
+    }
+
+    @Override
+    protected void addUsmUser(USM usm) {
+        UsmUser user = new UsmUser(new OctetString("SHADES"),
+                                   AuthSHA.ID,
+                                   new OctetString("SHADESAuthPassword"),
+                                   PrivDES.ID,
+                                   new OctetString("SHADESPrivPassword"));
+        usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
+        user = new UsmUser(new OctetString("TEST"),
+                           AuthSHA.ID,
+                           new OctetString("maplesyrup"),
+                           PrivDES.ID,
+                           new OctetString("maplesyrup"));
+        usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
+        user = new UsmUser(new OctetString("opennmsUser"),
+                           AuthMD5.ID,
+                           new OctetString("0p3nNMSv3"),
+                           PrivDES.ID,
+                           new OctetString("0p3nNMSv3"));
+        usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
+        user = new UsmUser(new OctetString("SHA"),
+                           AuthSHA.ID,
+                           new OctetString("SHAAuthPassword"),
+                           null,
+                           null);
+        usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
+    }
+
+    protected void initTransportMappings() throws IOException {
+        transportMappings = new TransportMapping[1];
+        transportMappings[0] =
+            new DefaultUdpTransportMapping(new UdpAddress(m_address));
+    }
 
 
-	@Override
-	protected void unregisterSnmpMIBs() {
-	}
 
-	@Override
-	protected void registerManagedObjects() {
-		ArrayList<ManagedObject> moList = createMockMOs();
-		Iterator<ManagedObject> moListIter = moList.iterator();
-		while (moListIter.hasNext()) {
-			try {
-				server.register(moListIter.next(), null);
-			}
-			catch (DuplicateRegistrationException ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
+    // override the agent defaults since we are providing all the agent data
+    @Override
+    protected void registerSnmpMIBs() {
+        registerManagedObjects();
+    }
 
-	@Override
-	protected void unregisterManagedObjects() {
-		// here we should unregister those objects previously registered...
-	}
-	
-	protected ArrayList<ManagedObject> createMockMOs() {
-		MockSnmpMOLoader moLoader = new PropsMockSnmpMOLoaderImpl(m_moFile);
-		return moLoader.loadMOs();
-	}
+
+
+    @Override
+    protected void unregisterSnmpMIBs() {
+    }
+
+    @Override
+    protected void registerManagedObjects() {
+        ArrayList<ManagedObject> moList = createMockMOs();
+        Iterator<ManagedObject> moListIter = moList.iterator();
+        while (moListIter.hasNext()) {
+            try {
+                server.register(moListIter.next(), null);
+            }
+            catch (DuplicateRegistrationException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void unregisterManagedObjects() {
+        // here we should unregister those objects previously registered...
+    }
+
+    protected ArrayList<ManagedObject> createMockMOs() {
+        MockSnmpMOLoader moLoader = new PropsMockSnmpMOLoaderImpl(m_moFile);
+        return moLoader.loadMOs();
+    }
 }
