@@ -39,8 +39,6 @@ package org.opennms.netmgt.mock;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
@@ -59,6 +57,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+
 public class OpenNMSTestCase extends TestCase {
 
     /*
@@ -1369,14 +1368,16 @@ public class OpenNMSTestCase extends TestCase {
      */
     protected String myLocalHost() {
         
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            fail("Exception getting localhost");
-        }
+//        try {
+//            return InetAddress.getLocalHost().getHostAddress();
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//            fail("Exception getting localhost");
+//        }
+//        
+//        return null;
         
-        return null;
+        return "127.0.0.1";
     }
     
     private String myVersion() {
