@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 05: Use DaoTestConfigBean to set system properties. - dj@opennms.org
 // 2007 Apr 05: Set rrd.base.dir property. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -48,18 +49,25 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.test.DaoTestConfigBean;
 
 public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
     private PollerBackEnd m_backEnd;
     private SessionFactory m_sessionFactory;
     
-    @Override
-    protected String[] getConfigLocations() {
+    public PollerBackEndIntegrationTest() {
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
         System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
-        System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
-        System.setProperty("rrd.base.dir", System.getProperty("java.io.tmpdir"));
+        
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.setRelativeHomeDirectory("src/test/test-configurations/PollerBackEndIntegrationTest");
+        daoTestConfig.afterPropertiesSet();
+    }
+    
+    
+    @Override
+    protected String[] getConfigLocations() {
         return new String[] { 
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
                 "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
