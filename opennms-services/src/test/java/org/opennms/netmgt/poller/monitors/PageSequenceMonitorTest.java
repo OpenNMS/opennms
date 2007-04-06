@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 06: Separate out testSimple into individual tests and
+//              pass the virtual host in the config to keep cookie
+//              warnings from happening.  Verify that nothing is
+//              logged at a level at WARN or higher. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -42,6 +49,7 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -57,6 +65,8 @@ public class PageSequenceMonitorTest extends TestCase {
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
+        
+        MockLogAppender.setupLogging();
 		
     	m_monitor = new PageSequenceMonitor();
     	m_monitor.initialize(Collections.EMPTY_MAP);
@@ -80,26 +90,42 @@ public class PageSequenceMonitorTest extends TestCase {
     
     @Override
 	protected void tearDown() throws Exception {
+        MockLogAppender.assertNoWarningsOrGreater();
+        
 		super.tearDown();
 	}
     
-    public void testSimple() throws Exception {
-		m_params.put("page-sequence", "" +
-				"<?xml version=\"1.0\"?>" +
-				"<page-sequence>\n" + 
-				"  <page path=\"/\" port=\"80\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"I'm Feeling Lucky\" />\n" + 
-				"</page-sequence>\n");
-		
-		
+    public void testSimpleGoogle() throws Exception {
+        setPageSequenceParam("www.google.com");
         PollStatus googleStatus = m_monitor.poll(getHttpService("www.google.com"), m_params);
         assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+    }
         
+    public void testSimpleBogus() throws Exception {
+        setPageSequenceParam(null);
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
-		assertTrue(notLikely.isUnavailable());
+		assertTrue("should not be available", notLikely.isUnavailable());
+    }
 
+    public void testSimpleYahoo() throws Exception {
+        setPageSequenceParam("www.yahoo.com");
         PollStatus yahooStatus = m_monitor.poll(getHttpService("www.yahoo.com"), m_params);
-        assertTrue(yahooStatus.isUnavailable());
+        assertTrue("should not be available", yahooStatus.isUnavailable());
+    }
+
+    private void setPageSequenceParam(String virtualHost) {
+        String virtualHostParam;
+        if (virtualHost == null) {
+            virtualHostParam = "";
+        } else {
+            virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
+        }
         
+        m_params.put("page-sequence", "" +
+				"<?xml version=\"1.0\"?>" +
+				"<page-sequence>\n" + 
+				"  <page path=\"/\" port=\"80\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"I'm Feeling Lucky\" " + virtualHostParam + "/>\n" + 
+				"</page-sequence>\n");
     }
 
     public void testHttps() throws Exception {
