@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 06: Use DaoTestConfigBean for system properties. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -36,6 +37,7 @@
 package org.opennms.netmgt.topn.jmx;
 
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.test.DaoTestConfigBean;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -43,10 +45,10 @@ import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringCon
 public class TopndTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     public TopndTest() {
         super();
-        
-        System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
-        System.setProperty("rrd.base.dir", System.getProperty("java.io.tmpdir"));
-        System.setProperty("rrd.binary", "/bin/true");
+
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        //daoTestConfig.setRelativeHomeDirectory("src/test/test-configurations/PollerBackEndIntegrationTest");
+        daoTestConfig.afterPropertiesSet();
     }
     
     public void testInitStartStop() throws Exception {
