@@ -37,21 +37,21 @@
 
 package org.opennms.web.svclayer.support;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransactionalDataSourceSpringContextTests {
+public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     
     private SiteStatusViewService m_aggregateService;
     
@@ -60,16 +60,8 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
      *  for integration testing.
      */
     public DefaultSiteStatusServiceIntegrationTest() throws Exception {
-    	File f = new File("src/test/opennms-home");
-		System.setProperty("opennms.home", f.getAbsolutePath());
-
-		File rrdDir = new File("target/test/opennms-home/share/rrd");
-		if (!rrdDir.exists()) {
-			rrdDir.mkdirs();
-		}
-		// FIXME: We should never modify anything under src... this should be under target
-		System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
-		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
+        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
+        webAppTestConfig.afterPropertiesSet();
     }
     
     /**
