@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 06: Use DaoTestConfigBean to setup system properties. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,6 +41,7 @@ import java.util.Properties;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.test.BaseIntegrationTestCase;
+import org.opennms.test.DaoTestConfigBean;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -46,6 +51,18 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
     private PollerSettings m_settings;
     private ClassPathXmlApplicationContext m_frontEndContext;
     
+    public PollerFrontEndIntegrationTest() {
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.setRelativeHomeDirectory("src/test/test-configurations/PollerBackEndIntegrationTest");
+        daoTestConfig.afterPropertiesSet();
+        
+        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
+        String configFile = "/tmp/remote-poller.configuration";
+        File config = new File(configFile);
+        config.delete();
+        System.setProperty("opennms.poller.configuration.resource", "file://"+configFile);
+        System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
+    }
     
 
     @Override
@@ -86,13 +103,6 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
 
     @Override
     protected String[] getConfigLocations() {
-        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
-        String configFile = "/tmp/remote-poller.configuration";
-        File config = new File(configFile);
-        config.delete();
-        System.setProperty("opennms.poller.configuration.resource", "file://"+configFile);
-        System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
-        System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndIntegrationTest");
         return new String[] {
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
                 "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
