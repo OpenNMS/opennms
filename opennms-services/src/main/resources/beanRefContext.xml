@@ -22,5 +22,14 @@
      <constructor-arg ref="daoContext" />
    </bean>
    
+    <bean id="topnDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-topnDaemon.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daoContext" />
+   </bean>
+   
         
 </beans>
