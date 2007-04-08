@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 07: Reorganize a bit.  Close Readers in the same method that causes
+//              them to be opened as suggested by brozow@. - dj@opennms.org 
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -72,15 +77,17 @@ public class DefaultSurveillanceViewConfigDao implements SurveillanceViewConfigD
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("Opening XML configuration file '" + configFile.getAbsolutePath() + "'", e);
         }
         
-        return loadFromReader(reader);
-    }
-    
-    private SurveillanceViewConfig loadFromReader(Reader reader) {
+        SurveillanceViewConfig config;
         try {
-            return new SurveillanceViewConfig(reader);
+            config = loadFromReader(reader);
         } finally {
             IOUtils.closeQuietly(reader);
         }
+        return config;
+    }
+    
+    private SurveillanceViewConfig loadFromReader(Reader reader) {
+        return new SurveillanceViewConfig(reader);
     }
 
     public View getView(String viewName) {
@@ -151,9 +158,7 @@ public class DefaultSurveillanceViewConfigDao implements SurveillanceViewConfigD
         }
     }
 
-    public void afterPropertiesSet() throws IOException {
-        Assert.state(m_configResource != null, "property configResource must be set and be non-null");
-
+    private void initializeConfiguration() throws IOException {
         File file = null;
         try {
             file = m_configResource.getFile();
@@ -165,9 +170,21 @@ public class DefaultSurveillanceViewConfigDao implements SurveillanceViewConfigD
             SurveillanceViewConfig config = loadFromFile(file);
             m_container = new FileReloadContainer<SurveillanceViewConfig>(config, file, m_callback);
         } else {
-            SurveillanceViewConfig config = loadFromReader(new InputStreamReader(m_configResource.getInputStream()));
+            Reader reader = new InputStreamReader(m_configResource.getInputStream());
+            SurveillanceViewConfig  config;
+            try {
+                config = loadFromReader(reader);
+            } finally {
+                IOUtils.closeQuietly(reader);
+            }
             m_container = new FileReloadContainer<SurveillanceViewConfig>(config);
         }
+    }
+
+    public void afterPropertiesSet() throws IOException {
+        Assert.state(m_configResource != null, "property configResource must be set and be non-null");
+
+        initializeConfiguration();
     }
 
     public Resource getConfigResource() {
