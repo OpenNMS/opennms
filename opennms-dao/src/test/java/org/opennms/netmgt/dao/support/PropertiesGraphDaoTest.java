@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 07: Refactor to use setters and an afterPropertiesSet method for
+//              configuration and initialization instead of configuration
+//              passed to the constructor. - dj@opennms.org 
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,6 +40,7 @@ package org.opennms.netmgt.dao.support;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -131,13 +138,8 @@ public class PropertiesGraphDaoTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        /*
-        m_properties = new Properties();
-        m_properties.load(new ByteArrayInputStream(s_propertiesString.getBytes()));
-        m_graphs = PropertiesGraphDao.getPrefabGraphDefinitions(m_properties);
-        */
         
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         ByteArrayInputStream in = new ByteArrayInputStream(s_prefab.getBytes());
         dao.loadProperties("performance", in);
         
@@ -250,22 +252,22 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
 
     public void testLoadSnmpGraphProperties() throws Exception {
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("snmp-graph.properties"));
     }
 
     public void testLoadSnmpAdhocGraphProperties() throws Exception {
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("snmp-adhoc-graph.properties"));
     }
 
     public void testLoadResponseTimeGraphProperties() throws Exception {
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-graph.properties"));
     }
 
     public void testLoadResponseTimeAdhocGraphProperties() throws Exception {
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-adhoc-graph.properties"));
     }
     
@@ -287,7 +289,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             
             HashMap<String, File> perfConfig = new HashMap<String, File>();
             perfConfig.put("performance", f);
-            PropertiesGraphDao dao = new PropertiesGraphDao(perfConfig, s_emptyMap);
+            PropertiesGraphDao dao = createPropertiesGraphDao(perfConfig, s_emptyMap);
             PrefabGraphType type = dao.findByName("performance");
             assertNotNull("could not get performance prefab graph type", type);
             
@@ -334,7 +336,7 @@ public class PropertiesGraphDaoTest extends TestCase {
 
             HashMap<String, File> perfConfig = new HashMap<String, File>();
             perfConfig.put("performance", f);
-            PropertiesGraphDao dao = new PropertiesGraphDao(perfConfig, s_emptyMap);
+            PropertiesGraphDao dao = createPropertiesGraphDao(perfConfig, s_emptyMap);
             PrefabGraphType type = dao.findByName("performance");
             assertNotNull("could not get performance prefab graph type", type);
             
@@ -390,7 +392,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             
             HashMap<String, File> adhocConfig = new HashMap<String, File>();
             adhocConfig.put("performance", f);
-            PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, adhocConfig);
+            PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, adhocConfig);
             AdhocGraphType type = dao.findAdhocByName("performance");
             assertNotNull("could not get performance adhoc graph type", type);
             assertEquals("image type isn't correct", "image/cheesy", type.getOutputMimeType());
@@ -417,7 +419,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
     
     public void testNoType() throws Exception {
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         String ourConfig = s_responsePrefab.replaceAll("report.icmp.type=responseTime", "");
         ByteArrayInputStream in = new ByteArrayInputStream(ourConfig.getBytes());
         dao.loadProperties("response", in);
@@ -435,7 +437,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
     
     public void testOneType() throws Exception {
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         ByteArrayInputStream in = new ByteArrayInputStream(s_responsePrefab.getBytes());
         dao.loadProperties("response", in);
         
@@ -456,7 +458,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
 
     public void testTwoTypes() throws Exception {
-        PropertiesGraphDao dao = new PropertiesGraphDao(s_emptyMap, s_emptyMap);
+        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         String ourConfig = s_responsePrefab.replaceAll("report.icmp.type=responseTime", "report.icmp.type=responseTime, distributedStatus");
         ByteArrayInputStream in = new ByteArrayInputStream(ourConfig.getBytes());
         dao.loadProperties("response", in);
@@ -474,6 +476,16 @@ public class PropertiesGraphDaoTest extends TestCase {
         
         assertTrue("should have responseTime type", graph.hasMatchingType("responseTime"));
         assertTrue("should have distributedStatus type", graph.hasMatchingType("distributedStatus"));
+    }
+
+    public PropertiesGraphDao createPropertiesGraphDao(Map<String, File> prefabConfigs, Map<String, File> adhocConfigs) throws IOException {
+        PropertiesGraphDao dao = new PropertiesGraphDao();
+        
+        dao.setPrefabConfigs(prefabConfigs);
+        dao.setAdhocConfigs(adhocConfigs);
+        dao.afterPropertiesSet();
+        
+        return dao;
     }
 
 }
