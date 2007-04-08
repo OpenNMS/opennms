@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2007 Apr 07: Refactor to use setters and an afterPropertiesSet method for
+//              configuration and initialization instead of configuration
+//              passed to the constructor. - dj@opennms.org
 // 2007 Apr 05: Make getPrefabGraphsForResource consider string properties
 //              and external values from the OnmsAttribute. - dj@opennms.org
 //
@@ -60,14 +63,18 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-public class PropertiesGraphDao implements GraphDao {
+public class PropertiesGraphDao implements GraphDao, InitializingBean {
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
+    
+    private Map<String, File> m_prefabConfigs;
+    private Map<String, File> m_adhocConfigs;
     
     private Map<String, FileReloadContainer<PrefabGraphType>> m_types =
         new HashMap<String, FileReloadContainer<PrefabGraphType>>();
@@ -80,20 +87,17 @@ public class PropertiesGraphDao implements GraphDao {
     private AdhocGraphTypeCallback m_adhocCallback =
         new AdhocGraphTypeCallback();
 
-    public PropertiesGraphDao(Map<String, File> prefabConfigs, Map<String, File> adhocConfigs) throws IOException {
-        initPrefab(prefabConfigs);
-        initAdhoc(adhocConfigs);
+    public PropertiesGraphDao() {
     }
-
     
-    private void initPrefab(Map<String, File> configMap) throws IOException {
-        for (Map.Entry<String, File> configEntry : configMap.entrySet()) {
+    private void initPrefab() throws IOException {
+        for (Map.Entry<String, File> configEntry : m_prefabConfigs.entrySet()) {
             loadProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
     
-    private void initAdhoc(Map<String, File> configMap) throws IOException {
-        for (Map.Entry<String, File> configEntry : configMap.entrySet()) {
+    private void initAdhoc() throws IOException {
+        for (Map.Entry<String, File> configEntry : m_adhocConfigs.entrySet()) {
             loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
@@ -434,6 +438,30 @@ public class PropertiesGraphDao implements GraphDao {
             }
         }
 
+    }
+    
+    public void afterPropertiesSet() throws IOException {
+        Assert.notNull(m_prefabConfigs, "property prefabConfigs must be set to a non-null value");
+        Assert.notNull(m_adhocConfigs, "property adhocConfigs must be set to a non-null value");
+        
+        initPrefab();
+        initAdhoc();
+    }
+
+    public Map<String, File> getAdhocConfigs() {
+        return m_adhocConfigs;
+    }
+
+    public void setAdhocConfigs(Map<String, File> adhocConfigs) {
+        m_adhocConfigs = adhocConfigs;
+    }
+
+    public Map<String, File> getPrefabConfigs() {
+        return m_prefabConfigs;
+    }
+
+    public void setPrefabConfigs(Map<String, File> prefabConfigs) {
+        m_prefabConfigs = prefabConfigs;
     }
 
 }

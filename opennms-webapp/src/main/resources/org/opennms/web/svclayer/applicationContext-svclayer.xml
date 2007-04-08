@@ -92,18 +92,18 @@
   
   <!--  Graphing beans -->
   <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
-  	<constructor-arg>
+  	<property name="prefabConfigs">
   	  <map>
   	    <entry key="performance" value="${opennms.home}/etc/snmp-graph.properties"/>
   	    <entry key="response" value="${opennms.home}/etc/response-graph.properties"/>
   	  </map>
-    </constructor-arg>  	  
-  	<constructor-arg>
+    </property>
+  	<property name="adhocConfigs">
   	  <map>
   	    <entry key="performance" value="${opennms.home}/etc/snmp-adhoc-graph.properties"/>
   	    <entry key="response" value="${opennms.home}/etc/response-adhoc-graph.properties"/>
   	  </map>
-    </constructor-arg>  	  
+    </property>
   </bean>
   
   <!-- Admin applications bean -->
