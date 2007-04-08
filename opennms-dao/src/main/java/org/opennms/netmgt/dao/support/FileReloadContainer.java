@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 08: Use a Spring Resource instead of a File. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,9 +36,11 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
@@ -53,9 +59,9 @@ import org.springframework.util.Assert;
  * -->
  * There are two constructors:
  * <ol>
- *  <li>{@link #FileReloadContainer(Object, File, FileReloadCallback)
- *  FileReloadContainer(T, File, FileReloadCallback&lt;T&gt;)}
- *  is used for objects having an underlying file and are reloadable</li>
+ *  <li>{@link #FileReloadContainer(Object, Resource, FileReloadCallback)
+ *  FileReloadContainer(T, Resource, FileReloadCallback&lt;T&gt;)}
+ *  is used for objects having an underlying resource and are reloadable</li>
  *  <li>{@link #FileReloadContainer(Object) FileReloadContainer(T)} is used
  *  for objects that either do not have an underlying file or are otherwise
  *  not reloadable</li>
@@ -67,7 +73,9 @@ import org.springframework.util.Assert;
  * </p>
  * 
  * <p>
- * If the first constructor is used, the File will be stored and
+ * If the first constructor is used, the Resource will be stored for later
+ * reloading.  If {@link Resource#getFile() Resource.getFile()} does not
+ * throw an exception, the returned File object will be stored and
  * {@link File#lastModified() File.lastModified()} will be called every time
  * the {@link #getObject() getObject()} method is called to see if the file
  * has changed.  If the file has changed, the last modified time is updated
@@ -94,6 +102,7 @@ import org.springframework.util.Assert;
  */
 public class FileReloadContainer<T> {
     private T m_object;
+    private Resource m_resource;
     private File m_file;
     private long m_lastModified;
     private FileReloadCallback<T> m_callback;
@@ -109,17 +118,23 @@ public class FileReloadContainer<T> {
      *  will be called when the underlying file object is modified
      * @throws IllegalArgumentException if object, file, or callback are null
      */
-    public FileReloadContainer(T object, File file,
+    public FileReloadContainer(T object, Resource resource,
                                FileReloadCallback<T> callback) {
         Assert.notNull(object, "argument object cannot be null");
-        Assert.notNull(file, "argument file cannot be null");
+        Assert.notNull(resource, "argument file cannot be null");
         Assert.notNull(callback, "argument callback cannot be null");
         
         m_object = object;
-        m_file = file;
+        m_resource = resource;
         m_callback = callback;
         
-        m_lastModified = m_file.lastModified();
+        try {
+            m_file = resource.getFile();
+            m_lastModified = m_file.lastModified();
+        } catch (IOException e) {
+            // Do nothing... we'll fall back to using the InputStream
+            log().info("Resource '" + resource + "' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource");
+        }
     }
     
     /**
@@ -149,8 +164,7 @@ public class FileReloadContainer<T> {
         return m_object;
     }
     
-    private synchronized void checkForUpdates()
-            throws DataAccessResourceFailureException {
+    private synchronized void checkForUpdates() throws DataAccessResourceFailureException {
         if (m_file == null) {
             return;
         }
@@ -171,7 +185,7 @@ public class FileReloadContainer<T> {
             
         T object;
         try {
-            object = m_callback.reload(m_object, m_file);
+            object = m_callback.reload(m_object, m_resource);
         } catch (Throwable t) {
             String message = 
                 "Failed reloading data for object '" + m_object + "' "

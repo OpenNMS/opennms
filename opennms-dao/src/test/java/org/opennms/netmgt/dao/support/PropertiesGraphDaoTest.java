@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 08: Use Resources instead of Files. - dj@opennms.org
 // 2007 Apr 07: Refactor to use setters and an afterPropertiesSet method for
 //              configuration and initialization instead of configuration
 //              passed to the constructor. - dj@opennms.org 
@@ -56,9 +57,11 @@ import org.opennms.netmgt.model.PrefabGraphType;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 public class PropertiesGraphDaoTest extends TestCase {
-    private static final HashMap<String, File> s_emptyMap = new HashMap<String, File>();
+    private static final HashMap<String, Resource> s_emptyMap = new HashMap<String, Resource>();
     
     final static String s_prefab =
             "command.input.dir=foo\n"
@@ -287,8 +290,8 @@ public class PropertiesGraphDaoTest extends TestCase {
             writer.write(noDiscards);
             writer.close();
             
-            HashMap<String, File> perfConfig = new HashMap<String, File>();
-            perfConfig.put("performance", f);
+            HashMap<String, Resource> perfConfig = new HashMap<String, Resource>();
+            perfConfig.put("performance", new FileSystemResource(f));
             PropertiesGraphDao dao = createPropertiesGraphDao(perfConfig, s_emptyMap);
             PrefabGraphType type = dao.findByName("performance");
             assertNotNull("could not get performance prefab graph type", type);
@@ -334,8 +337,8 @@ public class PropertiesGraphDaoTest extends TestCase {
             writer.write(s_prefab);
             writer.close();
 
-            HashMap<String, File> perfConfig = new HashMap<String, File>();
-            perfConfig.put("performance", f);
+            HashMap<String, Resource> perfConfig = new HashMap<String, Resource>();
+            perfConfig.put("performance", new FileSystemResource(f));
             PropertiesGraphDao dao = createPropertiesGraphDao(perfConfig, s_emptyMap);
             PrefabGraphType type = dao.findByName("performance");
             assertNotNull("could not get performance prefab graph type", type);
@@ -390,8 +393,8 @@ public class PropertiesGraphDaoTest extends TestCase {
             writer.write(cheesy);
             writer.close();
             
-            HashMap<String, File> adhocConfig = new HashMap<String, File>();
-            adhocConfig.put("performance", f);
+            HashMap<String, Resource> adhocConfig = new HashMap<String, Resource>();
+            adhocConfig.put("performance", new FileSystemResource(f));
             PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, adhocConfig);
             AdhocGraphType type = dao.findAdhocByName("performance");
             assertNotNull("could not get performance adhoc graph type", type);
@@ -478,7 +481,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertTrue("should have distributedStatus type", graph.hasMatchingType("distributedStatus"));
     }
 
-    public PropertiesGraphDao createPropertiesGraphDao(Map<String, File> prefabConfigs, Map<String, File> adhocConfigs) throws IOException {
+    public PropertiesGraphDao createPropertiesGraphDao(Map<String, Resource> prefabConfigs, Map<String, Resource> adhocConfigs) throws IOException {
         PropertiesGraphDao dao = new PropertiesGraphDao();
         
         dao.setPrefabConfigs(prefabConfigs);

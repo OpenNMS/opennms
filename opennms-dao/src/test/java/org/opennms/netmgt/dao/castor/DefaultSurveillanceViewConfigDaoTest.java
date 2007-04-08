@@ -36,15 +36,17 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.surveillanceViews.Columns;
 import org.opennms.netmgt.config.surveillanceViews.Rows;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.config.surveillanceViews.Views;
+import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
@@ -60,8 +62,7 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
         
-        final String configResource = CONFIG_WITH_VIEWS_RESOURCE;
-        createDaoWithResource(configResource);
+        createDaoWithResource(CONFIG_WITH_VIEWS_RESOURCE);
     }
     
     @Override
@@ -73,6 +74,22 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
 
     public void testNothing() {
         // test that setUp() / tearDown() works
+    }
+    
+    public void testLoadBogusFile() throws Exception {
+        Resource resource = new FileSystemResource("/bogus-file");
+        m_dao = new DefaultSurveillanceViewConfigDao();
+        m_dao.setConfigResource(resource);
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new CastorDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
+        
+        try {
+            m_dao.afterPropertiesSet();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
     }
     
     public void testDefaultView() {
@@ -142,27 +159,25 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
         assertEquals("first view row count", 3, rows.getRowDefCount());
     }
     
-    public void testInitNoViews() throws MarshalException, ValidationException, IOException {
+    public void testInitNoViews() throws IOException {
         createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
     }
     
-    public void testGetDefaultViewNoViews() throws MarshalException, ValidationException, IOException {
+    public void testGetDefaultViewNoViews() throws IOException {
         createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         View view = m_dao.getDefaultView();
         assertNull("default view should be null", view);
-
     }
     
-    public void testGetViewByNameNoViews() throws MarshalException, ValidationException, IOException {
+    public void testGetViewByNameNoViews() throws IOException {
         createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         View view = m_dao.getView("default");
         assertNull("view by name 'default' should be null", view);
-
     }
     
-    public void testGetViewsNoViews() throws MarshalException, ValidationException, IOException {
+    public void testGetViewsNoViews() throws IOException {
         createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         Views views = m_dao.getViews();
@@ -170,7 +185,7 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
         assertEquals("view count", 0, views.getViewCount());
     }
     
-    public void testGetViewMapNoViews() throws MarshalException, ValidationException, IOException {
+    public void testGetViewMapNoViews() throws IOException {
         createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
         Map<String, View> viewMap = m_dao.getViewMap();
@@ -178,16 +193,16 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
         assertEquals("view count", 0, viewMap.size());
     }
     
-    public void testConfigProduction() throws MarshalException, ValidationException, IOException {
+    public void testConfigProduction() throws IOException {
         createDaoWithConfigFile("surveillance-views.xml");
     }
     
-    public void testConfigExample() throws MarshalException, ValidationException, IOException {
+    public void testConfigExample() throws IOException {
         createDaoWithConfigFile("examples/surveillance-views.xml");
     }
 
     private void createDaoWithResource(final String configResource) throws IOException {
-        Resource resource = new InputStreamResource(ConfigurationTestUtils.getInputStreamForResource(this, configResource));
+        Resource resource = new ClassPathResource(configResource);
         m_dao = new DefaultSurveillanceViewConfigDao();
         m_dao.setConfigResource(resource);
         m_dao.afterPropertiesSet();

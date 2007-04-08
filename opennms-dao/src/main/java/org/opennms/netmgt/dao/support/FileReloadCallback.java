@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 08: Use a Spring Resource instead of a File. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +35,7 @@
 //
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
+import org.springframework.core.io.Resource;
 
 /**
  * Supporting interface for {@link FileReloadContainer} for performing a
@@ -64,10 +68,10 @@ public interface FileReloadCallback<T> {
      * @param object object to be reloaded.  This is useful if the class
      *  receiving the callback handles many objects of the same type and
      *  needs to know any details about the object being reloaded.
-     * @param file file for the underlying object that should be used for
-     *  reloading
+     * @param resource resource for the underlying object that should be
+     *  used for reloading
      * @return the new object, or null if the old object should continue
      *  being used
      */
-    public T reload(T object, File file);
+    public T reload(T object, Resource resource);
 }
