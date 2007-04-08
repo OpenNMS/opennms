@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2007 Apr 08: Switch to use Spring Resources instead of File for the
+//              configuration files, since this is what FileReloadContainer
+//              now uses. - dj@opennms.org
 // 2007 Apr 07: Reorganize a bit.  Close Readers in the same method that causes
 //              them to be opened as suggested by brozow@. - dj@opennms.org 
 //
@@ -36,9 +39,6 @@
 //
 package org.opennms.netmgt.dao.castor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -68,28 +68,7 @@ public class DefaultSurveillanceViewConfigDao implements SurveillanceViewConfigD
     
     public DefaultSurveillanceViewConfigDao() {
     }
-
-    private SurveillanceViewConfig loadFromFile(File configFile) {
-        InputStreamReader reader;
-        try {
-            reader = new InputStreamReader(new FileInputStream(configFile));
-        } catch (FileNotFoundException e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("Opening XML configuration file '" + configFile.getAbsolutePath() + "'", e);
-        }
-        
-        SurveillanceViewConfig config;
-        try {
-            config = loadFromReader(reader);
-        } finally {
-            IOUtils.closeQuietly(reader);
-        }
-        return config;
-    }
     
-    private SurveillanceViewConfig loadFromReader(Reader reader) {
-        return new SurveillanceViewConfig(reader);
-    }
-
     public View getView(String viewName) {
         return m_container.getObject().getViewsMap().get(viewName);
     }
@@ -153,38 +132,34 @@ public class DefaultSurveillanceViewConfigDao implements SurveillanceViewConfigD
     }
     
     private class SurveillanceViewCallback implements FileReloadCallback<SurveillanceViewConfig> {
-        public SurveillanceViewConfig reload(SurveillanceViewConfig object, File file) {
-            return loadFromFile(file);
+        public SurveillanceViewConfig reload(SurveillanceViewConfig object, Resource resource) {
+            return loadConfig(resource);
         }
     }
 
-    private void initializeConfiguration() throws IOException {
-        File file = null;
+    private SurveillanceViewConfig loadConfig(Resource resource) {
+        Reader reader;
         try {
-            file = m_configResource.getFile();
+            reader = new InputStreamReader(resource.getInputStream());
         } catch (IOException e) {
-            // Do nothing... we'll fall back to using the InputStream
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("opening XML configuration file for resource '" + resource + "'", e);
         }
 
-        if (file != null) {
-            SurveillanceViewConfig config = loadFromFile(file);
-            m_container = new FileReloadContainer<SurveillanceViewConfig>(config, file, m_callback);
-        } else {
-            Reader reader = new InputStreamReader(m_configResource.getInputStream());
-            SurveillanceViewConfig  config;
-            try {
-                config = loadFromReader(reader);
-            } finally {
-                IOUtils.closeQuietly(reader);
-            }
-            m_container = new FileReloadContainer<SurveillanceViewConfig>(config);
+        SurveillanceViewConfig config;
+        try {
+            config = new SurveillanceViewConfig(reader);
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
+        
+        return config;
     }
 
     public void afterPropertiesSet() throws IOException {
         Assert.state(m_configResource != null, "property configResource must be set and be non-null");
 
-        initializeConfiguration();
+        SurveillanceViewConfig config = loadConfig(m_configResource);
+        m_container = new FileReloadContainer<SurveillanceViewConfig>(config, m_configResource, m_callback);
     }
 
     public Resource getConfigResource() {

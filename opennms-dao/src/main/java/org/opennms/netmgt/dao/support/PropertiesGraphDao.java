@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2007 Apr 08: Switch to use Spring Resources instead of File for the
+//              configuration files, since this is what FileReloadContainer
+//              now uses. - dj@opennms.org
 // 2007 Apr 07: Refactor to use setters and an afterPropertiesSet method for
 //              configuration and initialization instead of configuration
 //              passed to the constructor. - dj@opennms.org
@@ -40,8 +43,6 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -73,8 +74,8 @@ import org.springframework.util.StringUtils;
 public class PropertiesGraphDao implements GraphDao, InitializingBean {
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
     
-    private Map<String, File> m_prefabConfigs;
-    private Map<String, File> m_adhocConfigs;
+    private Map<String, Resource> m_prefabConfigs;
+    private Map<String, Resource> m_adhocConfigs;
     
     private Map<String, FileReloadContainer<PrefabGraphType>> m_types =
         new HashMap<String, FileReloadContainer<PrefabGraphType>>();
@@ -91,13 +92,13 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
     
     private void initPrefab() throws IOException {
-        for (Map.Entry<String, File> configEntry : m_prefabConfigs.entrySet()) {
+        for (Map.Entry<String, Resource> configEntry : m_prefabConfigs.entrySet()) {
             loadProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
     
     private void initAdhoc() throws IOException {
-        for (Map.Entry<String, File> configEntry : m_adhocConfigs.entrySet()) {
+        for (Map.Entry<String, Resource> configEntry : m_adhocConfigs.entrySet()) {
             loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
@@ -110,13 +111,17 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         return m_adhocTypes.get(name).getObject();
     }
 
-    public void loadProperties(String type, File file) throws IOException {
-        FileInputStream in = new FileInputStream(file);
-        PrefabGraphType t = createPrefabGraphType(type, in);
-        in.close();
+    public void loadProperties(String type, Resource resource) throws IOException {
+        InputStream in = resource.getInputStream();
+        PrefabGraphType t;
+        try {
+            t = createPrefabGraphType(type, in);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
         
         m_types.put(t.getName(),
-                    new FileReloadContainer<PrefabGraphType>(t, file, m_prefabCallback));
+                    new FileReloadContainer<PrefabGraphType>(t, resource, m_prefabCallback));
     }
     
     public void loadProperties(String type, InputStream in) throws IOException {
@@ -141,12 +146,16 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         return t;
     }
     
-    public void loadAdhocProperties(String type, File file) throws IOException {
-        FileInputStream in = new FileInputStream(file);
-        AdhocGraphType t = createAdhocGraphType(type, in);
-        in.close();
+    public void loadAdhocProperties(String type, Resource resource) throws IOException {
+        InputStream in = resource.getInputStream();
+        AdhocGraphType t;
+        try {
+            t = createAdhocGraphType(type, in);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
         
-        m_adhocTypes.put(t.getName(), new FileReloadContainer<AdhocGraphType>(t, file, m_adhocCallback));
+        m_adhocTypes.put(t.getName(), new FileReloadContainer<AdhocGraphType>(t, resource, m_adhocCallback));
     }
     
     public void loadAdhocProperties(String type, InputStream in) throws IOException {
@@ -289,47 +298,21 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
     
     private class PrefabGraphTypeCallback implements FileReloadCallback<PrefabGraphType> {
-        public PrefabGraphType reload(PrefabGraphType object, File file) {
-            FileInputStream in;
+        public PrefabGraphType reload(PrefabGraphType object, Resource resource) {
+            InputStream in = null;
             try {
-                in = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to FileNotFoundException: " + e,
+                in = resource.getInputStream();
+                return createPrefabGraphType(object.getName(), in);
+            } catch (Exception e) {
+                log().error("Could not reload configuration '"
+                            + resource + "'; nested exception: " + e,
                             e);
                 return null;
+            } finally {
+                if (in != null) {
+                    IOUtils.closeQuietly(in);
+                }
             }
-            
-            PrefabGraphType t;
-            try {
-                t = createPrefabGraphType(object.getName(), in);
-            } catch (IOException e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to IOException when reading from file: " + e,
-                            e);
-                return null;
-            } catch (DataAccessException e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to DataAccessException when reading from "
-                            + "file: " + e,
-                            e);
-                return null;
-            }
-            
-            try {
-                in.close();
-            } catch (IOException e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to IOException when closing file: " + e,
-                            e);
-                return null;
-            }
-            
-            return t;
         }
     }
     
@@ -422,15 +405,14 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
     
     private class AdhocGraphTypeCallback implements FileReloadCallback<AdhocGraphType> {
-        public AdhocGraphType reload(AdhocGraphType object, File file) {
-            FileInputStream in = null;
+        public AdhocGraphType reload(AdhocGraphType object, Resource resource) {
+            InputStream in = null;
             try {
-                in = new FileInputStream(file);
+                in = resource.getInputStream();
                 return createAdhocGraphType(object.getName(), in);
             } catch (Exception e) {
-                log().error("Could not reload configuration file '"
-                            + file.getAbsolutePath()
-                            + "' due to: " + e,
+                log().error("Could not reload configuration from '"
+                            + resource + "'; nested exception: " + e,
                             e);
                 return null;
             } finally {
@@ -448,19 +430,19 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         initAdhoc();
     }
 
-    public Map<String, File> getAdhocConfigs() {
+    public Map<String, Resource> getAdhocConfigs() {
         return m_adhocConfigs;
     }
 
-    public void setAdhocConfigs(Map<String, File> adhocConfigs) {
+    public void setAdhocConfigs(Map<String, Resource> adhocConfigs) {
         m_adhocConfigs = adhocConfigs;
     }
 
-    public Map<String, File> getPrefabConfigs() {
+    public Map<String, Resource> getPrefabConfigs() {
         return m_prefabConfigs;
     }
 
-    public void setPrefabConfigs(Map<String, File> prefabConfigs) {
+    public void setPrefabConfigs(Map<String, Resource> prefabConfigs) {
         m_prefabConfigs = prefabConfigs;
     }
 

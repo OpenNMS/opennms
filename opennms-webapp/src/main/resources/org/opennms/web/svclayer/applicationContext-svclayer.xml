@@ -94,14 +94,14 @@
   <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
   	<property name="prefabConfigs">
   	  <map>
-  	    <entry key="performance" value="${opennms.home}/etc/snmp-graph.properties"/>
-  	    <entry key="response" value="${opennms.home}/etc/response-graph.properties"/>
+  	    <entry key="performance" value="file:${opennms.home}/etc/snmp-graph.properties"/>
+  	    <entry key="response" value="file:${opennms.home}/etc/response-graph.properties"/>
   	  </map>
     </property>
   	<property name="adhocConfigs">
   	  <map>
-  	    <entry key="performance" value="${opennms.home}/etc/snmp-adhoc-graph.properties"/>
-  	    <entry key="response" value="${opennms.home}/etc/response-adhoc-graph.properties"/>
+  	    <entry key="performance" value="file:${opennms.home}/etc/snmp-adhoc-graph.properties"/>
+  	    <entry key="response" value="file:${opennms.home}/etc/response-adhoc-graph.properties"/>
   	  </map>
     </property>
   </bean>
