@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 10: Externalize the building of report definitions. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -33,7 +34,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn;
+package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
 
@@ -53,17 +54,18 @@ import org.springframework.util.Assert;
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class Topnd implements InitializingBean {
+public class Statsd implements InitializingBean {
     private ResourceDao m_resourceDao;
     private RrdDao m_rrdDao;
     private TransactionTemplate m_transactionTemplate;
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
+    private ReportDefinitionBuilder m_reportDefinitionBuilder;
 
     public void start() throws InterruptedException, ParseException, SchedulerException, ClassNotFoundException, NoSuchMethodException {
-        ReportDefinition reportDef = createExampleReport();
-        
-        scheduleReport(reportDef);
+        for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+            scheduleReport(reportDef);
+        }
     }
 
     private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException {
@@ -86,7 +88,7 @@ public class Topnd implements InitializingBean {
     }
 
     public void runReport(ReportDefinition reportDef) {
-        final Report report = reportDef.createReport(m_resourceDao, m_rrdDao);
+        final ReportInstance report = reportDef.createReport(m_resourceDao, m_rrdDao);
         
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             public void doInTransactionWithoutResult(TransactionStatus status) {
@@ -96,29 +98,13 @@ public class Topnd implements InitializingBean {
         });
     }
 
-    private ReportDefinition createExampleReport() {
-        ReportDefinition reportDef = new ReportDefinition();
-        
-        reportDef.setName("Pee-Wee's Big Report");
-        reportDef.setReportClass(UnfilteredTopNReport.class);
-        reportDef.setCount(5);
-        reportDef.setConsolidationFunction("AVERAGE");
-        reportDef.setRelativeTime(RelativeTime.YESTERDAY);
-        reportDef.setResourceTypeMatch("interfaceSnmp");
-        reportDef.setAttributeMatch("ifInOctets");
-        //reportDef.setCronExpression("0 0/5 * * * ?");
-        reportDef.setCronExpression("* * * * * ?");
-        reportDef.afterPropertiesSet();
-        
-        return reportDef;
-    }
-
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
         Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
         Assert.state(m_transactionTemplate != null, "property transactionTemplate must be set to a non-null value");
         Assert.state(m_reportPersister != null, "property reportPersister must be set to a non-null value");
         Assert.state(m_scheduler != null, "property scheduler must be set to a non-null value");
+        Assert.state(m_reportDefinitionBuilder != null, "property reportDefinitionBuilder must be set to a non-null value");
         
         start();
     }
@@ -161,5 +147,13 @@ public class Topnd implements InitializingBean {
 
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
+    }
+
+    public ReportDefinitionBuilder getReportDefinitionBuilder() {
+        return m_reportDefinitionBuilder;
+    }
+
+    public void setReportDefinitionBuilder(ReportDefinitionBuilder reportDefinitionBuilder) {
+        m_reportDefinitionBuilder = reportDefinitionBuilder;
     }
 }

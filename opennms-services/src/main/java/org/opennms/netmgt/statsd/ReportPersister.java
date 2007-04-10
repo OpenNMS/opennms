@@ -33,23 +33,12 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn;
-
-import java.util.Date;
-import java.util.SortedSet;
-
-import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
+package org.opennms.netmgt.statsd;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class StandardOutputReportPersister implements ReportPersister {
-    public void persist(Report report) {
-        System.out.println("Top " + report.getCount() + " " + report.getAttributeMatch() + " data sources on resources of type " + report.getResourceTypeMatch() + " from " + new Date(report.getStartTime()) + " to " + new Date(report.getEndTime()));
-        SortedSet<AttributeStatistic> top = report.getTopN();
-        for (AttributeStatistic stat : top) {
-            System.out.println(stat.getAttribute().getResource().getId() + "/" + stat.getAttribute().getName() + ": " + stat.getStatistic());
-        }
-        System.out.println("");
-    }
+public interface ReportPersister {
+    public void persist(ReportInstance report);
 }
+

@@ -10,7 +10,6 @@
  *
  * Modifications:
  *
- * 2007 Apr 06: Use DaoTestConfigBean for system properties. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -34,55 +33,23 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn.jmx;
+package org.opennms.netmgt.statsd;
 
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.test.DaoTestConfigBean;
+import java.util.Date;
+import java.util.SortedSet;
+
+import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class TopndTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    public TopndTest() {
-        super();
-
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        //daoTestConfig.setRelativeHomeDirectory("src/test/test-configurations/PollerBackEndIntegrationTest");
-        daoTestConfig.afterPropertiesSet();
-    }
-    
-    // FIXME: This tests don't work on Timmy for some reason
-    public void FIXMEtestInitStartStop() throws Exception {
-        Topnd mbean = new Topnd();
-        
-        mbean.init();
-        mbean.start();
-        
-        Thread.sleep(3000);
-        
-        mbean.stop();
-    }
-    
-    // FIXME: This test doesn't work on Timmy for some reason
-    public void FIXMEtestInitStartStopTwice() throws Exception {
-        Topnd mbean = new Topnd();
-        
-        mbean.init();
-        mbean.start();
-        mbean.stop();
-
-        mbean.init();
-        mbean.start();
-        mbean.stop();
-    }
-    
-    // FIXME: This should be removed once other tests are made to work
-    public void testBogus() {
-        // This test is here so we have at least one test
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[0];
+public class StandardOutputReportPersister implements ReportPersister {
+    public void persist(ReportInstance report) {
+        System.out.println("Top " + report.getCount() + " " + report.getAttributeMatch() + " data sources on resources of type " + report.getResourceTypeMatch() + " from " + new Date(report.getStartTime()) + " to " + new Date(report.getEndTime()));
+        SortedSet<AttributeStatistic> top = report.getTopN();
+        for (AttributeStatistic stat : top) {
+            System.out.println(stat.getAttribute().getResource().getId() + "/" + stat.getAttribute().getName() + ": " + stat.getStatistic());
+        }
+        System.out.println("");
     }
 }

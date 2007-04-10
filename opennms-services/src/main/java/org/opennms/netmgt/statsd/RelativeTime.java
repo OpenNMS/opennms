@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 10: Added LASTHOUR; useful for testing. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -33,7 +34,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn;
+package org.opennms.netmgt.statsd;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -68,6 +69,31 @@ public enum RelativeTime {
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.HOUR, 0);
+            
+            return calendar.getTime();
+        }
+    },
+    
+    LASTHOUR {
+        public Date getStart() {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTimeInMillis(getCurrentTime());
+            
+            calendar.set(Calendar.MILLISECOND, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.add(Calendar.HOUR, -1);
+            
+            return calendar.getTime();
+        }
+        
+        public Date getEnd() {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTimeInMillis(getCurrentTime());
+
+            calendar.set(Calendar.MILLISECOND, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MINUTE, 0);
             
             return calendar.getTime();
         }

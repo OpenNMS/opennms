@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn;
+package org.opennms.netmgt.statsd;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +41,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.opennms.core.utils.TimeKeeper;
+import org.opennms.netmgt.statsd.RelativeTime;
 
 import junit.framework.TestCase;
 

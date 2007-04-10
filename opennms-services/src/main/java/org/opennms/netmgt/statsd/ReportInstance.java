@@ -33,19 +33,69 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn.jmx;
+package org.opennms.netmgt.statsd;
 
-import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+import java.util.Date;
+import java.util.SortedSet;
 
-public class Topnd extends AbstractSpringContextJmxServiceDaemon implements TopndMBean {
-    @Override
-    protected String getLoggingPrefix() {
-        return "OpenNMS.TopN";
-    }
+import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
 
-    @Override
-    protected String getSpringContext() {
-        return "topnDaemonContext";       
-    }
+/**
+ * @author <a href="dj@opennms.org">DJ Gregor</a>
+ */
+public interface ReportInstance {
+
+    public void walk();
+
+    public SortedSet<AttributeStatistic> getTopN();
+
+    public String getResourceTypeMatch();
+
+    public void setResourceTypeMatch(String resourceType);
+
+    public String getAttributeMatch();
+
+    public void setAttributeMatch(String attr);
+
+    public long getStartTime();
+
+    public void setStartTime(long start);
+
+    public long getEndTime();
+
+    public void setEndTime(long end);
+
+    public String getConsolidationFunction();
+
+    public void setConsolidationFunction(String cf);
+
+    public int getCount();
+
+    public void setCount(int count);
+
+    public Date getJobStartedDate();
+    
+    public Date getJobCompletedDate();
+
+    public String getName();
+    
+    public void setName(String name);
+
+    /**
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet();
+
+    /**
+     * @param resourceDao
+     */
+    public void setResourceDao(ResourceDao resourceDao);
+
+    /**
+     * @param rrdDao
+     */
+    public void setRrdDao(RrdDao rrdDao);
 
 }

@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn;
+package org.opennms.netmgt.statsd;
 
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
@@ -90,22 +90,36 @@ public class ReportDefinition implements InitializingBean {
     public void setReportClass(Class reportClass) {
         m_reportClass = reportClass;
     }
+    public String getName() {
+        return m_name;
+    }
+    public void setName(String name) {
+        m_name = name;
+    }
+    public RelativeTime getRelativeTime() {
+        return m_relativeTime;
+    }
+    public void setRelativeTime(RelativeTime relativeTime) {
+        m_relativeTime = relativeTime;
+    }
     
-    public Report createReport(ResourceDao resourceDao, RrdDao rrdDao) {
-        Report report;
+    public ReportInstance createReport(ResourceDao resourceDao, RrdDao rrdDao) {
+        ReportInstance report;
         try {
-            report = (Report) m_reportClass.newInstance();
+            report = (ReportInstance) m_reportClass.newInstance();
         } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Could not instantiate report object: " + e, e);
+            throw new DataAccessResourceFailureException("Could not instantiate report object; nested exception: " + e, e);
         }
         
+        report.setName(m_name);
         report.setResourceDao(resourceDao);
         report.setRrdDao(rrdDao);
         
-        report.setCount(getCount());
-        report.setConsolidationFunction(getConsolidationFunction());
         report.setStartTime(getRelativeTime().getStart().getTime());
         report.setEndTime(getRelativeTime().getEnd().getTime());
+        
+        report.setCount(getCount());
+        report.setConsolidationFunction(getConsolidationFunction());
         report.setResourceTypeMatch(getResourceTypeMatch());
         report.setAttributeMatch(getAttributeMatch());
         
@@ -126,18 +140,5 @@ public class ReportDefinition implements InitializingBean {
         Assert.state(m_attributeMatch != null, "property attributeMatch must be set to a non-null value");
         Assert.state(m_reportClass != null, "property reportClass must be set to a non-null value");
         Assert.state(m_cronExpression != null, "property cronExpression must be set to a non-null value");
-        
-    }
-    public String getName() {
-        return m_name;
-    }
-    public void setName(String name) {
-        m_name = name;
-    }
-    public RelativeTime getRelativeTime() {
-        return m_relativeTime;
-    }
-    public void setRelativeTime(RelativeTime relativeTime) {
-        m_relativeTime = relativeTime;
     }
 }
