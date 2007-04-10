@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 10: Store the entity. - dj@opennms.org
 // 2007 Apr 05: Remove getRelativePathForAttribute and move attribute loading to
 //              ResourceTypeUtils.getAttributesAtRelativePath. - dj@opennms.org
 //
@@ -90,7 +91,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
             File iface = getInterfaceDirectory(ipAddr, false);
             
             if (iface.isDirectory()) {
-                resources.add(createResource(ipAddr));
+                resources.add(createResource(i));
             }
         }
 
@@ -112,12 +113,15 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         return DefaultResourceDao.RESPONSE_DIRECTORY + File.separator + ipAddr;
     }
     
-    private OnmsResource createResource(String intf) {
+    private OnmsResource createResource(OnmsIpInterface ipInterface) {
+        String intf = ipInterface.getIpAddress();
         String label = intf;
         String resource = intf;
 
         Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(intf));
-        return new OnmsResource(resource, label, this, set);
+        OnmsResource r = new OnmsResource(resource, label, this, set);
+        r.setEntity(ipInterface);
+        return r;
     }
 
 

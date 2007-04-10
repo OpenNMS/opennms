@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Apr 10: Add an optional OnmsEntity object and a String link.
+//              - dj@opennms.org
 // 2007 Apr 05: Deduplicate constructors, set the resource reference for
 //              attributes, and add get*Attributes methods for different
 //              attribute types. - dj@opennms.org
@@ -52,7 +54,9 @@ public class OnmsResource implements Comparable<OnmsResource> {
     private String m_name;
     private Set<OnmsAttribute> m_attributes;
     private String m_label;
+    private String m_link;
     private OnmsResourceType m_resourceType;
+    private OnmsEntity m_entity;
     private List<OnmsResource> m_resources;
     private OnmsResource m_parent = null;
     
@@ -138,8 +142,17 @@ public class OnmsResource implements Comparable<OnmsResource> {
     }
 
     public String getLink() {
-        return m_resourceType.getLinkForResource(this);
+        if (m_link != null) {
+            return m_link;
+        } else {
+            return m_resourceType.getLinkForResource(this);
+        }
     }
+
+    public void setLink(String link) {
+        m_link = link;
+    }
+
     
     public static String createResourceId(String... resources) {
         if ((resources.length % 2) != 0) {
@@ -216,6 +229,14 @@ public class OnmsResource implements Comparable<OnmsResource> {
     
     public String toString() {
         return getId();
+    }
+
+    public OnmsEntity getEntity() {
+        return m_entity;
+    }
+
+    public void setEntity(OnmsEntity entity) {
+        m_entity = entity;
     }
 
 }

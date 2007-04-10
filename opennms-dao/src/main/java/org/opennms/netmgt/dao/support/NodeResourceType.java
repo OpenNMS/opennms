@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 10: Store the entity. - dj@opennms.org
 // 2007 Apr 05: Remove getRelativePathForAttribute. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -88,6 +89,7 @@ public class NodeResourceType implements OnmsResourceType {
     public OnmsResource createChildResource(OnmsNode node) {
         NodeChildResourceLoader loader = new NodeChildResourceLoader(node.getId());
         OnmsResource r = new OnmsResource(node.getId().toString(), node.getLabel(), this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));
+        r.setEntity(node);
         loader.setParent(r);
 
         return r;
