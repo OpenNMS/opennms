@@ -8,12 +8,14 @@
       <rra>RRA:MAX:0.5:12:8784</rra>
     </rrd>
 
-    <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)">
+    <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"
+                  resourceLabel="${hrStorageDescr} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)">
+    <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)"
+                  resourceLabel="${naDfFileSys} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
