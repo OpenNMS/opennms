@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 10: Store the entity and a guess at a link - dj@opennms.org
 // 2007 Apr 05: Remove getRelativePathForAttribute, move attribute loading to
 //              ResourceTypeUtils.getAttributesAtRelativePath, and add ifSpeed
 //              and ifSpeedFriendly as external values. - dj@opennms.org
@@ -52,6 +53,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -221,6 +223,15 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             }
 
             OnmsResource resource = getResourceByNodeAndInterface(nodeId, intfDir.getName(), label, ifSpeed, ifSpeedFriendly);
+            if (snmpInterface != null) {
+                Set<OnmsIpInterface> ipInterfaces = snmpInterface.getIpInterfaces();
+                if (ipInterfaces.size() > 0) {
+                    int id = ipInterfaces.iterator().next().getId();
+                    resource.setLink("element/interface.jsp?ipinterfaceid=" + id);
+                }
+
+                resource.setEntity(snmpInterface);
+            }
             resources.add(resource);
         }
 
