@@ -36,37 +36,29 @@
 
 package org.opennms.web.svclayer.support;
 
-import java.io.File;
-import java.io.FileReader;
-
-import org.opennms.netmgt.config.C3P0ConnectionFactory;
-import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.SiteStatusViewsFactory;
-import org.opennms.netmgt.config.ViewsDisplayFactory;
+import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
-import org.opennms.web.svclayer.SurveillanceTable;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalDataSourceSpringContextTests {
     
     private SurveillanceService m_surveillanceService;
     
-    
-    
     public DefaultSurveillanceServiceIntegrationTest() throws Exception {
-    	File f = new File("src/test/opennms-home");
-		System.setProperty("opennms.home", f.getAbsolutePath());
+        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
+        webAppTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
+        webAppTestConfig.afterPropertiesSet();
 
-		File rrdDir = new File("target/test/opennms-home/share/rrd");
-		if (!rrdDir.exists()) {
-			rrdDir.mkdirs();
-		}
-		// FIXME: We should never modify anything under src... this should be in target
-		System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
-		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
+//        File rrdDir = new File("target/test/opennms-home/share/rrd");
+//		if (!rrdDir.exists()) {
+//			rrdDir.mkdirs();
+//		}
+//		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
+//        // FIXME: We should never modify anything under src... this should be in target
+//        System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
+
     }
     
     
@@ -91,16 +83,12 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
         // Empty test so JUnit doesn't complain about not having any tests to run
     }
     
+    // FIXME
     public void FIXMEtestCreateSurveillanceServiceTableUsingViewName() {
         String viewName = "default";
         SimpleWebTable table = m_surveillanceService.createSurveillanceTable(viewName, new ProgressMonitor() {
 
 			public void beginNextPhase(String string) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			public void finished() {
 				// TODO Auto-generated method stub
 				
 			}
