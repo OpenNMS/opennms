@@ -1,5 +1,12 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
+--# Modifications:
+--#
+--# 2007 Apr 10: Added statistics report tables - dj@opennms.org
+--# 2006 Apr 17: Added pathOutage table
+--# 2005 Mar 11: Added alarms table
+--# 2004 Aug 30: See create.sql.changes
+--#
 --# Copyright (C) 2005-2006 The OpenNMS Group, Inc., Inc.  All rights reserved.
 --# Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 --#
@@ -22,14 +29,6 @@
 --#      http://www.opennms.org/
 --#      http://www.sortova.com/
 --#
---# Modified: 2006-04-17
---# Note: Added pathOutage table
---#
---# Modified: 2005-03-11
---# Note: Added alarms table
---#
---# Modified: 2004-08-30
---# Note: See create.sql.changes
 
 drop table category_node cascade;
 drop table categories cascade;
@@ -64,6 +63,9 @@ drop table map cascade;
 drop table location_monitors cascade;
 drop table location_specific_status_changes cascade;
 drop table vlan cascade;
+drop table statisticsReportData cascade;
+drop table resourceReference cascade;
+drop table statisticsReport cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -1862,6 +1864,98 @@ create table reportLocator (
 --#          sequence,   column, table
 --# install: reportNxtId reportId reportLocator
 create sequence reportNxtId minvalue 1;
+
+
+--########################################################################
+--#
+--# statisticsReport table -- This table contains a record of statistics
+--#                           reports
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the report
+--#  startDate          : The beginning date for the report (data starting
+--#                       at this time stamp is included)
+--#  endDate            : The end date for the report (data up to,
+--#                       but not including this time stamp is included)
+--#  name               : Report name this references a report definition
+--#                       in statsd-configuration.xml
+--#  description        : User-friendly description for this report
+--#  jobStartedDate     : The date when this report run started
+--#  jobCompletedDate   : The date when this report run completed
+--#  purgeDate          : The date at which this report can be purged
+--#
+--########################################################################
+
+create table statisticsReport (
+	id					integer default nextval('opennmsNxtId') not null,
+	startDate			timestamp without time zone not null,
+	endDate				timestamp without time zone not null,
+	name				varchar(63) not null,
+	description			varchar(255) not null,
+	jobStartedDate		timestamp without time zone not null,
+	jobCompletedDate	timestamp without time zone not null,
+	purgeDate			timestamp without time zone not null,
+
+	constraint pk_statisticsReport_id primary key (id)
+);
+
+create index statisticsReport_startDate on statisticsReport(startDate);
+create index statisticsReport_name on statisticsReport(name);
+create index statisticsReport_purgeDate on statisticsReport(purgeDate);
+
+
+--########################################################################
+--#
+--# resourceReference table -- This table is a lookup table for string
+--#                            resourceIds. This will help keep the relatively
+--#                            long (tens of characters) string resource IDs
+--#                            out of the statistics table.
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the resource
+--#  resourceId         : String resource ID for this resource
+--#
+--########################################################################
+
+create table resourceReference (
+	id					integer default nextval('opennmsNxtId') not null,
+	resourceId			varchar(255) not null,
+
+	constraint pk_resourceReference_id primary key (id)
+);
+
+create unique index resourceReference_resourceId on resourceReference (resourceId);
+
+
+--########################################################################
+--#
+--# statisticsReportData table -- This table contains individual data points
+--#                               (aggregated or not) for statistics reports.
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the data
+--#  reportId           : Integer ID for the report that created this data
+--#  resourceId         : Integer ID for this resource related to this data
+--#  value              : Float containing the value for this data point
+--#
+--########################################################################
+
+create table statisticsReportData (
+	id					integer default nextval('opennmsNxtId') not null,
+	reportId			integer not null,
+	resourceId			integer not null,
+	value				float8 not null,
+	
+	constraint pk_statsData_id primary key (id),
+	constraint fk_statsData_reportId foreign key (reportId) references statisticsReport (id) on delete cascade,
+	constraint fk_statsData_resourceId foreign key (resourceId) references resourceReference (id) on delete cascade
+);
+
+create unique index statsData_unique on statisticsReportData(reportId, resourceId);
+
 
 --# Begin Quartz persistence tables
 

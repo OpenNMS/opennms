@@ -227,16 +227,14 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
-<!--
         <service>
-                <name>OpenNMS:Name=Topnd</name>
-                <class-name>org.opennms.netmgt.topn.jmx.Topnd</class-name>
+                <name>OpenNMS:Name=Statsd</name>
+                <class-name>org.opennms.netmgt.statsd.jmx.Statsd</class-name>
                 <invoke at="start" pass="0" method="init"/>
                 <invoke at="start" pass="1" method="start"/>
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
--->
 <!--  If you enable the importer don't forget to disable discovery and capsd -->
 <!--
         <service>
