@@ -196,6 +196,13 @@
           <documentation>resource type label (this is what users see in the webUI)</documentation>
         </annotation>
       </attribute>
+
+      <attribute name="resourceLabel" type="string" use="optional">
+        <annotation>
+          <documentation>resource label expression (this is what users see in the webUI for each resource of this type)</documentation>
+        </annotation>
+      </attribute>
+
     </complexType>
   </element>
   

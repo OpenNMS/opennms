@@ -44,23 +44,29 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.LazySet;
+import org.opennms.core.utils.PropertiesUtils;
+import org.opennms.core.utils.PropertiesUtils.SymbolTable;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericIndexResourceType implements OnmsResourceType {
     private String m_name;
     private String m_label;
+    private String m_resourceLabelExpression;
     private ResourceDao m_resourceDao;
     private StorageStrategy m_storageStrategy;
 
-    public GenericIndexResourceType(ResourceDao resourceDao, String name, String label, StorageStrategy storageStrategy) {
+    public GenericIndexResourceType(ResourceDao resourceDao, String name, String label, String resourceLabelExpression, StorageStrategy storageStrategy) {
         m_resourceDao = resourceDao;
         m_name = name;
         m_label = label;
+        m_resourceLabelExpression = resourceLabelExpression;
         m_storageStrategy = storageStrategy;
     }
     
@@ -126,12 +132,39 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
 
     
-    public OnmsResource getResourceByNodeAndIndex(int nodeId,
-            String index) {
-        String label = index;
+    public OnmsResource getResourceByNodeAndIndex(int nodeId, final String index) {
+        final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(nodeId, index));
+        
+        String label;
+        if (m_resourceLabelExpression == null) {
+            label = index;
+        } else {
+            SymbolTable symbolTable = new SymbolTable() {
+                public String getSymbolValue(String symbol) {
+                    if (symbol.equals("index")) {
+                        return index;
+                    }
+                    
+                    for (OnmsAttribute attr : set) {
+                        if (symbol.equals(attr.getName())) {
+                            if (StringPropertyAttribute.class.isAssignableFrom(attr.getClass())) {
+                                StringPropertyAttribute stringAttr = (StringPropertyAttribute) attr;
+                                return stringAttr.getValue();
+                            }
+                            if (ExternalValueAttribute.class.isAssignableFrom(attr.getClass())) {
+                                ExternalValueAttribute extAttr = (ExternalValueAttribute) attr;
+                                return extAttr.getValue();
+                            }
+                        }
+                    }
+                    
+                    return null;
+                }
+            };
+            
+            label = PropertiesUtils.substitute(m_resourceLabelExpression, symbolTable);
+        }
 
-        Set<OnmsAttribute> set =
-            new LazySet<OnmsAttribute>(new AttributeLoader(nodeId, index));
         return new OnmsResource(index, label, this, set);
     }
 

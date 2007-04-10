@@ -241,6 +241,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                 new GenericIndexResourceType(this,
                                                   resourceType.getName(),
                                                   resourceType.getLabel(),
+                                                  resourceType.getResourceLabel(),
                                                   storageStrategy);
             resourceTypes.put(genericIndexResourceType.getName(), genericIndexResourceType);
         }
