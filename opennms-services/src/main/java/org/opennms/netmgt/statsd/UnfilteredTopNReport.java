@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 10: Store the job start and stop date and the name. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -33,8 +34,9 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn;
+package org.opennms.netmgt.statsd;
 
+import java.util.Date;
 import java.util.SortedSet;
 
 import org.opennms.netmgt.dao.ResourceDao;
@@ -50,12 +52,15 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class UnfilteredTopNReport implements Report, InitializingBean {
+public class UnfilteredTopNReport implements ReportInstance, InitializingBean {
     private final TopNAttributeStatisticVisitor m_topNVisitor = new TopNAttributeStatisticVisitor();
     private final RrdStatisticAttributeVisitor m_rrdVisitor = new RrdStatisticAttributeVisitor();
     private final AttributeMatchingResourceVisitor m_attributeVisitor = new AttributeMatchingResourceVisitor();
     private final ResourceTypeFilteringResourceVisitor m_resourceTypeVisitor = new ResourceTypeFilteringResourceVisitor();
     private final ResourceTreeWalker m_walker = new ResourceTreeWalker();
+    private Date m_jobCompletedDate;
+    private Date m_jobStartedDate;
+    private String m_name;
 
     public UnfilteredTopNReport() {
         m_rrdVisitor.setStatisticVisitor(m_topNVisitor);
@@ -76,7 +81,9 @@ public class UnfilteredTopNReport implements Report, InitializingBean {
      * @see org.opennms.netmgt.topn.Report#walk()
      */
     public void walk() {
+        m_jobStartedDate = new Date();
         m_walker.walk();
+        m_jobCompletedDate = new Date();
     }
     
     /* (non-Javadoc)
@@ -179,5 +186,21 @@ public class UnfilteredTopNReport implements Report, InitializingBean {
         m_attributeVisitor.afterPropertiesSet();
         m_resourceTypeVisitor.afterPropertiesSet();
         m_walker.afterPropertiesSet();
+    }
+
+    public Date getJobCompletedDate() {
+        return m_jobCompletedDate;
+    }
+
+    public Date getJobStartedDate() {
+        return m_jobStartedDate;
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(String name) {
+        m_name = name;
     }
 }

@@ -4,15 +4,23 @@
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+    <bean id="reportPersister" class="org.opennms.netmgt.statsd.DatabaseReportPersister">
+      <property name="statisticsReportDao" ref="statisticsReportDao"/>
+      <property name="resourceReferenceDao" ref="resourceReferenceDao"/>
+    </bean>
+
+    <bean id="reportDefinitionBuilder" class="org.opennms.netmgt.statsd.ReportDefinitionBuilder">
+      <property name="statsdConfigDao" ref="statsdConfigDao"/>
+    </bean>
        
-    <bean id="reportPersister" class="org.opennms.netmgt.topn.StandardOutputReportPersister"/>
-       
-    <bean id="topnDaemon" class="org.opennms.netmgt.topn.Topnd">
+    <bean id="daemon" class="org.opennms.netmgt.statsd.Statsd">
       <property name="resourceDao" ref="resourceDao"/>
       <property name="rrdDao" ref="rrdDao"/>
       <property name="transactionTemplate" ref="transactionTemplate"/>
       <property name="reportPersister" ref="reportPersister"/>
       <property name="scheduler" ref="scheduler"/>
+      <property name="reportDefinitionBuilder" ref="reportDefinitionBuilder"/>
     </bean>
 
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>

@@ -33,10 +33,10 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn.jmx;
+package org.opennms.netmgt.statsd.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-public interface TopndMBean extends BaseOnmsMBean {
+public interface StatsdMBean extends BaseOnmsMBean {
     
 }

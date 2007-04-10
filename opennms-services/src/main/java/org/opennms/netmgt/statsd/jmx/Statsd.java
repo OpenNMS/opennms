@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 10: Renamed to statsd. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -33,60 +34,19 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.topn;
+package org.opennms.netmgt.statsd.jmx;
 
-import java.util.SortedSet;
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
-import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
+public class Statsd extends AbstractSpringContextJmxServiceDaemon implements StatsdMBean {
+    @Override
+    protected String getLoggingPrefix() {
+        return "OpenNMS.Statsd";
+    }
 
-/**
- * @author <a href="dj@opennms.org">DJ Gregor</a>
- */
-public interface Report {
-
-    public void walk();
-
-    public SortedSet<AttributeStatistic> getTopN();
-
-    public String getResourceTypeMatch();
-
-    public void setResourceTypeMatch(String resourceType);
-
-    public String getAttributeMatch();
-
-    public void setAttributeMatch(String attr);
-
-    public long getStartTime();
-
-    public void setStartTime(long start);
-
-    public long getEndTime();
-
-    public void setEndTime(long end);
-
-    public String getConsolidationFunction();
-
-    public void setConsolidationFunction(String cf);
-
-    public int getCount();
-
-    public void setCount(int count);
-
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet();
-
-    /**
-     * @param resourceDao
-     */
-    public void setResourceDao(ResourceDao resourceDao);
-
-    /**
-     * @param rrdDao
-     */
-    public void setRrdDao(RrdDao rrdDao);
+    @Override
+    protected String getSpringContext() {
+        return "statisticsDaemonContext";       
+    }
 
 }
