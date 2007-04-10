@@ -49,6 +49,9 @@
                 <value>org.opennms.netmgt.model.PollStatus</value>
                 <value>org.opennms.netmgt.model.AvailabilityReportLocator</value>
                 <value>org.opennms.netmgt.model.OnmsApplication</value>
+                <value>org.opennms.netmgt.model.ResourceReference</value>
+                <value>org.opennms.netmgt.model.StatisticsReportData</value>
+                <value>org.opennms.netmgt.model.StatisticsReport</value>
 			</list>
 		</property>
 		<!--  property name="schemaUpdate" value="true">
@@ -141,6 +144,18 @@
   <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.hibernate.AvailabilityReportLocatorDaoHibernate">
   	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
+
+  <bean id="statisticsReportDao" class="org.opennms.netmgt.dao.hibernate.StatisticsReportDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="statisticsReportDataDao" class="org.opennms.netmgt.dao.hibernate.StatisticsReportDataDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="resourceReferenceDao" class="org.opennms.netmgt.dao.hibernate.ResourceReferenceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
   
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate" >
     <property name="sessionFactory" ref="sessionFactory"/>
@@ -200,6 +215,10 @@
     <property name="rrdStrategy" ref="rrdStrategy"/>
     <property name="rrdBaseDirectory" value="${rrd.base.dir}"/>
     <property name="rrdBinaryPath" value="${rrd.binary}"/>
+  </bean>
+
+  <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
   </bean>
   
   

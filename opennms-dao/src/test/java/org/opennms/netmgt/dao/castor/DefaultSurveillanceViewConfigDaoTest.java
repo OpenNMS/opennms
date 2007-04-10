@@ -8,7 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
+// 2007 Apr 10: Move common tests to AbstractCastorConfigDaoTest. - dj@opennms.org
+//
+// Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,13 +44,10 @@ import org.opennms.netmgt.config.surveillanceViews.Columns;
 import org.opennms.netmgt.config.surveillanceViews.Rows;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.config.surveillanceViews.Views;
-import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
@@ -74,22 +75,6 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
 
     public void testNothing() {
         // test that setUp() / tearDown() works
-    }
-    
-    public void testLoadBogusFile() throws Exception {
-        Resource resource = new FileSystemResource("/bogus-file");
-        m_dao = new DefaultSurveillanceViewConfigDao();
-        m_dao.setConfigResource(resource);
-        
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new CastorDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
-        
-        try {
-            m_dao.afterPropertiesSet();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
     }
     
     public void testDefaultView() {
@@ -207,7 +192,6 @@ public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
         m_dao.setConfigResource(resource);
         m_dao.afterPropertiesSet();
     }
-
 
     private void createDaoWithConfigFile(final String configFileName) throws IOException {
         Resource resource = new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile(configFileName));
