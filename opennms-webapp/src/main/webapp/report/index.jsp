@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 10: Add a link to statistics reports. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 04: Added Key SNMP Custom Performance Reports.
 // 2003 Jan 27: Removed reference to e-mailing reports.
@@ -61,6 +62,7 @@
         <li><a href="graph/index.jsp">Resource Graphs</a></li>
         <li><a href="KSC/index.htm">KSC Performance, Nodes, Domain</a></li>
         <li><a href="availability/index.jsp">Availability</a></li>
+        <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
       </ul>
     </div>
   <!-- more reports will follow -->
@@ -83,6 +85,11 @@
       <p><b>Availability Reports</b> provide graphical or numeric
           view of your service level metrics for the current
           month-to-date, previous month, and last twelve months by categories.
+      </p>
+      
+      <p><b>Statistics Reports</b> provide regularly scheduled statistical
+          reports on collected numerical data (response time, SNMP performance
+          data, etc.).
       </p>
     </div>
   </div>

@@ -200,5 +200,9 @@
     <property name="outageDao" ref="outageDao" />
   </bean>
   
+  <bean id="statisticsReportService" class="org.opennms.web.svclayer.support.DefaultStatisticsReportService">
+    <property name="statisticsReportDao" ref="statisticsReportDao"/>
+    <property name="resourceDao" ref="resourceDao"/>
+  </bean>
   
 </beans>
