@@ -174,6 +174,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             init();
             loadConfig(ImportModes.UPDATE_CREATE);
             addShutdownHook();
+            finishInit();
             super.run();
             m_running = true;
         } catch (BindException be) {
