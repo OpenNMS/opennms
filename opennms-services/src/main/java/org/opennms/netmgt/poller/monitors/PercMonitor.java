@@ -225,7 +225,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             if (log().isDebugEnabled()) {
                 log().debug("PercMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
-            SnmpObjId snmpObjectId = new SnmpObjId(LOGICAL_BASE_OID + "." + arrayNumber);
+            SnmpObjId snmpObjectId = SnmpObjId.get(LOGICAL_BASE_OID + "." + arrayNumber);
 
             // First walk the physical OID Tree and check the returned values 
 
@@ -240,8 +240,8 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             	// lets find out which disks are bad in the array
             	
             	// first we need to fetch the arrayPosition table.
-            	SnmpObjId arrayPositionSnmpObject = new SnmpObjId(ARRAY_POSITION_BASE_OID);
-            	SnmpObjId diskStatesSnmpObject = new SnmpObjId(PHYSICAL_BASE_OID); 
+            	SnmpObjId arrayPositionSnmpObject = SnmpObjId.get(ARRAY_POSITION_BASE_OID);
+            	SnmpObjId diskStatesSnmpObject = SnmpObjId.get(PHYSICAL_BASE_OID); 
             	
             	Map<SnmpInstId,SnmpValue> arrayDisks = SnmpUtils.getOidValues(agentConfig, "PercMonitor", arrayPositionSnmpObject);
             	Map<SnmpInstId,SnmpValue> diskStates = SnmpUtils.getOidValues(agentConfig, "PercMonitor", diskStatesSnmpObject);

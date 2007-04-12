@@ -135,7 +135,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             if (log().isDebugEnabled()) {
                 log().debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
-            SnmpObjId virtualDiskRollUpStatusSnmpObject = new SnmpObjId(virtualDiskRollUpStatus + "." + virtualDiskNumber);
+            SnmpObjId virtualDiskRollUpStatusSnmpObject = SnmpObjId.get(virtualDiskRollUpStatus + "." + virtualDiskNumber);
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
             
             if(virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
@@ -148,10 +148,10 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             	
             	returnValue = "log vol(" + virtualDiskNumber + ") degraded"; // XXX should degraded be the virtualDiskState ? 
             
-            	SnmpObjId arrayDiskLogicalConnectionVirtualDiskNumberSnmpObject = new SnmpObjId(arrayDiskLogicalConnectionVirtualDiskNumber);	
+            	SnmpObjId arrayDiskLogicalConnectionVirtualDiskNumberSnmpObject = SnmpObjId.get(arrayDiskLogicalConnectionVirtualDiskNumber);	
             	Map<SnmpInstId,SnmpValue> arrayDisks = SnmpUtils.getOidValues(agentConfig, "OMSAStorageMonitor", arrayDiskLogicalConnectionVirtualDiskNumberSnmpObject);
             	
-            	SnmpObjId arrayDiskLogicalConnectionArrayDiskNumberSnmpObject = new SnmpObjId(arrayDiskLogicalConnectionArrayDiskNumber);
+            	SnmpObjId arrayDiskLogicalConnectionArrayDiskNumberSnmpObject = SnmpObjId.get(arrayDiskLogicalConnectionArrayDiskNumber);
     			Map<SnmpInstId,SnmpValue> arrayDiskConnectionNumber = SnmpUtils.getOidValues(agentConfig,"OMSAStorageMonitor", arrayDiskLogicalConnectionArrayDiskNumberSnmpObject);
     			
     			
@@ -168,7 +168,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             			
             			log().debug("OMSAStorageMonitor :: Found This Array Disk Value " + disk.getKey());
             			
-            			SnmpObjId arrayDiskStateSnmpObject = new SnmpObjId(arrayDiskState + "." + arrayDiskConnectionNumber.get(disk.getKey()));
+            			SnmpObjId arrayDiskStateSnmpObject = SnmpObjId.get(arrayDiskState + "." + arrayDiskConnectionNumber.get(disk.getKey()));
             			
             			SnmpValue diskValue = SnmpUtils.get(agentConfig,arrayDiskStateSnmpObject);
             			
@@ -176,7 +176,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             			if(diskValue.toInt() != 3) {
             				
             			String arrayDiskState = getArrayDiskStatus(diskValue);
-            			SnmpObjId arrayDiskNexusIDSnmpObject = new SnmpObjId(arrayDiskNexusID + "." + disk.getKey().toString());
+            			SnmpObjId arrayDiskNexusIDSnmpObject = SnmpObjId.get(arrayDiskNexusID + "." + disk.getKey().toString());
             			SnmpValue nexusValue =  SnmpUtils.get(agentConfig,arrayDiskNexusIDSnmpObject);
             			
             			returnValue += " phy drv(" + nexusValue +") " + arrayDiskState;
