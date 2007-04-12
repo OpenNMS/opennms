@@ -35,7 +35,10 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.test.PropertySettingTestSuite;
+import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.ClassPathResource;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -43,6 +46,7 @@ import junit.framework.TestSuite;
 public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     
     private TestTrapListener m_trapListener;
+    private MockSnmpAgent m_mockAgent;
 
     private final class TestTrapProcessor implements TrapProcessor {
         public void setCommunity(String community) {
@@ -113,6 +117,10 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     protected void setUp() throws Exception {
         super.setUp();
         
+        MockLogAppender.setupLogging();
+        
+        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("snmpTestData1.properties"), InetAddress.getLocalHost().getHostAddress()+"/9161");
+        
         m_trapListener = new TestTrapListener();
         SnmpUtils.registerForTraps(m_trapListener, this, 9162);
 
@@ -120,6 +128,9 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
 
     protected void tearDown() throws Exception {
         SnmpUtils.unregisterForTraps(m_trapListener, 9162);
+        
+        m_mockAgent.shutDownAndWait();
+        
         super.tearDown();
     }
     
@@ -135,19 +146,26 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     }
     
     public void testGet() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2.0"));
         assertNotNull(val);
     }
+
+
+	private SnmpAgentConfig getAgentConfig() throws UnknownHostException {
+		SnmpAgentConfig snmpAgentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+		snmpAgentConfig.setPort(9161);
+		return snmpAgentConfig;
+	}
     
     public void testBadGet() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2"));
         assertEquals(null, val);
     }
     
     public void getMultipleVarbinds() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpObjId[] oids = { SnmpObjId.get(".1.3.6.1.2.1.1.2.0"), SnmpObjId.get(".1.3.6.1.2.1.1.3.0") };
         SnmpValue[] vals = SnmpUtils.get(agentConfig, oids);
         assertNotNull(vals);
@@ -155,13 +173,13 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     }
     
     public void testGetNext() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.getNext(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1"));
         assertNotNull(val);
     }
     
     public void testGetNextMultipleVarbinds() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpObjId[] oids = { SnmpObjId.get(".1.3.6.1.2.1.1.2.0"), SnmpObjId.get(".1.3.6.1.2.1.1.3.0") };
         SnmpValue[] vals = SnmpUtils.getNext(agentConfig, oids);
         assertNotNull(vals);
@@ -181,7 +199,7 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     }
 */    
     public void testCreateWalkerWithAgentConfig() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "Test", new ColumnTracker(SnmpObjId.get("1.2.3.4")));
         assertNotNull(walker);
     }
