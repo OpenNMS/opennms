@@ -141,8 +141,8 @@ public class MockLogAppender extends AppenderSkeleton {
 
         logConfig.put("log4j.rootCategory", level + consoleAppender
                 + ", MOCK");
-        logConfig.put("log4j.logger.org.snmp4j", "ERROR" + consoleAppender
-                + ", MOCK");
+        logConfig.put("log4j.logger.org.snmp4j", "ERROR");
+        logConfig.put("log4j.logger.org.snmp4j.agent", "ERROR");
         logConfig.put("log4j.logger.org.hibernate.cfg.AnnotationBinder",
                       "ERROR" + consoleAppender + ", MOCK");
 
