@@ -136,19 +136,19 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     
     public void testGet() throws UnknownHostException {
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
-        SnmpValue val = SnmpUtils.get(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1.2.0"));
+        SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2.0"));
         assertNotNull(val);
     }
     
     public void testBadGet() throws UnknownHostException {
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
-        SnmpValue val = SnmpUtils.get(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1.2"));
+        SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2"));
         assertEquals(null, val);
     }
     
     public void getMultipleVarbinds() throws UnknownHostException {
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
-        SnmpObjId[] oids = { new SnmpObjId(".1.3.6.1.2.1.1.2.0"), new SnmpObjId(".1.3.6.1.2.1.1.3.0") };
+        SnmpObjId[] oids = { SnmpObjId.get(".1.3.6.1.2.1.1.2.0"), SnmpObjId.get(".1.3.6.1.2.1.1.3.0") };
         SnmpValue[] vals = SnmpUtils.get(agentConfig, oids);
         assertNotNull(vals);
         assertEquals(2, vals.length);
@@ -156,13 +156,13 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     
     public void testGetNext() throws UnknownHostException {
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
-        SnmpValue val = SnmpUtils.getNext(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1"));
+        SnmpValue val = SnmpUtils.getNext(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1"));
         assertNotNull(val);
     }
     
     public void testGetNextMultipleVarbinds() throws UnknownHostException {
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
-        SnmpObjId[] oids = { new SnmpObjId(".1.3.6.1.2.1.1.2.0"), new SnmpObjId(".1.3.6.1.2.1.1.3.0") };
+        SnmpObjId[] oids = { SnmpObjId.get(".1.3.6.1.2.1.1.2.0"), SnmpObjId.get(".1.3.6.1.2.1.1.3.0") };
         SnmpValue[] vals = SnmpUtils.getNext(agentConfig, oids);
         assertNotNull(vals);
         assertEquals(2, vals.length);

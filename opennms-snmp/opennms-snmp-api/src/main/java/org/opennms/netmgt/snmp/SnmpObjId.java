@@ -40,30 +40,51 @@ public class SnmpObjId implements Comparable {
 
     private int[] m_ids;
     
+    /**
+     * These constructors are private.  The get method should be called to create a new oid
+     */ 
     protected SnmpObjId(int[] ids, boolean clone) {
         m_ids = (clone ? cloneIds(ids) : ids);
     }
     
+    /**
+     * These constructors are private.  The get method should be called to create a new oid
+     */ 
     protected SnmpObjId(int[] ids) {
         this(ids, true);
     }
 
-    public SnmpObjId(String oid) {
+    /**
+     * These constructors are private.  The get method should be called to create a new oid
+     */ 
+    protected SnmpObjId(String oid) {
         this(convertStringToInts(oid), false);
     }
     
+    /**
+     * These constructors are private.  The get method should be called to create a new oid
+     */ 
     protected SnmpObjId(SnmpObjId oid) {
         this(oid.m_ids);
     }
     
+    /**
+     * These constructors are private.  The get method should be called to create a new oid
+     */ 
     private SnmpObjId(String objId, String instance) {
         this(appendArrays(convertStringToInts(objId), convertStringToInts(instance)), false);
     }
     
+    /**
+     * These constructors are private.  The get method should be called to create a new oid
+     */ 
     private SnmpObjId(SnmpObjId objId, String instance) {
         this(appendArrays(objId.m_ids, convertStringToInts(instance)), false);
     }
     
+    /**
+     * These constructors are private.  The get method should be called to create a new oid
+     */ 
     private SnmpObjId(SnmpObjId objId, SnmpObjId instance) {
         this(appendArrays(objId.m_ids, instance.m_ids), false);
     }

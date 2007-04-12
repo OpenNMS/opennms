@@ -90,7 +90,7 @@ public class Snmp4JStrategyTest extends TestCase {
     }
 
     public void testSendWithGetPduSingleValue() throws Exception {
-        SnmpObjId[] oids = new SnmpObjId[] { new SnmpObjId(".1.3.5.1.1.3.0") };
+        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };
         
         SnmpValue[] values = m_strategy.send(new Snmp4JAgentConfig(getAgentConfig()), PDU.GET, oids);
         
@@ -101,8 +101,8 @@ public class Snmp4JStrategyTest extends TestCase {
     
     public void testSendWithGetPduMultipleValues() throws Exception {
         SnmpObjId[] oids = new SnmpObjId[] {
-                new SnmpObjId(".1.3.5.1.1.3.0"),
-                new SnmpObjId(".1.3.5.1.1.4.0"),
+                SnmpObjId.get(".1.3.5.1.1.3.0"),
+                SnmpObjId.get(".1.3.5.1.1.4.0"),
         };
         
         SnmpValue[] values = m_strategy.send(new Snmp4JAgentConfig(getAgentConfig()), PDU.GET, oids);
@@ -115,7 +115,7 @@ public class Snmp4JStrategyTest extends TestCase {
     
 
     public void testSendWithGetNextPduSingleValue() throws Exception {
-        SnmpObjId[] oids = new SnmpObjId[] { new SnmpObjId(".1.3.5.1.1.3.0") };
+        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };
         
         SnmpValue[] values = m_strategy.send(new Snmp4JAgentConfig(getAgentConfig()), PDU.GETNEXT, oids);
         
@@ -127,8 +127,8 @@ public class Snmp4JStrategyTest extends TestCase {
     
     public void testSendWithGetNextPduMultipleValues() throws Exception {
         SnmpObjId[] oids = new SnmpObjId[] {
-                new SnmpObjId(".1.3.5.1.1.3.0"),
-                new SnmpObjId(".1.3.5.1.1.4.0"),
+                SnmpObjId.get(".1.3.5.1.1.3.0"),
+                SnmpObjId.get(".1.3.5.1.1.4.0"),
         };
         
         SnmpValue[] values = m_strategy.send(new Snmp4JAgentConfig(getAgentConfig()), PDU.GETNEXT, oids);
@@ -142,7 +142,7 @@ public class Snmp4JStrategyTest extends TestCase {
     }
     
     public void testGetSingleValue() throws Exception {
-        SnmpObjId[] oids = new SnmpObjId[] { new SnmpObjId(".1.3.5.1.1.3.0") };
+        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };
         
         SnmpValue[] values = m_strategy.get(getAgentConfig(), oids);
         
@@ -153,8 +153,8 @@ public class Snmp4JStrategyTest extends TestCase {
     
     public void testGetMultipleValues() throws Exception {
         SnmpObjId[] oids = new SnmpObjId[] {
-                new SnmpObjId(".1.3.5.1.1.3.0"),
-                new SnmpObjId(".1.3.5.1.1.4.0"),
+                SnmpObjId.get(".1.3.5.1.1.3.0"),
+                SnmpObjId.get(".1.3.5.1.1.4.0"),
         };
         
         SnmpValue[] values = m_strategy.get(getAgentConfig(), oids);
@@ -166,7 +166,7 @@ public class Snmp4JStrategyTest extends TestCase {
     }
     
     public void testGetNextSingleValue() throws Exception {
-        SnmpObjId[] oids = new SnmpObjId[] { new SnmpObjId(".1.3.5.1.1.3.0") };
+        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get(".1.3.5.1.1.3.0") };
         
         SnmpValue[] values = m_strategy.getNext(getAgentConfig(), oids);
         
@@ -178,8 +178,8 @@ public class Snmp4JStrategyTest extends TestCase {
     
     public void testGetNextMultipleValues() throws Exception {
         SnmpObjId[] oids = new SnmpObjId[] {
-                new SnmpObjId(".1.3.5.1.1.3.0"),
-                new SnmpObjId(".1.3.5.1.1.4.0"),
+                SnmpObjId.get(".1.3.5.1.1.3.0"),
+                SnmpObjId.get(".1.3.5.1.1.4.0"),
         };
         
         SnmpValue[] values = m_strategy.getNext(getAgentConfig(), oids);

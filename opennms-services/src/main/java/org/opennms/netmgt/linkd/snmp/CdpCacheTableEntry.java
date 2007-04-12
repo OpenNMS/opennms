@@ -395,7 +395,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
 		if (!hasIfIndex) {
 			int ifindex = inst.getSubIdAt(inst.length()-2);
-			super.storeResult(new SnmpObjId(CDP_IFINDEX_OID), inst, 
+			super.storeResult(SnmpObjId.get(CDP_IFINDEX_OID), inst, 
 						SnmpUtils.getValueFactory().getInt32(ifindex));
 			hasIfIndex = true;
 		}

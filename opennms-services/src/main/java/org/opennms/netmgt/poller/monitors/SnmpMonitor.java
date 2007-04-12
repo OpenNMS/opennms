@@ -225,7 +225,7 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
             if (log().isDebugEnabled()) {
                 log().debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
-            SnmpObjId snmpObjectId = new SnmpObjId(oid);
+            SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 
             if ("true".equals(walkstr)) {
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);

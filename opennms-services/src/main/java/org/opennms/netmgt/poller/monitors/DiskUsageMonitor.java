@@ -205,7 +205,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             if (log().isDebugEnabled()) {
                 log().debug("DiskUsageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
-            SnmpObjId hrStorageDescrSnmpObject = new SnmpObjId(hrStorageDescr);
+            SnmpObjId hrStorageDescrSnmpObject = SnmpObjId.get(hrStorageDescr);
             
             
             
@@ -222,8 +222,8 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 if (e.getValue().toString().equals(diskName)) {
                 	log().debug("DiskUsageMonitor.poll: found disk=" + diskName);
                 	
-                	SnmpObjId hrStorageSizeSnmpObject = new SnmpObjId(hrStorageSize + "." + e.getKey().toString());
-                	SnmpObjId hrStorageUsedSnmpObject = new SnmpObjId(hrStorageUsed + "." + e.getKey().toString());
+                	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
+                	SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed + "." + e.getKey().toString());
                 	
                 	
                 	SnmpValue snmpSize = SnmpUtils.get(agentConfig, hrStorageSizeSnmpObject);

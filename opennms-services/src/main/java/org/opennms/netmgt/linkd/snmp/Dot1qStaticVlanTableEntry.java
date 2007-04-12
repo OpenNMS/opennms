@@ -137,7 +137,7 @@ implements VlanCollectorEntry {
 	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
 		if (!hasVlanIndex) {
 			int vlanid = inst.getLastSubId();
-			super.storeResult(new SnmpObjId(VLAN_INDEX_OID), inst, 
+			super.storeResult(SnmpObjId.get(VLAN_INDEX_OID), inst, 
 						SnmpUtils.getValueFactory().getInt32(vlanid));
 			hasVlanIndex = true;
 		}
