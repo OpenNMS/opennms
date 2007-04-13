@@ -1,7 +1,10 @@
 /*
- * Created on Mar 7, 2005
+ * Modifications:
+ *
+ * 2007 Apr 13: Genericize List passed to send method. - dj@opennms.org
+ * 2005 Mar 07: Created this file.
+ *
  * Copyright (C) 2005, The OpenNMS Group, Inc..
- * 
  */
 
 package org.opennms.netmgt.notifd;
@@ -68,7 +71,7 @@ public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 	 * 
 	 * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
 	 */
-	public int send(List arguments) {
+	public int send(List<Argument> arguments) {
 
 		try {
 
@@ -96,13 +99,13 @@ public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 	 * @throws Exception
 	 */
 
-	private String[] parseArguments(List arguments) throws Exception {
+	private String[] parseArguments(List<Argument> arguments) throws Exception {
 
 		String[] parsedArgs = new String[XMPP_MAX];
 
 		for (int i = 0; i < arguments.size(); i++) {
 
-			Argument arg = (Argument) arguments.get(i);
+			Argument arg = arguments.get(i);
 
 			if (NotificationManager.PARAM_XMPP_ADDRESS.equals(arg.getSwitch())) {
 				parsedArgs[XMPP_TO] = arg.getValue();

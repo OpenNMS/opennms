@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 13: Genericize List passed to send method. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -51,6 +55,8 @@ public class MockNotificationStrategy implements NotificationStrategy {
     
     private static NotificationAnticipator s_anticpator = null;
     
+    Map notificationsSent = new HashMap();
+    
     static {
         MockUtil.println("Static initializer on "+ MockNotificationStrategy.class.getName());
     }
@@ -58,19 +64,17 @@ public class MockNotificationStrategy implements NotificationStrategy {
     public MockNotificationStrategy(){
         MockUtil.println("Created a "+ MockNotificationStrategy.class.getName());        
     }
-    
-    Map notificationsSent = new HashMap();
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
-    public int send(List arguments) {
+    public int send(List<Argument> arguments) {
         MockUtil.println("Message sent with arguments:"+arguments);
         
         MockNotification notification = new MockNotification();
-        Iterator it = arguments.iterator();
+        Iterator<Argument> it = arguments.iterator();
         while (it.hasNext()) {
-            Argument arg = (Argument) it.next();
+            Argument arg = it.next();
             if (arg.getSwitch().equals("-subject")) {
                 notification.setSubject(arg.getValue());
             } else if (arg.getSwitch().equals("-email")) {

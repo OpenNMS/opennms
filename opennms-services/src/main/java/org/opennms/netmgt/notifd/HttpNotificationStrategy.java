@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 13: Genericize List passed to send method. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -60,12 +64,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class HttpNotificationStrategy implements NotificationStrategy {
 
-    private List m_arguments;
+    private List<Argument> m_arguments;
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
-    public int send(List arguments) {
+    public int send(List<Argument> arguments) {
         
         m_arguments = arguments;
         
@@ -84,8 +88,8 @@ public class HttpNotificationStrategy implements NotificationStrategy {
             log().info("send: No \"post-\" arguments..., continuing with an HTTP GET using URL: "+url);
         } else {
             log().info("send: Found \"post-\" arguments..., continuing with an HTTP POST using URL: "+url);
-            for (Iterator it = m_arguments.iterator(); it.hasNext();) {
-                Argument arg = (Argument) it.next();
+            for (Iterator<Argument> it = m_arguments.iterator(); it.hasNext();) {
+                Argument arg = it.next();
                 log().debug("send: post argument: "+arg.getSwitch() +" = "+arg.getValue());
             }
             method = new PostMethod(url);
@@ -138,8 +142,8 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         List<Argument> args = getArgsByPrefix("post-");
         NameValuePair[] posts = new NameValuePair[args.size()];
         int cnt = 0;
-        for (Iterator it = args.iterator(); it.hasNext();) {
-            Argument arg = (Argument) it.next();
+        for (Iterator<Argument> it = args.iterator(); it.hasNext();) {
+            Argument arg = it.next();
             String argSwitch = arg.getSwitch().substring("post-".length());
             if (arg.getValue() == null) {
                 arg.setValue("");
@@ -151,8 +155,8 @@ public class HttpNotificationStrategy implements NotificationStrategy {
 
     private String getMessage() {
         String message = "no notification text message defined for the \"-tm\" switch.";
-        for (Iterator it = m_arguments.iterator(); it.hasNext();) {
-            Argument arg = (Argument) it.next();
+        for (Iterator<Argument> it = m_arguments.iterator(); it.hasNext();) {
+            Argument arg = it.next();
             if (arg.getSwitch().equals("-tm"))
                 message = arg.getValue();
         }
@@ -162,8 +166,8 @@ public class HttpNotificationStrategy implements NotificationStrategy {
 
     private List<Argument> getArgsByPrefix(String argPrefix) {
         List<Argument> args = new ArrayList<Argument>();
-        for (Iterator it = m_arguments.iterator(); it.hasNext();) {
-            Argument arg = (Argument) it.next();
+        for (Iterator<Argument> it = m_arguments.iterator(); it.hasNext();) {
+            Argument arg = it.next();
             if (arg.getSwitch().startsWith(argPrefix)) {
                 args.add(arg) ;
             }
@@ -187,8 +191,8 @@ public class HttpNotificationStrategy implements NotificationStrategy {
      */
     private String getSwitchValue(String argSwitch) {
         String value = null;
-        for (Iterator it = m_arguments.iterator(); it.hasNext();) {
-            Argument arg = (Argument) it.next();
+        for (Iterator<Argument> it = m_arguments.iterator(); it.hasNext();) {
+            Argument arg = it.next();
             if (arg.getSwitch().equals(argSwitch)) {
                 value = arg.getValue();
             }

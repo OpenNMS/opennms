@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 13: Genericize List passed to send method. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -53,9 +57,9 @@ import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
  */
 public class SnmpTrapNotificationStrategy implements NotificationStrategy {
     
-    private List m_arguments;
+    private List<Argument> m_arguments;
 
-    public int send (List arguments) {
+    public int send (List<Argument> arguments) {
         
         m_arguments = arguments;
         String argVersion = getVersion();
@@ -261,8 +265,8 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
      */
     private String getSwitchValue(String argSwitch) {
         String value = null;
-        for (Iterator it = m_arguments.iterator(); it.hasNext();) {
-            Argument arg = (Argument) it.next();
+        for (Iterator<Argument> it = m_arguments.iterator(); it.hasNext();) {
+            Argument arg = it.next();
             if (arg.getSwitch().equals(argSwitch)) {
                 value = arg.getValue();
             }

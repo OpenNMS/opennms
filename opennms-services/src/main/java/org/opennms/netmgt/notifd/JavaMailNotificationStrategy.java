@@ -1,7 +1,10 @@
 /*
- * Created on Sep 8, 2004
+ * Modifications:
+ *
+ * 2007 Apr 13: Genericize List passed to send method. - dj@opennms.org
+ * 2004 Sep 08: Created this file.
+ *
  * Copyright (C) 2005, The OpenNMS Group, Inc..
- * 
  */
 package org.opennms.netmgt.notifd;
 
@@ -34,7 +37,7 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
      * 
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
-    public int send(List arguments) {
+    public int send(List<Argument> arguments) {
 
         log().debug("In the JavaMailNotification class.");
 
@@ -59,13 +62,13 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
      * 
      * @param arguments
      */
-    private JavaMailer buildMessage(List arguments) {
+    private JavaMailer buildMessage(List<Argument> arguments) {
 
         JavaMailer jm = new JavaMailer();
 
         for (int i = 0; i < arguments.size(); i++) {
 
-            Argument arg = (Argument) arguments.get(i);
+            Argument arg = arguments.get(i);
             log().debug("Current arg switch: " + i + " of " + arguments.size() + " is: " + arg.getSwitch());
             log().debug("Current arg  value: " + i + " of " + arguments.size() + " is: " + arg.getValue());
 
