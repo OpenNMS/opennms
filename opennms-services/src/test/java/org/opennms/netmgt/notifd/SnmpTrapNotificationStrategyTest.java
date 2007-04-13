@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 13: Genericize List passed to send method. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -51,7 +55,7 @@ public class SnmpTrapNotificationStrategyTest extends TestCase {
      * Test method for 'org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy.send(List)'
      */
     public void testSendWithEmptyArgumentList() {
-        List arguments = new ArrayList();
+        List<Argument> arguments = new ArrayList<Argument>();
         NotificationStrategy strategy = new SnmpTrapNotificationStrategy();
         strategy.send(arguments);
 
