@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?>
+<collectd-configuration 
+	threads="50">
+
+	<package name="example1">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>	 
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+		<include-url>file:/space/svn/trunk/target/opennms-1.3.3-SNAPSHOT/etc/include</include-url>
+		
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+			<parameter key="port" value="161"/>
+			<parameter key="retry" value="3"/>
+			<parameter key="timeout" value="3000"/>
+		</service>
+
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+	
+	<collector service="SNMP"         class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+
+</collectd-configuration>
+
