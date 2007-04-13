@@ -36,6 +36,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.DaoTestConfigBean;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class CorrelatorIntegrationTest extends
@@ -44,7 +45,9 @@ public class CorrelatorIntegrationTest extends
     private MockEventIpcManager m_eventIpcMgr;
 
     static {
-        System.setProperty("opennms.home", "src/test/opennms-home");
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.setRelativeHomeDirectory("src/test/opennms-home");
+        bean.afterPropertiesSet();
 
         MockEventIpcManager eventIpcMgr = new MockEventIpcManager();
         EventIpcManagerFactory.setIpcManager(eventIpcMgr);
