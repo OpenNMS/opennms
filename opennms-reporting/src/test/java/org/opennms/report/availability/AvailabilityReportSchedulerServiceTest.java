@@ -41,6 +41,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.test.DaoTestConfigBean;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +51,10 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
         private MockDatabase m_db;
         
         public AvailabilityReportSchedulerServiceTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
-            System.setProperty("opennms.home", "src/test/opennms-home");
+            DaoTestConfigBean bean = new DaoTestConfigBean();
+            bean.setRelativeHomeDirectory("src/test/opennms-home");
+            bean.afterPropertiesSet();
+            
             m_db = new MockDatabase();
             DataSourceFactory.setInstance(m_db);
         }
