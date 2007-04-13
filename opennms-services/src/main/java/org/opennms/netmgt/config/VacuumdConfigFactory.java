@@ -178,7 +178,8 @@ public final class VacuumdConfigFactory {
      * Returns a Collectionn of triggers defined in the config
      * @return 
      */
-    public synchronized Collection getTriggers() {
+    @SuppressWarnings("unchecked")
+	public synchronized Collection<Trigger> getTriggers() {
         return m_config.getTriggers().getTriggerCollection();
     }
     
@@ -237,7 +238,8 @@ public final class VacuumdConfigFactory {
      * Returns a Collection of actions defined in the config
      * @return
      */
-    public synchronized Collection getActions() {
+    @SuppressWarnings("unchecked")
+	public synchronized Collection<Action> getActions() {
         return m_config.getActions().getActionCollection();
     }
 

@@ -152,6 +152,8 @@
 
       <attribute name="name" type="string" use="required"/>
 
+      <attribute name="data-source" type="string" default="opennms" />
+
       <attribute name="operator" use="optional">
         <annotation>
           <documentation>only run the action if the row count evalutes with
@@ -181,6 +183,9 @@
       </sequence>
 
       <attribute name="name" type="string" use="required"/>
+
+      <attribute name="data-source" type="string" default="opennms" />
+
     </complexType>
   </element>
 

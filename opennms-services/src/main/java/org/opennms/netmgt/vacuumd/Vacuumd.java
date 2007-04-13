@@ -39,6 +39,7 @@
 
 package org.opennms.netmgt.vacuumd;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
@@ -52,7 +53,9 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
+import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -104,25 +107,33 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             log().info("Loading the configuration file.");
             VacuumdConfigFactory.init();
             getEventManager().addEventListener(this, RELOAD_CONFIG_UEI);
-        } catch (MarshalException ex) {
+            
+            initializeDataSources();
+           
+        } catch (Exception ex) {
             log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
+		}
+        
         log().info("Vaccumd initialization complete");
         
+
         createScheduler();
         scheduleAutomations();
 
     }
 
-    protected void onStart() {
+    private void initializeDataSources() throws MarshalException, ValidationException, IOException, ClassNotFoundException, PropertyVetoException, SQLException {
+    	for(Trigger trigger : VacuumdConfigFactory.getInstance().getTriggers()) {
+    		DataSourceFactory.init(trigger.getDataSource());
+    	}
+    	
+    	for(Action action : VacuumdConfigFactory.getInstance().getActions()) {
+    		DataSourceFactory.init(action.getDataSource());
+    	}
+	}
+
+	protected void onStart() {
 		m_startTime = System.currentTimeMillis();
         m_thread = new Thread(this, "Vacuumd-Thread");
         m_thread.start();
