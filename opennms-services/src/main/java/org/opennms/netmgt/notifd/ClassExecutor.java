@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 // 
+// Modifications:
+//
+// 2007 Apr 13: Catch any Throwables sent by the send method. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -57,19 +61,26 @@ public class ClassExecutor implements ExecutorStrategy {
      * @return int, the return code of the send method of the plug-in
      */
     public int execute(String className, List<Argument> arguments) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        log.debug("Going for the class instance: " + className);
+        log().debug("Going for the class instance: " + className);
         NotificationStrategy ns;
         try {
             ns = (NotificationStrategy) Class.forName(className).newInstance();
-            log.debug(className + " class created: " + ns.getClass());
+            log().debug(className + " class created: " + ns.getClass());
         } catch (Exception e) {
-            log.error("Execption creating notification strategy class: " + className, e);
+            log().error("Execption creating notification strategy class: " + className, e);
             return 1;
         }
 
-        return ns.send(arguments);
+        try {
+            return ns.send(arguments);
+        } catch (Throwable t) {
+            log().error("Throwable received while sending message: " + t, t);
+            return 1;
+        }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }
