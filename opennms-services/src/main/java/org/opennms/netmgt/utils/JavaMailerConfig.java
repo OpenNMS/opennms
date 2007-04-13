@@ -10,7 +10,8 @@
 //
 // Modifications:
 //
-// Aug 23, 2004: Created this file.
+// 2007 Apr 13: Create log() method. - dj@opennms.org
+// 2004 Aug 23: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -77,15 +78,17 @@ class JavaMailerConfig {
      * @return the value of the property
      */
     public static String getProperty(String name, String defaultVal) {
-        Category log = ThreadCategory.getInstance(JavaMailerConfig.class);
-
         try {
             return getProperties().getProperty(name, defaultVal);
         } catch (IOException e) {
-            log.error("Unable to read property " + name + " returning defaultValue: " + defaultVal, e);
+            log().error("Unable to read property " + name + " returning defaultValue: " + defaultVal, e);
             return defaultVal;
         }
 
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(JavaMailerConfig.class);
     }
 
     /**
