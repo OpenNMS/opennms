@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 13: Add a few more test cases and deduplicate. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,9 +35,6 @@
 //
 /*
  * Created on Jan 24, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.opennms.netmgt.utils;
 
@@ -42,30 +43,18 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Calendar;
-import java.util.Properties;
-
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
-import alt.dev.jmta.JMTA;
 /**
  * @author david hustace
  */
 public class JavaMailerTest extends TestCase {
-    
+    private static final String TEST_ADDRESS = "brozow@opennms.org";
+
     protected void setUp() throws IOException {
         MockLogAppender.setupLogging();
         
@@ -76,85 +65,73 @@ public class JavaMailerTest extends TestCase {
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
     }
     
-    protected void tearDown() {
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
     public void testNothing() throws Exception {
         
     }
-	    
-    public void testMTA() throws Exception {
-        
-        Properties props = new Properties();
-        Session session = Session.getInstance(props, null);
-        MimeMessage message = new MimeMessage(session);
-        message.setContent("Hello", "text/plain");
-        message.setText("Hello");
-        message.setSubject(Calendar.getInstance().getTime() + ": testMTA message");
-        
-        String to = "brozow@opennms.org";
-        String from = "brozow@opennms.org";
-        
 
-        Address address = new InternetAddress(from);
-        message.setFrom(address);
-        address = new InternetAddress(to);
-        message.setRecipients(Message.RecipientType.TO, to);
-        message.saveChanges();
+    public final void testJavaMailerWithDefaults() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer using details");
         
-        Transport  aTransport = session.getTransport( "mta" );
-        
-        aTransport.sendMessage( message, null );
-//        JMTA.send(message);
-        
+        jm.mailSend();
     }
 
-    
-    public final void testJavaMailerWithoutFileAttachment()  {
+    public final void testJavaMailerUsingMTAExplicitly() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer using MTA explicitly");
         
-        JavaMailer jm = new JavaMailer();
+        jm.setUseJMTA(true);
         
-        jm.setFrom("brozow@opennms.org");
-        try {
-            jm.setMessageText("Test message from testJavaMailer: "+InetAddress.getLocalHost());
-        } catch (UnknownHostException e) {
-            log().error("Host Name exception: "+e.getMessage());
-        }
-        jm.setSubject("Testing JavaMailer");
-        jm.setTo("brozow@opennms.org");
-        try {
-            jm.mailSend();
-        } catch (JavaMailerException e) {
-            log().error("JavaMailerException exception: "+e.getMessage());
-        }
+        jm.mailSend();
+    }
+
+    public final void testJavaMailerUsingMTAByTransport() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer using MTA by transport");
         
+        jm.setUseJMTA(false);
+        jm.setTransport("mta");
+        
+        jm.mailSend();
     }
     
-    public final void testJavaMailerWithFileAttachment() {
+    public final void testJavaMailerWithoutMTA() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
         
-        JavaMailer jm = new JavaMailer();
-
-        jm.setFrom("brozow@opennms.org");
-        try {
-            jm.setMessageText("Test message with file attachment from testJavaMailer: "+InetAddress.getLocalHost());
-        } catch (UnknownHostException e) {
-            log().error("Host Name exception: "+e.getMessage());
-        }
-        jm.setSubject("Testing JavaMailer");
-        jm.setTo("brozow@opennms.org");
+        jm.setUseJMTA(false);
+        jm.setMailHost("mail.opennms.org");
+        
+        jm.mailSend();
+    }
+    
+    public final void testJavaMailerWithFileAttachment() throws Exception {
+        JavaMailer jm = createMailer("Test message with file attachment from testJavaMailer");
         
         jm.setFileName("/etc/motd");
-        try {
-            jm.mailSend();
-        } catch (JavaMailerException e) {
-            log().error("JavaMailerException exception: "+e.getMessage());
-        }
         
+        jm.mailSend();
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    private JavaMailer createMailer(String subject) {
+        JavaMailer jm = new JavaMailer();
+
+        jm.setFrom(TEST_ADDRESS);
+        jm.setMessageText(subject + ": " + getLocalHost());
+        jm.setSubject("Testing JavaMailer");
+        jm.setTo(TEST_ADDRESS);
+        
+        return jm;
     }
 
+    private InetAddress getLocalHost()  {
+        try {
+            return InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            fail("Could not lookup local host address: " + e);
+            return null; // never reached
+        }
+    }
 }
