@@ -78,12 +78,12 @@ public class Statsd implements SpringServiceDaemon {
         jobFactory.setTargetMethod("runReport");
         jobFactory.setArguments(new Object[] { reportDef });
         jobFactory.setConcurrent(false);
-        jobFactory.setBeanName(reportDef.getName());
+        jobFactory.setBeanName(reportDef.getDescription());
         jobFactory.afterPropertiesSet();
         JobDetail jobDetail = (JobDetail) jobFactory.getObject();
         
         CronTriggerBean cronReportTrigger = new CronTriggerBean();
-        cronReportTrigger.setBeanName(reportDef.getName());
+        cronReportTrigger.setBeanName(reportDef.getDescription());
         cronReportTrigger.setJobDetail(jobDetail);
         cronReportTrigger.setCronExpression(reportDef.getCronExpression());
         cronReportTrigger.afterPropertiesSet();
