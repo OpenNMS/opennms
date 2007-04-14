@@ -50,7 +50,7 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         startNewTransaction();
         
         m_dao = new JdbcFilterDao();
-        m_dao.setNodeDao(getNodeDao());
+        // Don't set the NodeDao because it isn't required for most methods
         m_dao.setDataSource(getDataSource());
         m_dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         m_dao.afterPropertiesSet();
@@ -63,31 +63,26 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
-        dao.setNodeDao(getNodeDao());
+        dao.setNodeDao(m_nodeDao);
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         dao.afterPropertiesSet();
     }
 
-    public void testAfterPropertiesSetNoNodeDao() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        
+    public void testAfterPropertiesSetNoNodeDao() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         
-        ta.anticipate(new IllegalStateException("property nodeDao cannot be null"));
-        try {
-            dao.afterPropertiesSet();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
+        // The nodeDao isn't required because this ends up getting used outside of a Spring context quite a bit
+        dao.afterPropertiesSet();
     }
     
-    public void testAfterPropertiesSetNoDataSource() {
+    public void testAfterPropertiesSetNoDataSource() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         
         JdbcFilterDao dao = new JdbcFilterDao();
-        dao.setNodeDao(getNodeDao());
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+
         
         ta.anticipate(new IllegalStateException("property dataSource cannot be null"));
         try {
@@ -102,7 +97,6 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         ThrowableAnticipator ta = new ThrowableAnticipator();
         
         JdbcFilterDao dao = new JdbcFilterDao();
-        dao.setNodeDao(getNodeDao());
         dao.setDataSource(getDataSource());
         
         ta.anticipate(new IllegalStateException("property databaseSchemaConfigFactory cannot be null"));
@@ -145,6 +139,8 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     }
     
     public void testWalkNodes() throws Exception {
+        m_dao.setNodeDao(getNodeDao());
+        
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         EntityVisitor visitor = new AbstractEntityVisitor() {
             public void visitNode(OnmsNode node) {
