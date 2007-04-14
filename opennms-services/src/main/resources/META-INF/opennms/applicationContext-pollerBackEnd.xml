@@ -23,7 +23,7 @@
     </bean>
 -->	
 
-	<bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+	<bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
 	  <property name="locationMonitorDao" ref="locationMonitorDao" />
 	  <property name="monitoredServiceDao" ref="monitoredServiceDao" />
 	  <property name="pollerConfig" ref="pollerConfig" />
@@ -33,7 +33,7 @@
 	</bean>
 	
 	<bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-	  <property name="targetObject" ref="pollerBackEnd" />
+	  <property name="targetObject" ref="daemon" />
 	  <property name="targetMethod" value="checkForDisconnectedMonitors" />
 	</bean>
 
