@@ -84,6 +84,14 @@ public class PopulatedTemporaryDatabaseTestCase extends
         m_installerDb.updatePlPgsql();
         m_installerDb.addStoredProcedures();
         
+
+        /*
+         * Here's an example of an iplike function that always returns true.
+         * CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN RETURN true; END; ' LANGUAGE 'plpgsql';
+         * 
+         * Found this in BaseIntegrationTestCase.
+         */
+
         if (m_setupIpLike) {
             m_installerDb.setPgIpLikeLocation(findIpLikeLibrary().getAbsolutePath());
             m_installerDb.updateIplike();
