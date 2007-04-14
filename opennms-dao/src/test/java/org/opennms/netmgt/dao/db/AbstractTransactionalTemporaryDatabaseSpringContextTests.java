@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2007 Apr 14: Call setDirty() at the end of runTest, not early on. - dj@opennms.org
  * 2007 Apr 07: Add docs; use ArrayList instead of LinkedList. - dj@opennms.org
  * 
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -177,23 +178,30 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests e
     /**
      * Run the unit test if tests are enabled.
      * 
-     * Note: this sets the Spring context as dirty to ensure that each
-     * test gets a fresh context, and in particular, a fresh temporary
-     * database.
+     * Note: this sets the Spring context as dirty at the end of each test
+     * to ensure that each test gets a fresh context, and in particular,
+     * a fresh temporary database.
      * 
      * @see junit.framework.TestCase#runTest()
      * @see setDirty()
      */
     @Override
     protected void runTest() throws Throwable {
-        setDirty();
-
         if (!PopulatedTemporaryDatabaseTestCase.isEnabled()) {
             PopulatedTemporaryDatabaseTestCase.notifyTestDisabled(getName());
             return;
         }
 
-        super.runTest();
+        try {
+            super.runTest();
+        } finally {
+            /*
+             * Mark the context as dirty when we're all done with the test.
+             * This causes the context to be destroyed immediately, so it
+             * needs to happen at the very end when everything is done.
+             */
+            setDirty();
+        }
     }
 
     /**
