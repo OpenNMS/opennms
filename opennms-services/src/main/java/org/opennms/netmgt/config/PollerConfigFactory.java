@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 14: Create a logStatic method and use setInstance to save the instance in init() - dj@opennms.org
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Jan 31: Added code to allow for RRA definitions within poller packages.
 //
@@ -45,6 +46,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -120,13 +122,17 @@ public final class PollerConfigFactory extends PollerConfigManager {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
-        ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+        logStatic().debug("init: config file path: " + cfgFile.getPath());
 
         FileReader reader = new FileReader(cfgFile);
-        m_singleton = new PollerConfigFactory(cfgFile.lastModified(), reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+        PollerConfigFactory config = new PollerConfigFactory(cfgFile.lastModified(), reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
         reader.close();
 
-        m_loaded = true;
+        setInstance(config);
+    }
+
+    private static Category logStatic() {
+        return ThreadCategory.getInstance(PollerConfigFactory.class);
     }
 
     /**
@@ -148,12 +154,12 @@ public final class PollerConfigFactory extends PollerConfigManager {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-            ThreadCategory.getInstance(PollerConfigFactory.class).debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
+            logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
             FileWriter fileWriter = new FileWriter(cfgFile);
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
-            ThreadCategory.getInstance(PollerConfigFactory.class).debug("saveXml: finished saving config file: " + cfgFile.getPath());
+            logStatic().debug("saveXml: finished saving config file: " + cfgFile.getPath());
         }
     }
 
@@ -166,8 +172,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized PollerConfig getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
+        }
 
         return m_singleton;
     }
@@ -182,9 +189,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
-            ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+            logStatic().debug("init: config file path: " + cfgFile.getPath());
             reloadXML(new FileReader(cfgFile));
-            ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: finished loading config file: " + cfgFile.getPath());
+            logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }
 }
