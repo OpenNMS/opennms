@@ -59,13 +59,13 @@ public class StatisticsReportCommandValidator implements Validator, Initializing
         StatisticsReportCommand cmd = (StatisticsReportCommand) obj;
         
         if (cmd.getId() == null) {
-            errors.rejectValue("monitorId", "monitorId.notSpecified",
-                               new Object[] { "monitorId" }, 
+            errors.rejectValue("id", "statisticsReportId.notSpecified",
+                               new Object[] { "id" }, 
                                "Value required.");
         } else {
             try {
-                int monitorId = cmd.getId();
-                m_statisticsReportDao.load(monitorId);
+                int id = cmd.getId();
+                m_statisticsReportDao.load(id);
             } catch (DataAccessException e) {
                 errors.rejectValue("id", "statisticsReportId.notFound",
                                    new Object[] { "id", cmd.getId() }, 

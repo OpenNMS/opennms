@@ -21,15 +21,20 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.filter.SQLTranslation;
 import org.opennms.netmgt.filter.lexer.Lexer;
 import org.opennms.netmgt.filter.node.Start;
 import org.opennms.netmgt.filter.parser.Parser;
+import org.opennms.netmgt.model.EntityVisitor;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 
 public class JdbcFilterDao implements FilterDao, InitializingBean {
+    private NodeDao m_nodeDao;
     private DataSource m_dataSource;
     private DatabaseSchemaConfigFactory m_databaseSchemaConfigFactory;
     
@@ -50,6 +55,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         SortedMap<Integer, String> resultMap = new TreeMap<Integer, String>();
         String sqlString = null;
 
+        if (log().isDebugEnabled()) {
+            log().debug("Filter: rule: " + rule);
+        }
+
         // get the database connection
         Connection conn = null;
         try {
@@ -58,7 +67,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             // parse the rule and get the sql select statement
             sqlString = getNodeMappingStatement(rule);
             if (log().isDebugEnabled()) {
-                log().debug("Filter: SQL statement: \n" + sqlString);
+                log().debug("Filter: SQL statement: " + sqlString);
             }
 
             // execute query
@@ -104,8 +113,17 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     public void afterPropertiesSet() {
+        Assert.state(m_nodeDao != null, "property nodeDao cannot be null");
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
+    }
+    
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
     public DataSource getDataSource() {
@@ -341,4 +359,20 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return translation.getStatement();
     }
 
+    public void walkMatchingNodes(String rule, EntityVisitor visitor) {
+        SortedMap<Integer, String> map;
+        try {
+            map = getNodeMap(rule);
+        } catch (FilterParseException e) {
+            throw new DataRetrievalFailureException("Could not parse rule '" + rule + "': " + e, e);
+        }
+        if (log().isDebugEnabled()) {
+            log().debug("got " + map.size() + " results");
+        }
+        
+        for (Integer nodeId : map.keySet()) {
+            OnmsNode node = getNodeDao().load(nodeId);
+            visitor.visitNode(node);
+        }
+    }
 }

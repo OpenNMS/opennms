@@ -53,6 +53,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -70,7 +71,6 @@ import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.utils.EventBuilder;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 
@@ -79,7 +79,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
-public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
+public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
 
@@ -120,6 +120,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         Assert.state(m_disconnectedTimeout > 0, "the disconnectedTimeout property must be set");
 
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
+    }
+    
+    public void start() throws Throwable {
+        // Nothing to do: job scheduling and RMI export is done externally
     }
 
     public void checkForDisconnectedMonitors() {
@@ -213,6 +217,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
         ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
 
         Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
+        log().debug("found " + services.size() + " services");
 
         List<PolledService> configs = new ArrayList<PolledService>(services.size());
 
@@ -223,7 +228,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
             configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
         }
 
-        PolledService[] polledSvcs = (PolledService[]) configs.toArray(new PolledService[configs.size()]);
+        PolledService[] polledSvcs = configs.toArray(new PolledService[configs.size()]);
         return new SimplePollerConfiguration(getConfigurationTimestamp(), polledSvcs);
 
 
@@ -244,7 +249,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
     }
 
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
-        return m_pollerConfig.getServiceMonitorLocators(context);
+        Collection<ServiceMonitorLocator> locators = m_pollerConfig.getServiceMonitorLocators(context);
+        log().debug("getServiceMonitorLocators: Returning " + locators.size() + " locators");
+        return locators;
     }
 
     private Category log() {
@@ -447,5 +454,4 @@ public class DefaultPollerBackEnd implements PollerBackEnd, InitializingBean {
             m_locMonDao.update(mon);
         }
     }
-
 }

@@ -41,6 +41,8 @@
 <%@page language="java" contentType="text/html" session="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Statistics Reports List" />
@@ -51,26 +53,82 @@
   <jsp:param name="breadcrumb" value="List"/>
 </jsp:include>
 
-<h3>Report List</h3>
-<div class="boxWrapper">
-  <c:choose>
-    <c:when test="${empty model}">
+<c:choose>
+  <c:when test="${empty model}">
+    <h3>Report List</h3>
+    <div class="boxWrapper">
       <p>
         None found.
       </p>
-    </c:when>
+    </div>
+  </c:when>
 
-    <c:otherwise>
-      <ul class="plain">
-        <c:forEach var="report" items="${model}">
-          <c:url var="reportUrl" value="statisticsReports/report.htm">
-            <c:param name="id" value="${report.id}"/>
-          </c:url>
-          <li><a href="${reportUrl}">${report.description}</a></li>
-        </c:forEach>
-      </ul>
-    </c:otherwise>
-  </c:choose>
-</div>
+  <c:otherwise>
+    <!-- We need the </script>, otherwise IE7 breaks -->
+    <script type="text/javascript" src="js/extremecomponents.js"></script>
+      
+    <link rel="stylesheet" type="text/css" href="css/onms-extremecomponents.css"/>
+        
+    <form id="form" action="${relativeRequestPath}" method="post">
+      <ec:table items="model" var="row"
+        action="${relativeRequestPath}?${pageContext.request.queryString}"
+        filterable="false"
+        imagePath="images/table/compact/*.gif"
+        title="Statistics Report List"
+        tableId="reportList"
+        form="form"
+        rowsDisplayed="25"
+        view="org.opennms.web.svclayer.etable.FixedRowCompact"
+        showExports="true" showStatusBar="true" 
+        autoIncludeParameters="false"
+        >
+      
+        <ec:exportPdf fileName="Statistics Report List.pdf" tooltip="Export PDF"
+          headerColor="black" headerBackgroundColor="#b6c2da"
+          headerTitle="Statistics Report List" />
+        <ec:exportXls fileName="Statistics Report List.xls" tooltip="Export Excel" />
+      
+        <ec:row highlightRow="false">
+        <%--
+          <ec:column property="name" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor"/>
+          --%>
+
+          <ec:column property="description" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor"/>
+
+          <ec:column property="startDate" title="Start" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+
+          <ec:column property="duration" title="Interval">
+            ${row.durationString}
+          </ec:column>
+          
+          
+        <%--
+          <ec:column property="endDate" title="End"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          --%>
+          
+        <%--
+          <ec:column property="jobStartedDate" title="Job Started"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          --%>
+          
+          <ec:column property="jobCompletedDate" title="Job Completed"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+
+          <ec:column property="jobDuration" title="Job Run Time">
+            ${row.jobDurationString}
+          </ec:column>
+
+          <ec:column property="purgeDate" title="Purge (no earlier than)" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+
+          <ec:column property="id" title="ID">
+            <c:url var="reportUrl" value="statisticsReports/report.htm">
+              <c:param name="id" value="${row.id}"/>
+            </c:url>
+            <a href="${reportUrl}">${row.id}</a>
+          </ec:column>
+        </ec:row>
+      </ec:table>
+    </form>
+  </c:otherwise>
+</c:choose>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

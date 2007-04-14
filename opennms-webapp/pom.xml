@@ -344,6 +344,10 @@
       <artifactId>spring-support</artifactId>
     </dependency>
     <dependency>
+      <groupId>poi</groupId>
+      <artifactId>poi</artifactId>
+    </dependency>
+    <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>

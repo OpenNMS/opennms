@@ -1,5 +1,6 @@
 package org.opennms.netmgt.dao.support;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -7,20 +8,49 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.model.AbstractEntityVisitor;
+import org.opennms.netmgt.model.EntityVisitor;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.ThrowableAnticipator;
 
 
 public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private DataSource m_dataSource;
+    private NodeDao m_nodeDao;
     private JdbcFilterDao m_dao;
+    private DatabasePopulator m_populator;
+    
+    public JdbcFilterDaoTest() {
+        super();
+        
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.afterPropertiesSet();
+    }
+    
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        };
+    }
     
     @Override
     public void onSetUpInTransactionIfEnabled() throws Exception {
         super.onSetUpInTransactionIfEnabled();
         
+        m_populator.populateDatabase();
+        setComplete();
+        endTransaction();
+        startNewTransaction();
+        
         m_dao = new JdbcFilterDao();
+        m_dao.setNodeDao(getNodeDao());
         m_dao.setDataSource(getDataSource());
         m_dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         m_dao.afterPropertiesSet();
@@ -33,14 +63,31 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
+        dao.setNodeDao(getNodeDao());
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         dao.afterPropertiesSet();
+    }
+
+    public void testAfterPropertiesSetNoNodeDao() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        
+        JdbcFilterDao dao = new JdbcFilterDao();
+        dao.setDataSource(getDataSource());
+        
+        ta.anticipate(new IllegalStateException("property nodeDao cannot be null"));
+        try {
+            dao.afterPropertiesSet();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
     }
     
     public void testAfterPropertiesSetNoDataSource() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         
         JdbcFilterDao dao = new JdbcFilterDao();
+        dao.setNodeDao(getNodeDao());
         
         ta.anticipate(new IllegalStateException("property dataSource cannot be null"));
         try {
@@ -55,6 +102,7 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         ThrowableAnticipator ta = new ThrowableAnticipator();
         
         JdbcFilterDao dao = new JdbcFilterDao();
+        dao.setNodeDao(getNodeDao());
         dao.setDataSource(getDataSource());
         
         ta.anticipate(new IllegalStateException("property databaseSchemaConfigFactory cannot be null"));
@@ -95,10 +143,17 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     public void testGetInterfaceWithServiceStatement() throws Exception {
         assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface, ifServices, service, node WHERE (iplike(ipInterface.ipaddr, '*.*.*.*')) AND ifServices.ipInterfaceId = ipInterface.id AND service.serviceID = ifServices.serviceID AND ifServices.ipInterfaceId = ipInterface.id AND node.nodeID = ipInterface.nodeID", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
     }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[0];
+    
+    public void testWalkNodes() throws Exception {
+        final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        EntityVisitor visitor = new AbstractEntityVisitor() {
+            public void visitNode(OnmsNode node) {
+                nodes.add(node);
+            }
+        };
+        m_dao.walkMatchingNodes("ipaddr == '10.1.1.1'", visitor);
+        
+        assertEquals("node list size", 1, nodes.size());
     }
 
     public DataSource getDataSource() {
@@ -107,6 +162,22 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
 
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public DatabasePopulator getPopulator() {
+        return m_populator;
+    }
+
+    public void setPopulator(DatabasePopulator populator) {
+        m_populator = populator;
     }
 
 }

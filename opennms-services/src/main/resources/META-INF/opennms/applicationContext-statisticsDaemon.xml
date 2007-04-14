@@ -17,6 +17,7 @@
     <bean id="daemon" class="org.opennms.netmgt.statsd.Statsd">
       <property name="resourceDao" ref="resourceDao"/>
       <property name="rrdDao" ref="rrdDao"/>
+      <property name="filterDao" ref="filterDao"/>
       <property name="transactionTemplate" ref="transactionTemplate"/>
       <property name="reportPersister" ref="reportPersister"/>
       <property name="scheduler" ref="scheduler"/>

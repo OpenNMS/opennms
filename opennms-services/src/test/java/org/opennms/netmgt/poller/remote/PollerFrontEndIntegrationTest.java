@@ -35,39 +35,76 @@
 //
 package org.opennms.netmgt.poller.remote;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.test.BaseIntegrationTestCase;
 import org.opennms.test.DaoTestConfigBean;
+import org.opennms.test.FileAnticipator;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
+public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+    private DatabasePopulator m_populator;
+    private FileAnticipator m_fileAnticipator;
 
     private PollerFrontEnd m_frontEnd;
     private PollerSettings m_settings;
     private ClassPathXmlApplicationContext m_frontEndContext;
     
-    public PollerFrontEndIntegrationTest() {
+    public PollerFrontEndIntegrationTest() throws IOException {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/test-configurations/PollerBackEndIntegrationTest");
         daoTestConfig.afterPropertiesSet();
         
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
-        String configFile = "/tmp/remote-poller.configuration";
-        File config = new File(configFile);
-        config.delete();
-        System.setProperty("opennms.poller.configuration.resource", "file://"+configFile);
-        System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
+        
+        m_fileAnticipator = new FileAnticipator();
+        
+        System.setProperty("opennms.poller.configuration.resource", m_fileAnticipator.expecting("remote-poller.configuration").toURL().toString());
+        System.setProperty("test.overridden.properties", "classpath:/org/opennms/netmgt/poller/remote/test.overridden.properties");
     }
     
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+                "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+                "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
+        };
+    }
 
     @Override
-    protected void onSetUp() throws Exception {
-        super.onSetUp();
+    protected void runTest() throws Throwable {
+        super.runTest();
+        
+        if (m_fileAnticipator.isInitialized()) {
+            m_fileAnticipator.deleteExpected();
+        }
+    }
+
+    @Override
+    protected void onSetUpInTransactionIfEnabled() throws Exception {
+        super.onSetUpInTransactionIfEnabled();
+        
+        getPopulator().populateDatabase();
+        
+        /**
+         * We complete and end the transaction here so that the populated
+         * database gets committed.  If we don't do this, the poller back
+         * end (setup with the contexts in getConfigLocations) won't see
+         * the populated database because it's working in another
+         * transaction.  This will cause one of the asserts in testRegister
+         * to fail because no services will be monitored by the remote
+         * poller.
+         */
+        setComplete();
+        endTransaction();
         
         m_frontEndContext = new ClassPathXmlApplicationContext(
                 new String[] { 
@@ -87,32 +124,24 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
         m_frontEndContext.refresh();
         m_frontEnd = (PollerFrontEnd)m_frontEndContext.getBean("pollerFrontEnd");
         m_settings = (PollerSettings)m_frontEndContext.getBean("pollerSettings");
-        
     }
-    
-    
 
     @Override
-    protected void onTearDown() throws Exception {
+    protected void onTearDownInTransactionIfEnabled() throws Exception {
         m_frontEndContext.stop();
         m_frontEndContext.close();
-        super.onTearDown();
+        
+        super.onTearDownInTransactionIfEnabled();
     }
-
-
-
+    
     @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
-                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
-        };
-
+    protected void onTearDownAfterTransaction() throws Exception {
+        m_fileAnticipator.tearDown();
+        
+        super.onTearDownAfterTransaction();
     }
     
     public void testRegister() throws Exception {
-       
         assertFalse(m_frontEnd.isRegistered());
         
         m_frontEnd.register("RDU");
@@ -129,10 +158,16 @@ public class PollerFrontEndIntegrationTest extends BaseIntegrationTestCase {
         
         assertEquals(0, getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId));
         
+        assertTrue("Could not find any pollResults", 0 < getJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
+
         m_frontEnd.stop();
-        assertTrue("Could not found any pollResults", 0 < getJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
-        
-      
     }
-    
+
+    public DatabasePopulator getPopulator() {
+        return m_populator;
+    }
+
+    public void setPopulator(DatabasePopulator populator) {
+        m_populator = populator;
+    }
 }

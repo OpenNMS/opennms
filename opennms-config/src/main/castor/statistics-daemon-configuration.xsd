@@ -51,7 +51,8 @@
 
       <attribute name="name" type="string" use="required">
         <annotation>
-          <documentation>The report name</documentation>
+          <documentation>The report name.  This is used in packages to refer
+          to this report class.</documentation>
         </annotation>
       </attribute>
 
@@ -66,7 +67,7 @@
 
   <element name="package">
     <annotation>
-      <documentation>Package encapsulating nodes eligible to have SNMP
+      <documentation>Package encapsulating nodes eligible to have
       this report run on them.</documentation>
     </annotation>
 
@@ -129,7 +130,15 @@
 
       <attribute name="name" type="string" use="required">
         <annotation>
-          <documentation>the report name</documentation>
+          <documentation>The report name.  This is used internally to
+          reference a configured report class.</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="description" type="string" use="required">
+        <annotation>
+          <documentation>The report description.  This is shown in the web
+          UI.</documentation>
         </annotation>
       </attribute>
 
@@ -139,8 +148,15 @@
           generated</documentation>
         </annotation>
       </attribute>
+      
+      <attribute name="retainInterval" type="string" use="required">
+        <annotation>
+          <documentation>the amount of time after which this report has been
+          created that it can be purged.</documentation>
+        </annotation>
+      </attribute>
 
-      <attribute name="status" use="optional">
+      <attribute name="status" use="required">
         <annotation>
           <documentation>status of the report; report is generated only if
           on</documentation>

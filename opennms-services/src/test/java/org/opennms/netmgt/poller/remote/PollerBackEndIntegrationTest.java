@@ -49,29 +49,30 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.DaoTestConfigBean;
 
 public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-
     private PollerBackEnd m_backEnd;
     private SessionFactory m_sessionFactory;
     
     public PollerBackEndIntegrationTest() {
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
-        System.setProperty("test.overridden.properties", "file:src/test/test-configurations/PollerBackEndIntegrationTest/test.overridden.properties");
+        System.setProperty("test.overridden.properties", "classpath:/org/opennms/netmgt/poller/remote/test.overridden.properties");
         
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/test-configurations/PollerBackEndIntegrationTest");
         daoTestConfig.afterPropertiesSet();
     }
     
     
     @Override
     protected String[] getConfigLocations() {
-        return new String[] { 
+        return new String[] {
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                "classpath:/META-INF/opennms/applicationContext-daemon.xml",
                 "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
                 "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
+                "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
         };
     }
     
@@ -90,8 +91,8 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
     public void testRegister() {
         
         Collection<OnmsMonitoringLocationDefinition> locations = m_backEnd.getMonitoringLocations();
-        assertNotNull(locations);
-        assertFalse(locations.isEmpty());
+        assertNotNull("locations list should not be null", locations);
+        assertFalse("locations list should not be empty", locations.isEmpty());
         
         int initialCount = queryForInt("select count(*) from location_monitors");
         
@@ -176,7 +177,7 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         String ipAddr = queryForString("select ipaddr from ifservices where id = ?", serviceId);
         
         // make sure there is no rrd data
-        File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ipAddr+"/http.rrd");
+        File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ipAddr+"/http" + RrdUtils.getExtension());
         if (rrdFile.exists()) {
             rrdFile.delete();
         }
@@ -189,7 +190,7 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         
         assertEquals(1, queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", locationMonitorId));
         
-        assertTrue(rrdFile.exists());
+        assertTrue("rrd file doesn't exist at " + rrdFile.getAbsolutePath(), rrdFile.exists());
     }
 
     private int findServiceId() {

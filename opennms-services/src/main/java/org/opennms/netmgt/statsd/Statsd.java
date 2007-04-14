@@ -38,12 +38,15 @@ package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.scheduling.quartz.CronTriggerBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.transaction.TransactionStatus;
@@ -54,9 +57,10 @@ import org.springframework.util.Assert;
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class Statsd implements InitializingBean {
+public class Statsd implements SpringServiceDaemon {
     private ResourceDao m_resourceDao;
     private RrdDao m_rrdDao;
+    private FilterDao m_filterDao;
     private TransactionTemplate m_transactionTemplate;
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
@@ -85,28 +89,43 @@ public class Statsd implements InitializingBean {
         cronReportTrigger.afterPropertiesSet();
         
         m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
+        log().debug("Schedule report " + cronReportTrigger);
     }
 
-    public void runReport(ReportDefinition reportDef) {
-        final ReportInstance report = reportDef.createReport(m_resourceDao, m_rrdDao);
+    public void runReport(ReportDefinition reportDef) throws Throwable {
+        final ReportInstance report;
+        try {
+            report = reportDef.createReport(m_resourceDao, m_rrdDao, m_filterDao);
+        } catch (Throwable t) {
+            log().error("Could not create a report instance for report definition " + reportDef + ": " + t, t);
+            throw t;
+        }
         
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             public void doInTransactionWithoutResult(TransactionStatus status) {
+                log().debug("Starting report " + report);
                 report.walk();
+                log().debug("Completed report " + report);
+                
                 m_reportPersister.persist(report);
+                log().debug("Report " + report + " persisted");
             }
         });
+    }
+
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
         Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
+        Assert.state(m_filterDao != null, "property filterDao must be set to a non-null value");
         Assert.state(m_transactionTemplate != null, "property transactionTemplate must be set to a non-null value");
         Assert.state(m_reportPersister != null, "property reportPersister must be set to a non-null value");
         Assert.state(m_scheduler != null, "property scheduler must be set to a non-null value");
         Assert.state(m_reportDefinitionBuilder != null, "property reportDefinitionBuilder must be set to a non-null value");
-        
-        start();
     }
     
     public ResourceDao getResourceDao() {
@@ -155,5 +174,13 @@ public class Statsd implements InitializingBean {
 
     public void setReportDefinitionBuilder(ReportDefinitionBuilder reportDefinitionBuilder) {
         m_reportDefinitionBuilder = reportDefinitionBuilder;
+    }
+
+    public FilterDao getFilterDao() {
+        return m_filterDao;
+    }
+
+    public void setFilterDao(FilterDao filterDao) {
+        m_filterDao = filterDao;
     }
 }

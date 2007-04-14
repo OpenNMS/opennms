@@ -40,17 +40,17 @@ import org.extremecomponents.table.view.html.BuilderConstants;
 import org.extremecomponents.table.view.html.BuilderUtils;
 import org.extremecomponents.table.view.html.StatusBarBuilder;
 import org.extremecomponents.table.view.html.ToolbarBuilder;
-import org.extremecomponents.table.view.html.TwoColumnRowLayout;
 import org.extremecomponents.util.HtmlBuilder;
 
 /**
  * @author Jeff Johnston
  */
-public class CompactFixedRowToolbar extends TwoColumnRowLayout {
+public class CompactFixedRowToolbar extends CustomizableTwoColumnRowLayout {
 	public CompactFixedRowToolbar(HtmlBuilder html, TableModel model) {
 		super(html, model);
 	}
 
+    @Override
 	protected boolean showLayout(TableModel model) {
 		boolean showStatusBar = BuilderUtils.showStatusBar(model);
 		boolean filterable = BuilderUtils.filterable(model);
@@ -65,6 +65,7 @@ public class CompactFixedRowToolbar extends TwoColumnRowLayout {
 		return true;
 	}
 
+    @Override
 	protected void columnLeft(HtmlBuilder html, TableModel model) {
 		boolean showStatusBar = BuilderUtils.showStatusBar(model);
 		if (!showStatusBar) {
@@ -78,6 +79,7 @@ public class CompactFixedRowToolbar extends TwoColumnRowLayout {
 		html.tdEnd();
 	}
 
+    @Override
 	protected void columnRight(HtmlBuilder html, TableModel model) {
 		boolean filterable = BuilderUtils.filterable(model);
 		boolean showPagination = BuilderUtils.showPagination(model);
@@ -87,10 +89,9 @@ public class CompactFixedRowToolbar extends TwoColumnRowLayout {
 
 			ToolbarBuilder toolbarBuilder = new ToolbarBuilder(html, model);
 
-			html.td(4).styleClass(BuilderConstants.COMPACT_TOOLBAR_CSS).align(
-					"right").close();
+			html.td(4).styleClass(BuilderConstants.COMPACT_TOOLBAR_CSS).align("right").close();
 
-			html.table(4).border("0").cellPadding("1").cellSpacing("2").close();
+			html.table(4).styleClass("normal").style("margin-bottom: 0px;").close();
 			html.tr(5).close();
 
 			if (showPagination) {
@@ -159,4 +160,9 @@ public class CompactFixedRowToolbar extends TwoColumnRowLayout {
 			html.tdEnd();
 		}
 	}
+
+    @Override
+    protected HtmlBuilder startTable(HtmlBuilder html) {
+        return html.table(2).styleClass("normal").style("width: 100%;   margin-bottom: 0px;").close();
+    }
 }

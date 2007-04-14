@@ -58,8 +58,6 @@ public class ReportDefinitionBuilder implements InitializingBean {
         Set<ReportDefinition> reportDefinitions = new HashSet<ReportDefinition>();
         
         for (StatsdPackage pkg : m_statsdConfigDao.getPackages()) {
-            Assert.isNull(pkg.getFilter(), "filters are not currently supported (package '" + pkg.getName() + "')");
-            
             for (PackageReport packageReport : pkg.getReports()) {
                 Report report = packageReport.getReport();
 
@@ -75,9 +73,8 @@ public class ReportDefinitionBuilder implements InitializingBean {
                 }
                 
                 ReportDefinition reportDef = new ReportDefinition();
-                reportDef.setName(report.getName());
+                reportDef.setReport(packageReport);
                 reportDef.setReportClass(clazz);
-                reportDef.setCronExpression(packageReport.getSchedule());
                 
                 BeanWrapper bw = new BeanWrapperImpl(reportDef);
                 bw.setPropertyValues(packageReport.getAggregateParameters());

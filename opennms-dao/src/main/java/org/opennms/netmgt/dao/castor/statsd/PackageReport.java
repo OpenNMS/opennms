@@ -49,6 +49,12 @@ public class PackageReport {
     private String m_schedule;
     private boolean m_enabled;
     private LinkedHashMap<String, String> m_parameters = new LinkedHashMap<String, String>();
+    private String m_description;
+    private Long m_retainInterval;
+    private StatsdPackage m_pkg;
+    
+    public PackageReport() {
+    }
 
     public boolean isEnabled() {
         return m_enabled;
@@ -81,5 +87,23 @@ public class PackageReport {
     }
     public void setReport(Report report) {
         m_report = report;
+    }
+    public String getDescription() {
+        return m_description;
+    }
+    public void setDescription(String description) {
+        m_description = description;
+    }
+    public Long getRetainInterval() {
+        return m_retainInterval;
+    }
+    public void setRetainInterval(Long retainInterval) {
+        m_retainInterval = retainInterval;
+    }
+    public StatsdPackage getPackage() {
+        return m_pkg;
+    }
+    public void setPackage(StatsdPackage pkg) {
+        m_pkg = pkg;
     }
 }

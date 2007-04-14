@@ -33,23 +33,19 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.statsd;
+package org.opennms.netmgt.model;
 
-import java.util.Date;
 import java.util.SortedSet;
-
-import org.opennms.netmgt.model.AttributeStatistic;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class StandardOutputReportPersister implements ReportPersister {
-    public void persist(ReportInstance report) {
-        System.out.println("Top " + report.getCount() + " " + report.getAttributeMatch() + " data sources on resources of type " + report.getResourceTypeMatch() + " from " + new Date(report.getStartTime()) + " to " + new Date(report.getEndTime()));
-        SortedSet<AttributeStatistic> top = report.getResults();
-        for (AttributeStatistic stat : top) {
-            System.out.println(stat.getAttribute().getResource().getId() + "/" + stat.getAttribute().getName() + ": " + stat.getStatistic());
-        }
-        System.out.println("");
-    }
+public interface AttributeStatisticVisitorWithResults extends AttributeStatisticVisitor {
+    public SortedSet<AttributeStatistic> getResults();
+    
+    // FIXME: Hack, hack, hack
+    
+    public void setCount(Integer count);
+    public Integer getCount();
+    public void afterPropertiesSet();
 }

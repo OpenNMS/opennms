@@ -35,11 +35,14 @@
  */
 package org.opennms.web.svclayer.support;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 
 /**
@@ -62,6 +65,40 @@ public class StatisticsReportModel {
     
         public void setResource(OnmsResource resource) {
             m_resource = resource;
+        }
+        
+        public String getResourceParentLabel() {
+            Assert.state(m_resource != null, "the resource must be set before calling this method");
+            
+            StringBuffer buffer = new StringBuffer();
+            
+            OnmsResource parent = m_resource.getParent();
+            while (parent != null) {
+                if (buffer.length() > 0) {
+                    buffer.append("<br/>");
+                }
+                buffer.append(parent.getResourceType().getLabel());
+                buffer.append(": ");
+                buffer.append(parent.getLabel());
+                
+                parent = parent.getParent();
+            }
+            
+            return buffer.toString();
+        }
+        
+        public List<OnmsResource> getResourceParentsReversed() {
+            Assert.state(m_resource != null, "the resource must be set before calling this method");
+
+            List<OnmsResource> resources = new ArrayList<OnmsResource>();
+            
+            OnmsResource parent = m_resource.getParent();
+            while (parent != null) {
+                resources.add(0, parent);
+                parent = parent.getParent();
+            }
+            
+            return resources;
         }
     
         public Double getValue() {

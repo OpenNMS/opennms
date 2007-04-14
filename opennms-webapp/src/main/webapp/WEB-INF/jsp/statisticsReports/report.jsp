@@ -37,11 +37,12 @@
  */
 
 
---%>
+--%> 
 
 <%@page language="java" contentType="text/html" session="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Statistics Reports List" />
@@ -52,24 +53,93 @@
   <jsp:param name="breadcrumb" value="List"/>
 </jsp:include>
 
-<h3>Report: ${model.report.description}</h3>
-<div class="boxWrapper">
-  <c:choose>
-    <c:when test="${empty model}">
+<c:choose>
+  <c:when test="${empty model}">
+    <h3>Report: ${model.report.description}</h3>
+    <div class="boxWrapper">
       <p>
         None found.
       </p>
-    </c:when>
+    </div>
+  </c:when>
 
-    <c:otherwise>
-      <ul class="plain">
-        <c:forEach var="data" items="${model.data}">
-          <c:url var="reportUrl" value="${data.resource.link}"/>
-          <li>${data.resource.parent.resourceType.label} ${data.resource.parent.label}: <a href="${reportUrl}">${data.resource.resourceType.label} ${data.resource.label}</a>: ${data.value}</li>
-        </c:forEach>
-      </ul>
-    </c:otherwise>
-  </c:choose>
-</div>
+  <c:otherwise>
+    <!-- We need the </script>, otherwise IE7 breaks -->
+    <script type="text/javascript" src="js/extremecomponents.js"></script>
+      
+    <link rel="stylesheet" type="text/css" href="css/onms-extremecomponents.css"/>
+        
+    <form id="form" action="${relativeRequestPath}" method="post">
+      <ec:table items="model.data" var="row"
+        action="${relativeRequestPath}?${pageContext.request.queryString}"
+        filterable="false"
+        imagePath="images/table/compact/*.gif"
+        title="Statistics Report: ${model.report.description}"
+        tableId="reportList"
+        form="form"
+        rowsDisplayed="25"
+        view="org.opennms.web.svclayer.etable.FixedRowCompact"
+        showExports="true" showStatusBar="true" 
+        autoIncludeParameters="false"
+        >
+      
+        <ec:exportPdf fileName="Statistics Report.pdf" tooltip="Export PDF"
+          headerColor="black" headerBackgroundColor="#b6c2da"
+          headerTitle="Statistics Report List" />
+        <ec:exportXls fileName="Statistics Report.xls" tooltip="Export Excel" />
+      
+        <ec:row highlightRow="false">
+          <ec:column property="resourceParentsReversed" title="Parent resource" sortable="false"  interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
+            <c:set var="count" value="0"/>
+            <c:forEach var="parentResource" items="${row.resourceParentsReversed}">
+              <c:if test="${count > 0}">
+                <br/>
+              </c:if>
+              ${parentResource.resourceType.label}:
+              <c:choose>
+                <c:when test="${!empty parentResource.link}">
+                  <c:url var="resourceLink" value="${parentResource.link}"/>
+                  <a href="${resourceLink}">${parentResource.label}</a>
+                </c:when>
+                
+                <c:otherwise>
+                  ${parentResource.label}
+                </c:otherwise>
+              </c:choose>
+              <c:set var="count" value="${count + 1}"/>
+            </c:forEach>
+          </ec:column>
+
+          <ec:column property="resource" sortable="false">
+            ${row.resource.resourceType.label}:
+            <c:choose>
+              <c:when test="${!empty row.resource.link}">
+                <c:url var="resourceLink" value="${row.resource.link}"/>
+                <a href="${resourceLink}">${row.resource.label}</a>
+              </c:when>
+                
+              <c:otherwise>
+                ${row.resource.label}
+              </c:otherwise>
+            </c:choose>
+          </ec:column>
+      
+          <ec:column property="value"/>
+          
+          <ec:column property="resource.id" title="Graphs" sortable="false">
+            <c:url var="graphUrl" value="graph/results.htm">
+              <c:param name="resourceId" value="${row.resource.id}"/>
+              <c:param name="start" value="${model.report.startDate.time}"/>
+              <c:param name="end" value="${model.report.endDate.time}"/>
+              <c:param name="reports" value="all"/>
+            </c:url>
+            <a href="${graphUrl}">Resource graphs</a>
+          </ec:column>
+        </ec:row>
+      </ec:table>
+    </form>
+  </c:otherwise>
+</c:choose>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

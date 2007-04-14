@@ -5,17 +5,18 @@
   xsi:schemaLocation="http://www.opennms.org/xsd/config/statsd http://www.opennms.org/xsd/config/statistics-daemon-configuration.xsd ">
 
   <package name="example1">
-    <packageReport name="Top 5 ifInOctets from yesterday" schedule="0 20 1 * * ?" status="on"/>
+    <packageReport name="TopN" description="Top 20 ifInOctets across all nodes"
+                   schedule="0 20 1 * * ?" retainInterval="2592000000"
+                   status="on">
+      <parameter key="count" value="20"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="YESTERDAY"/>
+      <parameter key="resourceTypeMatch" value="interfaceSnmp"/>
+      <parameter key="attributeMatch" value="ifInOctets"/>
+    </packageReport>
   </package>
   
-  <report name="Top 5 ifInOctets from yesterday"
-          class-name="org.opennms.netmgt.statsd.UnfilteredTopNReport">
-    <parameter key="count" value="5"/>
-    <parameter key="consolidationFunction" value="AVERAGE"/>
-    <parameter key="relativeTime" value="YESTERDAY"/>
-    <parameter key="resourceTypeMatch" value="interfaceSnmp"/>
-    <parameter key="attributeMatch" value="ifInOctets"/>
-  </report>
+  <report name="TopN" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
 
 </statistics-daemon-configuration>
 

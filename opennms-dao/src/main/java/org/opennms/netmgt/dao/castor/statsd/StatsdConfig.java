@@ -77,11 +77,14 @@ public class StatsdConfig {
             p.setFilter(pkg.getFilter() != null ? pkg.getFilter().getContent() : null);
             for (org.opennms.netmgt.config.statsd.PackageReport packageReport : getPackageReportForPackage(pkg)) {
                 PackageReport r = new PackageReport();
+                r.setPackage(p);
                 try {
                     r.setReport(loadReport(packageReport.getName()));
                 } catch (DataAccessException e) {
                     throw new ObjectRetrievalFailureException("Could not get report named '" + packageReport.getName() + "' for package '" + pkg.getName() + "'", pkg.getName(), null, e);
                 }
+                r.setDescription(packageReport.getDescription());
+                r.setRetainInterval(Long.parseLong(packageReport.getRetainInterval()));
                 r.setSchedule(packageReport.getSchedule());
                 r.setEnabled(packageReport.getStatus().equals(PackageReportStatusType.ON));
                 for (Parameter parameter : getParametersForPackageReport(packageReport)) {

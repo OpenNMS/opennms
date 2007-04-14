@@ -50,6 +50,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * Model class for a statistics report.
@@ -190,4 +191,53 @@ public class StatisticsReport implements Serializable {
         m_data.add(datum);
     }
 
+    @Transient
+    public long getDuration() {
+        return m_endDate.getTime() - m_startDate.getTime();
+    }
+    
+    @Transient
+    public String getDurationString() {
+        return getStringForInterval(getDuration());
+    }
+
+    @Transient
+    public long getJobDuration() {
+        return m_jobCompletedDate.getTime() - m_jobStartedDate.getTime();
+    }
+    
+    @Transient
+    public String getJobDurationString() {
+        return getStringForInterval(getJobDuration());
+    }
+    
+    private String getStringForInterval(long interval) {
+        double value = interval;
+        
+        value = value / 1000;
+        String unit = "seconds";
+
+        if (value < 60) {
+            return value + " " + unit;
+        }
+        
+        value = value / 60;
+        unit = "minutes";
+
+        if (value < 60) {
+            return value + " " + unit;
+        }
+
+        value = value / 60;
+        unit = "hours";
+
+        if (value < 24) {
+            return value + " " + unit;
+        }
+
+        value = value / 24;
+        unit = "days";
+
+        return value + " " + unit;
+    }
 }

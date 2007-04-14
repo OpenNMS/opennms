@@ -42,7 +42,7 @@ import java.util.Map.Entry;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
+import org.opennms.netmgt.model.AttributeStatistic;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.test.ThrowableAnticipator;
@@ -53,14 +53,14 @@ import org.opennms.test.ThrowableAnticipator;
 public class TopNAttributeStatisticVisitorTest extends TestCase {
     
     public void testAfterPropertiesSet() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
     }
 
 
     public void testAfterPropertiesSetNoCount() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("property count must be set to a non-null value"));
@@ -76,7 +76,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
     }
 
     public void testVisit() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
         
@@ -90,7 +90,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
     }
     
     public void testVisitWithNull() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
         
@@ -106,7 +106,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
     }
     
     public void testVisitGetResults() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
         
@@ -118,7 +118,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
             visitor.visit(entry.getKey(), entry.getValue());
         }
 
-        SortedSet<AttributeStatistic> top = visitor.getTopN();
+        SortedSet<AttributeStatistic> top = visitor.getResults();
         assertNotNull("topN list should not be null", top);
         assertEquals("topN list size", 1, top.size());
         
@@ -129,7 +129,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
     }
     
     public void testVisitGetResultsSameValue() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
         
@@ -143,7 +143,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
             visitor.visit(entry.getKey(), entry.getValue());
         }
         
-        SortedSet<AttributeStatistic> top = visitor.getTopN();
+        SortedSet<AttributeStatistic> top = visitor.getResults();
         assertNotNull("topN list should not be null", top);
         assertEquals("topN list size", 5, top.size());
 
@@ -155,7 +155,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
     }
     
     public void testVisitGetResultsDifferentValues() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
         
@@ -169,7 +169,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
             visitor.visit(entry.getKey(), entry.getValue());
         }
         
-        SortedSet<AttributeStatistic> top = visitor.getTopN();
+        SortedSet<AttributeStatistic> top = visitor.getResults();
         assertNotNull("topN list should not be null", top);
         assertEquals("topN list size", 5, top.size());
 
@@ -181,7 +181,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
     }
     
     public void testVisitGetResultsLimitedByCount() throws Exception {
-        TopNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
+        BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
         
@@ -195,7 +195,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
             visitor.visit(entry.getKey(), entry.getValue());
         }
 
-        SortedSet<AttributeStatistic> top = visitor.getTopN();
+        SortedSet<AttributeStatistic> top = visitor.getResults();
         assertNotNull("topN list should not be null", top);
         assertEquals("topN list size", 20, top.size());
 

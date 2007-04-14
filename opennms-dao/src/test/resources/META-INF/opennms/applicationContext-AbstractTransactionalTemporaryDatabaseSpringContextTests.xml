@@ -3,7 +3,9 @@
 
 <beans>
 
-  <bean id="populatedTemporaryDatabaseTestCase" class="org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase" init-method="setUp"/>
+  <bean id="populatedTemporaryDatabaseTestCase" class="org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase" init-method="setUp">
+    <property name="setupIpLike" ref="setupIpLike"/>
+  </bean>
 
   <bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 	<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.setInstance</value></property>
