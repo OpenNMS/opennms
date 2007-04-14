@@ -301,6 +301,10 @@ span.filter {
 table.normal {
 	width: auto;
 }
+table.normal td {
+	border: none;
+	background-color: transparent;
+}
 td.normal {
 	border: none;
 	background-color: transparent;

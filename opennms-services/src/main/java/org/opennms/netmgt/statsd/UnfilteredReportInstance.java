@@ -45,30 +45,29 @@ import org.opennms.netmgt.dao.support.AttributeMatchingResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceTreeWalker;
 import org.opennms.netmgt.dao.support.ResourceTypeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.RrdStatisticAttributeVisitor;
-import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor;
-import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
+import org.opennms.netmgt.model.AttributeStatistic;
+import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class UnfilteredTopNReport implements ReportInstance, InitializingBean {
-    private final TopNAttributeStatisticVisitor m_topNVisitor = new TopNAttributeStatisticVisitor();
+public class UnfilteredReportInstance extends AbstractReportInstance implements ReportInstance, InitializingBean {
+    private final AttributeStatisticVisitorWithResults m_attributeStatisticVisitor;
     private final RrdStatisticAttributeVisitor m_rrdVisitor = new RrdStatisticAttributeVisitor();
     private final AttributeMatchingResourceVisitor m_attributeVisitor = new AttributeMatchingResourceVisitor();
     private final ResourceTypeFilteringResourceVisitor m_resourceTypeVisitor = new ResourceTypeFilteringResourceVisitor();
     private final ResourceTreeWalker m_walker = new ResourceTreeWalker();
-    private Date m_jobCompletedDate;
-    private Date m_jobStartedDate;
-    private String m_name;
-
-    public UnfilteredTopNReport() {
-        m_rrdVisitor.setStatisticVisitor(m_topNVisitor);
+    
+    public UnfilteredReportInstance(AttributeStatisticVisitorWithResults visitor) {
+        m_attributeStatisticVisitor = visitor;
+        
+        m_rrdVisitor.setStatisticVisitor(m_attributeStatisticVisitor);
         m_attributeVisitor.setAttributeVisitor(m_rrdVisitor);
         m_resourceTypeVisitor.setDelegatedVisitor(m_attributeVisitor);
         m_walker.setVisitor(m_resourceTypeVisitor);
     }
-
+    
     public void setResourceDao(ResourceDao resourceDao) {
         m_walker.setResourceDao(resourceDao);
     }
@@ -76,21 +75,15 @@ public class UnfilteredTopNReport implements ReportInstance, InitializingBean {
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdVisitor.setRrdDao(rrdDao);
     }
-    
-    /*
-     * @see org.opennms.netmgt.topn.Report#walk()
-     */
+
     public void walk() {
-        m_jobStartedDate = new Date();
+        setJobStartedDate(new Date());
         m_walker.walk();
-        m_jobCompletedDate = new Date();
+        setJobCompletedDate(new Date());
     }
-    
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.topn.Report#getTopN()
-     */
-    public SortedSet<AttributeStatistic> getTopN() {
-        return m_topNVisitor.getTopN();
+
+    public SortedSet<AttributeStatistic> getResults() {
+        return m_attributeStatisticVisitor.getResults();
     }
 
     /* (non-Javadoc)
@@ -167,40 +160,27 @@ public class UnfilteredTopNReport implements ReportInstance, InitializingBean {
      * @see org.opennms.netmgt.topn.Report#getCount()
      */
     public int getCount() {
-        return m_topNVisitor.getCount();
+        return m_attributeStatisticVisitor.getCount();
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.topn.Report#setCount(int)
      */
     public void setCount(int count) {
-        m_topNVisitor.setCount(count);
+        m_attributeStatisticVisitor.setCount(count);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.topn.Report#afterPropertiesSet()
      */
     public void afterPropertiesSet() {
-        m_topNVisitor.afterPropertiesSet();
+        super.afterPropertiesSet();
+        
+        m_attributeStatisticVisitor.afterPropertiesSet();
         m_rrdVisitor.afterPropertiesSet();
         m_attributeVisitor.afterPropertiesSet();
         m_resourceTypeVisitor.afterPropertiesSet();
         m_walker.afterPropertiesSet();
     }
 
-    public Date getJobCompletedDate() {
-        return m_jobCompletedDate;
-    }
-
-    public Date getJobStartedDate() {
-        return m_jobStartedDate;
-    }
-
-    public String getName() {
-        return m_name;
-    }
-
-    public void setName(String name) {
-        m_name = name;
-    }
 }

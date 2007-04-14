@@ -31,6 +31,7 @@
     <automation name="GC" interval="300000" action-name="garbageCollect" active="true" />
     <automation name="unclear" interval="30000" trigger-name="selectClearedAlarms" action-name="resetSeverity" active="true" />
     <automation name="escalation" interval="30000" trigger-name="selectSuspectAlarms" action-name="escalateAlarm" action-event="eventEscalated" active="true" />
+    <automation name="purgeStatisticsReports" interval="3600000" action-name="deletePurgeableStatisticsReports" active="true" />
   </automations>
   
   <triggers>
@@ -135,6 +136,13 @@
            AND COALESCE(ipaddr, '') = COALESCE(${ipaddr}, '') 
            AND COALESCE(serviceID, 0) = COALESCE(${serviceID}, 0)
       </statement> 
+    </action>
+
+    <action name="deletePurgeableStatisticsReports" >
+      <statement>
+        DELETE from statisticsReport
+         WHERE purgeDate &lt; now()
+      </statement>
     </action>
 
   </actions>

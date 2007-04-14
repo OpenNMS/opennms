@@ -24,9 +24,7 @@
 	<bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
 	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="dataSource">
-			<ref bean="dataSource" />
-		</property>
+		<property name="dataSource" ref="dataSource"/>
 		<property name="annotatedClasses">
 			<list>
 				<value>org.opennms.netmgt.model.OnmsDistPoller</value>
@@ -156,14 +154,22 @@
   <bean id="resourceReferenceDao" class="org.opennms.netmgt.dao.hibernate.ResourceReferenceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
+    
+  <bean id="locationMonitorConfigResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
+    <property name="location" value="file:${opennms.home}/etc/monitoring-locations.xml"/>
+  </bean>
   
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate" >
     <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="monitoringLocationConfigResource" value="file:${opennms.home}/etc/monitoring-locations.xml" />
+    <property name="monitoringLocationConfigResource" ref="locationMonitorConfigResource" />
+  </bean>
+  
+  <bean id="surveillanceViewConfigResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
+    <property name="location" value="file:${opennms.home}/etc/surveillance-views.xml"/>
   </bean>
   
   <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml" />
+    <property name="configResource" ref="surveillanceViewConfigResource" />
   </bean>
 
   <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -177,6 +183,7 @@
   <bean id="filterDao" class="org.opennms.netmgt.dao.support.JdbcFilterDao">
     <property name="dataSource" ref="dataSource" />
     <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
+    <property name="nodeDao" ref="nodeDao" />
   </bean>
   
   <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -216,9 +223,13 @@
     <property name="rrdBaseDirectory" value="${rrd.base.dir}"/>
     <property name="rrdBinaryPath" value="${rrd.binary}"/>
   </bean>
+  
+  <bean id="statsdConfigResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
+    <property name="location" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
+  </bean>
 
   <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
+    <property name="configResource" ref="statsdConfigResource"/>
   </bean>
   
   

@@ -36,102 +36,17 @@
 package org.opennms.netmgt.dao.support;
 
 import java.util.Comparator;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.opennms.netmgt.model.AttributeStatisticVisitor;
-import org.opennms.netmgt.model.OnmsAttribute;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class TopNAttributeStatisticVisitor implements AttributeStatisticVisitor, InitializingBean {
-    private Integer m_count;
-    private SortedSet<AttributeStatistic> m_topN = new TreeSet<AttributeStatistic>();
-    private Comparator<Double> m_comparator = new ReverseDoubleComparator();
-    
-    /**
-     * @see org.opennms.netmgt.model.AttributeStatisticVisitor#visit(org.opennms.netmgt.model.OnmsAttribute, double)
-     */
-    public void visit(OnmsAttribute attribute, double statistic) {
-        Assert.notNull(attribute, "attribute argument must not be null");
-        
-        m_topN.add(new AttributeStatistic(attribute, statistic));
-    }
-
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet() {
-        Assert.state(m_count != null, "property count must be set to a non-null value");
-    }
-
-    public Integer getCount() {
-        return m_count;
-    }
-
-    public void setCount(Integer count) {
-        m_count = count;
-    }
-
-    /**
-     * @return top attribute statistics (up to getCount() number)
-     */
-    public SortedSet<AttributeStatistic> getTopN() {
-        SortedSet<AttributeStatistic> top = new TreeSet<AttributeStatistic>();
-        
-        for (AttributeStatistic stat : m_topN) {
-            top.add(stat);
-            
-            if (top.size() >= m_count) {
-                break;
-            }
-        }
-        
-        return top;
+public class TopNAttributeStatisticVisitor extends BottomNAttributeStatisticVisitor {
+    public TopNAttributeStatisticVisitor() {
+        super();
+        setComparator(new ReverseDoubleComparator());
     }
     
-    public class AttributeStatistic implements Comparable<AttributeStatistic> {
-        private OnmsAttribute m_attribute;
-        private Double m_statistic;
-        
-        public AttributeStatistic(OnmsAttribute attribute, Double statistic) {
-            m_attribute = attribute;
-            m_statistic = statistic;
-        }
-        
-        public OnmsAttribute getAttribute() {
-            return m_attribute;
-        }
-        
-        public Double getStatistic() {
-            return m_statistic;
-        }
-
-        /**
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(AttributeStatistic o) {
-            int diff;
-            
-            diff = m_comparator.compare(getStatistic(), o.getStatistic()); 
-            if (diff != 0) {
-                return diff;
-            }
-            
-            diff = getAttribute().getResource().getId().compareToIgnoreCase(o.getAttribute().getResource().getId());
-            if (diff != 0) {
-                return diff;
-            }
-            
-            return new Integer(getAttribute().hashCode()).compareTo(o.getAttribute().hashCode());
-        }
-    }
-    
-    private class ReverseDoubleComparator implements Comparator<Double> {
-
+    public class ReverseDoubleComparator implements Comparator<Double> {
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */

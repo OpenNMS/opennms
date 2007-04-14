@@ -1,5 +1,7 @@
 package org.opennms.netmgt.daemon;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.BeanUtils;
@@ -8,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsMBean {
+
+    public static final String DAEMON_BEAN_NAME = "daemon";
 
     private ClassPathXmlApplicationContext m_context;
 
@@ -27,20 +31,39 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
     protected ApplicationContext getContext() {
         return m_context;
     }
-
+    
     public final void init() {
         setLoggingCategory();
-    }
+  
+        log().debug("SPRING: thread.classLoader=" + Thread.currentThread().getContextClassLoader());
 
+        m_context = BeanUtils.getFactory(getSpringContext(), ClassPathXmlApplicationContext.class);
+
+        log().debug("SPRING: context.classLoader= "+ m_context.getClassLoader());
+    }
+    
     public final void start() {
         setLoggingCategory();
         
         setStatus(Fiber.STARTING);
-        log().debug("SPRING: thread.classLoader=" + Thread.currentThread().getContextClassLoader());
-    
-        m_context = BeanUtils.getFactory(getSpringContext(), ClassPathXmlApplicationContext.class);
-    
-        log().debug("SPRING: context.classLoader= "+ m_context.getClassLoader());
+        SpringServiceDaemon daemon = (SpringServiceDaemon) m_context.getBean(DAEMON_BEAN_NAME, SpringServiceDaemon.class);
+        try {
+            daemon.start();
+        } catch (Throwable t) {
+            log().error("Could not start daemon: " + t, t);
+            
+            try {
+                stop();
+            } catch (Throwable tt) {
+                log().error("Could not stop daemon after it failed to start: " + tt, tt);
+            }
+            
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            } else {
+                throw new UndeclaredThrowableException(t);
+            }
+        }
         setStatus(Fiber.RUNNING);
     }
 
@@ -79,6 +102,4 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
     private void setLoggingCategory() {
         ThreadCategory.setPrefix(getLoggingPrefix());
     }
-
-
 }

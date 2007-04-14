@@ -12,24 +12,18 @@
 	<jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<script type="text/javascript"
-	src="<c:url value="/js/extremecomponents.js"/>"></script>
+<!-- We need the </script>, otherwise IE7 breaks -->
+<script type="text/javascript" src="js/extremecomponents.js"></script>
 
-
-<link rel="stylesheet" type="text/css"
-	href="<c:url value="/css/styles.css"/>">
-<link rel="stylesheet" type="text/css"
-	href="<c:url value="/css/extremecomponents.css"/>">
-
-<form id="outageForm"
-	action="<c:url value="displayCurrentOutages.htm"/>" method="post">
-
+<link rel="stylesheet" type="text/css" href="css/onms-extremecomponents.css"/>
+  
+<form id="outageForm" action="displayCurrentOutages.htm" method="post">
 
 <ec:table items="tabledata" var="tabledata"
 	action="${relativeRequestPath}?${pageContext.request.queryString}"
 	filterable="false"
 	imagePath="images/table/compact/*.gif"
-	title="Current Outages" 
+    title="Current Outages"
 	retrieveRowsCallback="limit"
 	filterRowsCallback="limit" 
 	sortRowsCallback="limit" 
@@ -37,14 +31,15 @@
 	tableId="tabledata"
 	form="outageForm"
 	view="org.opennms.web.svclayer.etable.FixedRowCompact"
-	showExports="false" showStatusBar="true" 
+	showExports="true" showStatusBar="true" 
 	autoIncludeParameters="false"
 	>
 
 	<ec:exportPdf fileName="CurrentOutages.pdf" tooltip="Export PDF"
 		headerColor="black" headerBackgroundColor="#b6c2da"
 		headerTitle="Current Outages" />
-	<ec:exportXls fileName="output.xls" tooltip="Export Excel" />
+    <ec:exportXls fileName="Current Outages.xls" tooltip="Export Excel" />
+
 	<ec:row highlightRow="false">
 
         <ec:column property="node" alias="Node" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
@@ -59,8 +54,7 @@
 			<a href="element/service.jsp?ifserviceid=${tabledata.ifserviceid}">${tabledata.service}</a>
 		</ec:column>
 
-		<ec:column property="iflostservice" alias="Down" title="Time Down" cell="date"
-			format="yyyy-MM-dd hh:mm:ss"/>
+		<ec:column property="iflostservice" alias="Down" title="Time Down" cell="date" format="yyyy-MM-dd hh:mm:ss"/>
 
         <c:if test="${param.currentOutages != 'true'}">
           <ec:column property="ifregainedservice" alias="Up" title="Time Up" cell="org.opennms.web.svclayer.outage.DownDateCell"
@@ -124,6 +118,8 @@
      </script></form>
 
 --%>
+
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

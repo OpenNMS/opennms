@@ -38,9 +38,7 @@ package org.opennms.netmgt.statsd;
 import java.util.Date;
 import java.util.SortedSet;
 
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
-import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
+import org.opennms.netmgt.model.AttributeStatistic;
 
 /**
  * @author <a href="dj@opennms.org">DJ Gregor</a>
@@ -49,7 +47,7 @@ public interface ReportInstance {
 
     public void walk();
 
-    public SortedSet<AttributeStatistic> getTopN();
+    public SortedSet<AttributeStatistic> getResults();
 
     public String getResourceTypeMatch();
 
@@ -80,22 +78,12 @@ public interface ReportInstance {
     public Date getJobCompletedDate();
 
     public String getName();
+
+    public String getDescription();
+
+    public long getRetainInterval();
+
+    public ReportDefinition getReportDefinition();
     
-    public void setName(String name);
-
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet();
-
-    /**
-     * @param resourceDao
-     */
-    public void setResourceDao(ResourceDao resourceDao);
-
-    /**
-     * @param rrdDao
-     */
-    public void setRrdDao(RrdDao rrdDao);
-
+    public void setReportDefinition(ReportDefinition definition);
 }

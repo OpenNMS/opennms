@@ -37,6 +37,8 @@
 package org.opennms.netmgt.statsd.jmx;
 
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.statsd.jmx.Statsd;
 import org.opennms.test.DaoTestConfigBean;
 
@@ -49,10 +51,12 @@ public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringCont
 
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
+        
+        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
     }
     
     // FIXME: This tests don't work on Timmy for some reason
-    public void FIXMEtestInitStartStop() throws Exception {
+    public void testInitStartStop() throws Exception {
         Statsd mbean = new Statsd();
         
         mbean.init();
@@ -77,7 +81,7 @@ public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringCont
     }
     
     // FIXME: This should be removed once other tests are made to work
-    public void testBogus() {
+    public void FIXMEtestBogus() {
         // This test is here so we have at least one test
     }
 

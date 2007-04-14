@@ -39,7 +39,7 @@ import java.util.Date;
 
 import org.opennms.netmgt.dao.ResourceReferenceDao;
 import org.opennms.netmgt.dao.StatisticsReportDao;
-import org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor.AttributeStatistic;
+import org.opennms.netmgt.model.AttributeStatistic;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
@@ -56,14 +56,14 @@ public class DatabaseReportPersister implements ReportPersister, InitializingBea
     public void persist(ReportInstance report) {
         StatisticsReport dbReport = new StatisticsReport();
         dbReport.setName(report.getName());
-        dbReport.setDescription("Top " + report.getCount() + " " + report.getAttributeMatch() + " data sources on resources of type " + report.getResourceTypeMatch() + " from " + new Date(report.getStartTime()) + " to " + new Date(report.getEndTime()));
+        dbReport.setDescription(report.getDescription());
         dbReport.setStartDate(new Date(report.getStartTime()));
         dbReport.setEndDate(new Date(report.getEndTime()));
         dbReport.setJobStartedDate(report.getJobStartedDate());
         dbReport.setJobCompletedDate(report.getJobCompletedDate());
-        dbReport.setPurgeDate(new Date(System.currentTimeMillis() + (30 * 24 * 60 * 60 * 1000L)));
+        dbReport.setPurgeDate(new Date(report.getJobCompletedDate().getTime() + report.getRetainInterval()));
 
-        for (AttributeStatistic stat : report.getTopN()) {
+        for (AttributeStatistic stat : report.getResults()) {
             ResourceReference resource = getResourceReference(stat.getAttribute().getResource().getId());
 
             StatisticsReportData data = new StatisticsReportData();

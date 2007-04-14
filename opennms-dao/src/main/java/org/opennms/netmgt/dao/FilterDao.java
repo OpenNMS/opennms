@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.model.EntityVisitor;
 
 public interface FilterDao {
     /**
@@ -28,5 +29,7 @@ public interface FilterDao {
     public String getInterfaceWithServiceStatement(String rule);
     
     public void validateRule(String rule) throws FilterParseException;
+    
+    public void walkMatchingNodes(String rule, EntityVisitor visitor);
 
 }
