@@ -15,6 +15,32 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 
+/**
+ * Populates a test database with some entities (nodes, interfaces, services).
+ * 
+ * <pre>
+ * private DatabasePopulator m_populator;
+ *
+ * @Override
+ * protected String[] getConfigLocations() {
+ *     return new String[] {
+ *         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+ *         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+ *     };
+ * }
+ * 
+ * @Override
+ * protected void onSetUpInTransactionIfEnabled() {
+ *     m_populator.populateDatabase();
+ * }
+ * 
+ * public void setPopulator(DatabasePopulator populator) {
+ *     m_populator = populator;
+ * }
+ * </pre>
+ *
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ */
 public class DatabasePopulator {
     private DistPollerDao m_distPollerDao;
     private NodeDao m_nodeDao;
