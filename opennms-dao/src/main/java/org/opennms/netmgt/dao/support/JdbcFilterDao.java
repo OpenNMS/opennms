@@ -113,7 +113,6 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     public void afterPropertiesSet() {
-        Assert.state(m_nodeDao != null, "property nodeDao cannot be null");
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
     }
@@ -360,6 +359,8 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     public void walkMatchingNodes(String rule, EntityVisitor visitor) {
+        Assert.state(m_nodeDao != null, "property nodeDao cannot be null");
+
         SortedMap<Integer, String> map;
         try {
             map = getNodeMap(rule);
