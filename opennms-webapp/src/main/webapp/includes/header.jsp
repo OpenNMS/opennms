@@ -20,18 +20,13 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.text.DateFormat,
-	        java.text.SimpleDateFormat,
-		java.util.Date,
-		org.opennms.netmgt.config.NotifdConfigFactory
-		"
+	import="org.opennms.netmgt.config.NotifdConfigFactory"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <%!
-    static DateFormat dateFormatter = DateFormat.getDateInstance( DateFormat.MEDIUM );
-    static SimpleDateFormat timeFormatter = new SimpleDateFormat("H:mm z");
-    
     public void init() throws ServletException {
         try {
             NotifdConfigFactory.init();
@@ -42,10 +37,6 @@
 %>
 
 <%
-    Date now = new Date(); 
-    pageContext.setAttribute("date", dateFormatter.format(now));
-    pageContext.setAttribute("time", timeFormatter.format(now));
-
     String noticeStatus;
     try {
         noticeStatus = NotifdConfigFactory.getPrettyStatus();
@@ -94,19 +85,21 @@
 	<div id="header">
 		<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
 		<div id="headerinfo">
-			<h2><c:out value="${param.title}"/></h2>
+			<h2>${param.title}</h2>
 			<p align="right">
 				<c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
-						User: <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-						- <a href="j_acegi_logout">Log out</a>
+						User: <strong>${pageContext.request.remoteUser}</strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+						- <a href="j_acegi_logout">Log out</a><br/>
 					</c:when>
 					<c:otherwise>
-						User: &hellip;
+						User: &hellip;<br/>
 					</c:otherwise>
 				</c:choose>
-				<br />
-				<c:out value="${date}"/> &nbsp; <c:out value="${time}"/>
+                <jsp:useBean id="currentDate" class="java.util.Date" />
+                <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
+                &nbsp;
+                <fmt:formatDate value="${currentDate}" type="time" pattern="H:mm z"/> 
 			</p>
 		</div>
 		<hr />
