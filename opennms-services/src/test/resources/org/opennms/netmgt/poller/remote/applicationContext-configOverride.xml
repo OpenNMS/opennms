@@ -21,4 +21,13 @@
   <bean id="setupIpLike" class="java.lang.Boolean">
     <constructor-arg><value>true</value></constructor-arg>
   </bean>
+  
+  <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
+    <constructor-arg><value>3000</value></constructor-arg>
+  </bean>
+  
+  <bean name="monitorCheckInterval" class="java.lang.Long">
+    <constructor-arg><value>500</value></constructor-arg>
+  </bean>
+  
 </beans>

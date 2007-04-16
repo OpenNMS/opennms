@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 16: Don't use test.overridden.properties; use beans and override them instead. - dj@opennms.org
 // 2007 Apr 05: Use DaoTestConfigBean to set system properties. - dj@opennms.org
 // 2007 Apr 05: Set rrd.base.dir property. - dj@opennms.org
 //
@@ -58,12 +59,10 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
     
     public PollerBackEndIntegrationTest() {
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
-        System.setProperty("test.overridden.properties", "classpath:/org/opennms/netmgt/poller/remote/test.overridden.properties");
         
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
     }
-    
     
     @Override
     protected String[] getConfigLocations() {

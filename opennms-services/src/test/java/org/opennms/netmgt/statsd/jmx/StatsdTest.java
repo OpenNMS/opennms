@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 16: Re-enable tests now that the problem has been found with cruisecontrol. - dj@opennms.org
  * 2007 Apr 06: Use DaoTestConfigBean for system properties. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
@@ -54,8 +55,12 @@ public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringCont
         
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
     }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[0];
+    }
     
-    // FIXME: This tests don't work on Timmy for some reason
     public void testInitStartStop() throws Exception {
         Statsd mbean = new Statsd();
         
@@ -67,8 +72,7 @@ public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringCont
         mbean.stop();
     }
     
-    // FIXME: This test doesn't work on Timmy for some reason
-    public void FIXMEtestInitStartStopTwice() throws Exception {
+    public void testInitStartStopTwice() throws Exception {
         Statsd mbean = new Statsd();
         
         mbean.init();
@@ -78,15 +82,5 @@ public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringCont
         mbean.init();
         mbean.start();
         mbean.stop();
-    }
-    
-    // FIXME: This should be removed once other tests are made to work
-    public void FIXMEtestBogus() {
-        // This test is here so we have at least one test
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[0];
     }
 }

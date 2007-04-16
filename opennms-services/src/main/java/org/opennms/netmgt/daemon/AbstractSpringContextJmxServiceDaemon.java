@@ -38,6 +38,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
         log().debug("SPRING: thread.classLoader=" + Thread.currentThread().getContextClassLoader());
 
         m_context = BeanUtils.getFactory(getSpringContext(), ClassPathXmlApplicationContext.class);
+        m_context.refresh();
 
         log().debug("SPRING: context.classLoader= "+ m_context.getClassLoader());
     }
