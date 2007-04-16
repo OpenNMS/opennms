@@ -46,6 +46,7 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
+import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -79,6 +80,126 @@ public class JavaMailerTest extends TestCase {
         JavaMailer jm = createMailer("Test message from testJavaMailer using details");
         
         jm.mailSend();
+    }
+    
+    public final void testJavaMailerWithNullTo() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setTo(null);
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have a null to address."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+    
+    public final void testJavaMailerWithEmptyTo() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setTo("");
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have an empty to address."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+
+    public final void testJavaMailerWithNullFrom() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setFrom(null);
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have a null from address."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+    
+    public final void testJavaMailerWithEmptyFrom() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setFrom("");
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have an empty from address."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+
+    public final void testJavaMailerWithNullSubject() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setSubject(null);
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have a null subject."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+    
+    public final void testJavaMailerWithEmptySbuject() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setSubject("");
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have an empty subject."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+
+    public final void testJavaMailerWithNullMessageText() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setMessageText(null);
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have a null messageText."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+    
+    public final void testJavaMailerWithEmptyMessageText() throws Exception {
+        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
+        
+        jm.setMessageText("");
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new JavaMailerException("Cannot have an empty messageText."));
+        try {
+            jm.mailSend();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
     }
 
     public final void testJavaMailerUsingMTAExplicitly() throws Exception {

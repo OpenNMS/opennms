@@ -191,14 +191,26 @@ public class JavaMailer {
         if (getFrom() == null) {
             throw new JavaMailerException("Cannot have a null from address.");
         }
+        if ("".equals(getFrom())) {
+            throw new JavaMailerException("Cannot have an empty from address.");
+        }
         if (getTo() == null) {
             throw new JavaMailerException("Cannot have a null to address.");
+        }
+        if ("".equals(getTo())) {
+            throw new JavaMailerException("Cannot have an empty to address.");
         }
         if (getSubject() == null) {
             throw new JavaMailerException("Cannot have a null subject.");
         }
+        if ("".equals(getSubject())) {
+            throw new JavaMailerException("Cannot have an empty subject.");
+        }
         if (getMessageText() == null) {
             throw new JavaMailerException("Cannot have a null messageText.");
+        }
+        if ("".equals(getMessageText())) {
+            throw new JavaMailerException("Cannot have an empty messageText.");
         }
     }
 
