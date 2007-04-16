@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 16: Don't use test.overridden.properties; use beans and override them instead. - dj@opennms.org
 // 2007 Apr 06: Use DaoTestConfigBean to setup system properties. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -64,7 +65,7 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
         m_fileAnticipator = new FileAnticipator();
         
         System.setProperty("opennms.poller.configuration.resource", m_fileAnticipator.expecting("remote-poller.configuration").toURL().toString());
-        System.setProperty("test.overridden.properties", "classpath:/org/opennms/netmgt/poller/remote/test.overridden.properties");
+//        System.setProperty("test.overridden.properties", "classpath:/org/opennms/netmgt/poller/remote/test.overridden.properties");
     }
     
     @Override

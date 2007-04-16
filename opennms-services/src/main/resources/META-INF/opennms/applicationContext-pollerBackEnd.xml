@@ -13,15 +13,9 @@
 		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
 	</bean>
 
-<!-- 
-    <bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
+    <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
+      <constructor-arg><value>600000</value></constructor-arg>
     </bean>
-  
-    <bean id="eventIpcManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
-      <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
-    </bean>
--->	
 
 	<bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
 	  <property name="locationMonitorDao" ref="locationMonitorDao" />
@@ -29,7 +23,7 @@
 	  <property name="pollerConfig" ref="pollerConfig" />
 	  <property name="timeKeeper" ref="timeKeeper" />
 	  <property name="eventIpcManager" ref="eventIpcManager"/>
-	  <property name="disconnectedTimeout" value="600000"/>
+      <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout"/>
 	</bean>
 	
 	<bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -37,8 +31,12 @@
 	  <property name="targetMethod" value="checkForDisconnectedMonitors" />
 	</bean>
 
+    <bean name="monitorCheckInterval" class="java.lang.Long">
+      <constructor-arg><value>10000</value></constructor-arg>
+    </bean>
+
 	<bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-	  <property name="repeatInterval" value="10000" />
+      <property name="repeatInterval" ref="monitorCheckInterval" />
 	  <property name="jobDetail" ref="methodInvokingJobDetail"/>
 	</bean>
 	
