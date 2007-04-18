@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 18: Use Java 5 generics to eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,20 +35,17 @@
 //
 package org.opennms.netmgt.poller.nsclient;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
-
-import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <P>
@@ -168,7 +169,7 @@ public class NsclientManager {
     /**
      * Stores the String -> CHECK_ id mappings for lookups.
      */
-    public static HashMap CheckStrings = new HashMap();
+    public static Map<String, Short> CheckStrings = new HashMap<String, Short>();
     /**
      * This static block initialzies the global check strings map with the
      * default values used for performing string->type->string conversions.
@@ -199,12 +200,11 @@ public class NsclientManager {
      * @see convertStringToType
      */
     public static String convertTypeToString(short type) {
-        Iterator iter = CheckStrings.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry e = (Map.Entry) iter.next();
-            short val = ((Short) e.getValue()).shortValue();
-            if (val == type)
-                return (String) e.getKey();
+        for (Map.Entry<String, Short> e : CheckStrings.entrySet()) {
+            short val = e.getValue().shortValue();
+            if (val == type) {
+                return e.getKey();
+            }
         }
         return "NONE";
     }
@@ -223,7 +223,7 @@ public class NsclientManager {
      * @see convertTypeToString
      */
     public static short convertStringToType(String type) {
-        return ((Short) CheckStrings.get(type)).shortValue();
+        return CheckStrings.get(type).shortValue();
     }
 
     /**
