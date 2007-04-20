@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 20: Throw a ValidationException if we can't instantiate a plugin. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -469,7 +473,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     /**
      * 
      */
-    private void finishConstruction() {
+    private void finishConstruction() throws ValidationException {
         // now load the plugins!
         // Map by protocol name and also by class name!
         //
@@ -490,7 +494,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                     m_plugins.put(plugin.getProtocol(), oplugin);
                 }
             } catch (Throwable t) {
-                log().error("CapsdConfigFactory: failed to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName(), t);
+                String message = "CapsdConfigFactory: failed to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName() + ", exception = " + t; 
+                log().error(message, t);
+                throw new ValidationException(message, t);
             }
         }
         // Load addresses from any urls which have been specified
