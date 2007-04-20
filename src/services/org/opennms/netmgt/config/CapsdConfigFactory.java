@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 20: Throw a ValidationException if we can't instantiate a plugin (bug #1397). - dj@opennms.org
 // 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
 //              interfaces, as well as a few other minor bugs discovered
 //              in testing the bug fix.
@@ -519,7 +520,11 @@ public final class CapsdConfigFactory {
                     m_plugins.put(plugin.getProtocol(), oplugin);
                 }
             } catch (Throwable t) {
-                ThreadCategory.getInstance(getClass()).error("CapsdConfigFactory: failed to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName(), t);
+        		String message = "CapsdConfigFactory: failed to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName() + ", exception = " + t;
+                ThreadCategory.getInstance(getClass()).error(message, t);
+                ValidationException validationException = new ValidationException(message);
+                validationException.initCause(t);
+                throw validationException;
             }
         }
 
