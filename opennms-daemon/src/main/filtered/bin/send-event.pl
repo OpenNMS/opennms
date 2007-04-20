@@ -15,6 +15,7 @@ use vars qw(
 	$SEVERITY
 	$SOURCE
 	$UEI
+	$UUID
 	$VERBOSE
 	$ZONE
 	$OPERINSTR
@@ -31,7 +32,7 @@ $ZONE    = 'GMT';
 
 @SEVERITIES = ( undef, 'Indeterminate', 'Cleared', 'Normal', 'Warning', 'Minor', 'Major', 'Critical' );
 	
-Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s  u=s uei>u V version>V v verbose>v x=s severity>x o=s operinstr>o');
+Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s  u=s uei>u U=s uuid>U V version>V v verbose>v x=s severity>x o=s operinstr>o');
 while (my ($option, $value) = nextOption()) {
 
         $SERVICE   = $value if ($option eq "s");
@@ -41,6 +42,7 @@ while (my ($option, $value) = nextOption()) {
         $SEVERITY  = $value if ($option eq "x");
 	$VERBOSE   = 1      if ($option eq "v");
 	$OPERINSTR = $value if ($option eq "o");
+	$UUID      = $value if ($option eq "U");
 	push(@PARMS, parse_parm($value)) if ($option eq "p");
 
 	if ($option eq "V") { print "$0 version $VERSION\n"; exit; }
@@ -138,10 +140,18 @@ $hour  = $hour % 12;
 my @week = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 my @month = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 
+my $uuidattribute;
+if (defined $UUID) {
+	$uuidattribute = "uuid=\"$UUID\"";
+} else {
+	$uuidattribute = "";
+}
+
+
 my $event = <<END;
 <log>
  <events>
-  <event>
+  <event $uuidattribute>
    <source>$SOURCE</source>
    <host>$HOSTNAME</host>
    <time>$week[$wday], $month[$month] $mday, $year $hour:$min:$sec $ap $ZONE</time>
@@ -234,13 +244,13 @@ Options:
                            7 = Critical
 	--parm, -p         an event parameter (ie:
                            --parm 'url http://www.google.com/')
-Example:
+	--uuid, -U         a UUID to pass with the event
 
-        Force discovery of a node
+Example: Force discovery of a node:
 
         send-event.pl \\
-        --interface 172.16.1.1
-        uei.opennms.org/internal/discovery/newSuspect \\
+                --interface 172.16.1.1 \\
+                uei.opennms.org/internal/discovery/newSuspect
 
 END
 }
