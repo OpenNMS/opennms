@@ -55,7 +55,7 @@ public class CapsdConfigManagerTest extends TestCase {
      * plugins cannot be loaded.
      */
     public void testBadPlugin() throws Exception {
-        Reader reader = ConfigurationTestUtils.getReaderForResource(getClass(), "/org/opennms/netmgt/config/capsd-configuration-bad-class.xml");
+        Reader reader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/capsd-configuration-bad-class.xml");
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new ValidationException(ThrowableAnticipator.IGNORE_MESSAGE));
