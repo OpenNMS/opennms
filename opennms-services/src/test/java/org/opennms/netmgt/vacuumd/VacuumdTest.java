@@ -50,7 +50,6 @@ import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
-import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.mock.MockNode;
@@ -233,11 +232,13 @@ public class VacuumdTest extends OpenNMSTestCase {
         Thread.sleep(500);
         assertEquals(2, alarmDeDuplicated());
         
+        int currentSeverity = getCurrentSeverity();
+        
         /*
          * Sleep long enough for the automation to run.
          */
         Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval()+100);
-        assertEquals(7, verifyAlarmEscalated());
+        assertEquals(currentSeverity+1, verifyAlarmEscalated());
         
         EventBuilder builder = new EventBuilder(Vacuumd.RELOAD_CONFIG_UEI, "test");
         Event e = builder.getEvent();
@@ -337,7 +338,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         q.execute();
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         assertFalse("Testing the result rows:"+q.getCount()+" with the trigger operator "+trigger.getOperator()+" against the required rows:"+trigger.getRowCount(),
-                ap.triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), q.getCount()));
+                ap.getTrigger().triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), q.getCount()));
         assertEquals(0, q.getCount());
         
     }
@@ -452,8 +453,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
-        ArrayList actions = (ArrayList)VacuumdConfigFactory.getInstance().getActions();
-        Collection tokens = ap.getAction().getTokenizedColumns(((Action)actions.get(0)).getStatement().getContent());
+        Collection tokens = ap.getAction().getActionColumns();
 
         //just this for now
         assertFalse(tokens.isEmpty());
@@ -510,6 +510,14 @@ public class VacuumdTest extends OpenNMSTestCase {
         MockUtil.println("verifyInitialSetup: Expecting counter in alarms table to be 2 and actually is: "+((Integer)srq.getResult()).intValue());
         srq = null;
         return verified;
+    }
+
+    private int getCurrentSeverity() {
+        int currentSeverity = 0;
+        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select severity from alarms");
+        srq.execute();
+        currentSeverity = ((Integer)srq.getResult()).intValue();
+        return currentSeverity;
     }
 
     /**
