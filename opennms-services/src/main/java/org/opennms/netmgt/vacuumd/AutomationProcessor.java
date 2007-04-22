@@ -50,7 +50,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
@@ -80,13 +79,7 @@ public class AutomationProcessor implements ReadyRunnable {
     private boolean m_ready = false;
     private Schedule m_schedule;
 
-    private boolean m_triggerInAutomation;
-    private Statement m_triggerStatement;
-    private ResultSet m_triggerResultSet;
-    private Collection m_actionColumns;
-    private Connection m_conn;
-    
-    private TriggerProcessor m_trigger;
+    public TriggerProcessor m_trigger;
     private ActionProcessor m_action;
     private AutoEventProcessor m_autoEvent;
     private ActionEventProcessor m_actionEvent;
@@ -94,15 +87,6 @@ public class AutomationProcessor implements ReadyRunnable {
     static class TriggerProcessor {
         private String m_automationName;
         private Trigger m_trigger;
-        private boolean m_successful; 
-
-        public boolean isSuccessful() {
-            return m_successful;
-        }
-
-        public void setSuccessful(boolean successful) {
-            m_successful = successful;
-        }
 
         public TriggerProcessor(String automationName, Trigger trigger) {
             m_automationName = automationName;
@@ -128,7 +112,108 @@ public class AutomationProcessor implements ReadyRunnable {
                 return null;
             }
         }
+
+		public String getName() {
+			return getTrigger().getName();
+		}
+		
+		public String toString() {
+			return m_trigger == null ? "<No-Trigger>" : m_trigger.getName();
+		}
+
+		ResultSet runTriggerQuery() throws SQLException {
+			try {
+				if (!hasTrigger()) {
+					return null;
+				}
+                
+                Connection conn = Transaction.getConnection(m_trigger.getDataSource());
+
+                Statement triggerStatement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                Transaction.register(triggerStatement);
+
+                ResultSet triggerResultSet = triggerStatement.executeQuery(getTriggerSQL());
+                Transaction.register(triggerResultSet);
+
+                return triggerResultSet;
+			} catch (SQLException e) {
+				log().warn("Error executing trigger "+getName(), e);
+				throw e;
+			}
+		}
+
+		/**
+		 * This method verifies that the number of rows in the result set of the trigger
+		 * match the defined operation in the config.  For example, if the user has specified
+		 * that the trigger-rows = 5 and the operator ">", the automation will only run
+		 * if the result rows is greater than 5.
+		 * @param trigRowCount
+		 * @param trigOp
+		 * @param resultRows
+		 * @param processor TODO
+		 */
+		public boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
+		    
+		    if (trigRowCount == 0 || trigOp == null) {
+		        log().debug("triggerRowCheck: trigger has no row-count restrictions: operator is: "+trigOp+", row-count is: "+trigRowCount);
+		        return true;
+		    }
+		    
+		    log().debug("triggerRowCheck: Verifying trigger resulting row count " +resultRows+" is "+trigOp+" "+trigRowCount);
+		    
+		    boolean runAction = false;
+		    if ("<".equals(trigOp)) {
+		        if (resultRows < trigRowCount)
+		            runAction = true;
+		        
+		    } else if ("<=".equals(trigOp)) {
+		        if (resultRows <= trigRowCount)
+		            runAction = true;
+		        
+		    } else if ("=".equals(trigOp)) {
+		        if (resultRows == trigRowCount)
+		            runAction = true;
+		        
+		    } else if (">=".equals(trigOp)) {
+		        if (resultRows >= trigRowCount)
+		            runAction = true;
+		        
+		    } else if (">".equals(trigOp)) {
+		        if (resultRows > trigRowCount)
+		            runAction = true;
+		        
+		    }
+		    
+		    log().debug("Row count verification is: "+runAction);
+		    
+		    return runAction;
+		}
         
+        
+    }
+    
+    static class TriggerResults {
+    	private TriggerProcessor m_trigger;
+    	private ResultSet m_resultSet;
+    	private boolean m_successful;
+    	
+		public TriggerResults(TriggerProcessor trigger, ResultSet set, boolean successful) {
+			m_trigger = trigger;
+			m_resultSet = set;
+			m_successful = successful;
+		}
+		
+		public boolean hasTrigger() {
+			return m_trigger.hasTrigger();
+		}
+
+        public ResultSet getResultSet() {
+            return m_resultSet;
+        }
+
+        public boolean isSuccessful() {
+            return m_successful;
+        }
         
     }
     
@@ -136,7 +221,6 @@ public class AutomationProcessor implements ReadyRunnable {
         
         private String m_automationName;
         private Action m_action;
-        private boolean m_successful;
 
         public ActionProcessor(String automationName,Action action) {
             m_automationName = automationName;
@@ -159,12 +243,15 @@ public class AutomationProcessor implements ReadyRunnable {
             return getAction().getStatement().getContent();
         }
 
-        PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
+        PreparedStatement createPreparedStatement() throws SQLException {
             String actionJDBC = getActionSQL().replaceAll("\\$\\{\\w+\\}", "?");
             
             log().debug("createPrepareStatement: This action SQL: "+getActionSQL()+"\nTurned into this: "+actionJDBC);
             
-            return conn.prepareStatement(actionJDBC);
+            Connection conn = Transaction.getConnection(m_action.getDataSource());
+            PreparedStatement stmt = conn.prepareStatement(actionJDBC);
+            Transaction.register(stmt);
+            return stmt;
         }
 
         /**
@@ -174,7 +261,11 @@ public class AutomationProcessor implements ReadyRunnable {
          * @param targetString
          * @return
          */
-        public List<String> getTokenizedColumns(String targetString) {
+        public List<String> getActionColumns() {
+        	return getTokenizedColumns(getActionSQL());
+        }
+
+        private List<String> getTokenizedColumns(String targetString) {
             // The \w represents a "word" charactor
             String expression = "\\$\\{(\\w+)\\}";
             Pattern pattern = Pattern.compile(expression);
@@ -192,7 +283,7 @@ public class AutomationProcessor implements ReadyRunnable {
             }
             return tokens;        
         }
-
+        
         void assignStatementParameters(PreparedStatement stmt, ResultSet rs) throws SQLException {
             List<String> actionColumns = getTokenizedColumns(getActionSQL());        
             Iterator it = actionColumns.iterator();
@@ -226,46 +317,51 @@ public class AutomationProcessor implements ReadyRunnable {
             return count;
         }
 
-        public boolean isSuccessful() {
-            return m_successful;
-        }
-
-        public void setSuccessful(boolean successful) {
-            m_successful = successful;
-        }
-
-        private void execute(Connection conn) throws SQLException {
-            setSuccessful(false);
+        boolean execute() throws SQLException {
             //No trigger defined, just running the action.
             if (getTokenCount(getActionSQL()) != 0) {
                 log().info("execute: not running action: "+m_action.getName()+".  Action contains tokens in an automation ("+m_automationName+") with no trigger.");
-                setSuccessful(false);
+                return false;
             } else {
                 //Convert the sql to a PreparedStatement
-                PreparedStatement actionStatement = createPreparedStatement(conn);
+                PreparedStatement actionStatement = createPreparedStatement();
                 actionStatement.executeUpdate();
-                setSuccessful(true);
+                return true;
             }
         }
 
-        void processTriggerResults(Connection conn, ResultSet triggerResultSet) throws SQLException {
-            setSuccessful(false);
+        boolean processTriggerResults(TriggerResults triggerResults) throws SQLException {
+        	ResultSet triggerResultSet = triggerResults.getResultSet();
+
             triggerResultSet.beforeFirst();
             
-            PreparedStatement actionStatement = createPreparedStatement(conn);
+            PreparedStatement actionStatement = createPreparedStatement();
         
             //Loop through the select results
             while (triggerResultSet.next()) {                        
                 //Convert the sql to a PreparedStatement
                 assignStatementParameters(actionStatement, triggerResultSet);
                 actionStatement.executeUpdate();
-                /*
-                 * TODO: create new XSD configuration to allow a way to send an event for each action per row.
-                 * Currently, the XSD presents itself as one event per automation.
-                 */
             }
-            setSuccessful(true);
+
+            return true;
         }
+
+		boolean processAction(TriggerResults triggerResults) throws SQLException {
+			if (triggerResults.hasTrigger()) {
+			    return processTriggerResults(triggerResults);
+			} else {
+			    return execute();
+			}
+		}
+
+		public String getName() {
+			return m_action.getName();
+		}
+		
+		public String toString() {
+			return m_action.getName();
+		}
         
     }
     
@@ -320,6 +416,7 @@ public class AutomationProcessor implements ReadyRunnable {
     }
     
     static class SQLExceptionHolder extends RuntimeException {
+        private static final long serialVersionUID = 1L;
         SQLException m_ex = null;
         public SQLExceptionHolder(SQLException ex) {
             m_ex = ex;
@@ -441,8 +538,10 @@ public class AutomationProcessor implements ReadyRunnable {
             Vacuumd.getSingleton().getEventManager().sendNow(event);
         }
 
-        void processTriggerResults(ResultSet triggerResultSet) throws SQLException {
+        void processTriggerResults(TriggerResults triggerResults) throws SQLException {
             if (!hasEvent()) return;
+            
+            ResultSet triggerResultSet = triggerResults.getResultSet();
             
             triggerResultSet.beforeFirst();
             
@@ -466,6 +565,14 @@ public class AutomationProcessor implements ReadyRunnable {
         public boolean forEachResult() {
             return m_actionEvent == null ? false : m_actionEvent.getForEachResult();
         }
+
+		void processActionEvent(TriggerResults triggerResults) throws SQLException {
+			if (triggerResults.hasTrigger() && forEachResult()) {
+			    processTriggerResults(triggerResults);
+			} else {
+			    send();
+			}
+		}
         
     }
 
@@ -514,53 +621,6 @@ public class AutomationProcessor implements ReadyRunnable {
     }
 
     /**
-     * This method verifies that the number of rows in the result set of the trigger
-     * match the defined operation in the config.  For example, if the user has specified
-     * that the trigger-rows = 5 and the operator ">", the automation will only run
-     * if the result rows is greater than 5.
-     * 
-     * @param trigRowCount
-     * @param trigOp
-     * @param resultRows
-     */
-    public boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
-        
-        if (trigRowCount == 0 || trigOp == null) {
-            log().debug("triggerRowCheck: trigger has no row-count restrictions: operator is: "+trigOp+", row-count is: "+trigRowCount);
-            return true;
-        }
-        
-        log().debug("triggerRowCheck: Verifying trigger resulting row count " +resultRows+" is "+trigOp+" "+trigRowCount);
-        
-        boolean runAction = false;
-        if ("<".equals(trigOp)) {
-            if (resultRows < trigRowCount)
-                runAction = true;
-            
-        } else if ("<=".equals(trigOp)) {
-            if (resultRows <= trigRowCount)
-                runAction = true;
-            
-        } else if ("=".equals(trigOp)) {
-            if (resultRows == trigRowCount)
-                runAction = true;
-            
-        } else if (">=".equals(trigOp)) {
-            if (resultRows >= trigRowCount)
-                runAction = true;
-            
-        } else if (">".equals(trigOp)) {
-            if (resultRows > trigRowCount)
-                runAction = true;
-            
-        }
-        
-        log().debug("Row count verification is: "+runAction);
-        
-        return runAction;
-    }
-
-    /**
      * Called by the run method to execute the sql statements
      * of triggers and actions defined for an automation.  An
      * automation may have 0 or 1 trigger and must have 1 action.
@@ -574,101 +634,86 @@ public class AutomationProcessor implements ReadyRunnable {
     public boolean runAutomation() throws SQLException {
         log().debug("runAutomation: "+m_automation.getName()+" running...");
 
-        setTriggerInAutomation(m_trigger.hasTrigger());
-
-        if (isTriggerInAutomation()) {
+        if (hasTrigger()) {
             log().debug("runAutomation: "+m_automation.getName()+" trigger statement is: "+ m_trigger.getTriggerSQL());
         }
             
         log().debug("runAutomation: "+m_automation.getName()+" action statement is: "+m_action.getActionSQL());
 
-        setFields();
-
         log().debug("runAutomation: Executing trigger: "+m_automation.getTriggerName());
-
+        
+        
+        Transaction.begin();
         try {
-            setConn(DataSourceFactory.getInstance().getConnection());
+            log().debug("runAutomation: Processing automation: "+m_automation.getName());
 
-            processTrigger();
+            TriggerResults results = processTrigger();
             
-            if (!m_trigger.isSuccessful()) {
-                return false;
+            boolean success = false;
+            if (results.isSuccessful()) {
+                success = processAction(results);
             }
+            
+			return success;
 
-
-            processAction();
-
-        } catch (SQLException e) {
-            log().warn("runAutomation: Could not execute trigger: "+m_automation.getTriggerName(), e);
+        } catch (Exception e) {
+        	Transaction.rollbackOnly();
+            log().warn("runAutomation: Could not execute automation: "+m_automation.getName(), e);
+            return false;
         } finally {
-            log().debug("runAutomation: Closing trigger resultset.");
-            if (isTriggerInAutomation()) {
-                log().debug("runAutomation: Closing trigger statement.");
-                //Just in case, check for null
-                if (getTriggerResultSet() != null)
-                    getTriggerResultSet().close();
-            }
-            log().debug("runAutomation: Closing database connection.");
-            getConn().close();
-        }
 
-        return m_action.isSuccessful();
-    }
-
-    private void processAction() throws SQLException {
-        try {
-            log().debug("runAutomation: running action(s): "+m_automation.getActionName());
+            log().debug("runAutomation: Ending processing of automation: "+m_automation.getName());
             
-            getConn().setAutoCommit(false);
-            if (isTriggerInAutomation()) {
-                m_action.processTriggerResults(getConn(), getTriggerResultSet());
-            } else {
-                m_action.execute(getConn());
-            }
-            if (m_action.isSuccessful()) {
-                if (isTriggerInAutomation() && m_actionEvent.forEachResult()) {
-                    m_actionEvent.processTriggerResults(getTriggerResultSet());
-                } else {
-                    m_actionEvent.send();
-                }
-            }
-            if (m_action.isSuccessful()) {
-                m_autoEvent.send();
-            }
-            getConn().commit();           
-        } catch (SQLException e) {
-            getConn().rollback();
-            log().warn("runAutomation: Could not execute update on action: "+m_automation.getActionName());
-            log().warn(e.getMessage());
+            Transaction.end();         
         }
+
     }
 
-    private void processTrigger() throws SQLException {
-        if (isTriggerInAutomation()) {
-            //get a scrollable ResultSet so that we can count the rows and move back to the
+    private boolean processAction(TriggerResults triggerResults) throws SQLException {
+		log().debug("runAutomation: running action(s)/actionEvent(s) for : "+m_automation.getName());
+		
+        //Verfiy the trigger ResultSet returned the required number of rows and the required columns for the action statement
+        checkForRequiredColumns(triggerResults);
+        		
+		if (m_action.processAction(triggerResults)) {
+		    m_actionEvent.processActionEvent(triggerResults);
+		    m_autoEvent.send();
+		    return true;
+		} else {
+			return false;
+		}
+	}
+
+	private TriggerResults processTrigger() throws SQLException {
+		
+		if (m_trigger.hasTrigger()) {
+			//get a scrollable ResultSet so that we can count the rows and move back to the
             //beginning for processing.
-            setTriggerStatement(getConn().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY));
-            setTriggerResultSet(getTriggerStatement().executeQuery(m_trigger.getTriggerSQL()));
+			
+            ResultSet triggerResultSet = m_trigger.runTriggerQuery();
 
-            //Verfiy the trigger ResultSet returned the required number of rows and the required columns for the action statement
-            if (!verifyRowCount(getTriggerResultSet()) || !resultSetHasRequiredActionColumns(getTriggerResultSet(), getActionColumns())) {
-                m_trigger.setSuccessful(false);
-            } else {
-                m_trigger.setSuccessful(true);
-            }
+            TriggerResults triggerResults = new TriggerResults(m_trigger, triggerResultSet, verifyRowCount(triggerResultSet));
+
+			return triggerResults;
+            
         } else {
-            m_trigger.setSuccessful(true);
+            return new TriggerResults(m_trigger, null, true);
         }
-    }
+	}
 
-    private void setFields() {
-        setActionColumns(m_action.getTokenizedColumns(m_action.getActionSQL()));
-        setConn(null);
-        setTriggerStatement(null);
-        setTriggerResultSet(null);
-    }
+	public void checkForRequiredColumns(TriggerResults triggerResults) {
+		ResultSet triggerResultSet = triggerResults.getResultSet();
+		if (!resultSetHasRequiredActionColumns(triggerResultSet, m_action.getActionColumns())) {
+			throw new AutomationException("Action "+m_action+" uses column not defined in trigger: "+m_trigger);
+		}
+	}
 
-    protected boolean verifyRowCount(ResultSet triggerResultSet) throws SQLException {
+	protected boolean verifyRowCount(ResultSet triggerResultSet) throws SQLException {
+        if (!m_trigger.hasTrigger()) {
+            return true;
+        }
+        
+        
         int resultRows;
         boolean validRows = true;
         //determine if number of rows required by the trigger row-count and operator were
@@ -680,7 +725,7 @@ public class AutomationProcessor implements ReadyRunnable {
 
         log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+triggerOperator+" than "+triggerRowCount);
 
-        if (!triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
+        if (!m_trigger.triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
             validRows = false;
 
         return validRows;
@@ -693,21 +738,17 @@ public class AutomationProcessor implements ReadyRunnable {
      * @param actionSQL
      * @return
      */
-    public boolean resultSetHasRequiredActionColumns(ResultSet rs, String actionSQL) {
-        Collection actionColumns = m_action.getTokenizedColumns(actionSQL);
-        return resultSetHasRequiredActionColumns(rs, actionColumns);
-    }
-
-    /**
-     * Helper method that verifies tokens in a config defined action
-     * are available in the ResultSet of the paired trigger
-     * @param rs
-     * @param actionSQL
-     * @return
-     */
     public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection actionColumns) {
         
         log().debug("resultSetHasRequiredActionColumns: Verifying required action columns in trigger ResultSet...");
+        
+        if (actionColumns.isEmpty()) {
+        	return true;
+        }
+        
+        if (rs == null) {
+        	return false;
+        }
         
         boolean verified = true;
         String actionColumnName = null;
@@ -737,6 +778,10 @@ public class AutomationProcessor implements ReadyRunnable {
      * @throws SQLException
      */
     public int countRows(ResultSet rs) throws SQLException {
+        if (rs == null) {
+            return 0;
+        }
+
         int rows = 0;
         while (rs.next())
             rows++;
@@ -784,44 +829,8 @@ public class AutomationProcessor implements ReadyRunnable {
         return ThreadCategory.getInstance(AutomationProcessor.class);        
     }
 
-    private void setTriggerInAutomation(boolean triggerInAuto) {
-        m_triggerInAutomation = triggerInAuto;
-    }
-
-    private boolean isTriggerInAutomation() {
-        return m_triggerInAutomation;
-    }
-
-    private void setTriggerStatement(Statement triggerStatement) {
-        m_triggerStatement = triggerStatement;
-    }
-
-    private Statement getTriggerStatement() {
-        return m_triggerStatement;
-    }
-
-    private void setTriggerResultSet(ResultSet triggerResultSet) {
-        m_triggerResultSet = triggerResultSet;
-    }
-
-    private ResultSet getTriggerResultSet() {
-        return m_triggerResultSet;
-    }
-
-    private void setActionColumns(Collection actionColumns) {
-        m_actionColumns = actionColumns;
-    }
-
-    private Collection getActionColumns() {
-        return m_actionColumns;
-    }
-
-    private void setConn(Connection conn) {
-        m_conn = conn;
-    }
-
-    private Connection getConn() {
-        return m_conn;
+    private boolean hasTrigger() {
+        return m_trigger.hasTrigger();
     }
 
     public void setReady(boolean ready) {
