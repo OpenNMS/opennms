@@ -48,11 +48,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
@@ -245,24 +247,25 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         // can be null
         String description = getReportProperty(props, key, "description", false);
 
+        /*
+         * TODO: Right now a "width" and "height" property is required
+         * in order to get zoom to work properly on non-standard sized
+         * graphs. A more elegant solution would be to parse the
+         * command string and look for --width and --height and set
+         * the following two variables automagically, without having
+         * to rely on a config file.
+         */
+        Integer graphWidth = getIntegerReportProperty(props, key, "width", false);
+        Integer graphHeight = getIntegerReportProperty(props, key, "height", false);
+        
 
-	// TODO: Right now a "width" and "height" property is required
-	// in order to get zoom to work properly on non-standard sized
-	// graphs. A more elegant solution would be to parse the
-	// command string and look for --width and --height and set
-	// the following two variables automagically, without having
-	// to rely on a config file.
-
-        // can be null
-        String graphWidth = getReportProperty(props, key, "width", false);
-
-        // can be null
-        String graphHeight = getReportProperty(props, key, "height", false);
+        String suppressString = getReportProperty(props, key, "suppress", false);
+        String[] suppress = (suppressString == null) ? new String[0] : BundleLists.parseBundleList(suppressString);
         
         return new PrefabGraph(key, title, columns,
                 command, externalValues,
                 propertiesValues, order, types,
-                description, graphWidth, graphHeight);
+                description, graphWidth, graphHeight, suppress);
 
     }
 
@@ -292,6 +295,24 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     
         return property;
     }
+
+
+    private static Integer getIntegerReportProperty(Properties props, String key, String suffix, boolean required) {
+        String value = getReportProperty(props, key, suffix, required);
+        if (value == null) {
+            return null;
+        }
+
+        try {
+            return new Integer(value);
+        } catch (NumberFormatException e) {
+            throw new DataAccessResourceFailureException("Property value for '"
+                    + suffix + "' on report '" + key
+                    + "' must be an integer.  '" + value
+                    + "' is not a valid value");
+        }
+    }
+
     
     private Category log() {
         return ThreadCategory.getInstance();
@@ -354,7 +375,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
         String resourceType = resource.getResourceType().getName();
 
-        List<PrefabGraph> returnList = new ArrayList<PrefabGraph>();
+        Map<String, PrefabGraph> returnList = new LinkedHashMap<String, PrefabGraph>();
         for (PrefabGraph query : getAllPrefabGraphs()) {
             if (resourceType != null && !query.hasMatchingType(resourceType)) {
                 if (log().isDebugEnabled()) {
@@ -377,18 +398,32 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 log().debug("adding " + query.getName() + " to query list");
             }
             
-            returnList.add(query);
+            returnList.put(query.getName(), query);
         }
 
         if (log().isDebugEnabled()) {
             ArrayList<String> nameList = new ArrayList<String>(returnList.size());
-            for (PrefabGraph graph : returnList) {
+            for (PrefabGraph graph : returnList.values()) {
                 nameList.add(graph.getName());
             }
             log().debug("found " + nameList.size() + " prefabricated graphs for resource " + resource + ": " + StringUtils.collectionToDelimitedString(nameList, ", "));
         }
         
-        return returnList.toArray(new PrefabGraph[returnList.size()]);
+        Set<String> suppressReports = new HashSet<String>();
+        for (Entry<String, PrefabGraph> entry : returnList.entrySet()) {
+            suppressReports.addAll(Arrays.asList(entry.getValue().getSuppress()));
+        }
+        
+        suppressReports.retainAll(returnList.keySet());
+        if (suppressReports.size() > 0 && log().isDebugEnabled()) {
+            log().debug("suppressing " + suppressReports.size() + " prefabricated graphs for resource " + resource + ": " + StringUtils.collectionToDelimitedString(suppressReports, ", "));
+        }
+        
+        for (String suppressReport : suppressReports) {
+            returnList.remove(suppressReport);
+        }
+        
+        return returnList.values().toArray(new PrefabGraph[returnList.size()]);
     }
 
 

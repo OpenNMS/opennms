@@ -151,6 +151,15 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         
         assertEquals("node list size", 1, nodes.size());
     }
+    
+    public void testVariousWaysToMatchServiceNames() {
+        assertEquals("service statement", m_dao.getInterfaceWithServiceStatement("isFooService"), m_dao.getInterfaceWithServiceStatement("serviceName == 'FooService'"));
+        assertEquals("ip service mapping statement", m_dao.getIPServiceMappingStatement("isFooService"), m_dao.getIPServiceMappingStatement("serviceName == 'FooService'"));
+        assertEquals("ip service mapping statement", m_dao.getNodeMappingStatement("isFooService"), m_dao.getNodeMappingStatement("serviceName == 'FooService'"));
+        
+        // Just make sure this one doesn't hurl
+        m_dao.getInterfaceWithServiceStatement("serviceName == 'DiskUsage-/foo/bar'");
+    }
 
     public DataSource getDataSource() {
         return m_dataSource;
