@@ -74,11 +74,11 @@ public class Graph implements Comparable<Graph> {
         return m_graph.compareTo(other.m_graph);
     }
 
-    public String getGraphWidth() {
+    public Integer getGraphWidth() {
         return m_graph.getGraphWidth();
     }
 
-    public String getGraphHeight() {
+    public Integer getGraphHeight() {
         return m_graph.getGraphHeight();
     }
     

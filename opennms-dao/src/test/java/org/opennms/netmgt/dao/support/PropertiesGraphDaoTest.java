@@ -43,8 +43,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -52,8 +52,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.netmgt.dao.support.PropertiesGraphDao;
 import org.opennms.netmgt.model.AdhocGraphType;
+import org.opennms.netmgt.model.ExternalValueAttribute;
+import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
+import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
@@ -61,14 +65,36 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class PropertiesGraphDaoTest extends TestCase {
-    private static final HashMap<String, Resource> s_emptyMap = new HashMap<String, Resource>();
+    private static final Map<String, Resource> s_emptyMap = new HashMap<String, Resource>();
     
     final static String s_prefab =
             "command.input.dir=foo\n"
             + "command.prefix=foo\n"
             + "output.mime=foo\n"
             + "\n"
-            + "reports=mib2.bits, mib2.discards\n"
+            + "reports=mib2.HCbits, mib2.bits, mib2.discards\n"
+            + "\n"
+            + "report.mib2.HCbits.name=Bits In/Out\n"
+            + "report.mib2.HCbits.columns=ifHCInOctets,ifHCOutOctets\n"
+            + "report.mib2.HCbits.type=interface\n"
+            + "report.mib2.HCbits.externalValues=ifSpeed\n"
+            + "report.mib2.HCbits.suppress=mib2.bits\n"
+            + "report.mib2.HCbits.command=--title=\"Bits In/Out (High Speed)\" \\\n"
+            + " DEF:octIn={rrd1}:ifHCInOctets:AVERAGE \\\n"
+            + " DEF:octOut={rrd2}:ifHCOutOctets:AVERAGE \\\n"
+            + " CDEF:bitsIn=octIn,8,* \\\n"
+            + " CDEF:bitsOut=octOut,8,* \\\n"
+            + " CDEF:totBits=octIn,octOut,+,8,* \\\n"
+            + " AREA:totBits#00ff00:\"Total\" \\\n"
+            + " GPRINT:totBits:AVERAGE:\" Avg  \\\\: %8.2lf %s\\\\n\" \\\n"
+            + " LINE2:bitsIn#0000ff:\"Bits In\" \\\n"
+            + " GPRINT:bitsIn:AVERAGE:\" Avg  \\\\: %8.2lf %s\" \\\n"
+            + " GPRINT:bitsIn:MIN:\"Min  \\\\: %8.2lf %s\" \\\n"
+            + " GPRINT:bitsIn:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" \\\n"
+            + " LINE2:bitsOut#ff0000:\"Bits Out\" \\\n"
+            + " GPRINT:bitsOut:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n"
+            + " GPRINT:bitsOut:MIN:\"Min  \\\\: %8.2lf %s\" \\\n"
+            + " GPRINT:bitsOut:MAX:\"Max  \\\\: %8.2lf %s\\\\n\"\n"
             + "\n"
             + "report.mib2.bits.name=Bits In/Out\n"
             + "report.mib2.bits.columns=ifInOctets,ifOutOctets\n"
@@ -134,23 +160,32 @@ public class PropertiesGraphDaoTest extends TestCase {
         + "  GPRINT:rt:MIN:\"Min  \\\\: %8.2lf %s\" \\\n"
         + "  GPRINT:rt:MAX:\"Max  \\\\: %8.2lf %s\\\\n\"";
 
+    private Map<String, PrefabGraph> m_graphs;
 
-    Properties m_properties;
+    private PropertiesGraphDao m_dao;
 
-    Map<String, PrefabGraph> m_graphs;
-
-    public void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
         
-        PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
-        ByteArrayInputStream in = new ByteArrayInputStream(s_prefab.getBytes());
-        dao.loadProperties("performance", in);
+        MockLogAppender.setupLogging();
         
-        PrefabGraphType type = dao.findByName("performance");
+        m_dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
+        ByteArrayInputStream in = new ByteArrayInputStream(s_prefab.getBytes());
+        m_dao.loadProperties("performance", in);
+        
+        PrefabGraphType type = m_dao.findByName("performance");
         assertNotNull("could not get performance prefab graph type", type);
 
         m_graphs = type.getReportMap();
         assertNotNull("report map shouldn't be null", m_graphs);
+    }
+    
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
+        
+        MockLogAppender.assertNoWarningsOrGreater();
     }
     
     public void testCompareToLessThan() {
@@ -183,7 +218,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     }
 
     public void testGetOrder() {
-        PrefabGraph bits = m_graphs.get("mib2.bits");
+        PrefabGraph bits = m_graphs.get("mib2.HCbits");
         assertEquals("getOrder", 0, bits.getOrder());
     }
 
@@ -356,7 +391,7 @@ public class PropertiesGraphDaoTest extends TestCase {
 
             writer = new FileWriter(f);
             // Don't include the reports line at all so we get an error
-            String noReports = s_prefab.replace("reports=mib2.bits, mib2.discards", "");
+            String noReports = s_prefab.replace("reports=mib2.HCbits, mib2.bits, mib2.discards", "");
             writer.write(noReports);
             writer.close();
             
@@ -374,6 +409,8 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("should only have received two logged events", 2, events.length);
         assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
         assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
+        
+        MockLogAppender.resetEvents();
     }
 
     
@@ -479,6 +516,47 @@ public class PropertiesGraphDaoTest extends TestCase {
         
         assertTrue("should have responseTime type", graph.hasMatchingType("responseTime"));
         assertTrue("should have distributedStatus type", graph.hasMatchingType("distributedStatus"));
+    }
+    
+    public void testGetPrefabGraphsForResource() {
+        MockResourceType resourceType = new MockResourceType();
+        resourceType.setName("interface");
+        HashSet<OnmsAttribute> attributes = new HashSet<OnmsAttribute>(0);
+        attributes.add(new RrdGraphAttribute("ifInOctets", "", ""));
+        attributes.add(new RrdGraphAttribute("ifOutOctets", "", ""));
+        attributes.add(new ExternalValueAttribute("ifSpeed", ""));
+        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes);
+        PrefabGraph[] graphs = m_dao.getPrefabGraphsForResource(resource);
+        assertEquals("prefab graph array size", 1, graphs.length);
+        assertEquals("prefab graph[0] name", "mib2.bits", graphs[0].getName());
+    }
+    
+    public void testGetPrefabGraphsForResourceWithSuppress() {
+        MockResourceType resourceType = new MockResourceType();
+        resourceType.setName("interface");
+        HashSet<OnmsAttribute> attributes = new HashSet<OnmsAttribute>(0);
+        attributes.add(new RrdGraphAttribute("ifInOctets", "", ""));
+        attributes.add(new RrdGraphAttribute("ifOutOctets", "", ""));
+        attributes.add(new RrdGraphAttribute("ifHCInOctets", "", ""));
+        attributes.add(new RrdGraphAttribute("ifHCOutOctets", "", ""));
+        attributes.add(new ExternalValueAttribute("ifSpeed", ""));
+        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes);
+        PrefabGraph[] graphs = m_dao.getPrefabGraphsForResource(resource);
+        assertEquals("prefab graph array size", 1, graphs.length);
+        assertEquals("prefab graph[0] name", "mib2.HCbits", graphs[0].getName());
+    }
+    
+    public void testGetPrefabGraphsForResourceWithSuppressUnused() {
+        MockResourceType resourceType = new MockResourceType();
+        resourceType.setName("interface");
+        HashSet<OnmsAttribute> attributes = new HashSet<OnmsAttribute>(0);
+        attributes.add(new RrdGraphAttribute("ifHCInOctets", "", ""));
+        attributes.add(new RrdGraphAttribute("ifHCOutOctets", "", ""));
+        attributes.add(new ExternalValueAttribute("ifSpeed", ""));
+        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes);
+        PrefabGraph[] graphs = m_dao.getPrefabGraphsForResource(resource);
+        assertEquals("prefab graph array size", 1, graphs.length);
+        assertEquals("prefab graph[0] name", "mib2.HCbits", graphs[0].getName());
     }
 
     public PropertiesGraphDao createPropertiesGraphDao(Map<String, Resource> prefabConfigs, Map<String, Resource> adhocConfigs) throws IOException {

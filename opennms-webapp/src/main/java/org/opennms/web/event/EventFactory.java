@@ -455,9 +455,31 @@ public class EventFactory extends Object {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
+        
+        int eventCount = 0;
+        Connection conn = Vault.getDbConnection();
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId) };
-        return (getEventCount(ackType, filters));
+        try {
+            StringBuffer select = new StringBuffer("SELECT COUNT(*) AS EVENTCOUNT FROM EVENTS WHERE ");
+            select.append(getAcknowledgeTypeClause(ackType));
+
+            select.append(" AND NODEID=" + nodeId + " ");
+            select.append(" AND EVENTDISPLAY='Y' ");
+
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(select.toString());
+
+            if (rs.next()) {
+                eventCount = rs.getInt("EVENTCOUNT");
+            }
+
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return eventCount;
     }
 
     /*

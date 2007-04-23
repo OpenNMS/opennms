@@ -836,8 +836,8 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
 
     private void expectResourceDaoCall(OnmsLocationMonitor monitor, Collection<OnmsMonitoredService> services) {
-        PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
-        PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, "400", "100");
+        PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0]);
+        PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0]);
         
         for (OnmsMonitoredService service : services) {
             OnmsResource resource = new OnmsResource("foo", "even more foo", new MockResourceType(), new HashSet<OnmsAttribute>(0));
