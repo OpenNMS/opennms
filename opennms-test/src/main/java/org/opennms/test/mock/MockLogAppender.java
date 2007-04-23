@@ -1,46 +1,46 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc. All rights
-// reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included
-// code and modified
-// code that was published under the GNU General Public License. Copyrights
-// for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2006 Aug 15: fix logger for org.snmp4j - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-// reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing <license@opennms.org>
-// http://www.opennms.org/
-// http://www.opennms.com/
-//
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc. All rights
+ * reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included
+ * code and modified
+ * code that was published under the GNU General Public License. Copyrights
+ * for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 Apr 23: Java 5 generics, eliminate partially used s_loggingSetup. - dj@opennms.org
+ * 2006 Aug 15: fix logger for org.snmp4j - dj@opennms.org
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+ * reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.test.mock;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -57,8 +57,6 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class MockLogAppender extends AppenderSkeleton {
     private static List<LoggingEvent> s_events = null;
-
-    private static boolean s_loggingSetup = false;
 
     private static Level s_logLevel = Level.ALL;
 
@@ -96,15 +94,14 @@ public class MockLogAppender extends AppenderSkeleton {
         LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
 
         synchronized (s_events) {
-            for (Iterator i = s_events.iterator(); i.hasNext();) {
-                LoggingEvent event = (LoggingEvent) i.next();
+            for (LoggingEvent event : s_events) {
                 if (event.getLevel().isGreaterOrEqual(level)) {
                     matching.add(event);
                 }
             }
         }
 
-        return (LoggingEvent[]) matching.toArray(new LoggingEvent[0]);
+        return matching.toArray(new LoggingEvent[0]);
     }
 
     public static void setupLogging() {
@@ -118,10 +115,6 @@ public class MockLogAppender extends AppenderSkeleton {
     
     public static void setupLogging(boolean toConsole, String level) {
         resetLogLevel();
-        
-        if (s_loggingSetup) {
-            return;
-        }
         
         Properties logConfig = new Properties();
 
@@ -149,6 +142,10 @@ public class MockLogAppender extends AppenderSkeleton {
         PropertyConfigurator.configure(logConfig);
     }
 
+    public static boolean isLoggingSetup() {
+        return s_events != null;
+    }
+
     public static void receivedLogLevel(Level level) {
         if (level.isGreaterOrEqual(s_logLevel)) {
             s_logLevel = level;
@@ -163,8 +160,11 @@ public class MockLogAppender extends AppenderSkeleton {
         return Level.INFO.isGreaterOrEqual(s_logLevel);
     }
 
-    public static void assertNotGreaterOrEqual(Level level)
-            throws AssertionFailedError {
+    public static void assertNotGreaterOrEqual(Level level) throws AssertionFailedError {
+        if (!isLoggingSetup()) {
+            throw new AssertionFailedError("MockLogAppender has not been initialized");
+        }
+
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -175,23 +175,19 @@ public class MockLogAppender extends AppenderSkeleton {
             return;
         }
 
-        StringBuffer message = new StringBuffer(
-                                                "Log messages at or greater than the "
-                                                        + "log level "
-                                                        + level.toString()
-                                                        + " received:");
+        StringBuffer message = new StringBuffer("Log messages at or greater than the log level "
+                + level.toString() + " received:");
 
-        for (int i = 0; i < events.length; i++) {
-            message.append("\n\t[" + events[i].getLevel().toString() + "] "
-                    + events[i].getLoggerName() + ": "
-                    + events[i].getMessage());
+        for (LoggingEvent event : events) {
+            message.append("\n\t[" + event.getLevel().toString() + "] "
+                    + event.getLoggerName() + ": "
+                    + event.getMessage());
         }
 
         throw new AssertionFailedError(message.toString());
     }
 
-    public static void assertNoWarningsOrGreater()
-            throws AssertionFailedError {
+    public static void assertNoWarningsOrGreater() throws AssertionFailedError {
         assertNotGreaterOrEqual(Level.WARN);
     }
 }
