@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Apr 23: Add non-null tests to constructor. - dj@opennms.org
 // 2007 Apr 10: Add an optional OnmsEntity object and a String link.
 //              - dj@opennms.org
 // 2007 Apr 05: Deduplicate constructors, set the resource reference for
@@ -49,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.util.Assert;
+
 public class OnmsResource implements Comparable<OnmsResource> {
 
     private String m_name;
@@ -62,12 +65,18 @@ public class OnmsResource implements Comparable<OnmsResource> {
     
     public OnmsResource(String name, String label,
             OnmsResourceType resourceType, Set<OnmsAttribute> attributes) {
-        this(name, label, resourceType, attributes, new ArrayList<OnmsResource>());
+        this(name, label, resourceType, attributes, new ArrayList<OnmsResource>(0));
     }
     
     public OnmsResource(String name, String label,
             OnmsResourceType resourceType, Set<OnmsAttribute> attributes,
             List<OnmsResource> resources) {
+        Assert.notNull(name, "name argument must not be null");
+        Assert.notNull(label, "label argument must not be null");
+        Assert.notNull(resourceType, "resourceType argument must not be null");
+        Assert.notNull(attributes, "attributes argument must not be null");
+        Assert.notNull(resources, "resources argument must not be null");
+        
         m_name = name;
         m_label = label;
         m_resourceType = resourceType;
