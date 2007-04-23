@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 23: Use asserts to check for arguments required to be non-null in constructor,
+//              convert width and height to Integers, and add suppress String array. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,6 +37,8 @@
 
 package org.opennms.netmgt.model;
 
+import org.springframework.util.Assert;
+
 public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     private String m_name;
 
@@ -51,37 +58,37 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
 
     private String m_description;
 
-    private String m_graphWidth;
+    private Integer m_graphWidth;
 
-    private String m_graphHeight;
+    private Integer m_graphHeight;
+    
+    private String[] m_suppress;
 
     public PrefabGraph(String name, String title, String[] columns,
             String command, String[] externalValues,
             String[] propertiesValues, int order, String[] types,
-            String description, String graphWidth, String graphHeight) {
-        if (name == null || title == null || columns == null
-                || command == null || externalValues == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+            String description, Integer graphWidth, Integer graphHeight,
+            String[] suppress) {
+        Assert.notNull(name, "name argument cannot be null");
+        Assert.notNull(title, "title argument cannot be null");
+        Assert.notNull(columns, "columns argument cannot be null");
+        Assert.notNull(command, "command argument cannot be null");
+        Assert.notNull(externalValues, "externalValues argument cannot be null");
+        Assert.notNull(propertiesValues, "propertiesValues argument cannot be null");
+        Assert.notNull(suppress, "suppress argument cannot be null");
 
         m_name = name;
         m_title = title;
         m_columns = columns;
         m_command = command;
         m_externalValues = externalValues;
-	m_propertiesValues = propertiesValues;
+        m_propertiesValues = propertiesValues;
         m_order = order;
+        m_suppress = suppress;
 
-        // type can be null
         m_types = types;
-
-        // description can be null
         m_description = description;
-
-        // width can be null
         m_graphWidth = graphWidth;
-
-        // height can be null
         m_graphHeight = graphHeight;
     }
 
@@ -109,10 +116,13 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
         return m_externalValues;
     }
 
+    /**
+     * @return list of required string properties
+     * @see org.opennms.netmgt.model.StringPropertyAttribute
+     */
     public String[] getPropertiesValues() {
-	return m_propertiesValues;
+        return m_propertiesValues;
     }
-
 
     /** Can be null. */
     public String[] getTypes() {
@@ -136,13 +146,17 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     }
 
     /** Can be null. */
-    public String getGraphWidth() {
+    public Integer getGraphWidth() {
         return m_graphWidth;
     }
 
     /** Can be null. */
-    public String getGraphHeight() {
+    public Integer getGraphHeight() {
         return m_graphHeight;
+    }
+    
+    public String[] getSuppress() {
+        return m_suppress;
     }
 
     public int compareTo(PrefabGraph other) {
