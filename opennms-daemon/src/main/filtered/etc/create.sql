@@ -669,6 +669,7 @@ create index events_display_idx on events(eventDisplay);
 create index events_ackuser_idx on events(eventAckUser);
 create index events_acktime_idx on events(eventAckTime);
 create index events_alarmid_idx on events(alarmID);
+create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, eventackuser);
 
 --########################################################################
 --#
