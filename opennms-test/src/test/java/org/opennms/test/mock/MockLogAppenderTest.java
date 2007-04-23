@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Apr 23: Fix warning when using Category.getInstance. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,6 +40,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.test.mock.MockLogAppender;
@@ -157,7 +162,7 @@ public class MockLogAppenderTest extends TestCase {
 	}
         
         public void testDiscardHibernateAnnotationBinderWarnings() {
-            Category log = Category.getInstance("org.hibernate.cfg.AnnotationBinder");
+            Category log = Logger.getLogger("org.hibernate.cfg.AnnotationBinder");
             log.info("An Info message");
             log.warn("A warn message");
 
