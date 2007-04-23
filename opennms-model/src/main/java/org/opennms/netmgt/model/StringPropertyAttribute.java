@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Apr 23: Add some javadocs. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -45,8 +46,8 @@ public class StringPropertyAttribute implements OnmsAttribute {
     private OnmsResource m_resource;
 
     /**
-     * @param string
-     * @param string2
+     * @param name the name
+     * @param value the value
      */
     public StringPropertyAttribute(String name, String value) {
         m_name = name;
@@ -63,6 +64,10 @@ public class StringPropertyAttribute implements OnmsAttribute {
         return m_name;
     }
     
+    /**
+     * Get the value for this attribute.  This is the property value
+     * from the properties file.
+     */
     public String getValue() {
         return m_value;
     }
@@ -79,7 +84,5 @@ public class StringPropertyAttribute implements OnmsAttribute {
      */
     public void setResource(OnmsResource resource) {
         m_resource = resource;
-
     }
-
 }
