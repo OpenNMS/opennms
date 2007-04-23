@@ -82,6 +82,7 @@ public class TransactionTest extends TestCase {
         Transaction.getConnection("ds");
         Transaction.getConnection("ds2");
         Transaction.rollbackOnly();
+        Transaction.end();
         
         m_ezMock.verifyAll();
         
