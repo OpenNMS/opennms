@@ -1,34 +1,38 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * 2007 Apr 24: Fix tests and deduplicate node and ipInterface creation. - dj@opennms.org
+ * 
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.dao.support;
 
 import static org.easymock.EasyMock.expect;
@@ -134,8 +138,7 @@ public class DefaultResourceDaoTest extends TestCase {
    
     
     public void testGetResourceByIdNewTopLevelOnly() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
+        OnmsNode node = createNode();
         expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
         //expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         
@@ -151,12 +154,8 @@ public class DefaultResourceDaoTest extends TestCase {
     }
 
     public void testGetResourceByIdNewTwoLevel() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
-        node.addIpInterface(ip);
-        expect(m_nodeDao.get(node.getId())).andReturn(node).times(3);
+        OnmsIpInterface ip = createIpInterfaceOnNode();
+        expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(3);
 
         Collection<LocationMonitorIpInterface> locMons = new HashSet<LocationMonitorIpInterface>();
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(1)).andReturn(locMons).times(1);
@@ -173,8 +172,7 @@ public class DefaultResourceDaoTest extends TestCase {
     }
     
     public void testGetTopLevelResourceNodeExists() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
+        OnmsNode node = createNode();
         expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
         //expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         
@@ -205,8 +203,7 @@ public class DefaultResourceDaoTest extends TestCase {
     }
     
     public void testGetTopLevelResourceNodeExistsNoChildResources() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(2);
+        OnmsNode node = createNode(2, "Node Two");
 
         expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
         //expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -311,10 +308,8 @@ public class DefaultResourceDaoTest extends TestCase {
     
     public void testFindNodeResourcesWithResponseTime() throws Exception {
         List<OnmsNode> nodes = new LinkedList<OnmsNode>();
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
+        OnmsNode node = createNode();
+        OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
         
@@ -336,10 +331,8 @@ public class DefaultResourceDaoTest extends TestCase {
     // XXX this is a false positive match because there isn't an entry in the DB for this distributed data
     public void testFindNodeResourcesWithDistributedResponseTime() throws Exception {
         List<OnmsNode> nodes = new LinkedList<OnmsNode>();
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
+        OnmsNode node = createNode();
+        OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
         
@@ -361,10 +354,8 @@ public class DefaultResourceDaoTest extends TestCase {
 
     public void testFindNodeResourcesWithNodeSnmp() throws Exception {
         List<OnmsNode> nodes = new LinkedList<OnmsNode>();
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
+        OnmsNode node = createNode();
+        OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
         
@@ -386,10 +377,8 @@ public class DefaultResourceDaoTest extends TestCase {
 
     public void testFindNodeResourcesWithNodeInterface() throws Exception {
         List<OnmsNode> nodes = new LinkedList<OnmsNode>();
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
+        OnmsNode node = createNode();
+        OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
         
@@ -409,8 +398,7 @@ public class DefaultResourceDaoTest extends TestCase {
     }
     
     public void testGetResourceForNode() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
+        OnmsNode node = createNode();
         
 //        expect(m_nodeDao.get(node.getId())).andReturn(node);
 //        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -441,10 +429,8 @@ public class DefaultResourceDaoTest extends TestCase {
     }
 
     public void testGetResourceForIpInterface() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
+        OnmsNode node = createNode();
+        OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         
         File response = m_fileAnticipator.tempDir("response");
@@ -477,8 +463,7 @@ public class DefaultResourceDaoTest extends TestCase {
     
 
     public void testGetResourceForIpInterfaceWithNullNodeOnOnmsIpInterface() {
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
+        OnmsIpInterface ip = createIpInterface();
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("getNode() on ipInterface must not return null"));
@@ -494,11 +479,7 @@ public class DefaultResourceDaoTest extends TestCase {
     }
     
     public void testGetResourceForIpInterfaceWithLocationMonitor() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
-        OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
-        node.addIpInterface(ip);
+        OnmsIpInterface ip = createIpInterfaceOnNode();
 
         OnmsLocationMonitor locMon = new OnmsLocationMonitor();
         locMon.setId(12345);
@@ -513,8 +494,8 @@ public class DefaultResourceDaoTest extends TestCase {
         ArrayList<LocationMonitorIpInterface> locationMonitorInterfaces = new ArrayList<LocationMonitorIpInterface>();
         locationMonitorInterfaces.add(new LocationMonitorIpInterface(locMon, ip));
 
-        expect(m_nodeDao.get(node.getId())).andReturn(ip.getNode()).times(1);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(locationMonitorInterfaces).times(2);
+        expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(1);
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(ip.getNode().getId())).andReturn(locationMonitorInterfaces).times(2);
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip, locMon);
@@ -524,8 +505,7 @@ public class DefaultResourceDaoTest extends TestCase {
     }
 
     public void testGetResourceForNodeWithData() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
+        OnmsNode node = createNode();
         
 //        expect(m_nodeDao.get(node.getId())).andReturn(node);
 //        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -542,8 +522,7 @@ public class DefaultResourceDaoTest extends TestCase {
     }
 
     public void testGetResourceForNodeNoData() {
-        OnmsNode node = new OnmsNode();
-        node.setId(1);
+        OnmsNode node = createNode();
         
 //        expect(m_nodeDao.get(node.getId())).andReturn(node);
 //        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -553,5 +532,28 @@ public class DefaultResourceDaoTest extends TestCase {
         m_easyMockUtils.verifyAll();
         
         assertNotNull("Resource should exist", resource);
+    }
+
+    private OnmsNode createNode() {
+        return createNode(1, "Node One");
+    }
+
+    private OnmsNode createNode(int id, String label) {
+        OnmsNode node = new OnmsNode();
+        node.setId(id);
+        node.setLabel(label);
+        return node;
+    }
+
+    private OnmsIpInterface createIpInterface() {
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setIpAddress("192.168.1.1");
+        return ip;
+    }
+
+    private OnmsIpInterface createIpInterfaceOnNode() {
+        OnmsIpInterface ip = createIpInterface();
+        createNode().addIpInterface(ip);
+        return ip;
     }
 }
