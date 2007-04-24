@@ -38,21 +38,21 @@
   
     <trigger name="selectSuspectAlarms" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT a.alarmid as _alarmid, 
-               a.eventuei as _eventuei, 
-               a.nodeid as _nodeid, 
-               a.ipaddr as _ipaddr, 
-               a.serviceid as _serviceid,
-               s.servicename as _servicename,
-               now() as _ts
-          FROM alarms a
-          JOIN service s
-            ON s.serviceid = a.serviceid
-         WHERE alarmType = 1
-           AND severity &gt; 3
-           AND severity &lt; 7
-           AND alarmacktime IS NULL
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '60 minutes'
+          SELECT a.alarmid as _alarmid, 
+                 a.eventuei as _eventuei, 
+                 a.nodeid as _nodeid, 
+                 a.ipaddr as _ipaddr, 
+                 a.serviceid as _serviceid,
+                 s.servicename as _servicename,
+                 now() as _ts
+            FROM alarms a
+ LEFT OUTER JOIN service s
+              ON s.serviceid = a.serviceid
+           WHERE alarmType = 1
+             AND severity &gt; 3
+             AND severity &lt; 7
+             AND alarmacktime IS NULL
+             AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '60 minutes'
       </statement>
     </trigger>
   
