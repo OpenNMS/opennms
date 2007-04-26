@@ -96,6 +96,18 @@
   </filter>
   
   <filter>
+    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
+    <filter-name>AddRefreshHeader-30</filter-name>
+    <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
+    <init-param>
+      <description>This parameter specifies how often to refresh the page.</description>
+      <param-name>seconds</param-name>
+      <param-value>30</param-value>
+    </init-param>
+  </filter>
+
+  
+  <filter>
     <description>Stores HTTP request parameters in request attributes for later access</description>
     <filter-name>StoreRequestProperties</filter-name>
     <filter-class>org.opennms.web.StoreRequestPropertiesFilter</filter-class>
@@ -152,6 +164,10 @@
   <filter-mapping>
     <filter-name>AddRefreshHeader-120</filter-name>
     <url-pattern>/event/list</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-30</filter-name>
+    <url-pattern>/alarm/list</url-pattern>
   </filter-mapping>
 
   <filter-mapping>
