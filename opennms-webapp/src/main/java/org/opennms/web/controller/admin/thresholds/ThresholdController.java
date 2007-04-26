@@ -109,6 +109,7 @@ public class ThresholdController extends AbstractController implements Initializ
         //Set the two default values which need to be set for the UI to work properly
         threshold.setDsType("node");
         threshold.setType("high"); 
+	threshold.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
         
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
         // uses a simple List structure, probably ArrayList).  We can be a bit cleverer later on and check though, so we should
@@ -311,6 +312,7 @@ public class ThresholdController extends AbstractController implements Initializ
             this.ensureUEIInEventConf(rearmedUEI, "rearmed");
         }
         baseDef.setDsType(request.getParameter("dsType"));
+        baseDef.setType(request.getParameter("type"));
         baseDef.setRearm(Double.parseDouble(request.getParameter("rearm")));
         baseDef.setTrigger(Integer.parseInt(request.getParameter("trigger")));
         baseDef.setValue(Double.parseDouble(request.getParameter("value")));
