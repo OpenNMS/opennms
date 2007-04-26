@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Alarm implements IsSerializable {
     
+    private String m_logMsg;
     private String m_descrption;
     private String m_severity;
     private int m_count;
@@ -20,9 +21,10 @@ public class Alarm implements IsSerializable {
         
     }
     
-    public Alarm(String severity, String nodeLabel, String description, int count, Date firstEventTime, Date lastEventTime) {
+    public Alarm(String severity, String nodeLabel, String logMsg, String description, int count, Date firstEventTime, Date lastEventTime) {
         m_severity = severity;
         m_nodeLabel = nodeLabel;
+        m_logMsg = logMsg;
         m_descrption = description;
         m_count = count;
         m_firstEventTime = firstEventTime;
@@ -85,6 +87,14 @@ public class Alarm implements IsSerializable {
 
     public void setLastEventTime(Date lastEventTime) {
         m_lastEventTime = lastEventTime;
+    }
+
+    public String getLogMsg() {
+        return m_logMsg;
+    }
+
+    public void setLogMsg(String logMsg) {
+        m_logMsg = logMsg;
     }
     
     
