@@ -186,7 +186,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         int index = 0;
         for (OnmsAlarm alarm : alarms) {
-            alarmArray[index] = new Alarm(getSeverityString(alarm.getSeverity()), alarm.getNode().getLabel(), alarm.getDescription(), alarm.getCounter(), new Date(alarm.getFirstEventTime().getTime()), new Date(alarm.getLastEventTime().getTime()));
+            alarmArray[index] = new Alarm(getSeverityString(alarm.getSeverity()), alarm.getNode().getLabel(), alarm.getLogMsg(), alarm.getDescription(), alarm.getCounter(), new Date(alarm.getFirstEventTime().getTime()), new Date(alarm.getLastEventTime().getTime()));
             index++;
         }
         
