@@ -125,9 +125,8 @@ public class Alarm extends Object {
     protected String operatorInstruction;
 
     /**
-     * Trouble ticket integration string. Should consist of fully-qualfied
-     * pathname to executable command, with possible variables used to reference
-     * event-specific data
+     * Trouble ticket id.  This represents the id as returned from a trouble ticketing system
+     * or null if not trouble ticket exists.
      */
     protected String troubleTicket;
 

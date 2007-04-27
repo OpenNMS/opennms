@@ -54,6 +54,8 @@
 		"
 %>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <%--
   This page is written to be the display (view) portion of the AlarmQueryServlet
   at the /alarm/list URL.  It will not work by itself, as it requires two request
@@ -72,6 +74,9 @@
     if( alarms == null || parms == null ) {
 	throw new ServletException( "Missing either the alarms or parms request attribute." );
     }
+    
+    pageContext.setAttribute("alarms",alarms);
+    pageContext.setAttribute("parms", parms);
 
     String action = null;
 
@@ -83,14 +88,23 @@
             action = AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION;
         }
     } 
+    
+    pageContext.setAttribute("action", action);
 
-    int alarmCount = AlarmFactory.getAlarmCount( parms.ackType, parms.getFilters() );    
+    int alarmCount = AlarmFactory.getAlarmCount( parms.ackType, parms.getFilters() );  
+    
+    pageContext.setAttribute("alarmCount", new Integer(alarmCount));
     
     //useful constant strings
     String addPositiveFilterString = "[+]";
     String addNegativeFilterString = "[-]";
     String addBeforeDateFilterString = "[&gt;]";
-    String addAfterDateFilterString  = "[&lt;]";    
+    String addAfterDateFilterString  = "[&lt;]"; 
+    
+    pageContext.setAttribute("addPositiveFilter", "[+]");
+    pageContext.setAttribute("addNegativeFilter", "[-]");
+    pageContext.setAttribute("addBeforeFilter", "[&gt;]");
+    pageContext.setAttribute("addAfterFilter", "[&lt;]");
 %>
 
 
@@ -241,26 +255,29 @@
       <table>
 				<thead>
 					<tr>
-                                             <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+                    <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
 						<% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-							<th width="1%">Ack</th>
-							<% } else { %>
-								<th width="1%">UnAck</th>
-								<% } %>
-                                                <% } else { %>
-                                                        <th width="1%">&nbsp;</th>
-                                                <% } %>
-								<th width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
-								<th width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
-								<th width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
-								<th width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
-								<th width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
-								<th width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></th>
-								<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></th>
-								<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></th>
-							</tr>
-						</thead>
-      <% for( int i=0; i < alarms.length; i++ ) { %>        
+						<th width="1%">Ack</th>
+						<% } else { %>
+						<th width="1%">UnAck</th>
+						<% } %>
+                    <% } else { %>
+                        <th width="1%">&nbsp;</th>
+                    <% } %>
+						<th width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
+						<th width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
+						<th width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
+						<th width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
+						<th width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
+						<th width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></th>
+						<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></th>
+						<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></th>
+					</tr>
+				</thead>
+      <% for( int i=0; i < alarms.length; i++ ) { 
+      	Alarm alarm = alarms[i];
+      	pageContext.setAttribute("alarm", alarm);
+      %>        
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
               <td class="divider" valign="top" rowspan="3">
@@ -282,8 +299,8 @@
             <% org.opennms.web.alarm.filter.Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>      
             <% if( !parms.filters.contains( severityFilter )) { %>
               <nobr>
-                <a href="<%=this.makeLink( parms, severityFilter, true)%>" class="filterLink" title="Show only alarms with this severity"><%=addPositiveFilterString%></a>
-                <a href="<%=this.makeLink( parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true)%>" class="filterLink" title="Do not show alarms with this severity"><%=addNegativeFilterString%></a>
+                <a href="<%=this.makeLink( parms, severityFilter, true)%>" class="filterLink" title="Show only alarms with this severity">${addPositiveFilter}</a>
+                <a href="<%=this.makeLink( parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true)%>" class="filterLink" title="Do not show alarms with this severity">${addNegativeFilter}</a>
               </nobr>
             <% } %>
           </td>
@@ -295,8 +312,8 @@
                     
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only alarms on this node"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(alarms[i].getNodeId()), true)%>" class="filterLink" title="Do not show alarms for this node"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only alarms on this node">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(alarms[i].getNodeId()), true)%>" class="filterLink" title="Do not show alarms for this node">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
@@ -313,8 +330,8 @@
               <% } %>
               <% if( !parms.filters.contains(intfFilter) ) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only alarms on this IP address"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(alarms[i].getIpAddress()), true)%>" class="filterLink" title="Do not show alarms for this interface"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only alarms on this IP address">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(alarms[i].getIpAddress()), true)%>" class="filterLink" title="Do not show alarms for this interface">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
@@ -331,8 +348,8 @@
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
                 </nobr>
               <% } %>                            
             <% } %>
@@ -350,15 +367,15 @@
           <td class="divider">
             <nobr><span title="Event <%= alarms[i].getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEventID() %>"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getLastEventTime())%></a></span></nobr>
             <nobr>
-              <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one"><%=addAfterDateFilterString%></a>            
-              <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one"><%=addBeforeDateFilterString%></a>
+              <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
+              <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           </td>
           <td class="divider">
             <nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getFirstEventTime())%></nobr>
             <nobr>
-              <a href="<%=this.makeLink( parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one"><%=addAfterDateFilterString%></a>            
-              <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one"><%=addBeforeDateFilterString%></a>
+              <a href="<%=this.makeLink( parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
+              <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           </td>
 	</tr>
@@ -369,8 +386,8 @@
               <%=alarms[i].getAcknowledgeUser()%>
               <% if( !parms.filters.contains( acknByFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only alarms with this acknowledged by user"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(alarms[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show alarms acknowledgd by this user"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only alarms with this acknowledged by user">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(alarms[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show alarms acknowledgd by this user">${addNegativeFilter}</a>
                 </nobr>
               <% } %>              
             <% } else { %>
@@ -387,8 +404,8 @@
                 UEI: <%=alarms[i].getUei()%>
               <% if( !parms.filters.contains( exactUEIFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(alarms[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(alarms[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
