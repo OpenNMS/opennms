@@ -45,6 +45,7 @@
 	session="true"
 	import="org.opennms.web.alarm.*"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%
     String alarmIdString = request.getParameter( "id" );
@@ -130,7 +131,7 @@
           <th>First Event</th>
           <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
           <th>Service</th>
-          <td colspan="3">
+          <td>
             <% if( alarm.getServiceName() != null ) { %>
               <% if( alarm.getIpAddress() != null && alarm.getNodeId() > 0 ) { %>
                 <a href="element/service.jsp?node=<%=alarm.getNodeId()%>&intf=<%=alarm.getIpAddress()%>&service=<%=alarm.getServiceId()%>"><%=alarm.getServiceName()%></a>
@@ -140,6 +141,13 @@
             <% } else {%>
               &nbsp;
             <% } %>
+          </td>
+          <th>Ticket ID</th>
+          <td><% if (alarm.getTroubleTicket() == null) { %>
+                &nbsp;
+              <% } else { %>
+            	<%= alarm.getTroubleTicket() %> 
+              <% } %>
           </td>
           </tr> 
           <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
@@ -209,5 +217,28 @@
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
         <input type="submit" value="<%=buttonName%>" />
       </form>
+      
+	  <% if (alarm.getTroubleTicket() == null) { %>
+      <form method="post" action="alarm/ticket">
+        <input type="hidden" name="action" value="create" />
+        <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+        <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+        <input type="submit" value="Create Ticket" />
+      </form>
+      <% } else { %>
+      <form method="post" action="alarm/ticket">
+        <input type="hidden" name="action" value="update" />
+        <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+        <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+        <input type="submit" value="Update Ticket" />
+      </form>
+      <form method="post" action="alarm/ticket">
+        <input type="hidden" name="action" value="close" />
+        <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+        <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+        <input type="submit" value="Close Ticket" />
+      </form>
+      <% } %>
+      
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
