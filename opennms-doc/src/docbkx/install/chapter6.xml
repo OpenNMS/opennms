@@ -359,6 +359,23 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       <para>Note that step 2 will delete any changes you made to the
       postgresql configuration files and you'll need to redo them.</para>
     </section>
+
+    <section>
+      <title>Error: java.io.FileNotFoundException: ... (Permission
+      denied)</title>
+
+      <para>An exact example of this error is:
+      "<code>java.io.FileNotFoundException: /opt/opennms/etc/users.xml
+      (Permission denied)</code>".</para>
+
+      <para>If the above error happens when using admin functions through
+      the web interface, such as managing users, notifications, and adding
+      nodes, then the Tomcat web server is running as a non-root user but
+      you haven't changed the permissions on the configuration files so
+      the Tomcat user can access them.  Go back and follow the instructions
+      earlier in the install guide on setting up Tomcat to run as a non-root
+      user.</para>
+    </section>
   </section>
 
   <section>
