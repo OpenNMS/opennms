@@ -128,17 +128,28 @@
         </listitem>
 
         <listitem>
-          <para>Locate the OpenNMS "<filename>logs</filename>" directory. This
-          is usually <filename>/var/log/opennms</filename>, and can be found
-          by looking in the <filename>log4j.properties</filename> file in the
-          OpenNMS "<filename>etc</filename>" directory (find an instance of
-          "File"). Run the commands:</para>
+          <para>Locate the OpenNMS webapp logs directory.  This is usually
+          <filename>/var/log/opennms/webapp</filename> or in
+          <filename>logs/webapp</filename> under the OpenNMS home directory.
+          Run the commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat5 /var/log/opennms
-</command><computeroutput># </computeroutput><command>chmod -R g+w /var/log/opennms</command></programlisting></para>
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat5 /var/log/opennms/webapp
+</command><computeroutput># </computeroutput><command>chmod -R g+w /var/log/opennms/webapp</command></programlisting></para>
 
-          <para>where <varname>/var/log/opennms</varname> is the OpenNMS logs
-          directory.</para>
+          <para>where <varname>/var/log/opennms/webapp</varname> is the
+          OpenNMS webapp logs directory.</para>
+        </listitem>
+
+        <listitem>
+          <para>Locate the OpenNMS reports directory.  This is usually
+          <filename>share/reports</filename> under the OpenNMS home directory.
+          Run the commands:</para>
+
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat5 $OPENNMS_HOME/share/reports
+</command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/share/reports/</command></programlisting></para>
+
+          <para>where <varname>$OPENNMS_HOME/share/reports</varname> is the
+          OpenNMS reports directory.</para>
         </listitem>
       </orderedlist>
 
