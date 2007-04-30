@@ -1500,7 +1500,7 @@
     </logmsg>
     <severity>Normal</severity>
   </event> 
-      <event>
+  <event>
     <descr>
       This event is sent by the WebUI or the user when event configuration has changed and should be reloaded
     </descr>
@@ -1511,6 +1511,58 @@
     </logmsg>
     <severity>Normal</severity>
   </event> 
+  
+  <event>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for creating a new trouble ticket.
+    </descr>
+    <uei>uei.opennms.org/troubleTicket/create</uei>
+    <event-label>A request has been made to create a trouble ticket</event-label>
+    <logmsg dest='logndisplay'>
+      A request has been generated to create a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  
+  <event>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for updating an existing trouble ticket.
+    </descr>
+    <uei>uei.opennms.org/troubleTicket/update</uei>
+    <event-label>A request has been made to update a trouble ticket</event-label>
+    <logmsg dest='logndisplay'>
+      A request has been generated to update a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  
+  <event>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for closing an existing trouble ticket.
+    </descr>
+    <uei>uei.opennms.org/troubleTicket/close</uei>
+    <event-label>A request has been made to close a trouble ticket</event-label>
+    <logmsg dest='logndisplay'>
+      A request has been generated to close a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+
+  <event>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for canceling an existing trouble ticket.
+    </descr>
+    <uei>uei.opennms.org/troubleTicket/cancel</uei>
+    <event-label>A request has been made to cancel a trouble ticket</event-label>
+    <logmsg dest='logndisplay'>
+      A request has been generated to cancel a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
   
   <event-file>@install.etc.dir@/events/default.events.xml</event-file>
   
