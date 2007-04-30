@@ -514,6 +514,10 @@ public class EventConstants {
 
        public static final String PARM_IMPORT_STATS = "importStats";
 
+    public final static String TROUBLETICKET_CREATE_UEI = "uei.opennms.org/troubleTicket/create";
+    public final static String TROUBLETICKET_UPDATE_UEI = "uei.opennms.org/troubleTicket/update";
+    public final static String TROUBLETICKET_CLOSE_UEI = "uei.opennms.org/troubleTicket/close";
+    public final static String TROUBLETICKET_CANCEL_UEI = "uei.opennms.org/troubleTicket/cancel";
 
     //
     // end eventUEIs
