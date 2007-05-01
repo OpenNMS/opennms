@@ -135,15 +135,16 @@ public final class TcpEventProxy implements EventProxy {
      *                thrown if the send fails for any reason
      */
     public void send(Log eventLog) throws EventProxyException {
+        Connection connection = null;
         try {
-            Connection connection = new Connection(m_target, m_port);
+            connection = new Connection(m_target, m_port);
             Writer writer = connection.getWriter();
             Marshaller.marshal(eventLog, writer);
             writer.flush();
-            connection.close();
         } catch (Exception e) {
-	    throw new EventProxyException("Exception while sending event: " +
-					  e.getMessage(), e);
+            throw new EventProxyException("Exception while sending event: " + e.getMessage(), e);
+        } finally {
+            if (connection != null) connection.close();
         }
     }
 

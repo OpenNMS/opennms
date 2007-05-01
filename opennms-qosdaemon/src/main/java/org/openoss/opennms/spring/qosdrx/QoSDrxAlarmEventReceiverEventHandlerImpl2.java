@@ -271,7 +271,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setX733AlarmType((nnae.getAlarmType()==null) ? "" : nnae.getAlarmType());
 				alarm.setX733ProbableCause(nnae.getProbableCause());
 
-				alarm.setTTicketState(new Integer(0)); // needed?
+				alarm.setTTicketState(null); // needed?
 				alarm.setTTicketId(""); // TODO changed
 				alarm.setQosAlarmState("external_type"); // TODO changed				
 				alarm.setSuppressedUser(""); // needed?

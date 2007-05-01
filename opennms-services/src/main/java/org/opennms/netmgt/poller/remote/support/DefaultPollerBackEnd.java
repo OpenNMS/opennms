@@ -122,7 +122,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
     }
     
-    public void start() throws Throwable {
+    public void start() throws Exception {
         // Nothing to do: job scheduling and RMI export is done externally
     }
 

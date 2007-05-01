@@ -36,6 +36,8 @@ package org.opennms.web.alarm;
 
 import java.util.Date;
 
+import org.opennms.netmgt.model.TroubleTicketState;
+
 /**
  * A JavaBean implementation to hold information about a network alarm as
  * defined by OpenNMS.
@@ -134,7 +136,7 @@ public class Alarm extends Object {
      * State of the trouble ticket. Trouble ticket on/off boolean 1=on, 0=off.
      * Can be null.
      */
-    protected Integer troubleTicketState;
+    protected TroubleTicketState troubleTicketState;
 
     /**
      * Mouse over text. Text to be displayed on MouseOver event, if the event is
@@ -195,7 +197,7 @@ public class Alarm extends Object {
      * Create an alarm that represents a real network alarm with all the
      * parameters.
      */
-    public Alarm(int id, String uei, String dpName, Integer nodeID, String ipAddr, Integer serviceID, String reductionKey, int count, int severity, int lastEventID, Date firsteventtime, Date lasteventtime, String description, String logMessage, String operatorInstruction, String troubleTicket, Integer troubleTicketState, String mouseOverText, Date suppressedUntil, String suppressedUser, Date suppressedTime, String acknowledgeUser, Date acknowledgeTime, String parms) {
+    public Alarm(int id, String uei, String dpName, Integer nodeID, String ipAddr, Integer serviceID, String reductionKey, int count, int severity, int lastEventID, Date firsteventtime, Date lasteventtime, String description, String logMessage, String operatorInstruction, String troubleTicket, TroubleTicketState troubleTicketState, String mouseOverText, Date suppressedUntil, String suppressedUser, Date suppressedTime, String acknowledgeUser, Date acknowledgeTime, String parms) {
     	this(id, uei, dpName, nodeID, ipAddr, serviceID, reductionKey, count, severity, lastEventID, firsteventtime, lasteventtime, description, logMessage, operatorInstruction, troubleTicket, troubleTicketState, mouseOverText, suppressedUntil, suppressedUser, suppressedTime, acknowledgeUser, acknowledgeTime, parms, null, null);
     }
 
@@ -203,7 +205,7 @@ public class Alarm extends Object {
      * Create an alarm that represents a real network alarm with all the
      * parameters.
      */
-    public Alarm(int id, String uei, String dpName, Integer nodeID, String ipAddr, Integer serviceID, String reductionKey, int count, int severity, int lastEventID, Date firsteventtime, Date lasteventtime, String description, String logMessage, String operatorInstruction, String troubleTicket, Integer troubleTicketState, String mouseOverText, Date suppressedUntil, String suppressedUser, Date suppressedTime, String acknowledgeUser, Date acknowledgeTime, String parms, String nodeLabel, String serviceName) {
+    public Alarm(int id, String uei, String dpName, Integer nodeID, String ipAddr, Integer serviceID, String reductionKey, int count, int severity, int lastEventID, Date firsteventtime, Date lasteventtime, String description, String logMessage, String operatorInstruction, String troubleTicket, TroubleTicketState troubleTicketState, String mouseOverText, Date suppressedUntil, String suppressedUser, Date suppressedTime, String acknowledgeUser, Date acknowledgeTime, String parms, String nodeLabel, String serviceName) {
 
         if (uei == null || dpName == null || lasteventtime == null || firsteventtime == null ) {
             throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, dpName, firsteventtime, lasteventtime.");
@@ -306,7 +308,7 @@ public class Alarm extends Object {
         return (this.troubleTicket);
     }
 
-    public Integer getTroubleTicketState() {
+    public TroubleTicketState getTroubleTicketState() {
         return (this.troubleTicketState);
     }
 

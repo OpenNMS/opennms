@@ -846,11 +846,11 @@
     <servlet-name>queryAlarm</servlet-name>
     <url-pattern>/alarm/query</url-pattern>
   </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/alarm/ticket</url-pattern>
-  </servlet-mapping>
   <!--  servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/alarm/ticket/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/alarm/*</url-pattern>
   </servlet-mapping -->
