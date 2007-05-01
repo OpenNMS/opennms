@@ -1028,6 +1028,10 @@
     <url-pattern>/alarm/query</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+  	<servlet-name>dispatcher</servlet-name>
+  	<url-pattern>/alarm/ticket/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>filterVulnerability</servlet-name>
     <url-pattern>/vulnerability/list</url-pattern>
   </servlet-mapping>    

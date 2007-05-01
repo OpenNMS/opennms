@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.TroubleTicketState;
 
 import org.openoss.opennms.spring.qosdrx.QoSDrx;
 
@@ -229,7 +230,7 @@ public class OnmsAlarmOssjMapper {
 					onmsAlarm.setX733AlarmType((alarmValue.getAlarmType()==null) ? "" : alarmValue.getAlarmType());
 					onmsAlarm.setX733ProbableCause(alarmValue.getProbableCause());
 
-					onmsAlarm.setTTicketState(new Integer(0)); // needed?
+					onmsAlarm.setTTicketState(null); // needed?
 					onmsAlarm.setTTicketId(""); // needed?
 					onmsAlarm.setQosAlarmState("");
 					onmsAlarm.setSuppressedUser(""); // needed?

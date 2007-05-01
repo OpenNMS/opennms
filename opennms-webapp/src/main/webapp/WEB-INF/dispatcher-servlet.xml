@@ -179,6 +179,16 @@
     <property name="nodeListService" ref="nodeListService" />
   </bean>
   
+  <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
+  	<property name="troubleTicketProxy" ref="troubleTicketProxy" />
+  </bean>
+  <bean name="/alarm/ticket/update.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
+  	<property name="troubleTicketProxy" ref="troubleTicketProxy" />
+  </bean>
+  <bean name="/alarm/ticket/close.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
+  	<property name="troubleTicketProxy" ref="troubleTicketProxy" />
+  </bean>
+  
   <bean name="/admin/distributed/locationMonitorResume.htm" class="org.opennms.web.controller.distributed.LocationMonitorResumeController">
     <property name="commandName"><value>command</value></property>
     <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>

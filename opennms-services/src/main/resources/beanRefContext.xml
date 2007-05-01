@@ -40,5 +40,14 @@
      <constructor-arg ref="daemonContext" />
    </bean>
    
+    <bean id="troubleTicketerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-troubleTicketer.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daemonContext" />
+   </bean>
+   
         
 </beans>

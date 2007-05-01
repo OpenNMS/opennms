@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.NodeFilter;
@@ -1010,8 +1011,12 @@ public class AlarmFactory extends Object {
             element = rs.getString("TTicketID");
             alarm.troubleTicket = (String) element;
 
-            element = rs.getObject("TTicketState");
-            alarm.troubleTicketState = (Integer) element;
+            Integer stateCode = (Integer)rs.getObject("TTicketState");
+            for (TroubleTicketState state : TroubleTicketState.values()) {
+                if (stateCode != null && state.ordinal() == stateCode.intValue()) {
+                    alarm.troubleTicketState = state;
+                }
+            }
 
             element = rs.getString("MouseOverText");
             alarm.mouseOverText = (String) element;

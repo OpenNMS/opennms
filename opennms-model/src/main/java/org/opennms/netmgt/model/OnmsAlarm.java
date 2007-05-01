@@ -115,9 +115,9 @@ public class OnmsAlarm implements Serializable {
 
     /** nullable persistent field */
     private String m_tTicketId;
-
-    /** nullable persistent field */
-    private Integer m_tTicketState;
+    
+      /** nullable persistent field */
+    private TroubleTicketState m_tTicketState;
 
     /** nullable persistent field */
     private String m_mouseOverText;
@@ -161,7 +161,7 @@ public class OnmsAlarm implements Serializable {
     private int m_x733ProbableCause = 0;
 
     /** full constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, org.opennms.netmgt.model.OnmsEvent event) {
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, TroubleTicketState tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, org.opennms.netmgt.model.OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
@@ -355,11 +355,11 @@ public class OnmsAlarm implements Serializable {
     }
 
     @Column(name="tticketState")
-    public Integer getTTicketState() {
+    public TroubleTicketState getTTicketState() {
         return this.m_tTicketState;
     }
 
-    public void setTTicketState(Integer tticketstate) {
+    public void setTTicketState(TroubleTicketState tticketstate) {
         this.m_tTicketState = tticketstate;
     }
 
