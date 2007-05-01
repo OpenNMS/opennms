@@ -1022,7 +1022,7 @@ function viewMapInfo(){
 	var mapInfo= menuSvgDocument.getElementById("MapInfo");
 	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"30\" id=\"mapName\"  font-size=\"9\" >Name: "+currentMapName+" </tspan>",menuSvgDocument));
 	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"20\" id=\"mapOwner\" font-size=\"9\">Owner:  "+currentMapOwner+"</tspan>",menuSvgDocument));
-	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"20\" id=\"mapUserLast\" font-size=\"9\">User last modifies: "+currentMapUserlast+"</tspan>",menuSvgDocument));
+	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"20\" id=\"mapUserLast\" font-size=\"9\">User last modified: "+currentMapUserlast+"</tspan>",menuSvgDocument));
 	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"20\" id=\"mapCreateTime\" font-size=\"9\">Create time: "+currentMapCreatetime+"</tspan>",menuSvgDocument));
 	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"20\" id=\"mapLastModTime\" font-size=\"9\">Last modified time: "+currentMapLastmodtime+"</tspan>",menuSvgDocument));
 	menuSvgDocument.getElementById("MapInfo").getStyle().setProperty('display', 'inline');
