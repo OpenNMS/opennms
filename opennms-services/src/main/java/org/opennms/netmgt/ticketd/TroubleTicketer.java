@@ -12,19 +12,13 @@ import org.springframework.util.Assert;
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
 	private EventIpcManager m_eventIpcManager;
-    private TicketerServiceLayer m_ticketerServiceLayer;
 	
 	public void setEventIpcManager(EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
 	}
 	
-	public void setTicketerServiceLayer(TicketerServiceLayer svcLayer) {
-		m_ticketerServiceLayer = svcLayer;
-	}
-	
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_eventIpcManager != null, "property eventIpcManager must be set to a non-null value");
-        Assert.state(m_ticketerServiceLayer != null, "property ticketerServiceLayer must be set to a non-null value");
 
         String[] ueis = {
     			EventConstants.TROUBLETICKET_CANCEL_UEI,
