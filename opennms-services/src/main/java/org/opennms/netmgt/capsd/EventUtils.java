@@ -462,6 +462,10 @@ public class EventUtils {
             return defaultValue;
         }
     }
+    
+    public static int getIntParm(Event e, String parmName) {
+        return getIntParm(e, parmName, 0);
+    }
 
     /**
      * Return the nodeId of the node associated with and event, or -1 of no node
