@@ -50,6 +50,9 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
         bldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
         bldr.addParam(EventConstants.PARM_USER, alarm.getAlarmAckUser());
         bldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+        if (alarm.getTTicketId() != null) {
+            bldr.addParam(EventConstants.PARM_TROUBLE_TICKET, alarm.getTTicketId());
+        }
         send(bldr.getEvent());
     }
 

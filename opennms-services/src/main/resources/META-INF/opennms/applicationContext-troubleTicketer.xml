@@ -5,8 +5,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
+	<bean name="ticketerServiceLayer" class="org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer">
+		<property name="alarmDao" ref="alarmDao" />
+	</bean>
+
 	<bean name="daemon" class="org.opennms.netmgt.ticketd.TroubleTicketer">
 	  <property name="eventIpcManager" ref="eventIpcManager"/>
+	  <property name="ticketerServiceLayer" ref="ticketerServiceLayer" />
 	</bean>
 	
     <tx:annotation-driven/>
