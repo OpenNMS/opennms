@@ -12,14 +12,13 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
 		m_alarmDao = alarmDao;
 	}
 
-	public void cancelTicketForAlarm(int alarmId, int ticketId) {
+	public void cancelTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
-		alarm.setTTicketId(""+System.currentTimeMillis());
 		alarm.setTTicketState(TroubleTicketState.CANCELLED);
 		m_alarmDao.saveOrUpdate(alarm);
 	}
 
-	public void closeTicketForAlarm(int alarmId, int ticketId) {
+	public void closeTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
 		alarm.setTTicketState(TroubleTicketState.CLOSED);
 		m_alarmDao.saveOrUpdate(alarm);
@@ -27,11 +26,12 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
 
 	public void createTicketForAlarm(int alarmId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        alarm.setTTicketId(""+System.currentTimeMillis());
 		alarm.setTTicketState(TroubleTicketState.OPEN);
 		m_alarmDao.saveOrUpdate(alarm);
 	}
 
-	public void upateTicketForAlarm(int alarmId, int ticketId) {
+	public void updateTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
 		alarm.setTTicketState(TroubleTicketState.OPEN);
 		m_alarmDao.saveOrUpdate(alarm);

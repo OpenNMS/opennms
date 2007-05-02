@@ -47,9 +47,9 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
         bldr.setNode(alarm.getNode());
         bldr.setInterface(alarm.getIpAddr());
         bldr.setService(alarm.getServiceType() == null ? null : alarm.getServiceType().getName());
-        bldr.addParam("alarmUei", alarm.getUei());
-        bldr.addParam("ackUser", alarm.getAlarmAckUser());
-        bldr.addParam("alarmId", alarm.getId());
+        bldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
+        bldr.addParam(EventConstants.PARM_USER, alarm.getAlarmAckUser());
+        bldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
         send(bldr.getEvent());
     }
 
