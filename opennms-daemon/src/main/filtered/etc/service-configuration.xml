@@ -155,11 +155,7 @@ maintained
 	</service>
 	<service>
 		<name>OpenNMS:Name=PollerBackEnd</name>
-		<class-name>org.opennms.netmgt.daemon.SpringContextJmxServiceDaemon</class-name>
-		<attribute>
-			<name>SpringContext</name>
-			<value type="java.lang.String">pollerBackEndContext</value>
-		</attribute>
+		<class-name>org.opennms.netmgt.poller.jmx.RemotePollerBackEnd</class-name>
 		<invoke at="start" pass="0" method="init"/>
 		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
