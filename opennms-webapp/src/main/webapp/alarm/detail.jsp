@@ -226,7 +226,7 @@
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
         <input type="submit" value="<%=buttonName%>" />
       </form>
-      
+
       <form method="post" action="alarm/ticket/create.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getServletPath() + "?" + request.getQueryString()%>" />
@@ -236,13 +236,13 @@
       <form method="post" action="alarm/ticket/update.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getServletPath() + "?" + request.getQueryString()%>" />
-        <form:input type="submit" value="Update Ticket" disabled="${empty alarm.troubleTicketState || alarm.troubleTicketState != TroubleTicketState.OPEN}"/>
+        <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.troubleTicketState) || !(alarm.troubleTicketState == 'OPEN')}"/>
       </form>
 
       <form method="post" action="alarm/ticket/close.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getServletPath() + "?" + request.getQueryString()%>" />
-        <form:input type="submit" value="Close Ticket" disabled="${empty alarm.troubleTicketState || alarm.troubleTicketState != TroubleTicketState.OPEN}" />
+        <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.troubleTicketState) || (alarm.troubleTicketState != 'OPEN')}" />
       </form>
       
 

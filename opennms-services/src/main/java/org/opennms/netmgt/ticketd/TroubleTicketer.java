@@ -15,6 +15,7 @@ import org.springframework.util.Assert;
 
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
+    private boolean m_initialized = false;
 	private EventIpcManager m_eventIpcManager;
     private TicketerServiceLayer m_ticketerServiceLayer;
 	
@@ -29,7 +30,9 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 
 
     public void afterPropertiesSet() throws Exception {
+        Assert.state(!m_initialized, "shouldn't be calling afterProperties set more than once");
         Assert.state(m_eventIpcManager != null, "property eventIpcManager must be set to a non-null value");
+        Assert.state(m_ticketerServiceLayer != null, "property ticketerServiceLayer must be set to a non-null value");
 
         String[] ueis = {
     			EventConstants.TROUBLETICKET_CANCEL_UEI,
@@ -38,6 +41,8 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     			EventConstants.TROUBLETICKET_UPDATE_UEI
     	};
     	m_eventIpcManager.addEventListener(this, Arrays.asList(ueis));
+        
+        m_initialized = true;
     }
 
     public void start() throws Exception {
