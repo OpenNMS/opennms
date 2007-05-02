@@ -7,10 +7,12 @@ import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.util.Assert;
 
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
 	private EventIpcManager m_eventIpcManager;
+    private TicketerServiceLayer m_ticketerServiceLayer;
 	
 	public void setEventIpcManager(EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
@@ -21,7 +23,10 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	}
 	
     public void afterPropertiesSet() throws Exception {
-    	String[] ueis = {
+        Assert.state(m_eventIpcManager != null, "property eventIpcManager must be set to a non-null value");
+        Assert.state(m_ticketerServiceLayer != null, "property ticketerServiceLayer must be set to a non-null value");
+
+        String[] ueis = {
     			EventConstants.TROUBLETICKET_CANCEL_UEI,
     			EventConstants.TROUBLETICKET_CLOSE_UEI,
     			EventConstants.TROUBLETICKET_CREATE_UEI,
