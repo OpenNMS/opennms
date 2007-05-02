@@ -86,6 +86,7 @@
     }
 %>
 
+<%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Alarm Detail" />
   <jsp:param name="headTitle" value="Detail" />
@@ -226,6 +227,8 @@
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
         <input type="submit" value="<%=buttonName%>" />
       </form>
+      
+      <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) { %>
 
       <form method="post" action="alarm/ticket/create.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
@@ -245,5 +248,6 @@
         <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.troubleTicketState) || (alarm.troubleTicketState != 'OPEN')}" />
       </form>
       
+      <% } %>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
