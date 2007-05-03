@@ -468,7 +468,7 @@ function getElemInfo(elemMap)
 		id = elemMap.getNodeId();
 		type=NODE_TYPE;
 	}
-	postURL ( "LoadInfos?action="+ACTION+"&elem="+id, null, handleLoadInfosResponse, "text/xml", null );
+	postURL ( "LoadInfos?action="+ACTION+"&elem="+id+"&type="+type, null, handleLoadInfosResponse, "text/xml", null );
 }
 
 function handleDeleteNodeResponse(data) {

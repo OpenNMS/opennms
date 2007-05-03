@@ -497,7 +497,10 @@ public class Manager{
      * @throws MapsException
      */
     public List<MapMenu> getVisibleMapsMenu(String user, String userRole)throws MapsException{
-    	return Arrays.asList(m_implManager.getVisibleMapsMenu(user, userRole));
+    	MapMenu[] maps = m_implManager.getVisibleMapsMenu(user, userRole);
+    	if(maps==null)
+    		return new ArrayList<MapMenu>();
+    	return Arrays.asList(maps);
     }
     
     /**
