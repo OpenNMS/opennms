@@ -1387,7 +1387,7 @@ public class DBManager extends Manager {
 		if (mapElements != null) 
     	for(int i=0;i<mapElements.length;i++){
     		ve = refresh(mapElements[i],nodesBySource,deletedNodeids,outagedNodes,avails);
-    		if (!(ve.equalsIgnorePosition(mapElements[i]))) {
+    		if (ve!=null) {
 				elems.add(ve);
 			}
     	}
@@ -1560,7 +1560,7 @@ public class DBManager extends Manager {
     private VElement refresh(VElement mapElement, Set nodesBySource, Vector deletedNodeids, java.util.Map outagedNodes,java.util.Map avails) throws MapsException {
 		VElement ve = (VElement) mapElement.clone();
 		if (log.isDebugEnabled())
-			log.debug("refreshElements: parsing VElement ID " + ve.getId()
+			log.debug("refresh: parsing VElement ID " + ve.getId()
 					+ ve.getType() + ", label:"+ve.getLabel()+" with node by sources: " +nodesBySource.toString() + " deletedNodeids: " + deletedNodeids.toString()
 					+ " outagedNode: " +outagedNodes.keySet().toString());
 
@@ -2263,11 +2263,14 @@ public class DBManager extends Manager {
     
     public MapMenu[] getVisibleMapsMenu(String user, String userRole) throws MapsException {
     	MapMenu[] retMaps = null;
+    	/*
+    	 * for the moment, returns all maps.
     	if(userRole.equals(Authentication.ADMIN_ROLE)){
     		retMaps=getAllMapMenus();
     	}else{
     		retMaps=getMapsMenuByOwner(user);
-    	}
+    	}*/
+    	retMaps=getAllMapMenus();
     	return retMaps;
     }
     

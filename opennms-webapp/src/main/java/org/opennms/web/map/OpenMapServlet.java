@@ -195,6 +195,10 @@ public class OpenMapServlet extends HttpServlet {
 						.getOutputStream()));
 			}
 			log.error(this.getClass().getName()+" Error: "+e);
+			StackTraceElement[] st = e.getStackTrace();
+			for(int i=0;i<st.length;i++){
+				log.error(st[i].toString());
+			}
 		}finally{
 			bw.write(strToSend);
 			bw.close();

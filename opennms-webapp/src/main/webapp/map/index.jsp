@@ -143,8 +143,12 @@
 		  <option value="" selected></option>
 		<%
 			MapMenu[] maps = null;
-			Manager m = new Manager();
-			
+			Manager m = null;
+			m = (Manager) session.getAttribute("manager");		
+			if(m==null){
+				throw new ServletException("Session attribute 'manager' not found.");
+			}
+          
 			try{
       				maps = m.getAllMapMenus();
 			}catch(Exception e){
