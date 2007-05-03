@@ -36,6 +36,14 @@
                           <match>nodeid</match>
         </auto-acknowledge>
         
+        <auto-acknowledge resolution-prefix="RESOLVED: "
+            uei="uei.opennms.org/correlation/remote/wideSpreadOutageResolved"
+            acknowledge="uei.opennms.org/correlation/remote/wideSpreadOutage">
+            <match xmlns="">nodeid</match>
+            <match xmlns="">interfaceid</match>
+            <match xmlns="">serviceid</match>
+        </auto-acknowledge>
+        
         <queue>
                 <queue-id>default</queue-id>
                 <interval>20s</interval>
