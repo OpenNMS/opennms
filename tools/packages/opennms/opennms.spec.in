@@ -351,8 +351,7 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 
 ### symlinks for system dirs to %{instprefix}
 
-rm $RPM_BUILD_ROOT%{instprefix}/logs/.readme
-rmdir $RPM_BUILD_ROOT%{instprefix}/logs
+rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
 ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
 ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
 
