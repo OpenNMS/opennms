@@ -1308,11 +1308,7 @@ public class DBManager extends Manager {
 			*/
 	    	
     	}catch(Exception e){
-    		log.error(e);
-    		StackTraceElement[] ste = e.getStackTrace();
-    		for(int k=0;k<ste.length;k++){
-    			log.error(ste[k].getLineNumber()+":"+ste[k].toString());
-    		}
+    		log.error(e,e);
     		throw new MapsException(e);
     	}
         return links.toArray(new VLink[0]);

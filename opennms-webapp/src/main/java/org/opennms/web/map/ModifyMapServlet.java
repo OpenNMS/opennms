@@ -405,11 +405,7 @@ public class ModifyMapServlet extends HttpServlet {
 			
 		} catch (Exception e) {
 			strToSend = action + "Failed";
-			log.error("Exception catch " + e);
-			StackTraceElement[] ste = e.getStackTrace();
-			for(int k=0; k<ste.length; k++){
-				log.error(ste[k].toString());
-			}
+			log.error("Exception catch " + e,e);
 		} finally {
 			bw.write(strToSend);
 			bw.close();
