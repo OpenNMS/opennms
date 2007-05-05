@@ -178,7 +178,7 @@ function intersect2lines(line1x1,line1y1,line1x2,line1y2,line2x1,line2y1,line2x2
 	var result = new Array();
 	var denominator = (line2y2 - line2y1)*(line1x2 - line1x1) - (line2x2 - line2x1)*(line1y2 - line1y1);
 	if (denominator == 0) {
-		alert("lines are parallel");
+		alert("Lines are parallel");
 	}
 	else {
 		ua = ((line2x2 - line2x1)*(line1y1 - line2y1) - (line2y2 - line2y1)*(line1x1 - line2x1)) / denominator;
@@ -383,7 +383,7 @@ function rgb2hsv (red,green,blue) {
 function assArrayPopulate(arrayKeys,arrayValues) {
 	var returnArray = new Array();
 	if (arrayKeys.length != arrayValues.length) {
-		alert("error: arrays do not have same length!");
+		alert("Error: arrays do not have same length");
 	}
 	else {
 		for (i=0;i<arrayKeys.length;i++) {

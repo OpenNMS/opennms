@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2007 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -117,7 +117,7 @@
                   <option value="n" selected>No</option>
                 </select>
             </p>
-            <p align="right">Auto-refresh:
+            <p align="right">Auto-Refresh:
             <select name="refresh">
                   <option value="1">1 minute</option>
                   <option value="2">2 minutes</option>
@@ -127,7 +127,7 @@
                   <option value="15">15 minutes</option>
                 </select>
             </p>
-            <p align="right">Dimension:
+            <p align="right">Dimensions:
             <select name="dimension">
 		    <option value="auto" selected>Auto</option>
                   <option value="640x480">640x480</option>
@@ -179,28 +179,29 @@
   <h3>Mapping</h3>
      <div class="boxWrapper">
       <p>
-         Mapping provides the management of maps representing the status (links beetwen nodes, status,
-         availability ecc.) of a subset of nodes monitored by the system.
-         You can create your personal view of the system, just creating a map containing the nodes you
-         are interested to. 
+         Mapping provides management of maps representing the status (links between nodes, status,
+         availability, etc.) of a subset of nodes monitored by the system.
+         You can create your personal view of the system by creating a map containing the nodes you
+         are interested in. 
        </p>
        
        <p>  
          Also, you can include one or more <i>map nodes</i> into your map. A <i>map node</i> is
-         a map (previousely created) containing another subset (not compulsorily disjoined from your map)
-         of nodes of system. By this instrument, you can monitor your system grouping nodes in costumized 
-         way and easily to jump from a map to another with a double-click.
+         a map (previously created) containing another subset (not necessarily disjoined from your map)
+         of nodes of system. By this method, you can monitor your system, grouping nodes in customized 
+         ways and easily jumping from one map to another with a double-click.
         </p>
         
         <p>
-         At last, you can change the layout of your map, modifying its background, icons of the nodes 
-         (by default, the icon corrensponding to the asset category of the nodes) etc.
+         Finally, you can change the layout of your map, modifying its background, icons of the nodes 
+         (by default, the icon corresponding to the asset category of the node) etc.
          </p>
          
          <p>
-         To view Maps, choose if view in fullscreen mode, the interval for refreshing node informations and the
-         dimensions of the map frame (with <i>Auto</i> the system choose best dimensions for your browser). 
-         Note that choosing wrong dimensions you could not visualize correctly maps.
+         To view Maps, choose whether to view in full-screen mode, the interval for refreshing node information, and the
+         dimensions of the map frame (with <i>Auto</i> the system chooses the best dimensions for your browser). 
+         Note that maps may not display correctly if you choose dimensions that are not suitable for your
+         screen resolution.
          </p>
     </div>
 

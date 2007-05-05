@@ -121,7 +121,7 @@ function textbox(id,parentNode,defaultVal,maxChars,x,y,boxWidth,boxHeight,textSt
 	}
 	else {
 		createTextBox = false;
-		alert("Error ("+id+"): wrong nr of arguments! You have to pass over "+nrArguments+" parameters.");
+		alert("Error ("+id+"): wrong number of arguments, more than "+nrArguments+" parameters required");
 	}
 	if (createTextBox) {
 		this.timer = new Timer(this); //a Timer instance for calling the functionToCall
@@ -183,7 +183,7 @@ textbox.prototype.createTextbox = function() {
 			this.cursorPosition = this.defaultVal.length - 1;
 		}
 		else {
-			alert("the default textbox value is longer than the maximum of allowed characters\nDefault val will be truncated.");
+			alert("Default textbox value longer than maximum allowed characters\nDefault value will be truncated");
 			this.textVal = this.defaultVal.substr(0,(this.maxChars - 1));
 			this.textboxTextContent = document.createTextNode(this.textVal);
 			this.cursorPosition = this.maxChars - 1;
@@ -226,7 +226,7 @@ textbox.prototype.createTextbox = function() {
 		this.timer.setTimeout("testSupportsChar",this.timerMs);
 	}
 	else {
-		alert("could not create or reference 'parentNode' of textbox with id '"+this.id+"'");
+		alert("Could not create or reference 'parentNode' of textbox with id '"+this.id+"'");
 	}
 }
 
