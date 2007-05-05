@@ -576,10 +576,11 @@ class HttpCollectionConfig extends XMLConfigurationFile {
         xml.comment(comment(svc));
         xml.'http-collection'(name:svc.serviceName) {
             rrd(step:300) {
-                rra("RRA:AVERAGE:0.5:1:8928")
-                rra("RRA:AVERAGE:0.5:12:8784")
-                rra("RRA:MIN:0.5:12:8784")
-                rra("RRA:MAX:0.5:12:8784")
+                rra("RRA:AVERAGE:0.5:1:2016")
+                rra("RRA:AVERAGE:0.5:12:1488")
+                rra("RRA:AVERAGE:0.5:288:366")
+                rra("RRA:MIN:0.5:288:366")
+                rra("RRA:MAX:0.5:288:366")
             }
             uris {
                 uri {
@@ -746,10 +747,11 @@ class PollerConfiguration extends XMLConfigurationFile {
                     filter("IPADDR IPLIKE *.*.*.*")
                     'include-range'(begin:'1.1.1.1', end:'254.254.254.254')
                     rrd(step:300) {
-                        rra('RRA:AVERAGE:0.5:1:2016')
-                        rra('RRA:AVERAGE:0.5:12:4464')
-                        rra('RRA:MIN:0.5:12:4464')
-                        rra('RRA:MAX:0.5:12:4464')
+                        rra("RRA:AVERAGE:0.5:1:2016")
+                        rra("RRA:AVERAGE:0.5:12:1488")
+                        rra("RRA:AVERAGE:0.5:288:366")
+                        rra("RRA:MIN:0.5:288:366")
+                        rra("RRA:MAX:0.5:288:366")
                     }
                 }
             }
@@ -808,10 +810,11 @@ class PollerConfiguration extends XMLConfigurationFile {
                    filter("IPADDR IPLIKE *.*.*.*")
                     'include-range'(begin:'1.1.1.1', end:'254.254.254.254')
                     rrd(step:300) {
-                        rra('RRA:AVERAGE:0.5:1:2016')
-                        rra('RRA:AVERAGE:0.5:12:4464')
-                        rra('RRA:MIN:0.5:12:4464')
-                        rra('RRA:MAX:0.5:12:4464')
+                        rra("RRA:AVERAGE:0.5:1:2016")
+                        rra("RRA:AVERAGE:0.5:12:1488")
+                        rra("RRA:AVERAGE:0.5:288:366")
+                        rra("RRA:MIN:0.5:288:366")
+                        rra("RRA:MAX:0.5:288:366")
                     }
                     downtime(interval:30000, begin:0, end:300000)
                     downtime(interval:300000, begin:300000, end:43200000)
