@@ -188,7 +188,7 @@ function handleInitResponse(data) {
 			str=str.substring(INIT_ACTION.length+2,str.length);
 		}
 		else{
-		     alert('Init Maps Application failed!');
+		     alert('Initialization of Maps application failed');
 		     hideAll();
 		     disableMenu();
 			return;
@@ -200,7 +200,7 @@ function handleInitResponse(data) {
 		refreshNodesIntervalInSec=parseInt(str)*60;
 
 		if(mapToOpen==undefined && isUserAdmin=="false") {
-				alert('Warning: you have to specify a map to view.');
+				alert('Warning: you must specify a map to view');
 				loading--;	
 				assertLoading();				
 				hideAll();
@@ -221,7 +221,7 @@ function handleInitResponse(data) {
 		//start the refresh nodes countdown
 		startRefreshNodesTime();		
 	} else {
-		alert('Init Maps Application failed');
+		alert('Initialization of Maps application failed');
 		hideAll();
 	    disableMenu();
 	}
@@ -242,7 +242,7 @@ function handleLoadMapsResponse(data) {
 		if(testResponse(LOADMAPS_ACTION, str)){
 			str=str.substring(LOADMAPS_ACTION.length+2,str.length);
 		}else{
-		    alert('Load Maps failed!');
+		    alert('Loading Maps failed');
 	        loading--;	
 			assertLoading();
 			hideAll();
@@ -272,7 +272,7 @@ function handleLoadMapsResponse(data) {
 		assertLoading();
 		mapsLoaded=true;
 	} else {
-		alert('Loading Maps has failed');
+		alert('Loading Maps failed');
 		loading--;	
 		assertLoading();
 		hideAll();	
@@ -296,7 +296,7 @@ function handleLoadNodesResponse(data) {
 		if(testResponse(LOADNODES_ACTION, str)){
 			str=str.substring(LOADNODES_ACTION.length+2,str.length);
 		}else{
-		     alert('Load Nodes failed!');
+		     alert('Load Nodes failed');
 		     hideAll();
 			 loading--;	
 		     assertLoading();		
@@ -347,7 +347,7 @@ function addMapElement(){
 	}
 	var point = getFirstFreePoint();
 	if(point==null){
-		alert("no free points in the grid, cambiare grandezza nodi!!");
+		alert("No free points in the grid; try decreasing the node size");
 		return;
 	}
 	loading++;
@@ -372,7 +372,7 @@ function addRangeOfNodes(){
 function addNodesByLabel(){
 	var label = menuSvgDocument.getElementById("NodeLabelBoxText").firstChild.nodeValue;
 	if(label==""){
-		alert('Label not valid!');
+		alert('Invalid Label (must not be blank)');
 		return;
 		}
 	loading++;
@@ -424,7 +424,7 @@ function addMapAsNode(){
 		var childNode = menuSvgDocument.getElementById("DownInfoText");
 		if (childNode)
 			menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-		menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Cannot add map into itself." +
+		menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Cannot add map to itself" +
 		"</text>",menuSvgDocument));			
 		return;
 	}
@@ -481,14 +481,14 @@ function handleDeleteNodeResponse(data) {
 			if(testResponse(DELETEMAPS_ACTION, str)){
 				str=str.substring(DELETEMAPS_ACTION.length+2,str.length);
 			}else{
-	    	    alert('Deleting Element/s failed!');
+	    	    alert('Deleting Element(s) failed');
 				loading--;
 				assertLoading();
 				return;
 			}
 		}
 	} else {
-        alert('Deleting Element/s failed!');
+        alert('Deleting Element(s) failed');
 		loading--;
 		assertLoading();
 		return;
@@ -519,7 +519,7 @@ function handleDeleteNodeResponse(data) {
 	if (childNode)
 		menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
 	menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">" +
-		"<tspan x=\"5\" dy=\"0\">Deleted selected element/s.</tspan>" +
+		"<tspan x=\"5\" dy=\"0\">Deleted selected element(s).</tspan>" +
 		"</text>",menuSvgDocument));	
 }
 
@@ -587,7 +587,7 @@ function handleAddElementResponse(data) {
 								if(testResponse(ADDMAPS_ACTION, str)){
 									str=str.substring(ADDMAPS_ACTION.length+2,str.length);
 								}else{
-									alert('Adding Element/s failed!');
+									alert('Adding Element(s) failed');
 									loading--;
 									assertLoading();
 									return;
@@ -599,7 +599,7 @@ function handleAddElementResponse(data) {
 			}
 		}
 	} else {
-        alert('Adding Element/s failed!');
+        alert('Adding Element(s) failed');
 		loading--;
 		assertLoading();
 		return;
@@ -626,7 +626,7 @@ function handleAddElementResponse(data) {
 				//loopfound
 				var tmpStr=iderror.substring(0,9);
 				if(tmpStr=="loopfound"){
-					alert("Add Map As Node: Found Loop Adding SubMap with ID " + iderror.substring(9));
+					alert("Add Map as Node: Found Loop Adding SubMap with ID " + iderror.substring(9));
 				}
 			}			
 		}
@@ -733,14 +733,14 @@ function handleAddElementResponse(data) {
 			break;
 		   }else{
 			if(!alerted)
-				alert('Not enough space for all elements, theirs dimension will be decreased.');
+				alert('Not enough space for all elements; their dimensions will be reduced');
 			alerted=true;
 		   }
 		   var decrResult = decreaseMapElemDim();
 
 		   if(decrResult==false) // space problems
 			{
-			alert('No space available for elements.');
+			alert('No space available for elements');
 			return;
 			}	   
 		}while(freePoints.length<nodesToAdd.length);
@@ -759,9 +759,9 @@ function handleAddElementResponse(data) {
 		}				
 	}
 	clearTopInfo();
-	var msg = "Added "+nodesToAdd.length+" nodes to the map.";
+	var msg = "Added "+nodesToAdd.length+" nodes to the map";
 	if(nodesToAdd.length==0){
-		msg="No nodes added to map."
+		msg="No nodes added to map"
 	}
 	var childNode = menuSvgDocument.getElementById("DownInfoText");		
 	if (childNode)
@@ -815,7 +815,7 @@ function setMapElemDimension(dim){
 
 function newMap(){
 	if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
-	 if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
+	 if(confirm('Map \''+currentMapName+'\' not saved, proceed anyway?')==false)
 	 	return;
 	}
 	map.clear();
@@ -833,7 +833,7 @@ function openMap(mapId){
 	if(!refreshingMapElems){
 		if(selectedMapInList!=0 || (mapId!=undefined && (typeof mapId)!="object")){
 			if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
-			 if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
+			 if(confirm('Map \''+currentMapName+'\' not saved, proceed anyway?')==false)
 				return;
 			}	
 			map.clear();
@@ -870,7 +870,7 @@ function handleLoadingMap(data) {
 					str=str.substring(CLOSEMAP_ACTION.length+2,str.length);
 					action = CLOSEMAP_ACTION;
 				}else{			
-					alert('Operation Failed!');
+					alert('Failed to close map');
 					loading--;
 					assertLoading();
 					return;
@@ -878,7 +878,7 @@ function handleLoadingMap(data) {
 			}
 		}
 	} else {
-		        alert('Operation Failed!');
+		        alert('Failed to reset zoom / pan controls');
 				loading--;
 				assertLoading();
 				return;
@@ -1167,7 +1167,7 @@ function handleSaveResponse(data) {
 		if(testResponse(SAVEMAP_ACTION, str)){
 			str=str.substring(SAVEMAP_ACTION.length+2,str.length);
 		}else{			
-			alert('Saving Map has failed ');	
+			alert('Failed to save map');	
 			clearDownInfo();
 			enableMenu();
 			return;
@@ -1195,7 +1195,7 @@ function handleSaveResponse(data) {
 			var childNode = menuSvgDocument.getElementById("DownInfoText");
 			if (childNode)
 				menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-				menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map '" +currentMapName+"' saved."+
+				menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map '" +currentMapName+"' saved"+
 			"</text>",menuSvgDocument));
 			enableMenu();			
 			//save the map in the map history
@@ -1205,7 +1205,7 @@ function handleSaveResponse(data) {
 		}
 		
 	} else {
-		alert('Saving Map has failed');
+		alert('Failed to save map');
 		clearDownInfo();
 		enableMenu();
 		return;
@@ -1230,7 +1230,7 @@ function renameMap(){
 			var childNode = menuSvgDocument.getElementById("DownInfoText");
 			if (childNode)
 				menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-				menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map renamed."+
+				menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map renamed"+
 			"</text>",menuSvgDocument));		
 		}
 	}
@@ -1239,7 +1239,7 @@ function renameMap(){
 		var childNode = menuSvgDocument.getElementById("DownInfoText");
 		if (childNode)
 			menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-			menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Name not valid."+
+			menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Name not valid"+
 		"</text>",menuSvgDocument));
 	}
 }
@@ -1305,14 +1305,14 @@ function handleDeleteResponse(data) {
 		map.render();
 		LoadMaps();
 	} else {
-		alert('Deleting Map has failed');
+		alert('Failed to delete map');
 		return;
 	}
 	clearDownInfo();
 	var childNode = menuSvgDocument.getElementById("DownInfoText");
 	if (childNode)
 		menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-		menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map deleted."+
+		menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">Map deleted"+
 	"</text>",menuSvgDocument));
 	enableMenu();
 	mapHistory.splice(mapHistoryIndex,1);
@@ -1342,7 +1342,7 @@ function clearMap(){
 	}
 	
 	if (map.mapElements==null || map.mapElementSize==0){
-	  	 alert('Map doesn\'t contain nodes.');
+	  	 alert('Map contains no nodes');
 		return;
 	}
 
@@ -1362,13 +1362,13 @@ function handleClearMapResponse(data) {
 		if(tmpStr==CLEAR_ACTION+"OK"){
 			str=str.substring(CLEAR_ACTION.length+2,str.length);
 		} else {
-	    	    alert('Clear Map Element/s failed!');
+	    	    alert('Clear Map Element(s) failed');
 				loading--;
 				assertLoading();
 				return;
 		}
 	} else {
-        alert('Clear Map Element/s failed!');
+        alert('Failed to clear map element(s)');
 		loading--;
 		assertLoading();
 		return;
@@ -1398,12 +1398,12 @@ if (result==true){
 
 function close(){
 	if(currentMapId==MAP_NOT_OPENED){
-		alert("No Maps opened.");
+		alert("No maps opened");
 		return;
 	}
 	
 	if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
-	 if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
+	 if(confirm('Map \''+currentMapName+'\' not saved, proceed anyway?')==false)
 	 	return;
 	}
 	map.clear();
@@ -1467,7 +1467,7 @@ function handleRefreshNodesResponse(data) {
 			if(tmpStr==RELOAD_ACTION+"OK"){
 				str=str.substring(RELOAD_ACTION.length+2,str.length);
 			} else {
-	    	    		alert('Refresh failed!');
+	    	    		alert('Refresh failed');
 				menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
 				enableMenu();
 				startRefreshNodesTime();
@@ -1478,7 +1478,7 @@ function handleRefreshNodesResponse(data) {
 			if(tmpStr==REFRESH_ACTION+"OK"){
 				str=str.substring(REFRESH_ACTION.length+2,str.length);
 			} else {
-				alert('Refresh failed!');
+				alert('Refresh failed');
 				menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
 				enableMenu();
 				startRefreshNodesTime();
@@ -1486,7 +1486,7 @@ function handleRefreshNodesResponse(data) {
 			}
 		}
 	} else {
-        alert('Refresh failed!');
+        alert('Refresh failed');
 		menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
 		enableMenu();
 		startRefreshNodesTime();
@@ -1517,7 +1517,7 @@ function handleRefreshNodesResponse(data) {
 				//loopfound
 				var tmpStr=iderror.substring(0,9);
 				if(tmpStr=="loopfound"){
-					alert("Add Map As Node: Found Loop Adding SubMap with ID " + iderror.substring(9));
+					alert("Add Map as Node: Encountered Loop Adding SubMap with ID " + iderror.substring(9));
 				}
 			}			
 		}

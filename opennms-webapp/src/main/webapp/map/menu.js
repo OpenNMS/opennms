@@ -528,12 +528,12 @@ function addMapsList()
 function addMapElementNeigh()
 {
 	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened.');
+		alert('No maps opened');
 		return;
 	}
 	if( map.mapElements==null || map.mapElementSize==0)
 	{
-		alert('Map without nodes.');
+		alert('Map contains no nodes');
 		return;
 	}	
 	clearTopInfo();
@@ -598,12 +598,12 @@ function addMapElementNeighList()
 function addIconList()
 {
 	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened.');
+		alert('No maps opened');
 		return;
 	}
 	if( map.mapElements==null || map.mapElementSize==0)
 	{
-		alert('Map without nodes.');
+		alert('Map contains no nodes');
 		return;
 	}
 	clearTopInfo();
@@ -916,7 +916,7 @@ function deleteMapElementMenu()
 	}
 	if( map.mapElements==null || map.mapElementSize==0)
 	{
-		alert('Map without nodes.');
+		alert('Map contains no nodes');
 		return;
 	}	
 	clearTopInfo();

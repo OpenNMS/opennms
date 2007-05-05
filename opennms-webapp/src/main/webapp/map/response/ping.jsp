@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2007 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -88,14 +88,14 @@ function doCommand(){
      var address = document.getElementById("address").value;
      
      if(!checkIpAddress(document.getElementById("address").value)){
-             	alert("Ip address not valid.");
+             	alert("Invalid IP address");
              	document.getElementById("address").focus();
              	return;
         }
      
      var timeOut = document.getElementById("timeOut").value;
      if(isNaN(timeOut)){
-     	alert("Time-out not valid.");
+     	alert("Invalid timeout");
      	document.getElementById("timeOut").focus();
      	return;
      }
@@ -104,7 +104,7 @@ function doCommand(){
      }
      var numberOfRequest = document.getElementById("numberOfRequest").value;
      if(numberOfRequest=="" || isNaN(numberOfRequest)){
-     	alert("Number of request not valid.");
+     	alert("Invalid request number");
      	document.getElementById("numberOfRequest").focus();
      	return;
      }     
@@ -114,7 +114,7 @@ function doCommand(){
      
      var packetSize = document.getElementById("packetSize").value;
      if(isNaN(packetSize)){
-     	alert("Packet size not valid.");
+     	alert("Invalid packet size");
      	document.getElementById("packetSize").focus();
      	return;
      }else{

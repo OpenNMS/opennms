@@ -371,7 +371,7 @@ selectionList.prototype.fireFunction = function() {
 		window.setTimeout("eval("+functionString+")",300);
 	}
 	if (typeof(this.functionToCall) == "function") {
-	alert("function");
+	//alert("function");
 		window.setTimeout(this.functionToCall(this.groupName,this.activeSelection,this.elementsArray[this.activeSelection]),300);
 	}
 	if (typeof(this.functionToCall) == "object") {
@@ -386,7 +386,7 @@ selectionList.prototype.fireFunction = function() {
 
 selectionList.prototype.scrollPerButton = function() {
 	//this.scroll(this.scrollDir,1,true); //1 is one element to scroll, true says that we should move scrollbar
-	alert(this.scrollDir);
+	//alert(this.scrollDir);
 	if (this.scrollActive == true) {
 		//setTimeout("this.scrollPerButton("+scrollDir+")",1000);
 	}
