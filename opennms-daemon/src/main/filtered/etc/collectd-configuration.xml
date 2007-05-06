@@ -11,9 +11,6 @@
 		
 		<service name="SNMP" interval="300000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>
-			<parameter key="port" value="161"/>
-			<parameter key="retry" value="3"/>
-			<parameter key="timeout" value="3000"/>
 		</service>
 
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
