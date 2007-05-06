@@ -63,6 +63,6 @@ public class AlarmTicketController extends MultiActionController {
      * @return logger for this class
      */
     private Category log() {
-        return ThreadCategory.getInstance();
+        return ThreadCategory.getInstance(getClass());
     }
 }
