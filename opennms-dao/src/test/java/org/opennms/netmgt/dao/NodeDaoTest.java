@@ -183,6 +183,15 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         endTransaction();
         
         validateNode(n);
+
+        for (OnmsIpInterface ip : n.getIpInterfaces()) {
+            ip.getIpAddress();
+            for (OnmsMonitoredService service : ip.getMonitoredServices()) {
+                service.getServiceName();
+            }
+        }
+
+        // Test for bug 1594
         for (OnmsSnmpInterface snmp : n.getSnmpInterfaces()) {
             for (OnmsIpInterface ip : snmp.getIpInterfaces()) {
                 ip.getIpAddress();
