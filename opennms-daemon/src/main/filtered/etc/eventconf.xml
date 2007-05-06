@@ -76,9 +76,11 @@
 <!--        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file> -->
         <event-file>@install.etc.dir@/events/Syslogd.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/TUT.events.xml</event-file>
         <event-file>@install.etc.dir@/events/UPS-MIB.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Veraz.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/VMWare.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Waverider.3000.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox-V2.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
