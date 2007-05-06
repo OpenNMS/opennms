@@ -1,67 +1,62 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc. All rights
-// reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included
-// code and modified
-// code that was published under the GNU General Public License. Copyrights
-// for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
-// interfaces, as well as a few other minor bugs discovered
-// in testing the bug fix.
-// 2004 Dec 27: Updated code to determine primary SNMP interface to select
-// an interface from collectd-configuration.xml first, and if
-// none found, then from all interfaces on the node. In either
-// case, a loopback interface is preferred if available.
-// 2004 Apr 01: Fixed case where sysObjectId is null for suspect device
-// 2004 Feb 12: Rebuild collectd package agaist IP List map when determining
-// primary
-// interface.
-// 2003 Nov 11: Merged changes from Rackspace project
-// 2003 Sep 09: Modifications to allow OpenNMS to handle duplicate IP
-// addresses.
-// 2003 Mar 18: Fixed null pointer exceptions from some poorly written SNMP
-// agents.
-// 2003 Jan 31: Cleaned up some unused imports.
-// 2002 Oct 03: Added the ability to discover non 127.*.*.* loopback
-// interfaces
-// and to use that for the primary SNMP interface, if possible.
-// 2002 Aug 01: Modified the code to label nodes based first on DNS, then SMB,
-// SNMP and finally IP Address. If available, the SNMP primary
-// interface will be used.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-// reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact:
-// OpenNMS Licensing <license@opennms.org>
-// http://www.opennms.org/
-// http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights
+ * reserved.  OpenNMS(R) is a derivative work, containing both original code,
+ * included code and modified code that was published under the GNU General
+ * Public License.  Copyrights for modified and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 May 06: Moved database synchronization code out of
+ *              CapsdConfigManager. - dj@opennms.org
+ * 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
+ *              interfaces, as well as a few other minor bugs discovered
+ *              in testing the bug fix.
+ * 2004 Dec 27: Updated code to determine primary SNMP interface to select
+ *              an interface from collectd-configuration.xml first, and if
+ *              none found, then from all interfaces on the node. In either
+ *              case, a loopback interface is preferred if available.
+ * 2004 Apr 01: Fixed case where sysObjectId is null for suspect device
+ * 2004 Feb 12: Rebuild collectd package agaist IP List map when determining
+ *              primary interface.
+ * 2003 Nov 11: Merged changes from Rackspace project
+ * 2003 Sep 09: Modifications to allow OpenNMS to handle duplicate IP
+ *              addresses.
+ * 2003 Mar 18: Fixed null pointer exceptions from some poorly written SNMP
+ *              agents.
+ * 2003 Jan 31: Cleaned up some unused imports.
+ * 2002 Oct 03: Added the ability to discover non 127.*.*.* loopback
+ *              interfaces and to use that for the primary SNMP interface,
+ *              if possible.
+ * 2002 Aug 01: Modified the code to label nodes based first on DNS, then SMB,
+ *              SNMP and finally IP Address. If available, the SNMP primary
+ *              interface will be used.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+ * reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
@@ -89,6 +84,7 @@ import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DefaultCapsdConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -96,6 +92,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.springframework.util.Assert;
 
 /**
  * This class is designed to scan/capability check a suspect interface, update
@@ -129,20 +126,23 @@ final class SuspectEventProcessor implements Runnable {
      */
     String m_suspectIf;
 
+    private CapsdDbSyncer m_capsdDbSyncer;
+
+    private PluginManager m_pluginManager;
+
     /**
      * Constructor.
-     * 
+     * @param pluginManager TODO
      * @param ifAddress
      *            Suspect interface address.
      */
-    protected SuspectEventProcessor(String ifAddress) {
-        // Check the arguments
-        //
-        if (ifAddress == null) {
-            throw new IllegalArgumentException(
-                                               "The interface address cannot be null");
-        }
+    protected SuspectEventProcessor(CapsdDbSyncer capsdDbSyncer, PluginManager pluginManager, String ifAddress) {
+        Assert.notNull(capsdDbSyncer, "The capsdDbSyncer argument cannot be null");
+        Assert.notNull(pluginManager, "The pluginManager argument cannot be null");
+        Assert.notNull(ifAddress, "The ifAddress argument cannot be null");
 
+        m_capsdDbSyncer = capsdDbSyncer;
+        m_pluginManager = pluginManager;
         m_suspectIf = ifAddress;
     }
 
@@ -592,7 +592,7 @@ final class SuspectEventProcessor implements Runnable {
         int ifIndex = getIfIndexForNewInterface(dbc, ifaddr, collector,
                                                 ipIfEntry);
         
-        if (ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
+        if (ifIndex == CapsdConfig.LAME_SNMP_HOST_IFINDEX
                 || !addedSnmpInterfaceEntry) {
             DbSnmpInterfaceEntry snmpEntry =
                 DbSnmpInterfaceEntry.create(nodeId, ifIndex);
@@ -684,7 +684,7 @@ final class SuspectEventProcessor implements Runnable {
              * there is no ipAddrTable and set ifIndex equal to
              * CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
              */
-            ifIndex = CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX;
+            ifIndex = CapsdConfig.LAME_SNMP_HOST_IFINDEX;
             if (log.isDebugEnabled()) {
                 log.debug("SuspectEventProcessor: no valid ifIndex for "
                         + ifaddr + " Assume this is a lame SNMP host");
@@ -1053,8 +1053,7 @@ final class SuspectEventProcessor implements Runnable {
         Iterator iproto = protocols.iterator();
         while (iproto.hasNext()) {
             IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
-            Number sid = (Number) CapsdConfigFactory.getInstance().getServiceIdentifier(
-                                                                                        p.getProtocolName());
+            Number sid = m_capsdDbSyncer.getServiceId(p.getProtocolName());
 
             DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(
                                                                   node.getNodeId(),
@@ -1446,7 +1445,7 @@ final class SuspectEventProcessor implements Runnable {
             log.debug("SuspectEventProcessor: running collection for "
                     + ifaddr.getHostAddress());
 
-        IfCollector collector = new IfCollector(ifaddr, true);
+        IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true);
         collector.run();
 
         // Track changes to primary SNMP interface
@@ -1474,7 +1473,7 @@ final class SuspectEventProcessor implements Runnable {
 
                     // Only add the node/interface to the database if
                     // it isn't already in the database
-                    if (!cFactory.isInterfaceInDB(dbc, ifaddr)) {
+                    if (!m_capsdDbSyncer.isInterfaceInDB(dbc, ifaddr)) {
                         // Using the interface collector object determine
                         // if this interface belongs under a node already
                         // in the database.

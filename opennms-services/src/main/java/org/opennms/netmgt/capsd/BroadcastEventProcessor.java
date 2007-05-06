@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 May 06: Moved plugin management out of CapsdConfigManager. - dj@opennms.org
 // 2005 Nov 20: Cleaned up.  Removed unused constants and fixed JavaDoc.  Added valid FIXMEs.
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -182,16 +183,25 @@ final class BroadcastEventProcessor implements EventListener {
      */
     private FifoQueue m_suspectQ;
 
+    private CapsdDbSyncer m_capsdDbSyncer;
+
+    private PluginManager m_pluginManager;
+
     /**
      * Constructor
-     * 
+     * @param capsdDbSyncer capsd database syncer that manages service mappings in the database with the configuration file
+     * @param pluginManager plugin manager that is used when doing capabilities scanning
      * @param suspectQ
      *            The queue where new SuspectEventProcessor objects are enqueued
      *            for running..
      * @param scheduler
      *            Rescan scheduler.
      */
-    BroadcastEventProcessor(FifoQueue suspectQ, Scheduler scheduler) {
+    BroadcastEventProcessor(CapsdDbSyncer capsdDbSyncer, PluginManager pluginManager, FifoQueue suspectQ, Scheduler scheduler) {
+        m_capsdDbSyncer = capsdDbSyncer;
+        
+        m_pluginManager = pluginManager;
+        
         // Suspect queue
         //
         m_suspectQ = suspectQ;
@@ -1588,7 +1598,7 @@ final class BroadcastEventProcessor implements EventListener {
         // new poll event
         try {
             log().debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
-            m_suspectQ.add(new SuspectEventProcessor(event.getInterface()));
+            m_suspectQ.add(new SuspectEventProcessor(m_capsdDbSyncer, m_pluginManager, event.getInterface()));
         } catch (Exception ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }

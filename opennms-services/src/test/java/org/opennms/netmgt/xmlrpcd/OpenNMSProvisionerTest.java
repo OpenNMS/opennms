@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 06: Make tests work with plugin management and database
+//              synchronization pulled out of CapsdConfigManager.
+//              Move TestCapsdConfigManager inner class to its own
+//              class in org.opennms.netmgt.mock. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,12 +38,10 @@
 //
 package org.opennms.netmgt.xmlrpcd;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -46,9 +51,12 @@ import org.exolab.castor.xml.ValidationException;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.CapsdConfigManager;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
@@ -56,10 +64,11 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class OpenNMSProvisionerTest extends MockObjectTestCase {
@@ -128,6 +137,8 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
     private MockEventIpcManager m_eventManager;
 
+    private JdbcCapsdDbSyncer m_syncer;
+
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging();
@@ -146,21 +157,34 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         m_provisioner.setEventManager(m_eventManager);
         
         m_capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
-        m_capsdConfig.setNextSvcIdSql(db.getNextServiceIdStatement());
         CapsdConfigFactory.setInstance(m_capsdConfig);
-        
-        Connection conn = db.getConnection();
-        try {
-            m_capsdConfig.syncServices(conn);
-        } finally {
-            conn.close();
-        }
-        
+
         m_pollerConfig = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
         PollerConfigFactory.setInstance(m_pollerConfig);
         
         m_provisioner.setCapsdConfig(m_capsdConfig);
         m_provisioner.setPollerConfig(m_pollerConfig);
+        
+        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("opennms-server.xml"));
+        OpennmsServerConfigFactory.setInstance(onmsSvrConfig);
+        
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        CollectdConfigFactory.setInstance(new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+
+        m_syncer = new JdbcCapsdDbSyncer();
+        m_syncer.setOpennmsServerConfig(OpennmsServerConfigFactory.getInstance());
+        m_syncer.setCapsdConfig(m_capsdConfig);
+        m_syncer.setPollerConfig(m_pollerConfig);
+        m_syncer.setCollectdConfig(CollectdConfigFactory.getInstance());
+        m_syncer.setNextSvcIdSql(db.getNextServiceIdStatement());
+        m_syncer.afterPropertiesSet();
+
+        Connection conn = db.getConnection();
+        try {
+            m_syncer.syncServices(conn);
+        } finally {
+            conn.close();
+        }
 
     }
 
@@ -191,8 +215,8 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
             m_xml = xml;
         }
 
-        public List getIpList(Package pkg) {
-            return Collections.EMPTY_LIST;
+        public List<String> getIpList(Package pkg) {
+            return new ArrayList<String>(0);
         }
 
         public String getXml() {
@@ -202,29 +226,6 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
     }
     
-    static class TestCapsdConfigManager extends CapsdConfigManager {
-        private String m_xml;
-
-        public TestCapsdConfigManager(String xml) throws MarshalException, ValidationException, IOException {
-            super(new StringReader(xml));
-            save();
-        }
-
-        protected void saveXml(String xml) throws IOException {
-            m_xml = xml;
-        }
-
-        protected void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-            loadXml(new StringReader(m_xml));
-        }
-        
-        public String getXml() {
-            return m_xml;
-        }
-
-        
-    }
-
     public void testGetServiceConfiguration() throws Exception {
         checkServiceConfiguration("default", "ICMP", 2, 3000, 300000, 300000, 30000);
         checkTcpConfiguration("MyTcp", "MyTcp", 3, 314159, 1234, 17, 1492, 1776, "Right back at ya!");
@@ -259,7 +260,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         assertNotNull("Unable to find monitor for svc "+svcName, mgr.getServiceMonitor(svcName));
         
         assertNotNull("Unable to find protocol plugin in capsdConfig for svc "+svcName, m_capsdConfig.getProtocolPlugin(svcName));
-        assertNotNull("Unable to find service table entry in capsdConfig for svc "+svcName, m_capsdConfig.getServiceIdentifier(svcName));
+        assertNotNull("Unable to find service table entry in capsdConfig for svc "+svcName, m_syncer.getServiceId(svcName));
 
         return configParams;
     }

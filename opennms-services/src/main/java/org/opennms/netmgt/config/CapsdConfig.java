@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 06: Moved plugin management and database synchronization
+//              code out of CapsdConfigManager. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,19 +38,18 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.CapsdConfigManager.ProtocolInfo;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
+import org.opennms.netmgt.config.capsd.Property;
+import org.opennms.netmgt.config.capsd.ProtocolConfiguration;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.capsd.SmbAuth;
+import org.opennms.netmgt.config.common.Range;
 
 public interface CapsdConfig {
-
     /**
      * This integer value is used to represent the primary snmp interface
      * ifindex in the ipinterface table for SNMP hosts that don't support
@@ -64,102 +68,6 @@ public interface CapsdConfig {
     public abstract CapsdConfiguration getConfiguration();
 
     /**
-     * This method is responsible for sync'ing the content of the 'service'
-     * table with the protocols listed in the caspd-configuration.xml file.
-     * 
-     * First a list of services currently contained in the 'service' table in
-     * the database is built.
-     * 
-     * Next, the list of services defined in capsd-configuration.xml is iterated
-     * over and if any services are defined but do not yet exist in the
-     * 'service' table they are added to the table.
-     * 
-     * Finally, the list of services in the database is iterated over and if any
-     * service exists in the database but is no longer listed in the
-     * capsd-configuration.xml file then that the following occurs:
-     * 
-     * 1. All 'outage' table entries which refer to the service are deleted. 2.
-     * All 'ifServices' table entries which refer to the service are deleted.
-     * 
-     * Note that the 'service' table entry will remain in the database since
-     * events most likely exist which refer to the service.
-     */
-    public abstract void syncServices(Connection conn) throws SQLException;
-    
-    
-    public abstract List syncServicesTable(Connection conn) throws SQLException;
-
-    /**
-     * Responsible for syncing up the 'isManaged' field of the ipInterface table
-     * and the 'status' field of the ifServices table based on the capsd and
-     * poller configurations. Note that the 'sync' only takes place for
-     * interfaces and services that are not deleted or force unmanaged.
-     * 
-     * <pre>
-     * Here is how the statuses are set:
-     *  If an interface is 'unmanaged' based on the capsd configuration,
-     *      ipManaged='U' and status='U'
-     * 
-     *  If an interface is 'managed' based on the capsd configuration,
-     *    1. If the interface is not in any pacakge, ipManaged='N' and status ='N'
-     *    2. If the interface in atleast one package but the service is not polled by
-     *       by any of the packages, ipManaged='M' and status='N'
-     *    3. If the interface in atleast one package and the service is polled by a
-     *       package that this interface belongs to, ipManaged='M' and status'=A'
-     * 
-     * </pre>
-     * 
-     * @param conn
-     *            Connection to the database.
-     * 
-     * @exception SQLException
-     *                Thrown if an error occurs while syncing the database.
-     */
-    public abstract void syncManagementState(Connection conn) throws SQLException;
-
-    /**
-     * Responsible for syncing up the 'isPrimarySnmp' field of the ipInterface
-     * table based on the capsd and collectd configurations. Note that the
-     * 'sync' only takes place for interfaces that are not deleted. Also, it
-     * will prefer a loopback interface over other interfaces.
-     * 
-     * @param conn
-     *            Connection to the database.
-     * 
-     * @exception SQLException
-     *                Thrown if an error occurs while syncing the database.
-     */
-    public abstract void syncSnmpPrimaryState(Connection conn) throws SQLException;
-
-    /**
-     * Returns the list of protocol plugins and the associated actions for the
-     * named address. The currently loaded configuration is used to find, build,
-     * and return the protocol information. The returns information has all the
-     * necessary element to check the address for capabilities.
-     * 
-     * @param address
-     *            The address to get protocol information for.
-     * 
-     * @return The array of protocol information instances for the address.
-     * 
-     */
-    public abstract ProtocolInfo[] getProtocolSpecification(InetAddress address);
-
-    /**
-     * Returns the protocol identifier from the service table that was loaded
-     * during class initialization. The identifier is used determines the
-     * result. If a String is passed then the integer value is returned. If an
-     * interger value is passed then the string protocol name is returned.
-     * 
-     * @param key
-     *            The value used to lookup the result in in the preloaded map.
-     * 
-     * @return The result of the lookup, either a String or an Integer.
-     * 
-     */
-    public abstract Object getServiceIdentifier(Object key);
-
-    /**
      * Finds the SMB authentication object using the netbios name.
      * 
      * The target of the search.
@@ -174,16 +82,6 @@ public interface CapsdConfig {
      *            The target to check against.
      */
     public abstract boolean isAddressUnmanaged(InetAddress target);
-
-    /**
-     * 
-     */
-    public abstract boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException;
-
-    /**
-     * 
-     */
-    public abstract int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress, int ifIndex) throws SQLException;
 
     /**
      * 
@@ -226,7 +124,24 @@ public interface CapsdConfig {
 
     public abstract void addProtocolPlugin(ProtocolPlugin plugin);
     
-    public abstract InetAddress determinePrimarySnmpInterface(List addressList, boolean strict);
+    public abstract InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict);
+
+    public abstract List<String> getConfiguredProtocols();
+
+    public abstract List<ProtocolPlugin> getProtocolPlugins();
+
+    public abstract List<ProtocolConfiguration> getProtocolConfigurations(ProtocolPlugin plugin);
+
+    public abstract List<String> getSpecifics(ProtocolConfiguration pluginConf);
+
+    public abstract List<Range> getRanges(ProtocolConfiguration pluginConf);
+
+    public abstract List<Property> getPluginProperties(ProtocolPlugin plugin);
+
+    public abstract List<Property> getProtocolConfigurationProperties(ProtocolConfiguration pluginConf);
+
+    public abstract long toLong(InetAddress start);
+
 
 
 }
