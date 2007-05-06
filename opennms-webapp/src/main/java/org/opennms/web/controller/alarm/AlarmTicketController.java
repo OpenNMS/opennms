@@ -3,22 +3,24 @@ package org.opennms.web.controller.alarm;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class AlarmTicketController extends MultiActionController {
-    
     private TroubleTicketProxy m_troubleTicketProxy;
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        System.err.println("AlarmTicketController.handleRequestInternal");
-        return super.handleRequestInternal(request, response);
-    }
     
     public AlarmTicketController() {
         super();
-        System.err.println("AlarmTicketController CREATED");
+        log().debug("AlarmTicketController created");
+    }
+
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        log().debug("AlarmTicketController handleRequestInternal called");
+        return super.handleRequestInternal(request, response);
     }
     
     static class CommandBean {
@@ -57,4 +59,10 @@ public class AlarmTicketController extends MultiActionController {
         m_troubleTicketProxy = troubleTicketProxy;
     }
 
+    /**
+     * @return logger for this class
+     */
+    private Category log() {
+        return ThreadCategory.getInstance();
+    }
 }
