@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 May 06: Eliminate a warning. - dj@opennms.org
 // 2006 Apr 27: Added support for pathOutageEnabled
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -742,8 +743,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * 
      * @return list of RRA strings.
      */
-    public List getRRAList(org.opennms.netmgt.config.poller.Package pkg) {
-        return (List) pkg.getRrd().getRraCollection();
+    @SuppressWarnings("unchecked")
+    public List<String> getRRAList(org.opennms.netmgt.config.poller.Package pkg) {
+        return pkg.getRrd().getRraCollection();
     
     }
 
