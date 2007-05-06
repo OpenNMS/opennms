@@ -243,8 +243,6 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
-<!--  If you enable the importer don't forget to disable discovery and capsd -->
-<!--
         <service>
                 <name>OpenNMS:Name=Importer</name>
                 <class-name>org.opennms.netmgt.importer.jmx.ImporterService</class-name>
@@ -253,8 +251,7 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
--->
-<!--
+<!-- To unable maps (topology discovery) uncommenet this service
     <service>
         <name>OpenNMS:Name=Linkd</name>
         <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
