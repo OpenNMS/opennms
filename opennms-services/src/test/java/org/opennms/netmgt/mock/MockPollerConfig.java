@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 06: Use Java 5 generics and remove an unused method to
+//              eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +43,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -72,9 +76,9 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     private boolean m_outageProcessingEnabled = false;
 
-    private Vector m_pkgs = new Vector();
+    private Vector<Package> m_pkgs = new Vector<Package>();
 
-    private Map m_svcMonitors = new TreeMap();
+    private Map<String, ServiceMonitor> m_svcMonitors = new TreeMap<String, ServiceMonitor>();
 
     private int m_threads = 1;
 
@@ -205,17 +209,6 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return m_pkgs.elements();
     }
 
-    private Outage findOutage(String name) {
-        Iterator it = getConfig().getOutageCollection().iterator();
-        while (it.hasNext()) {
-            Outage outage = (Outage) it.next();
-            if (outage.getName().equals(name)) {
-                return outage;
-            }
-        }
-        return null;
-    }
-
     private Service findService(Package pkg, String svcName) {
         Enumeration svcs = pkg.enumerateService();
         while (svcs.hasMoreElements()) {
@@ -239,13 +232,12 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
     
     public Package getPackage(String name) {
-        for (int i = 0; i < m_pkgs.size(); i++) {
-            Package pkg = (Package) m_pkgs.get(i);
-            if (pkg.getName().equals(name))
+        for (Package pkg : m_pkgs) {
+            if (pkg.getName().equals(name)) {
                 return pkg;
+            }
         }
         return null;
-
     }
 
     public List getRRAList(Package pkg) {
@@ -253,10 +245,10 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     public ServiceMonitor getServiceMonitor(String svcName) {
-        return (ServiceMonitor) getServiceMonitors().get(svcName);
+        return getServiceMonitors().get(svcName);
     }
 
-    public Map getServiceMonitors() {
+    public Map<String, ServiceMonitor> getServiceMonitors() {
         return m_svcMonitors;
     }
 

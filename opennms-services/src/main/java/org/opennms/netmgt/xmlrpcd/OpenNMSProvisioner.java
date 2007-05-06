@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 06: Moved database synchronization out of CapsdConfigFactory,
+//              use Java 5 generics, eliminate warnings, cleanup logging,
+//              and do some code formatting. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,6 +51,8 @@ import java.util.Properties;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.CapsdDbSyncerFactory;
+import org.opennms.netmgt.capsd.CapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
@@ -60,34 +68,34 @@ import org.opennms.netmgt.config.DataSourceFactory;
 
 public class OpenNMSProvisioner implements Provisioner {
     
-private static final String JDBC_MONITOR = "org.opennms.netmgt.poller.monitors.JDBCMonitor";
-private static final String HTTPS_MONITOR = "org.opennms.netmgt.poller.monitors.HttpsMonitor";
-private static final String HTTP_MONITOR = "org.opennms.netmgt.poller.monitors.HttpMonitor";
-private static final String TCP_MONITOR = "org.opennms.netmgt.poller.monitors.TcpMonitor";
-private static final String DNS_MONITOR = "org.opennms.netmgt.poller.monitors.DnsMonitor";
-private static final String ICMP_MONITOR = "org.opennms.netmgt.poller.monitors.IcmpMonitor";
+    private static final String JDBC_MONITOR = "org.opennms.netmgt.poller.monitors.JDBCMonitor";
+    private static final String HTTPS_MONITOR = "org.opennms.netmgt.poller.monitors.HttpsMonitor";
+    private static final String HTTP_MONITOR = "org.opennms.netmgt.poller.monitors.HttpMonitor";
+    private static final String TCP_MONITOR = "org.opennms.netmgt.poller.monitors.TcpMonitor";
+    private static final String DNS_MONITOR = "org.opennms.netmgt.poller.monitors.DnsMonitor";
+    private static final String ICMP_MONITOR = "org.opennms.netmgt.poller.monitors.IcmpMonitor";
 
-private static final String JDBC_PLUGIN = "org.opennms.netmgt.capsd.plugins.JDBCPlugin";
-private static final String HTTPS_PLUGIN = "org.opennms.netmgt.capsd.plugins.HttpsPlugin";
-private static final String HTTP_PLUGIN = "org.opennms.netmgt.capsd.plugins.HttpPlugin";
-private static final String TCP_PLUGIN = "org.opennms.netmgt.capsd.plugins.TcpPlugin";
-private static final String DNS_PLUGIN = "org.opennms.netmgt.capsd.plugins.DnsPlugin";
-private static final String ICMP_PLUGIN = "org.opennms.netmgt.capsd.plugins.IcmpPlugin";
+    private static final String JDBC_PLUGIN = "org.opennms.netmgt.capsd.plugins.JDBCPlugin";
+    private static final String HTTPS_PLUGIN = "org.opennms.netmgt.capsd.plugins.HttpsPlugin";
+    private static final String HTTP_PLUGIN = "org.opennms.netmgt.capsd.plugins.HttpPlugin";
+    private static final String TCP_PLUGIN = "org.opennms.netmgt.capsd.plugins.TcpPlugin";
+    private static final String DNS_PLUGIN = "org.opennms.netmgt.capsd.plugins.DnsPlugin";
+    private static final String ICMP_PLUGIN = "org.opennms.netmgt.capsd.plugins.IcmpPlugin";
 
 
-private static class Parm {
-    String m_key;
-    String m_val;
-    Parm(String key, String val) { m_key = key; m_val = val; }
-    Parm(String key, int val) { m_key = key; m_val = ""+val; }
-    String getKey() { return m_key; }
-    String getVal() { return m_val; }
+    private static class Parm {
+        String m_key;
+        String m_val;
+        Parm(String key, String val) { m_key = key; m_val = val; }
+        Parm(String key, int val) { m_key = key; m_val = ""+val; }
+        String getKey() { return m_key; }
+        String getVal() { return m_val; }
 
-}
+    }
 
-private CapsdConfig m_capsdConfig;
-private PollerConfig m_pollerConfig;
-private EventIpcManager m_eventManager;
+    private CapsdConfig m_capsdConfig;
+    private PollerConfig m_pollerConfig;
+    private EventIpcManager m_eventManager;
 
 
 
@@ -352,9 +360,11 @@ private EventIpcManager m_eventManager;
         saveConfigs();
         return true;
     }
+    
     private Category log() {
-        return ThreadCategory.getInstance(OpenNMSProvisioner.class);
+        return ThreadCategory.getInstance(getClass());
     }
+    
     private void saveConfigs() {
         try {
             m_capsdConfig.save();
@@ -369,7 +379,7 @@ private EventIpcManager m_eventManager;
             m_eventManager.sendNow(event);
             
         } catch (Exception e) {
-            throw new RuntimeException("Error saving poller or capsd configuration", e);
+            throw new RuntimeException("Error saving poller or capsd configuration: " + e, e);
         }
     }
     
@@ -377,15 +387,19 @@ private EventIpcManager m_eventManager;
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             try {
-                m_capsdConfig.syncServicesTable(conn);
+                getCapsdDbSyncer().syncServicesTable(conn);
             } finally {
                 conn.close();
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Unable to update the services table with new serivces", e);
+            throw new RuntimeException("Unable to update the services table with new serivces: " + e, e);
         }
     }
     
+    private CapsdDbSyncer getCapsdDbSyncer() {
+        return CapsdDbSyncerFactory.getInstance();
+    }
+
     private void addServiceToPackage(Package pkg, String serviceId, int interval, Properties parms) {
         Service svc = m_pollerConfig.getServiceInPackage(serviceId, pkg);
         if (svc == null) {
@@ -507,20 +521,32 @@ private EventIpcManager m_eventManager;
         checkContentCheck(responseText);
         checkUrl(url);
         
-        List parmList = new ArrayList();
+        List<Parm> parmList = new ArrayList<Parm>();
         
-        if ("".equals(response)) response = null;
+        if ("".equals(response)) { 
+            response = null;
+        }
         
         parmList.add(new Parm("port", port));
-        if (response != null) parmList.add(new Parm("response", response));
+        if (response != null) { 
+            parmList.add(new Parm("response", response));
+        }
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
-        if (hostName != null) parmList.add(new Parm("host-name", hostName));
-        if (user != null) parmList.add(new Parm("user", user));
-        if (passwd != null) parmList.add(new Parm("password", passwd));
-        if (agent != null) parmList.add(new Parm("user-agent", agent));
+        if (hostName != null) {
+            parmList.add(new Parm("host-name", hostName));
+        }
+        if (user != null) { 
+            parmList.add(new Parm("user", user));
+        }
+        if (passwd != null) { 
+            parmList.add(new Parm("password", passwd));
+        }
+        if (agent != null) { 
+            parmList.add(new Parm("user-agent", agent));
+        }
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, parmList.toArray(new Parm[parmList.size()]));
     }
 
     public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
@@ -533,19 +559,31 @@ private EventIpcManager m_eventManager;
         checkContentCheck(responseText);
         checkUrl(url);
         
-        if ("".equals(response)) response = null;
+        if ("".equals(response)) { 
+            response = null;
+        }
 
-        List parmList = new ArrayList();
+        List<Parm> parmList = new ArrayList<Parm>();
         parmList.add(new Parm("port", port));
-        if (response != null) parmList.add(new Parm("response", response));
+        if (response != null) { 
+            parmList.add(new Parm("response", response));
+        }
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
-        if (hostName != null) parmList.add(new Parm("host-name", hostName));
-        if (user != null) parmList.add(new Parm("user", user));
-        if (passwd != null) parmList.add(new Parm("password", passwd));
-        if (agent != null) parmList.add(new Parm("user-agent", agent));
+        if (hostName != null) { 
+            parmList.add(new Parm("host-name", hostName));
+        }
+        if (user != null) { 
+            parmList.add(new Parm("user", user));
+        }
+        if (passwd != null) {
+            parmList.add(new Parm("password", passwd));
+        }
+        if (agent != null) {
+            parmList.add(new Parm("user-agent", agent));
+        }
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, parmList.toArray(new Parm[parmList.size()]));
     }
 
     public boolean addServiceDatabase(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String user, String password, String driver, String url)   {
@@ -578,20 +616,24 @@ private EventIpcManager m_eventManager;
     }
     
     public Map getServiceConfiguration(String pkgName, String serviceId) {
-        if (pkgName == null)
+        if (pkgName == null) {
             throw new NullPointerException("pkgName is null");
-        if (serviceId == null)
+        }
+        if (serviceId == null) {
             throw new NullPointerException("serviceId is null");
+        }
 
         Package pkg = m_pollerConfig.getPackage(pkgName);
-        if (pkg == null)
+        if (pkg == null) {
             throw new IllegalArgumentException(pkgName+" is not a valid poller package name");
+        }
         
         Service svc = m_pollerConfig.getServiceInPackage(serviceId, pkg);
-        if (svc == null)
+        if (svc == null) {
             throw new IllegalArgumentException("Could not find service "+serviceId+" in package "+pkgName);
+        }
         
-        Map m = new HashMap();
+        Map<String, Object> m = new HashMap<String, Object>();
         m.put("serviceid", serviceId);
         m.put("interval", new Integer((int)svc.getInterval()));
         
@@ -621,8 +663,9 @@ private EventIpcManager m_eventManager;
                 key = "agent";
             } else if ("basic-authentication".equals(key)) {
                 int colon = valStr.indexOf(':');
-                if (colon < 0)
+                if (colon < 0) {
                     continue;
+                }
                 String user = valStr.substring(0, colon);
                 String passwd = valStr.substring(colon+1);
                 m.put("user", user);

@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 06: Make tests work with plugin management and database
+//              synchronization pulled out of CapsdConfigManager.
+//              Move TestCapsdConfigManager inner class to its own
+//              class in org.opennms.netmgt.mock. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,19 +38,18 @@
 //
 package org.opennms.netmgt.poller;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.CapsdConfigManager;
+import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
+import org.opennms.netmgt.capsd.CapsdDbSyncerFactory;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -61,14 +67,23 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
+import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 public class PollerTest extends TestCase {
+    private static final String CAPSD_CONFIG = "\n"
+            + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
+            + "   delete-propagation-enabled=\"true\">\n"
+            + "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
+            + "   <protocol-plugin protocol=\"SMTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
+            + "   <protocol-plugin protocol=\"HTTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
+            + "</capsd-configuration>\n";
 
 	private Poller m_poller;
 
@@ -92,7 +107,10 @@ public class PollerTest extends TestCase {
 	// SetUp and TearDown
 	//
 
-	public void setUp() {
+    @Override
+	protected void setUp() throws Exception {
+        super.setUp();
+        
 		// System.setProperty("mock.logLevel", "DEBUG");
 		// System.setProperty("mock.debug", "true");
 		MockUtil.println("------------ Begin Test " + getName()
@@ -835,10 +853,24 @@ public class PollerTest extends TestCase {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
 		startDaemons();
+        
+        TestCapsdConfigManager capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
+        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("opennms-server.xml"));
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+        
+        JdbcCapsdDbSyncer syncer = new JdbcCapsdDbSyncer();
+        syncer.setOpennmsServerConfig(onmsSvrConfig);
+        syncer.setCapsdConfig(capsdConfig);
+        syncer.setPollerConfig(m_pollerConfig);
+        syncer.setCollectdConfig(collectdConfig);
+        syncer.setNextSvcIdSql(m_db.getNextServiceIdStatement());
+        syncer.afterPropertiesSet();
+        CapsdDbSyncerFactory.setInstance(syncer);
 
 		OpenNMSProvisioner provisioner = new OpenNMSProvisioner();
 		provisioner.setPollerConfig(m_pollerConfig);
-		provisioner.setCapsdConfig(new TestCapsdConfigManager());
+		provisioner.setCapsdConfig(capsdConfig);
 
 		provisioner.setEventManager(m_eventMgr);
 		provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53,
@@ -992,39 +1024,6 @@ public class PollerTest extends TestCase {
 			}
 		};
 		element.visit(markCritSvcDown);
-
-	}
-
-	private static final String CAPSD_CONFIG = "\n"
-			+ "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
-			+ "   delete-propagation-enabled=\"true\">\n"
-			+ "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-			+ "   <protocol-plugin protocol=\"SMTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-			+ "   <protocol-plugin protocol=\"HTTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-			+ "</capsd-configuration>\n";
-
-	class TestCapsdConfigManager extends CapsdConfigManager {
-		private String m_xml;
-
-		public TestCapsdConfigManager() throws MarshalException,
-				ValidationException, IOException {
-			super(new StringReader(CAPSD_CONFIG));
-			setNextSvcIdSql(m_db.getNextServiceIdStatement());
-			save();
-		}
-
-		protected void saveXml(String xml) throws IOException {
-			m_xml = xml;
-		}
-
-		protected void update() throws IOException, FileNotFoundException,
-				MarshalException, ValidationException {
-			loadXml(new StringReader(m_xml));
-		}
-
-		public String getXml() {
-			return m_xml;
-		}
 
 	}
 

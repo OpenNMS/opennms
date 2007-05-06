@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 May 06: Moved database synchronization code out of
+//              CapsdConfigManager. - dj@opennms.org
 // 2006 Sep 05: Format code. - dj@opennms.org
 // 2006 Sep 05: Applied patch from Bug 1573.
 // 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
@@ -203,11 +205,6 @@ public final class RescanProcessor implements Runnable {
     private List<Event> m_eventList;
 
     /**
-     * Capsd configuration factory
-     */
-    private CapsdConfigFactory m_cFactory;
-
-    /**
      * Set during the rescan to true if any of the ifIndex values associated
      * with a node's interface's were modified as a result of the scan.
      */
@@ -220,6 +217,8 @@ public final class RescanProcessor implements Runnable {
      */
     private boolean m_snmpIfTableChangedFlag;
 
+    private CapsdDbSyncer m_capsdDbSyncer;
+
     /**
      * Constructor.
      * 
@@ -230,7 +229,7 @@ public final class RescanProcessor implements Runnable {
      *            True if a forced rescan is to be performed (all interfaces not
      *            just managed interfaces scanned), false otherwise.
      */
-    RescanProcessor(Scheduler.NodeInfo nodeInfo, boolean forceRescan) {
+    RescanProcessor(Scheduler.NodeInfo nodeInfo, boolean forceRescan, CapsdDbSyncer capsdDbSyncer) {
         // Check the arguments
         if (nodeInfo == null) {
             throw new IllegalArgumentException("The nodeInfo parm cannot be null!");
@@ -238,6 +237,7 @@ public final class RescanProcessor implements Runnable {
 
         m_scheduledNode = nodeInfo;
         m_forceRescan = forceRescan;
+        m_capsdDbSyncer = capsdDbSyncer;
 
         m_eventList = new ArrayList<Event>();
     }
@@ -1362,7 +1362,7 @@ public final class RescanProcessor implements Runnable {
                               + " has no valid ifIndex. Assuming this is a "
                               + "lame SNMP host with no ipAddrTable");
                 }
-                ifIndex = CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX;
+                ifIndex = CapsdConfig.LAME_SNMP_HOST_IFINDEX;
             }
             currIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr,
                                                       ifIndex);
@@ -1498,7 +1498,7 @@ public final class RescanProcessor implements Runnable {
         Iterator iproto = protocols.iterator();
         while (iproto.hasNext()) {
             IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
-            Number sid = (Number) cFactory.getServiceIdentifier(p.getProtocolName());
+            Number sid = m_capsdDbSyncer.getServiceId(p.getProtocolName());
 
             /*
              * Only adding newly supported services so check against the service
@@ -1831,7 +1831,7 @@ public final class RescanProcessor implements Runnable {
 
             // Make sure we have a valid IfTableEntry object
             if (ifte == null
-                    && ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX) {
+                    && ifIndex == CapsdConfig.LAME_SNMP_HOST_IFINDEX) {
                 currSnmpIfEntry.setIfAddress(snmpc.getCollectorTargetAddress());
                  if (log.isDebugEnabled()) {
                     log.debug("updateSnmpInfo: interface "
@@ -2014,7 +2014,7 @@ public final class RescanProcessor implements Runnable {
             // end if partial snmp info available
         } else if (snmpc != null) {
             // allow for lame snmp hosts with no ipAddrTable
-            ifIndex = CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX;
+            ifIndex = CapsdConfig.LAME_SNMP_HOST_IFINDEX;
             if (log.isDebugEnabled()) {
                 log.debug("updateSnmpInfo: updating snmp interface for "
                           + "nodeId/ipAddr=" + node.getNodeId() + "/" + ifaddr
@@ -2148,7 +2148,7 @@ public final class RescanProcessor implements Runnable {
         Iterator iproto = protocols.iterator();
         while (iproto.hasNext()) {
             IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
-            Number sid = (Number) CapsdConfigFactory.getInstance().getServiceIdentifier(p.getProtocolName());
+            Number sid = m_capsdDbSyncer.getServiceId(p.getProtocolName());
 
             DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
 

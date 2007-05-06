@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 May 06: The default manager is now DefaultCapsdConfigManager. - dj@opennms.org
  * 2007 Apr 20: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -60,7 +61,7 @@ public class CapsdConfigManagerTest extends TestCase {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new ValidationException(ThrowableAnticipator.IGNORE_MESSAGE));
         try {
-            new CapsdConfigFactory(reader);
+            new DefaultCapsdConfigManager(reader);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 May 06: Moved plugin management out of CapsdConfigManager. - dj@opennms.org
 // 2003 Oct 08: Changed thread poll water marks.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -121,6 +122,8 @@ public class Capsd extends AbstractServiceDaemon {
      */
     private RunnableConsumerThreadPool m_rescanRunner;
 
+    private PluginManager m_pluginManager;
+
     /**
      * <P>
      * Static initialization
@@ -165,8 +168,12 @@ public class Capsd extends AbstractServiceDaemon {
         initializeDataSourceFactory();
 
         initializeSnmpPeerFactory();
+        
+        initializePluginManager();
+        
+        initializeSyncer();
 
-	/*
+        /*
          * Get connection to the database and use it to sync the
          * content of the database with the latest configuration
          * information.
@@ -183,21 +190,18 @@ public class Capsd extends AbstractServiceDaemon {
          * the latest configuration information via a call to
          * syncSnmpPrimaryState()
          */
-        
-        
         java.sql.Connection conn = null;
         try {
             conn = DataSourceFactory.getInstance().getConnection();
-            
+
             log().debug("init: Loading services into database...");
-            CapsdConfigFactory.getInstance().syncServices(conn);
-            
+            getCapsdDbSyncer().syncServices(conn);
+
             log().debug("init: Syncing management state...");
-            CapsdConfigFactory.getInstance().syncManagementState(conn);
-            
+            getCapsdDbSyncer().syncManagementState(conn);
+
             log().debug("init: Syncing primary SNMP interface state...");
-            CapsdConfigFactory.getInstance().syncSnmpPrimaryState(conn);
-            
+            getCapsdDbSyncer().syncSnmpPrimaryState(conn);     
         } catch (SQLException sqlE) {
             log().fatal("SQL Exception while syncing database with latest configuration information.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
@@ -234,7 +238,7 @@ public class Capsd extends AbstractServiceDaemon {
              * During instantiation, the scheduler will load the
              * list of known nodes from the database.
              */
-            m_scheduler = new Scheduler(m_rescanRunner.getRunQueue());
+            m_scheduler = new Scheduler(getCapsdDbSyncer(), m_rescanRunner.getRunQueue());
         } catch (SQLException sqlE) {
             log().error("Failed to initialize the rescan scheduler.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
@@ -244,12 +248,9 @@ public class Capsd extends AbstractServiceDaemon {
         }
 
         // Create an event receiver.
+        log().debug("init: Creating event broadcast event receiver");
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("init: Creating event broadcast event receiver");
-            }
-
-            m_receiver = new BroadcastEventProcessor(m_suspectRunner.getRunQueue(), m_scheduler);
+            m_receiver = new BroadcastEventProcessor(getCapsdDbSyncer(), m_pluginManager, m_suspectRunner.getRunQueue(), m_scheduler);
         } catch (Throwable t) {
             log().error("Failed to initialized the broadcast event receiver", t);
             throw new UndeclaredThrowableException(t);
@@ -345,6 +346,16 @@ public class Capsd extends AbstractServiceDaemon {
         }
     }
 
+    private void initializeSyncer() {
+        CapsdDbSyncerFactory.init();
+    }
+    
+    private void initializePluginManager() {
+        m_pluginManager = new PluginManager();
+        m_pluginManager.setCapsdConfig(CapsdConfigFactory.getInstance());
+        m_pluginManager.afterPropertiesSet();
+    }
+
     protected void onStart() {
 		// Start the suspect event and rescan thread pools
         log().debug("start: Starting runnable thread pools...");
@@ -402,11 +413,15 @@ public class Capsd extends AbstractServiceDaemon {
         try {
             ThreadCategory.setPrefix(getName());
             InetAddress addr = InetAddress.getByName(ifAddr);
-            SuspectEventProcessor proc = new SuspectEventProcessor(addr.getHostAddress());
+            SuspectEventProcessor proc = new SuspectEventProcessor(getCapsdDbSyncer(), m_pluginManager, addr.getHostAddress());
             proc.run();
         } finally {
             ThreadCategory.setPrefix(prefix);
         }
+    }
+
+    private CapsdDbSyncer getCapsdDbSyncer() {
+        return CapsdDbSyncerFactory.getInstance();
     }
 
     /**
