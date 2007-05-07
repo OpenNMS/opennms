@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2007 May 06: Log at INFO level when we delete a record from the ifServices
+ *              table. - dj@opennms.org
  * 2007 May 06: Created this file.  Pulled databse synchronization code out
  *              of CapsdConfigManager into CapsdDbSyncer interface and into
  *              this file. - dj@opennms.org
@@ -522,6 +524,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     delFromIfServicesStmt = conn.prepareStatement(DELETE_IFSERVICES_SQL);
                     delFromIfServicesStmt.setInt(1, id.intValue());
                     delFromIfServicesStmt.executeUpdate();
+                    log().info("syncServices: deleted service id " + id + " for service '" + service + "' from the IfServices table.");
                 }
             }
         } finally {
