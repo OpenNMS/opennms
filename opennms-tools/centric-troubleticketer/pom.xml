@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>opennms-tools</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.3.3-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>centric-troubleticketer</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS Centric Trouble Ticketer</name>
+  <dependencies>
+    <dependency>
+      <groupId>com.centriccrm</groupId>
+      <artifactId>tools</artifactId>
+      <version>4.1</version>
+<!--
+      <scope>system</scope>
+      <systemPath>/Users/brozow/distributions/centric-crm-4.1/centric_crm_tools-4.1.jar</systemPath>
+-->
+    </dependency>
+  </dependencies>
+</project>
