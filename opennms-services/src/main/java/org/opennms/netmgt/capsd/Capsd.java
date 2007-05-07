@@ -353,7 +353,12 @@ public class Capsd extends AbstractServiceDaemon {
     private void initializePluginManager() {
         m_pluginManager = new PluginManager();
         m_pluginManager.setCapsdConfig(CapsdConfigFactory.getInstance());
-        m_pluginManager.afterPropertiesSet();
+        try {
+            m_pluginManager.afterPropertiesSet();
+        } catch (ValidationException e) {
+            log().error("Failed to initialize PluginManager: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        }
     }
 
     protected void onStart() {

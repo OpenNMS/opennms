@@ -78,7 +78,7 @@ public class PluginManager implements InitializingBean {
     /**
      * Now load the plugins!
      */
-    protected void instantiatePlugins() throws ValidationException {
+    private void instantiatePlugins() throws ValidationException {
         List<ProtocolPlugin> plugins = getCapsdConfig().getProtocolPlugins();
         for (ProtocolPlugin plugin : plugins) {
             try {
@@ -265,8 +265,10 @@ public class PluginManager implements InitializingBean {
         m_capsdConfig = capsdConfig;
     }
     
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws ValidationException {
         Assert.state(m_capsdConfig != null, "property capsdConfig must be set to a non-null value");
+        
+        instantiatePlugins();
     }
 
 }
