@@ -139,28 +139,20 @@ public class Constants {
      * @see #DB_ATTRIB_DELIM
      * @see #MULTIPLE_VAL_DELIM
      */
-    public static String escape(String inStr, char delimchar) {
-        // integer equivalent of the delimiter
-        int delim = delimchar;
+  public static String escape(String inStr, char delimchar) {
+        
+        StringBuilder buf = new StringBuilder(inStr.length()+16);
 
-        // convert this to a '%<int>' string
-        String delimEscStr = "%" + String.valueOf(delim);
-
-        // the buffer to return
-        StringBuffer outBuffer = new StringBuffer(inStr);
-
-        int index = 0;
-        int delimIndex = inStr.indexOf(delimchar, index);
-        while (delimIndex != -1) {
-            // delete the delimiter and add the escape string
-            outBuffer.deleteCharAt(delimIndex);
-            outBuffer.insert(delimIndex, delimEscStr);
-
-            index = delimIndex + delimEscStr.length() + 1;
-            delimIndex = outBuffer.toString().indexOf(delimchar, index);
+        for (char ch : inStr.toCharArray()) {
+            if (ch == delimchar || Character.isISOControl(ch)) {
+                buf.append('%');
+                buf.append(String.valueOf((int)ch));
+            } else {
+                buf.append(ch);
+            }
         }
-
-        return outBuffer.toString();
+        
+        return buf.toString();
     }
 
     /**
