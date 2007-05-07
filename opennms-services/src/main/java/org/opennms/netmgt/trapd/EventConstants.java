@@ -111,7 +111,7 @@ public class EventConstants extends Object {
             }
             else if (value instanceof SnmpValue) {
                 SnmpValue snmpValue = (SnmpValue)value;
-                result = new  String(Base64.encodeBase64(snmpValue.getBytes()));
+                result = new String(Base64.encodeBase64(snmpValue.getBytes()));
             }
         }
         
