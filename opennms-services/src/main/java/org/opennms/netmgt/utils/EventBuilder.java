@@ -38,6 +38,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
@@ -182,6 +183,22 @@ public class EventBuilder {
     public void setField(String name, String val) {
         BeanWrapper w = new BeanWrapperImpl(m_event);
         w.setPropertyValue(name, val);
+    }
+    
+    private void ensureLogmsg() {
+        if (m_event.getLogmsg() == null) {
+            m_event.setLogmsg(new Logmsg());
+        }
+    }
+
+    public void setLogDest(String dest) {
+        ensureLogmsg();
+        m_event.getLogmsg().setDest(dest);
+    }
+
+    public void setLogMessage(String content) {
+        ensureLogmsg();
+        m_event.getLogmsg().setContent(content);
     }
 
 }
