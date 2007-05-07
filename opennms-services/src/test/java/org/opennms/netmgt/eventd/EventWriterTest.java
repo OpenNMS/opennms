@@ -33,8 +33,10 @@ public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
     }
     
     public void testWriteEventWithNull() throws SQLException {
+        
         EventWriter eWriter = new EventWriter("SELECT nextval('eventsNxtId')");
         
+        try {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
         bldr.setLogDest("logndisplay");
         bldr.addParam("test", "testVal");
@@ -59,7 +61,9 @@ public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         
         eWriter.persistEvent(null, bldr.getEvent());
         
+        } finally {
         eWriter.close();
+        }
     }
 
 }
