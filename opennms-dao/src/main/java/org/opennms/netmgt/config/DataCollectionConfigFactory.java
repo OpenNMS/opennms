@@ -712,7 +712,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         if (collection != null)
             return collection.getMaxVarsPerPdu();
         else
-            return -1;
+            return 0;
     }
     
     public RrdRepository getRrdRepository(String collectionName) {
