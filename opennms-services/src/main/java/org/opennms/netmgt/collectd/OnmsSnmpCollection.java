@@ -97,7 +97,7 @@ public class OnmsSnmpCollection {
     private int determineMaxVarsPerPdu(CollectionAgent agent) {
         // Retrieve configured value for max number of vars per PDU
         int maxVarsPerPdu = getDataCollectionConfig().getMaxVarsPerPdu(getName());
-        if (maxVarsPerPdu == -1) {
+        if (maxVarsPerPdu == 0) {
             log().info("determineMaxVarsPerPdu: using agent's configured value: "
                        + agent.getMaxVarsPerPdu());
             maxVarsPerPdu = agent.getMaxVarsPerPdu();
