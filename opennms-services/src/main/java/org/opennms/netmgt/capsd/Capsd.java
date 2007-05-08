@@ -238,7 +238,7 @@ public class Capsd extends AbstractServiceDaemon {
              * During instantiation, the scheduler will load the
              * list of known nodes from the database.
              */
-            m_scheduler = new Scheduler(getCapsdDbSyncer(), m_rescanRunner.getRunQueue());
+            m_scheduler = new Scheduler(getCapsdDbSyncer(), m_pluginManager, m_rescanRunner.getRunQueue());
         } catch (SQLException sqlE) {
             log().error("Failed to initialize the rescan scheduler.", sqlE);
             throw new UndeclaredThrowableException(sqlE);

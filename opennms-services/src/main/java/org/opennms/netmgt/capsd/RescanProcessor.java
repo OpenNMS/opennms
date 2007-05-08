@@ -219,6 +219,8 @@ public final class RescanProcessor implements Runnable {
 
     private CapsdDbSyncer m_capsdDbSyncer;
 
+    private PluginManager m_pluginManager;
+
     /**
      * Constructor.
      * 
@@ -229,7 +231,7 @@ public final class RescanProcessor implements Runnable {
      *            True if a forced rescan is to be performed (all interfaces not
      *            just managed interfaces scanned), false otherwise.
      */
-    RescanProcessor(Scheduler.NodeInfo nodeInfo, boolean forceRescan, CapsdDbSyncer capsdDbSyncer) {
+    RescanProcessor(Scheduler.NodeInfo nodeInfo, boolean forceRescan, CapsdDbSyncer capsdDbSyncer, PluginManager pluginManager) {
         // Check the arguments
         if (nodeInfo == null) {
             throw new IllegalArgumentException("The nodeInfo parm cannot be null!");
@@ -238,6 +240,7 @@ public final class RescanProcessor implements Runnable {
         m_scheduledNode = nodeInfo;
         m_forceRescan = forceRescan;
         m_capsdDbSyncer = capsdDbSyncer;
+        m_pluginManager = pluginManager;
 
         m_eventList = new ArrayList<Event>();
     }
@@ -3087,7 +3090,7 @@ public final class RescanProcessor implements Runnable {
                               + ifaddr.getHostAddress());
                 }
 
-                IfCollector collector = new IfCollector(ifaddr, true,
+                IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true,
                                                         probedAddrs);
                 collector.run();
 
@@ -3336,7 +3339,7 @@ public final class RescanProcessor implements Runnable {
         if (log.isDebugEnabled()) {
             log.debug("running collection for DB primary snmp interface " + ifaddr.getHostAddress());
         }
-        IfCollector collector = new IfCollector(ifaddr, true, probedAddrs);
+        IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true, probedAddrs);
         collector.run();
         IfSnmpCollector snmpc = collector.getSnmpCollector();
         if (snmpc == null) {

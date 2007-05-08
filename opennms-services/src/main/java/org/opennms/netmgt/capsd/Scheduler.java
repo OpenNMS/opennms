@@ -129,6 +129,8 @@ final class Scheduler implements Runnable, PausableFiber {
 
     private CapsdDbSyncer m_capsdDbSyncer;
 
+    private PluginManager m_pluginManager;
+
     /**
      * This class encapsulates the information about a node necessary to
      * schedule the node for rescans.
@@ -196,8 +198,9 @@ final class Scheduler implements Runnable, PausableFiber {
      * Constructs a new instance of the scheduler.
      * 
      */
-    Scheduler(CapsdDbSyncer syncer, FifoQueue rescanQ) throws SQLException {
+    Scheduler(CapsdDbSyncer syncer, PluginManager pluginManager, FifoQueue rescanQ) throws SQLException {
         m_capsdDbSyncer = syncer;
+        m_pluginManager = pluginManager;
         m_rescanQ = rescanQ;
 
         m_name = FIBER_NAME;
@@ -378,7 +381,7 @@ final class Scheduler implements Runnable, PausableFiber {
     void forceRescan(int nodeId) {
         Scheduler.NodeInfo nodeInfo = new Scheduler.NodeInfo(nodeId, null, -1);
         try {
-            m_rescanQ.add(new RescanProcessor(nodeInfo, true, m_capsdDbSyncer));
+            m_rescanQ.add(new RescanProcessor(nodeInfo, true, m_capsdDbSyncer, m_pluginManager));
         } catch (FifoQueueException e) {
             ThreadCategory.getInstance(getClass()).error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
         } catch (InterruptedException e) {
@@ -609,7 +612,7 @@ final class Scheduler implements Runnable, PausableFiber {
                         else {
                             if (log.isDebugEnabled())
                                 log.debug("Scheduler.run: adding node " + node.getNodeId() + " to the rescan queue.");
-                            m_rescanQ.add(new RescanProcessor(node, false, m_capsdDbSyncer));
+                            m_rescanQ.add(new RescanProcessor(node, false, m_capsdDbSyncer, m_pluginManager));
                             added++;
                         }
                     } catch (InterruptedException ex) {

@@ -257,14 +257,6 @@ public final class IfCollector implements Runnable {
         this(pluginManager, addr, doSnmpCollection, new HashSet());
     }
 
-    IfCollector(InetAddress addr, boolean doSnmpCollection) {
-        this(null, addr, doSnmpCollection, new HashSet());
-    }
-    
-    IfCollector(InetAddress addr, boolean doSnmpCollection, Set previouslyProbed) {
-        this(null, addr, doSnmpCollection, previouslyProbed);
-    }
-    
     IfCollector(PluginManager pluginManager, InetAddress addr, boolean doSnmpCollection, Set previouslyProbed) {
         m_pluginManager = pluginManager;
         m_target = addr;
