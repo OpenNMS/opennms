@@ -143,15 +143,14 @@
 		  <option value="" selected></option>
 		<%
 			MapMenu[] maps = null;
-			Manager m = null;
-			m = (Manager) session.getAttribute("manager");		
-			if(m==null){
-				throw new ServletException("Session attribute 'manager' not found.");
-			}
-          
+			Manager m = new Manager();
+	          	
 			try{
       				maps = m.getAllMapMenus();
-			}catch(Exception e){
+			}catch(org.opennms.web.map.MapNotFoundException ex){
+				//do nothing 
+			}	
+			catch(Exception e){
 				throw new ServletException(e);
 				//do nothing, this exception is managed later
 			}
