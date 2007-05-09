@@ -246,19 +246,21 @@ public class Constants {
      * @return The string(truncated if necessary).
      * 
      */
-    public static String format(String string, int maxlen) {
-        if (string == null)
+    public static String format(String origString, int maxlen) {
+        if (origString == null)
             return null;
+        
+        String escapedString = Constants.escape(origString, '\u0000');
 
-        if (string.length() >= maxlen) {
-            StringBuffer buf = new StringBuffer(string);
+        if (escapedString.length() >= maxlen) {
+            StringBuffer buf = new StringBuffer(escapedString);
 
             buf.setLength(maxlen - 4);
             buf.append(VALUE_TRUNCATE_INDICATOR);
 
             return buf.toString();
         } else {
-            return string;
+            return escapedString;
         }
     }
 

@@ -201,4 +201,8 @@ public class EventBuilder {
         m_event.getLogmsg().setContent(content);
     }
 
+    public void setDescription(String descr) {
+        m_event.setDescr(descr);
+    }
+
 }
