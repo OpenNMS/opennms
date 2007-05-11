@@ -996,6 +996,27 @@ CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, s
 CREATE INDEX alarm_app_dn ON alarms(applicationDN);
 CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 
+--########################################################################
+--#
+--# Use this table to add additional custom data about an alarm... somewhat
+--# usefull with automations and will be viewable/editable in the alarm
+--# details WebUI page.
+--#
+--# This table contains the following fields:
+--# alarmID     : The id created from the alarmsNxtId sequence.
+--# attribute   : The custom attribute name
+--# attributeValue : The custom attribute value
+--########################################################################
+
+CREATE TABLE alarm_attributes (
+    alarmID         INTEGER, CONSTRAINT fk_alarmID1 FOREIGN KEY (alarmID) REFERENCES alarms (alarmID) ON DELETE CASCADE,
+    attributeName   VARCHAR(63),
+    attributeValue  VARCHAR(255)
+);
+
+CREATE INDEX alarm_attributes_idx ON alarm_attributes(alarmID);
+CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attributeName);
+
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
 --#
