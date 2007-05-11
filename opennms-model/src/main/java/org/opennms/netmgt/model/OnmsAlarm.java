@@ -553,5 +553,11 @@ public class OnmsAlarm implements Serializable {
     public Map<String, String> getDetails() {
         return m_details;
     }
+    
+    public void setDetails(Map<String, String> alarmDetails) {
+        m_details = alarmDetails;
+    }
+
+
 
 }
