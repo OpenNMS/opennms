@@ -37,6 +37,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,12 +45,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.MapKey;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -159,6 +163,8 @@ public class OnmsAlarm implements Serializable {
     private String m_qosAlarmState;
 
     private int m_x733ProbableCause = 0;
+
+	private Map<String, String> m_details;
 
     /** full constructor */
     public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, TroubleTicketState tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, org.opennms.netmgt.model.OnmsEvent event) {
@@ -538,6 +544,14 @@ public class OnmsAlarm implements Serializable {
 
     public void setLastAutomationTime(Date lastAutomationTime) {
         m_lastAutomationTime = lastAutomationTime;
+    }
+    
+    @CollectionOfElements
+    @JoinTable(name="alarm_details", joinColumns = @JoinColumn(name="alarmId"))
+    @MapKey(columns=@Column(name="attribute"))
+    @Column(name="attributeValue", nullable=false)
+    public Map<String, String> getDetails() {
+        return m_details;
     }
 
 }
