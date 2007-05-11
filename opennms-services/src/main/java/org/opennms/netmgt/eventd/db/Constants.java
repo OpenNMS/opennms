@@ -144,7 +144,7 @@ public class Constants {
         StringBuilder buf = new StringBuilder(inStr.length()+16);
 
         for (char ch : inStr.toCharArray()) {
-            if (ch == delimchar || Character.isISOControl(ch)) {
+            if (ch == delimchar || (Character.isISOControl(ch) && !Character.isWhitespace(ch))) {
                 buf.append('%');
                 buf.append(String.valueOf((int)ch));
             } else {
