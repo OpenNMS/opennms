@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 May 12: Remove command.input.dir. - dj@opennms.org
 // 2007 Apr 08: Switch to use Spring Resources instead of File for the
 //              configuration files, since this is what FileReloadContainer
 //              now uses. - dj@opennms.org
@@ -42,7 +43,6 @@
 //
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -172,7 +172,6 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         AdhocGraphType t = new AdhocGraphType();
         t.setName(type);
         
-        t.setRrdDirectory(new File(getProperty(properties, "command.input.dir")));
         t.setCommandPrefix(getProperty(properties, "command.prefix"));
         t.setOutputMimeType(getProperty(properties, "output.mime"));
         

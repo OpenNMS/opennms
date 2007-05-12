@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 May 12: Remove command.input.dir. - dj@opennms.org
 // 2007 Apr 08: Use Resources instead of Files. - dj@opennms.org
 // 2007 Apr 07: Refactor to use setters and an afterPropertiesSet method for
 //              configuration and initialization instead of configuration
@@ -68,8 +69,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     private static final Map<String, Resource> s_emptyMap = new HashMap<String, Resource>();
     
     final static String s_prefab =
-            "command.input.dir=foo\n"
-            + "command.prefix=foo\n"
+            "command.prefix=foo\n"
             + "output.mime=foo\n"
             + "\n"
             + "reports=mib2.HCbits, mib2.bits, mib2.discards\n"
@@ -134,16 +134,14 @@ public class PropertiesGraphDaoTest extends TestCase {
             + " GPRINT:octOut:MAX:\"Max  \\\\: %8.2lf %s\\\\n\"\n";
     
     private static final String s_adhoc =
-        "command.input.dir=@install.share.dir@/rrd/snmp/\n"
-        + "command.prefix=@install.rrdtool.bin@ graph - --imgformat PNG --start {1} --end {2}\n"
+        "command.prefix=@install.rrdtool.bin@ graph - --imgformat PNG --start {1} --end {2}\n"
         + "output.mime=image/png\n"
         + "adhoc.command.title=--title=\"{3}\"\n"
         + "adhoc.command.ds=DEF:{4}={0}:{5}:{6}\n"
         + "adhoc.command.graphline={7}:{4}#{8}:\"{9}\"\n";
     
     private static final String s_responsePrefab =
-        "command.input.dir=foo\n"
-        + "command.prefix=foo\n"
+        "command.prefix=foo\n"
         + "output.mime=foo\n"
         + "\n"
         + "reports=icmp\n"

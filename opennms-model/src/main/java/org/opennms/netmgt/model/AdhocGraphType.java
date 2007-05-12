@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 12: Remove rrdDirectory. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,11 +35,8 @@
 //
 package org.opennms.netmgt.model;
 
-import java.io.File;
 
 public class AdhocGraphType {
-    private File m_rrdDirectory;
-
     private String m_name;
 
     private String m_commandPrefix;
@@ -58,14 +59,6 @@ public class AdhocGraphType {
 
     public String getName() {
         return m_name;
-    }
-
-    public void setRrdDirectory(File rrdDirectory) {
-        m_rrdDirectory = rrdDirectory;
-    }
-
-    public File getRrdDirectory() {
-        return m_rrdDirectory;
     }
 
     public void setCommandPrefix(String commandPrefix) {
