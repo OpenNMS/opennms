@@ -7,7 +7,11 @@
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-// 
+//
+// Modifications:
+//
+// 2007 May 12: Dedeplicate and use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -48,13 +52,15 @@ import org.apache.log4j.Category;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class ThreadCategory extends Category {
+    private static final String DEFAULT_CATEGORY = "UNCATEGORIZED";
+    
     /**
      * This thread local variable is used to store the category that threads
      * (and their children) should use to log information. If a thread has a set
      * category and then starts a new thread, the new thread will inherit the
      * category of the parent thread.
      */
-    private static InheritableThreadLocal m_tgCategory = new InheritableThreadLocal();
+    private static InheritableThreadLocal<String> s_threadCategory = new InheritableThreadLocal<String>();
 
     /**
      * This constructor created a new Category instance and sets its name. It is
@@ -83,16 +89,13 @@ public class ThreadCategory extends Category {
      * @see java.lang.InheritableThreadLocal
      */
     public static Category getInstance(Class c) {
-        Category cat;
-        String prefix = (String) m_tgCategory.get();
+        String prefix = getPrefix();
 
         if ((prefix != null) && !prefix.equals("")) {
-            cat = Category.getInstance(prefix + "." + c.getName());
+            return Category.getInstance(prefix + "." + c.getName());
         } else {
-            cat = Category.getInstance(c.getName());
+            return Category.getInstance(c.getName());
         }
-
-        return cat;
     }
 
     /**
@@ -109,35 +112,36 @@ public class ThreadCategory extends Category {
      * @see java.lang.InheritableThreadLocal
      */
     public static Category getInstance(String cname) {
-        Category cat;
-        String prefix = (String) m_tgCategory.get();
+        String prefix = getPrefix();
 
         if ((prefix != null) && !prefix.equals("")) {
-            cat = Category.getInstance(prefix + "." + cname);
+            return Category.getInstance(prefix + "." + cname);
         } else {
-            cat = Category.getInstance(cname);
+            return Category.getInstance(cname);
         }
-
-        return cat;
     }
 
     /**
      * This method is used to get the category instance associated with the
-     * thread. If the instance has not been set then a null is returned to the
-     * caller.
+     * thread. If the instance has not been set then a default category is
+     * returned to the caller.
      * 
      * @return The instance for the thread, null if it is not set.
      * 
      * @see java.lang.InheritableThreadLocal
      */
     public static Category getInstance() {
-        if ((String) m_tgCategory.get() != null) {
-            return Category.getInstance((String) m_tgCategory.get());
+        String prefix = getPrefix();
+        
+        if (prefix != null) {
+            return Category.getInstance(prefix);
         } else {
-            // Use the default category anywhere that ThreadCategory
-            // is instantiated without a prefix, classname, or user-
-            // specified string
-            return Category.getInstance("UNCATEGORIZED");
+            /*
+             * Use the default category anywhere that ThreadCategory
+             * is instantiated without a prefix, classname, or user-
+             * specified string.
+             */
+            return Category.getInstance(DEFAULT_CATEGORY);
         }
     }
 
@@ -150,7 +154,7 @@ public class ThreadCategory extends Category {
      * highest level threads.
      */
     public static void setPrefix(String prefix) {
-        m_tgCategory.set(prefix);
+        s_threadCategory.set(prefix);
     }
 
     /**
@@ -162,6 +166,6 @@ public class ThreadCategory extends Category {
      * @return The prefix string as inherieted by the calling thread.
      */
     public static String getPrefix() {
-        return (String) m_tgCategory.get();
+        return s_threadCategory.get();
     }
 }
