@@ -33,43 +33,42 @@ package org.opennms.netmgt.vmmgr;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.ConnectException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Authenticator;
-import java.net.PasswordAuthentication;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StatusGetter {
-    public static final int STATUS_UNKNOWN = 0;
+    public enum Status {
+        UNKNOWN, RUNNING, PARTIALLY_RUNNING, NOT_RUNNING, CONNECTION_REFUSED
+    }
 
-    public static final int STATUS_RUNNING = 1;
-
-    public static final int STATUS_PARTIALLY_RUNNING = 2;
-
-    public static final int STATUS_NOT_RUNNING = 3;
-
-    public static final int STATUS_CONNECTION_REFUSED = 4;
-
-    private static final String s_defaultInvokeURL = "http://127.0.0.1:8181/"
-        + "invoke?objectname=OpenNMS:Name=Manager&operation=status";
+    private static final URL DEFAULT_INVOKE_URL;
 
     private boolean m_verbose = false;
 
-    private URL m_invokeURL;
+    private URL m_invokeURL = DEFAULT_INVOKE_URL;
 
-    private String m_username;
+    private Status m_status = Status.UNKNOWN;
 
-    private String m_password;
+    static {
+        try {
+            DEFAULT_INVOKE_URL = new URL("http://127.0.0.1:8181/"
+                    + "invoke?objectname=OpenNMS:Name=Manager&operation=status");
+        } catch (MalformedURLException e) {
+            // This should never happen
+            throw new UndeclaredThrowableException(e);
+        }
+    }
 
-    private int m_status = STATUS_UNKNOWN;
-
-    public StatusGetter() throws MalformedURLException {
-        m_invokeURL = new URL(s_defaultInvokeURL);
+    public StatusGetter() {
     }
 
     public boolean isVerbose() {
@@ -88,7 +87,7 @@ public class StatusGetter {
         m_invokeURL = invokeURL;
     }
 
-    public int getStatus() {
+    public Status getStatus() {
         return m_status;
     }
 
@@ -124,16 +123,16 @@ public class StatusGetter {
 
         statusGetter.queryStatus();
 
-        if (statusGetter.getStatus() == STATUS_NOT_RUNNING
-                || statusGetter.getStatus() == STATUS_CONNECTION_REFUSED) {
+        if (statusGetter.getStatus() == Status.NOT_RUNNING
+                || statusGetter.getStatus() == Status.CONNECTION_REFUSED) {
             System.exit(3); // According to LSB: 3 - service not running
-        } else if (statusGetter.getStatus() == STATUS_PARTIALLY_RUNNING) {
+        } else if (statusGetter.getStatus() == Status.PARTIALLY_RUNNING) {
             /*
              * According to LSB: reserved for application So, I say 160 -
              * partially running
              */
             System.exit(160);
-        } else if (statusGetter.getStatus() == STATUS_RUNNING) {
+        } else if (statusGetter.getStatus() == Status.RUNNING) {
             System.exit(0); // everything should be good and running
         } else {
             throw new Exception("Unknown status returned from "
@@ -159,7 +158,7 @@ public class StatusGetter {
                         + "could be starting up or shutting down): "
                         + e.getMessage());
             }
-            m_status = STATUS_CONNECTION_REFUSED;
+            m_status = Status.CONNECTION_REFUSED;
             return;
         }
 
@@ -183,7 +182,7 @@ public class StatusGetter {
         }
         statusResults = statusResults.substring(0, i);
 
-        LinkedHashMap results = new LinkedHashMap();
+        LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
         Pattern p = Pattern.compile("Status: OpenNMS:Name=(\\S+) = (\\S+)");
 
         /*
@@ -222,9 +221,9 @@ public class StatusGetter {
         String spaces = "               ";
         int running = 0;
         int services = 0;
-        for (Iterator it = results.keySet().iterator(); it.hasNext();) {
-            String daemon = (String) it.next();
-            String status = ((String) results.get(daemon)).toLowerCase();
+        for (Entry<String, String> entry : results.entrySet()) {
+            String daemon = entry.getKey();
+            String status = entry.getValue().toLowerCase();
 
             services++;
             if (status.equals("running")) {
@@ -237,11 +236,11 @@ public class StatusGetter {
         }
 
         if (services == 0) {
-            m_status = STATUS_NOT_RUNNING;
+            m_status = Status.NOT_RUNNING;
         } else if (running != services) {
-            m_status = STATUS_PARTIALLY_RUNNING;
+            m_status = Status.PARTIALLY_RUNNING;
         } else {
-            m_status = STATUS_RUNNING;
+            m_status = Status.RUNNING;
         }
     }
 }

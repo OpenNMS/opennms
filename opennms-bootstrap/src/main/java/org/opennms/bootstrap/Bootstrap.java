@@ -239,7 +239,7 @@ public class Bootstrap {
      * <li>jcifs.properties: ClassLoader.getResource("jcifs.properties")</li>
      * </ul>
      * </li>
-     * <li>Finally, the main method of org.opennms.netmgt.vmmgr.Manager is
+     * <li>Finally, the main method of org.opennms.netmgt.vmmgr.Controller is
      * invoked with the parameters passed in argv.</li>
      * </ul>
      * 
@@ -293,7 +293,7 @@ public class Bootstrap {
             System.setProperty(opennmsHomeProperty, parent.getPath());
         }
         
-        final String classToExec = System.getProperty("opennms.manager.class", "org.opennms.netmgt.vmmgr.Manager");
+        final String classToExec = System.getProperty("opennms.manager.class", "org.opennms.netmgt.vmmgr.Controller");
         final String classToExecMethod = "main";
         final String[] classToExecArgs = args;
 
@@ -306,33 +306,6 @@ public class Bootstrap {
                     + File.separator + "etc";
         }
         final ClassLoader cl = Bootstrap.loadClasses(dir, false);
-
-        URL url;
-
-        if (System.getProperty("opennms.library.jicmp") == null) {
-            url = cl.getResource(System.mapLibraryName("jicmp"));
-            if (url != null) {
-                System.setProperty("opennms.library.jicmp", url.getPath());
-            }
-        }
-
-        if (System.getProperty("opennms.library.jrrd") == null) {
-            url = cl.getResource(System.mapLibraryName("jrrd"));
-            if (url != null) {
-                System.setProperty("opennms.library.jrrd", url.getPath());
-            }
-        }
-
-        if (System.getProperty("log4j.configuration") == null) {
-            System.setProperty("log4j.configuration", "log4j.properties");
-        }
-
-        if (System.getProperty("jcifs.properties") == null) {
-            url = cl.getResource("jcifs.properties");
-            if (url != null) {
-                System.setProperty("jcifs.properties", url.getPath());
-            }
-        }
 
         if (classToExec != null) {
             final String className = classToExec;

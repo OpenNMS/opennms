@@ -1,74 +1,54 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
-// reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included
-// code and modified
-// code that was published under the GNU General Public License. Copyrights
-// for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2003 Jan 31: Cleaned up some unused imports.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-// reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact:
-// OpenNMS Licensing <license@opennms.org>
-// http://www.opennms.org/
-// http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+ * reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included
+ * code and modified
+ * code that was published under the GNU General Public License. Copyrights
+ * for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2003 Jan 31: Cleaned up some unused imports.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+ * reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.vmmgr;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.Authenticator;
-import java.net.ConnectException;
-import java.net.PasswordAuthentication;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
-import javax.management.Attribute;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.service.Argument;
-import org.opennms.netmgt.config.service.Invoke;
-import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.protocols.icmp.IcmpSocket;
@@ -103,173 +83,57 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * @author <a href="http://www.opennms.org">OpenNMS.org</a>
  */
 public class Manager implements ManagerMBean {
-    private static class InvokerService {
-        private Service m_service;
-        private ObjectInstance m_mbean;
-        private Throwable m_badThrowable;
-        
-        private InvokerService() {
-            // doesn't do anything
-        }
-        
-        private static InvokerService[] createServiceArray(Service[] services) {
-            InvokerService[] invokerServices =
-                new InvokerService[services.length];
-            
-            for (int i = 0; i < services.length; i++) {
-                invokerServices[i] = new InvokerService();
-                invokerServices[i].setService(services[i]);
-            }
-            
-            return invokerServices;
-        }
-        
-        private void setBadThrowable(Throwable badThrowable) {
-            m_badThrowable = badThrowable;
-        }
-        
-        private ObjectInstance getMbean() {
-            return m_mbean;
-        }
-        
-        private void setMbean(ObjectInstance mbean) {
-            m_mbean = mbean;
-        }
-        
-        private Service getService() {
-            return m_service;
-        }
-        
-        private void setService(Service service) {
-            m_service = service;
-        }
-
-        public boolean isBadService() {
-            return (m_badThrowable != null);
-        }
-    }
-
-    private static class InvokerResult {
-        private Service m_service;
-        private ObjectInstance m_mbean;
-        private Object m_result;
-        private Throwable m_throwable;
-        
-        private InvokerResult(Service service, ObjectInstance mbean,
-                              Object result, Throwable throwable) {
-            m_service = service;
-            m_mbean = mbean;
-            m_result = result;
-            m_throwable = throwable;
-        }
-        
-        private ObjectInstance getMbean() {
-            return m_mbean;
-        }
-        
-        private Object getResult() {
-            return m_result;
-        }
-        
-        private Throwable getThrowable() {
-            return m_throwable;
-        }
-
-        private Service getService() {
-            return m_service;
-        }
-
-    }
-
-    /**
-     * Default invoker URL. This is used for getting status information from a
-     * running OpenNMS instance.
-     */
-    public static final String s_defaultInvokeUrl =
-        "http://127.0.0.1:8181/invoke?objectname=OpenNMS%3AName=Manager";
-
     /**
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
 
-    public static Attribute getAttribute(
-            org.opennms.netmgt.config.service.Attribute attrib)
-            throws Exception {
-        Class attribClass = Class.forName(attrib.getValue().getType());
-        Constructor construct =
-            attribClass.getConstructor(new Class[] { String.class });
-
-        Object value =
-            construct.newInstance(new Object[] { attrib.getValue().getContent() });
-
-        return new Attribute(attrib.getName(), value);
-    }
-
-    public static Object getArgument(Argument arg) throws Exception {
-        Class argClass = Class.forName(arg.getType());
-        Constructor construct =
-            argClass.getConstructor(new Class[] { String.class });
-
-        return construct.newInstance(new Object[] { arg.getContent() });
-    }
-
-    public static void start(MBeanServer server) {
-        log().debug("Beginning startup");
-        List<InvokerResult> resultInfo = getInstancesAndInvoke(server, true,
-                                                InvokeAtType.START, false,
-                                                true);
-        InvokerResult result = resultInfo.get(resultInfo.size() - 1);
-        if (result != null && result.getThrowable() != null) {
-            Service service = result.getService();
-            String name = service.getName();
-            String className = service.getClassName();
-            
-            String message =
-                "An error occurred while attempting to start the \"" +
-                name + "\" service (class " + className + ").  "
-                + "Shutting down and exiting.";
-            log().fatal(message, result.getThrowable());
-            System.err.println(message);
-            result.getThrowable().printStackTrace();
-            stop(server);
-            new Manager().doSystemExit();
-            // Shouldn't get here
-            return;
-        }
-        log().debug("Startup complete");
-    }
-
     public void stop() {
-        List servers = MBeanServerFactory.findMBeanServer(null);
-        for (Iterator i = servers.iterator(); i.hasNext(); ) {
-            MBeanServer server = (MBeanServer) i.next();
+        setLogPrefix();
+
+        for (MBeanServer server : getMBeanServers()) {
             stop(server);
         }
     }
-
-    public static void stop(MBeanServer server) {
+    
+    private void stop(MBeanServer server) {
         log().debug("Beginning shutdown");
-        getInstancesAndInvoke(server, false, InvokeAtType.STOP, true, false);
+        Invoker invoker = new Invoker();
+        invoker.setServer(server);
+        invoker.setAtType(InvokeAtType.STOP);
+        invoker.setReverse(true);
+        invoker.setFailFast(false);
+        
+        List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+        invoker.setServices(services);
+        invoker.getObjectInstances();
+        invoker.invokeMethods();
 
         log().debug("Shutdown complete");
     }
     
     public List<String> status() {
-        List servers = MBeanServerFactory.findMBeanServer(null);
+        setLogPrefix();
+
         List<String> result = new ArrayList<String>();
-        for (Iterator i = servers.iterator(); i.hasNext(); ) {
-            MBeanServer server = (MBeanServer) i.next();
+        for (MBeanServer server : getMBeanServers()) {
             result.addAll(status(server));
         }
         return result;
     }
     
-    public static List<String> status(MBeanServer server) {
+    private List<String> status(MBeanServer server) {
         log().debug("Beginning status check");
-        List<InvokerResult> results = getInstancesAndInvoke(server, false,
-                                             InvokeAtType.STATUS, false,
-                                             false);
+        Invoker invoker = new Invoker();
+        invoker.setServer(server);
+        invoker.setAtType(InvokeAtType.STATUS);
+        invoker.setFailFast(false);
+        
+        List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+        invoker.setServices(services);
+        
+        invoker.getObjectInstances();
+        List<InvokerResult> results = invoker.invokeMethods();
         
         List<String> statusInfo = new ArrayList<String>(results.size());
         for (InvokerResult invokerResult : results) {
@@ -288,223 +152,6 @@ public class Manager implements ManagerMBean {
         return statusInfo;
     }
 
-    public static List<InvokerResult> getInstancesAndInvoke(MBeanServer server,
-                                             boolean instantiate,
-                                             InvokeAtType at,
-                                             boolean reverse,
-                                             boolean failFast) {
-        ServiceConfigFactory sfact = null;
-        try {
-            ServiceConfigFactory.init();
-            sfact = ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-
-        InvokerService[] services =
-            InvokerService.createServiceArray(sfact.getServices());
-
-        if (instantiate) {
-            instantiateClasses(server, services);
-        } else {
-            getObjectInstances(server, services);
-        }
-
-        return invokeMethods(server, services, at, reverse, failFast);
-    }
-    
-    private static void instantiateClasses(MBeanServer server,
-                                           InvokerService[] invokerServices) {
-        /*
-         * Preload the classes and register a new instance with the
-         * MBeanServer.
-         */
-        for (InvokerService invokerService : invokerServices) {
-            Service service = invokerService.getService();
-            try {
-                // preload the class
-                if (log().isDebugEnabled()) {
-                    log().debug("loading class " + service.getClassName());
-                }
-
-                Class cinst = Class.forName(service.getClassName());
-
-                // Get a new instance of the class
-                if (log().isDebugEnabled()) {
-                    log().debug("create new instance of "
-                            + service.getClassName());
-                }
-                Object bean = cinst.newInstance();
-
-                // Register the mbean
-                if (log().isDebugEnabled()) {
-                    log().debug("registering mbean instance "
-                            + service.getName());
-                }
-                ObjectName name = new ObjectName(service.getName());
-                invokerService.setMbean(server.registerMBean(bean, name));
-
-                // Set attributes
-                org.opennms.netmgt.config.service.Attribute[] attribs =
-                    service.getAttribute();
-                if (attribs != null) {
-                    for (int j = 0; j < attribs.length; j++) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("setting attribute "
-                                    + attribs[j].getName());
-                        }
-
-                        server.setAttribute(name, getAttribute(attribs[j]));
-                    }
-                }
-            } catch (Throwable t) {
-                log().error("An error occured loading the mbean "
-                          + service.getName() + " of type "
-                          + service.getClassName() + " it will be skipped",
-                          t);
-                invokerService.setBadThrowable(t);
-            }
-        }
-    }
-
-    public static void getObjectInstances(MBeanServer server,
-                                          InvokerService[] invokerServices) {
-        for (int i = 0; i < invokerServices.length; i++) {
-            Service service = invokerServices[i].getService();
-            try {
-                // find the mbean
-                if (log().isDebugEnabled()) {
-                    log().debug("finding mbean instance "
-                              + service.getName());
-                }
-
-                ObjectName name = new ObjectName(service.getName());
-                invokerServices[i].setMbean(server.getObjectInstance(name));
-            } catch (Throwable t) {
-                log().error("An error occured loading the mbean "
-                          + service.getName() + " of type "
-                          + service.getClassName() + " it will be skipped",
-                          t);
-                invokerServices[i].setBadThrowable(t);
-            }
-        }
-    }
-
-    private static List<InvokerResult> invokeMethods(MBeanServer server,
-            InvokerService[] invokerServices,
-            InvokeAtType at, boolean reverse,
-            boolean failFast) {
-        Integer[] serviceIndexes = new Integer[invokerServices.length];
-        for (int i = 0; i < invokerServices.length; i++) {
-            if (!reverse) {
-                serviceIndexes[i] = new Integer(i);
-            } else {
-                serviceIndexes[i] = new Integer(invokerServices.length - 1 - i);
-            }
-        }
-
-        List<InvokerResult> resultInfo = new ArrayList<InvokerResult>(invokerServices.length);
-        for (int pass = 0, end = getEndPass(invokerServices); pass <= end; pass++) {
-            if (log().isDebugEnabled()) {
-                log().debug("starting pass " + pass);
-            }
-
-            for (Integer serviceIndex : serviceIndexes) {
-                String name = invokerServices[serviceIndex].getService().getName();
-                if (invokerServices[serviceIndex].isBadService()) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("pass " + pass + " on service " + name
-                                + " is bad: not invoking any more methods"); 
-                    }
-                    break;
-                }
-                Invoke[] todo = invokerServices[serviceIndex].getService().getInvoke();
-                for (Invoke todoItem : todo) {
-                    if (todoItem.getPass() != pass || !at.equals(todoItem.getAt())) {
-                        continue;
-                    }
-
-                    Service service = invokerServices[serviceIndex].getService();
-                    ObjectInstance mbean = invokerServices[serviceIndex].getMbean();
-
-                    if (log().isDebugEnabled()) {
-                        log().debug("pass " + pass + " on service " + name
-                                + " will invoke method \""
-                                + todoItem.getMethod() + "\""); 
-                    }
-
-                    try {
-                        Object result = invoke(server, todoItem, mbean);
-                        resultInfo.add(new InvokerResult(service, mbean, result, null));
-                    } catch (Throwable t) {
-                        resultInfo.add(new InvokerResult(service, mbean, null, t));
-                        if (failFast) {
-                            return resultInfo;
-                        }
-                    }
-                }
-            }
-            if (log().isDebugEnabled()) {
-                log().debug("completed pass " + pass);
-            }
-        }
-
-        return resultInfo;
-    }
-
-    private static Category log() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        return ThreadCategory.getInstance(LOG4J_CATEGORY);
-    }
-
-    private static int getEndPass(InvokerService[] invokerServices) {
-        int end = 0;
-        for (int i = 0; i < invokerServices.length; i++) {
-            Invoke[] todo = invokerServices[i].getService().getInvoke();
-            for (int j = 0; todo != null && j < todo.length; j++) {
-                if (end < todo[j].getPass()) {
-                    end = todo[j].getPass();
-                }
-            }
-        }
-        
-        return end;
-    }
-
-    private static Object invoke(MBeanServer server, Invoke invoke,
-                                 ObjectInstance mbean) throws Throwable {
-
-        // invoke!
-        try {
-            // get the arguments
-            Argument[] args = invoke.getArgument();
-            Object[] parms = new Object[0];
-            String[] sig = new String[0];
-            if (args != null && args.length > 0) {
-                parms = new Object[args.length];
-                sig = new String[args.length];
-                for (int k = 0; k < parms.length; k++) {
-                    parms[k] = getArgument(args[k]);
-                    sig[k] = parms[k].getClass().getName();
-                }
-            }
-
-            if (log().isDebugEnabled()) {
-                log().debug("Invoking " + invoke.getMethod()
-                          + " on object "
-                          + mbean.getObjectName());
-            }
-
-            return server.invoke(mbean.getObjectName(),
-                                 invoke.getMethod(), parms, sig);
-        } catch (Throwable t) {
-            log().error("An error occured invoking operation "
-                      + invoke.getMethod() + " on MBean "
-                      + mbean.getObjectName(), t);
-            throw t;
-        }
-    }
-
     /**
      * Uncleanly shutdown OpenNMS.  This method calls
      * {@see java.lang.System.exit(int)}, which causes the JVM to
@@ -514,308 +161,53 @@ public class Manager implements ManagerMBean {
      * @return does not return
      */
     public void doSystemExit() {
+        setLogPrefix();
+
         log().debug("doSystemExit called... exiting.");
+        shutdownLogging();
         System.exit(1);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void shutdownLogging() {
+        Logger.shutdown();
     }
     
     public void doTestLoadLibraries() {
-        IcmpSocket s = null;
+        setLogPrefix();
 
+        testIcmpSocket();
+        testRrdInitialize();
+    }
+
+    private void testIcmpSocket() {
+        IcmpSocket s = null;
         try {
             s = new IcmpSocket();
         } catch (Throwable t) {
-            String message = "Could not initialize ICMP socket: "
-                + t.getMessage();
-            throw new UndeclaredThrowableException(t, message);
+            throw new UndeclaredThrowableException(t, ("Could not initialize ICMP socket: " + t.getMessage()));
         }
         s.close();
+    }
 
+    private void testRrdInitialize() {
         try {
             RrdUtils.initialize();
         } catch (Throwable t) {
-            String message = "Could not initialize RRD subsystem: "
-                + t.getMessage();
-            throw new UndeclaredThrowableException(t, message);
+            throw new UndeclaredThrowableException(t, ("Could not initialize RRD subsystem: " + t.getMessage()));
         }
     }
 
-    public static void main(String[] argv) {
-        String invokeUrl = s_defaultInvokeUrl;
-        boolean verbose = false;
-
+    private void setLogPrefix() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        /*
-         * Setup Authenticator so that we can provide authentication, if
-         * needed, when go to connect to the URL
-         */
-        Authenticator.setDefault(getAuthenticator());
-
-        // set up the JMX logging
-        mx4j.log.Log.redirectTo(new mx4j.log.Log4JLogger());
-        
-        loadGlobalProperties();
-
-        for (int i = 0; i < argv.length; i++) {
-            if (argv[i].equals("-h")) {
-                System.out.println("Usage: java org.opennms.netmgt.vmmgr.Manager "
-                                   + "[<options>] <command>");
-                System.out.println("Accepted options:");
-                System.out.println("        -v              Verbose mode.");
-                System.out.println("        -u <URL>        Alternate invoker URL.");
-                System.out.println("");
-                System.out.println("Accepted commands: start, stop, status");
-                System.out.println("");
-                System.out.println("The default invoker URL is: "
-                        + s_defaultInvokeUrl);
-                System.exit(0);
-            } else if (argv[i].equals("-v")) {
-                verbose = true;
-            } else if (argv[i].equals("-u")) {
-                invokeUrl = argv[i + 1];
-                i++;
-            } else if (i != (argv.length - 1)) {
-                System.err.println("Invalid command-line option: \""
-                        + argv[i] + "\".  Use \"-h\" option for help.");
-                System.exit(1);
-            } else {
-                break;
-            }
-        }
-
-        if (argv.length == 0) {
-            System.err.println("You must specify a command.  Use \"-h\""
-                               + " option for help");
-            System.exit(1);
-        }
-
-        String command = argv[argv.length - 1];
-
-        if ("start".equals(command)) {
-            doStartCommand();
-        } else if ("stop".equals(command)) {
-            doStopCommand(verbose, invokeUrl);
-        } else if ("status".equals(command)) {
-            doStatusCommand(verbose, invokeUrl);
-        } else if ("check".equals(command)) {
-            doCheckCommand();
-        } else if ("exit".equals(command)) {
-            doExitCommand(verbose, invokeUrl);
-        } else {
-            System.err.println("Invalid command \"" + command + "\".");
-            System.err.println("Use \"-h\" option for help.");
-            System.exit(1);
-        }
     }
 
-    private static void loadGlobalProperties() {
-        File propertiesFile = getPropertiesFile();
-        if (!propertiesFile.exists()) {
-            // don't require the file
-            return;
-        }
-        
-        Properties props = new Properties(System.getProperties());
-        InputStream fin = null;
-        try {
-            fin = new FileInputStream(propertiesFile);
-            props.load(fin);
-        } catch (IOException e) {
-            System.err.println("Error trying to read "+propertiesFile+": "+e.getMessage());
-            System.exit(1);
-        } finally {
-            closeQuietly(fin);
-        }
-        
-        
-        System.setProperties(props);
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
-    private static File getPropertiesFile() {
-        String homeDir = System.getProperty("opennms.home");
-        File etcDir = new File(homeDir, "etc");
-        File propertiesFile = new File(etcDir, "opennms.properties");
-        return propertiesFile;
-    }
-    
-    private static void closeQuietly(InputStream in) {
-        try {
-            if (in != null) in.close();
-        } catch (IOException e) {
-            // ignore this
-        }
-    }
-
-    private static void doStartCommand() {
-        MBeanServer server = MBeanServerFactory.createMBeanServer("OpenNMS");
-        start(server);
-    }
-
-    private static void doStopCommand(boolean verbose, String invokeUrl) {
-        invokeOperation(verbose, invokeUrl, "stop");
-    }
-    
-    private static void doStatusCommand(boolean verbose, String invokeUrl) {
-        try {
-            StatusGetter statusGetter = new StatusGetter();
-
-            statusGetter.setVerbose(verbose);
-            statusGetter.setInvokeURL(new URL(invokeUrl
-                    + "&operation=status"));
-
-            statusGetter.queryStatus();
-
-            if (statusGetter.getStatus() == StatusGetter.STATUS_NOT_RUNNING
-                    || statusGetter.getStatus() == StatusGetter.STATUS_CONNECTION_REFUSED) {
-                System.exit(3); // According to LSB: 3 - service not running
-            } else if (statusGetter.getStatus() == StatusGetter.STATUS_PARTIALLY_RUNNING) {
-                /*
-                 * According to LSB: reserved for application So, I say
-                 * 160 - partially running
-                 */
-                System.exit(160);
-            } else if (statusGetter.getStatus() == StatusGetter.STATUS_RUNNING) {
-                System.exit(0); // everything should be good and running
-            } else {
-                String message = "Unknown status returned from "
-                    + "statusGetter.getStatus(): "
-                    + statusGetter.getStatus();
-                System.err.println(message);
-                log().error(message);
-                System.exit(1);
-            }
-        } catch (Throwable t) {
-            log().error("error invoking status command", t);
-            System.exit(1);
-        }
-    }
-
-    private static void doCheckCommand() {
-        try {
-            DatabaseChecker checker = new DatabaseChecker();
-            checker.check();
-        } catch (Throwable t) {
-            log().error("error invoking check command", t);
-            System.err.println(t);
-            System.exit(1);
-        }
-        System.exit(0);
-    }
-
-    private static void doExitCommand(boolean verbose, String invokeUrl) {
-        invokeOperation(verbose, invokeUrl, "doSystemExit");
-    }
-    
-    private static void invokeOperation(boolean verbose, String invokeUrl,
-                                        String operation) {
-        String urlString = invokeUrl + "&operation=" + operation;
-        try {
-            URL invoke = new URL(urlString);
-            InputStream in = invoke.openStream();
-            int ch;
-            while ((ch = in.read()) != -1) {
-                System.out.write((char) ch);
-            }
-            in.close();
-            System.out.println("");
-            System.out.flush();
-            System.exit(0);
-        } catch (ConnectException e) {
-            log().error(e.getMessage() + " when attempting to fetch URL \""
-                      + urlString + "\"");
-            if (verbose) {
-                System.out.println(e.getMessage()
-                                   + " when attempting to fetch URL \""
-                                   + urlString + "\"");
-            }
-            System.exit(1);
-        } catch (Throwable t) {
-            log().error("error invoking " + operation + " operation", t);
-            System.out.println("error invoking " + operation + " operation");
-            t.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    private static Authenticator getAuthenticator() {
-        ServiceConfigFactory sfact = null;
-        try {
-            ServiceConfigFactory.init();
-            sfact = ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-
-        // allocate some storage locations
-        Service[] services = sfact.getServices();
-
-        Service service = null;
-        for (int i = 0; i < services.length; i++) {
-            if (services[i].getName().equals(":Name=HttpAdaptorMgmt")) {
-                service = services[i];
-                break;
-            }
-        }
-        
-        if (service == null) {
-            // Didn't find the service we were looking for
-            return null;
-        }
-
-        org.opennms.netmgt.config.service.Attribute[] attribs =
-            service.getAttribute();
-
-        if (attribs == null) {
-            // the AuthenticationMethod is not set, so no authentication
-            return null;
-        }
-
-        boolean usingBasic = false;
-        for (int j = 0; j < attribs.length; j++) {
-            if (attribs[j].getName().equals("AuthenticationMethod")) {
-                if (!attribs[j].getValue().getContent().equals("basic")) {
-                    log().error("AuthenticationMethod is \""
-                              + attribs[j].getValue()
-                              + "\", but only \"basic\" is supported");
-                    return null;
-                }
-                usingBasic = true;
-                break;
-            }
-        }
-            
-        if (!usingBasic) {
-            // AuthenticationMethod is not set to basic, so no authentication
-            return null;
-        }
-
-        String username = null;
-        String password = null;
-        Invoke[] invokes = service.getInvoke();
-        for (int j = 0; invokes != null && j < invokes.length; j++) {
-            if (invokes[j].getMethod().equals("addAuthorization")) {
-                Argument[] args = invokes[j].getArgument();
-                if (args != null && args.length == 2
-                        && args[0].getContent().equals("manager")) {
-                    username = args[0].getContent();
-                    password = args[1].getContent();
-                    break;
-                }
-            }
-        }
-            
-        if (username == null || password == null) {
-            // Didn't find a username or password
-            return null;
-        }
-            
-        final String username_f = username;
-        final String password_f = password;
-        return new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username_f,
-                                                  password_f.toCharArray());
-            }
-        };
+    @SuppressWarnings("unchecked")
+    private List<MBeanServer> getMBeanServers() {
+        return MBeanServerFactory.findMBeanServer(null);
     }
 }
