@@ -460,6 +460,7 @@ opennms.home = ${opennms.home}
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
     <install.daemonlogs.dir>${install.logs.dir}/daemon</install.daemonlogs.dir>
+    <install.controllerlogs.dir>${install.logs.dir}/controller</install.controllerlogs.dir>
     <install.webapplogs.dir>${install.logs.dir}/webapp</install.webapplogs.dir>
     <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
 
