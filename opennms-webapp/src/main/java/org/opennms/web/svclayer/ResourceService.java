@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 12: Add getRrdDirectory(). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,6 +35,7 @@
 //
 package org.opennms.web.svclayer;
 
+import java.io.File;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsResource;
@@ -39,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 public interface ResourceService {
+    public File getRrdDirectory();
     public List<OnmsResource> findNodeResources();
     public List<OnmsResource> findDomainResources();
     public List<OnmsResource> findNodeChildResources(int nodeId);
