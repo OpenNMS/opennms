@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 May 12: Reorganize, use Java 5 generics/loops, get RRD directories
+//              from the ResourceService. - dj@opennms.org
 // 2002 Nov 12: Added the ability to delete data dirs when deleting nodes.
 // 2002 Nov 10: Removed "http://" from UEIs and references to bluebird.
 // 2002 Oct 22: Removed the need for a restart.
@@ -40,32 +42,35 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.Date;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.Util;
+import org.opennms.web.svclayer.ResourceService;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * A servlet that handles deleting nodes from the database
@@ -74,103 +79,102 @@ import org.opennms.web.Util;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class DeleteNodesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
+    private File m_snmpRrdDirectory;
+
+    private File m_rtRrdDirectory;
+
+    private ResourceService m_resourceService;
+
+    @Override
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
         } catch (Exception e) {
-            throw new ServletException("Could not initialize database factory: " + e.getMessage(), e);
+            throw new ServletException("Could not initialize database factory: " + e, e);
         }
 
+        WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
+
+        m_snmpRrdDirectory = new File(m_resourceService.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY);
+        log().debug("SNMP RRD directory: " + m_snmpRrdDirectory);
+
+        m_rtRrdDirectory = new File(m_resourceService.getRrdDirectory(), DefaultResourceDao.RESPONSE_DIRECTORY);
+        log().debug("Response time RRD directory: " + m_rtRrdDirectory);
     }
 
-    public static final String RRDTOOL_SNMP_GRAPH_PROPERTIES_FILENAME = "/etc/snmp-graph.properties";
-
-    public static final String RRDTOOL_RT_GRAPH_PROPERTIES_FILENAME = "/etc/response-graph.properties";
-
-    protected Properties snmpProps;
-
-    protected File snmpRrdDirectory;
-
-    protected Properties rtProps;
-
-    protected File rtRrdDirectory;
-
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession userSession = request.getSession(false);
+        List<Integer> nodeList = getList(request.getParameterValues("nodeCheck"));
+        List<Integer> nodeDataList = getList(request.getParameterValues("nodeData"));
 
-        // the list of all nodes marked for deletion
-        java.util.List nodeList = getList(request.getParameterValues("nodeCheck"));
-        java.util.List nodeDataList = getList(request.getParameterValues("nodeData"));
+        for (Integer nodeId : nodeDataList) {
+            // Get a list of response time IP address lists
+            List<String> ipAddrs = getIpAddrsForNode(nodeId);
 
-        // get the directories storing the response time and SNMP data
-        this.snmpProps = new java.util.Properties();
-        this.snmpProps.load(new FileInputStream(Vault.getHomeDir() + RRDTOOL_SNMP_GRAPH_PROPERTIES_FILENAME));
-
-        this.snmpRrdDirectory = new File(this.snmpProps.getProperty("command.input.dir"));
-
-        this.rtProps = new java.util.Properties();
-        this.rtProps.load(new FileInputStream(Vault.getHomeDir() + RRDTOOL_RT_GRAPH_PROPERTIES_FILENAME));
-
-        this.rtRrdDirectory = new File(this.rtProps.getProperty("command.input.dir"));
-
-        // delete data directories if desired
-        for (int j = 0; j < nodeDataList.size(); j++) {
             // SNMP RRD directory
-            File nodeDir = new File(this.snmpRrdDirectory, (String) nodeDataList.get(j));
+            File nodeDir = new File(m_snmpRrdDirectory, nodeId.toString());
 
             if (nodeDir.exists() && nodeDir.isDirectory()) {
-                this.log("DEBUG: Attempting to Delete Node Data Directory: " + nodeDir.getAbsolutePath());
-                if (deleteDir(nodeDir))
-                    this.log("DEBUG: Node Data Directory Deleted Successfully");
-            }
-            StringBuffer select = new StringBuffer("SELECT DISTINCT ipaddr FROM ipinterface WHERE nodeid=");
-
-            select.append((String) nodeDataList.get(j));
-
-            try {
-                Connection conn = Vault.getDbConnection();
-                ArrayList intfs = new ArrayList();
-
-                try {
-                    Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery(select.toString());
-
-                    while (rs.next()) {
-                        String ipAddr = rs.getString("ipaddr");
-                        // Response Time RRD directory
-                        File intfDir = new File(this.rtRrdDirectory, ipAddr);
-
-                        if (intfDir.exists() && intfDir.isDirectory()) {
-                            this.log("DEBUG: Attempting to Delete Node Response Time Data Directory: " + intfDir.getAbsolutePath());
-                            if (deleteDir(intfDir))
-                                this.log("DEBUG: Node Response Time Data Directory Deleted Successfully");
-                        }
-                    }
-                    rs.close();
-                    stmt.close();
-                } finally {
-                    Vault.releaseDbConnection(conn);
+                log().debug("Attempting to delete node data directory: " + nodeDir.getAbsolutePath());
+                if (deleteDir(nodeDir)) {
+                    log().info("Node SNMP data directory deleted successfully: " + nodeDir.getAbsolutePath());
+                } else {
+                    log().warn("Node SNMP data directory *not* deleted successfully: " + nodeDir.getAbsolutePath());
                 }
-            } catch (SQLException e) {
-                throw new ServletException("There was a problem with the database connection: " + e.getMessage(), e);
+            }
+            
+            // Response time RRD directories
+            for (String ipAddr : ipAddrs) {
+                File intfDir = new File(m_rtRrdDirectory, ipAddr);
+
+                if (intfDir.exists() && intfDir.isDirectory()) {
+                    log().debug("Attempting to delete node response time data directory: " + intfDir.getAbsolutePath());
+                    if (deleteDir(intfDir)) {
+                        log().info("Node response time data directory deleted successfully: " + intfDir.getAbsolutePath());
+                    } else {
+                        log().warn("Node response time data directory *not* deleted successfully: " + intfDir.getAbsolutePath());
+                    }
+                }
             }
         }
 
-        // Now, Delete the node from the database
-
-        for (int s = 0; s < nodeList.size(); s++) {
-            int nodeid = Integer.parseInt((String) nodeList.get(s));
-            sendDeleteNodeEvent(nodeid);
-
-            this.log("DEBUG: End of Delete of Node Number: " + nodeList.get(s));
-
-        } // end s loop
+        // Now, tell capsd to delete the node from the database
+        for (Integer nodeId : nodeList) {
+            sendDeleteNodeEvent(nodeId);
+            log().debug("End of delete of node " + nodeId);
+        }
 
         // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/deleteNodesFinish.jsp");
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/admin/deleteNodesFinish.jsp");
         dispatcher.forward(request, response);
+    }
 
+    private List<String> getIpAddrsForNode(Integer nodeId) throws ServletException {
+        List<String> ipAddrs = new ArrayList<String>();
+        try {
+            Connection conn = Vault.getDbConnection();
+
+            try {
+                PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT ipaddr FROM ipinterface WHERE nodeid=?");
+                stmt.setInt(1, nodeId);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    ipAddrs.add(rs.getString("ipaddr"));
+                }
+
+                rs.close();
+                stmt.close();
+            } finally {
+                Vault.releaseDbConnection(conn);
+            }
+        } catch (SQLException e) {
+            throw new ServletException("There was a problem with the database connection: " + e, e);
+        }
+        return ipAddrs;
     }
 
     private void sendDeleteNodeEvent(int node) throws ServletException {
@@ -178,17 +182,15 @@ public class DeleteNodesServlet extends HttpServlet {
         nodeDeleted.setUei("uei.opennms.org/internal/capsd/deleteNode");
         nodeDeleted.setSource("web ui");
         nodeDeleted.setNodeid(node);
-        nodeDeleted.setTime(EventConstants.formatToString(new java.util.Date()));
+        nodeDeleted.setTime(EventConstants.formatToString(new Date()));
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
         // Add Transaction ID
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent("webUI");
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -207,35 +209,44 @@ public class DeleteNodesServlet extends HttpServlet {
         }
     }
 
-    private java.util.List getList(String array[]) {
-        java.util.List newList = new ArrayList();
-
-        if (array != null) {
-            for (int i = 0; i < array.length; i++) {
-                newList.add(array[i]);
-            }
+    private List<Integer> getList(String[] array) {
+        if (array == null) {
+            return new ArrayList<Integer>(0);
         }
-
-        return newList;
+        
+        List<Integer> list = new ArrayList<Integer>(array.length);
+        for (String a : array) {
+            list.add(Integer.parseInt(a));
+        }
+        return list;
     }
 
-    // Deletes all files and subdirectories under dir.
-    // Returns true if all deletions were successful.
-    // If a deletion fails, the method stops attempting to delete and returns
-    // false.
-    public static boolean deleteDir(File dir) {
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) {
+    /**
+     * Deletes all files and sub-directories under the specified directory
+     * If a deletion fails, the method stops attempting to delete and returns
+     * false.
+     * 
+     * @return true if all deletions were successful, false otherwise.
+     */
+    private boolean deleteDir(File file) {
+        // If this file is a directory, delete all of its children
+        if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                if (!deleteDir(child)) {
                     return false;
                 }
             }
         }
 
-        // The directory is now empty so delete it
-        return dir.delete();
+        // Delete the file/directory itself
+        boolean successful = file.delete();
+        if (!successful) {
+            log().warn("Failed to delete file: " + file.getAbsolutePath());
+        }
+        return successful;
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }
