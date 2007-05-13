@@ -41,7 +41,11 @@ package org.opennms.netmgt.vmmgr;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -163,9 +167,44 @@ public class Manager implements ManagerMBean {
     public void doSystemExit() {
         setLogPrefix();
 
-        log().debug("doSystemExit called... exiting.");
+        log().debug("doSystemExit called");
+        
+        if (log().isDebugEnabled()) {
+            dumpThreads();
+            
+            Runtime r = Runtime.getRuntime();
+            log().debug("memory usage (free/used/total/max allowed): " + r.freeMemory() + "/" + (r.totalMemory() - r.freeMemory()) + "/" + r.totalMemory() + "/" + (r.maxMemory() == Long.MAX_VALUE ? "infinite" : r.maxMemory()));
+        }
+        
+        log().info("calling System.exit(1)");
         shutdownLogging();
         System.exit(1);
+    }
+
+    private void dumpThreads() {
+        Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
+        int daemons = 0;
+        for (Thread t : threads.keySet()) {
+            if (t.isDaemon()) {
+                daemons++;
+            }
+        }
+        log().debug("Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
+        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
+            public int compare(Thread t1, Thread t2) {
+                return new Long(t1.getId()).compareTo(new Long(t2.getId()));
+            }
+        });
+        sortedThreads.putAll(threads);
+
+        for (Entry<Thread, StackTraceElement[]> entry : sortedThreads.entrySet()) {
+            Thread thread = entry.getKey();
+            log().debug("Thread " + thread.getId() + (thread.isDaemon() ? " (daemon)" : "") + ": " + thread + " (state: " + thread.getState() + ")");
+            for (StackTraceElement e : entry.getValue()) {
+                log().debug("\t" + e);
+            }
+        }
+        log().debug("Thread dump completed.");
     }
 
     @SuppressWarnings("deprecation")
