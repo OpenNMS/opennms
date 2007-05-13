@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 12: Add getRrdDirectory(), update afterPropertiesSet(). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,6 +35,7 @@
 //
 package org.opennms.web.svclayer.support;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +47,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 public class DefaultResourceService implements ResourceService, InitializingBean {
     private ResourceDao m_resourceDao;
@@ -64,9 +70,12 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     }
     
     public void afterPropertiesSet() throws Exception {
-        if (m_resourceDao == null) {
-            throw new IllegalStateException("resourceDao property is not set");
-        }
+        Assert.state(m_resourceDao != null, "resourceDao property is not set");
+        Assert.state(m_graphDao != null, "graphDao property is not set");
+    }
+    
+    public File getRrdDirectory() {
+        return m_resourceDao.getRrdDirectory();
     }
 
     public List<OnmsResource> findDomainResources() {
