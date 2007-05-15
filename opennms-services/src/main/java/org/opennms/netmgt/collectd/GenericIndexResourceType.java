@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2007 May 14: Patch for bug 1850 from Alejandro Galue. - dj@opennms.org
  * 2006 Aug 15: Created this file. - dj@opennms.org
  * 
  * Copyright (C) 2006 The OpenNMS Group.  All rights reserved.
@@ -43,6 +44,7 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.Assert;
 
 public class GenericIndexResourceType extends ResourceType {
     private String m_name;
@@ -51,9 +53,11 @@ public class GenericIndexResourceType extends ResourceType {
 
     private Map<SnmpInstId, GenericIndexResource> m_resourceMap = new HashMap<SnmpInstId, GenericIndexResource>();
 
-
     public GenericIndexResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, org.opennms.netmgt.config.datacollection.ResourceType resourceType) {
         super(agent, snmpCollection);
+
+        Assert.notNull(resourceType, "resourceType argument must not be null");
+        
         m_name = resourceType.getName();
         instantiatePersistenceSelectorStrategy(resourceType.getPersistenceSelectorStrategy().getClazz());
         instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz());
@@ -69,27 +73,19 @@ public class GenericIndexResourceType extends ResourceType {
             cinst = Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new ObjectRetrievalFailureException(StorageStrategy.class,
-                    className,
-                    "Could not load class",
-                    e);
+                    className, "Could not load class", e);
         }
-        StorageStrategy storageStrategy;
         try {
-            storageStrategy = (StorageStrategy) cinst.newInstance();
+            m_storageStrategy = (StorageStrategy) cinst.newInstance();
         } catch (InstantiationException e) {
             throw new ObjectRetrievalFailureException(StorageStrategy.class,
-                    className,
-                    "Could not instantiate",
-                    e);
+                    className, "Could not instantiate", e);
         } catch (IllegalAccessException e) {
             throw new ObjectRetrievalFailureException(StorageStrategy.class,
-                    className,
-                    "Could not instantiate",
-                    e);
+                    className, "Could not instantiate", e);
         }
 
-        storageStrategy.setResourceTypeName(m_name);
-
+        m_storageStrategy.setResourceTypeName(m_name);
     }
 
     @Override
