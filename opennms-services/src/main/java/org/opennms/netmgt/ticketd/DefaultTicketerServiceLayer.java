@@ -28,7 +28,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
         
 	}
 
-    private void setTicketState(String ticketId, State state) {
+    private void setTicketState(String ticketId, State state) { 
         Ticket ticket = m_ticketerPlugin.get(ticketId);
         ticket.setState(state);
         m_ticketerPlugin.saveOrUpdate(ticket);

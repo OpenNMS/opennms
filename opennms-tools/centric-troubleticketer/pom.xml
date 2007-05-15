@@ -18,5 +18,9 @@
       <systemPath>/Users/brozow/distributions/centric-crm-4.1/centric_crm_tools-4.1.jar</systemPath>
 -->
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+    </dependency>
   </dependencies>
 </project>
