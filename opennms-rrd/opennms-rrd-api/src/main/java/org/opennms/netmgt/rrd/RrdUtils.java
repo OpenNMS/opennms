@@ -297,7 +297,7 @@ public class RrdUtils {
      * tolerance (which should be a multiple of the RRD interval). This is useful
      * If you are not entirely sure when an RRD might have been updated, but you 
      * want to retrieve the last value which is not NaN
-      * NOTE: This method assumes that each RRD file contains a single
+     * NOTE: This method assumes that each RRD file contains a single
      * datasource.
      * 
      * @param rrdFile
