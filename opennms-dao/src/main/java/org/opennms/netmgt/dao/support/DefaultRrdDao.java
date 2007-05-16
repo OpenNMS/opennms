@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 May 16: Added fetch methods. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -154,5 +155,36 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      */
     public int setGraphRightOffset() {
         return m_rrdStrategy.getGraphRightOffset();
+    }
+
+    public Double getLastFetchValue(OnmsAttribute attribute, int interval) throws DataAccessResourceFailureException {
+        Assert.notNull(attribute, "attribute argument must not be null");
+        Assert.isTrue(interval > 0, "interval argument must be greater than zero");
+        Assert.isAssignable(attribute.getClass(), RrdGraphAttribute.class, "attribute argument must be assignable to RrdGraphAttribute");
+        
+        RrdGraphAttribute rrdAttribute = (RrdGraphAttribute) attribute;
+
+        File rrdFile = new File(m_rrdBaseDirectory, rrdAttribute.getRrdRelativePath());
+        try {
+            return m_rrdStrategy.fetchLastValue(rrdFile.getAbsolutePath(), interval);
+        } catch (Exception e) {
+            throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval, e);
+        }
+    }
+
+    public Double getLastFetchValue(OnmsAttribute attribute, int interval, int range) throws DataAccessResourceFailureException {
+        Assert.notNull(attribute, "attribute argument must not be null");
+        Assert.isTrue(interval > 0, "interval argument must be greater than zero");
+        Assert.isTrue(range > 0, "range argument must be greater than zero");
+        Assert.isAssignable(attribute.getClass(), RrdGraphAttribute.class, "attribute argument must be assignable to RrdGraphAttribute");
+        
+        RrdGraphAttribute rrdAttribute = (RrdGraphAttribute) attribute;
+
+        File rrdFile = new File(m_rrdBaseDirectory, rrdAttribute.getRrdRelativePath());
+        try {
+            return m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), interval, range);
+        } catch (Exception e) {
+            throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval + " and range " + range, e);
+        }
     }
 }
