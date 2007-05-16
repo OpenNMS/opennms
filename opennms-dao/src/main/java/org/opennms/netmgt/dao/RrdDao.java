@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 May 16: Added fetch methods. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.opennms.netmgt.model.OnmsAttribute;
+import org.springframework.dao.DataAccessException;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -79,4 +81,46 @@ public interface RrdDao {
      */
     public int setGraphRightOffset();
 
+    /**
+     * This method issues an round robin fetch command to retrieve the last
+     * value of the data source stored in the specified RRD file.
+     * NOTE: This method assumes that each RRD file contains a single
+     * data source.
+     * 
+     * @param attribute
+     *            The attribute for which fetch the last value.  Must be a
+     *            RrdGraphAttribute.
+     * @param interval
+     *            Fetch interval.  This should equal RRD step size.
+     * 
+     * @return Retrived value or null if some errors occur
+     * 
+     * @throws DataAccessException
+     *             if an error occurs retrieving the last value
+     */
+    public Double getLastFetchValue(OnmsAttribute attribute, int interval) throws DataAccessException;
+    
+    /**
+     * This method issues an round robin fetch command to retrieve the last
+     * value of the data source stored in the specified RRD file.
+     * NOTE: This method assumes that each RRD file contains a single
+     * data source.
+     * 
+     * @param attribute
+     *            The attribute for which fetch the last value.  Must be a
+     *            RrdGraphAttribute.
+     * @param interval
+     *            Fetch interval in milliseconds.  This should equal the RRD
+     *            step size.
+     * @param range
+     *            Interval in milliseconds for how long we should look back
+     *            in time for a non-NaN value.  This should a multiple of
+     *            the RRD step size.
+     * 
+     * @return Retrived value or null if some errors occur
+     * 
+     * @throws DataAccessException
+     *             if an error occurs retrieving the last value
+     */
+    public Double getLastFetchValue(OnmsAttribute attribute, int interval, int range)throws DataAccessException;
 }

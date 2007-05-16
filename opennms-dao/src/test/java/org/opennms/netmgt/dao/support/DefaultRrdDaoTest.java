@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 May 16: Added fetch methods. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -113,5 +114,62 @@ public class DefaultRrdDaoTest extends TestCase {
         
         assertNotNull("value should not be null", value);
         assertEquals("value", 1.0, value);
+    }
+    
+    public void testFetchLastValue() throws Exception {
+        String rrdDir = "snmp/1/eth0";
+        String rrdFile = "ifInOctets.jrb";
+
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+
+        OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
+        HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
+        attributeSet.add(attribute);
+        
+        MockResourceType childResourceType = new MockResourceType();
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        childResource.setParent(topResource);
+        
+        int interval = 300000;
+        Double expectedValue = new Double(1.0);
+        
+        String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + "/" + rrdDir + "/" + rrdFile;
+        expect(m_rrdStrategy.fetchLastValue(fullRrdFilePath, interval)).andReturn(expectedValue);
+
+        m_mocks.replayAll();
+        Double value = m_dao.getLastFetchValue(attribute, interval);
+        m_mocks.verifyAll();
+        
+        assertNotNull("last fetched value must not be null, but was null", value);
+        assertEquals("last fetched value", expectedValue, value);
+    }
+    
+    public void testFetchLastValueInRange() throws Exception {
+        String rrdDir = "snmp/1/eth0";
+        String rrdFile = "ifInOctets.jrb";
+
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+
+        OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
+        HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
+        attributeSet.add(attribute);
+        
+        MockResourceType childResourceType = new MockResourceType();
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        childResource.setParent(topResource);
+        
+        int interval = 300000;
+        int range = 300000;
+        Double expectedValue = new Double(1.0);
+        
+        String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + "/" + rrdDir + "/" + rrdFile;
+        expect(m_rrdStrategy.fetchLastValueInRange(fullRrdFilePath, interval, range)).andReturn(expectedValue);
+
+        m_mocks.replayAll();
+        Double value = m_dao.getLastFetchValue(attribute, interval, range);
+        m_mocks.verifyAll();
+        
+        assertNotNull("last fetched value must not be null, but was null", value);
+        assertEquals("last fetched value", expectedValue, value);
     }
 }
