@@ -185,6 +185,8 @@ final public class LdapMonitor extends IPv4Monitor {
             // lets detect the service
             LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
 
+            long sentTime = System.currentTimeMillis();
+            
             for (int attempts = 1; attempts <= retries && !serviceStatus.isAvailable(); attempts++) {
                 log().debug("polling LDAP on " + address + ", attempt " + attempts + " of " + (retries == 0 ? "1" : retries + ""));
 
@@ -201,7 +203,11 @@ final public class LdapMonitor extends IPv4Monitor {
                 if (ldapDn != null && password != null) {
                     try {
                         lc.bind(ldapVersion, ldapDn, password.getBytes());
-                        log().debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                        serviceStatus.setResponseTime(System.currentTimeMillis() - sentTime);
+                        if (log().isDebugEnabled()) {
+                            log().debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                            log().debug("poll: responseTime= " + serviceStatus.getResponseTime() + "ms");
+                        }
                     } catch (LDAPException e) {
                         try {
                             lc.disconnect();
