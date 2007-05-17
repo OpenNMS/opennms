@@ -45,6 +45,10 @@
 #endif /* UNDEF_FILE_OFFSET_BITS */
 #include <postgres.h>		/* PostgreSQL types */
 
+#ifdef PG_MODULE_MAGIC
+PG_MODULE_MAGIC;
+#endif
+
 #ifdef DEBUG
 #define LOG_FILE  "/var/log/opennms/iplike.log"
 #endif
