@@ -1,8 +1,8 @@
 This is a simple tool to create CSV files from RRD archives.
 
 Note that it requires that rrdtool be in your path, and that
-you have the Text::CSV_XS (preferred) or Text::CSV_PP perl
-module installed.
+you have the XML::SAX module installed, as well as
+Text::CSV_XS (preferred) or Text::CSV_PP.
 
 Usage:
 
