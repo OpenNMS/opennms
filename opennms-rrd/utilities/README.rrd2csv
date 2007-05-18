@@ -1,0 +1,15 @@
+This is a simple tool to create CSV files from RRD archives.
+
+Note that it requires that rrdtool be in your path, and that
+you have the Text::CSV_XS (preferred) or Text::CSV_PP perl
+module installed.
+
+Usage:
+
+  ./rrd2csv <rrd_file> [output_file]
+
+If the output file is not specified, it will write to the
+console.
+
+If you give the output file the extension ".xls" you will be
+able to automatically import it into Excel.
