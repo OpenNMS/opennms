@@ -51,4 +51,5 @@ fi
 
 MAVEN_OPTS=-Xmx512m
 export MAVEN_OPTS
-$PREFIX/maven-2.0.4/bin/mvn -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "$@"
+[ -z "$MVN" ] && MVN="$PREFIX/maven-2.0.4/bin/mvn"
+"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "$@"
