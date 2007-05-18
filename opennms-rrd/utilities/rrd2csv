@@ -1,0 +1,153 @@
+#!/usr/bin/perl
+
+package My::Handler;
+
+use warnings;
+use strict;
+
+our $debug = 0;
+
+sub new
+{
+	my $type = shift;
+	return bless {}, $type;
+}
+
+sub start_element
+{
+	my ($self, $element) = @_;
+	$self->{in}->{$element->{Name}} = 1;
+}
+
+sub end_element
+{
+	my ($self, $element) = @_;
+	my $name =$element->{Name};
+
+	if ($name eq 'row')
+	{
+		$self->_print_row();
+	}
+	$self->{in}->{$name} = 0;
+}
+
+sub characters
+{
+	my ($self, $characters) = @_;
+	my $data = $characters->{Data};
+	$data =~ s/^\s*(.*?)\s*$/$1/;
+	print "characters: $data\n" if ($debug);
+	if ($self->{in}->{row} and $self->{in}->{v})
+	{
+		$self->{value} = $data;
+	}
+	elsif ($self->{in}->{ds} and $self->{in}->{name})
+	{
+		$self->{dsname} = $data;
+	}
+	else
+	{
+		print "unknown characters: $characters->{Data}\n" if ($debug);
+	}
+}
+
+sub comment
+{
+	my ($self, $comment) = @_;
+	my $data = $comment->{Data};
+	print "comment: $comment->{Data}\n" if ($debug);
+	if ($data =~ /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d)\:(\d\d)\:(\d\d) (\S+)/)
+	{
+		$self->{date} = "$2/$3/$1 $4:$5:$6";
+	}
+}
+
+sub set_csv
+{
+	my ($self, $csv) = @_;
+	$self->{csv} = $csv;
+}
+
+sub set_output
+{
+	my ($self, $handle) = @_;
+	$self->{output} = $handle;
+}
+
+sub _print_row
+{
+	my $self = shift;
+	$self->{csv}->combine($self->{dsname}, $self->{date}, $self->{value});
+	print { $self->{output} } $self->{csv}->string, "\n";
+}
+
+1;
+
+package main;
+
+$| = 1; # unbuffered I/O
+
+use warnings;
+use strict;
+
+use XML::SAX::ParserFactory;
+use IO::Handle;
+
+our $csv;
+eval {
+	require Text::CSV_XS;
+	$csv = Text::CSV_XS->new();
+};
+
+if (not defined $csv)
+{
+	eval {
+		require Text::CSV_PP;
+		$csv = Text::CSV_PP->new();
+	};
+}
+
+die "Unable to find the Text::CSV_PP or Text::CSV_XS perl modules.  Please install one of them.\n" unless (defined $csv);
+
+my $file = shift || die "usage: $0 <rrd_file>";
+my $outfile = shift;
+
+die "$file does not exist\n" unless (-f $file);
+
+chomp(my $rrdtool=`which rrdtool 2>/dev/null`);
+die "unable to locate rrdtool, make sure it is in the path" unless (-x $rrdtool);
+
+$file =~ s/\'/\\\'/gs;
+my $input  = IO::Handle->new();
+open($input, "rrdtool dump '$file' |") or die "unable to read from $file: $!";
+
+my $output = IO::Handle->new();
+if (defined $outfile)
+{
+	print STDERR "writing to $outfile\n";
+	open($output, '>' . $outfile) or die "unable to write to $file: $!";
+}
+else
+{
+	print STDERR "writing to STDOUT\n";
+	open($output, '>-') or die "unable to write to STDOUT: $!";
+}
+
+my $handler = My::Handler->new();
+my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
+$handler->set_output($output);
+$handler->set_csv($csv);
+
+$csv->combine('Data Source', 'Date', 'Value');
+print { $output } $csv->string, "\n";
+
+$parser->parse_file($input);
+
+close($input);
+close($output);
+
+sub usage
+{
+	print "usage: $0 <rrd_file> [output_file]\n";
+	exit 1;
+}
