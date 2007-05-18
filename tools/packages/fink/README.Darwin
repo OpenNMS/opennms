@@ -3,17 +3,15 @@ Post-Installation Tasks
 ==============================================================================
 
 ------------------------------------------------------------------------------
-System Limits -- Mac OS X 10.2 and Lower
+System Limits -- Mac OS X 10.3
 ------------------------------------------------------------------------------
 
-On MacOSX 10.2 and lower, to be able to give PostgreSQL enough buffers and
-such to run properly, you will need to change the shared memory buffers in
-the startup item:
-
-  /System/Library/StartupItems/SystemTuning/SystemTuning
+On MacOSX 10.3, to be able to give PostgreSQL enough buffers and such to
+run properly, you will need to change the shared memory buffers in the
+/etc/rc file.
 
 On our test system we multiplied the supplied values by 4 and all seems to
-run OK.  Just look for the sysctl lines near the bottom and set them to:
+run OK.  Just look for the sysctl lines and set them to:
 
   sysctl -w kern.maxfiles=65536
   sysctl -w kern.sysv.shmmax=16777216
@@ -22,44 +20,52 @@ run OK.  Just look for the sysctl lines near the bottom and set them to:
   sysctl -w kern.sysv.shmseg=32
   sysctl -w kern.sysv.shmall=4096
 
-Be warned, these settings can get changed back on OS upgrade!
+Your mileage may vary, you may need to raise them higher, depending on how
+large your network is.
 
 ------------------------------------------------------------------------------
-System Limits -- Mac OS X 10.3 and Higher
+System Limits -- Mac OS X 10.4 and Higher
 ------------------------------------------------------------------------------
 
-On recent versions of Mac OS X, these settings are now in:
+On recent versions of Mac OS X, these settings are now properly read from
+/etc/sysctl.conf.  Create an /etc/sysctl.conf file with the following lines:
 
-  /etc/rc
-
-You should probably do something similar to the limits above (multiply by 4
-and reboot) for OpenNMS to run properly, although it seems to work out of the
-box on a reasonably full class-C network with recent Fink packages.  Your
-mileage may vary, you may need to raise them higher, depending on how large
-your network is.
+  kern.maxfiles=65536
+  kern.sysv.shmmax=16777216
+  kern.sysv.shmmin=1
+  kern.sysv.shmmni=128
+  kern.sysv.shmseg=32
+  kern.sysv.shmall=4096
 
 ------------------------------------------------------------------------------
 PostgreSQL Limits -- All Platforms
 ------------------------------------------------------------------------------
 
-Once you do that, you will need to edit
-@PREFIX@/var/postgresql-7.4/data/postgresql.conf (as root, or postgres), and
+Once you do that, you will want to edit
+@PREFIX@/var/postgresql-8.2/data/postgresql.conf (as root, or postgres), and
 make sure that the following values are set:
 
-  tcpip_socket    = true
-  max_connections = 192
-  shared_buffers  = 384
+  listen_addresses = 'localhost'
+  max_connections  = 192
+  shared_buffers   = 3072kB
 
-Again, on a reasonably small network, the defaults from Fink seem to work
-alright now.
+Or, if you're using an older PostgreSQL, you want:
+
+  tcpip_socket     = true
+  max_connections  = 192
+  shared_buffers   = 384
+
+On a reasonably small network, the defaults from Fink's PostgreSQL for
+max_connections and shared_buffers seem to work alright, but your mileage
+may vary.
 
 ------------------------------------------------------------------------------
 Database Setup -- All Platforms
 ------------------------------------------------------------------------------
 
 Make sure PostgreSQL is started before you install.  If it isn't, you will
-have to start it ("sudo @PREFIX@/bin/pgsql.sh start") and try again.  To run
-the installer manually, run:
+have to start it ("sudo @PREFIX@/bin/pgsql.sh start") and try again.  To
+finish the installation, run:
 
   sudo @PREFIX@/var/opennms/bin/install -disU
 
@@ -73,5 +79,5 @@ quick start guide at http://sourceforge.net/docman/?group_id=4141) and run:
 
   sudo @PREFIX@/bin/pgsql.sh start
   sudo @PREFIX@/bin/opennms start
-  sudo @PREFIX@/bin/tomcat4 start
+  sudo @PREFIX@/bin/tomcat5 start
 
