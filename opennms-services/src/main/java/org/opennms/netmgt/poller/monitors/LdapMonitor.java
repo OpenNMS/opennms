@@ -140,10 +140,12 @@ final public class LdapMonitor extends IPv4Monitor {
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-        PollStatus serviceStatus = PollStatus.unavailable();
+	int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
+	String reason = null;
 
         // get the parameters
         //
+	long responseTime = -1;
         int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
         int ldapPort = ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
         int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
@@ -177,7 +179,7 @@ final public class LdapMonitor extends IPv4Monitor {
             log().debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
 
             // We're connected, so upgrade status to unresponsive
-            serviceStatus = PollStatus.unresponsive();
+	    serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
 
             if (socket != null)
                 socket.close();
@@ -187,7 +189,7 @@ final public class LdapMonitor extends IPv4Monitor {
 
             long sentTime = System.currentTimeMillis();
             
-            for (int attempts = 1; attempts <= retries && !serviceStatus.isAvailable(); attempts++) {
+            for (int attempts = 1; attempts <= retries && !(serviceStatus == PollStatus.SERVICE_AVAILABLE); attempts++) {
                 log().debug("polling LDAP on " + address + ", attempt " + attempts + " of " + (retries == 0 ? "1" : retries + ""));
 
                 // connect to the ldap server
@@ -195,7 +197,8 @@ final public class LdapMonitor extends IPv4Monitor {
                     lc.connect(address, ldapPort);
                     log().debug("connected to LDAP server " + address + " on port " + ldapPort);
                 } catch (LDAPException e) {
-                	serviceStatus = logDown(Level.DEBUG, "could not connect to LDAP server " + address + " on port " + ldapPort);
+                	log().debug("could not connect to LDAP server " + address + " on port " + ldapPort);
+                	reason = "could not connect to LDAP server " + address + " on port " + ldapPort;
                     continue;
                 }
 
@@ -203,10 +206,9 @@ final public class LdapMonitor extends IPv4Monitor {
                 if (ldapDn != null && password != null) {
                     try {
                         lc.bind(ldapVersion, ldapDn, password.getBytes());
-                        serviceStatus.setResponseTime(System.currentTimeMillis() - sentTime);
                         if (log().isDebugEnabled()) {
                             log().debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
-                            log().debug("poll: responseTime= " + serviceStatus.getResponseTime() + "ms");
+                            log().debug("poll: responseTime= " + responseTime + "ms");
                         }
                     } catch (LDAPException e) {
                         try {
@@ -215,7 +217,8 @@ final public class LdapMonitor extends IPv4Monitor {
                             log().debug(ex);
                         }
 
-                        serviceStatus = logDown(Level.DEBUG, "could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                        log().debug("could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                        reason = "could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn;
                         continue;
                     }
                 }
@@ -232,11 +235,13 @@ final public class LdapMonitor extends IPv4Monitor {
                     results = lc.search(searchBase, searchScope, searchFilter, attrs, attributeOnly);
 
                     if (results != null && results.hasMore()) {
+			responseTime = System.currentTimeMillis() - sentTime;
                         log().debug("search yielded results");
-                        serviceStatus = PollStatus.available();
+                        serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
                         log().debug("no results found from search");
-                        serviceStatus = PollStatus.unavailable();
+			reason = "No results found from search";
+                        serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
                     }
                 } catch (LDAPException e) {
                     try {
@@ -245,7 +250,8 @@ final public class LdapMonitor extends IPv4Monitor {
                         log().debug(ex);
                     }
 
-                    serviceStatus = logDown(Level.DEBUG, "could not perform search " + searchFilter + " from " + searchBase);
+                    log().debug("could not perform search " + searchFilter + " from " + searchBase);
+                    reason = "could not perform search " + searchFilter + " from " + searchBase;
                     continue;
                 }
 
@@ -257,16 +263,20 @@ final public class LdapMonitor extends IPv4Monitor {
                 }
             }
         } catch (ConnectException e) {
-        	serviceStatus = logDown(Level.DEBUG, "connection refused to host " + address, e);
+        	log().debug("connection refused to host " + address, e);
+        	reason = "connection refused to host " + address;
         } catch (NoRouteToHostException e) {
-        	serviceStatus = logDown(Level.WARN, "No route to host " + address, e);
+        	log().debug("No route to host " + address, e);
+        	reason = "No route to host " + address;
         } catch (InterruptedIOException e) {
-        	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout);
+        	log().debug("did not connect to host within timeout: " + timeout);
+        	reason = "did not connect to host within timeout: " + timeout;
         } catch (Throwable t) {
-        	serviceStatus = logDown(Level.WARN, "An undeclared throwable exception caught contacting host " + address, t);
+        	log().debug("An undeclared throwable exception caught contacting host " + address, t);
+        	reason = "An undeclared throwable exception caught contacting host " + address;
         }
 
-        return serviceStatus;
+	return PollStatus.get(serviceStatus, reason, responseTime);
     }
 
 }
