@@ -13,6 +13,16 @@
  *
  * Modifications:
  *
+ * 2007 May 20: Deduplicate the file resource searching and property setting.
+ *              Improve logging of property handling.  Do not override system
+ *              properties that have already been set.  Add support for using
+ *              log4j.xml to configure Log4j if it exists, falling back to
+ *              log4j.properties it not, and exit with an error if neither are
+ *              found.  Deduplicate exiting with error messages.  Use
+ *              ClassLoader.getResource, as that seems to work for finding
+ *              file resources in etc and lib, where using Class.getResource
+ *              wasn't working for these files.  Reorganize code a bit to be
+ *              more clear. - dj@opennms.org
  * 2003 Jan 31: Cleaned up some unused imports.
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
@@ -46,12 +56,16 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
@@ -104,69 +118,111 @@ public class Starter {
         
         setLogPrefix();
         
-        mx4j.log.Log.redirectTo(new mx4j.log.Log4JLogger());
+        setupMx4jLogger();
         
         loadGlobalProperties();
         
-        setupProperties();
+        setDefaultProperties();
 
-        MBeanServer server = MBeanServerFactory.createMBeanServer("OpenNMS");
-        start(server);
+        start();
+    }
+
+    private void setupMx4jLogger() {
+        mx4j.log.Log.redirectTo(new mx4j.log.Log4JLogger());
     }
     
     private void configureLog4j() {
         File homeDir = new File(System.getProperty("opennms.home"));
         File etcDir = new File(homeDir, "etc");
-        File daemonProperties = new File(etcDir, "log4j.properties");
-        PropertyConfigurator.configureAndWatch(daemonProperties.getAbsolutePath());
+        
+        File xmlFile = new File(etcDir, "log4j.xml");
+        if (xmlFile.exists()) {
+            DOMConfigurator.configureAndWatch(xmlFile.getAbsolutePath());
+        } else {
+            File propertiesFile = new File(etcDir, "log4j.properties");
+            if (propertiesFile.exists()) {
+                PropertyConfigurator.configureAndWatch(propertiesFile.getAbsolutePath());
+            } else {
+                die("Could not find a Log4j configuration file at "
+                        + xmlFile.getAbsolutePath() + " or "
+                        + propertiesFile.getAbsolutePath() + ".  Exiting.");
+            }
+        }
     }
     
-    private void setupProperties() {
-        if (System.getProperty("opennms.library.jicmp") == null) {
-            URL url = Starter.class.getResource(System.mapLibraryName("jicmp"));
-            if (url != null) {
-                log().debug("Found jicmp library at " + url.getPath());
-                System.setProperty("opennms.library.jicmp", url.getPath());
-            }
-        }
+    private void setDefaultProperties() {
+        setupFileResourceProperty("opennms.library.jicmp", System.mapLibraryName("jicmp"), "Initialization of ICMP socket will likely fail.");
+        setupFileResourceProperty("opennms.library.jrrd", System.mapLibraryName("jrrd"), "Initialization of RRD code will likely fail if the JniRrdStrategy is used.");
+        setupFileResourceProperty("jcifs.properties", "jcifs.properties", "Initialization of JCIFS will likely fail or may be improperly configured.");
+    }
 
-        if (System.getProperty("opennms.library.jrrd") == null) {
-            URL url = Starter.class.getResource(System.mapLibraryName("jrrd"));
+    private void setupFileResourceProperty(String propertyName, String file, String notFoundWarning) {
+        if (System.getProperty(propertyName) == null) {
+            log().debug("System property '" + propertyName + "' not set.  Searching for file '" + file + "' in the class path.");
+            URL url = getClass().getClassLoader().getResource(file);
             if (url != null) {
-                log().debug("Found jrrd library at " + url.getPath());
-                System.setProperty("opennms.library.jrrd", url.getPath());
+                log().info("Found file '" + file + "' at '" + url.getPath() + "'.  Setting '" + propertyName + "' to this path.");
+                System.setProperty(propertyName, url.getPath());
+            } else {
+                log().warn("Did not find file '" + file + "' in the class path.  " + notFoundWarning + "  Set the property '" + propertyName + "' to the location of the file.");
             }
+        } else {
+            log().info("System property '" + propertyName + "' already set to '" + System.getProperty(propertyName) + "'.");
         }
-
-        if (System.getProperty("jcifs.properties") == null) {
-            URL url = Starter.class.getResource("jcifs.properties");
-            if (url != null) {
-                System.setProperty("jcifs.properties", url.getPath());
-            }
-        }
-
     }
 
     private void loadGlobalProperties() {
+        // Log system properties, sorted by property name
+        TreeMap<Object, Object> sortedProps = new TreeMap<Object, Object>(System.getProperties());
+        for (Entry<Object, Object> entry : sortedProps.entrySet()) {
+            log().info("System property '" + entry.getKey() + "' already set to value '" + entry.getValue() + "'.");
+        }
+        
         File propertiesFile = getPropertiesFile();
         if (!propertiesFile.exists()) {
             // don't require the file
             return;
         }
         
-        Properties props = new Properties(System.getProperties());
-        InputStream fin = null;
+        Properties props = new Properties();
+        InputStream in = null;
         try {
-            fin = new FileInputStream(propertiesFile);
-            props.load(fin);
+            in = new FileInputStream(propertiesFile);
+            props.load(in);
         } catch (IOException e) {
-            System.err.println("Error trying to read properties file '" + propertiesFile + "': " + e);
-            System.exit(1);
+            die("Error trying to read properties file '" + propertiesFile + "': " + e, e);
         } finally {
-            closeQuietly(fin);
+            IOUtils.closeQuietly(in);
         }
-        
-        System.setProperties(props);
+
+        for (Entry<Object, Object> entry : props.entrySet()) {
+            String systemValue = System.getProperty(entry.getKey().toString());
+            if (systemValue != null) {
+                log().info("Property '" + entry.getKey() + "' from " + propertiesFile + " already exists as a system property (with value '" + systemValue + "').  Not overridding existing system property.");
+            } else {
+                log().info("Setting system property '" + entry.getKey() + "' to '" + entry.getValue() + "' from " + propertiesFile + ".");
+                System.setProperty(entry.getKey().toString(), entry.getValue().toString());
+            }
+        }
+    }
+
+    /**
+     * Print out a message and stack trace and then exit.
+     * This method does not return.
+     * 
+     * @param message message to print to System.err
+     * @param t Throwable for which to print a stack trace
+     */
+    private void die(String message, Throwable  t) {
+        System.err.println(message);
+        if (t != null) {
+            t.printStackTrace();
+        }
+        System.exit(1);
+    }
+
+    private void die(String message) {
+        die(message, null);
     }
 
     private File getPropertiesFile() {
@@ -175,19 +231,11 @@ public class Starter {
         File propertiesFile = new File(etcDir, "opennms.properties");
         return propertiesFile;
     }
-    
-    private void closeQuietly(InputStream in) {
-        try {
-            if (in != null) {
-                in.close();
-            }
-        } catch (IOException e) {
-            // ignore this
-        }
-    }
 
-    private void start(MBeanServer server) {
+    private void start() {
         log().debug("Beginning startup");
+
+        MBeanServer server = MBeanServerFactory.createMBeanServer("OpenNMS");
         
         Invoker invoker = new Invoker();
         invoker.setServer(server);
