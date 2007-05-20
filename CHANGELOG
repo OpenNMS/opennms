@@ -1,3 +1,10 @@
+1.3.2 to 1.3.3
+----------------------------------------------------------------------
+- Changed a large number of files to make defaults more reasonable.
+  Big change in the way RRDs are installed. If there is historic
+  data, be sure to merge these files correctly or else the RRD
+  structure will change.
+
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
 - Changed the way v2 traps are handled, we now do not take the first two 
