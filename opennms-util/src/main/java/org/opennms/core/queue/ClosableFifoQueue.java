@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 // 
+// Modifications:
+//
+// 2007 May 21: Use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -49,7 +53,7 @@ package org.opennms.core.queue;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public interface ClosableFifoQueue extends FifoQueue {
+public interface ClosableFifoQueue<T> extends FifoQueue<T> {
     /**
      * Returns true if the queue is currently open.
      * 
