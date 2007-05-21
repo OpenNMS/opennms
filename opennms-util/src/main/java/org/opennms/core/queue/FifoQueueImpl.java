@@ -10,6 +10,10 @@
 // 
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// Modifications:
+//
+// 2007 May 20: Use Java 5 generics. - dj@opennms.org
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -49,13 +53,13 @@ import java.util.LinkedList;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public class FifoQueueImpl implements FifoQueue {
+public class FifoQueueImpl<T> implements FifoQueue<T> {
     /**
      * The delegate list where queue elements are stored. The elements are
      * removed from the front of the list and added to the end of the list,
      * always!
      */
-    private LinkedList m_delegate;
+    private LinkedList<T> m_delegate;
 
     /**
      * Constructs a new First In, First Out queue that can be used to exchange
@@ -63,7 +67,7 @@ public class FifoQueueImpl implements FifoQueue {
      * between to concurrent processes.
      */
     public FifoQueueImpl() {
-        m_delegate = new LinkedList();
+        m_delegate = new LinkedList<T>();
     }
 
     /**
@@ -77,7 +81,7 @@ public class FifoQueueImpl implements FifoQueue {
      * @exception java.lang.InterruptedException
      *                Thrown if the thread is interrupted.
      */
-    public void add(Object element) throws FifoQueueException, InterruptedException {
+    public void add(T element) throws FifoQueueException, InterruptedException {
         synchronized (m_delegate) {
             m_delegate.addLast(element);
             m_delegate.notifyAll();
@@ -103,7 +107,7 @@ public class FifoQueueImpl implements FifoQueue {
      * @return True if the element was successfully added to the queue before
      *         the timeout expired, false otherwise.
      */
-    public boolean add(Object element, long timeout) throws FifoQueueException, InterruptedException {
+    public boolean add(T element, long timeout) throws FifoQueueException, InterruptedException {
         synchronized (m_delegate) {
             m_delegate.addLast(element);
             m_delegate.notifyAll();
@@ -121,7 +125,7 @@ public class FifoQueueImpl implements FifoQueue {
      * 
      * @return The oldest object in the queue.
      */
-    public Object remove() throws FifoQueueException, InterruptedException {
+    public T remove() throws FifoQueueException, InterruptedException {
         synchronized (m_delegate) {
             while (m_delegate.isEmpty()) {
                 m_delegate.wait();
@@ -146,8 +150,8 @@ public class FifoQueueImpl implements FifoQueue {
      * @return The oldest object in the queue, or <code>null</code> if one is
      *         not available.
      */
-    public Object remove(long timeout) throws FifoQueueException, InterruptedException {
-        Object rval = null;
+    public T remove(long timeout) throws FifoQueueException, InterruptedException {
+        T rval = null;
         synchronized (m_delegate) {
             if (m_delegate.isEmpty()) {
                 long start = System.currentTimeMillis();
