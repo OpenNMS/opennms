@@ -7,8 +7,13 @@
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2007 May 20: Use Java 5 generics. - dj@opennms.org
 // 
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -49,7 +54,7 @@ package org.opennms.core.queue;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public interface FifoQueue {
+public interface FifoQueue<T> {
     /**
      * Inserts a new element into the queue.
      * 
@@ -61,7 +66,7 @@ public interface FifoQueue {
      * @exception java.lang.InterruptedException
      *                Thrown if the thread is interrupted.
      */
-    public void add(Object element) throws FifoQueueException, InterruptedException;
+    public void add(T element) throws FifoQueueException, InterruptedException;
 
     /**
      * Inserts a new element into the queue. If the queue has reached an
@@ -84,7 +89,7 @@ public interface FifoQueue {
      * @return True if the element was successfully added to the queue before
      *         the timeout expired, false otherwise.
      */
-    public boolean add(Object element, long timeout) throws FifoQueueException, InterruptedException;
+    public boolean add(T element, long timeout) throws FifoQueueException, InterruptedException;
 
     /**
      * Removes the oldest element from the queue.
@@ -96,7 +101,7 @@ public interface FifoQueue {
      * 
      * @return The oldest object in the queue.
      */
-    public Object remove() throws FifoQueueException, InterruptedException;
+    public T remove() throws FifoQueueException, InterruptedException;
 
     /**
      * Removes the next element from the queue if one becomes available before
@@ -116,7 +121,7 @@ public interface FifoQueue {
      * @return The oldest object in the queue, or <code>null</code> if one is
      *         not available.
      */
-    public Object remove(long timeout) throws FifoQueueException, InterruptedException;
+    public T remove(long timeout) throws FifoQueueException, InterruptedException;
 
     /**
      * Returns the current number of elements that are in the queue.
