@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 21: Make sure that the value cannot be null in the
+//              constructor. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -49,11 +54,13 @@ import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
+import org.springframework.util.Assert;
 
 class Snmp4JValue implements SnmpValue {
     Variable m_value;
     
     Snmp4JValue(Variable value) {
+        Assert.notNull(value, "value attribute cannot be null");
         m_value = value;
     }
     
@@ -112,6 +119,7 @@ class Snmp4JValue implements SnmpValue {
         default:
             throw new IllegalArgumentException("invalid syntax "+syntax);
         }
+        Assert.notNull(m_value, "value object created from syntax " + syntax + " is null");
     }
     
     public byte[] getBytes() {
