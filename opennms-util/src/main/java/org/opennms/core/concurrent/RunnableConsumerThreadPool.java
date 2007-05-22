@@ -1,38 +1,38 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-// 
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-//
-// Tab Size = 8
-//
-//
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified 
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ * 
+ * Modifications:
+ * 
+ * 2007 May 21: Use java 5 generics, loops, and format code. - dj@opennms.org
+ * 
+ * Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 
 package org.opennms.core.concurrent;
 
@@ -47,12 +47,13 @@ import org.opennms.core.queue.FifoQueueClosedException;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.util.Assert;
 
 public class RunnableConsumerThreadPool extends Object implements Fiber {
     /**
      * The queue where runnable objects are added.
      */
-    private SizingFifoQueue m_delegateQ;
+    private SizingFifoQueue<Runnable> m_delegateQ;
 
     /**
      * The list of running fibers in the pool. The list allows the size of the
@@ -93,7 +94,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
     /**
      * The set of listeners to call when a Runnable completes successfully.
      */
-    private List m_completedListeners;
+    private List<RunnableCompletionListener> m_completedListeners;
 
     /**
      * The thread group that all pool threads belong to.
@@ -104,7 +105,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * The set of listeners to call when a Runnable fails to complete
      * successfully.
      */
-    private List m_errorListeners;
+    private List<RunnableErrorListener> m_errorListeners;
 
     /**
      * <p>
@@ -123,7 +124,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * @author <a href="http://www.opennms.org/">OpenNMS </a>
      * 
      */
-    private class SizingFifoQueue extends FifoQueueImpl implements ClosableFifoQueue {
+    private class SizingFifoQueue<T> extends FifoQueueImpl<T> implements ClosableFifoQueue<T> {
         /**
          * Determines if the queue is open or closed. If the queue is closed
          * then an exception is thrown on queue additions. Also, queue removals
@@ -143,20 +144,20 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
                 float ratio = (float) e / (float) (alive <= 0 ? 1 : alive);
 
                 // Never stop the last thread!?
-                //
                 if (alive > 1 && ratio <= m_loRatio) {
-                    // IF
-                    // 1) Fibers greater than one, and...
-                    // 2) ratio less than low water mark
-                    //
+                    /*
+                     * If:
+                     * 1) Fibers greater than one, and...
+                     * 2) ratio less than low water mark
+                     */
                     Fiber f = null;
                     int last = Fiber.START_PENDING;
-                    for (int x = 0; x < m_fibers.length; x++) {
-                        if (m_fibers[x] != null) {
-                            switch (m_fibers[x].getStatus()) {
+                    for (Fiber fiber : m_fibers) {
+                        if (fiber != null) {
+                            switch (fiber.getStatus()) {
                             case Fiber.RUNNING:
                                 if (last < Fiber.RUNNING) {
-                                    f = m_fibers[x];
+                                    f = fiber;
                                     last = f.getStatus();
                                 }
                                 break;
@@ -172,31 +173,32 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
                     }
 
                     if (f != null && f.getStatus() != Fiber.STOP_PENDING) {
-                        Category log = ThreadCategory.getInstance(this.getClass());
-                        if (log.isDebugEnabled())
-                            log.debug("adjust: calling stop on fiber " + f.getName());
+                        if (log().isDebugEnabled()) {
+                            log().debug("adjust: calling stop on fiber " + f.getName());
+                        }
                         f.stop();
                     }
 
                 } else if (((alive == 0 && e > 0) || ratio > m_hiRatio) && alive < m_maxSize) {
-                    // If
-                    // 1a) Fibers equal to zero and queue not empty, or..
-                    // 1a) ratio greater than hiRatio, and...
-                    // 2) Fibers less than max size
-                    //
+                    /*
+                     * If:
+                     * 1a) Fibers equal to zero and queue not empty, or..
+                     * 1a) ratio greater than hiRatio, and...
+                     * 2) Fibers less than max size
+                     */
                     for (int x = 0; x < m_fibers.length; x++) {
                         if (m_fibers[x] == null || m_fibers[x].getStatus() == Fiber.STOPPED) {
                             Fiber f = new FiberThreadImpl(m_poolName + "-fiber" + x);
                             f.start();
                             m_fibers[x] = f;
-                            Category log = ThreadCategory.getInstance(this.getClass());
-                            if (log.isDebugEnabled())
-                                log.debug("adjust: started fiber " + f.getName() + " ratio = " + ratio + ", alive = " + alive);
+                            if (log().isDebugEnabled()) {
+                                log().debug("adjust: started fiber " + f.getName() + " ratio = " + ratio + ", alive = " + alive);
+                            }
                             break;
                         }
                     }
                 }
-            } // synchronized m_fibers
+            }
         }
 
         /**
@@ -251,9 +253,10 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @exception java.lang.InterruptedException
          *                Thrown if the thread is interrupted.
          */
-        public void add(Object element) throws FifoQueueException, InterruptedException {
-            if (m_isClosed)
+        public void add(T element) throws FifoQueueException, InterruptedException {
+            if (m_isClosed) {
                 throw new FifoQueueClosedException("Queue Closed");
+            }
 
             super.add(element);
             adjust();
@@ -278,9 +281,10 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @return True if the element was successfully added to the queue
          *         before the timeout expired, false otherwise.
          */
-        public boolean add(Object element, long timeout) throws FifoQueueException, InterruptedException {
-            if (m_isClosed)
+        public boolean add(T element, long timeout) throws FifoQueueException, InterruptedException {
+            if (m_isClosed) {
                 throw new FifoQueueClosedException("Queue Closed");
+            }
 
             boolean result = super.add(element, timeout);
             adjust();
@@ -297,11 +301,12 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * 
          * @return The oldest object in the queue.
          */
-        public Object remove() throws FifoQueueException, InterruptedException {
-            if (m_isClosed && size() == 0)
+        public T remove() throws FifoQueueException, InterruptedException {
+            if (m_isClosed && size() == 0) {
                 throw new FifoQueueClosedException("Queue Closed");
+            }
 
-            Object result = super.remove();
+            T result = super.remove();
             adjust();
             return result;
         }
@@ -323,16 +328,20 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @return The oldest object in the queue, or <code>null</code> if one
          *         is not available.
          */
-        public Object remove(long timeout) throws FifoQueueException, InterruptedException {
-            if (m_isClosed && size() == 0)
+        public T remove(long timeout) throws FifoQueueException, InterruptedException {
+            if (m_isClosed && size() == 0) {
                 throw new FifoQueueClosedException("Queue Closed");
+            }
 
-            Object result = super.remove(timeout);
+            T result = super.remove(timeout);
             adjust();
             return result;
         }
 
-    } // end SizingFifoQueue
+        private Category log() {
+            return ThreadCategory.getInstance(getClass());
+        }
+    }
 
     /**
      * This class implements the {@link org.opennms.core.fiber.Fiber Fiber}
@@ -394,51 +403,49 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
             ThreadCategory.setPrefix(m_log4jPrefix);
             m_status = RUNNING;
             while (!m_shutdown) {
-                Object obj = null;
+                Runnable runnable = null;
                 try {
-                    obj = m_delegateQ.remove(500);
-                    if (obj == null)
+                    runnable = m_delegateQ.remove(500);
+                    if (runnable == null) {
                         continue;
-                } catch (InterruptedException ie) {
+                    }
+                } catch (InterruptedException e) {
                     m_status = STOP_PENDING;
                     break; // exit, log?
-                } catch (FifoQueueException fqE) {
+                } catch (FifoQueueException e) {
                     m_status = STOP_PENDING;
                     break; // exit, log?
                 }
 
                 try {
-                    if (obj != null) {
-                        ((Runnable) obj).run();
+                    if (runnable != null) {
+                        runnable.run();
 
-                        // if successful then
-                        // invoke callback to
-                        // process message
-                        //
-                        Object[] list = null;
+                        // If successful, invoke callback to process message
+                        RunnableCompletionListener[] list = null;
                         synchronized (m_completedListeners) {
-                            list = m_completedListeners.toArray();
+                            list = m_completedListeners.toArray(new RunnableCompletionListener[m_completedListeners.size()]);
                         }
-                        for (int i = 0; list != null && i < list.length; i++) {
-                            ((RunnableCompletionListener) list[i]).onRunnableCompletion((Runnable) obj);
+                        for (RunnableCompletionListener listener : list) {
+                            listener.onRunnableCompletion(runnable);
                         }
                     }
                 } catch (Throwable t) {
-                    Category log = ThreadCategory.getInstance(this.getClass());
-                    if (log.isDebugEnabled())
-                        log.debug("run: an unexpected error occured during fiber run, calling error liseners");
+                    log().debug("run: an unexpected error occured during fiber run, calling error liseners");
 
-                    // call a listener to handle errors?
-                    // or should it be logged
-                    //
-                    Object[] list = null;
+                    /*
+                     * call a listener to handle errors?
+                     * or should it be logged
+                     */
+                    RunnableErrorListener[] list = null;
                     synchronized (m_errorListeners) {
-                        list = m_errorListeners.toArray();
+                        list = m_errorListeners.toArray(new RunnableErrorListener[m_errorListeners.size()]);
                     }
-                    if (list.length == 0)
-                        log.error("No error listeners defined for for unexpected error ", t);
-                    for (int i = 0; list != null && i < list.length; i++) {
-                        ((RunnableErrorListener) list[i]).onRunnableError(obj, t);
+                    if (list.length == 0) {
+                        log().error("No error listeners defined for unexpected error: " + t, t);
+                    }
+                    for (RunnableErrorListener listener : list) {
+                        listener.onRunnableError(runnable, t);
                     }
                 }
             }
@@ -478,7 +485,10 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
             return m_status;
         }
 
-    } // end FiberThreadImpl
+        private Category log() {
+            return ThreadCategory.getInstance(getClass());
+        }
+    }
 
     /**
      * This interface is used to define a listener for the thread pool that is
@@ -520,7 +530,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
          * @param t
          *            The caught error.
          */
-        public void onRunnableError(Object r, Throwable t);
+        public void onRunnableError(Runnable r, Throwable t);
     }
 
     /**
@@ -536,10 +546,11 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
         synchronized (m_fibers) {
             for (int i = 0; i < m_fibers.length; i++) {
                 if (m_fibers[i] != null) {
-                    if (m_fibers[i].getStatus() != Fiber.STOPPED)
+                    if (m_fibers[i].getStatus() != Fiber.STOPPED) {
                         alive++;
-                    else
+                    } else {
                         m_fibers[i] = null;
+                    }
                 }
             }
         }
@@ -575,13 +586,10 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      *                maximum number of threads is invalid.
      */
     public RunnableConsumerThreadPool(String name, float loMark, float hiMark, int max) {
-        if (loMark > hiMark)
-            throw new IllegalArgumentException("The lo-mark must be less than the hi-mark");
+        Assert.state(loMark <= hiMark, "The lo-mark must be less than the hi-mark");
+        Assert.state(max > 0, "The maximum number of fibers must be greater than zero");
 
-        if (max <= 0)
-            throw new IllegalArgumentException("The maximum number of fibers must be greater than zero");
-
-        m_delegateQ = new SizingFifoQueue();
+        m_delegateQ = new SizingFifoQueue<Runnable>();
         m_fibers = new Fiber[max];
         m_poolName = name;
         m_hiRatio = hiMark;
@@ -590,8 +598,8 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
         m_tGroup = new ThreadGroup(name + "-tgroup");
         m_poolStatus = START_PENDING;
 
-        m_completedListeners = new ArrayList();
-        m_errorListeners = new ArrayList();
+        m_completedListeners = new ArrayList<RunnableCompletionListener>();
+        m_errorListeners = new ArrayList<RunnableErrorListener>();
 
         m_log4jPrefix = ThreadCategory.getPrefix();
     }
@@ -603,7 +611,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * 
      * @return The Runnable input queue.
      */
-    public FifoQueue getRunQueue() {
+    public FifoQueue<Runnable> getRunQueue() {
         return m_delegateQ;
     }
 
@@ -614,8 +622,8 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
     public void start() {
         try {
             m_delegateQ.open();
-        } catch (FifoQueueException fe) {
-            throw new RuntimeException(fe.getMessage());
+        } catch (FifoQueueException e) {
+            throw new RuntimeException(e.getMessage());
         }
         m_poolStatus = RUNNING;
     }
@@ -626,17 +634,18 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      */
     public void stop() {
         synchronized (m_fibers) {
-            for (int i = 0; i < m_fibers.length; i++) {
-                if (m_fibers[i] != null)
-                    m_fibers[i].stop();
+            for (Fiber fiber : m_fibers) {
+                if (fiber != null) {
+                    fiber.stop();
+                }
             }
         }
         m_poolStatus = STOP_PENDING;
 
         try {
             m_delegateQ.close();
-        } catch (FifoQueueException fe) {
-            throw new RuntimeException(fe.getMessage());
+        } catch (FifoQueueException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -647,8 +656,9 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      */
     public int getStatus() {
         if (m_poolStatus == STOP_PENDING) {
-            if (livingFiberCount() == 0)
+            if (livingFiberCount() == 0) {
                 m_poolStatus = STOPPED;
+            }
         }
 
         return m_poolStatus;
