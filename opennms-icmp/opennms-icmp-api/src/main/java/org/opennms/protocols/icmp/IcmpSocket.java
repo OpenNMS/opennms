@@ -1,46 +1,47 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2003 Mar 05: Changes to support response times and more platforms.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified 
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 May 21: Improve logging of shared library loading. - dj@opennms.org
+ * 2003 Mar 05: Changes to support response times and more platforms.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.protocols.icmp;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.net.DatagramPacket;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This class provides a bridge between the host operating system so that ICMP
@@ -51,6 +52,9 @@ import java.net.DatagramPacket;
  * 
  */
 public final class IcmpSocket {
+    private static final String LIBRARY_NAME = "jicmp";
+    private static final String PROPERTY_NAME = "opennms.library.jicmp";
+
     /**
      * This instance is used by the native code to save and store file
      * descriptor information about the icmp socket. This needs to be
@@ -79,15 +83,22 @@ public final class IcmpSocket {
      *                correctly.
      */
     public IcmpSocket() throws IOException {
-	String property = System.getProperty("opennms.library.jicmp");
-	if (property != null) {
-	    System.load(property);
-	} else {
-	    System.loadLibrary("jicmp");
-	}
+        String property = System.getProperty(PROPERTY_NAME);
+        if (property != null) {
+            log().debug("System property '" + PROPERTY_NAME + "' set to '" + System.getProperty(PROPERTY_NAME) + ".  Attempting to load " + LIBRARY_NAME + " library from this location.");
+            System.load(property);
+        } else {
+            log().debug("System property '" + PROPERTY_NAME + "' not set.  Attempting to load library using System.loadLibrary(\"" + LIBRARY_NAME + "\").");
+            System.loadLibrary(LIBRARY_NAME);
+        }
+        log().info("Successfully loaded " + LIBRARY_NAME + " library.");
 
         m_rawFd = new FileDescriptor();
         initSocket();
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /**
