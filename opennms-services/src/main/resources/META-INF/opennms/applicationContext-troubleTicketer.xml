@@ -5,9 +5,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-    <bean name="ticketerPlugin" class="${opennms.ticketer.plugin}">
-    </bean>
-    
+	<bean id="x" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	</bean>
+	
+	<bean name="ticketerPlugin" class="org.opennms.netmgt.ticketd.TicketerPluginFactory">
+		<property name="pluginClass" value="${opennms.ticketer.plugin}"/>
+	</bean>
+   
 	<bean name="ticketerServiceLayer" class="org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer">
 		<property name="alarmDao" ref="alarmDao" />
 		<property name="ticketerPlugin" ref="ticketerPlugin" />
