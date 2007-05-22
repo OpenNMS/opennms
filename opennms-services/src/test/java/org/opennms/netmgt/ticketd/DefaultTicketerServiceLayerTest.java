@@ -60,16 +60,18 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
 	 * Test method for {@link org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer#cancelTicketForAlarm(int, java.lang.String)}.
 	 */
 	public void testCancelTicketForAlarm() {
-		EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
-		EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
-		
-		expectNewTicketState(Ticket.State.CANCELLED);
-		
-		expectNewAlarmState(TroubleTicketState.CANCELLED);
-		
-		m_easyMockUtils.replayAll();
-		m_defaultTicketerServiceLayer.cancelTicketForAlarm(m_alarm.getId(), m_ticket.getId());
-		m_easyMockUtils.verifyAll();
+        EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
+        EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
+        
+        expectNewTicketState(Ticket.State.CANCELLED);
+        
+        expectNewAlarmState(TroubleTicketState.CANCELLED);
+        
+        m_easyMockUtils.replayAll();
+
+        m_defaultTicketerServiceLayer.cancelTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+
+        m_easyMockUtils.verifyAll();
 	}
 
 	/**
@@ -88,38 +90,106 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
 		});
 	}
 
-	/**
-	 * @param state
-	 */
-	private void expectNewTicketState(final Ticket.State state) {
-		m_ticketerPlugin.saveOrUpdate(m_ticket);
-		EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+    /**
+     * @param state
+     */
+    private void expectNewTicketState(final Ticket.State state) {
+        m_ticketerPlugin.saveOrUpdate(m_ticket);
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
 
-			public Object answer() throws Throwable {
-				Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
-				assertEquals(state, ticket.getState());
-				return null;
-			}
-			
-		});
-	}
+            public Object answer() throws Throwable {
+                Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
+                assertEquals(state, ticket.getState());
+                return null;
+            }
+            
+        });
+    }
+
+    /**
+     * @param state
+     */
+    private void expectNewTicket() {
+        m_ticketerPlugin.saveOrUpdate(EasyMock.isA(Ticket.class));
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+
+            public Object answer() throws Throwable {
+                Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
+                assertNull(ticket.getId());
+                ticket.setId("7");
+                assertEquals(m_alarm.getLogMsg(), ticket.getSummary());
+                assertEquals(m_alarm.getDescription(), ticket.getDetails());
+                return null;
+            }
+            
+        });
+    }
 
 	/**
 	 * Test method for {@link org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer#closeTicketForAlarm(int, java.lang.String)}.
 	 */
 	public void testCloseTicketForAlarm() {
+        EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
+        EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
+        
+        expectNewTicketState(Ticket.State.CLOSED);
+        
+        expectNewAlarmState(TroubleTicketState.CLOSED);
+        
+        m_easyMockUtils.replayAll();
+
+        m_defaultTicketerServiceLayer.closeTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+
+        m_easyMockUtils.verifyAll();
 	}
 
 	/**
 	 * Test method for {@link org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer#createTicketForAlarm(int)}.
 	 */
 	public void testCreateTicketForAlarm() {
+        EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
+        
+        expectNewTicket();
+        
+        expectNewAlarmState(TroubleTicketState.OPEN);
+        
+        m_easyMockUtils.replayAll();
+
+        m_defaultTicketerServiceLayer.createTicketForAlarm(m_alarm.getId());
+
+        m_easyMockUtils.verifyAll();
 	}
 
 	/**
 	 * Test method for {@link org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer#updateTicketForAlarm(int, java.lang.String)}.
 	 */
 	public void testUpdateTicketForAlarm() {
+        EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
+        EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
+        
+        expectUpdatedTicket();
+        
+        expectNewAlarmState(TroubleTicketState.OPEN);
+        
+        m_easyMockUtils.replayAll();
+
+        m_defaultTicketerServiceLayer.updateTicketForAlarm(m_alarm.getId(), m_ticket.getId());
+
+        m_easyMockUtils.verifyAll();
 	}
+
+    private void expectUpdatedTicket() {
+        m_ticketerPlugin.saveOrUpdate(m_ticket);
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+        
+            public Object answer() throws Throwable {
+                Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
+                assertEquals(Ticket.State.OPEN, ticket.getState());
+                assertEquals(m_alarm.getDescription(), ticket.getDetails());
+                return null;
+            }
+            
+        });
+    }
 
 }

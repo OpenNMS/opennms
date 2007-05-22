@@ -71,7 +71,10 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
 	public void updateTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
-        Ticket ticket = createTicketFromAlarm(alarm);
+		Ticket ticket = m_ticketerPlugin.get(ticketId);
+        ticket.setState(State.OPEN);
+        // TODO what do I do on an update?
+        ticket.setDetails(alarm.getDescription());
         m_ticketerPlugin.saveOrUpdate(ticket);
         
 		alarm.setTTicketState(TroubleTicketState.OPEN);
