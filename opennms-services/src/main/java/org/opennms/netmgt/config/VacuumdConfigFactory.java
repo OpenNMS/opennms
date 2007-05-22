@@ -1,43 +1,43 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2007 Mar 14: Create a public constructor that takes a reader, add a
-//              setInstance method, eliminate setConfigReader method and
-//              m_singleton, and indent a bit. - dj@opennms.org
-//
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified 
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 May 21: Java 5 generics and loops, format code, add a few more get<X>s
+ *              methods to return a genericized Collection, and reorder a bit.
+ *              - dj@opennms.org
+ * 2007 Mar 14: Create a public constructor that takes a reader, add a
+ *              setInstance method, eliminate setConfigReader method and
+ *              m_singleton, and indent a bit. - dj@opennms.org
+ *
+ * Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.                                                            
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact: 
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.config;
 
 import java.io.FileInputStream;
@@ -45,10 +45,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.vacuumd.Action;
@@ -58,6 +56,7 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.util.Assert;
 
 
@@ -93,7 +92,7 @@ public final class VacuumdConfigFactory {
      * @throws ValidationException
      */
     public VacuumdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        m_config = (VacuumdConfiguration) Unmarshaller.unmarshal(VacuumdConfiguration.class, rdr);
+        m_config = CastorUtils.unmarshal(VacuumdConfiguration.class, rdr);
     }
 
     /**
@@ -109,8 +108,10 @@ public final class VacuumdConfigFactory {
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_singleton != null) {
-            // init already called - return
-            // to reload, reload() will need to be called
+            /*
+             * The init method has already called, so return.
+             * To reload, reload() will need to be called.
+             */
             return;
         }
 
@@ -121,6 +122,7 @@ public final class VacuumdConfigFactory {
         } finally {
             reader.close();
         }
+        
         m_loadedFromFile = true;
     }
 
@@ -135,7 +137,7 @@ public final class VacuumdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        if (m_loadedFromFile ) {
+        if (m_loadedFromFile) {
             setInstance(null);
 
             init();
@@ -165,12 +167,12 @@ public final class VacuumdConfigFactory {
         m_singleton = instance;
     }
     
-    
     /**
      * Returns a Collection of automations defined in the config
      * @return
      */
-    public synchronized Collection getAutomations() {
+    @SuppressWarnings("unchecked")
+    public synchronized Collection<Automation> getAutomations() {
         return m_config.getAutomations().getAutomationCollection();
     }
     
@@ -182,17 +184,41 @@ public final class VacuumdConfigFactory {
 	public synchronized Collection<Trigger> getTriggers() {
         return m_config.getTriggers().getTriggerCollection();
     }
-    
+
+    /**
+     * Returns a Collection of actions defined in the config
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public synchronized Collection<Action> getActions() {
+        return m_config.getActions().getActionCollection();
+    }
+
+    /**
+     * Returns a Collection of named events to that may have
+     * been configured to be sent after an automation has run.
+     */
+    @SuppressWarnings("unchecked")
+    public synchronized Collection<AutoEvent> getAutoEvents() {
+        return m_config.getAutoEvents().getAutoEventCollection();
+    }
+
+    @SuppressWarnings("unchecked")
+    public synchronized Collection<ActionEvent> getActionEvents() {
+        return m_config.getActionEvents().getActionEventCollection();
+    }
+
+    public synchronized int getPeriod() {
+        return m_config.getPeriod();
+    }
+
     /**
      * Returns a Trigger with a name matching the string parameter
      * @param triggerName
      * @return
      */
     public synchronized Trigger getTrigger(String triggerName) {
-        Collection triggers = m_config.getTriggers().getTriggerCollection();
-        Iterator it = triggers.iterator();
-        while (it.hasNext()) {
-            Trigger trig = (Trigger) it.next();
+        for (Trigger trig : getTriggers()) {
             if (trig.getName().equals(triggerName)) {
                 return trig;
             }
@@ -206,10 +232,7 @@ public final class VacuumdConfigFactory {
      * @return
      */
     public synchronized Action getAction(String actionName) {
-        Collection actions = m_config.getActions().getActionCollection();
-        Iterator it = actions.iterator();
-        while (it.hasNext()) {
-            Action act = (Action) it.next();
+        for (Action act : getActions()) {
             if (act.getName().equals(actionName)) {
                 return act;
             }
@@ -223,33 +246,12 @@ public final class VacuumdConfigFactory {
      * @return
      */
     public synchronized Automation getAutomation(String autoName) {
-        Collection autos = m_config.getAutomations().getAutomationCollection();
-        Iterator it = autos.iterator();
-        while (it.hasNext()) {
-            Automation auto = (Automation) it.next();
+        for (Automation auto : getAutomations()) {
             if (auto.getName().equals(autoName)) {
                 return auto;
             }
         }
         return null;
-    }
-
-    /**
-     * Returns a Collection of actions defined in the config
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-	public synchronized Collection<Action> getActions() {
-        return m_config.getActions().getActionCollection();
-    }
-
-    /**
-     * Returns a Collection of named events to that may have
-     * been configured to be sent after an automation has run.
-     */
-    
-    public synchronized Collection getAutoEvents() {
-        return m_config.getAutoEvents().getAutoEventCollection();
     }
     
     /**
@@ -258,21 +260,14 @@ public final class VacuumdConfigFactory {
      * @return
      */
     public synchronized AutoEvent getAutoEvent(String name) {
-        Collection actions = getAutoEvents();
-        Iterator it = actions.iterator();
-        while (it.hasNext()) {
-            AutoEvent ae = (AutoEvent) it.next();
+        for (AutoEvent ae : getAutoEvents()) {
             if (ae.getName().equals(name)) {
                 return ae;
             }
         }
         return null;
     }
-    
-    public synchronized int getPeriod() {
-        return m_config.getPeriod();
-    }
-    
+
     public synchronized String[] getStatements() {
         Statement[] stmts = m_config.getStatement();
         String[] sql = new String[stmts.length];
@@ -283,10 +278,7 @@ public final class VacuumdConfigFactory {
     }
 
     public ActionEvent getActionEvent(String name) {
-        Collection actionEvents = m_config.getActionEvents().getActionEventCollection();
-        Iterator it = actionEvents.iterator();
-        while (it.hasNext()) {
-            ActionEvent actionEvent = (ActionEvent) it.next();
+        for (ActionEvent actionEvent : getActionEvents()) {
             if (actionEvent.getName().equals(name)) {
                 return actionEvent;
             }
