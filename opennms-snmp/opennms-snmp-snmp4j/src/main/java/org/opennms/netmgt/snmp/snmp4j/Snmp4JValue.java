@@ -60,7 +60,9 @@ class Snmp4JValue implements SnmpValue {
     Variable m_value;
     
     Snmp4JValue(Variable value) {
-        Assert.notNull(value, "value attribute cannot be null");
+        if (value == null) {
+            new NullPointerException("value attribute cannot be null");
+        }
         m_value = value;
     }
     
@@ -119,7 +121,10 @@ class Snmp4JValue implements SnmpValue {
         default:
             throw new IllegalArgumentException("invalid syntax "+syntax);
         }
-        Assert.notNull(m_value, "value object created from syntax " + syntax + " is null");
+        if (m_value == null) {
+            new IllegalArgumentException("value object created from syntax " + syntax + " is null");
+        }
+
     }
     
     public byte[] getBytes() {
