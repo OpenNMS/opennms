@@ -1,42 +1,40 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2007 Mar 13: Call VacuumdConfigFactory.init(), not reload(). - dj@opennms.org
-// 2004 Aug 28: Created this file.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified 
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 May 21: Java 5 generics and loops, format code. - dj@opennms.org
+ * 2007 Mar 13: Call VacuumdConfigFactory.init(), not reload(). - dj@opennms.org
+ * 2004 Aug 28: Created this file.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.                                                            
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact: 
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.vacuumd;
 
 import java.beans.PropertyVetoException;
@@ -45,8 +43,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
+
+import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -81,7 +79,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     private boolean m_stopped = false;
 
     private LegacyScheduler m_scheduler;
-    
+
     private EventIpcManager m_eventMgr;
 
     public synchronized static Vacuumd getSingleton() {
@@ -90,9 +88,9 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
         return m_singleton;
     }
-    
+
     public Vacuumd() {
-    	super("OpenNMS.Vacuumd");
+        super("OpenNMS.Vacuumd");
     }
 
     /*
@@ -100,61 +98,61 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
      */
+    @Override
     protected void onInit() {
-
-
         try {
             log().info("Loading the configuration file.");
             VacuumdConfigFactory.init();
             getEventManager().addEventListener(this, RELOAD_CONFIG_UEI);
-            
+
             initializeDataSources();
-           
         } catch (Exception ex) {
             log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
-		}
-        
+        }
+
         log().info("Vaccumd initialization complete");
-        
 
         createScheduler();
         scheduleAutomations();
-
     }
 
     private void initializeDataSources() throws MarshalException, ValidationException, IOException, ClassNotFoundException, PropertyVetoException, SQLException {
-    	for(Trigger trigger : VacuumdConfigFactory.getInstance().getTriggers()) {
-    		DataSourceFactory.init(trigger.getDataSource());
-    	}
-    	
-    	for(Action action : VacuumdConfigFactory.getInstance().getActions()) {
-    		DataSourceFactory.init(action.getDataSource());
-    	}
-	}
+        for (Trigger trigger : getVacuumdConfig().getTriggers()) {
+            DataSourceFactory.init(trigger.getDataSource());
+        }
 
-	protected void onStart() {
-		m_startTime = System.currentTimeMillis();
+        for (Action action : getVacuumdConfig().getActions()) {
+            DataSourceFactory.init(action.getDataSource());
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        m_startTime = System.currentTimeMillis();
         m_thread = new Thread(this, "Vacuumd-Thread");
         m_thread.start();
         m_scheduler.start();
-	}
+    }
 
+    @Override
     protected void onStop() {
-		m_stopped = true;
-        m_scheduler.stop();
-	}
-
-    protected void onPause() {
-		m_scheduler.pause();
         m_stopped = true;
-	}
+        m_scheduler.stop();
+    }
 
+    @Override
+    protected void onPause() {
+        m_scheduler.pause();
+        m_stopped = true;
+    }
+
+    @Override
     protected void onResume() {
-		m_thread = new Thread(this, "Vacuumd-Thread");
+        m_thread = new Thread(this, "Vacuumd-Thread");
         m_thread.start();
         m_scheduler.resume();
-	}
+    }
 
     /*
      * (non-Javadoc)
@@ -167,14 +165,13 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         setStatus(RUNNING);
 
         long now = System.currentTimeMillis();
-        long period = VacuumdConfigFactory.getInstance().getPeriod();
+        long period = getVacuumdConfig().getPeriod();
 
         log().info("Vacuumd sleeping until time to execute statements period = " + period);
 
         long waitTime = 500L;
 
         while (!m_stopped) {
-
             try {
                 now = waitPeriod(now, period, waitTime);
 
@@ -194,11 +191,10 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
      */
     private void executeStatements() {
         if (!m_stopped) {
-            String[] stmts = VacuumdConfigFactory.getInstance().getStatements();
-            for (int i = 0; i < stmts.length; i++) {
-                runUpdate(stmts[i]);
+            String[] stmts = getVacuumdConfig().getStatements();
+            for (String stmt : stmts) {
+                runUpdate(stmt);
             }
-
         }
     }
 
@@ -212,9 +208,8 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         int count = 0;
         while (!m_stopped && ((now - m_startTime) < period)) {
             try {
-
                 if (count % 100 == 0) {
-                    log().debug("Vacuumd: " + (period - now + m_startTime) + " millis remaining to execution.");
+                    log().debug("Vacuumd: " + (period - now + m_startTime) + "ms remaining to execution.");
                 }
                 Thread.sleep(waitTime);
                 now = System.currentTimeMillis();
@@ -225,29 +220,29 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
         return now;
     }
-    
+
     private void runUpdate(String sql) {
         log().info("Vacuumd executing statement: " + sql);
         // update the database
         Connection dbConn = null;
         boolean commit = false;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getDataSourceFactory().getConnection();
             dbConn.setAutoCommit(false);
 
             PreparedStatement stmt = dbConn.prepareStatement(sql);
             int count = stmt.executeUpdate();
             stmt.close();
 
-            if (log().isDebugEnabled())
+            if (log().isDebugEnabled()) {
                 log().debug("Vacuumd: Ran update " + sql + ": this affected " + count + " rows");
+            }
 
             commit = true;
         } catch (SQLException ex) {
             log().error("Vacuumd:  Database error execuating statement  " + sql, ex);
         } finally {
-
-            if (dbConn != null)
+            if (dbConn != null) {
                 try {
                     if (commit) {
                         dbConn.commit();
@@ -256,46 +251,38 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                     }
                 } catch (SQLException ex) {
                 } finally {
-                    if (dbConn != null)
+                    if (dbConn != null) {
                         try {
                             dbConn.close();
                         } catch (Exception e) {
                         }
+                    }
                 }
+            }
         }
-
     }
-    
+
     private void createScheduler() {
-        // Create a scheduler
-        //
         try {
             log().debug("init: Creating Vacuumd scheduler");
             m_scheduler = new LegacyScheduler("Vacuumd", 2);
         } catch (RuntimeException e) {
-            log().fatal("init: Failed to create Vacuumd scheduler", e);
+            log().fatal("init: Failed to create Vacuumd scheduler: " + e, e);
             throw e;
         }
     }
-    
+
     public Scheduler getScheduler() {
         return m_scheduler;
     }
-    
+
     private void scheduleAutomations() {
-        
-        Collection autos = VacuumdConfigFactory.getInstance().getAutomations();
-        Iterator it = autos.iterator();
-        
-        while (it.hasNext()) {
-            
-            scheduleAutomation((Automation)it.next());
-            
+        for (Automation auto : getVacuumdConfig().getAutomations()) {
+            scheduleAutomation(auto);
         }
     }
-    
+
     private void scheduleAutomation(Automation auto) {
-        
         if (auto.getActive()) {
             AutomationProcessor ap = new AutomationProcessor(auto);
             Schedule s = new Schedule(ap, new AutomationInterval(auto.getInterval()), m_scheduler);
@@ -312,44 +299,49 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         m_eventMgr = eventMgr;
     }
 
-    public void onEvent(Event e) {
-        
-        if (RELOAD_CONFIG_UEI.equals(e.getUei())) {
+    public void onEvent(Event event) {
+        if (RELOAD_CONFIG_UEI.equals(event.getUei())) {
             try {
                 log().info("onEvent: reloading configuration.");
-                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
+                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
                 log().debug("onEvent: calling stop on scheduler.");
-                
+
                 stop();
-                while (m_scheduler.m_runner.getStatus() != STOPPED || m_scheduler.getStatus() != STOPPED) {
+                while (m_scheduler.getRunner().getStatus() != STOPPED || m_scheduler.getStatus() != STOPPED) {
                     log().debug("onEvent: waiting for scheduler to stop." +
-                            " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.m_runner.getStatus());
+                            " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
                     Thread.sleep(500);
                 }
-                log().debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.m_runner.getStatus());
-                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
+                log().debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
+                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
                 log().debug("onEvent: reloading vacuumd configuration.");
-                
+
                 VacuumdConfigFactory.reload();
                 log().debug("onEvent: creating new schedule and rescheduling automations.");
-                
+
                 init();
                 log().debug("onEvent: restarting vacuumd and scheduler.");
-                
+
                 start();
-                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.m_scheduled);
-                
-            } catch (MarshalException e1) {
-                log().error("onEvent: problem marshaling vacuumd configuration.", e1);
-            } catch (ValidationException e1) {
-                log().error("onEvent: problem validating vacuumd configuration.", e1);
-            } catch (IOException e1) {
-                log().error("onEvent: IO problem reading vacuumd configuration.", e1);
-            } catch (InterruptedException e1) {
-                log().error("onEvent: Problem interrupting current Vacuumd Thread.", e1);
+                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
+            } catch (MarshalException e) {
+                log().error("onEvent: problem marshaling vacuumd configuration: " + e, e);
+            } catch (ValidationException e) {
+                log().error("onEvent: problem validating vacuumd configuration: " + e, e);
+            } catch (IOException e) {
+                log().error("onEvent: IO problem reading vacuumd configuration: " + e, e);
+            } catch (InterruptedException e) {
+                log().error("onEvent: Problem interrupting current Vacuumd Thread: " + e, e);
             }
             log().info("onEvent: completed configuration reload.");
         }
     }
 
+    private VacuumdConfigFactory getVacuumdConfig() {
+        return VacuumdConfigFactory.getInstance();
+    }
+    
+    private DataSource getDataSourceFactory() {
+        return DataSourceFactory.getInstance();
+    }
 }
