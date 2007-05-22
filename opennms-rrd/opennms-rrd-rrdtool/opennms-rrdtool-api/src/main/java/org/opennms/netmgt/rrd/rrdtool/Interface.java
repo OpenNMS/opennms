@@ -1,44 +1,45 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2003 Jan 31: Cleaned up some unused imports.
-//
-// Orignal code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified 
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 May 21: Better logging around loading of the shared library, format
+ *              code, and eliminate m_loaded member. - dj@opennms.org
+ * 2003 Jan 31: Cleaned up some unused imports.
+ *
+ * Orignal code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.                                                            
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact: 
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.rrd.rrdtool;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.util.Assert;
 
 /**
  * This is a singleton class which provides an interface through which RRD
@@ -68,16 +69,13 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  */
 public final class Interface {
+    private static final String LIBRARY_NAME = "jrrd";
+    private static final String PROPERTY_NAME = "opennms.library.jrrd";
+
     /**
      * The singleton instance of the interface
      */
-    private static Interface m_singleton = null;
-
-    /**
-     * This member is set to true if the 'jrrd' library (libjrrd.so on
-     * linux/unix) has has been loaded.
-     */
-    private static boolean m_loaded = false;
+    private static Interface s_singleton = null;
 
     /**
      * Native method implemented in C which provides an interface to the
@@ -112,15 +110,21 @@ public final class Interface {
      *             if the library doesn't exist
      */
     public static synchronized void init() throws SecurityException, UnsatisfiedLinkError {
-        if (m_loaded) {
+        if (isLoaded()) {
             // init already called - return
             // to reload, reload() will need to be called
             return;
         }
 
-        ThreadCategory.getInstance(Interface.class).debug("init: loading jrrd library...");
-        m_singleton = new Interface();
-        m_loaded = true;
+        setInstance(new Interface());
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    private static boolean isLoaded() {
+        return s_singleton != null;
     }
 
     /**
@@ -133,8 +137,7 @@ public final class Interface {
      *             if the library doesn't exist
      */
     public static synchronized void reload() throws SecurityException, UnsatisfiedLinkError {
-        m_singleton = null;
-        m_loaded = false;
+        setInstance(null);
 
         init();
     }
@@ -149,12 +152,15 @@ public final class Interface {
      *             if the library doesn't exist
      */
     private Interface() throws SecurityException, UnsatisfiedLinkError {
-	String property = System.getProperty("opennms.library.jrrd");
-	if (property != null) {
-	    System.load(property);
-	} else {
-	    System.loadLibrary("jrrd");
-	}
+        String property = System.getProperty(PROPERTY_NAME);
+        if (property != null) {
+            log().debug("System property '" + PROPERTY_NAME + "' set to '" + System.getProperty(PROPERTY_NAME) + ".  Attempting to load " + LIBRARY_NAME + " library from this location.");
+            System.load(property);
+        } else {
+            log().debug("System property '" + PROPERTY_NAME + "' not set.  Attempting to load library using System.loadLibrary(\"" + LIBRARY_NAME + "\").");
+            System.loadLibrary(LIBRARY_NAME);
+        }
+        log().info("Successfully loaded " + LIBRARY_NAME + " library.");
     }
 
     /**
@@ -166,10 +172,13 @@ public final class Interface {
      *             Thrown if the interface has not yet been initialized.
      */
     public static synchronized Interface getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("The RRD JNI interface has not been initialized");
+        Assert.state(isLoaded(), "The RRD JNI interface has not been initialized");
 
-        return m_singleton;
+        return s_singleton;
+    }
+    
+    public static synchronized void setInstance(Interface instance) {
+        s_singleton = instance;
     }
 
     /**
@@ -191,7 +200,8 @@ public final class Interface {
             Interface.launch(cmd);
             System.out.println("command completed.");
         } catch (Throwable t) {
-            System.out.println("unexpected error, reason: " + t.getMessage());
+            System.err.println("unexpected error, reason: " + t);
+            t.printStackTrace();
         }
     }
 }
