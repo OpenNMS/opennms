@@ -1,7 +1,6 @@
 package org.opennms.netmgt.ticketer.centric;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.aspcfs.apps.transfer.DataRecord;
 import org.aspcfs.utils.CRMConnection;
@@ -9,8 +8,6 @@ import org.aspcfs.utils.XMLUtils;
 import org.opennms.netmgt.ticketd.Ticket;
 import org.opennms.netmgt.ticketd.TicketerPlugin;
 import org.opennms.netmgt.ticketd.Ticket.State;
-import org.opennms.netmgt.ticketer.centric.CentricAPITest.RecordLocator;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
@@ -28,7 +25,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
                 }
                 xml = new XMLUtils(responseXML);
                 Element response = xml.getFirstChild("response");
-                Element errorText = xml.getFirstChild(response, "errorText");
+                Element errorText = XMLUtils.getFirstChild(response, "errorText");
                 return errorText.getTextContent();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -68,6 +65,9 @@ public class CentricTicketerPlugin implements TicketerPlugin {
     }
 
     private State getStateFromId(String stateIdString) {
+    	if (stateIdString == null) {
+    		return State.OPEN;
+    	}
         int stateId = Integer.parseInt(stateIdString);
         switch(stateId) {
         case 1:
@@ -102,7 +102,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         record.setName("ticket");
         if (ticket.getId() == null) {
             record.setAction(DataRecord.INSERT);
-            record.addField("orgId", 1);
+            record.addField("orgId", 0);
             record.addField("contactId", 1);
             record.addField("enteredBy", 0);
             record.addField("modifiedBy", 0);
