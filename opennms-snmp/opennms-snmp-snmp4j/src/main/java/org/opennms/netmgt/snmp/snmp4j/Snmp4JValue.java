@@ -54,7 +54,6 @@ import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
-import org.springframework.util.Assert;
 
 class Snmp4JValue implements SnmpValue {
     Variable m_value;
