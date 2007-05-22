@@ -4,9 +4,11 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.ticketd.Ticket.State;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.Assert;
 
-public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
+public class DefaultTicketerServiceLayer implements TicketerServiceLayer, InitializingBean {
 	
 	private AlarmDao m_alarmDao;
     private TicketerPlugin m_ticketerPlugin;
@@ -19,6 +21,11 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
         m_ticketerPlugin = ticketerPlugin;
     }
     
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_alarmDao != null, "alarmDao property must be set");
+        Assert.state(m_ticketerPlugin != null, "ticketPlugin property must be set");
+    }
+
 	public void cancelTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
 		if (alarm == null) {

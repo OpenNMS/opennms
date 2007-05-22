@@ -46,7 +46,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     }
 
     public void start() throws Exception {
-
+        // DO NOTHING?
     }
 
 	public String getName() {
