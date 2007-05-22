@@ -4,6 +4,7 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.ticketd.Ticket.State;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
 	
@@ -20,6 +21,9 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer {
     
 	public void cancelTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
+		if (alarm == null) {
+			throw new ObjectRetrievalFailureException("Unable to locate Alarm with ID: "+alarmId, null);
+		}
 
 		setTicketState(ticketId, Ticket.State.CANCELLED);
         
