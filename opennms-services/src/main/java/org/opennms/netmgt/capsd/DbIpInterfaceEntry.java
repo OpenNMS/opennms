@@ -343,6 +343,11 @@ public final class DbIpInterfaceEntry {
         } else {
             sqlText.append(" WHERE nodeID = ? AND ipAddr = ?");
         }
+
+        if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY && m_primaryState == 'N') {
+            sqlText.append(" AND isSnmpPrimary != 'C'");
+        }
+
         sqlText.append(" AND isManaged <> 'D'");
 
         log.debug("DbIpInterfaceEntry.update: SQL update statment = "

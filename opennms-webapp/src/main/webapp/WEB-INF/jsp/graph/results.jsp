@@ -12,7 +12,6 @@
 //
 // Modifications:
 //
-// 2007 May 21: Fix user-agent testing, pointed out by tarus@. - dj@opennms.org
 // 2005 Oct 01: Convert to use CSS for layout. -- DJ Gregor
 // 2005 Oct 01: Refactor relative date code. -- DJ Gregor
 // 2003 Feb 28: Corrected day/week/month/year reports on some browsers.
@@ -62,12 +61,17 @@
   <c:param name="breadcrumb" value="Results" />
 </c:import>
 
-<c:set var="topOffset">3</c:set>
-<c:set var="rightOffset">-13</c:set>
+<c:set var="topOffset">-22</c:set>
+<c:set var="rightOffset">0</c:set>
 
 <c:if test="${fn:contains(header['user-agent'], 'MSIE')}">
-  <c:set var="topOffset">-13</c:set>
-  <c:set var="rightOffset">-20</c:set>
+  <c:set var="topOffset">-25</c:set>
+  <c:set var="rightOffset">0</c:set>
+</c:if>
+
+<c:if test="${fn:contains(header['user-agent'], 'Safari')}">
+  <c:set var="topOffset">-12</c:set>
+  <c:set var="rightOffset">0</c:set>
 </c:if>
 
 <script type="text/javascript">
