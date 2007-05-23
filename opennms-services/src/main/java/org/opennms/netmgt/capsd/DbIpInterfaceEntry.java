@@ -376,7 +376,7 @@ public final class DbIpInterfaceEntry {
 
         if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED) {
             if (m_managedState == STATE_UNKNOWN) {
-                stmt.setNull(ndx++, Types.CHAR);
+                stmt.setString(ndx++, "N");
             } else {
                 stmt.setString(ndx++, new String(new char[] { m_managedState }));
             }
