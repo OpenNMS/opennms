@@ -1,5 +1,7 @@
 1.3.2 to 1.3.3
 ----------------------------------------------------------------------
+- Fixed Bug 1403 which was causing the issnmprimary field to be
+  set to "N" for interfaces with IP addresses and no SNMP.
 - Changed a large number of files to make defaults more reasonable.
   Big change in the way RRDs are installed. If there is historic
   data, be sure to merge these files correctly or else the RRD
