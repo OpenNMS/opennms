@@ -160,7 +160,6 @@ public class Invoker {
                         }
 
                         getServer().setAttribute(name, getAttribute(attribs[j]));
-                        ThreadCategory.setPrefix(log4jPrefix);
                     }
                 }
             } catch (Throwable t) {
