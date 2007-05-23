@@ -13,6 +13,9 @@
  *
  * Modifications:
  *
+ * 2007 May 22: Wrap all invocations of service methods in a try/finally block
+ *              that saves the log4j category prefix before calling the method
+ *              and restores it upon exit.  Caught by david@. - dj@opennms.org
  * 2003 Jan 31: Cleaned up some unused imports.
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
@@ -109,6 +112,7 @@ public class Invoker {
     }
     
     public void instantiateClasses() {
+
         /*
          * Preload the classes and register a new instance with the
          * MBeanServer.
@@ -128,7 +132,14 @@ public class Invoker {
                     log().debug("create new instance of "
                             + service.getClassName());
                 }
-                Object bean = clazz.newInstance();
+
+                String log4jPrefix = ThreadCategory.getPrefix();
+                Object bean;
+                try {
+                    bean = clazz.newInstance();
+                } finally {
+                    ThreadCategory.setPrefix(log4jPrefix);
+                }
 
                 // Register the mbean
                 if (log().isDebugEnabled()) {
@@ -149,6 +160,7 @@ public class Invoker {
                         }
 
                         getServer().setAttribute(name, getAttribute(attribs[j]));
+                        ThreadCategory.setPrefix(log4jPrefix);
                     }
                 }
             } catch (Throwable t) {
@@ -297,7 +309,12 @@ public class Invoker {
 
         Object object;
         try {
-            object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
+            String log4jPrefix = ThreadCategory.getPrefix(); 
+            try {
+                object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
+            } finally {
+                ThreadCategory.setPrefix(log4jPrefix);
+            }
         } catch (Throwable t) {
             log().error("An error occurred invoking operation "
                       + invoke.getMethod() + " on MBean "
@@ -314,7 +331,13 @@ public class Invoker {
         Class attribClass = Class.forName(attrib.getValue().getType());
         Constructor construct = attribClass.getConstructor(new Class[] { String.class });
 
-        Object value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
+        Object value;
+        String log4jPrefix = ThreadCategory.getPrefix(); 
+        try {
+            value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
+        } finally {
+            ThreadCategory.setPrefix(log4jPrefix);
+        }
 
         return new Attribute(attrib.getName(), value);
     }
@@ -323,7 +346,12 @@ public class Invoker {
         Class argClass = Class.forName(arg.getType());
         Constructor construct = argClass.getConstructor(new Class[] { String.class });
 
-        return construct.newInstance(new Object[] { arg.getContent() });
+        String log4jPrefix = ThreadCategory.getPrefix(); 
+        try {
+            return construct.newInstance(new Object[] { arg.getContent() });
+        } finally {
+            ThreadCategory.setPrefix(log4jPrefix);
+        }
     }
 
     private Category log() {
