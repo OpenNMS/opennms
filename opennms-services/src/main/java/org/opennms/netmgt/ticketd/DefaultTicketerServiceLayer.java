@@ -136,5 +136,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 		alarm.setTTicketState(TroubleTicketState.OPEN);
 		m_alarmDao.saveOrUpdate(alarm);
 	}
+    
+    // TODO what if the alarm doesn't exist?
 
 }

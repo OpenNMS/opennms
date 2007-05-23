@@ -18,6 +18,9 @@ public class TicketerPluginFactory implements FactoryBean {
         if (m_pluginClass == null) {
             throw new IllegalStateException("pluginClass must be set");
         }
+        if (!TicketerPlugin.class.isAssignableFrom(m_pluginClass)) {
+            throw new IllegalArgumentException("The class "+m_pluginClass+" is not assignable to TicketPlugin class");
+        }
         if (m_ticketerPlugin == null) {
             m_ticketerPlugin = (TicketerPlugin)m_pluginClass.newInstance();
         }
