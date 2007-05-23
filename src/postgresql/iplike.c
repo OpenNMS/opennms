@@ -41,6 +41,15 @@
 #include <ctype.h>		/* used for isdigit() & isspace() */
 #include <postgres.h>		/* PostgreSQL types */
 
+#ifdef PG_VERSION_NUM
+# if PG_VERSION_NUM >= 80200
+#  include <fmgr.h>
+#  ifdef PG_MODULE_MAGIC
+    PG_MODULE_MAGIC;
+#  endif
+# endif
+#endif
+
 #ifdef DEBUG
 #define LOG_FILE  "/var/log/opennms/iplike.log"
 #endif
