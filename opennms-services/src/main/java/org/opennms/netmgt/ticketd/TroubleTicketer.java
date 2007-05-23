@@ -1,3 +1,42 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+ * reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included
+ * code and modified
+ * code that was published under the GNU General Public License. Copyrights
+ * for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2003 Jan 31: Cleaned up some unused imports.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+ * reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.ticketd;
 
 import java.util.Arrays;
@@ -13,22 +52,46 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
+/**
+ * Manages Events trouble ticket related events and passes them to the service layer
+ * implementation. 
+ * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ *
+ */
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
     private boolean m_initialized = false;
+    
+    /**
+     * Typically wired in by Spring (applicationContext-troubleTicketer.xml)
+     * @param eventIpcManager
+     */
 	private EventIpcManager m_eventIpcManager;
     private TicketerServiceLayer m_ticketerServiceLayer;
-	
+
+	/**
+	 * @param eventIpcManager
+	 */
 	public void setEventIpcManager(EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
 	}
     
 	
+    /**
+     * @param ticketerServiceLayer
+     */
     public void setTicketerServiceLayer(TicketerServiceLayer ticketerServiceLayer) {
         m_ticketerServiceLayer = ticketerServiceLayer;
     }
 
-
+    /**
+     * SpringFramework method from implementation of the Spring Interface
+     * <code>org.springframework.beans.factory.InitializingBean</code>
+     * @throws Exception An exception is thrown when detecting an invalid state such 
+     *         as data not properly initialized or this method called more then once.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(!m_initialized, "shouldn't be calling afterProperties set more than once");
         Assert.state(m_eventIpcManager != null, "property eventIpcManager must be set to a non-null value");
@@ -45,14 +108,23 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_initialized = true;
     }
 
+    //FIXME
     public void start() throws Exception {
         // DO NOTHING?
     }
 
+    /**
+     * EventListener Interface required implementation
+     * @return <code>java.lang.String</code> representing the name of this service daemon
+     */
 	public String getName() {
 		return "TroubleTicketer";
 	}
 
+	/**
+	 * Eventlistner Interface required implementation
+	 * @param e Event received from Eventd
+	 */
 	public void onEvent(Event e) {
         try {
 		if (EventConstants.TROUBLETICKET_CANCEL_UEI.equals(e.getUei())) {
@@ -74,6 +146,11 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     }
 
 
+	/**
+	 * Makes call to API to close a trouble ticket associated with an OnmsAlarm.
+	 * @param e An OpenNMS event.
+	 * @throws InsufficientInformationException
+	 */
     private void handleCloseTicket(Event e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
@@ -86,6 +163,11 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_ticketerServiceLayer.closeTicketForAlarm(alarmId, ticketId);
 	}
 
+    /**
+     * Make call to API to Update a trouble ticket with new data from an OnmsAlarm.
+     * @param e An OpenNMS Event
+     * @throws InsufficientInformationException
+     */
 	private void handleUpdateTicket(Event e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
@@ -98,6 +180,11 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_ticketerServiceLayer.updateTicketForAlarm(alarmId, ticketId);
     }
 
+	/**
+	 * Make call to API to Create a new Trouble Ticket to be associated with an OnmsAlarm.
+	 * @param e An OpenNMS Event
+	 * @throws InsufficientInformationException
+	 */
 	private void handleCreateTicket(Event e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
@@ -108,6 +195,11 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_ticketerServiceLayer.createTicketForAlarm(alarmId);
 	}
 
+	/**
+	 * Makes call to API to Cancel a Trouble Ticket associated with an OnmsAlarm.
+	 * @param e
+	 * @throws InsufficientInformationException
+	 */
 	private void handleCancelTicket(Event e) throws InsufficientInformationException {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_ID);
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
