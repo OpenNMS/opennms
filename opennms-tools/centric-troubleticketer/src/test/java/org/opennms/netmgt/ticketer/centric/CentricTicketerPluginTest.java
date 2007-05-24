@@ -41,15 +41,18 @@ public class CentricTicketerPluginTest extends TestCase {
     
     public void testUpdate() throws Exception {
         
+        String summary = "A Ticket at "+new Date();
+
         Ticket ticket = new Ticket();
         ticket.setState(Ticket.State.OPEN);
-        ticket.setSummary("A Ticket at "+new Date());
+        ticket.setSummary(summary);
         ticket.setDetails("Ticket details for ticket: "+new Date());
         
         m_ticketer.saveOrUpdate(ticket);
         
         assertNotNull(ticket.getId());
         
+
         Ticket newTicket = m_ticketer.get(ticket.getId());
         
         assertNotNull(newTicket);
@@ -84,12 +87,12 @@ public class CentricTicketerPluginTest extends TestCase {
     public void testGet() {
         
     	//This may need to be changed ;-)
-        String ticketId = "91";
+        String ticketId = "92";
 		Ticket newTicket = m_ticketer.get(ticketId);
         
         assertNotNull(newTicket);
         assertEquals(ticketId, newTicket.getId());
-        assertEquals("This is the summary", newTicket.getSummary());
+        assertTrue(newTicket.getSummary().startsWith("A Ticket at"));
         
         //TODO: Implement this later when we need 2 way retrievel of commments/details
         //assertEquals("These are the details", newTicket.getDetails());

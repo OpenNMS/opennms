@@ -69,6 +69,7 @@ public class Ticket {
     private String m_summary;
     private String m_details;
     private String m_user;
+    private String m_modificationTimestamp;
     private Map<String, String> m_attributes;
     
     /**
@@ -202,6 +203,18 @@ public class Ticket {
      */
     public void setState(State state) {
         m_state = state;
+    }
+
+    /**
+     * A timestamp to be used for optimistic locking with the trouble ticketing system
+     * @return
+     */
+    public String getModificationTimestamp() {
+        return m_modificationTimestamp;
+    }
+
+    public void setModificationTimestamp(String modificationTimestamp) {
+        m_modificationTimestamp = modificationTimestamp;
     }
     
 }
