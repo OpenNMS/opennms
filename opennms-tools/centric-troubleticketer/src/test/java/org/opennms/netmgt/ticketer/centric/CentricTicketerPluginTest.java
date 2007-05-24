@@ -1,5 +1,6 @@
 package org.opennms.netmgt.ticketer.centric;
 
+import java.io.File;
 import java.util.Date;
 
 import junit.framework.TestCase;
@@ -14,6 +15,9 @@ public class CentricTicketerPluginTest extends TestCase {
     
     @Override
     protected void setUp() throws Exception {
+        
+        System.setProperty("opennms.home", "src"+File.separatorChar+"test"+File.separatorChar+"opennms-home");
+        
         m_ticketer = new CentricTicketerPlugin();
     }
 
@@ -35,7 +39,7 @@ public class CentricTicketerPluginTest extends TestCase {
         
     }
     
-    public void testUpdate() {
+    public void testUpdate() throws Exception {
         
         Ticket ticket = new Ticket();
         ticket.setState(Ticket.State.OPEN);
@@ -55,9 +59,13 @@ public class CentricTicketerPluginTest extends TestCase {
         newTicket.setState(Ticket.State.CANCELLED);
         newTicket.setDetails("These details have changed");
         
+        System.err.println("TicketId = "+newTicket.getId());
+        
         m_ticketer.saveOrUpdate(newTicket);
         
-        Ticket newerTicket = m_ticketer.get(ticket.getId());
+        Thread.sleep(500);
+        
+        Ticket newerTicket = m_ticketer.get(newTicket.getId());
         
         assertTicketEquals(newTicket, newerTicket);
     }
@@ -76,7 +84,7 @@ public class CentricTicketerPluginTest extends TestCase {
     public void testGet() {
         
     	//This may need to be changed ;-)
-        String ticketId = "4";
+        String ticketId = "91";
 		Ticket newTicket = m_ticketer.get(ticketId);
         
         assertNotNull(newTicket);

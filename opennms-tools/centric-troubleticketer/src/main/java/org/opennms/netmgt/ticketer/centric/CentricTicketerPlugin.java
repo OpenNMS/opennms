@@ -1,10 +1,23 @@
 package org.opennms.netmgt.ticketer.centric;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Category;
 import org.aspcfs.apps.transfer.DataRecord;
 import org.aspcfs.utils.CRMConnection;
 import org.aspcfs.utils.XMLUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ticketd.Ticket;
 import org.opennms.netmgt.ticketd.TicketerPlugin;
 import org.opennms.netmgt.ticketd.Ticket.State;
@@ -13,6 +26,7 @@ import org.springframework.util.Assert;
 import org.w3c.dom.Element;
 
 public class CentricTicketerPlugin implements TicketerPlugin {
+    
     
     public static class CentricConnection extends CRMConnection {
         
@@ -33,6 +47,8 @@ public class CentricTicketerPlugin implements TicketerPlugin {
             }
         }
     }
+    
+    
 
     public Ticket get(String ticketId) {
         CentricConnection crm = createConnection();
@@ -89,7 +105,54 @@ public class CentricTicketerPlugin implements TicketerPlugin {
                 
         }
     }
+    
+    public DataRecord getRecord() {
+        DataRecord record = new DataRecord();
+        
+        Properties props = getProperties();
+        
+        
+        for(Map.Entry<Object, Object> entry : props.entrySet()) {
+            String key = (String)entry.getKey();
+            String val = (String)entry.getValue();
 
+            if (!key.startsWith("connection.")) {
+                record.addField(key, val);
+            }
+                
+        }
+                
+        return record;
+            
+    }   
+        
+    Properties getProperties() {
+        File home = new File(System.getProperty("opennms.home"));
+        File etc = new File(home, "etc");
+        File config = new File(etc, "centric.properties");
+
+
+        Properties props = new Properties();
+
+        InputStream in = null;
+        try {
+            in = new FileInputStream(config);
+            props.load(in);
+        } catch (IOException e) {
+            log().error("Unable to load "+config+" ignoring.", e);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+
+        return props; 
+
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    
     public void saveOrUpdate(Ticket ticket) {
         CentricConnection crm = createConnection();
         
@@ -97,20 +160,13 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         returnFields.add("id");
         crm.setTransactionMeta(returnFields);
         
-        
-        DataRecord record = new DataRecord();
+        DataRecord record = getRecord();
         record.setName("ticket");
         if (ticket.getId() == null) {
             record.setAction(DataRecord.INSERT);
-            record.addField("orgId", 0);
-            record.addField("contactId", 1);
-            record.addField("enteredBy", 0);
-            record.addField("modifiedBy", 0);
         } else {
             record.setAction(DataRecord.UPDATE);
             record.addField("id", ticket.getId());
-            record.addField("enteredBy", 0);
-            record.addField("modifiedBy", 0);
         }
         record.addField("problem", ticket.getSummary());
         record.addField("comment", ticket.getDetails());
@@ -205,18 +261,21 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         // Client ID must already exist in target CRM system and is created
         // under Admin -> Configure System -> HTTP-XML API Client Manager
         int clientId = 1;
+        
+        Properties props = getProperties();
 
         // Establish connectivity as a client
         CentricConnection crm = new CentricConnection();
-        crm.setUrl("http://localhost:8080/centric");
-        crm.setId("localhost");
-        crm.setCode("opennms");
-        crm.setClientId(clientId);
+        crm.setUrl(props.getProperty("connection.url"));
+        crm.setId(props.getProperty("connection.id"));
+        crm.setCode(props.getProperty("connection.code"));
+        crm.setClientId(props.getProperty("connection.clientId"));
 
         // Start a new transaction
         crm.setAutoCommit(false);
         return crm;
     }
-  
+    
+    
 
 }
