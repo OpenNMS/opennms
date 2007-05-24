@@ -177,5 +177,42 @@ public class CentricAPITest extends TestCase {
       
 */
     }
+    
+    public void testUpdateTicket() {
+  
+       // Client ID must already exist in target CRM system and is created
+        // under Admin -> Configure System -> HTTP-XML API Client Manager
+        int clientId = 1;
+        
+        // Establish connectivity as a client
+        CRMConnection crm = new CRMConnection();
+        crm.setUrl("http://localhost:8080/centric");
+        crm.setId("localhost");
+        crm.setCode("opennms");
+        crm.setClientId(clientId);
+        
+        // Start a new transaction
+        crm.setAutoCommit(false);
+        
+        
+        DataRecord ticket = new DataRecord();
+        ticket.setName("ticket");
+        ticket.setAction(DataRecord.UPDATE);
+        //email.addField("orgId", 1);
+        //email.addField("contactId", 1);
+        ticket.addField("id", 91);
+        ticket.addField("problem", "can't get there from here");
+        ticket.addField("enteredBy", 0);
+        ticket.addField("modifiedBy", 0);
+        ticket.addField("stateId", 6);
+        ticket.addField("severityCode", 2);
+        
+        crm.save(ticket);
+        
+        boolean result = crm.commit();
+        assertTrue(crm.getLastResponse(), result);
+        
+ 
+    }
 
 }
