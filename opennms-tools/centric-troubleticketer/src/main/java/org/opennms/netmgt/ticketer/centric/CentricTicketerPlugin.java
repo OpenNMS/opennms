@@ -55,6 +55,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         
         ArrayList<String> returnFields = new ArrayList<String>();
         returnFields.add("id");
+        returnFields.add("modified");
         returnFields.add("problem");
         returnFields.add("comment");
         returnFields.add("stateId");
@@ -72,6 +73,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         
         Ticket ticket = new Ticket();
         ticket.setId(crm.getResponseValue("id"));
+        ticket.setModificationTimestamp(crm.getResponseValue("modified"));
         ticket.setSummary(crm.getResponseValue("problem"));
         ticket.setDetails(crm.getResponseValue("comment"));
         ticket.setState(getStateFromId(crm.getResponseValue("stateId")));
@@ -151,6 +153,14 @@ public class CentricTicketerPlugin implements TicketerPlugin {
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
+    
+    public void save(Ticket ticket) {
+        
+    }
+    
+    public void update(Ticket ticket) {
+        
+    }
 
     
     public void saveOrUpdate(Ticket ticket) {
@@ -167,6 +177,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         } else {
             record.setAction(DataRecord.UPDATE);
             record.addField("id", ticket.getId());
+            record.addField("modified", ticket.getModificationTimestamp());
         }
         record.addField("problem", ticket.getSummary());
         record.addField("comment", ticket.getDetails());
@@ -244,6 +255,25 @@ public class CentricTicketerPlugin implements TicketerPlugin {
 
     }
     
+    private String getModifiedTimestamp(String id) {
+        CentricConnection crm = createConnection();
+        
+        ArrayList<String> returnFields = new ArrayList<String>();
+        returnFields.add("id");
+        returnFields.add("modified");
+        crm.setTransactionMeta(returnFields);
+
+        DataRecord query = new DataRecord();
+        query.setAction(DataRecord.SELECT);
+        query.setName("ticketList");
+        query.addField("id", 91);
+        
+        crm.load(query);
+        
+        return crm.getResponseValue("modified");
+
+    }
+
     private int getStateId(State state) {
         switch(state) {
         case OPEN:

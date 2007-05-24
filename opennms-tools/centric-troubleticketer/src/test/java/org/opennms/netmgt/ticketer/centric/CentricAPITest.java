@@ -87,6 +87,7 @@ public class CentricAPITest extends TestCase {
 
     }
     
+    
     public void testCreateTicket() {
         
         CRMConnection crm = createConnection();
@@ -191,8 +192,25 @@ public class CentricAPITest extends TestCase {
         crm.setCode("opennms");
         crm.setClientId(clientId);
         
+        
+        ArrayList returnFields = new ArrayList();
+        returnFields.add("id");
+        returnFields.add("modified");
+        crm.setTransactionMeta(returnFields);
+
+        DataRecord query = new DataRecord();
+        query.setAction(DataRecord.SELECT);
+        query.setName("ticketList");
+        query.addField("id", 91);
+        
+        crm.load(query);
+        
+        String modified = crm.getResponseValue("modified");
+        
         // Start a new transaction
         crm.setAutoCommit(false);
+        
+        
         
         
         DataRecord ticket = new DataRecord();
@@ -206,6 +224,7 @@ public class CentricAPITest extends TestCase {
         ticket.addField("modifiedBy", 0);
         ticket.addField("stateId", 6);
         ticket.addField("severityCode", 2);
+        ticket.addField("modified", modified);
         
         crm.save(ticket);
         
