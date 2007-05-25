@@ -45,7 +45,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-dynamiclib ${build.jni.compiler.arg} ${build.jni.linker.arg} -L${build.rrd.lib.dir} -lrrd -lc -ldl</linkerStartOption>
+            <linkerStartOption>-bundle ${build.jni.compiler.arg} ${build.jni.linker.arg} -L${build.rrd.lib.dir} -lrrd -lc -ldl</linkerStartOption>
           </linkerStartOptions>
           <javahOS>${platform.javahOS}</javahOS>
           <jdkIncludePath>${platform.jdk.include.dir}</jdkIncludePath>
