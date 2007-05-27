@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2007 May 27: Organize imports, cleanup breadcrumbs. - dj@opennms.org
 // 2007 Feb 01: Don't display the "Site Status" link if the building
 //              column in assets is a zero-length string. - dj@opennms.org
 // 2006 Oct 30: Convert to use Java 5 generics and clean up warnings.
@@ -52,7 +53,18 @@
 		java.util.*,
 		java.net.*,
       	org.opennms.netmgt.dao.CategoryDao,
-	    org.opennms.netmgt.dao.NodeDao,org.opennms.core.utils.IPSorter,org.opennms.web.Util,org.opennms.web.acegisecurity.Authentication,org.opennms.web.event.*,org.opennms.web.svclayer.ResourceService,org.opennms.web.asset.Asset,org.opennms.web.asset.AssetModel,org.springframework.transaction.support.TransactionTemplate,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
+	    org.opennms.netmgt.dao.NodeDao,
+        org.opennms.netmgt.model.OnmsResource,
+        org.opennms.core.utils.IPSorter,
+        org.opennms.web.Util,
+        org.opennms.web.acegisecurity.Authentication,
+        org.opennms.web.event.*,
+        org.opennms.web.svclayer.ResourceService,
+        org.opennms.web.asset.Asset,
+        org.opennms.web.asset.AssetModel,
+        org.springframework.transaction.support.TransactionTemplate,
+        org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -206,14 +218,12 @@
     Asset asset = this.model.getAsset( nodeId );
 %>
 
-<% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
-<% String breadcrumb2 = "Node"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="<%= node_db.getLabel() %>" />
   <jsp:param name="headTitle" value="Node" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+  <jsp:param name="breadcrumb" value="Node" />
 </jsp:include>
 
       <h2>Node: <%=node_db.getLabel()%></h2>
