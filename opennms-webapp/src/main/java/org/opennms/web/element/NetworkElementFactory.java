@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 May 29: Add "id" for Interface model object. - dj@opennms.org
 // 2003 Feb 05: Added ORDER BY to SQL statement.
 //
 // Orignal code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -928,6 +929,7 @@ public class NetworkElementFactory extends Object {
             Object element = null;
             Interface intf = new Interface();
 
+            intf.m_id = rs.getInt("id");
             intf.m_nodeId = rs.getInt("nodeid");
             intf.m_ifIndex = rs.getInt("ifIndex");
             intf.m_ipStatus = rs.getInt("ipStatus");
