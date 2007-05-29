@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 May 29: Add "id". - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,6 +37,8 @@
 package org.opennms.web.element;
 
 public class Interface {
+    int m_id;
+    
     int m_nodeId;
 
     int m_ifIndex;
@@ -68,6 +74,10 @@ public class Interface {
     String m_snmpIfAlias;
 
     String m_isSnmpPrimary;
+
+    public int getId() {
+        return m_id;
+    }
 
     public int getNodeId() {
         return m_nodeId;
