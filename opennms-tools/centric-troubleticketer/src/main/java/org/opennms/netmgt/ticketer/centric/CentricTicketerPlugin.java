@@ -194,7 +194,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         record.addField("problem", ticket.getSummary());
         record.addField("comment", ticket.getDetails());
         record.addField("stateId", getStateId(ticket.getState()));
-        record.addField("closeIt", isClosingState(ticket.getState()));
+        record.addField("closeNow", isClosingState(ticket.getState()));
         
         crm.save(record);
         
