@@ -1,0 +1,24 @@
+<assembly>
+  <id>daemon</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/test/opennms-home/etc</directory>
+      <outputDirectory>etc</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>${centric.tools.jar}</source>
+      <outputDirectory>lib</outputDirectory>
+    </file>
+  </files>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+    </dependencySet>
+  </dependencySets>
+</assembly>
