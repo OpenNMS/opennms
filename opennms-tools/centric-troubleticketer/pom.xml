@@ -13,10 +13,8 @@
       <groupId>com.centriccrm</groupId>
       <artifactId>tools</artifactId>
       <version>4.1</version>
-<!--
       <scope>system</scope>
-      <systemPath>/Users/brozow/distributions/centric-crm-4.1/centric_crm_tools-4.1.jar</systemPath>
--->
+      <systemPath>${centric.tools.jar}</systemPath>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
