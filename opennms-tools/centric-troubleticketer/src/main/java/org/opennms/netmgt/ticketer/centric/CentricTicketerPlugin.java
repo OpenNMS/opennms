@@ -81,6 +81,18 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         return ticket;
         
     }
+    
+    private boolean isClosingState(State newState) {
+        switch(newState) {
+        case CANCELLED:
+        case CLOSED:
+            return true;
+        case OPEN:
+        default:    
+            return false;
+        }
+        
+    }
 
     private State getStateFromId(String stateIdString) {
     	if (stateIdString == null) {
@@ -182,6 +194,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         record.addField("problem", ticket.getSummary());
         record.addField("comment", ticket.getDetails());
         record.addField("stateId", getStateId(ticket.getState()));
+        record.addField("closeIt", isClosingState(ticket.getState()));
         
         crm.save(record);
         
