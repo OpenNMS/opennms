@@ -47,6 +47,20 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
+
+<%!
+
+	public String alarmTicketLink(Alarm alarm) {
+    	String template = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");
+    	if (template == null) {
+    	    return alarm.getTroubleTicket();
+    	} else {
+    	    return template.replaceAll("\\$\\{id\\}", alarm.getTroubleTicket());
+    	}
+	}
+
+%>
+
 <%
     String alarmIdString = request.getParameter( "id" );
 
@@ -149,7 +163,7 @@
           <td><% if (alarm.getTroubleTicket() == null) { %>
                 &nbsp;
               <% } else { %>
-            	<%= alarm.getTroubleTicket() %> 
+            	<%= alarmTicketLink(alarm) %> 
               <% } %>
           </td>
           </tr> 
