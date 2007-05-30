@@ -198,7 +198,7 @@
 	  <!-- hidden form for adding a new Notification -->
 	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
-	  	<input type="hidden" name="uei" value="" /> <!-- Set by java script -->
+	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
 	  </form>
 	  
       <!-- hidden form for acknowledging the result set --> 
@@ -371,7 +371,7 @@
                 </nobr>
               <% } %>
               <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
-               	  <a href="javascript: void  submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
+               	  <a href="javascript: void submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
               <% } %>
             <% } else { %>
               &nbsp;
