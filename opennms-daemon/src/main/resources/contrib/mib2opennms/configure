@@ -2010,7 +2010,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=mib2opennms
- VERSION=0.2.2
+ VERSION=0.2.3
 
 
 cat >>confdefs.h <<_ACEOF
