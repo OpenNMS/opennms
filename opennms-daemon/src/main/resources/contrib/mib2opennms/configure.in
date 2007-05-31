@@ -1,5 +1,5 @@
 AC_INIT(src/mib2opennms.c)
-AM_INIT_AUTOMAKE(mib2opennms,0.2.2)
+AM_INIT_AUTOMAKE(mib2opennms,0.2.3)
 AM_CONFIG_HEADER(src/config.h)
 
 dnl find and test the C compiler
