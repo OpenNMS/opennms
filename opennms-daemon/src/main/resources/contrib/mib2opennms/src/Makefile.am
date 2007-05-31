@@ -2,3 +2,4 @@
 AUTOMAKE_OPTIONS = gnu
 bin_PROGRAMS = mib2opennms
 mib2opennms_SOURCES = mib2opennms.c
+bin_SCRIPTS = rename-mibs.pl
