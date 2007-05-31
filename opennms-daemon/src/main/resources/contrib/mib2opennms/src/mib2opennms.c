@@ -34,6 +34,7 @@ typedef struct EventDefaults {
 
 int verbosity = 0;
 int generic6 = 0;
+int wrapevents = 0;
 
 #define verbose(level, ...) \
 	if( (level) <= verbosity ) { \
@@ -100,6 +101,9 @@ void dumpXml(SmiModule* smiModule, FILE* file, EventDefaults* defs) {
 	smiNode = smiGetFirstNode(smiModule, SMI_NODEKIND_NOTIFICATION);
 
 	fprintf(file, "<!-- Start of auto generated data from MIB: %s -->\n", smiModule->name);
+	if (wrapevents) {
+		fprintf(file, "<events>\n");
+	}
 
 	for(; smiNode; smiNode = smiGetNextNode(smiNode, SMI_NODEKIND_NOTIFICATION) ) 
 	{
@@ -166,14 +170,18 @@ void dumpXml(SmiModule* smiModule, FILE* file, EventDefaults* defs) {
 		fprintf(file, "</event>\n");
 	}
   
+	if (wrapevents) {
+		fprintf(file, "</events>\n");
+	}
 	fprintf(file, "<!-- End of auto generated data from MIB: %s -->\n", 
 		smiModule->name);
 }
 
 void usage() {
 	fprintf(stderr, 
-		"Usage: mib2opennms [-v] [-f file] [-m MIBPATH] MIB1 [MIB2 [...]] [-6]\n"\
-		"       -6 - hardcode generic to 6\n"
+		"Usage: mib2opennms [-v] [-f file] [-m MIBPATH] [-6] [-w] MIB1 [MIB2 [...]]\n"\
+		"       -6 - hardcode generic to 6\n"\
+		"       -w - wrap event in <events> tag\n"
 );
 	exit(1);
 }
@@ -186,7 +194,10 @@ int main(int argc, char *argv[])
 
 	char* modulename;
 	char* filename = NULL;
+
+	char* STANDARD_PATH = ".:/usr/share/snmp/mibs";
 	char* mibpath = NULL;
+	int pathlen = 0;
 
 	FILE* file = stdout;
 
@@ -195,9 +206,9 @@ int main(int argc, char *argv[])
 
 	EventDefaults* defaults = NULL;
 
-	printf("mib2opennms version %s\n", VERSION);
+	fprintf(stderr, "mib2opennms version %s\n", VERSION);
 
-	while ( (c = getopt(argc, argv, "m:f:v:6")) != -1 ) {
+	while ( (c = getopt(argc, argv, "m:f:v:6w")) != -1 ) {
 		switch (c) {
 			case 'm' :
 				mibpath = optarg;
@@ -211,6 +222,9 @@ int main(int argc, char *argv[])
 			case '6' :
 				generic6++;
 				break;
+			case 'w' :
+				wrapevents++;
+				break;
 			default :
 				usage();
 		}
@@ -222,13 +236,19 @@ int main(int argc, char *argv[])
     
 	smiInit(NULL);
 
-	if (mibpath != NULL) {
-		strcat(mibpath, ".:/usr/share/snmp/mibs\0");
-	} else {
-		mibpath = ".:/usr/share/snmp/mibs";
-	}
+	pathlen = strlen(STANDARD_PATH) + (mibpath == NULL ? 0 : strlen(mibpath)+1 /* for the colon */);
 
-	smiSetPath(mibpath);
+	char * newpath = (char *) malloc( pathlen * sizeof(char) );
+	newpath[0] = '\0';
+
+	if (mibpath != NULL) {
+	  strcat(newpath, mibpath);
+	  strcat(newpath, ":");
+	}
+  
+	strcat(newpath, STANDARD_PATH);
+
+	smiSetPath(newpath);
 
 	modules = (SmiModule **) malloc( argc * sizeof(SmiModule *));
 	moduleCount = 0;
