@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <smi.h>
 #include <unistd.h> 
+#include <string.h>
 #include "config.h"
 
 typedef struct EventDefaults {
@@ -222,8 +223,12 @@ int main(int argc, char *argv[])
 	smiInit(NULL);
 
 	if (mibpath != NULL) {
-		smiSetPath(mibpath);
+		strcat(mibpath, ".:/usr/share/snmp/mibs\0");
+	} else {
+		mibpath = ".:/usr/share/snmp/mibs";
 	}
+
+	smiSetPath(mibpath);
 
 	modules = (SmiModule **) malloc( argc * sizeof(SmiModule *));
 	moduleCount = 0;
