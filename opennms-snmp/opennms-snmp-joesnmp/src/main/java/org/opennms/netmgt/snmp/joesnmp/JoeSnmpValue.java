@@ -132,6 +132,17 @@ class JoeSnmpValue implements SnmpValue {
     public boolean isEndOfMib() {
         return m_value instanceof SnmpEndOfMibView;
     }
+    
+    public boolean isError() {
+        switch (getType()) {
+        case SnmpValue.SNMP_NO_SUCH_INSTANCE:
+        case SnmpValue.SNMP_NO_SUCH_OBJECT:
+            return true;
+        default:
+            return false;
+        }
+        
+    }
 
     public boolean isNumeric() {
         switch (m_value.typeId()) {

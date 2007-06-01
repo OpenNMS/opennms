@@ -65,6 +65,8 @@ public interface SnmpValue {
     
     public abstract boolean isEndOfMib();
     
+    public abstract boolean isError();
+
     public abstract boolean isNull();
 
     public abstract boolean isDisplayable();
@@ -88,5 +90,6 @@ public interface SnmpValue {
     public abstract byte[] getBytes();
 
     public abstract SnmpObjId toSnmpObjId();
+
 
 }
