@@ -81,7 +81,8 @@ int dumpNamed(SmiNode* node, FILE *file) {
 		smiNamedNumber = smiGetNextNamedNumber(smiNamedNumber) )
 	{
 		fprintf(file, "\n\t\t%s(%d)",
-			smiNamedNumber->name, smiNamedNumber->value.value);
+			smiNamedNumber->name,
+			smiNamedNumber->value.value.integer32);
 		output++;
 	}
 
