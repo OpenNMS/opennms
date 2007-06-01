@@ -309,5 +309,16 @@ class Snmp4JValue implements SnmpValue {
         return m_value;
     }
 
+    public boolean isError() {
+        switch (getType()) {
+        case SnmpValue.SNMP_NO_SUCH_INSTANCE:
+        case SnmpValue.SNMP_NO_SUCH_OBJECT:
+            return true;
+        default:
+            return false;
+        }
+        
+    }
+
 
 }

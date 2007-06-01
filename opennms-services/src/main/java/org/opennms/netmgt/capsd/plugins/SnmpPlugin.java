@@ -104,8 +104,14 @@ public final class SnmpPlugin extends AbstractPlugin {
     
     private String getValue(SnmpAgentConfig agentConfig, String oid) {
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
-        return (val == null ? null : val.toString());
+        if (val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
+            return null;
+        }
+        else {
+            return val.toString();
+        }
     }
+
 
     /**
      * Returns true if the protocol defined by this plugin is supported. If the

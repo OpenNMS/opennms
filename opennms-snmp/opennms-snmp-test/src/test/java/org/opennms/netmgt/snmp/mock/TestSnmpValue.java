@@ -227,6 +227,17 @@ public class TestSnmpValue implements SnmpValue {
     public boolean isNumeric() {
         return false;
     }
+    
+    public boolean isError() {
+        switch (getType()) {
+        case SnmpValue.SNMP_NO_SUCH_INSTANCE:
+        case SnmpValue.SNMP_NO_SUCH_OBJECT:
+            return true;
+        default:
+            return false;
+        }
+        
+    }
 
     public static SnmpValue parseMibValue(String mibVal) {
         if (mibVal.startsWith("OID:"))
