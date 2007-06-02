@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2007 Jun 02: Refactor to MVC pattern and pull reusable code into
+//              for dealing with nodes into ElementUtil. - dj@opennms.org
 // 2007 May 27: Organize imports, cleanup breadcrumbs. - dj@opennms.org
 // 2007 Feb 01: Don't display the "Site Status" link if the building
 //              column in assets is a zero-length string. - dj@opennms.org
@@ -52,17 +54,12 @@
 	import="org.opennms.web.element.*,
 		java.util.*,
 		java.net.*,
-      	org.opennms.netmgt.dao.CategoryDao,
-	    org.opennms.netmgt.dao.NodeDao,
-        org.opennms.netmgt.model.OnmsResource,
+        java.sql.SQLException,
         org.opennms.core.utils.IPSorter,
-        org.opennms.web.Util,
         org.opennms.web.acegisecurity.Authentication,
-        org.opennms.web.event.*,
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
-        org.springframework.transaction.support.TransactionTemplate,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
 %>
@@ -70,388 +67,373 @@
 
 
 <%!
-
-    private WebApplicationContext m_webAppContext;
-
-    protected int telnetServiceId;
-    protected int httpServiceId;
-    protected int dellServiceId;
-    protected int snmpServiceId;
+    private int m_telnetServiceId;
+    private int m_httpServiceId;
+    private int m_dellServiceId;
+    private int m_snmpServiceId;
     private ResourceService m_resourceService;
-	protected AssetModel model = new AssetModel();
+	private AssetModel m_model = new AssetModel();
 
-	public static HashMap<Character, String> m_statusMap;
-
-	static {
-        m_statusMap = new HashMap<Character, String>();
-        m_statusMap.put(new Character('A'), "Active");
-        m_statusMap.put(new Character(' '), "Unknown");
-        m_statusMap.put(new Character('D'), "Deleted");
-	}
-    
     public void init() throws ServletException {
-        
         try {
-            this.telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not determine the Telnet service ID", e );
+            m_telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");
+        } catch (Exception e) {
+            throw new ServletException("Could not determine the Telnet service ID", e);
         }        
 
         try {
-            this.httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not determine the HTTP service ID", e );
-        }
-
-        try {
-            this.dellServiceId = NetworkElementFactory.getServiceIdFromName("Dell-OpenManage");
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
+            m_httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
+        } catch (Exception e) {
+            throw new ServletException("Could not determine the HTTP service ID", e);
         }
 
         try {
-            this.snmpServiceId = NetworkElementFactory.getServiceIdFromName("SNMP");
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
+            m_dellServiceId = NetworkElementFactory.getServiceIdFromName("Dell-OpenManage");
+        } catch (Exception e) {
+            throw new ServletException("Could not determine the Dell-OpenManage service ID", e);
         }
 
-	    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
+        try {
+            m_snmpServiceId = NetworkElementFactory.getServiceIdFromName("SNMP");
+        } catch (Exception e) {
+            throw new ServletException("Could not determine the SNMP service ID", e);
+        }
+
+	    WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
     
-    public static String getStatusString(char c) {
-        return m_statusMap.get(new Character(c));
-    }%>
+    public static String getStatusStringWithDefault(Node node_db) {
+        String status = ElementUtil.getNodeStatusString(node_db);
+        if (status != null) {
+            return status;
+        } else {
+            return "Unknown";
+        }
+    }
+    
+    public static String findServiceAddress(int nodeId, int serviceId) throws SQLException, UnknownHostException {
+        Service[] services = NetworkElementFactory.getServicesOnNode(nodeId, serviceId);
+        if (services == null || services.length == 0) {
+            return null;
+        }
+        
+        List<InetAddress> ips = new ArrayList<InetAddress>();
+        for (Service service : services) {
+            ips.add(InetAddress.getByName(service.getIpAddress()));
+        }
+
+        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+
+        if (lowest != null) {
+            return lowest.getHostAddress();
+        } else {
+            return null;
+        }
+    }
+    
+    public static Collection<Map<String, String>> createLinkForService(int nodeId, int serviceId, String linkText, String linkPrefix, String linkSuffix) throws SQLException, UnknownHostException {
+        String ip = findServiceAddress(nodeId, serviceId);
+        if (ip == null) {
+            Map<String, String> empty = new HashMap<String, String>(0);
+            return Collections.singleton(empty);
+        }
+        
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("text", linkText);
+        map.put("url", linkPrefix + ip + linkSuffix);
+        return Collections.singleton(map);
+    }
+%>
 
 <%
-    String nodeIdString = request.getParameter( "node" );
-
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
-    }
-
-    int nodeId = Integer.parseInt( nodeIdString );
-
-    //get the database node info
-    Node node_db = NetworkElementFactory.getNode( nodeId );
-    if( node_db == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such node in database" );
-    }
-
-    //get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
-    if( intfs == null ) { 
-        intfs = new Interface[0]; 
-    }
-
-    //find the telnet interfaces, if any
-    String telnetIp = null;
-    Service[] telnetServices = NetworkElementFactory.getServicesOnNode(nodeId, this.telnetServiceId);
+    Node node_db = ElementUtil.getNodeByParams(request);
     
-    if( telnetServices != null && telnetServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < telnetServices.length; i++ ) {
-            ips.add(InetAddress.getByName(telnetServices[i].getIpAddress()));
-        }
-        
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
-        
-        if( lowest != null ) {
-            telnetIp = lowest.getHostAddress();
-        }
-    }    
+    Map<String, Object> nodeModel = new TreeMap<String, Object>();
+    nodeModel.put("id", Integer.toString(node_db.getNodeId()));
+    nodeModel.put("label", node_db.getLabel());
 
-    //find the HTTP interfaces, if any
-    String httpIp = null;
-    Service[] httpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.httpServiceId);
+    List<Map<String, String>> links = new ArrayList<Map<String, String>>();
+    links.addAll(createLinkForService(node_db.getNodeId(), m_telnetServiceId, "Telnet", "telnet://", ""));
+    links.addAll(createLinkForService(node_db.getNodeId(), m_httpServiceId, "HTTP", "http://", "/"));
+    links.addAll(createLinkForService(node_db.getNodeId(), m_dellServiceId, "OpenManage", "https://", ":1311"));
+    nodeModel.put("links", links);
 
-    if( httpServices != null && httpServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < httpServices.length; i++ ) {
-            ips.add(InetAddress.getByName(httpServices[i].getIpAddress()));
-        }
-
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
-
-        if( lowest != null ) {
-            httpIp = lowest.getHostAddress();
-        }
+    Asset asset = m_model.getAsset(node_db.getNodeId());
+    nodeModel.put("asset", asset);
+    if (asset != null && asset.getBuilding() != null && asset.getBuilding().length() > 0) {
+        nodeModel.put("statusSite", asset.getBuilding());
     }
-
-    //find the Dell-OpenManage interfaces, if any
-    String dellIp = null;
-    Service[] dellServices = NetworkElementFactory.getServicesOnNode(nodeId, this.dellServiceId);
-
-    if( dellServices != null && dellServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < dellServices.length; i++ ) {
-            ips.add(InetAddress.getByName(dellServices[i].getIpAddress()));
-        }
-
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
-
-        if( lowest != null ) {
-            dellIp = lowest.getHostAddress();
-        }
-    }
-
-    //find if SNMP is on this node 
-    boolean isSnmp = false;
-    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.snmpServiceId);
-
-    if( snmpServices != null && snmpServices.length > 0 ) 
-	isSnmp = true;
-
-    boolean isParent = NetworkElementFactory.isParentNode(nodeId);
-    boolean isBridge = NetworkElementFactory.isBridgeNode(nodeId);
-    boolean isRouteIP = NetworkElementFactory.isRouteInfoNode(nodeId);
-
-    // Get vlans on node
-    Vlan[] vlans = NetworkElementFactory.getVlansOnNode(nodeId);
     
-    //Get Asset Info for this node
-    Asset asset = this.model.getAsset( nodeId );
+    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db.getNodeId()));
+    nodeModel.put("vlans", NetworkElementFactory.getVlansOnNode(node_db.getNodeId()));
+    nodeModel.put("admin", request.isUserInRole(Authentication.ADMIN_ROLE));
+    
+    // get the child interfaces
+    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(node_db.getNodeId());
+    if (intfs != null) { 
+        nodeModel.put("intfs", intfs);
+    } else {
+        nodeModel.put("intfs", new Interface[0]);
+    }
+    
+    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(node_db.getNodeId(), m_snmpServiceId);
+    if (snmpServices != null && snmpServices.length > 0) {
+        for (Interface intf : intfs) {
+            if ("P".equals(intf.getIsSnmpPrimary())) {
+                nodeModel.put("snmpPrimaryIntf", intf);
+                break;
+            }
+        }
+    }
+    
+    nodeModel.put("status", getStatusStringWithDefault(node_db));
+    nodeModel.put("showIpRoute", NetworkElementFactory.isRouteInfoNode(node_db.getNodeId()));
+    nodeModel.put("showBridge", NetworkElementFactory.isBridgeNode(node_db.getNodeId()));
+    
+    nodeModel.put("node", node_db);
+    
+    pageContext.setAttribute("model", nodeModel);
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
-  <jsp:param name="headTitle" value="<%= node_db.getLabel() %>" />
+  <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
 </jsp:include>
 
-      <h2>Node: <%=node_db.getLabel()%></h2>
+<h2>Node: ${model.label}</h2>
+<div id="linkbar">
+  <ul>
+    <c:url var="eventLink" value="event/list">
+      <c:param name="filter" value="node=${model.id}"/>
+    </c:url>
+    <li>
+      <a href="${eventLink}">View Events</a>
+    </li>
+    
+    <c:url var="assetLink" value="asset/modify.jsp">
+      <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li>
+      <a href="${assetLink}">Asset Info</a>
+    </li>
 
-      <div id="linkbar">
-      <ul>
-        <li>
-          <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-	    </li>
-        <li>
-         <a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
-        </li>
-		<!-- li>
-         <a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
-        </li -->
+    <c:if test="${! empty model.statusSite}">
+      <c:url var="siteLink" value="siteStatusView.htm">
+        <c:param name="statusSite" value="${model.statusSite}"/>
+      </c:url>
+      <li>
+        <a href="${siteLink}">Site Status</a>
+      </li>
+    </c:if>
 
-        <% if (asset != null && asset.getBuilding() != null && asset.getBuilding().length() > 0) { %>
-          <li>
-            <a href="siteStatusView.htm?statusSite=<%=Util.encode(asset.getBuilding())%>">Site Status</a>
-          </li>
-        <% } %>
-        
-        <% if( telnetIp != null ) { %>
-          <li>
-            <a href="telnet://<%=telnetIp%>">Telnet</a>
-          </li>
-        <% } %>
+    <c:forEach items="${model.links}" var="link">
+      <li>
+        <a href="${link.url}">${link.text}</a>
+      </li>
+    </c:forEach>
+    
+    <c:if test="${! empty model.resources}">
+      <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
+        <c:param name="parentResourceType" value="node"/>
+        <c:param name="parentResource" value="${model.id}"/>
+        <c:param name="reports" value="all"/>
+      </c:url>
+      <li>
+        <a href="${resourceGraphsUrl}">Resource Graphs</a>
+      </li>
+    </c:if>
+    
+    <c:if test="${model.admin}">
+      <c:url var="rescanLink" value="element/rescan.jsp">
+        <c:param name="node" value="${model.id}"/>
+      </c:url>
+      <li>
+        <a href="${rescanLink}">Rescan</a>
+      </li>
+      
+      <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
+        <c:param name="node" value="${model.id}"/>
+      </c:url>
+      <li>
+        <a href="${adminLink}">Admin</a>
+      </li>
 
-        <% if( httpIp != null ) { %>
-	  <li>
-          <a href="http://<%=httpIp%>">HTTP</a>
-	  </li>
-        <% } %>
-
-        <% if( dellIp != null ) { %>
-	  <li>
-          <a href="https://<%=dellIp%>:1311">OpenManage</a>
-	  </li>
-        <% } %>
-        
-        <% if (m_resourceService.findNodeChildResources(nodeId).size() > 0) { %>
-	  <li>
-        <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-          <c:param name="parentResourceType" value="node"/>
-          <c:param name="parentResource" value="<%= Integer.toString(nodeId) %>"/>
-          <c:param name="reports" value="all"/>
+      <c:if test="${! empty model.snmpPrimaryIntf}">
+        <c:url var="updateSnmpLink" value="admin/updateSnmp.jsp">
+          <c:param name="node" value="${model.id}"/>
+          <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
-          <a href="${resourceGraphsUrl}">Resource Graphs</a>
-	  </li>
-        <% } %>
-        
-        <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
-	  <li>
-            <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
-	  </li>
-        <% } %>
-        <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
-	  <li>
-          <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
-	  </li>
-        <% } %>
+        <li>
+          <a href="${updateSnmpLink}">Update SNMP</a>
+        </li>
+      </c:if>
+    </c:if>
+  </ul>
+</div>
 
-           <% if ( isSnmp && request.isUserInRole( Authentication.ADMIN_ROLE ))  { %>
-              <% for( int i=0; i < intfs.length; i++ ) { %>
-                <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
-		      <li>
-                      <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
-		      </li>
-                <% } %>
-              <% } %>
-           <% } %>
+<div class="TwoColLeft">
+  <!-- general info box -->
+  <h3>General (Status: ${model.status})</h3>
+  <div class="boxWrapper">
+    <ul class="plain">
+      <c:if test="${model.showIpRoute}">
+        <c:url var="ipRouteLink" value="element/routeipnode.jsp">
+          <c:param name="node" value="${model.id}"/>
+        </c:url>
+        <li>
+          <a href="${ipRouteLink}">View Node Ip Route Info</a>
+        </li>
+      </c:if>
+     
+      <c:if test="${model.showBridge}">
+        <c:url var="bridgeLink" value="element/bridgenode.jsp">
+          <c:param name="node" value="${model.id}"/>
+        </c:url>
+        <li>
+          <a href="${bridgeLink}">View Node Bridge/STP Info</a>
+        </li>
+      </c:if>
 
+      <c:url var="detailLink" value="element/linkednode.jsp">
+        <c:param name="node" value="${model.id}"/>
+      </c:url>
+      <li>
+        <a href="${detailLink}">View Node Link Detailed Info</a>
+      </li>
+    </ul>	     
+  </div>
 
-      </ul>
-      </div>
+  <!-- Availability box -->
+  <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
 
+  <!-- Asset box, if info available --> 
+  <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
+    <h3>Asset Information</h3>
+    <table>
+      <tr>
+        <th>Description</th>
+        <td>${model.asset.description}</td>
+      </tr>
+      
+      <tr>
+        <th>Comments</th>
+        <td>${model.asset.comments}</td>
+      </tr>
+    </table>
+  </c:if>
 
+  <!-- SNMP box, if info available -->
+  <c:if test="${! empty model.node.nodeSysId}">
+    <h3>SNMP Attributes</h3>
+    <table>
+      <tr>
+        <th>Name</th>
+        <td>${model.node.nodeSysName}</td>
+      </tr>
+      <tr>
+        <th>Object&nbsp;ID</th>
+        <td>${model.node.nodeSysId}</td>
+      </tr>
+      <tr>
+        <th>Location</th>
+        <td>${model.node.nodeSysLocn}</td>
+      </tr>
+      <tr>
+        <th>Contact</th>
+        <td>${model.node.nodeSysContact}</td>
+      </tr>
+      <tr>
+        <th valign="top">Description</th>
+        <td valign="top">${model.node.nodeSysDescr}</td>
+      </tr>
+    </table>
+  </c:if>
 
-	<div class="TwoColLeft">
-            <!-- general info box -->
-						<h3>General (Status: <%=(getStatusString(node_db.getNodeType())!=null ? getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
-			<div class="boxWrapper">
-			     <ul class="plain">
-		            <% if( isRouteIP ) { %>
-		            <li>
-		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node Ip Route Info</a>
-		            </li>
-		            <% }%>
-		         
-		            <% if( isBridge ) { %>
-		            <li>
-						<a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
-					</li>
-		            <% }%>	
-		            <li>
-						<a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a>
-					</li>
-		         </ul>	     
-
-		</div>
- 
-            <!-- Availability box -->
-            <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
-
-            <!-- Asset box, if info available --> 
-            <% if( asset != null && ((asset.getDescription() != null && asset.getDescription().length() > 0)
-                    || (asset.getComments() != null && asset.getComments().length() > 0))) { %>
-			  <h3>Asset Information</h3>
-			  <table>
-				<tr>
-				  <td width="10%">Description:</td>
-				  <td><%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></td>
-				</tr>
-				
-				<tr>
-				  <td width="10%">Comments:</td>
-				  <td><%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></td>
-				</tr>
-			  </table>
-            <% } %>
-
-            <!-- SNMP box, if info available --> 
-            <% if( node_db.getNodeSysId() != null ) { %>
-		      <h3>SNMP Attributes</h3>
-	          <table class="standard">
-                <tr>
-		          <!-- XXX should get rid of width... replace with a class? -->
-                  <td class="standard" width="10%">Name:</td>
-                  <td class="standard"><%=(node_db.getNodeSysName() == null) ? "&nbsp;" : node_db.getNodeSysName()%></td>
-                </tr>
-                <tr>
-                  <td class="standard" width="10%">Object&nbsp;ID:</td>
-                  <td class="standard"><%=(node_db.getNodeSysId() == null) ? "&nbsp;" : node_db.getNodeSysId()%></td>
-                </tr>
-                <tr>
-                  <td class="standard" width="10%">Location:</td>
-                  <td class="standard"><%=(node_db.getNodeSysLocn() == null) ? "&nbsp;" : node_db.getNodeSysLocn()%></td>
-                </tr>
-                <tr>
-                  <td class="standard" width="10%">Contact:</td>
-                  <td class="standard"><%=(node_db.getNodeSysContact() == null) ? "&nbsp;" : node_db.getNodeSysContact()%></td>
-                </tr>
-                <tr>
-                  <td class="standard" valign="top" width="10%">Description:</td>
-                  <td class="standard" valign="top"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
-                </tr>
-              </table>
-            <% } %>
+  <!-- Interface box -->
+  <h3>Interfaces</h3>
+  <div class="boxWrapper">
+    <ul class="plain">
+      <c:forEach items="${model.intfs}" var="intf">
+        <c:url var="interfaceLink" value="element/interface.jsp">
+          <c:param name="ipinterfaceid" value="${intf.id}"/>
+        </c:url>
+        <li>
+          <c:choose>
+            <c:when test="${intf.ipAddress == '0.0.0.0'}">
+              <a href="${interfaceLink}">Non-IP</a>
+            </c:when>
             
-            <!-- Interface box -->
-	        <h3>Interfaces</h3>
-			<div class="boxWrapper">
-			  <ul class="plain">
-              <% for( int i=0; i < intfs.length; i++ ) { %>
-                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-                  <li><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-                <% } else { %>  
-                  <li><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-                <% } %>
-		       	<% if( intfs[i].getIfIndex() != 0 ) { %>
-				<%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-		        <% } %>
-		        </li>
-              <% } %>
-			  </ul>
-			</div>
+            <c:otherwise>
+              <a href="${interfaceLink}">${intf.ipAddress}</a>
+              <c:if test="${intf.ipAddress != intf.hostname}">
+                (${intf.hostname})
+              </c:if>
+            </c:otherwise>
+          </c:choose>
+          
+          <c:if test="${intf.ifIndex != 0}">
+            (ifIndex: ${intf.ifIndex}-${intf.snmpIfDescription})
+          </c:if>
+        </li>
+      </c:forEach>
+    </ul>
+  </div>
 
-           <!-- Vlan box if available -->
-            <% if ( vlans != null && vlans.length > 0) { %>
-                          <h3>Vlan Information</h3>
-                          <table>
-                                <thead>
-                                <tr>
-                                  <th>Vlan ID</th>
-                                  <th>Vlan name</th>
-                                  <th>Vlan Type</th>
-                                  <th>Vlan Status</th>
-                                  <th>Status - Last Poll Time</th>
-                                </tr>
-                                </thead>
-                          <% for ( int i=0; i< vlans.length ;i++ ) {
-                                Vlan vlan = vlans[i];
-                          %>
-                                <tr>
-                                  <td ><%=vlan.getVlanId()%></td>
-                                  <td><%=vlan.getVlanName()%></td>
-                                  <td><%=vlan.getVlanTypeString()%></td>
-                                  <td><%=vlan.getVlanStatusString()%></td>
-                                  <td><%=vlan.getStatusString()%> - <%=vlan.get_lastPollTime()%></td>
-                                </tr>
+  <!-- Vlan box if available -->
+  <c:if test="${! empty model.vlans}">
+    <h3>VLAN Information</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Status</th>
+          <th>Last Poll Time</th>
+        </tr>
+      </thead>
+  
+      <c:forEach items="${model.vlans}" var="vlan">
+        <tr>
+          <td>${vlan.vlanId}</td>
+          <td>${vlan.vlanName}</td>
+          <td>${vlan.vlanTypeString}</td>
+          <td>${vlan.vlanStatusString}</td>
+          <td>${vlan.statusString}</td>
+          <td>${vlan.lastPollTime}</td>
+        </tr>
+      </c:forEach>
+    </table>
+  </c:if>
 
-                    <% } %>
-                          </table>
+  <!-- Category box -->
+  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
+</div>
 
-            <% } %>
-
-      <!-- Category box -->
-	  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
-	</div>
-
-
-	<div class="TwoColRight">
-
-            <!-- notification box -->
-            <jsp:include page="/includes/notification-box.jsp" flush="false" >
-              <jsp:param name="node" value="<%=nodeId%>" />
-            </jsp:include>
-
-            <!-- events list  box -->
-            <% String eventHeader = "<a href='event/list?filter=" + Util.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
-            <% String moreEventsUrl = "event/list?filter=" + Util.encode("node=" + nodeId); %>
-
-            <jsp:include page="/includes/eventlist.jsp" flush="false" >
-              <jsp:param name="node" value="<%=nodeId%>" />
-              <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<%=eventHeader%>" />
-              <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
-            </jsp:include>
-
-            <!-- Recent outages box -->
-            <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
-       </div>
-<hr />
-            <%-- jsp:include page="/includes/nodeInventory-box.jsp" flush="false">
-              <jsp:param name="node" value="<%=nodeId%>" />
-              <jsp:param name="nodelabel" value="<%=node_db.getLabel()%>" />
-            </jsp:include>
-			<hr / --%>
+<div class="TwoColRight">
+  <!-- notification box -->
+  <jsp:include page="/includes/notification-box.jsp" flush="false" >
+    <jsp:param name="node" value="${model.id}" />
+  </jsp:include>
+  
+  <!-- events list  box -->
+  <c:url var="eventListUrl" value="event/list">
+    <c:param name="filter" value="node=${model.id}"/>
+  </c:url>
+  <jsp:include page="/includes/eventlist.jsp" flush="false" >
+    <jsp:param name="node" value="${model.id}" />
+    <jsp:param name="throttle" value="5" />
+    <jsp:param name="header" value="<a href='${eventListUrl}'>Recent Events</a>" />
+    <jsp:param name="moreUrl" value="${eventListUrl}" />
+  </jsp:include>
+  
+  <!-- Recent outages box -->
+  <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -1,4 +1,8 @@
 //
+// Modifications:
+//
+// 2007 June 01: Fix the name of the getter for lasltPollTime. - dj@opennms.org
+//
 // Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -97,7 +101,7 @@ public class Vlan
 		/**
 		 * @return
 		 */
-		public String get_lastPollTime() {
+		public String getLastPollTime() {
 			return m_lastPollTime;
 		}
 
