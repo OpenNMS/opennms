@@ -1167,6 +1167,15 @@
         </collect>
       </systemDef>
 
+       <systemDef name="IBM-AIX">
+         <sysoidMask>.1.3.6.1.4.1.2.3.1.2.1.1.3</sysoidMask>
+         <collect>
+           <includeGroup>mib2-host-resources-storage</includeGroup>
+           <includeGroup>mib2-host-resources-system</includeGroup>
+           <includeGroup>mib2-host-resources-memory</includeGroup>
+         </collect>
+       </systemDef>
+
       <systemDef name="Juniper Routers">
         <sysoidMask>.1.3.6.1.4.1.2636.1.</sysoidMask>
         <collect>
