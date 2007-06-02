@@ -10,6 +10,9 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2007 Jun 02: Move map initialization into their own methods, use
+//              Spring's Assert class for testing method arguments,
+//              and add methods for working with nodes. - dj@opennms.org
 // 2004 Jan 06: added support for STATUS_SUSPEND and STATUS_RESUME
 //
 // This program is free software; you can redistribute it and/or modify
@@ -42,41 +45,83 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.web.MissingParameterException;
+import org.springframework.util.Assert;
 
 public class ElementUtil extends Object {
+    /**
+     * Do not use directly. Call {@link #getNodeStatusMap 
+     * getInterfaceStatusMap} instead.
+     */
+    private static Map<Character, String> m_nodeStatusMap;
+
     /**
      * Do not use directly. Call {@link #getInterfaceStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    private static HashMap<Character, String> m_interfaceStatusMap;
+    private static Map<Character, String> m_interfaceStatusMap;
 
     /**
      * Do not use directly. Call {@link #getServiceStatusMap 
      * getServiceStatusMap} instead.
      */
-    private static HashMap<Character, String> m_serviceStatusMap;
+    private static Map<Character, String> m_serviceStatusMap;
 
+    /** Returns the interface status map, initializing a new one if necessary. */
+    protected static Map<Character, String> getNodeStatusMap() {
+        if (m_nodeStatusMap == null) {
+            initNodeStatusMap();
+        }
+
+        return m_nodeStatusMap;
+    }
+
+    private synchronized static void initNodeStatusMap() {
+        Map<Character, String> map = new HashMap<Character, String>();
+        map.put(new Character('A'), "Active");
+        map.put(new Character(' '), "Unknown");
+        map.put(new Character('D'), "Deleted");
+        
+        m_nodeStatusMap = map;
+    }
+
+    /** Return the human-readable name for a node's status, may be null. */
+    public static String getNodeStatusString(Node node) {
+        Assert.notNull(node, "node argument cannot be null");
+
+        return getNodeStatusString(node.getNodeType());
+    }
+
+    /**
+     * Return the human-readable name for a interface status character, may be
+     * null.
+     */
+    public static String getNodeStatusString(char c) {
+        return getNodeStatusMap().get(new Character(c));
+    }
+    
     /** Returns the interface status map, initializing a new one if necessary. */
     protected static Map<Character, String> getInterfaceStatusMap() {
         if (m_interfaceStatusMap == null) {
-            synchronized (ElementUtil.class) {
-                m_interfaceStatusMap = new HashMap<Character, String>();
-                m_interfaceStatusMap.put(new Character('M'), "Managed");
-                m_interfaceStatusMap.put(new Character('U'), "Unmanaged");
-                m_interfaceStatusMap.put(new Character('D'), "Deleted");
-                m_interfaceStatusMap.put(new Character('F'), "Forced Unmanaged");
-                m_interfaceStatusMap.put(new Character('N'), "Not Monitored");
-            }
+            initInterfaceStatusMap();
         }
 
-        return (m_interfaceStatusMap);
+        return m_interfaceStatusMap;
+    }
+
+    private synchronized static void initInterfaceStatusMap() {
+        Map<Character, String> map = new HashMap<Character, String>();
+        map.put(new Character('M'), "Managed");
+        map.put(new Character('U'), "Unmanaged");
+        map.put(new Character('D'), "Deleted");
+        map.put(new Character('F'), "Forced Unmanaged");
+        map.put(new Character('N'), "Not Monitored");
+        
+        m_interfaceStatusMap = map;
     }
 
     /** Return the human-readable name for a interface's status, may be null. */
     public static String getInterfaceStatusString(Interface intf) {
-        if (intf == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        Assert.notNull(intf, "intf argument cannot be null");
 
         return getInterfaceStatusString(intf.isManagedChar());
     }
@@ -93,27 +138,29 @@ public class ElementUtil extends Object {
     /** Returns the service status map, initializing a new one if necessary. */
     protected static Map<Character, String> getServiceStatusMap() {
         if (m_serviceStatusMap == null) {
-            synchronized (ElementUtil.class) {
-                m_serviceStatusMap = new HashMap<Character, String>();
-
-                m_serviceStatusMap.put(new Character('A'), "Managed");
-                m_serviceStatusMap.put(new Character('U'), "Unmanaged");
-                m_serviceStatusMap.put(new Character('D'), "Deleted");
-                m_serviceStatusMap.put(new Character('F'), "Forced Unmanaged");
-                m_serviceStatusMap.put(new Character('N'), "Not Monitored");
-                m_serviceStatusMap.put(new Character('R'), "Rescan to Resume");
-                m_serviceStatusMap.put(new Character('S'), "Rescan to Suspend");
-            }
+            initServiceStatusMap();
         }
 
-        return (m_serviceStatusMap);
+        return m_serviceStatusMap;
+    }
+
+    private synchronized static void initServiceStatusMap() {
+        Map<Character, String> map = new HashMap<Character, String>();
+
+        map.put(new Character('A'), "Managed");
+        map.put(new Character('U'), "Unmanaged");
+        map.put(new Character('D'), "Deleted");
+        map.put(new Character('F'), "Forced Unmanaged");
+        map.put(new Character('N'), "Not Monitored");
+        map.put(new Character('R'), "Rescan to Resume");
+        map.put(new Character('S'), "Rescan to Suspend");
+
+        m_serviceStatusMap = map;
     }
 
     /** Return the human-readable name for a service's status, may be null. */
     public static String getServiceStatusString(Service svc) {
-        if (svc == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        Assert.notNull(svc, "svc argument cannot be null");
 
         return getServiceStatusString(svc.getStatus());
     }
@@ -134,13 +181,8 @@ public class ElementUtil extends Object {
     }
 
     public static String truncateLabel(String label, int truncateThreshold) {
-        if (label == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        if (truncateThreshold < 3) {
-            throw new IllegalArgumentException("Cannot take a truncate position less than 3.");
-        }
+        Assert.notNull(label, "label argument cannot be null");
+        Assert.isTrue(truncateThreshold >= 3, "Cannot take a truncate position less than 3 (truncateThreshold is " + truncateThreshold + ")");
 
         String shortLabel = label;
 
@@ -151,6 +193,41 @@ public class ElementUtil extends Object {
         return shortLabel;
     }
     
+
+    public static Node getNodeByParams(HttpServletRequest request)
+            throws ServletException, SQLException {
+        return getNodeByParams(request, "node");
+    }
+    
+    public static Node getNodeByParams(HttpServletRequest request,
+            String nodeIdParam) throws ServletException, SQLException {
+        if (request.getParameter(nodeIdParam) == null) {
+            throw new MissingParameterException(nodeIdParam, new String[] { "node" });
+        }
+
+        String nodeIdString = request.getParameter(nodeIdParam);
+
+        int nodeId;
+
+        try {
+            nodeId = Integer.parseInt(nodeIdString);
+        } catch (NumberFormatException e) {
+            throw new ServletException("Wrong data type for \""
+                    + nodeIdParam + "\" "
+                    + "(value: \"" + nodeIdString
+                    + "\"), should be integer", e);
+        }
+
+        Node node = NetworkElementFactory.getNode(nodeId);
+
+        if (node == null) {
+            //handle this WAY better, very awful
+            throw new ServletException("No such node in database");
+        }
+        
+        return node;
+}
+
     
     public static Interface getInterfaceByParams(HttpServletRequest request)
             throws ServletException, SQLException {
