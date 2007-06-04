@@ -317,6 +317,7 @@ public class MockDatabase implements DataSource, EventWriter {
        update("create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);");
         
         update("CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);");
+        update("create sequence nodeNxtId start with 1;");
         update("create sequence outageNxtId start with 1;");
         update("create sequence eventNxtId start with 1;");
         update("create sequence serviceNxtId start with 1;");
