@@ -72,15 +72,8 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
         m_db.drop();
     }
 
-    /**
-     * This is just here so that JUnit doesn't complain about not having any
-     * tests.
-     */
-    public void testBogus() {
-    }
-
     @Transactional(readOnly = false)
-    public void FIXMEtestScheduleReport() {
+    public void testScheduleReport() {
         Date date = new Date();
         m_schedulerService.Schedule("all", "html", "classic", date);
         assertNotNull(m_locatorService.locateReports());
