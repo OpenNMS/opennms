@@ -11,6 +11,12 @@
     <property key="retry" value="2" />
   </protocol-plugin>
 
+  <protocol-plugin protocol="SNMP" class-name="org.opennms.netmgt.capsd.plugins.SnmpPlugin" scan="on" user-defined="false">
+    <property key="timeout" value="2000" />
+    <property key="retry" value="2" />
+    <property key="port" value="9161" />
+  </protocol-plugin>
+
   <smb-config>
     <smb-auth user="guest" password="guest" type="domain">WORKGROUP</smb-auth>
   </smb-config>

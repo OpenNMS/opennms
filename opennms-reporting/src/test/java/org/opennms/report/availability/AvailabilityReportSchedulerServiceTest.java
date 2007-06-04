@@ -50,7 +50,7 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
         private AvailabilityReportSchedulerService m_schedulerService;
         private MockDatabase m_db;
         
-        public AvailabilityReportSchedulerServiceTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
+        public AvailabilityReportSchedulerServiceTest() throws Exception {
             DaoTestConfigBean bean = new DaoTestConfigBean();
             bean.setRelativeHomeDirectory("src/test/opennms-home");
             bean.afterPropertiesSet();

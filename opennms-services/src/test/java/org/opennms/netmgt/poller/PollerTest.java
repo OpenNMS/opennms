@@ -189,7 +189,7 @@ public class PollerTest extends TestCase {
 
 	}
 
-	public void tearDown() {
+	public void tearDown() throws Exception {
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
 		sleep(200);

@@ -51,7 +51,7 @@ public class TemporaryDatabase implements DataSource {
     
     private ByteArrayOutputStream m_outputStream;
 
-    private boolean m_setupIpLike = false;
+    private boolean m_setupIpLike = true;
 
     private boolean m_populateSchema = false;
 
@@ -126,7 +126,7 @@ public class TemporaryDatabase implements DataSource {
         }
 
         m_installerDb.createTables();
-
+        m_installerDb.insertData();
         m_installerDb.closeConnection();
 
     }

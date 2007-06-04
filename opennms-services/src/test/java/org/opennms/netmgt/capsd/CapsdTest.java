@@ -41,9 +41,12 @@
 package org.opennms.netmgt.capsd;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -54,14 +57,19 @@ import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.ClassPathResource;
 
 public class CapsdTest extends OpenNMSTestCase {
     private Capsd m_capsd;
+    private MockSnmpAgent m_agent;
     
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
-        
+    	System.setProperty("opennms.db.nextNodeId", "select max(nodeId) + 1 from node");
+    	super.setUp();
+
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost() + "/9161");
+
         m_capsd = Capsd.getInstance();
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml"));
@@ -83,13 +91,66 @@ public class CapsdTest extends OpenNMSTestCase {
     }
 
     @Override
+    public String getSnmpConfig() {
+        return "<?xml version=\"1.0\"?>\n" + 
+                "<snmp-config "+ 
+                " retry=\"3\" timeout=\"3000\"\n" + 
+                " read-community=\"public\"" +
+                " write-community=\"private\"\n" + 
+                " port=\"161\"\n" +
+                " version=\"v1\">\n" +
+                "\n" +
+                "   <definition port=\"9161\" version=\"v2c\" " +
+                "       security-name=\"opennmsUser\" \n" + 
+                "       auth-passphrase=\"0p3nNMSv3\" \n" +
+                "       privacy-passphrase=\"0p3nNMSv3\" >\n" +
+                "       <specific>"+myLocalHost()+"</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v2c\" read-community=\"specificv1\" proxy-host=\""+myLocalHost()+"\">\n" + 
+                "<specific>149.134.45.45</specific>\n" +
+                "<specific>172.16.201.2</specific>\n" +
+                "<specific>172.17.1.230</specific>\n" +
+                "<specific>172.31.1.1</specific>\n" +
+                "<specific>172.31.3.1</specific>\n" +
+                "<specific>172.31.3.9</specific>\n" +
+                "<specific>172.31.3.17</specific>\n" +
+                "<specific>172.31.3.25</specific>\n" +
+                "<specific>172.31.3.33</specific>\n" +
+                "<specific>172.31.3.41</specific>\n" +
+                "<specific>172.31.3.49</specific>\n" +
+                "<specific>172.31.3.57</specific>\n" +
+                "<specific>172.31.3.65</specific>\n" +
+                "<specific>172.31.3.73</specific>\n" +
+                "<specific>172.100.10.1</specific>\n" +
+                "<specific>203.19.73.1</specific>\n" +
+                "<specific>203.220.17.53</specific>\n" +
+                "   </definition>\n" + 
+                "</snmp-config>";
+    }
+
+    @Override
     protected void tearDown() throws Exception {
+        m_agent.shutDownAndWait();
         super.tearDown();
     }
 
+    protected String myLocalHost() {
+        
+      try {
+          return InetAddress.getLocalHost().getHostAddress();
+      } catch (UnknownHostException e) {
+          e.printStackTrace();
+          fail("Exception getting localhost");
+      }
+      
+      return null;
+    }
+    
     public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
+//        m_capsd.scanSuspectInterface(this.myLocalHost());
         m_capsd.stop();
     }
     
