@@ -110,6 +110,24 @@ public abstract class SnmpWalker {
         return m_error;
     }
 
+    protected void handleAuthError(String msg) {
+        m_error = true;
+        m_tracker.setFailed(true);
+        log().info(getName()+": Authentication error processing "+getName()+" for "+m_address);
+        finish();
+    }
+
+    protected void handleDone() {
+        finish();
+    }
+
+    protected void handleError(String msg) {
+        m_error = true;
+        m_tracker.setTimedOut(false);
+        log().info(getName()+": Error retrieving "+getName()+" for "+m_address+": "+msg);
+        finish();
+    }
+
     protected void handleFatalError(Throwable e) {
         m_error = true;
         m_tracker.setFailed(true);
@@ -117,10 +135,10 @@ public abstract class SnmpWalker {
         finish();
     }
     
-    protected void handleAuthError(String msg) {
+    protected void handleTimeout(String msg) {
         m_error = true;
-        m_tracker.setFailed(true);
-        log().info(getName()+": Authentication error processing "+getName()+" for "+m_address);
+        m_tracker.setTimedOut(true);
+        log().info(getName()+": Timeout retrieving "+getName()+" for "+m_address+": "+msg);
         finish();
     }
 
@@ -137,24 +155,6 @@ public abstract class SnmpWalker {
     
     public String getName() {
         return m_name;
-    }
-
-    protected void handleDone() {
-        finish();
-    }
-
-    protected void handleError(String msg) {
-        m_error = true;
-        m_tracker.setTimedOut(false);
-        log().info(getName()+": Error retrieving "+getName()+" for "+m_address+": "+msg);
-        finish();
-    }
-
-    protected void handleTimeout(String msg) {
-        m_error = true;
-        m_tracker.setTimedOut(true);
-        log().info(getName()+": Timeout retrieving "+getName()+" for "+m_address+": "+msg);
-        finish();
     }
 
     private void signal() {
