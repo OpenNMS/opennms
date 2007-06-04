@@ -79,6 +79,7 @@ public class MockDatabaseTest extends TestCase {
         super.tearDown();
         
         m_db.drop();
+        if (m_secondDb != null) m_secondDb.drop();
     }
     
     public void testNodeQuery() {
@@ -96,7 +97,7 @@ public class MockDatabaseTest extends TestCase {
         assertEquals(m_network.getNodeCount(), querier.getCount());
     }
     
-    public void testMultipleDatabases() {
+    public void testMultipleDatabases() throws Exception {
     		m_secondDb = new MockDatabase("test2");
     		m_secondDb.create();
     	

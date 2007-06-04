@@ -50,11 +50,13 @@ public class MockInterface extends MockContainer {
     private String m_ipAddr;
 	private String m_ifAlias;
     private InetAddress m_inetAddr;
+    private int m_ifIndex;
     
 
     public MockInterface(MockNode node, String ipAddr) {
         super(node);
         m_ipAddr = ipAddr;
+        m_ifIndex = node.getNextIfIndex();
         try {
             m_inetAddr = InetAddress.getByName(ipAddr);
         } catch (UnknownHostException e) {
@@ -181,6 +183,10 @@ public class MockInterface extends MockContainer {
 
     public InetAddress getAddress() {
         return m_inetAddr;
+    }
+
+    public int getIfIndex() {
+        return m_ifIndex;
     }
     
 

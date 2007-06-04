@@ -87,63 +87,10 @@ public class CapsdTest extends OpenNMSTestCase {
         super.tearDown();
     }
 
-/*    public final void testPause() {
-        //TODO Implement pause().
-    }
-
-    public final void testResume() {
-        //TODO Implement resume().
-    }
-
-    public final void testStart() {
-        m_capsd.start();
-    }
-
-    public final void testStop() {
-        //TODO Implement stop().
-    }
-*/
     public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
         m_capsd.stop();
     }
     
-
-/*    public final void testGetLocalHostAddress() {
-        //TODO Implement getLocalHostAddress().
-    }
-
-    public final void testScanSuspectInterface() {
-        //TODO Implement scanSuspectInterface().
-    }
-
-    public final void testRescanInterfaceParent() {
-        //TODO Implement rescanInterfaceParent().
-    }
-
-    public final void testSetStatus() {
-        //TODO Implement setStatus().
-    }
-
-    public final void testGetStatus() {
-        //TODO Implement getStatus().
-    }
-
-    public final void testIsStartPending() {
-        //TODO Implement isStartPending().
-    }
-
-    public final void testIsRunning() {
-        //TODO Implement isRunning().
-    }
-
-    public final void testIsPaused() {
-        //TODO Implement isPaused().
-    }
-
-    public final void testIsStarting() {
-        //TODO Implement isStarting().
-    }
-*/
 }
