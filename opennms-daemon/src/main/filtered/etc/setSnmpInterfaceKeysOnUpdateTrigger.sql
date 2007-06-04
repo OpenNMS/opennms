@@ -21,9 +21,7 @@ BEGIN
        WHERE (snmpif.nodeid = NEW.nodeid AND snmpif.snmpIfIndex = NEW.ifIndex);
        
      IF NOT FOUND THEN
-        RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 3: No SnmpInterface found for... nodeid: % ifindex: %'', NEW.nodeid, NEW.ifIndex;
-     ELSE
-        RAISE NOTICE ''IpInterface Trigger Notice, Condition 3: SnmpInterface found for... nodeid: % ifIndex: %'', NEW.nodeid, NEW.ifIndex;
+       RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 3: No SnmpInterface found for... nodeid: % ifindex: %'', NEW.nodeid, NEW.ifIndex;
      END IF;
      
   --
@@ -42,8 +40,6 @@ BEGIN
       
       IF NOT FOUND THEN
          RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 4: No SnmpInterface found for snmpInterfaceId: %'', NEW.snmpInterfaceId;
-      ELSE
-         RAISE NOTICE ''IpInterface Trigger Notice, Condition 4: SnmpInterface found for snmpInterfaceId: %'', NEW.snmpInterfaceId;
       END IF;
   END IF;
 

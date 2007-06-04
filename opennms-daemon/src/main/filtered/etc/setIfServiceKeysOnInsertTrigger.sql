@@ -23,8 +23,6 @@ BEGIN
      IF NOT FOUND 
      THEN
         RAISE EXCEPTION ''Outages Trigger Exception, Condition 1: No service found for... nodeid: %  ipaddr: %  serviceid: %'', NEW.nodeid, NEW.ipAddr, NEW.serviceid;
-     ELSE
-        RAISE NOTICE ''Outages Trigger Success, Condition 1: Service found for... nodeid: %  ipaddr: %  serviceid: %'', NEW.nodeid, NEW.ipAddr, NEW.serviceid;
      END IF;
   
   --
@@ -41,8 +39,6 @@ BEGIN
       
       IF NOT FOUND THEN
          RAISE EXCEPTION ''Outages Trigger Exception, Condition 2: No service found for serviceID: %'', NEW.ifServiceId;
-      ELSE
-         RAISE NOTICE ''Outages Trigger Success, Condition 2: Service found for serviceID: %'', NEW.ifServiceId;
       END IF;
 
   END IF;
