@@ -29,8 +29,6 @@ BEGIN
        IF NOT FOUND 
        THEN
           RAISE EXCEPTION ''IfServices Trigger Exception, Condition 1: No IpInterface found for... nodeid: %  ipaddr: %'', NEW.nodeid, NEW.ipAddr;
-       ELSE
-          RAISE NOTICE ''IfServices Trigger Success, Condition 1: IpInterface found for... nodeid: %  ipaddr: %  ipInterfaceId: %'', NEW.nodeid, NEW.ipAddr, NEW.ipInterfaceId;
        END IF;
        
   --
@@ -49,8 +47,6 @@ BEGIN
       IF NOT FOUND
       THEN
          RAISE EXCEPTION ''IfServices Trigger Exception: No ipinterface found for ipInterfaceId: %'', NEW.ipInterfaceId;
-      ELSE
-         RAISE NOTICE ''IfServices Trigger Notice: IpInterface found for ipInterfaceId: %'', NEW.ipInterfaceId;
       END IF;
       
       IF NEW.ipAddr = ''0.0.0.0''
