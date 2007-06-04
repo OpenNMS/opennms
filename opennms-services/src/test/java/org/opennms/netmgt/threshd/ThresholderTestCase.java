@@ -162,7 +162,7 @@ public class ThresholderTestCase extends TestCase {
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".mockRrd").anyTimes();
 	}
 
-	protected void setupDatabase() {
+	protected void setupDatabase() throws Exception {
 		m_network = new MockNetwork();
 		m_network.setCriticalService("ICMP");
 		m_network.addNode(1, "Router");

@@ -131,7 +131,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         m_outageAnticipator = new OutageAnticipator(m_db);
     }
 
-    private void createMockDb() {
+    private void createMockDb() throws Exception {
         m_db = new MockDatabase();
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);

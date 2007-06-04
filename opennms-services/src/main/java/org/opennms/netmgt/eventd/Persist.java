@@ -907,7 +907,9 @@ class Persist {
         } catch (SQLException e) {
             throw e;
         } finally {
-            rs.close();
+        	if (rs != null) {
+        		rs.close();
+        	}
         }
         rs = null;
         return id;

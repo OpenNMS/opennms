@@ -69,9 +69,9 @@ public class OpenNMSTestCase extends TestCase {
             "   UDPPort=\"5837\"\n" + 
             "   receivers=\"5\"\n" + 
 //            "   getNextEventID=\"SELECT max(eventId)+1 from events\"\n" + 
-            "   getNextEventID=\"select next value for eventNxtId from seqQueryTable\"\n" +
+            "   getNextEventID=\"select nextVal('eventsNxtId')\"\n" +
 //            "   getNextAlarmID=\"SELECT max(alarmId)+1 from alarms\"\n" + 
-            "   getNextAlarmID=\"select next value for alarmNxtId from seqQueryTable\"\n" +
+            "   getNextAlarmID=\"select nextVal('alarmNxtId')\"\n" +
             "   socketSoTimeoutRequired=\"yes\"\n" + 
             "   socketSoTimeoutPeriod=\"3000\">\n" + 
             "</EventdConfiguration>";

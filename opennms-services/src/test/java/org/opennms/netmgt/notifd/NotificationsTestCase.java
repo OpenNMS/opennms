@@ -549,7 +549,7 @@ public class NotificationsTestCase extends TestCase {
     
     }
 
-    private MockDatabase createDatabase(MockNetwork network) {
+    private MockDatabase createDatabase(MockNetwork network) throws Exception {
         MockDatabase db = new MockDatabase();
         DataSourceFactory.setInstance(db);
         db.populate(network);

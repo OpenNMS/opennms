@@ -136,8 +136,9 @@ final class DbNodeEntry {
     /**
      * The SQL text used to extract the next sequence id for the node table.
      */
-    private static final String SQL_NEXT_NID = "SELECT NEXTVAL('nodeNxtId')";
-
+    // private static final String SQL_NEXT_NID = "SELECT NEXTVAL('nodeNxtId')";
+    private static final String SQL_NEXT_NID = System.getProperty("opennms.db.nextNodeId", "SELECT NEXTVAL('nodeNxtId')");
+    
     /**
      * The SQL statement used to read a node from the database. This record is
      * keyed by the node identifier and distributed poller name.
