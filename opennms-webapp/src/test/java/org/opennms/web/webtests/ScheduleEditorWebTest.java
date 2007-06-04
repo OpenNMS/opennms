@@ -48,7 +48,7 @@ import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
-import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.mock.MockUtil;
 
@@ -61,7 +61,7 @@ public class ScheduleEditorWebTest extends WebTestCase {
     
     private MockNetwork m_network;
 
-    private MockDatabase m_db;
+    private TemporaryDatabase m_db;
 
     private ServletRunner m_servletRunner;
 

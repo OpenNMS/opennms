@@ -46,6 +46,7 @@ public class MockNode extends MockContainer {
     String m_label;
 
     int m_nodeid;
+    int m_nextIfIndex = 1;
 
     public MockNode(MockNetwork network, int nodeid, String label) {
         super(network);
@@ -81,6 +82,10 @@ public class MockNode extends MockContainer {
     // model
     public int getNodeId() {
         return m_nodeid;
+    }
+    
+    public int getNextIfIndex() {
+        return m_nextIfIndex++;
     }
 
     // model

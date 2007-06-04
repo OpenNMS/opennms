@@ -31,9 +31,6 @@
 //
 package org.opennms.netmgt.mock;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -43,14 +40,11 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.hsqldb.Server;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.SingleResultQuerier;
-import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -58,296 +52,19 @@ import org.opennms.netmgt.xml.event.Event;
  * testing.  Can be populated from a MockNetwork
  * @author brozow
  */
-public class MockDatabase implements DataSource, EventWriter {
+public class MockDatabase extends TemporaryDatabase implements EventWriter {
 
 
-    private Server m_server;
-    private String m_dbName = "test";
+    public MockDatabase(String dbName) throws Exception {
+        super(dbName);
+        setPopulateSchema(true);
 
-    public MockDatabase(String dbName) {
-        m_dbName = dbName;
-        try {
-            Class.forName("org.hsqldb.jdbcDriver" );
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to locate hypersonic driver");
-        }
+    }
+
+    public MockDatabase() throws Exception {
+        super();
+        setPopulateSchema(true);
         create();
-    }
-    
-    public MockDatabase() {
-        this("test");
-    }
-    
-    public void create() {
-        update("shutdown");
-        update("create table node (" +
-                   "nodeID integer, " +
-                   "dpName      varchar(12)," +
-                   "nodeCreateTime  timestamp not null," +
-                   "nodeParentID    integer," +
-                   "nodeType    char(1)," +
-                   "nodeSysOID  varchar(256)," +
-                   "nodeSysName varchar(256)," +
-                   "nodeSysDescription  varchar(256)," +
-                   "nodeSysLocation varchar(256)," +
-                   "nodeSysContact  varchar(256)," +
-                   "nodeLabel   varchar(256)," +
-                   "nodeLabelSource char(1)," +
-                   "nodeNetBIOSName varchar(16)," +
-                   "nodeDomainName  varchar(16)," +
-                   "operatingSystem varchar(64)," +
-                   "lastCapsdPoll   timestamp," +
-                   "foreignsource varchar(64)," +
-                   "foreignid varchar(64)," +
-                   //"constraint fk_dpName foreign key (dpName) references distPoller," +
-                   "constraint pk_nodeID primary key (nodeID)" +
-        ");");
-        
-        update("create table ipInterface ( " +
-                   "id integer, " +
-                   "nodeID integer, " +
-                   "ipAddr varchar(16) not null, " +
-                   "ifIndex         integer," +
-                   "ipHostname      varchar(256)," +
-                   "ipStatus        integer," +
-                   "ipLastCapsdPoll     timestamp," +
-                   "isSnmpPrimary           char(1)," +
-                   "isManaged char(1), " +
-                   "snmpinterfaceid integer, " +
-                   "constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE" +
-        ");");
-        
-        update("create table snmpInterface (" +
-                "id integer, " +
-                "nodeID integer, " +
-                "ipAddr varchar(16) not null, " +
-		        "snmpIpAdEntNetMask varchar(16), " +
-		        "snmpPhysAddr char(12)," +
-                "snmpIfIndex integer," +
-                "snmpIfDesc varchar(256)," +
-                "snmpIfType integer," +
-                "snmpIfName varchar(32)," +
-                "snmpIfSpeed bigint," +
-                "snmpIfAdminStatus integer," +
-                "snmpIfOperStatus integer," +
-                "snmpIfAlias varchar(32)," +
-                "constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE" +
-        ");");
-        
-        update("create table service (" +
-                   "serviceID integer, " +
-                   "serviceName varchar(32) not null, " +
-                   "constraint pk_serviceID primary key (serviceID)" +
-        ");");
-        
-        update("create table ifServices (" +
-                "id integer, " +
-                   "nodeID          integer, " +
-                   "ipAddr          varchar(16) not null," +
-                   "ifIndex         integer," +
-                   "serviceID       integer," +
-                   "lastGood        timestamp," +
-                   "lastFail        timestamp," +
-                   "qualifier       char(16)," +
-                   "status              char(1)," +
-                   "source          char(1)," +
-                   "notify                  char(1), " +
-                   "ipinterfaceid integer, " +
-                   "constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE," +
-                   "constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE" +
-        ");");
-        
-        update("create table events (" +
-                   "eventID         integer," +
-                   "eventUei        varchar(256) not null," +
-                   "nodeID          integer," +
-                   "eventTime       timestamp not null," +
-                   "eventHost       varchar(256)," +
-                   "eventSource     varchar(128) not null," +
-                   "ipAddr          varchar(16)," +
-                   "eventDpName     varchar(12) not null," +
-                   "eventSnmphost       varchar(256)," +
-                   "serviceID       integer," +
-                   "eventSnmp       varchar(256)," +
-                   "eventParms      longvarchar," +
-                   "eventCreateTime     timestamp not null," +
-                   "eventDescr      varchar(4000)," +
-                   "eventLoggroup       varchar(32)," +
-                   "eventLogmsg     varchar(256)," +
-                   "eventSeverity       integer not null," +
-                   "eventPathOutage     varchar(1024)," +
-                   "eventCorrelation    varchar(1024)," +
-                   "eventSuppressedCount    integer," +
-                   "eventOperInstruct   varchar(1024)," +
-                   "eventAutoAction     varchar(256)," +
-                   "eventOperAction     varchar(256)," +
-                   "eventOperActionMenuText varchar(64)," +
-                   "eventNotification   varchar(128)," +
-                   "eventTticket        varchar(128)," +
-                   "eventTticketState   integer," +
-                   "eventForward        varchar(256)," +
-                   "eventMouseOverText  varchar(64)," +
-                   "eventLog        char(1) not null," +
-                   "eventDisplay        char(1) not null," +
-                   "eventAckUser        varchar(256)," +
-                   "eventAckTime        timestamp," +
-                   "alarmID             integer," +
-                   "constraint pk_eventID primary key (eventID)," +
-                   "constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE" +
-        ");");
-        
-        update("create table outages (" +
-                   "outageID        integer," +
-                   "svcLostEventID      integer," +
-                   "svcRegainedEventID  integer," +
-                   "nodeID          integer," +
-                   "ipAddr          varchar(16) not null," +
-                   "serviceID       integer," +
-                   "ifLostService       timestamp not null," +
-                   "ifRegainedService   timestamp," +
-                   "constraint pk_outageID primary key (outageID)," +
-                   "constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE," +
-                   "constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE," +
-                   "constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE," +
-                   "constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE" +
-        ");");
-        
-        update("create table notifications (" + 
-                "       textMsg      varchar(4000) not null," + 
-                "       subject      varchar(256)," +
-                "       numericMsg   varchar(256)," + 
-                "       notifyID        integer," + 
-                "       pageTime     timestamp," + 
-                "       respondTime  timestamp," + 
-                "       answeredBy   varchar(256)," + 
-                "       nodeID      integer," + 
-                "       interfaceID  varchar(16)," + 
-                "       serviceID    integer," +
-                "       queueID      varchar(256), " +
-                "       eventID      integer," + 
-                "       eventUEI     varchar(256) not null," + 
-                "       notifConfigName varchar(63), " +
-                "                   constraint pk_notifyID primary key (notifyID)," + 
-                "                   constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE," + 
-                "                   constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE" + 
-                "       );");
-        
-        update("create table usersNotified (\n" + 
-                "        id              integer not null, " +
-                "        userID          varchar(256) not null," + 
-                "        notifyID        integer," + 
-                "        notifyTime      timestamp," + 
-                "        media           varchar(32)," + 
-                "        contactinfo     varchar(64)," + 
-                "        autonotify         char(1)," + 
-                "           constraint pk_userNotificationID primary key (id)," +
-                "           constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE" + 
-                ");");
-        
-        update("create table alarms (\n" + 
-                "   alarmID             INTEGER, \n" + 
-                "   eventUei                VARCHAR(256) NOT NULL,\n" + 
-                "   dpName              VARCHAR(12) NOT NULL,\n" + 
-                "   nodeID              INTEGER,\n" + 
-                "   ipaddr              VARCHAR(16),\n" + 
-                "   serviceID           INTEGER,\n" + 
-                "   reductionKey            VARCHAR(256),\n" + 
-                "   alarmType           INTEGER,\n" + 
-                "    counter              INTEGER NOT NULL,\n" + 
-                "   severity                INTEGER NOT NULL,\n" + 
-                "   lastEventID         INTEGER, \n" + 
-                "   firstEventTime      TIMESTAMP,\n" + 
-                "   lastEventTime       TIMESTAMP,\n" + 
-                "   description         VARCHAR(4000),\n" + 
-                "   logMsg              VARCHAR(256),\n" + 
-                "   operInstruct            VARCHAR(1024),\n" + 
-                "   tticketID           VARCHAR(128),\n" + 
-                "   tticketState            INTEGER,\n" + 
-                "   mouseOverText       VARCHAR(64),\n" + 
-                "   suppressedUntil     TIMESTAMP,\n" + 
-                "   suppressedUser      VARCHAR(256),\n" + 
-                "   suppressedTime      TIMESTAMP,\n" + 
-                "   alarmAckUser            VARCHAR(256),\n" + 
-                "   alarmAckTime            TIMESTAMP,\n" + 
-                "   clearUei                VARCHAR(256),\n" + 
-                "   managedObjectInstance   VARCHAR(512),\n" + 
-                "   managedObjectType       VARCHAR(512),\n" + 
-                "   applicationDN           VARCHAR(512),\n" + 
-                "   ossPrimaryKey           VARCHAR(512),\n" + 
-                "   x733AlarmType           VARCHAR(31),\n" + 
-                "   x733ProbableCause       INTEGER,\n" + 
-                "   qosAlarmState           VARCHAR(31),\n" + 
-                "" + 
-                "             CONSTRAINT pk_alarmID primary key (alarmID),\n"+
-                "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE\n"+
-                ")"
-          );
-        
-        
-        update("create table demandPolls (\n" + 
-        		"	id			integer,\n" + 
-        		"	requestTime	timestamp,\n" + 
-        		"	username	varchar(32),\n" + 
-        		"	description varchar(128),\n" + 
-        		"	\n" + 
-        		"	constraint demandpoll_pkey primary key (id)\n" + 
-        		"	\n" + 
-        		");"
-       );
-       update("create index demandpoll_request_time on demandPolls(requestTime);");
-       
-       update("create table pollResults (\n" + 
-       		"	id			integer,\n" + 
-       		"	pollId      integer,\n" + 
-       		"	nodeId		integer,\n" + 
-       		"	ipAddr		varchar(16),\n" + 
-       		"	ifIndex		integer,\n" + 
-       		"	serviceId	integer,\n" + 
-       		"	statusCode	integer,\n" + 
-       		"	statusName	varchar(32),\n" + 
-       		"	reason		varchar(128),\n" + 
-       		"	\n" + 
-       		"	constraint pollresult_pkey primary key (id),\n" + 
-       		"	constraint fk_demandPollId foreign key (pollID) references demandPolls (id) ON DELETE CASCADE\n" + 
-       		"\n" + 
-       		");\n" + 
-       		"");
-       
-       update("create index pollresults_poll_id on pollResults(pollId);\n"); 
-       update("create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);");
-        
-        update("CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);");
-        update("create sequence nodeNxtId start with 1;");
-        update("create sequence outageNxtId start with 1;");
-        update("create sequence eventNxtId start with 1;");
-        update("create sequence serviceNxtId start with 1;");
-        update("create sequence alarmNxtId start with 1;");
-        update("create sequence notifNxtId start with 1;");
-        update("create sequence userNotifNxtId start with 1;");
-        update("create sequence demandPollNxtId start with 1;");
-        update("create table seqQueryTable (row integer);");
-        update("insert into seqQueryTable (row) values (0);");
-        
-        update("CREATE ALIAS iplike FOR \"org.opennms.netmgt.config.SnmpPeerFactory.verifyIpMatch\";");
-        update("CREATE ALIAS greatest FOR \"java.lang.Math.max\";");
-        update("CREATE ALIAS least FOR \"java.lang.Math.min\";");
-    }
-    
-    public void startServer() {
-        m_server = new Server();
-        m_server.setPort(9001);
-        m_server.setTrace(true);
-        m_server.setDatabasePath(0, "mem:test");
-        synchronized(m_server) {
-            m_server.start();
-        }
-        
-    }
-    
-    public void drop() {
-        if (m_server != null)
-            m_server.stop();
-        update("shutdown;");
     }
     
     public void populate(MockNetwork network) {
@@ -376,40 +93,15 @@ public class MockDatabase implements DataSource, EventWriter {
         
     }
 
-    public Connection getConnection() throws SQLException {
-        String dbURL = "jdbc:hsqldb:mem:"+m_dbName;
-        //String dbURL = "jdbc:hsqldb:file:/tmp/test;shutdown=true";
-        Connection c = DriverManager.getConnection(dbURL, "sa", "");
-        return c;
-    }
-    
-     public void update(String sql) {
-        update(sql, new Object[0]);
-    }
-    
-    public void update(String stmt, Object[] values) {
-//        StringBuffer buf = new StringBuffer("[");
-//        for(int i = 0; i < values.length; i++) {
-//            if (i != 0)
-//                buf.append(", ");
-//            buf.append(values[i]);
-//        }
-//        buf.append("]");
-//        MockUtil.println("Executing "+stmt+" with values "+buf);
-        Updater updater = new Updater(this, stmt);
-        updater.execute(values);
-    }
-
     public void writeInterface(MockInterface iface) {
-        int ifIndex = writeSnmpInterface(iface);
-		Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), new Integer(ifIndex), (ifIndex == 1 ? "P" : "N"), "A" };
+        writeSnmpInterface(iface);
+		Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "A" };
         update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?);", values);
     }
 
-    public int writeSnmpInterface(MockInterface iface) {
-        Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfAlias() };
-        update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias) values (?, ?, ?);", values);
-		return 1;
+    public void writeSnmpInterface(MockInterface iface) {
+        Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfAlias(), iface.getIfIndex() };
+        update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias, snmpIfIndex) values (?, ?, ?, ?);", values);
     }
 
     public void writeService(MockService svc) {
@@ -425,16 +117,6 @@ public class MockDatabase implements DataSource, EventWriter {
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
     
-    public int countRows(String sql) {
-        return countRows(sql, new Object[0]);
-    }
-    
-    public int countRows(String sql, Object[] values) {
-        Querier querier = new Querier(this, sql);
-        querier.execute(values);
-        return querier.getCount();
-    }
-
     private boolean serviceDefined(String svcName) {
         Querier querier = new Querier(this, "select serviceId from service where serviceName = ?");
         querier.execute(svcName);
@@ -442,7 +124,7 @@ public class MockDatabase implements DataSource, EventWriter {
     }
     
     public String getNextOutageIdStatement() {
-        return "select next value for outageNxtId from seqQueryTable";
+        return getNextSequenceValStatement("outageNxtId");
     }
     
     public Integer getNextOutageId() {
@@ -450,18 +132,8 @@ public class MockDatabase implements DataSource, EventWriter {
         
     }
     
-    public String getNextSequenceValStatement(String seqName) {
-        return "select next value for "+seqName+" from seqQueryTable";
-    }
-    
-    private Integer getNextId(String nxtIdStmt) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, nxtIdStmt);
-        querier.execute();
-        return (Integer)querier.getResult();
-    }
-    
     public String getNextEventIdStatement() {
-        return "select next value for eventNxtId from seqQueryTable";
+        return getNextSequenceValStatement("eventsNxtId");
     }
     
     public Integer getNextEventId() {
@@ -469,7 +141,8 @@ public class MockDatabase implements DataSource, EventWriter {
     }
     
     public String getNextServiceIdStatement() {
-        return "select next value for serviceNxtId from seqQueryTable";
+        return getNextSequenceValStatement("serviceNxtId");
+
     }
     
     public Integer getNextServiceId() {
@@ -696,7 +369,7 @@ public class MockDatabase implements DataSource, EventWriter {
      * @return
      */
     public String getNextNotifIdSql() {
-        return "select next value for notifNxtId from seqQueryTable";
+        return getNextSequenceValStatement("notifyNxtId");
     }
 
     /**
@@ -734,28 +407,8 @@ public class MockDatabase implements DataSource, EventWriter {
         return (Integer)querier.getResult();
     }
 
-    public Connection getConnection(String username, String password) throws SQLException {
-        return this.getConnection();
-    }
-
-    public PrintWriter getLogWriter() throws SQLException {
-        return DriverManager.getLogWriter();
-    }
-
-    public void setLogWriter(PrintWriter out) throws SQLException {
-        DriverManager.setLogWriter(out);
-    }
-
-    public void setLoginTimeout(int seconds) throws SQLException {
-        DriverManager.setLoginTimeout(seconds);
-    }
-
-    public int getLoginTimeout() throws SQLException {
-        return DriverManager.getLoginTimeout();
-    }
-
     public String getNextUserNotifIdSql() {
-        return "select next value for userNotifNxtId from seqQueryTable";
+        return getNextSequenceValStatement("userNotifNxtId");
     }
     
 
