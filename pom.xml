@@ -692,7 +692,6 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
-
     <profile>
       <id>generic-postgres-pgsql-server</id>
       
@@ -877,7 +876,45 @@ opennms.home = ${opennms.home}
     </profile>
 -->
  
+    <profile>
+      <id>rrd-usr-local-include</id>
+      <activation>
+        <file>
+          <exists>/usr/local/include/rrd.h</exists>
+        </file>
+      </activation>
+      <properties>
+        <build.rrd.include.dir>/usr/local/include</build.rrd.include.dir>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>rrd-usr-local-lib</id>
+      <activation>
+        <file>
+          <exists>/usr/local/lib/librrd.so</exists>
+        </file>
+      </activation>
+      <properties>
+        <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>postgresql-usr-local-include-postgresql-server</id>
+      <activation>
+        <file>
+          <exists>/usr/local/include/postgresql/server/postgres.h</exists>
+        </file>
+      </activation>
+      <properties>
+        <build.postgresql.compiler.arg>-I/usr/local/include</build.postgresql.compiler.arg>
+        <build.postgresql.include.dir>/usr/local/include/postgresql/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+
   </profiles>
+
 
   <dependencies>
     <dependency>
