@@ -270,6 +270,19 @@ public class TemporaryDatabaseTestCase extends TestCase {
         st.execute("CREATE DATABASE " + getTestDatabase()
                 + " WITH ENCODING='UNICODE'");
         adminConnection.close();
+        
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    destroyTestDatabase();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
+        });
     }
     
     private void destroyTestDatabase() throws Exception {
