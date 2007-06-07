@@ -86,6 +86,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private boolean m_leaveDatabaseOnFailure = false;
     private Throwable m_throwable = null;
     
+    private boolean m_destroyed = false;
+    
     private String m_driver;
     private String m_url;
     private String m_adminUser;
@@ -94,8 +96,6 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
 
-    private boolean m_destroyed;
-    
     public TemporaryDatabaseTestCase() {
         this(System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
              System.getProperty(URL_PROPERTY, DEFAULT_URL),
