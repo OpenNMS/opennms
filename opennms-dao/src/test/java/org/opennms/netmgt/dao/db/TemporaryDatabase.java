@@ -55,6 +55,8 @@ public class TemporaryDatabase implements DataSource {
 
     private boolean m_populateSchema = false;
 
+    private boolean m_destroyed = false;
+
     
     public TemporaryDatabase() throws Exception {
         this(TEST_DB_NAME_PREFIX+System.currentTimeMillis());
@@ -229,6 +231,20 @@ public class TemporaryDatabase implements DataSource {
         st.execute("CREATE DATABASE " + getTestDatabase()
                 + " WITH ENCODING='UNICODE'");
         adminConnection.close();
+        
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    destroyTestDatabase();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
+        });
+
     }
     
 
@@ -239,6 +255,11 @@ public class TemporaryDatabase implements DataSource {
 
     private void destroyTestDatabase() throws Exception {
 
+        if (m_destroyed) {
+            // database already destroyed
+            return;
+        }
+        
         /*
          * Sleep before destroying the test database because PostgreSQL doesn't
          * seem to notice immediately clients have disconnected. Yeah, it's a
@@ -295,6 +316,8 @@ public class TemporaryDatabase implements DataSource {
              */
             Thread.sleep(100);
         }
+        
+        m_destroyed = true;
     }
 
     public Connection getConnection() throws SQLException {
