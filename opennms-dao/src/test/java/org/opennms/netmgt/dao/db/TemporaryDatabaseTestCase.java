@@ -93,6 +93,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
     
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
+
+    private boolean m_destroyed;
     
     public TemporaryDatabaseTestCase() {
         this(System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
@@ -286,6 +288,11 @@ public class TemporaryDatabaseTestCase extends TestCase {
     }
     
     private void destroyTestDatabase() throws Exception {
+        if (m_destroyed) {
+            // database already destroyed
+            return;
+        }
+        
         if (m_leaveDatabase
                 || (m_leaveDatabaseOnFailure && hasTestFailed())) {
             System.err.println("Not dropping database '" + getTestDatabase()
@@ -349,6 +356,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
              */
             Thread.sleep(100);
         }
+        
+        m_destroyed = true;
     }
 
     public void executeSQL(String command) {
