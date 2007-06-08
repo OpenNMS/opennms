@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao.db;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
@@ -349,20 +350,61 @@ public class InstallerDb {
     public void updateIplike() throws Exception {
         Statement st = getConnection().createStatement();
 
-        m_out.print("- checking for stale iplike references... ");
+        boolean insert_iplike = false;
+        
+        m_out.print("- checking if iplike is usable... ");
         try {
-            st.execute("DROP FUNCTION iplike(text,text)");
-            m_out.println("REMOVED");
-        } catch (SQLException e) {
-            /*
-             * SQL Status code: 42883: ERROR: function %s does not exist
-             */
-            if (e.toString().indexOf("does not exist") != -1
-                    || "42883".equals("42883")) {
-                m_out.println("CLEAN");
-            } else {
-                throw e;
-            }
+        	st.execute("SELECT IPLIKE('127.0.0.1', '*.*.*.*')");
+        	m_out.println("YES");
+        } catch (SQLException selectException) {
+        	insert_iplike = true;
+        	m_out.println("NO");
+        }
+        
+        if (insert_iplike) {
+        	m_out.print("- removing existing iplike definition (if any)... ");
+        	try {
+        		st.execute("DROP FUNCTION iplike(text,text)");
+        		m_out.println("OK");
+        	} catch (SQLException dropException) {
+        		if (dropException.toString().contains("does not exist")
+        				|| "42883".equals(dropException.getSQLState())) {
+        			m_out.println("OK");
+        		} else {
+        			m_out.println("FAILED");
+        			throw dropException;
+        		}
+        	}
+
+        	m_out.print("- inserting iplike function... ");
+        	try {
+                st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '"
+                        + m_pg_iplike + "' LANGUAGE 'c' WITH(isstrict)");
+                m_out.println("OK");
+        	} catch (SQLException e) {
+        		m_out.println("FAILED");
+        		
+        		try {
+                	InputStream sqlfile = InstallerDb.class.getResourceAsStream("iplike.sql");
+
+                	if (sqlfile == null) {
+                		throw new Exception("unable to locate iplike.sql");
+                	}
+                	
+                	BufferedReader in = new BufferedReader(new java.io.InputStreamReader(sqlfile));
+                	StringBuffer createFunction = new StringBuffer();
+                	String line;
+                	while ((line = in.readLine()) != null) {
+                		createFunction.append(line).append("\n");
+                	}
+        			m_out.print("- inserting PL/PGSQL iplike function... ");
+        			st.execute(createFunction.toString());
+        			m_out.println("OK");
+        		} catch (Exception plpgsqlException) {
+        			m_out.println("FAILED");
+        			throw plpgsqlException;
+        		}
+        	}
         }
 
         // XXX This error is generated from Postgres if eventtime(text)
@@ -378,16 +420,12 @@ public class InstallerDb {
              */
             if (e.toString().indexOf("does not exist") != -1
                     || "42883".equals(e.getSQLState())) {
-                m_out.println("CLEAN");
+                m_out.println("OK");
             } else {
+            	m_out.println("FAILED");
                 throw e;
             }
         }
-
-        m_out.print("- adding iplike database function... ");
-        st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '"
-                + m_pg_iplike + "' LANGUAGE 'c' WITH(isstrict)");
-        m_out.println("OK");
     }
 
 
