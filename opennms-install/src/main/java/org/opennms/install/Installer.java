@@ -342,6 +342,10 @@ public class Installer {
                         m_update_database = true;
                         break;
 
+                    case 'D':
+                    	m_pg_url = getNextArg(argv, i, 'D');
+                    	break;
+                    	
                     case 'i':
                         m_do_inserts = true;
                         break;
@@ -449,9 +453,15 @@ public class Installer {
         }
 
         if (m_update_iplike) {
-            verifyFileExists(false, m_installerDb.getPgIpLikeLocation(),
+    		String ipLikeLocation = m_installerDb.getPgIpLikeLocation();
+        	try {
+        		verifyFileExists(false, ipLikeLocation,
                              "iplike module",
                              "install.postgresql.dir property");
+        	} catch (FileNotFoundException e) {
+        		m_out.println("WARNING: missing " + ipLikeLocation);
+        		m_out.println("  - will attempt to install the PL/PGSQL version instead");
+        	}
         }
 
         if (m_tomcat_conf != null) {
@@ -680,6 +690,8 @@ public class Installer {
         m_out.println("                                "
                 + "[-p <PostgreSQL admin password>]");
         m_out.println("                                "
+                + "[-D <PostgreSQL database URL>]");
+        m_out.println("                                "
                 + "[-T <tomcat4.conf>]");
         m_out.println("                                "
                 + "[-w <tomcat context directory>");
@@ -700,6 +712,8 @@ public class Installer {
                 + "administrator (default: \"" + m_pg_user + "\")");
         m_out.println("   -p    password of the PostgreSQL "
                 + "administrator (default: \"" + m_pg_pass + "\")");
+        m_out.println("   -D    JDBC URL of the PostgreSQL "
+                + "database (default: \"" + m_pg_url + "\")");
         m_out.println("   -c    drop and recreate tables that already "
                 + "exist");
         m_out.println("");
