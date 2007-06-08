@@ -124,6 +124,7 @@ div.boxWrapper {
 	border: 1px solid #999;
 	border-top: 0;
 	padding: 4px 6px;
+	overflow: auto;
 }
 div.boxWrapper div.col {
 	margin:  20px auto;
