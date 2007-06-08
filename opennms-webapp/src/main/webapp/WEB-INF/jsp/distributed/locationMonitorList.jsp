@@ -46,7 +46,7 @@
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Distributed Poller Status" />
-  <jsp:param name="headTitle" value="Distriuted Poller Status" />
+  <jsp:param name="headTitle" value="Distributed Poller Status" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Distributed Poller Status" />
