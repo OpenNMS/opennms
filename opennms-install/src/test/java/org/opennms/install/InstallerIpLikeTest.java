@@ -44,7 +44,12 @@ public class InstallerIpLikeTest extends TestCase {
         m_installer = new Installer();
     }
 
-    public void testIpLike() throws Exception {
+    // FIXME: this is here so there is at least one test in this file.
+    public void testBogus() {
+    }
+
+    // FIXME: this test modifies the "opennms" database.
+    public void FIXMEtestIpLike() throws Exception {
     	String[] args = {"-d", "-i", "-s", "-U" };
     	m_installer.install(args);
     }
