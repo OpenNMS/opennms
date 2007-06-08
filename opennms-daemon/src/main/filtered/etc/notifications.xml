@@ -7,7 +7,7 @@
     </header>
     <notification name="interfaceDown" status="on">
         <uei>uei.opennms.org/nodes/interfaceDown</uei>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>All services are down on interface %interfaceresolve% (%interface%) 
 on node %nodelabel%.  New Outage records have been created 
@@ -19,7 +19,7 @@ until this outage is resolved.
     </notification>
     <notification name="nodeDown" status="on">
         <uei>uei.opennms.org/nodes/nodeDown</uei>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>All services are down on node %nodelabel%.  New Outage records have 
 been created and service level availability calculations will 
@@ -30,7 +30,7 @@ be impacted until this outage is resolved.
     </notification>
     <notification name="nodeLostService" status="on">
         <uei>uei.opennms.org/nodes/nodeLostService</uei>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>The %service% service poll on interface %interfaceresolve% (%interface%) 
 on node %nodelabel% failed at %time%. 
@@ -40,7 +40,7 @@ on node %nodelabel% failed at %time%.
     </notification>
     <notification name="nodeAdded" status="on">
         <uei>uei.opennms.org/nodes/nodeAdded</uei>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>OpenNMS has discovered a new node named
 %parm[nodelabel]%. Please be advised.</text-message>
@@ -49,7 +49,7 @@ on node %nodelabel% failed at %time%.
     </notification>
     <notification name="interfaceDeleted" status="on">
         <uei>uei.opennms.org/nodes/interfaceDeleted</uei>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>Due to extended downtime or operator action, the interface %interfaceresolve% (%interface%) 
 on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>
@@ -59,7 +59,7 @@ on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text
     <notification name="High Threshold" status="off">
         <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
         <description>A monitored device has hit a high threshold</description>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>A Threshold has been exceeded on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% while the threshold is %parm[threshold]%. This alert will be rearmed when %parm[ds]% reaches %parm[rearm]%.</text-message>
         <subject>Notice #%noticeid%: High Threshold for %parm[ds]% on node %nodelabel%.</subject>
@@ -67,7 +67,7 @@ on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text
     <notification name="Low Threshold" status="off">
         <uei>uei.opennms.org/threshold/lowThresholdExceeded</uei>
         <description>A monitored device has hit a low threshold</description>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>A Threshold has been exceeded on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% while the threshold is %parm[threshold]%. This alert will be rearmed when %parm[ds]% reaches %parm[rearm]%.</text-message>
         <subject>Notice #%noticeid%: Low Threshold for %parm[ds]% on node %nodelabel%.</subject>
@@ -75,7 +75,7 @@ on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text
     <notification name="Low Threshold Rearmed" status="off">
         <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
         <description>A monitored device has recovered from a low threshold</description>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>A Threshold has returned to normal on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% with a rearm threshold of %parm[rearm]%. This threshold for this alert was %parm[threshold]%.</text-message>
         <subject>Notice #%noticeid%: Low Threshold Rearmed for %parm[ds]% on node %nodelabel%.</subject>
@@ -83,7 +83,7 @@ on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text
     <notification name="High Threshold Rearmed" status="off">
         <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
         <description>A monitored device has recovered from a high threshold</description>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>A Threshold has returned to normal on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% with a rearm threshold of %parm[rearm]%. This threshold for this alert was %parm[threshold]%.</text-message>
         <subject>Notice #%noticeid%: High Threshold Rearmed for %parm[ds]% on node %nodelabel%.</subject>
