@@ -8,7 +8,7 @@
         <name>WebConsole</name>
         <comment>Service Level Availability by Functional Group</comment>
         <common>
-            <rule><![CDATA[ipaddr IPLIKE *.*.*.*]]></rule>
+            <rule><![CDATA[IPADDR != '0.0.0.0']]></rule>
         </common>
         <categories>
             <category>
@@ -16,7 +16,7 @@
                 <comment>This category reflects availability of all services currently being monitored by OpenNMS.</comment>
                 <normal>99.99</normal>
                 <warning>97</warning>
-                <rule><![CDATA[ipaddr IPLIKE *.*.*.*]]></rule>
+                <rule><![CDATA[IPADDR != '0.0.0.0']]></rule>
             </category>
             <category>
                 <label><![CDATA[Network Interfaces]]></label>
@@ -25,7 +25,7 @@
                 <warning>97</warning>
                 <service>ICMP</service>
                 <service>SNMP</service>
-                <rule><![CDATA[(isICMP | isSNMP) & (ipaddr != "0.0.0.0")]]></rule>
+                <rule><![CDATA[(isICMP | isSNMP) & (IPADDR != '0.0.0.0')]]></rule>
             </category>
             <category>
                 <label><![CDATA[Email Servers]]></label>
@@ -91,7 +91,7 @@
                 <normal>99.99</normal>
                 <warning>97</warning>
                 <service>ICMP</service>
-                <rule><![CDATA[ipaddr IPLIKE 0.0.0.0]]></rule>
+                <rule><![CDATA[ipaddr == '0.0.0.0']]></rule>
             </category>
         </categories>
     </categorygroup>
