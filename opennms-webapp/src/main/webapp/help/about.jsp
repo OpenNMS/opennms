@@ -166,21 +166,21 @@
       	   <td>
 		<p>
         	Powered By Tomcat<br/>
-		<a href="http://jakarta.apache.org/tomcat/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" 
-      		   border="0" alt="jakarta.apache.org"></a>.
+		<a href="http://tomcat.apache.org/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" width="77" height="80"
+      		   border="0" alt="tomcat.apache.org"></a>.
       		</p>
 	   </td>
            <td>
 		<p>
 		Built on Tobi Oetiker's RRDTool<br/>
-        	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool.gif" hspace="0" vspace="0"
+        	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool-logo-dark.png" hspace="0" vspace="0" width="121" height="48"
            	border="0" alt="www.rrdtool.org"></a>
       		</p>      
 	   </td>
            <td>
 		<p>
 		PostgreSQL Powered<br/>
-        	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power.jpg" hspace="0" vspace="0"
+        	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power_95x51_4.gif" hspace="0" vspace="0" width="95" height="51"
            	border="0" alt="www.postgresql.org"></a>
       		</p>      
 	   </td>
