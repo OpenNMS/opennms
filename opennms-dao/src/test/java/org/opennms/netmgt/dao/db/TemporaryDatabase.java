@@ -20,9 +20,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;
 
 public class TemporaryDatabase implements DataSource {
-    
-    protected SimpleJdbcTemplate jdbcTemplate;
-
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     
     private static final String DRIVER_PROPERTY = "mock.db.driver";
@@ -57,6 +54,7 @@ public class TemporaryDatabase implements DataSource {
 
     private boolean m_destroyed = false;
 
+    private SimpleJdbcTemplate m_jdbcTemplate;
     
     public TemporaryDatabase() throws Exception {
         this(TEST_DB_NAME_PREFIX+System.currentTimeMillis());
@@ -221,16 +219,22 @@ public class TemporaryDatabase implements DataSource {
         Connection connection = getConnection();
         connection.close();
         
-        jdbcTemplate = new SimpleJdbcTemplate(this);
-
+        setJdbcTemplate(new SimpleJdbcTemplate(this));
     }
     
     private void createTestDatabase() throws Exception {
         Connection adminConnection = getAdminDataSource().getConnection();
-        Statement st = adminConnection.createStatement();
-        st.execute("CREATE DATABASE " + getTestDatabase()
-                + " WITH ENCODING='UNICODE'");
-        adminConnection.close();
+        Statement st = null;
+        try {
+            st = adminConnection.createStatement();
+            st.execute("CREATE DATABASE " + getTestDatabase()
+                    + " WITH ENCODING='UNICODE'");
+        } finally {
+            if (st != null) {
+                st.close();
+            }
+            adminConnection.close();
+        }
         
         Runtime.getRuntime().addShutdownHook(new Thread() {
 
@@ -256,6 +260,7 @@ public class TemporaryDatabase implements DataSource {
     private void destroyTestDatabase() throws Exception {
 
         if (m_destroyed) {
+            System.err.println("Database '" + getTestDatabase() + "' already destroyed");
             // database already destroyed
             return;
         }
@@ -338,8 +343,7 @@ public class TemporaryDatabase implements DataSource {
     // buf.append("]");
     // MockUtil.println("Executing "+stmt+" with values "+buf);
         
-        jdbcTemplate.update(stmt, values);
-        
+        getJdbcTemplate().update(stmt, values);
     }
 
     public int countRows(String sql) {
@@ -348,7 +352,7 @@ public class TemporaryDatabase implements DataSource {
 
     public int countRows(String sql, Object[] values) {
         RowCountCallbackHandler counter = new RowCountCallbackHandler();
-        jdbcTemplate.getJdbcOperations().query(sql, values, counter);
+        getJdbcTemplate().getJdbcOperations().query(sql, values, counter);
         return counter.getRowCount();
     }
 
@@ -357,7 +361,7 @@ public class TemporaryDatabase implements DataSource {
     }
 
     protected Integer getNextId(String nxtIdStmt) {
-        return jdbcTemplate.queryForInt(nxtIdStmt);
+        return getJdbcTemplate().queryForInt(nxtIdStmt);
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
@@ -381,11 +385,11 @@ public class TemporaryDatabase implements DataSource {
     }
 
     public SimpleJdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
+        return m_jdbcTemplate;
     }
 
     public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        m_jdbcTemplate = jdbcTemplate;
     }
 
     public DataSource getAdminDataSource() {

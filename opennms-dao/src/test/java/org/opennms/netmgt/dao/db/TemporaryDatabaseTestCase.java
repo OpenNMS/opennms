@@ -268,10 +268,17 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
     private void createTestDatabase() throws Exception {
         Connection adminConnection = getAdminDataSource().getConnection();
-        Statement st = adminConnection.createStatement();
-        st.execute("CREATE DATABASE " + getTestDatabase()
-                + " WITH ENCODING='UNICODE'");
-        adminConnection.close();
+        Statement st = null;
+        try {
+            st = adminConnection.createStatement();
+            st.execute("CREATE DATABASE " + getTestDatabase()
+                    + " WITH ENCODING='UNICODE'");
+        } finally {
+            if (st != null) {
+                st.close();
+            }
+            adminConnection.close();
+        }
         
         Runtime.getRuntime().addShutdownHook(new Thread() {
 
