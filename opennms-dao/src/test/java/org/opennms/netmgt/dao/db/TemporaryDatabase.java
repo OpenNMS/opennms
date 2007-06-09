@@ -310,7 +310,7 @@ public class TemporaryDatabase implements DataSource {
                 adminConnection.close();
             } catch (SQLException e) {
                 System.err.println("Error closing administrative database "
-                                   + "connection after attempting ot drop "
+                                   + "connection after attempting to drop "
                                    + "test database");
                 e.printStackTrace();
             }
