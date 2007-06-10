@@ -212,4 +212,11 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         m_pool.close();
     }
 
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;  //TODO
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;  //TODO
+    }
 }
