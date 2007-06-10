@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 10: Fix sequence for alarms and add getJdbcTemplate(). - dj@opennms.org
 // 2006 Aug 22: Move anticipator verify code into runTest(). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -57,6 +58,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 public class OpenNMSTestCase extends TestCase {
 
@@ -71,7 +73,7 @@ public class OpenNMSTestCase extends TestCase {
 //            "   getNextEventID=\"SELECT max(eventId)+1 from events\"\n" + 
             "   getNextEventID=\"select nextVal('eventsNxtId')\"\n" +
 //            "   getNextAlarmID=\"SELECT max(alarmId)+1 from alarms\"\n" + 
-            "   getNextAlarmID=\"select nextVal('alarmNxtId')\"\n" +
+            "   getNextAlarmID=\"select nextVal('alarmsNxtId')\"\n" +
             "   socketSoTimeoutRequired=\"yes\"\n" + 
             "   socketSoTimeoutPeriod=\"3000\">\n" + 
             "</EventdConfiguration>";
@@ -1514,5 +1516,8 @@ public class OpenNMSTestCase extends TestCase {
         m_eventProxy = eventProxy;
     }
 
+    public SimpleJdbcTemplate getJdbcTemplate() {
+        return m_db.getJdbcTemplate();
+    }
 
 }
