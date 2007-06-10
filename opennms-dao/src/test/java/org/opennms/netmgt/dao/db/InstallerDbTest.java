@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 10: Add a test for adding the PL/pgSQL version of iplike. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -2026,6 +2030,12 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         assertNoTablesHaveChanged();
     }
 
+    public void testUpdateIplikePgSql() throws Exception {
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().setPgIpLikeLocation(null); // Ensure that we don't try to load the C version
+        getInstallerDb().updateIplike();
+        getInstallerDb().closeConnection();
+    }
 
     public void addTableFromSQL(String tableName) throws SQLException {
         String partialSQL = null;

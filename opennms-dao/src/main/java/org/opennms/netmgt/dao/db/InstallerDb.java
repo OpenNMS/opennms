@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 10: Rearrange the iplike code a bit and add better error
+//              reporting. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,6 +42,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.sql.Connection;
@@ -63,6 +69,8 @@ import org.opennms.core.utils.ProcessExec;
 import org.springframework.util.StringUtils;
 
 public class InstallerDb {
+    private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
+
     public static final float POSTGRES_MIN_VERSION = 7.3f;
 
     private static final int s_fetch_size = 1024;
@@ -376,33 +384,47 @@ public class InstallerDb {
         		}
         	}
 
-        	m_out.print("- inserting iplike function... ");
-        	try {
-                st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '"
-                        + m_pg_iplike + "' LANGUAGE 'c' WITH(isstrict)");
-                m_out.println("OK");
-        	} catch (SQLException e) {
-        		m_out.println("FAILED");
-        		
+        	m_out.print("- inserting C iplike function... ");
+            boolean success;
+            if (m_pg_iplike == null) {
+                success = false;
+                
+                m_out.println("SKIPPED (location of iplike function not set)");
+            } else {
+            	try {
+                    st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '"
+                            + m_pg_iplike + "' LANGUAGE 'c' WITH(isstrict)");
+                    
+                    success = true;
+                    m_out.println("OK");
+            	} catch (SQLException e) {
+                    success = false;
+            		m_out.println("FAILED (" + e + ")");
+                }
+            }
+            
+            if (!success) {
         		try {
-                	InputStream sqlfile = InstallerDb.class.getResourceAsStream("iplike.sql");
-
+                    m_out.print("- inserting PL/pgSQL iplike function... ");
+                    
+                	InputStream sqlfile = getClass().getResourceAsStream(IPLIKE_SQL_RESOURCE);
                 	if (sqlfile == null) {
-                		throw new Exception("unable to locate iplike.sql");
+                        String message = "unable to locate " + IPLIKE_SQL_RESOURCE;
+                        m_out.println("FAILED (" + message + ")");
+                		throw new Exception(message);
                 	}
                 	
-                	BufferedReader in = new BufferedReader(new java.io.InputStreamReader(sqlfile));
+                	BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile));
                 	StringBuffer createFunction = new StringBuffer();
                 	String line;
                 	while ((line = in.readLine()) != null) {
                 		createFunction.append(line).append("\n");
                 	}
-        			m_out.print("- inserting PL/PGSQL iplike function... ");
         			st.execute(createFunction.toString());
         			m_out.println("OK");
-        		} catch (Exception plpgsqlException) {
+        		} catch (Exception e) {
         			m_out.println("FAILED");
-        			throw plpgsqlException;
+        			throw e;
         		}
         	}
         }
