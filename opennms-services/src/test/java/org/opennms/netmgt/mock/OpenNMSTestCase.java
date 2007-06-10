@@ -1473,9 +1473,12 @@ public class OpenNMSTestCase extends TestCase {
     
     @Override
     public void runTest() throws Throwable {
-        super.runTest();
-        MockLogAppender.assertNoWarningsOrGreater();
-        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+        try {
+            super.runTest();
+            MockLogAppender.assertNoWarningsOrGreater();
+        } finally {
+            MockUtil.println("------------ End Test "+getName()+" --------------------------");
+        }
     }
 
     protected void tearDown() throws Exception {
