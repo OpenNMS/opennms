@@ -1,16 +1,43 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc. All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.ticketer.centric;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
@@ -25,12 +52,32 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
 
+/**
+ * OpenNMS Trouble Ticket Plugin API implementation for CentricCRM (c) Darkhorse Ventures.
+ * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ *
+ */
 public class CentricTicketerPlugin implements TicketerPlugin {
     
-    
+    /**
+     * This class extends Centric Class that is responsible for transfering data
+     * to/from the Centric server via their HTTP-XML API.
+     * 
+     * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+     * @author <a href="mailto:david@opennms.org">David Hustace</a>
+     *
+     */
     public static class CentricConnection extends CRMConnection {
-        
-        public String getErrorText() {
+
+    	/**
+    	 * Convenience method added to retrieve error message embedded in the XML
+    	 * packet returned by the CentricCRM API.
+    	 * 
+    	 * @return <code>java.lang.String</code> if an error message exists in the server response.
+    	 */
+        public String getErrorText() throws CentricPluginException {
             XMLUtils xml;
             try {
                 String responseXML = getLastResponse();
@@ -42,14 +89,33 @@ public class CentricTicketerPlugin implements TicketerPlugin {
                 Element errorText = XMLUtils.getFirstChild(response, "errorText");
                 return errorText.getTextContent();
             } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+            	throw new CentricPluginException(e);
             }
+        }
+        
+        /**
+         * Wrapper class used to nicely handle Centric API exceptions
+         * 
+         * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+         * @author <a href="mailto:david@opennms.org">David Hustace</a>
+         *
+         */
+        class CentricPluginException extends RuntimeException {
+
+			private static final long serialVersionUID = -2279922257910422937L;
+			
+			public CentricPluginException(Exception e) {
+				super(e);
+			}
+        	
         }
     }
     
     
-
+    /**
+     * Implementation of TicketerPlugin API call to retrieve a CentricCRM trouble ticket.
+     * @return an OpenNMS 
+     */
     public Ticket get(String ticketId) {
         CentricConnection crm = createConnection();
         
@@ -82,6 +148,11 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         
     }
     
+    /**
+     * Convenience method of determing a "close" state of a ticket.
+     * @param newState
+     * @return true if canceled or closed state
+     */
     private boolean isClosingState(State newState) {
         switch(newState) {
         case CANCELLED:
@@ -94,6 +165,14 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         
     }
 
+
+    /**
+     * Convenience method for converting a string representation of
+     * the OpenNMS enumerated ticket states.
+     * 
+     * @param stateIdString
+     * @return the converted <code>org.opennms.netmgt.ticketd.Ticket.State</code> 
+     */
     private State getStateFromId(String stateIdString) {
     	if (stateIdString == null) {
     		return State.OPEN;
@@ -119,8 +198,14 @@ public class CentricTicketerPlugin implements TicketerPlugin {
                 
         }
     }
-    
-    public DataRecord getRecord() {
+
+    /**
+     * Helper method for creating a CentricCRM DataRecord from properties
+     * defined in the centric.properties file.
+     * 
+     * @return a populated <code>org.aspcfs.apps.transfer.DataRecord</code>
+     */
+    private DataRecord createDataRecord() {
         DataRecord record = new DataRecord();
         
         Properties props = getProperties();
@@ -137,10 +222,14 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         }
                 
         return record;
-            
     }   
-        
-    Properties getProperties() {
+
+    /**
+     * Retrieves the properties defined in the centric.properties file.
+     * 
+     * @return a <code>java.util.Properties object containing centric plugin defined properties
+     */
+    private Properties getProperties() {
         File home = new File(System.getProperty("opennms.home"));
         File etc = new File(home, "etc");
         File config = new File(etc, "centric.properties");
@@ -162,19 +251,19 @@ public class CentricTicketerPlugin implements TicketerPlugin {
 
     }
 
+    /**
+     * Covenience logging.
+     * @return a log4j Category for this class
+     */
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
-    
-    public void save(Ticket ticket) {
-        
-    }
-    
-    public void update(Ticket ticket) {
-        
-    }
 
-    
+
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.ticketd.TicketerPlugin#saveOrUpdate(org.opennms.netmgt.ticketd.Ticket)
+     */
     public void saveOrUpdate(Ticket ticket) {
         CentricConnection crm = createConnection();
         
@@ -182,7 +271,7 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         returnFields.add("id");
         crm.setTransactionMeta(returnFields);
         
-        DataRecord record = getRecord();
+        DataRecord record = createDataRecord();
         record.setName("ticket");
         if (ticket.getId() == null) {
             record.setAction(DataRecord.INSERT);
@@ -267,7 +356,8 @@ public class CentricTicketerPlugin implements TicketerPlugin {
 */
 
     }
-    
+
+/*    
     private String getModifiedTimestamp(String id) {
         CentricConnection crm = createConnection();
         
@@ -286,7 +376,17 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         return crm.getResponseValue("modified");
 
     }
+    
+*/
 
+    
+    /**
+     * Convenience method for converting OpenNMS Ticket.State enum
+     * to an int representation compatible with CentricCRM.
+     * 
+     * TODO: This needs to be configurable with the ability of the user
+     * to define.
+     */
     private int getStateId(State state) {
         switch(state) {
         case OPEN:
@@ -300,10 +400,13 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         }
     }
 
+    /**
+     * Creates connection to CentricCRM server using CentricCRM HTTP-XML API
+     * @return a connection to the configured CentricCRM server. 
+     */
     private CentricConnection createConnection() {
         // Client ID must already exist in target CRM system and is created
         // under Admin -> Configure System -> HTTP-XML API Client Manager
-        int clientId = 1;
         
         Properties props = getProperties();
 
@@ -318,7 +421,5 @@ public class CentricTicketerPlugin implements TicketerPlugin {
         crm.setAutoCommit(false);
         return crm;
     }
-    
-    
 
 }
