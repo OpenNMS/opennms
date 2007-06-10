@@ -147,7 +147,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 
     
     /**
-     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer.updateTicketForAlarm(int)
+     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer.updateTicketForAlarm(int, String)
      */
 	public void updateTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
