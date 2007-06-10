@@ -49,12 +49,15 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.NClob;
+//Java6
+//import java.sql.NClob;
 import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
+//Java6
+//import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.SQLXML;
+//Java6
+//import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
@@ -431,7 +434,7 @@ public final class LegacyDatabaseConnectionFactory implements ClosableDataSource
         public Blob createBlob() throws SQLException {
             return null;  //TODO
         }
-
+        /* Java6
         public NClob createNClob() throws SQLException {
             return null;  //TODO
         }
@@ -439,6 +442,7 @@ public final class LegacyDatabaseConnectionFactory implements ClosableDataSource
         public SQLXML createSQLXML() throws SQLException {
             return null;  //TODO
         }
+
 
         public boolean isValid(int timeout) throws SQLException {
             return false;  //TODO
@@ -467,6 +471,7 @@ public final class LegacyDatabaseConnectionFactory implements ClosableDataSource
         public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
             return null;  //TODO
         }
+        */
 
         /**
          * Forwards the request to the encapsulated connection after access to
