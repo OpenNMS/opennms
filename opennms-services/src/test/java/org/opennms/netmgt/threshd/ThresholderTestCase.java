@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 09: Let MockDatabase choose the database name. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -183,7 +187,7 @@ public class ThresholderTestCase extends TestCase {
 		m_network.addInterface("192.168.1.5");
 		m_network.addService("SMTP");
 		m_network.addService("HTTP");
-		MockDatabase db = new MockDatabase(getName());
+		MockDatabase db = new MockDatabase();
 		db.populate(m_network);
 		DataSourceFactory.setInstance(db);
 	}
