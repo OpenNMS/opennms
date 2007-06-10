@@ -48,6 +48,9 @@ public class NullTicketerPlugin implements TicketerPlugin {
         return ticket;
     }
 
+    /**
+     * No-op implementation
+     */
     public void saveOrUpdate(Ticket ticket) {
     }
 
