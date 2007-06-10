@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Jun 10: Use SimpleJdbcTemplate for queries. - dj@opennms.org
  * 2007 Jun 09: Move the config into a test resource. - dj@opennms.org
  * 2007 Mar 13: VacuumdConfigFactory.setConfigReader(Reader) is gone.  Use new VacuumdConfigFactory(Reader) and setInstance, instead. - dj@opennms.org
  *
@@ -54,8 +55,6 @@ import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.EventBuilder;
-import org.opennms.netmgt.utils.Querier;
-import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockUtil;
@@ -126,28 +125,26 @@ public class VacuumdTest extends OpenNMSTestCase {
         Thread.sleep(500);
         
         /*
-         * Changes to the automations to the VACUUMD_CONFIG will
+         * Changes to the automations to the config will
          * probably affect this.  There should be one node down
          * alarm.
          */
-        assertEquals(1, verifyInitialAlarmState());
+        assertEquals("alarm count", 1, verifyInitialAlarmState());
 
-
-        //Create another node down event
+        // Create another node down event
         bringNodeDownCreatingEvent(1);
-        /*
-         * Sleep and wait for the alarm to be written
-         */
+        
+        // Sleep and wait for the alarm to be written
         Thread.sleep(500);
-        assertEquals(2, alarmDeDuplicated());
-        
-        int currentSeverity = getCurrentSeverity();
-        
+        assertEquals("counter in the alarm", 2, getJdbcTemplate().queryForInt("select counter from alarms"));
+                
         /*
-         * Sleep long enough for the automation to run.
+         * Get the current severity, sleep long enough for the escalation
+         * automation to run, then check that it was escalated.
          */
+        int currentSeverity = getJdbcTemplate().queryForInt("select severity from alarms");
         Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval()+100);
-        assertEquals(currentSeverity+1, verifyAlarmEscalated());
+        assertEquals("alarm severity -- should have been excalated", currentSeverity+1, verifyAlarmEscalated());
         
         EventBuilder builder = new EventBuilder(Vacuumd.RELOAD_CONFIG_UEI, "test");
         Event e = builder.getEvent();
@@ -232,22 +229,19 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test running a trigger.
      */
     public final void testRunTrigger() throws InterruptedException {
-        //Get all the triggers defined in the config
-        ArrayList triggers = (ArrayList)VacuumdConfigFactory.getInstance().getTriggers();
+        // Get all the triggers defined in the config
+        Collection<Trigger> triggers = VacuumdConfigFactory.getInstance().getTriggers();
         assertEquals(5, triggers.size());
-
-        Querier q = null;
 
         Trigger trigger = VacuumdConfigFactory.getInstance().getTrigger("selectAll");
         String triggerSql = trigger.getStatement().getContent();
         MockUtil.println("Running trigger query: "+triggerSql);
-        q = new Querier(m_db, triggerSql);
-        q.execute();
-        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
-        assertFalse("Testing the result rows:"+q.getCount()+" with the trigger operator "+trigger.getOperator()+" against the required rows:"+trigger.getRowCount(),
-                ap.getTrigger().triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), q.getCount()));
-        assertEquals(0, q.getCount());
         
+        int count = getJdbcTemplate().queryForList(triggerSql).size();
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
+        assertFalse("Testing the result rows:"+count+" with the trigger operator "+trigger.getOperator()+" against the required rows:"+trigger.getRowCount(),
+                ap.getTrigger().triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), count));
+        assertEquals(0, count);
     }
 
     /**
@@ -306,29 +300,16 @@ public class VacuumdTest extends OpenNMSTestCase {
         bringNodeUpCreatingEvent(1);
         Thread.sleep(500);
         
-        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select clearUei from alarms where eventUei = \'uei.opennms.org/nodes/nodeUp\'");
-        srq.execute();
-        String result = (String)srq.getResult();
-        MockUtil.println(result);
-        assertTrue("uei.opennms.org/nodes/nodeDown".equals(result));
+        assertEquals("clearUei for nodeUp", "uei.opennms.org/nodes/nodeDown", getJdbcTemplate().queryForObject("select clearUei from alarms where eventUei = ?", String.class, "uei.opennms.org/nodes/nodeUp"));
         
         // should have three alarms, one for each event
-        srq = new SingleResultQuerier(m_db, "select count(*) from alarms");
-        srq.execute();
-        Integer rows = (Integer)srq.getResult();
-        assertEquals(3, rows.intValue());
+        assertEquals("should have one alarm for each event", 3, getJdbcTemplate().queryForLong("select count(*) from alarms"));
 
         // the automation should have cleared the nodeDown for node 1 so it should now have severity CLEARED == 2
-        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity = 2");
-        srq.execute();
-        rows = (Integer)srq.getResult();
-        assertEquals(1, rows.intValue());
+        assertEquals("alarms with severity == 2", 1, getJdbcTemplate().queryForLong("select count(*) from alarms where severity = 2"));
 
         // There should still be a nodeUp alarm and an uncleared nodeDown alarm
-        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity > 2");
-        srq.execute();
-        rows = (Integer)srq.getResult();
-        assertEquals(2, rows.intValue());
+        assertEquals("alarms with severity > 2", 2, getJdbcTemplate().queryForLong("select count(*) from alarms where severity > 2"));
 
         // run this automation again and make sure nothing happens since we've already processed the clear
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
@@ -336,16 +317,10 @@ public class VacuumdTest extends OpenNMSTestCase {
         Thread.sleep(1000);
         
         // same as above
-        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity = 2");
-        srq.execute();
-        rows = (Integer)srq.getResult();
-        assertEquals(1, rows.intValue());
+        assertEquals("alarms with severity == 2", 1, getJdbcTemplate().queryForLong("select count(*) from alarms where severity = 2"));
 
         // save as above
-        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity > 2");
-        srq.execute();
-        rows = (Integer)srq.getResult();
-        assertEquals(2, rows.intValue());
+        assertEquals("alarms with severity > 2", 2, getJdbcTemplate().queryForLong("select count(*) from alarms where severity > 2"));
     }
 
     /**
@@ -382,41 +357,12 @@ public class VacuumdTest extends OpenNMSTestCase {
     
     /**
      * Really only elminated some duplication here.  This
-     * method verifys that there is one alarm in the database
+     * method verifies that there is one alarm in the database
      * when a test begins (based on setUp()).
      * @return
      */
     private int verifyInitialAlarmState() {
-        int verified = -1;
-        Querier q = new Querier(m_db, "select * from alarms");
-        q.execute();
-        verified = q.getCount();
-        MockUtil.println("verifyInitialSetup: Expecting rows in alarms table to be 1 and actually is: "+q.getCount());
-        q = null;
-        return verified;
-    }
-
-    /**
-     * Verifys for the concurrency test that the alarm deduplicated.
-     * @return
-     */
-    private int alarmDeDuplicated() {
-        int verified = -1;
-        //TODO: put check in to make sure there is only one alarm in the table
-        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select counter from alarms");
-        srq.execute();
-        verified = ((Integer)srq.getResult()).intValue();
-        MockUtil.println("verifyInitialSetup: Expecting counter in alarms table to be 2 and actually is: "+((Integer)srq.getResult()).intValue());
-        srq = null;
-        return verified;
-    }
-
-    private int getCurrentSeverity() {
-        int currentSeverity = 0;
-        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select severity from alarms");
-        srq.execute();
-        currentSeverity = ((Integer)srq.getResult()).intValue();
-        return currentSeverity;
+        return (int) getJdbcTemplate().queryForLong("select count(*) from alarms");
     }
 
     /**
@@ -424,14 +370,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * @return
      */
     private int verifyAlarmEscalated() {
-        int verified = -1;
-        //TODO: put check in to make sure there is only one alarm in the table
-        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select severity from alarms");
-        srq.execute();
-        verified = ((Integer)srq.getResult()).intValue();
-        MockUtil.println("verifyAlarmEscalated: Expecting severity in alarms table to be 7 and actually is: "+((Integer)srq.getResult()).intValue());
-        srq = null;
-        return verified;
+        return getJdbcTemplate().queryForInt("select severity from alarms");
     }
 
     /**
@@ -439,11 +378,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * @return
      */
     private int getSingleResultSeverity() {
-        SingleResultQuerier srq;
-        srq = new SingleResultQuerier(m_db, "select severity from alarms");
-        srq.execute();
-        int severity = ((Integer)srq.getResult()).intValue();
-        return severity;
+        return getJdbcTemplate().queryForInt("select severity from alarms");
     }
     
     private void bringNodeDownCreatingEvent(int nodeid) {
