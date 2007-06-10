@@ -270,4 +270,11 @@ public final class DataSourceFactory implements DataSource {
         m_dataSources.clear();
     }
 
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;  //TODO
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;  //TODO
+    }
 }

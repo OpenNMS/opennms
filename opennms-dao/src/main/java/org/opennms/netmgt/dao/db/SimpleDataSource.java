@@ -77,4 +77,12 @@ public class SimpleDataSource implements DataSource {
     public void setLoginTimeout(int seconds) throws SQLException {
         throw new UnsupportedOperationException("setLoginTimeout(int) not implemented");
     }
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;  //TODO
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;  //TODO
+    }
 }

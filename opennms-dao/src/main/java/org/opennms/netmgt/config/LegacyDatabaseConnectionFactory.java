@@ -42,17 +42,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -124,6 +132,14 @@ public final class LegacyDatabaseConnectionFactory implements ClosableDataSource
      * collector has not finalized them yet.
      */
     private LinkedList m_dbcCache = null;
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;  //TODO
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;  //TODO
+    }
 
     /**
      * This class is used to represent a cached database connection within this
@@ -406,6 +422,50 @@ public final class LegacyDatabaseConnectionFactory implements ClosableDataSource
                 ThreadCategory.getInstance(getClass()).debug("setting bad flag [id=" + this + "]", ex);
                 throw ex;
             }
+        }
+
+        public Clob createClob() throws SQLException {
+            return null;  //TODO
+        }
+
+        public Blob createBlob() throws SQLException {
+            return null;  //TODO
+        }
+
+        public NClob createNClob() throws SQLException {
+            return null;  //TODO
+        }
+
+        public SQLXML createSQLXML() throws SQLException {
+            return null;  //TODO
+        }
+
+        public boolean isValid(int timeout) throws SQLException {
+            return false;  //TODO
+        }
+
+        public void setClientInfo(String name, String value) throws SQLClientInfoException {
+//TODO
+        }
+
+        public void setClientInfo(Properties properties) throws SQLClientInfoException {
+//TODO
+        }
+
+        public String getClientInfo(String name) throws SQLException {
+            return null;  //TODO
+        }
+
+        public Properties getClientInfo() throws SQLException {
+            return null;  //TODO
+        }
+
+        public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+            return null;  //TODO
+        }
+
+        public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+            return null;  //TODO
         }
 
         /**
@@ -885,6 +945,14 @@ public final class LegacyDatabaseConnectionFactory implements ClosableDataSource
                 ThreadCategory.getInstance(getClass()).debug("setting bad flag [id=" + this + "]", ex);
                 throw ex;
             }
+        }
+
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            return null;  //TODO
+        }
+
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            return false;  //TODO
         }
     }
 
