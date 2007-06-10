@@ -35,12 +35,11 @@
 //
 package org.opennms.netmgt.threshd;
 
-
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class LatencyThresholderIntegrationTest extends ThresholderTestCase {
-
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
@@ -69,10 +68,9 @@ public class LatencyThresholderIntegrationTest extends ThresholderTestCase {
 
         verifyMocks();
         expectRrdStrategyCalls();
-
     }
 
-
+    @Override
 	protected void tearDown() throws Exception {
         RrdUtils.setStrategy(null);
         MockLogAppender.assertNoWarningsOrGreater();
@@ -87,7 +85,6 @@ public class LatencyThresholderIntegrationTest extends ThresholderTestCase {
     }
     
     public void testNormalValue() throws Exception {
-        
         setupFetchSequence(new double[] { 69000.0, 79000.0, 74999.0, 74998.0 });
 		
         replayMocks();
@@ -96,8 +93,7 @@ public class LatencyThresholderIntegrationTest extends ThresholderTestCase {
     }
     
     public void testBigValue() throws Exception {
-        
-        setupFetchSequence(new double[] {79000.0, 80000.0, 84999.0, 84998.0, 97000.0 });
+        setupFetchSequence(new double[] { 79000.0, 80000.0, 84999.0, 84998.0, 97000.0 });
         
         replayMocks();
         ensureExceededAfterFetches("icmp", 3);
@@ -125,6 +121,4 @@ public class LatencyThresholderIntegrationTest extends ThresholderTestCase {
         ensureExceededAfterFetches("icmp", 3);
         verifyMocks();
     }
-
-
 }
