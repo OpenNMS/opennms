@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 10: Support login timeout (in hopefully a not-too-hackish way). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -43,6 +47,7 @@ public class SimpleDataSource implements DataSource {
     private String m_url;
     private String m_user;
     private String m_password;
+    private Integer m_timeout = null;
 
     public SimpleDataSource(String driver, String url,
                                String user, String password) throws ClassNotFoundException {
@@ -55,7 +60,15 @@ public class SimpleDataSource implements DataSource {
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(m_url, m_user, m_password);
+        if (m_timeout == null) {
+            return DriverManager.getConnection(m_url, m_user, m_password);
+        } else {
+            int oldTimeout = DriverManager.getLoginTimeout();
+            DriverManager.setLoginTimeout(m_timeout);
+            Connection conn = DriverManager.getConnection(m_url, m_user, m_password);
+            DriverManager.setLoginTimeout(oldTimeout);
+            return conn;
+        }
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
@@ -67,7 +80,7 @@ public class SimpleDataSource implements DataSource {
     }
 
     public int getLoginTimeout() throws SQLException {
-        throw new UnsupportedOperationException("getLoginTimeout() not implemented");
+        return m_timeout == null ? -1 : m_timeout;
     }
 
     public void setLogWriter(PrintWriter out) throws SQLException {
@@ -75,7 +88,7 @@ public class SimpleDataSource implements DataSource {
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        throw new UnsupportedOperationException("setLoginTimeout(int) not implemented");
+        m_timeout = seconds;
     }
 
     public <T> T unwrap(Class<T> iface) throws SQLException {
