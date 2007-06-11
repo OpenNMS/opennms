@@ -36,7 +36,6 @@ package org.opennms.report.datablock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * This class holds the interface whaich has service information and list of
@@ -50,7 +49,7 @@ public class Node extends StandardNamedObject {
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    //private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
     private static class InterfaceComparator {
         private String m_intfname;
@@ -84,7 +83,7 @@ public class Node extends StandardNamedObject {
     /**
      * List of outages.
      */
-    private ArrayList m_interfaces;
+    private ArrayList<Interface> m_interfaces;
 
     /**
      * Flag indicating an Outage
@@ -135,7 +134,7 @@ public class Node extends StandardNamedObject {
      * Default Constructor.
      */
     public Node() {
-        m_interfaces = new ArrayList();
+        m_interfaces = new ArrayList<Interface>();
         m_downTime = 0;
     }
 
@@ -145,7 +144,7 @@ public class Node extends StandardNamedObject {
     public Node(String name, int id) {
         m_nodeid = id;
         setName(name);
-        m_interfaces = new ArrayList();
+        m_interfaces = new ArrayList<Interface>();
         m_downTime = 0;
     }
 
@@ -159,7 +158,7 @@ public class Node extends StandardNamedObject {
      * @param id
      *            node id.
      */
-    public Node(String name, ArrayList interfaces, int id) {
+    public Node(String name, ArrayList<Interface> interfaces, int id) {
         m_nodeid = id;
         setName(name);
         m_interfaces = interfaces;
@@ -172,7 +171,7 @@ public class Node extends StandardNamedObject {
      * @param interfaces
      *            Interfaces for this node to be set.
      */
-    public Node(ArrayList interfaces) {
+    public Node(ArrayList<Interface> interfaces) {
         m_interfaces = interfaces;
         m_downTime = 0;
     }
@@ -229,13 +228,11 @@ public class Node extends StandardNamedObject {
      */
     public int getServiceCount() {
         int count = 0;
-        ListIterator lstIter = m_interfaces.listIterator();
-        while (lstIter.hasNext()) {
-            Interface intf = (Interface) lstIter.next();
-            if (intf != null) {
-                count += intf.getServiceCount();
-            }
-        }
+        for (Interface intf : m_interfaces) {
+			if (intf != null) {
+				count += intf.getServiceCount();
+			}
+		}
         m_serviceCount = count;
         return count;
     }
@@ -274,7 +271,7 @@ public class Node extends StandardNamedObject {
      * 
      * @return A list of interfaces.
      */
-    public ArrayList getInterfaces() {
+    public ArrayList<Interface> getInterfaces() {
         return m_interfaces;
     }
 
@@ -294,13 +291,11 @@ public class Node extends StandardNamedObject {
      */
     public int getServiceAffectCount() {
         int count = 0;
-        ListIterator lstIter = m_interfaces.listIterator();
-        while (lstIter.hasNext()) {
-            Interface intf = (Interface) lstIter.next();
-            if (intf != null) {
-                count += intf.getServiceAffectCount();
-            }
-        }
+        for (Interface intf : m_interfaces) {
+			if (intf != null) {
+				count += intf.getServiceAffectCount();
+			}
+		}
         return count;
     }
 
@@ -446,17 +441,16 @@ public class Node extends StandardNamedObject {
         int serviceCount = 0;
 
         if (m_interfaces != null && m_interfaces.size() > 0) {
-            ListIterator lstIter = m_interfaces.listIterator();
-            while (lstIter.hasNext()) {
-                Interface intf = (Interface) lstIter.next();
+        	for (Interface intf : m_interfaces) {
                 if (intf != null) {
                     long down = intf.getDownTime(endTime, rollingWindow);
                     if (down > 0)
                         outage += down;
                     serviceCount += intf.getServiceCount();
                 }
-            }
+			}
         }
+        
         if (serviceCount > 0) {
             m_downTime = outage;
             m_totalWindow = rollingWindow * serviceCount;
@@ -476,22 +470,18 @@ public class Node extends StandardNamedObject {
      * @return The outage time.
      */
     public long getOutage(long endTime, long rollingWindow) {
-        double percent = 0;
         long outage = 0;
         int serviceCount = 0;
 
-        if (m_interfaces != null && m_interfaces.size() > 0) {
-            ListIterator lstIter = m_interfaces.listIterator();
-            while (lstIter.hasNext()) {
-                Interface intf = (Interface) lstIter.next();
-                if (intf != null) {
-                    long down = intf.getDownTime(endTime, rollingWindow);
-                    if (down > 0)
-                        outage += down;
-                    serviceCount += intf.getServiceCount();
-                }
+        for (Interface intf : m_interfaces) {
+            if (intf != null) {
+                long down = intf.getDownTime(endTime, rollingWindow);
+                if (down > 0)
+                    outage += down;
+                serviceCount += intf.getServiceCount();
             }
-        }
+		}
+        
         if (serviceCount > 0) {
             m_serviceCount = serviceCount;
         }
@@ -511,23 +501,20 @@ public class Node extends StandardNamedObject {
 
         retVal.append(nl).append(nl).append("Nodeid : ").append(getName()).append(nl).append("Interfaces");
 
-        ListIterator lstInterfaces = (ListIterator) m_interfaces.listIterator();
-        while (lstInterfaces.hasNext()) {
-            Interface intf = (Interface) lstInterfaces.next();
+        for (Interface intf : m_interfaces) {
             if (intf != null) {
                 retVal.append(nl).append("\t\t").append(intf.getName());
 
-                List services = intf.getServices();
-                ListIterator lstServices = (ListIterator) services.listIterator();
-                while (lstServices.hasNext()) {
-                    Service service = (Service) lstServices.next();
+                List<Service> services = intf.getServices();
+                for (Service service : services) {
                     retVal.append(nl).append("\t\t\t\t").append(service.getName());
                     if (service != null) {
                         retVal.append(nl).append("\t\t\t\t\t").append(service.getOutages());
                     }
-                }
+				}
             }
-        }
+		}
+        
         return retVal.toString();
     }
 }
