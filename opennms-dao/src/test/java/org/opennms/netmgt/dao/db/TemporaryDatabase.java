@@ -81,7 +81,7 @@ public class TemporaryDatabase implements DataSource {
         m_populateSchema  = populateSchema;
     }
     
-    public void create() throws Exception {
+    protected void create() throws Exception {
         setupDatabase();
         
         if (m_populateSchema) {
