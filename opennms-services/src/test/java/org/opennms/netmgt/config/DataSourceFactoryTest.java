@@ -41,7 +41,7 @@ import org.opennms.test.mock.MockLogAppender;
 
 public class DataSourceFactoryTest extends OpenNMSTestCase {
 
-	public DataSource m_testDb = new DataSourceFactory();
+	private DataSource m_testDb = new DataSourceFactory();
     private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
     private MockEventIpcManager m_eventMgr;
