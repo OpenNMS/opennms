@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 10: Make sure we call create() in all of the constructors,
+//              update snmpInterface entries in reparentInterface, and
+//              use Java 5 varargs. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -53,12 +59,10 @@ import org.opennms.netmgt.xml.event.Event;
  * @author brozow
  */
 public class MockDatabase extends TemporaryDatabase implements EventWriter {
-
-
     public MockDatabase(String dbName) throws Exception {
         super(dbName);
         setPopulateSchema(true);
-
+        create();
     }
 
     public MockDatabase() throws Exception {
@@ -321,7 +325,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         return getOutages(null, new Object[0]);
     }
     
-    public Collection<Outage> getOutages(String criteria, Object[] values) {
+    public Collection<Outage> getOutages(String criteria, Object... values) {
         String critSql = (criteria == null ? "" : " where "+criteria);
         final List<Outage> outages = new LinkedList<Outage>();
         Querier loadExisting = new Querier(this, "select * from outages"+critSql) {
@@ -340,18 +344,18 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     }
     
     public Collection getOpenOutages(MockService svc) {
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
-        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is null", values);
+        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is null",
+                svc.getNodeId(), svc.getIpAddr(), svc.getId());
     }
     
     public Collection getOutages(MockService svc) {
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
-        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ?", values);
+        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ?",
+                svc.getNodeId(), svc.getIpAddr(), svc.getId());
     }
     
     public Collection getClosedOutages(MockService svc) {
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
-        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is not null", values);
+        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is not null",
+                svc.getNodeId(), svc.getIpAddr(), svc.getId());
     }
 
     /**
@@ -360,9 +364,9 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
      * @param nodeId2
      */
     public void reparentInterface(String ipAddr, int oldNode, int newNode) {
-        Object[] values = { new Integer(newNode), new Integer(oldNode), ipAddr };
-        update("update ipInterface set nodeId = ? where nodeId = ? and ipAddr = ?;", values);
-        update("update ifServices set nodeId = ? where nodeId = ? and ipAddr = ?;", values);
+        update("update snmpInterface set nodeId = ? where id in (select snmpInterfaceId from ipInterface where nodeId = ? and ipAddr = ?)", newNode, oldNode, ipAddr);
+        update("update ipInterface set nodeId = ? where nodeId = ? and ipAddr = ?", newNode, oldNode, ipAddr);
+        update("update ifServices set nodeId = ? where nodeId = ? and ipAddr = ?", newNode, oldNode, ipAddr);
     }
 
     /**
@@ -376,8 +380,8 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
      * @param e
      */
     public void acknowledgeNoticesForEvent(Event e) {
-        Object[] values = { new Timestamp(System.currentTimeMillis()), new Integer(e.getDbid()) };
-        update ("update notifications set respondTime = ? where eventID = ? and respondTime is null;", values);
+        update("update notifications set respondTime = ? where eventID = ? and respondTime is null",
+                new Timestamp(System.currentTimeMillis()), e.getDbid());
     }
 
     /**

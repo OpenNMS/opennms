@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 10: Don't call create() on the second database, as its now
+//              taken care of in the MockDatabase constructor.  Organize
+//              imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,11 +40,8 @@ package org.opennms.netmgt.mock;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -98,8 +101,7 @@ public class MockDatabaseTest extends TestCase {
     }
     
     public void testMultipleDatabases() throws Exception {
-    		m_secondDb = new MockDatabase("test2");
-    		m_secondDb.create();
+    		m_secondDb = new MockDatabase(m_db.getTestDatabase() + "_test2");
     	
     		Querier secondQuerier = new Querier(m_secondDb, "select * from node");
     		secondQuerier.execute();
