@@ -157,12 +157,7 @@ public class MockPollContext implements PollContext, EventListener {
     }
     
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        Object[] values = {
-            new Integer(newNodeId),
-            new Integer(oldNodeId),
-            ipAddr,
-        };
-        m_db.update("update outages set nodeId = ? where nodeId = ? and ipaddr = ?", values);
+        m_db.update("update outages set nodeId = ? where nodeId = ? and ipaddr = ?", newNodeId, oldNodeId, ipAddr);
     }
     
     public boolean isServiceUnresponsiveEnabled() {
