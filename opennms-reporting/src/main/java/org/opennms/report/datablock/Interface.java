@@ -35,9 +35,7 @@
 package org.opennms.report.datablock;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * This class holds the interface information and list of services that belong
@@ -51,7 +49,7 @@ public class Interface extends StandardNamedObject {
     /**
      * List of services.
      */
-    private ArrayList m_services;
+    private ArrayList<Service> m_services;
 
     private static class ServiceComparator {
         private String m_svcname;
@@ -86,7 +84,7 @@ public class Interface extends StandardNamedObject {
      * Default Constructor.
      */
     public Interface() {
-        m_services = new ArrayList();
+        m_services = new ArrayList<Service>();
     }
 
     /**
@@ -97,10 +95,10 @@ public class Interface extends StandardNamedObject {
      * @param services
      *            Services to be set for this interface.
      */
-    public Interface(String name, ArrayList services) {
+    public Interface(String name, ArrayList<Service> services) {
         setName(name);
         if (services == null)
-            m_services = new ArrayList();
+            m_services = new ArrayList<Service>();
         else
             m_services = services;
     }
@@ -117,7 +115,7 @@ public class Interface extends StandardNamedObject {
      */
     public Interface(String name, String service) {
         setName(name);
-        m_services = new ArrayList();
+        m_services = new ArrayList<Service>();
         Service svc;
         if (service != null) {
             svc = new Service(service);
@@ -141,7 +139,7 @@ public class Interface extends StandardNamedObject {
     public Interface(String name, String service, long losttime) {
         setName(name);
         Service svc;
-        m_services = new ArrayList();
+        m_services = new ArrayList<Service>();
         if (service != null) {
             svc = new Service(service);
             if (losttime > 0)
@@ -167,7 +165,7 @@ public class Interface extends StandardNamedObject {
      */
     public Interface(String name, String service, long losttime, long regainedtime) {
         setName(name);
-        m_services = new ArrayList();
+        m_services = new ArrayList<Service>();
         Service svc;
         if (service != null) {
             svc = new Service(service);
@@ -188,7 +186,7 @@ public class Interface extends StandardNamedObject {
      *            Name of the interface.
      */
     public Interface(String name) {
-        m_services = new ArrayList();
+        m_services = new ArrayList<Service>();
         setName(name);
     }
 
@@ -198,9 +196,9 @@ public class Interface extends StandardNamedObject {
      * @param services
      *            Services for this interface to be set.
      */
-    public Interface(ArrayList services) {
+    public Interface(ArrayList<Service> services) {
         if (services == null)
-            m_services = new ArrayList();
+            m_services = new ArrayList<Service>();
         else
             m_services = services;
     }
@@ -210,7 +208,7 @@ public class Interface extends StandardNamedObject {
      * 
      * @return Services to be set.
      */
-    public List getServices() {
+    public List<Service> getServices() {
         return m_services;
     }
 
@@ -337,13 +335,12 @@ public class Interface extends StandardNamedObject {
     public long getDownTime(long currentTime, long rollingWindow) {
         long outageTime = 0;
         if (m_services != null && m_services.size() > 0) {
-            Iterator svcIter = m_services.listIterator();
-            while (svcIter.hasNext()) {
-                Service service = (Service) svcIter.next();
-                long down = service.getDownTime(currentTime, rollingWindow);
-                if (down > 0)
-                    outageTime += down;
-            }
+        	for (Service service : m_services) {
+				long down = service.getDownTime(currentTime, rollingWindow);
+				if (down > 0) {
+					outageTime += down;
+				}
+			}
         }
         return outageTime;
     }
@@ -363,12 +360,11 @@ public class Interface extends StandardNamedObject {
     public int getServiceAffectCount() {
         int count = 0;
         if (m_services != null && m_services.size() > 0) {
-            ListIterator lstIter = m_services.listIterator();
-            while (lstIter.hasNext()) {
-                Service service = (Service) lstIter.next();
-                if (service.getOutages().size() > 0)
-                    count++;
-            }
+        	for (Service service : m_services) {
+				if (service.getOutages().size() > 0) {
+					count++;
+				}
+			}
         }
         return count;
     }
