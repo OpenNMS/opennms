@@ -329,11 +329,7 @@ public class TemporaryDatabase implements DataSource {
         return m_dataSource.getConnection();
     }
 
-    public void update(String sql) {
-        update(sql, new Object[0]);
-    }
-
-    public void update(String stmt, Object[] values) {
+    public void update(String stmt, Object... values) {
     // StringBuffer buf = new StringBuffer("[");
     // for(int i = 0; i < values.length; i++) {
     // if (i != 0)
