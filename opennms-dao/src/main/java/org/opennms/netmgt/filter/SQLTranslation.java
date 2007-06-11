@@ -41,15 +41,11 @@
 
 package org.opennms.netmgt.filter;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
 import org.opennms.netmgt.filter.analysis.DepthFirstAdapter;
@@ -66,7 +62,6 @@ import org.opennms.netmgt.filter.node.AIplikeExprPart;
 import org.opennms.netmgt.filter.node.ALessThanEqualExprPart;
 import org.opennms.netmgt.filter.node.ALessThanExprPart;
 import org.opennms.netmgt.filter.node.ALikeExprPart;
-import org.opennms.netmgt.filter.node.ATildelikeExprPart;
 import org.opennms.netmgt.filter.node.ANotEqualExprPart;
 import org.opennms.netmgt.filter.node.ANotExprPart;
 import org.opennms.netmgt.filter.node.AOctetListOctet;
@@ -75,6 +70,7 @@ import org.opennms.netmgt.filter.node.AOctetRangeOctet;
 import org.opennms.netmgt.filter.node.AOrRule;
 import org.opennms.netmgt.filter.node.AStarOctet;
 import org.opennms.netmgt.filter.node.AStringCompareRight;
+import org.opennms.netmgt.filter.node.ATildelikeExprPart;
 import org.opennms.netmgt.filter.node.Start;
 
 /**
@@ -113,12 +109,12 @@ public class SQLTranslation extends DepthFirstAdapter {
     /**
      * The list of tables required to create the approriate SQL statement
      */
-    private List m_tables;
+    private List<Table> m_tables;
 
     /**
      * The list of columns to be returned by the SQL.
      */
-    private List m_selectList;
+    private List<String> m_selectList;
 
     /**
      * A modifier on the selectList (like 'DISTINCT')
@@ -156,7 +152,7 @@ public class SQLTranslation extends DepthFirstAdapter {
      */
     private String constructJoin() {
         StringBuffer joinBuf = new StringBuffer();
-        Iterator i = m_tables.iterator();
+        Iterator<Table> i = m_tables.iterator();
         while (i.hasNext()) {
             Table t = (Table) i.next();
             String expr = m_schemaFactory.constructJoinExprForTable(t);
@@ -325,13 +321,13 @@ public class SQLTranslation extends DepthFirstAdapter {
         
         m_node = node;
 
-        m_selectList = new ArrayList();
+        m_selectList = new ArrayList<String>();
 
         m_from = new StringBuffer(" FROM ");
 
         m_where = new StringBuffer(" WHERE (");
 
-        m_tables = new ArrayList(m_schemaFactory.getTableCount());
+        m_tables = new ArrayList<Table>(m_schemaFactory.getTableCount());
         setDefaultTranslation();
     }
 
