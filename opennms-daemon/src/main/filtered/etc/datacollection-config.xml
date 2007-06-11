@@ -21,6 +21,12 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)"
+                  resourceLabel="${diskIODevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <groups>
       <!-- data from standard (mib-2) sources -->
       <group name="mib2-interfaces" ifType="all">
@@ -543,6 +549,13 @@
         <mibObj oid=".1.3.6.1.4.1.2021.11.56" instance="0" alias="CpuRawInterrupt" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.57" instance="0" alias="IORawSent" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.58" instance="0" alias="IORawReceived" type="counter" />
+      </group>
+      <group name="ucd-diskio" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.2" instance="diskIOIndex" alias="diskIODevice" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.3" instance="diskIOIndex" alias="diskIONRead" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.4" instance="diskIOIndex" alias="diskIONWritten" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.5" instance="diskIOIndex" alias="diskIOReads" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.6" instance="diskIOIndex" alias="diskIOWrites" type="counter" />
       </group>
 
       <!-- Netbotz MIBs -->
@@ -1226,6 +1239,7 @@
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-diskio</includeGroup>
         </collect>
       </systemDef>
 
@@ -1238,6 +1252,7 @@
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-diskio</includeGroup>
         </collect>
       </systemDef>
 
