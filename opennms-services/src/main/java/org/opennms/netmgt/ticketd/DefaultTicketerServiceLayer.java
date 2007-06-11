@@ -79,8 +79,9 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         Assert.state(m_ticketerPlugin != null, "ticketPlugin property must be set");
     }
 
-    /**
-     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer.cancelTicketForAlarm(int, String)
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#cancelTicketForAlarm(int, java.lang.String)
      */
 	public void cancelTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
@@ -101,9 +102,10 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         m_ticketerPlugin.saveOrUpdate(ticket);
     }
     
-    
-    /**
-     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer.closeTicketForAlarm(int, String)
+
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#closeTicketForAlarm(int, java.lang.String)
      */
 	public void closeTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
@@ -114,9 +116,10 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 		m_alarmDao.saveOrUpdate(alarm);
 	}
 
-    /**
-     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer.createTicketForAlarm(int)
-     */
+	/*
+	 * (non-Javadoc)
+	 * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#createTicketForAlarm(int)
+	 */
 	public void createTicketForAlarm(int alarmId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
@@ -131,6 +134,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 
 	/**
 	 * Called from API implemented method after successful retrieval of Alarm.
+	 * 
 	 * @param alarm OpenNMS Model class alarm
 	 * @return OpenNMS Ticket with contents of alarm.
 	 * TODO: Add alarm attributes to Ticket.
@@ -146,8 +150,9 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     }
 
     
-    /**
-     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer.updateTicketForAlarm(int, String)
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#updateTicketForAlarm(int, java.lang.String)
      */
 	public void updateTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
