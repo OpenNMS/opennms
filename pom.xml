@@ -758,6 +758,19 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
+    <profile>
+      <id>generic-postgres-8.2</id>
+      <activation>
+        <file>
+          <exists>/usr/include/postgresql/8.2/server/postgres.h</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.postgresql.include.dir>/usr/include/postgresql/8.2/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+
     <!-- Solaris -->
     <!--
          This is for the PostgreSQL package that ships with Solaris 10
