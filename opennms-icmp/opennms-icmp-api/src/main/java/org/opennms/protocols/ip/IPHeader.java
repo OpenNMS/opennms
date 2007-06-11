@@ -424,7 +424,7 @@ public class IPHeader extends Object {
          * The list of addresses for the packet to hit on it's way to it's
          * destination
          */
-        protected List m_addrs;
+        protected List<IPv4Address> m_addrs;
 
         /**
          * Adds an address to the end of the set of addresses to hit on its lan
@@ -470,7 +470,7 @@ public class IPHeader extends Object {
             dest[offset++] = (byte) bytesRequired();
             dest[offset++] = (byte) 4;
 
-            Iterator iter = m_addrs.iterator();
+            Iterator<IPv4Address> iter = m_addrs.iterator();
             while (iter.hasNext()) {
                 int addr = ((IPv4Address) iter.next()).getAddress();
                 for (int i = 3; i >= 0; i++)
@@ -485,7 +485,7 @@ public class IPHeader extends Object {
          */
         RouteOption(byte code) {
             super(code);
-            m_addrs = new ArrayList(9);
+            m_addrs = new ArrayList<IPv4Address>(9);
         }
 
         /**
@@ -505,7 +505,7 @@ public class IPHeader extends Object {
             if (addrs.length > 9)
                 throw new IndexOutOfBoundsException("Route Option List Cannot Exceed 9 Addresses");
 
-            m_addrs = new ArrayList(9);
+            m_addrs = new ArrayList<IPv4Address>(9);
             for (int i = 0; i < addrs.length; i++)
                 m_addrs.add(addrs[i]);
         }
@@ -522,13 +522,13 @@ public class IPHeader extends Object {
          *                Thrown if the number of addresses is to large for the
          *                option
          */
-        RouteOption(byte code, List addrs) {
+        RouteOption(byte code, List<IPv4Address> addrs) {
             super(code);
             if (addrs.size() > 9)
                 throw new IndexOutOfBoundsException("Route Option List Cannot Exceed 9 Addresses");
 
-            Iterator iter = addrs.iterator();
-            m_addrs = new ArrayList(9);
+            Iterator<IPv4Address> iter = addrs.iterator();
+            m_addrs = new ArrayList<IPv4Address>(9);
             while (iter.hasNext())
                 m_addrs.add(iter.next());
         }
@@ -540,7 +540,7 @@ public class IPHeader extends Object {
          * 
          * @return An iterator that can be used to operate on the list.
          */
-        public Iterator iterator() {
+        public Iterator<IPv4Address> iterator() {
             return m_addrs.iterator();
         }
 
@@ -598,7 +598,7 @@ public class IPHeader extends Object {
          *                Thrown if the number of addresses is to large for the
          *                option
          */
-        public LooseSourceRouteOption(List addrs) {
+        public LooseSourceRouteOption(List<IPv4Address> addrs) {
             super((byte) 0x83, addrs);
         }
     }
@@ -649,7 +649,7 @@ public class IPHeader extends Object {
          *                Thrown if the number of addresses is to large for the
          *                option
          */
-        public StrictSourceRouteOption(List addrs) {
+        public StrictSourceRouteOption(List<IPv4Address> addrs) {
             super((byte) 0x89, addrs);
         }
     }
@@ -712,7 +712,7 @@ public class IPHeader extends Object {
          *                Thrown if the number of addresses is to large for the
          *                option
          */
-        public RouteRecordOption(List addrs) {
+        public RouteRecordOption(List<IPv4Address> addrs) {
             super((byte) 0x7, addrs);
         }
     }
@@ -1239,17 +1239,17 @@ public class IPHeader extends Object {
      * 
      * @return The list of current options.
      */
-    public List getOptions() throws InstantiationException {
+    public List<Option> getOptions() throws InstantiationException {
         //
         // check for null data first
         //
         if (m_options == null)
-            return new ArrayList();
+            return new ArrayList<Option>();
 
         //
         // Process the options
         //
-        List options = new ArrayList();
+        List<Option> options = new ArrayList<Option>();
         int offset = 0;
         while (offset < m_options.length) {
             switch ((int) m_options[offset++] & 0xff) {
