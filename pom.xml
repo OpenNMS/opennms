@@ -286,6 +286,7 @@ opennms.home = ${opennms.home}
             </property>
           </systemProperties>
 	  <forkMode>pertest</forkMode>
+          <argLine>-Xmx1024m</argLine>
           <includes>
             <include>**/*Test.java</include>
           </includes>          
