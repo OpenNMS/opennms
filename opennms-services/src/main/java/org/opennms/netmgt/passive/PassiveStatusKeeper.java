@@ -121,7 +121,6 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     }
 
     protected void onStop() {
-        setStatus(STOPPED);
         m_initialized = false;
         m_eventMgr = null;
         m_statusTable = null;

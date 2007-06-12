@@ -47,6 +47,8 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, Initializi
     private int m_status;
 
     private String m_name;
+    
+    private Object m_statusLock = new Object();
 
     abstract protected void onInit();
 
@@ -65,12 +67,39 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, Initializi
         setStatus(START_PENDING);
     }
 
-    protected synchronized void setStatus(int status) {
-        m_status = status;
+    protected void setStatus(int status) {
+        synchronized (m_statusLock) {
+            m_status = status;
+            m_statusLock.notifyAll();
+        }
+    }
+    
+    protected void waitForStatus(int status, long timeout) throws InterruptedException {
+        synchronized (m_statusLock) {
+            
+            long last = System.currentTimeMillis();
+            long waitTime = timeout;
+            while (status != m_status && waitTime > 0) {
+                m_statusLock.wait(waitTime);
+                long now = System.currentTimeMillis();
+                waitTime -= (now - last);
+            }
+        
+        }
     }
 
-    public synchronized int getStatus() {
-        return m_status;
+    protected void waitForStatus(int status) throws InterruptedException {
+        synchronized (m_statusLock) {
+            while (status != m_status) {
+                m_statusLock.wait();
+            }
+        }
+    }
+
+    public int getStatus() {
+        synchronized (m_statusLock) {
+            return m_status;
+        }
     }
 
     public String getStatusText() {
@@ -82,19 +111,19 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, Initializi
     }
 
     protected synchronized boolean isStartPending() {
-        return m_status == START_PENDING;
+        return getStatus() == START_PENDING;
     }
 
     protected synchronized boolean isRunning() {
-        return m_status == RUNNING;
+        return getStatus() == RUNNING;
     }
 
     protected synchronized boolean isPaused() {
-        return m_status == PAUSED;
+        return getStatus() == PAUSED;
     }
 
     protected synchronized boolean isStarting() {
-        return m_status == STARTING;
+        return getStatus() == STARTING;
     }
 
     protected Category log() {

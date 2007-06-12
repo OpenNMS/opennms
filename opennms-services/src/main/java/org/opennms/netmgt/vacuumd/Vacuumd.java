@@ -162,7 +162,6 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     public void run() {
         ThreadCategory.setPrefix(getName());
         log().info("Vacuumd scheduling started");
-        setStatus(RUNNING);
 
         long now = System.currentTimeMillis();
         long period = getVacuumdConfig().getPeriod();
