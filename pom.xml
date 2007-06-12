@@ -1227,11 +1227,6 @@ opennms.home = ${opennms.home}
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>1.8.0.4</version>
-      </dependency>
-      <dependency>
         <groupId>httpunit</groupId>
         <artifactId>httpunit</artifactId>
         <version>1.6.1</version>

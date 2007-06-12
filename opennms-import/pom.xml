@@ -123,11 +123,6 @@
       <artifactId>concurrent</artifactId>
     </dependency>
     <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
       <scope>test</scope>
