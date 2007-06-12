@@ -281,20 +281,15 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // update the status
-        synchronized (this) {
-            if (!isStarting()) {
-                return;
-            }
-
-            log.debug("run: setting status to running...");
-            setStatus(RUNNING);
+        
+        try {
+            waitForStatus(RUNNING);
+        } catch (InterruptedException e1) {
+            // ignore
         }
-
-        log.debug("run: DHCPD client daemon running...");
-
+        
+        log().debug("run: DHCPD client daemon running...");
+        
         /*
          * Begin accepting connections from clients
          * For each new client create new DHCP Client Handler
@@ -308,7 +303,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
                 synchronized (this) {
                     if (isPaused()) {
                         try {
-                            wait();
+                            waitForStatus(RUNNING);
                         } catch (InterruptedException e) {
                             // ignore
                         }
@@ -325,7 +320,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
                 }
 
                 // Add the client's new socket connection to the client list
-                log.debug("run: got connection request...creating client handler...");
+                log().debug("run: got connection request...creating client handler...");
 
                 try {
                     Client clnt = new Client(sock);
@@ -333,16 +328,15 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
                     clnt.addObserver(this);
                     clnt.start();
                 } catch (IOException ioE) {
-                    log.error("I/O exception occured creating client handler.", ioE);
+                    log().error("I/O exception occured creating client handler.", ioE);
                 }
             }
         } catch (IOException ioE) {
-            log.error("I/O exception occured processing incomming request", ioE);
+            log().error("I/O exception occured processing incomming request", ioE);
         } catch (Throwable t) {
-            log.error("An undeclared throwable was caught", t);
+            log().error("An undeclared throwable was caught", t);
         } finally {
-            log.debug("run: DHCPD client daemon run completed setting status to stopped");
-            setStatus(STOPPED);
+            log().debug("run: DHCPD client daemon run completed setting status to stopped");
         }
 
     }

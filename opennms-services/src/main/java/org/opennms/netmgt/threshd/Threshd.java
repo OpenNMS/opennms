@@ -164,12 +164,6 @@ public final class Threshd extends AbstractServiceDaemon {
         //
         createBroadcastEventProcessor();
 
-        // Set the status of the service as running.
-        //
-        setStatus(RUNNING);
-
-        if (log().isDebugEnabled())
-            log().debug("start: Threshd running");
     }
 
     private void createBroadcastEventProcessor() {
