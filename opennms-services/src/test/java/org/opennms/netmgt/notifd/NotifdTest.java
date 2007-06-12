@@ -91,7 +91,7 @@ public class NotifdTest extends NotificationsTestCase {
          * when going through the notification names.
          */
         
-        verifyAnticipated(finished, 500);
+        verifyAnticipated(finished, 1000);
         
         
     }
@@ -106,7 +106,7 @@ public class NotifdTest extends NotificationsTestCase {
         MockEventUtil.setEventTime(e, date);
         m_eventMgr.sendEventToListeners(e);
         
-        verifyAnticipated(finished, 500);
+        verifyAnticipated(finished, 1000);
         
     }
     
@@ -135,7 +135,7 @@ public class NotifdTest extends NotificationsTestCase {
         //bring node down now
         m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
 
-        verifyAnticipated(finishedDowns, 2000);
+        verifyAnticipated(finishedDowns, 3000);
         
         m_anticipator.reset();
         
@@ -146,7 +146,7 @@ public class NotifdTest extends NotificationsTestCase {
         //bring node back up now
         m_eventMgr.sendEventToListeners(node.createUpEvent(upDate));
 
-        verifyAnticipated(finishedUps, 2000);
+        verifyAnticipated(finishedUps, 3000);
 
     }
     
@@ -161,7 +161,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
 
-        verifyAnticipated(finished, 500);
+        verifyAnticipated(finished, 1000);
 
     }
     
@@ -177,7 +177,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         m_eventMgr.sendEventToListeners(svc.createDownEvent(date));
         
-        verifyAnticipated(endTime, 500);
+        verifyAnticipated(endTime, 1000);
         
     }
     
@@ -192,7 +192,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         m_eventMgr.sendEventToListeners(iface.createDownEvent(now));
 
-        verifyAnticipated(endTime, 2000);
+        verifyAnticipated(endTime, 3000);
     }
     
     public void testManualAcknowledge1() throws Exception {
@@ -207,7 +207,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         m_db.acknowledgeNoticesForEvent(e);
         
-        verifyAnticipated(0, 0, 5000);
+        verifyAnticipated(0, 0, 7000);
     }
 
     public void testManualAcknowledge2() throws Exception {
@@ -225,7 +225,7 @@ public class NotifdTest extends NotificationsTestCase {
         m_db.acknowledgeNoticesForEvent(event);
         sleep(5000);
 
-        verifyAnticipated(finishedDowns, 500);
+        verifyAnticipated(finishedDowns, 1000);
                 
     }
 
@@ -250,7 +250,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         m_eventMgr.sendEventToListeners(upEvent);
                 
-        verifyAnticipated(endTime, 500, 5000);
+        verifyAnticipated(endTime, 1000, 5000);
     }
 
     public void testAutoAcknowledge2() throws Exception {
@@ -272,7 +272,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         m_eventMgr.sendEventToListeners(upEvent);
                 
-        verifyAnticipated(endTime, 500, 5000);
+        verifyAnticipated(endTime, 1000, 5000);
                 
     }
     
@@ -296,7 +296,7 @@ public class NotifdTest extends NotificationsTestCase {
         anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "RESOLVED: All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", date, 0);
         long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "The interface which was previously down is now up.", "UpGroup", date, 0);
         m_eventMgr.sendEventToListeners(upEvent);
-        verifyAnticipated(endTime, 500, 5000);
+        verifyAnticipated(endTime, 1000, 5000);
     }
 
     public void testBug1114() throws Exception {
@@ -317,7 +317,7 @@ public class NotifdTest extends NotificationsTestCase {
         m_eventMgr.sendEventToListeners(event);
 
         // XXX Needing to decrease the end time is bogus
-        verifyAnticipated(endTime - 5000, 500);
+        verifyAnticipated(endTime - 5000, 1000);
     }
     
     public void testRebuildParameterMap() throws Exception {
@@ -414,7 +414,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         m_eventMgr.sendEventToListeners(MockEventUtil.createNodeEvent("Test", "uei.opennms.org/test/roleTestEvent", node));
 
-        verifyAnticipated(finishedDowns, 500);
+        verifyAnticipated(finishedDowns, 1000);
         
         m_anticipator.reset();
         
