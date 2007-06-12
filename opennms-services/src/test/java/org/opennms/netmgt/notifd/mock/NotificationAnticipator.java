@@ -103,7 +103,7 @@ public class NotificationAnticipator {
 				notifyAll();
 			} else {
 				MockNotification[] n = new MockNotification[] { notification, mn };
-				if (difference < 0) {
+				if (difference > 0) {
 					MockUtil.println("Received early notification: " + mn);
 					m_earlyArrival.add(n);
 				} else {
