@@ -1,4 +1,4 @@
-create or replace function iplike(text, text) returns text as '
+create or replace function iplike(text, text) returns boolean as '
   declare
 	i_ipaddress	alias for $1;
 	i_rule		alias for $2;
