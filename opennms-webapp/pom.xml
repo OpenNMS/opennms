@@ -256,10 +256,6 @@
       <artifactId>jrobin</artifactId>
     </dependency>
     <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-    </dependency>
-    <dependency>
       <groupId>httpunit</groupId>
       <artifactId>httpunit</artifactId>
       <scope>test</scope>

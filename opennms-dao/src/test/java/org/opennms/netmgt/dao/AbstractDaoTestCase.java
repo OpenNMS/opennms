@@ -41,7 +41,6 @@ import javax.sql.DataSource;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import org.hsqldb.jdbc.jdbcDataSource;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -184,53 +183,6 @@ public class AbstractDaoTestCase extends TestCase {
         
     }
     
-    class HSQLDB extends DB {
-
-        public void createDatabase() throws Exception {
-            initializeDatabase();
-        }
-
-        public void dropDatabase() {
-            try {
-                JdbcTemplate template = new JdbcTemplate(getDataSource());
-                template.execute("SHUTDOWN");
-            } catch (Exception e) {
-                MockUtil.println("Error dropping Database: "+e);
-            }
-
-        }
-
-        public DataSource getDataSource() {
-        	
-        	jdbcDataSource ds = new jdbcDataSource();
-        	ds.setDatabase("jdbc:hsqldb:mem:opennms");
-        	ds.setUser("SA");
-        	ds.setPassword("");
-        	return ds;
-        	
-        	
-        }
-
-        public String getHibernateDialect() {
-            return "org.hibernate.dialect.HSQLDialect";
-        }
-
-        public DataSource getPoolingDataSource() {
-            ComboPooledDataSource pds = new ComboPooledDataSource();
-            try {
-                pds.setDriverClass("org.hsqldb.jdbcDriver");
-            } catch (PropertyVetoException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            pds.setJdbcUrl("jdbc:hsqldb:mem:opennms");
-            pds.setPassword("");
-            pds.setUser("SA");
-            return pds;
-        }
-        
-    }
-
 
     protected TransactionTemplate m_transTemplate;
     DaoTestConfig m_testConfig;
@@ -264,7 +216,6 @@ public class AbstractDaoTestCase extends TestCase {
         MockLogAppender.setupLogging();
 
         m_db = new PostgresqlDB();
-        //m_db = new HSQLDB();
         
         if (isCreateDb()) {
             m_db.dropDatabase();
