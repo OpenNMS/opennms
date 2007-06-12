@@ -112,7 +112,7 @@ public class CommandLineServlet extends HttpServlet {
 
 		} catch (Exception e) {
 			log.error(e);
-			os.write("An error occours.");
+			os.write("An error occurred.");
 		}finally{
 			os.write("</font>" +
 					"<br>" +
