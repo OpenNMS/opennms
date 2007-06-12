@@ -625,6 +625,7 @@ public class PollablesTest extends TestCase {
         assertEquals(2, m_db.countRows(ifOutageOnNode1));
         assertEquals(0, m_db.countRows(ifOutageOnNode2));
         
+        m_db.reparentInterface(pDot1.getIpAddr(), pDot1.getNodeId(), pNode2.getNodeId());
         pDot1.reparentTo(pNode2);
         
         assertEquals(0, m_db.countRows(ifOutageOnNode1));

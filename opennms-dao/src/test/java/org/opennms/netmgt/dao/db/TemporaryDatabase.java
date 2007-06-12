@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;
@@ -330,14 +331,14 @@ public class TemporaryDatabase implements DataSource {
     }
 
     public void update(String stmt, Object... values) {
-    // StringBuffer buf = new StringBuffer("[");
-    // for(int i = 0; i < values.length; i++) {
-    // if (i != 0)
-    // buf.append(", ");
-    // buf.append(values[i]);
-    // }
-    // buf.append("]");
-    // MockUtil.println("Executing "+stmt+" with values "+buf);
+        StringBuffer buf = new StringBuffer("[");
+        for(int i = 0; i < values.length; i++) {
+            if (i != 0)
+                buf.append(", ");
+            buf.append(values[i]);
+        }
+        buf.append("]");
+        MockUtil.println("Executing "+stmt+" with values "+buf);
         
         getJdbcTemplate().update(stmt, values);
     }

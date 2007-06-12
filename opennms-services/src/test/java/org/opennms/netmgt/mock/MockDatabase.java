@@ -364,6 +364,19 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
      * @param nodeId2
      */
     public void reparentInterface(String ipAddr, int oldNode, int newNode) {
+        update("delete from snmpInterface where id in (" +
+                "select oldif.id from snmpinterface as oldIf " +
+                "    where exists( " +
+                "        select * from snmpinterface as newIf " +
+                "        join ipinterface ip " +
+                "          on oldif.id = ip.snmpinterfaceid " +
+                "        where " +
+                "           newIf.nodeId = ? and " +
+                "           oldIf.nodeId = ? and " +
+                "           ip.ipaddr = ? and " +
+                "           oldIf.snmpifindex = newif.snmpifindex " +
+                "       )" +
+                ")", newNode, oldNode, ipAddr);
         update("update snmpInterface set nodeId = ? where id in (select snmpInterfaceId from ipInterface where nodeId = ? and ipAddr = ?)", newNode, oldNode, ipAddr);
         update("update ipInterface set nodeId = ? where nodeId = ? and ipAddr = ?", newNode, oldNode, ipAddr);
         update("update ifServices set nodeId = ? where nodeId = ? and ipAddr = ?", newNode, oldNode, ipAddr);
