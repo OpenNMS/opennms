@@ -305,6 +305,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // send to listeners who are interested in this event uei
+        //Loop to get partial wildcard "directory" matches
+        while (uei.length() > 0){
         List listenerList = (List) m_ueiListeners.get(uei);
         if (listenerList != null) {
             listenerIter = listenerList.iterator();
@@ -315,7 +317,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
                 try {
                     listenerThread.getQueue().add(event);
                     if (log.isDebugEnabled())
-                        log.debug("Queued event to listener: " + listener.getName());
+                        log.debug("Queued event "+uei+" to listener: " + listener.getName());
                 } catch (FifoQueueException fe) {
                     log.error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), fe);
                 } catch (InterruptedException ie) {
@@ -325,6 +327,17 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         } else {
             if (log.isDebugEnabled())
                 log.debug("No listener interested in event: " + uei);
+        }
+        //Try wildcards: Find / before last character
+        int i = uei.lastIndexOf("/",uei.length()-2);
+        if (i > 0){
+           //Split at "/", including the /
+           uei = uei.substring (0, i+1);
+        } else {
+           //No more wildcards to match
+           uei="";
+           break;
+        }
         }
     }
 

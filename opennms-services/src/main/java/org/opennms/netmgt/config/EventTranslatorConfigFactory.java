@@ -330,7 +330,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		boolean matches(Event e) {
 			// short circuit if the eui doesn't match
 			if (!ueiMatches(e)) {
-                log().debug("TransSpec.matches: Comparing spec UEI: "+m_spec.getUei()+" with event UEI: "+e.getUei());
+                log().debug("TransSpec.matches: No match comparing spec UEI: "+m_spec.getUei()+" with event UEI: "+e.getUei());
                 return false;
             }
 			
@@ -346,7 +346,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 		
 		private boolean ueiMatches(Event e) {
-			return m_spec.getUei().equals(e.getUei());
+			return e.getUei().equals(m_spec.getUei())
+                           || m_spec.getUei().endsWith("/")
+                           && e.getUei().startsWith(m_spec.getUei());
 		}
 		
 		
@@ -462,8 +464,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 				BeanWrapperImpl bean = new BeanWrapperImpl(targetEvent);
 				bean.setPropertyValue(getAttributeName(), value);
 			} catch(FatalBeanException e) {
-				log().error("Unable to set value for attribute "+getAttributeName()+"to value "+value);
-				throw new TranslationFailedException("Unable to set value for attribute "+getAttributeName()+"to value "+value);
+				log().error("Unable to set value for attribute "+getAttributeName()+"to value "+value+
+                         " Exception:" +e);
+				throw new TranslationFailedException("Unable to set value for attribute "+getAttributeName()+" to value "+value);
 			}
 		}
 		
