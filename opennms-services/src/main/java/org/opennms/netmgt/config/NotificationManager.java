@@ -75,6 +75,9 @@ import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
 
 /**
@@ -129,11 +132,20 @@ public abstract class NotificationManager {
     public boolean hasUei(String uei) throws IOException, MarshalException, ValidationException {
         update();
     
+        Category log = ThreadCategory.getInstance(getClass());
+
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification notif = (Notification) e.nextElement();
-    
+
+            log.debug("hasUei: Checking UEI " + uei + " against " + notif.getUei());
+  
             if (uei.equals(notif.getUei()) || "MATCH-ANY-UEI".equals(notif.getUei())) {
-                return true;
+                 return true;
+            } else if (notif.getUei().charAt(0) == '~') {
+               if (uei.matches(notif.getUei().substring(1))) {
+                       return true;
+               }
+    
             }
         }
     
@@ -145,12 +157,36 @@ public abstract class NotificationManager {
         List<Notification> notifList = new ArrayList<Notification>();
         Notification[] notif = null;
         boolean matchAll = getConfigManager().getNotificationMatch();
+        Category log = ThreadCategory.getInstance(getClass());
     
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification curNotif = (Notification) e.nextElement();
     
-            if (curNotif.getStatus().equals("on") && (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) && (nodeInterfaceServiceValid(curNotif, event) || !event.hasNodeid())) {
+            boolean curHasUei = false;
+            boolean curHasSeverity = false;
 
+            log.debug("Checking " + event.getUei() + " against " + curNotif.getUei());
+ 
+            if (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) {
+               curHasUei = true;
+            } else if (curNotif.getUei().charAt(0) == '~') {
+               if (event.getUei().matches(curNotif.getUei().substring(1))) {
+                       curHasUei = true;
+               }
+            }
+
+            /**
+             * Check if event severity matches pattern in notification
+             */
+            log.debug("Checking event severity: " + event.getSeverity() + " against notification severity: " + curNotif.getEventSeverity());
+            // parameter is optional, return true if not set
+            if (curNotif.getEventSeverity() == null) {
+               curHasSeverity = true;
+            } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().toLowerCase())) {
+               curHasSeverity = true;
+            }
+           
+            if (curNotif.getStatus().equals("on") && curHasUei && curHasSeverity && (nodeInterfaceServiceValid(curNotif, event) || !event.hasNodeid())) {
                 boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
 
                 if (!parmsmatched) {
