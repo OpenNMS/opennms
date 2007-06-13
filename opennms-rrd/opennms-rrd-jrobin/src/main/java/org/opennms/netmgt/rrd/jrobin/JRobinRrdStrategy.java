@@ -162,14 +162,15 @@ public class JRobinRrdStrategy implements RrdStrategy {
     /**
      * Fetch the last value from the JRobin RrdDb file.
      */
-    public Double fetchLastValue(String fileName, int interval) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
+    public Double fetchLastValue(String fileName, String ds, int interval) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
             long now = System.currentTimeMillis();
             long collectTime = (now - (now % interval)) / 1000L;
             rrd = new RrdDb(fileName);
             FetchData data = rrd.createFetchRequest("AVERAGE", collectTime, collectTime).fetchData();
-            double[] vals = data.getValues(0);
+            log().debug(data.toString());
+            double[] vals = data.getValues(ds);
             if (vals.length > 0) {
                 return new Double(vals[vals.length - 1]);
             }
@@ -189,7 +190,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         }
     }
     
-    public Double fetchLastValueInRange(String fileName, int interval, int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
+    public Double fetchLastValueInRange(String fileName, String ds, int interval, int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
         	rrd = new RrdDb(fileName);
@@ -202,7 +203,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
             
             FetchData data = rrd.createFetchRequest("AVERAGE", earliestUpdateTime, latestUpdateTime).fetchData();
             
-		    double[] vals = data.getValues(0);
+		    double[] vals = data.getValues(ds);
 		    long[] times = data.getTimestamps();
 		    
 		    // step backwards through the array of values until we get something that's a number

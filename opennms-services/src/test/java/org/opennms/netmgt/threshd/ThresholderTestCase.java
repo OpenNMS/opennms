@@ -223,9 +223,10 @@ public class ThresholderTestCase extends TestCase {
 	    ensureEventAfterFetches(count, null, null);
 	}
 
-	protected void setupFetchSequence(double... values) throws NumberFormatException, RrdException {
-        for (double value : values) {
-            expect(m_rrdStrategy.fetchLastValue(eq(m_fileName), eq(m_step))).andReturn(value);
+	protected void setupFetchSequence(String ds, double... values) throws NumberFormatException, RrdException {
+        // FIXME ds must be used like eq(m_ds)
+		for (double value : values) {
+            expect(m_rrdStrategy.fetchLastValue(eq(m_fileName), eq(ds), eq(m_step))).andReturn(value);
         }
 	}
 

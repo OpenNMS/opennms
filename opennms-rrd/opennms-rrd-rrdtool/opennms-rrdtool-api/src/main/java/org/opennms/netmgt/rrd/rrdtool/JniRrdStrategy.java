@@ -199,7 +199,7 @@ public class JniRrdStrategy implements RrdStrategy {
      * Fetches the last value directly from the rrd file using the JNI
      * Interface.
      */
-    public Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException {
+    public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
         checkState("fetchLastValue");
 
         /*
@@ -255,19 +255,25 @@ public class JniRrdStrategy implements RrdStrategy {
 
         // String at index 1 contains the RRDs datasource names
         //
-        String dsName = fetchStrings[1].trim();
+        String[] dsNames = fetchStrings[1].split("\\s");
+        int dsIndex = 0;
+        for (int i = 0; i < dsNames.length; i++) {
+        	if (dsNames[i].equals(ds)) dsIndex = i;
+        }
+        String dsName = dsNames[dsIndex].trim();
 
         // String at index 2 contains fetched values for the current time
         // Convert value string into a Double
         //
+        String[] dsValues = fetchStrings[2].split("\\s");
         Double dsValue = null;
-        if (fetchStrings[2].trim().equalsIgnoreCase("nan")) {
+        if (dsValues[dsIndex].trim().equalsIgnoreCase("nan")) {
             dsValue = new Double(Double.NaN);
         } else {
             try {
-                dsValue = new Double(fetchStrings[2].trim());
+                dsValue = new Double(dsValues[dsIndex].trim());
             } catch (NumberFormatException nfe) {
-                log().warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                log().warn("fetch: Unable to convert fetched value (" + dsValues[dsIndex].trim() + ") to Double for data source " + dsName);
                 throw nfe;
             }
         }
@@ -279,7 +285,7 @@ public class JniRrdStrategy implements RrdStrategy {
         return dsValue;
     }
 
-    public Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException {
+    public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         checkState("fetchLastValue");
 
         // Generate rrd_fetch() command through jrrd JNI interface in order to
@@ -345,24 +351,30 @@ public class JniRrdStrategy implements RrdStrategy {
 
         // String at index 1 contains the RRDs datasource names
         //
-        String dsName = fetchStrings[1].trim();
+        String[] dsNames = fetchStrings[1].split("\\s");
+        int dsIndex = 0;
+        for (int i = 0; i < dsNames.length; i++) {
+        	if (dsNames[i].equals(ds)) dsIndex = i;
+        }
+        String dsName = dsNames[dsIndex].trim();
 
         Double dsValue;
-        
+
         // Back through the RRD output until I get something interesting
         
         for(int i = fetchStrings.length - 2; i > 1; i--) {
-        	if ( fetchStrings[i].trim().equalsIgnoreCase("nan") ) {
+            String[] dsValues = fetchStrings[i].split("\\s");
+        	if ( dsValues[dsIndex].trim().equalsIgnoreCase("nan") ) {
         	    log().debug("fetchInRange: Got a NaN value - continuing back in time");
         	} else {
         		try {
-                    dsValue = new Double(fetchStrings[i].trim());
+                    dsValue = new Double(dsValues[dsIndex].trim());
                     if (log().isDebugEnabled()) {
                         log().debug("fetchInRange: fetch successful: " + dsName + "= " + dsValue);
                     }
                     return dsValue;
                 } catch (NumberFormatException nfe) {
-                    log().warn("fetchInRange: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                    log().warn("fetchInRange: Unable to convert fetched value (" + dsValues[dsIndex].trim() + ") to Double for data source " + dsName);
                     throw nfe;
                 }
           	}

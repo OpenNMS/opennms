@@ -233,9 +233,9 @@ public final class ThresholdEntity implements Cloneable {
                 }
 
                 if (latParms.getRange() == 0) {
-                    dsValue = RrdUtils.fetchLastValue(rrdFile.getAbsolutePath(), latParms.getInterval());
+                    dsValue = RrdUtils.fetchLastValue(rrdFile.getAbsolutePath(), datasource, latParms.getInterval());
                 } else {
-                    dsValue = RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), latParms.getInterval(), latParms.getRange());
+                    dsValue = RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), datasource, latParms.getInterval(), latParms.getRange());
                 }
             } else {
                 throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);

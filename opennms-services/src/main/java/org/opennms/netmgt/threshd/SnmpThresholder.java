@@ -59,6 +59,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
@@ -369,7 +370,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         Collection<String> requiredDatasources=threshold.getRequiredDatasources();
          Map<String, Double> values=new HashMap<String,Double>();
          for(String ds: requiredDatasources) {
-             File dsFile=new File(directory,ds+RrdUtils.getExtension());
+             File dsFile= ResourceTypeUtils.getRrdFileForDs(directory,ds);
              Double dsValue=null;
              if(dsFile.exists()) {
                  dsValue = getDataSourceValue(thresholdConfiguration, dsFile, ds);
@@ -554,12 +555,12 @@ public final class SnmpThresholder implements ServiceThresholder {
         		if (log().isDebugEnabled()) {
                     log().debug("Checking datasource '" + datasource + "' for values within " + thresholdConfiguration.getRange() + " milliseconds of last possible PDP with interval " + thresholdConfiguration.getInterval() + ".");
                 }
-        		dsValue = RrdUtils.fetchLastValueInRange(file.getAbsolutePath(), thresholdConfiguration.getInterval(), thresholdConfiguration.getRange());
+        		dsValue = RrdUtils.fetchLastValueInRange(file.getAbsolutePath(), datasource, thresholdConfiguration.getInterval(), thresholdConfiguration.getRange());
         	} else {
         		if (log().isDebugEnabled()) {
                     log().debug("Checking datasource '" + datasource + "' for value of last possible PDP only with interval " + thresholdConfiguration.getInterval() + ".");
                 }
-        		dsValue = RrdUtils.fetchLastValue(file.getAbsolutePath(), thresholdConfiguration.getInterval());
+        		dsValue = RrdUtils.fetchLastValue(file.getAbsolutePath(), datasource, thresholdConfiguration.getInterval());
         	}
         } catch (NumberFormatException e) {
             log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double: " + e);

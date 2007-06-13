@@ -82,7 +82,7 @@ public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
     
     public void testNormalValue() throws Exception {
         
-        setupFetchSequence(69.0, 79.0, 74.0, 74.0);
+        setupFetchSequence("cpuUtilization", 69.0, 79.0, 74.0, 74.0);
         
         
         replayMocks();
@@ -93,7 +93,7 @@ public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
     
     public void testBigValue() throws Exception {
         
-        setupFetchSequence(99.0, 98.0, 97.0, 96.0, 95.0);
+        setupFetchSequence("cpuUtilization", 99.0, 98.0, 97.0, 96.0, 95.0);
         
         replayMocks();
         ensureExceededAfterFetches("cpuUtilization", 3);
@@ -113,7 +113,7 @@ public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
                 98.0 // expect exceeded
         };
         
-        setupFetchSequence(values);
+        setupFetchSequence("cpuUtilization", values);
         
         replayMocks();
         ensureExceededAfterFetches("cpuUtilization", 3);

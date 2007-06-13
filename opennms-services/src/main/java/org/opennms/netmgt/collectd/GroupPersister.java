@@ -31,6 +31,10 @@
 //
 
 package org.opennms.netmgt.collectd;
+import java.io.File;
+import java.util.Properties;
+
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 
 public class GroupPersister extends BasePersister {
 
@@ -41,8 +45,27 @@ public class GroupPersister extends BasePersister {
 
     public void visitGroup(AttributeGroup group) {
         pushShouldPersist(group);
-        if (shouldPersist()) 
+        if (shouldPersist()) {
             createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
+            File path = new File(group.getResource().getResourceDir(getRepository()).getAbsolutePath());
+            Properties dsProperties = ResourceTypeUtils.getDsProperties(path); 
+            boolean save = false;
+            for (Object o : group.getAttributes()) {
+                Attribute a = (Attribute)o;
+                if (NumericAttributeType.supportsType(a.getType()) && !dsProperties.containsKey(a.getName())) {
+                    dsProperties.setProperty(a.getName(), group.getName());
+                    save = true;
+                }
+            }
+            try {
+                if (save) {
+                    File dsFile = new File(path.getAbsolutePath(), ResourceTypeUtils.DS_PROPERTIES_FILE);
+                    saveUpdatedProperties(dsFile, dsProperties);
+                }
+            } catch (Exception e) {
+                log().error("Unable to save DataSource Properties file" + e, e);
+            }
+        }
     }
 
 
