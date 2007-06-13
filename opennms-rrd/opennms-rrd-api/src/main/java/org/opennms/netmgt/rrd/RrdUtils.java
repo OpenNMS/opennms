@@ -281,14 +281,16 @@ public class RrdUtils {
      *            RRD file from which to fetch the data.
      * @param interval
      *            Thresholding interval (should equal RRD step size)
+     * @param ds
+     *            Name of the Data Source to be used
      * 
      * @return Retrived datasource value as a java.lang.Double
      * 
      * @throws NumberFormatException
      *             if the retrieved value fails to convert to a double
      */
-    public static Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException {
-        return getStrategy().fetchLastValue(rrdFile, interval);
+    public static Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
+        return getStrategy().fetchLastValue(rrdFile, ds, interval);
     }
 
     /**
@@ -304,14 +306,16 @@ public class RrdUtils {
      *            RRD file from which to fetch the data.
      * @param interval
      *            Thresholding interval (should equal RRD step size)
+     * @param ds
+     *            Name of the Data Source to be used
      * 
      * @return Retrived datasource value as a java.lang.Double
      * 
      * @throws NumberFormatException
      *             if the retrieved value fails to convert to a double
      */
-    public static Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException {
-        return getStrategy().fetchLastValueInRange(rrdFile, interval, range);
+    public static Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
+        return getStrategy().fetchLastValueInRange(rrdFile, ds, interval, range);
     }
     
     /**

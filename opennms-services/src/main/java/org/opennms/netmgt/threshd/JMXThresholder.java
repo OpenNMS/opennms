@@ -517,12 +517,12 @@ public abstract class JMXThresholder implements ServiceThresholder {
                         if (log.isDebugEnabled()) {
                             log.debug("checking values within " + range + " mS of last possible PDP");
                         }
-                        thisValue = RrdUtils.fetchLastValueInRange(dsFile.getAbsolutePath(), interval, range);
+                        thisValue = RrdUtils.fetchLastValueInRange(dsFile.getAbsolutePath(), ds, interval, range);
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug("checking value of last possible PDP only");
                         }
-                        thisValue = RrdUtils.fetchLastValue(dsFile.getAbsolutePath(), interval);
+                        thisValue = RrdUtils.fetchLastValue(dsFile.getAbsolutePath(), ds, interval);
                     }
                 } catch (NumberFormatException e) {
                     log.warn("Unable to convert retrieved value for datasource '" + ds + "' to a double, skipping evaluation.");

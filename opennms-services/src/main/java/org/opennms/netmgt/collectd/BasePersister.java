@@ -199,7 +199,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         push(resource.shouldPersist(m_params));
     }
 
-    private void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
+    protected void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
         if (!propertiesFile.getParentFile().isDirectory()) {
             log().info("Parent directory for properties file '" + propertiesFile.getParentFile().getAbsolutePath() + "' does not exist (or is not a directory).  Creating it.");
             if (!propertiesFile.getParentFile().mkdirs()) {

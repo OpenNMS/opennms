@@ -48,10 +48,14 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
 public class ResourceTypeUtils {
+	
+	public static String DS_PROPERTIES_FILE = "ds.properties";
+	
     /**
      * This class has only static methods.
      */
@@ -67,9 +71,19 @@ public class ResourceTypeUtils {
         Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>(files.length);
         for (File file : files) {
             String fileName = file.getName();
-            String dsName = fileName.substring(0, fileName.length() - suffixLength);
-    
-            attributes.add(new RrdGraphAttribute(dsName, relativePath, file.getName()));
+            if (isStoreByGroup()) {
+                String groupName = fileName.substring(0, fileName.length() - suffixLength);
+                Properties props = getDsProperties(directory);
+                for (Object o : props.keySet()) {
+                    String dsName = (String)o;
+                    if (props.getProperty(dsName).equals(groupName)) {
+                        attributes.add(new RrdGraphAttribute(dsName, relativePath, file.getName()));
+                    }
+                }
+            } else {
+                String dsName = fileName.substring(0, fileName.length() - suffixLength);
+                attributes.add(new RrdGraphAttribute(dsName, relativePath, file.getName()));
+            }
         }
         
         Properties properties = getProperties(rrdDirectory, relativePath);
@@ -82,6 +96,34 @@ public class ResourceTypeUtils {
         return attributes;
     }
 
+    public static Properties getDsProperties(File directory) {
+        Properties props = new Properties();
+        File propertiesFile = new File(directory, DS_PROPERTIES_FILE);
+        if (propertiesFile.exists()) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(propertiesFile);
+                props.load(fileInputStream);
+                fileInputStream.close();
+            } catch (Exception e) {
+                log().error("ds.properties error: " + e, e);
+            }
+        } else {
+            log().error("ds.properties does not exist");			
+        }
+        return props;
+    }
+	
+    public static File getRrdFileForDs(File directory, String ds) {
+        if (isStoreByGroup()) {
+            Properties props = getDsProperties(directory);
+            ds = props.getProperty(ds);
+        }
+        return new File(directory, ds + RrdUtils.getExtension());
+    }
+
+    public static boolean isStoreByGroup() {
+        return Boolean.getBoolean("org.opennms.rrd.storeByGroup");
+    }
 
     public static Properties getProperties(File rrdDirectory, String relativePath) {
         Assert.notNull(rrdDirectory, "rrdDirectory argument must not be null");

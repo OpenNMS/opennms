@@ -88,7 +88,7 @@ public class ThresholdController extends AbstractController implements Initializ
     private void addStandardEditingBits(ModelAndView modelAndView) {
         Collection<String> dsTypes=new ArrayList<String>();
         dsTypes.add("node");
-        dsTypes.add("interface");
+        dsTypes.add("if"); // "interface" is a wrong word
         modelAndView.addObject("dsTypes",dsTypes);
 
         Collection<String> thresholdTypes=new ArrayList<String>();

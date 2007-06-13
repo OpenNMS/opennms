@@ -147,6 +147,8 @@ public interface RrdStrategy {
      * 
      * @param rrdFile
      *            a name the represents a round robin database
+     * @param ds
+     *            a name the represents a data source to be used
      * @param interval
      *            a step interval of the round robin database
      * @return The last value as a Double (if the last value didn't exist
@@ -154,7 +156,7 @@ public interface RrdStrategy {
      * @throws NumberFormatException
      * @throws RrdException
      */
-    public Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException;
+    public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException;
 
     /**
      * Fetches the last value from the round robin database with the given name
@@ -165,6 +167,8 @@ public interface RrdStrategy {
      * 
      * @param rrdFile
      *            a name the represents a round robin database
+     * @param ds
+     *            a name the represents a data source to be used
      * @param interval
      *            a step interval of the round robin database
      * @param range
@@ -174,7 +178,7 @@ public interface RrdStrategy {
      * @throws NumberFormatException
      * @throws RrdException
      */
-    public Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException;
+    public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException;
     
     /**
      * Creates an InputStream representing the bytes of a graph created from

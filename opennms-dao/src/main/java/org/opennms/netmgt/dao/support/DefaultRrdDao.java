@@ -166,7 +166,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
 
         File rrdFile = new File(m_rrdBaseDirectory, rrdAttribute.getRrdRelativePath());
         try {
-            return m_rrdStrategy.fetchLastValue(rrdFile.getAbsolutePath(), interval);
+            return m_rrdStrategy.fetchLastValue(rrdFile.getAbsolutePath(), attribute.getName(), interval);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval, e);
         }
@@ -182,7 +182,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
 
         File rrdFile = new File(m_rrdBaseDirectory, rrdAttribute.getRrdRelativePath());
         try {
-            return m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), interval, range);
+            return m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), attribute.getName(), interval, range);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval + " and range " + range, e);
         }

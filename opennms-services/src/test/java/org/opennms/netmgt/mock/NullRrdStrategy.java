@@ -71,12 +71,12 @@ public class NullRrdStrategy implements RrdStrategy {
         return null;
     }
     
-	public Double fetchLastValue(String rrdFile, int interval)
+	public Double fetchLastValue(String rrdFile, String ds, int interval)
 			throws NumberFormatException, RrdException {
 		return null;
 	}
 
-	public Double fetchLastValueInRange(String rrdFile, int interval, int range)
+	public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range)
 			throws NumberFormatException, RrdException {
 		return null;
 	}

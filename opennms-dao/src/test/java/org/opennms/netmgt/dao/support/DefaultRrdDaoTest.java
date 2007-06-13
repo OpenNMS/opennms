@@ -134,7 +134,7 @@ public class DefaultRrdDaoTest extends TestCase {
         Double expectedValue = new Double(1.0);
         
         String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + "/" + rrdDir + "/" + rrdFile;
-        expect(m_rrdStrategy.fetchLastValue(fullRrdFilePath, interval)).andReturn(expectedValue);
+        expect(m_rrdStrategy.fetchLastValue(fullRrdFilePath, attribute.getName(), interval)).andReturn(expectedValue);
 
         m_mocks.replayAll();
         Double value = m_dao.getLastFetchValue(attribute, interval);
@@ -163,7 +163,7 @@ public class DefaultRrdDaoTest extends TestCase {
         Double expectedValue = new Double(1.0);
         
         String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + "/" + rrdDir + "/" + rrdFile;
-        expect(m_rrdStrategy.fetchLastValueInRange(fullRrdFilePath, interval, range)).andReturn(expectedValue);
+        expect(m_rrdStrategy.fetchLastValueInRange(fullRrdFilePath, attribute.getName(), interval, range)).andReturn(expectedValue);
 
         m_mocks.replayAll();
         Double value = m_dao.getLastFetchValue(attribute, interval, range);
