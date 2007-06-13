@@ -213,6 +213,13 @@
     <li>
       <a href="${eventLink}">View Events</a>
     </li>
+
+    <c:url var="alarmLink" value="alarm/list">
+      <c:param name="filter" value="node=${model.id}"/>
+    </c:url>
+    <li>
+      <a href="${alarmLink}">View Alarms</a>
+    </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
