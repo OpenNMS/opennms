@@ -1,7 +1,35 @@
 /*
- * Created on Sep 13, 2004
+ * This file is part of the OpenNMS(R) Application.
  *
- * Copyright (C) 2005 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2005-2007 The OpenNMS Group, Inc. All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * 13 June 2007: Added support for SSL, proper auth, ports, content-type, and charsets
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  */
 package org.opennms.netmgt.utils;
 
@@ -9,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -18,9 +47,12 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
+import javax.mail.Authenticator;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.event.TransportEvent;
@@ -30,6 +62,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -51,6 +84,13 @@ public class JavaMailer {
     private static final String DEFAULT_TRANSPORT = "smtp";
     private static final boolean DEFAULT_MAILER_DEBUG = true;
     private static final boolean DEFAULT_USE_JMTA = true;
+	private static final String DEFAULT_CONTENT_TYPE = "text/plain";
+	private static final String DEFAULT_CHARSET = "us-ascii";
+	private static final String DEFAULT_ENCODING = "7-bit";
+	private static final boolean DEFAULT_STARTTLS_ENABLE = false;
+	private static final boolean DEFAULT_QUIT_WAIT = true;
+	private static final int DEFAULT_SMTP_PORT = 25;
+	private static final boolean DEFAULT_SMTP_SSL_ENABLE = false;
 
     private boolean m_debug = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", DEFAULT_MAILER_DEBUG);
     private String m_mailHost = JavaMailerConfig.getProperty("org.opennms.core.utils.mailHost", DEFAULT_MAIL_HOST);
@@ -61,8 +101,15 @@ public class JavaMailer {
     private boolean m_authenticate = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticate", DEFAULT_AUTHENTICATE);
     private String m_user = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticateUser", DEFAULT_AUTHENTICATE_USER);
     private String m_password = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticatePassword", DEFAULT_AUTHENTICATE_PASSWORD);
+    private String m_contentType = JavaMailerConfig.getProperty("org.opennms.core.utils.messageContentType", DEFAULT_CONTENT_TYPE);
+    private String m_charSet = JavaMailerConfig.getProperty("org.opennms.core.utils.charset", DEFAULT_CHARSET);
+    private String m_encoding = JavaMailerConfig.getProperty("org.opennms.core.utils.encoding", DEFAULT_ENCODING);
+	private boolean m_startTlsEnabled = JavaMailerConfig.getProperty("org.opennms.core.utils.starttls.enable", DEFAULT_STARTTLS_ENABLE);
+	private boolean m_quitWait = JavaMailerConfig.getProperty("org.opennms.core.utils.quitwait", DEFAULT_QUIT_WAIT);
+	private int m_smtpPort = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpport", DEFAULT_SMTP_PORT);
+	private boolean m_smtpSsl = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpssl.enable", DEFAULT_SMTP_SSL_ENABLE);
 
-    private String m_to;// = DEFAULT_TO_ADDRESS;
+    private String m_to;
     private String m_subject;
     private String m_messageText;
     private String m_fileName;
@@ -79,14 +126,43 @@ public class JavaMailer {
         
         Properties props = System.getProperties();
         
-        props.put("mail.smtp.auth", new Boolean(isAuthenticate()).toString());
-        
-        Session session = Session.getInstance(props, null);
+        props.put("mail.smtp.auth", String.valueOf(isAuthenticate()));
+        props.put("mail.smtp.starttls.enable", String.valueOf(isStartTlsEnabled()));
+        props.put("mail.smtp.quitwait", String.valueOf(isQuitWait()));
+        props.put("mail.smtp.port", String.valueOf(getSmtpPort()));
+        if (isSmtpSsl()) {
+            props.put("mail.smtps.auth", String.valueOf(isAuthenticate()));
+        	props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        	props.put("mail.smtp.socketFactory.port", String.valueOf(getSmtpPort()));
+        	props.put("mail.smtp.socketFactory.fallback", "false");
+        }
+
+        Session session = Session.getInstance(props, createAuthenticator());
+        //Session session = Session.getInstance(props, null);
         session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
         session.setDebug(isDebug());
         
+        log().debug(createLogMsg());        
         sendMessage(session, buildMessage(session));
     }
+
+	/**
+	 * Helper method to create an Authenticator based on Password Authentication
+	 * @return
+	 */
+	private Authenticator createAuthenticator() {
+		Authenticator auth;
+		if (isAuthenticate()) {
+            auth = new Authenticator() {
+            	protected PasswordAuthentication getPasswordAuthentication() {
+            		return new PasswordAuthentication(getUser(), getPassword());
+            	}
+            };
+        } else {
+        	auth = null;
+        }
+		return auth;
+	}
 
     /**
      * Build a complete message ready for sending.
@@ -95,33 +171,22 @@ public class JavaMailer {
      * @return completed message, ready to be passed to Transport.sendMessage
      * @throws JavaMailerException if any of the underlying operations fail
      */
-    private Message buildMessage(Session session) throws JavaMailerException {
+    private Message buildMessage(final Session session) throws JavaMailerException {
         try {
-            Message message = new MimeMessage(session);
+            Message message = createMessage(session);
             
-            log().debug("From is: " + getFrom());
-            message.setFrom(new InternetAddress(getFrom()));
-            
-            log().debug("To is: " + getTo());
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
-            
-            log().debug("Subject is: " + getSubject());
-            message.setSubject(getSubject());
-            
-            log().debug("Message text is: " + getMessageText());
-            if (getFileName() != null) {
-                log().debug("fileName is non-null--creating a MIME multipart message with file '" + getFileName() + "' as an attachment.");
-
-                /*
-                 * Create a MIME multipart message to hold our message text
-                 * and the attachment
-                 */
+            String encodedText = MimeUtility.encodeText(getMessageText(), m_charSet, m_encoding);
+			if (getFileName() == null) {
+            	message.setContent(encodedText, m_contentType+"; charset="+m_charSet);
+            } else {
+                BodyPart bp = new MimeBodyPart();
+                bp.setContent(encodedText, m_contentType+"; charset="+m_charSet);
+                
                 MimeMultipart mp = new MimeMultipart();
-                mp.addBodyPart(createTextPart(getMessageText()));
+                mp.addBodyPart(bp);
+                mp = new MimeMultipart();
                 mp.addBodyPart(createFileAttachment(new File(getFileName())));
                 message.setContent(mp);
-            } else {
-                message.setText(getMessageText());
             }
             
             message.setHeader("X-Mailer", getMailer());
@@ -131,27 +196,53 @@ public class JavaMailer {
             
             return message;
         } catch (AddressException e) {
-            log().error("Java Mailer Addressing exception: " + e, e);
-            throw new JavaMailerException("Java Mailer Addressing exception: " + e, e);
+            log().error("Java Mailer Addressing exception: ", e);
+            throw new JavaMailerException("Java Mailer Addressing exception: ", e);
         } catch (MessagingException e) {
-            log().error("Java Mailer messaging exception: " + e, e);
-            throw new JavaMailerException("Java Mailer messaging exception: " + e, e);
-        }
+            log().error("Java Mailer messaging exception: ", e);
+            throw new JavaMailerException("Java Mailer messaging exception: ", e);
+        } catch (UnsupportedEncodingException e) {
+            log().error("Java Mailer messaging exception: ", e);
+            throw new JavaMailerException("Java Mailer encoding exception: ", e);
+		}
     }
 
-    /**
-     * Create a MimeBodyPart containing plain text.
-     * 
-     * @param messageText plain text message to include
-     * @return plain text body part
-     * @throws MessagingException
-     */
-    private MimeBodyPart createTextPart(String messageText) throws MessagingException {
-        MimeBodyPart messageTextPart = new MimeBodyPart();
-        messageTextPart.setText(messageText);
-        return messageTextPart;
-    }
-    
+	/**
+	 * Helper method to that creates a MIME message.
+	 * @param session
+	 * @return
+	 * @throws MessagingException
+	 * @throws AddressException
+	 */
+	private Message createMessage(final Session session)
+			throws MessagingException, AddressException {
+		Message message;
+		message = new MimeMessage(session);
+		message.setFrom(new InternetAddress(getFrom()));
+		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
+		message.setSubject(getSubject());
+		return message;
+	}
+
+	/**
+	 * @return
+	 */
+	private String createLogMsg() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("\n\tTo: ");
+		sb.append(getTo());
+		sb.append("\n\tFrom: ");
+		sb.append(getFrom());
+		sb.append("\n\tSubject is: ");
+		sb.append(getSubject());
+		sb.append("\n\tFile: ");
+		sb.append(getFileName()!=null ? getFileName() : "no file attached");
+		sb.append("\n\n");
+		sb.append(getMessageText());
+		sb.append("\n");
+		return sb.toString();
+	}
+
     /**
      * Create a file attachment as a MimeBodyPart, checking to see if the file
      * exists before we create the attachment.
@@ -163,7 +254,7 @@ public class JavaMailer {
      * @throws JavaMailerException if the file does not exist or is not
      *      readable
      */
-    private MimeBodyPart createFileAttachment(File file) throws MessagingException, JavaMailerException {
+    private MimeBodyPart createFileAttachment(final File file) throws MessagingException, JavaMailerException {
         if (!file.exists()) {
             log().error("File attachment '" + file.getAbsolutePath() + "' does not exist.");
             throw new JavaMailerException("File attachment '" + file.getAbsolutePath() + "' does not exist.");
@@ -324,6 +415,19 @@ public class JavaMailer {
      */
     public boolean isAuthenticate() {
         return m_authenticate;
+    }
+    
+    public boolean isStartTlsEnabled() {
+    	return m_startTlsEnabled;
+    }
+    public boolean isQuitWait() {
+    	return m_quitWait;
+    }
+    public int getSmtpPort() {
+    	return m_smtpPort;
+    }
+    public boolean isSmtpSsl() {
+    	return m_smtpSsl;
     }
 
     /**
