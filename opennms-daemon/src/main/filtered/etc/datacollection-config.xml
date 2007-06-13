@@ -27,6 +27,11 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collectd.IndexStorageStrategy"/>
+    </resourceType>
+
     <groups>
       <!-- data from standard (mib-2) sources -->
       <group name="mib2-interfaces" ifType="all">
@@ -305,6 +310,82 @@
       </group>
       <group  name = "cisco-aironet-stats" ifType = "ignore">
         <mibObj oid=".1.3.6.1.4.1.522.3.12.1.8" instance="0" alias="aironetClientAssoc" type="integer"/>
+      </group>
+      <group name="cisco-rttmon-latest-jitter-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.2.2.1.18" instance="rttMonCtrlAdminIndex" alias="echoNumPackets" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.1" instance="rttMonCtrlAdminIndex" alias="jitterNumRTT" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.2" instance="rttMonCtrlAdminIndex" alias="jitterRTTSum" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.3" instance="rttMonCtrlAdminIndex" alias="jitterRTTSum2" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.4" instance="rttMonCtrlAdminIndex" alias="jitterRTTMin" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.5" instance="rttMonCtrlAdminIndex" alias="jitterRTTMax" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.6" instance="rttMonCtrlAdminIndex" alias="jitterMinPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.7" instance="rttMonCtrlAdminIndex" alias="jitterMaxPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.8" instance="rttMonCtrlAdminIndex" alias="jitterNumPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.9" instance="rttMonCtrlAdminIndex" alias="jitterSumPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.10" instance="rttMonCtrlAdminIndex" alias="jitterSum2PosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.11" instance="rttMonCtrlAdminIndex" alias="jitterMinNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.12" instance="rttMonCtrlAdminIndex" alias="jitterMaxNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.13" instance="rttMonCtrlAdminIndex" alias="jitterNumNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.14" instance="rttMonCtrlAdminIndex" alias="jitterSumNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.15" instance="rttMonCtrlAdminIndex" alias="jitterSum2NegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.16" instance="rttMonCtrlAdminIndex" alias="jitterMinPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.17" instance="rttMonCtrlAdminIndex" alias="jitterMaxPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.18" instance="rttMonCtrlAdminIndex" alias="jitterNumPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.19" instance="rttMonCtrlAdminIndex" alias="jitterSumPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.20" instance="rttMonCtrlAdminIndex" alias="jitterSum2PosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.21" instance="rttMonCtrlAdminIndex" alias="jitterMinNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.22" instance="rttMonCtrlAdminIndex" alias="jitterMaxNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.23" instance="rttMonCtrlAdminIndex" alias="jitterNumNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.24" instance="rttMonCtrlAdminIndex" alias="jitterSumNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.25" instance="rttMonCtrlAdminIndex" alias="jitterSum2NegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.26" instance="rttMonCtrlAdminIndex" alias="jitterPktLossSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.27" instance="rttMonCtrlAdminIndex" alias="jitterPktLossDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.28" instance="rttMonCtrlAdminIndex" alias="jitterPktOOSeq" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.29" instance="rttMonCtrlAdminIndex" alias="jitterPktMIA" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.30" instance="rttMonCtrlAdminIndex" alias="jitterPktLateArr" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.33" instance="rttMonCtrlAdminIndex" alias="jitterOWSumSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.34" instance="rttMonCtrlAdminIndex" alias="jitterOWSum2SD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.35" instance="rttMonCtrlAdminIndex" alias="jitterOWMinSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.36" instance="rttMonCtrlAdminIndex" alias="jitterOWMaxSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.37" instance="rttMonCtrlAdminIndex" alias="jitterOWSumDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.38" instance="rttMonCtrlAdminIndex" alias="jitterOWSum2DS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.39" instance="rttMonCtrlAdminIndex" alias="jitterOWMinDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.40" instance="rttMonCtrlAdminIndex" alias="jitterOWMaxDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.41" instance="rttMonCtrlAdminIndex" alias="jitterNumOW" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.42" instance="rttMonCtrlAdminIndex" alias="jitterMOS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.43" instance="rttMonCtrlAdminIndex" alias="jitterICPIF" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.44" instance="rttMonCtrlAdminIndex" alias="jitterIAJOut" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.45" instance="rttMonCtrlAdminIndex" alias="jitterIAJIn" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.46" instance="rttMonCtrlAdminIndex" alias="jitterAvgJitter" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.47" instance="rttMonCtrlAdminIndex" alias="jitterAvgSDJ" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.48" instance="rttMonCtrlAdminIndex" alias="jitterAvgDSJ" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.49" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.50" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgDS" type="gauge" />
+      </group>
+      <group name="cisco-rttmon-latest-rtp-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.1" instance="rttMonCtrlAdminIndex" alias="rtpOperRTT" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.2" instance="rttMonCtrlAdminIndex" alias="rtpIAJitterDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.3" instance="rttMonCtrlAdminIndex" alias="rtpPktLossDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.4" instance="rttMonCtrlAdminIndex" alias="rtpPktLateDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.5" instance="rttMonCtrlAdminIndex" alias="rtpPktEarlyDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.6" instance="rttMonCtrlAdminIndex" alias="rtpPktOOSeqDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.7" instance="rttMonCtrlAdminIndex" alias="rtpFrameLossDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.8" instance="rttMonCtrlAdminIndex" alias="rtpRFactorDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.9" instance="rttMonCtrlAdminIndex" alias="rtpMOSCQDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.10" instance="rttMonCtrlAdminIndex" alias="rtpMOSLQDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.13" instance="rttMonCtrlAdminIndex" alias="rtpIAJitterSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.14" instance="rttMonCtrlAdminIndex" alias="rtpPktLossSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.15" instance="rttMonCtrlAdminIndex" alias="rtpPktsMIA" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.16" instance="rttMonCtrlAdminIndex" alias="rtpRFactorSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.17" instance="rttMonCtrlAdminIndex" alias="rtpMOSCQSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.18" instance="rttMonCtrlAdminIndex" alias="rtpMinOWSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.19" instance="rttMonCtrlAdminIndex" alias="rtpMaxOWSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.20" instance="rttMonCtrlAdminIndex" alias="rtpAvgOWSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.21" instance="rttMonCtrlAdminIndex" alias="rtpMinOWDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.22" instance="rttMonCtrlAdminIndex" alias="rtpMaxOWDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.23" instance="rttMonCtrlAdminIndex" alias="rtpAvgOWDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.24" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.25" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsDS" type="gauge" />
       </group>
 
       <!-- Netapp MIBS -->
@@ -1124,6 +1205,8 @@
           <includeGroup>cisco-memory</includeGroup>
           <includeGroup>cisco-router</includeGroup>
           <includeGroup>adsl-line</includeGroup>
+          <includeGroup>cisco-rttmon-latest-jitter-stats</includeGroup>
+          <includeGroup>cisco-rttmon-latest-rtp-stats</includeGroup>
         </collect>
       </systemDef>
       
