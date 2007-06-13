@@ -54,7 +54,7 @@ import org.springframework.core.io.Resource;
  * @author david hustace
  */
 public class JavaMailerTest extends TestCase {
-    private static final String TEST_ADDRESS = "brozow@opennms.org";
+    private static final String TEST_ADDRESS = "root@localhost";
 
     protected void setUp() throws IOException {
         MockLogAppender.setupLogging();
@@ -205,6 +205,9 @@ public class JavaMailerTest extends TestCase {
     public final void testJavaMailerUsingMTAExplicitly() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA explicitly");
         
+        if (jm.isSmtpSsl()) {
+        	return;
+        }
         jm.setUseJMTA(true);
         
         jm.mailSend();
@@ -213,17 +216,12 @@ public class JavaMailerTest extends TestCase {
     public final void testJavaMailerUsingMTAByTransport() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA by transport");
         
+        if (jm.isSmtpSsl()) {
+        	return;
+        }
+        
         jm.setUseJMTA(false);
         jm.setTransport("mta");
-        
-        jm.mailSend();
-    }
-    
-    public final void testJavaMailerWithoutMTA() throws Exception {
-        JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
-        jm.setUseJMTA(false);
-        jm.setMailHost("mail.opennms.org");
         
         jm.mailSend();
     }
