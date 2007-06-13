@@ -50,6 +50,7 @@ import java.util.Map;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.StringUtils;
@@ -73,14 +74,18 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         OnmsNode node = findUnique(
                           "select distinct n from OnmsNode as n "
                                   + "left join fetch n.assetRecord "
-                                  + "left join fetch n.snmpInterfaces as snmpIface "
-                                  + "left join fetch n.ipInterfaces as iface "
-                                  + "left join fetch iface.monitoredServices as monSvc "
-                                  + "left join fetch monSvc.serviceType "
                                   + "where n.id = ?", id);
+        
+        initialize(node.getIpInterfaces());
+        for (OnmsIpInterface i : node.getIpInterfaces()) {
+            initialize(i.getMonitoredServices());
+        }
+        
+        initialize(node.getSnmpInterfaces());
         for (OnmsSnmpInterface i : node.getSnmpInterfaces()) {
             initialize(i.getIpInterfaces());
         }
+        
         return node;
 
     }
