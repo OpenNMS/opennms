@@ -231,6 +231,17 @@
              		<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
              		<parameter key="ds-name" value="nrpe"/>
 		</service>
+		<service name="DbTestExample" interval="300000" user-defined="false" status="on">
+             		<parameter key="retry" value="3"/>
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="user" value="dbtest"/>
+             		<parameter key="password" value="onetwothree"/>
+			<parameter key="stored-procedure" value="is_db_consistent"/>
+			<parameter key="schema" value="test"/>
+			<parameter key="url" value="jdbc:postgresql://dbserver.example.com/dbname"/>
+             		<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
+             		<parameter key="ds-name" value="dbtransaction"/>
+		</service>
 		<!--
 		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
 		<service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
@@ -316,6 +327,7 @@
 	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
 	<monitor service="RadiusAuth"	class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>
 	<monitor service="NRPE"		class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
+	<monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/>
 	<!-- 
 	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
 	 -->

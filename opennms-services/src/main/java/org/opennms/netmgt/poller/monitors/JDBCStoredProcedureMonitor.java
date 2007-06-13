@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -75,7 +75,9 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
          if ( storedProcedure == null )
             return status;
 
-         String procedureCall = "{ ? = call test." + storedProcedure + "()}";
+         String schemaName = ParameterMap.getKeyedString(parameters, "schema", "test");
+
+         String procedureCall = "{ ? = call " + schemaName + "." + storedProcedure + "()}";
          cs = con.prepareCall( procedureCall );
          
          log().debug("Calling stored procedure: " + procedureCall );
