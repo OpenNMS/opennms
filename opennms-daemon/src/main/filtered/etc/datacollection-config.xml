@@ -29,7 +29,7 @@
 
     <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collectd.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
     <groups>
