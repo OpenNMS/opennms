@@ -15,7 +15,6 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;
@@ -343,11 +342,7 @@ public class TemporaryDatabase implements DataSource {
         getJdbcTemplate().update(stmt, values);
     }
 
-    public int countRows(String sql) {
-        return countRows(sql, new Object[0]);
-    }
-
-    public int countRows(String sql, Object[] values) {
+    public int countRows(String sql, Object... values) {
         RowCountCallbackHandler counter = new RowCountCallbackHandler();
         getJdbcTemplate().getJdbcOperations().query(sql, values, counter);
         return counter.getRowCount();
