@@ -96,7 +96,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     
     public void writeNode(MockNode node) {
         Object[] values = { new Integer(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
-        update("insert into node (nodeID, nodeLabel, nodeCreateTime, nodeType) values (?, ?, ?, ?);", values);
+        update("insert into node (dpName, nodeID, nodeLabel, nodeCreateTime, nodeType) values ('localhost', ?, ?, ?, ?);", values);
         
     }
 
