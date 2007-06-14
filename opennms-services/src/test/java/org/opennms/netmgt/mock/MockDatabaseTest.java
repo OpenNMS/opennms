@@ -183,6 +183,13 @@ public class MockDatabaseTest extends TestCase {
         
     }
     
+    public void testUpdateNodeSequence() {
+        int maxNodeId = m_db.getJdbcTemplate().queryForInt("select max(nodeid) from node");
+        int nextSeqNum = m_db.getJdbcTemplate().queryForInt("select nextval('nodeNxtId')");
+        assertTrue(nextSeqNum > maxNodeId);
+        
+    }
+    
     public void testSetServiceStatus() {
         MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
         assertEquals('A', m_db.getServiceStatus(svc));
