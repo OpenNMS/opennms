@@ -37,6 +37,7 @@
 package org.opennms.netmgt.dao.db;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -404,10 +405,11 @@ public class InstallerDb {
             }
             
             if (!success) {
+                InputStream sqlfile = null;
         		try {
                     m_out.print("- inserting PL/pgSQL iplike function... ");
                     
-                	InputStream sqlfile = getClass().getResourceAsStream(IPLIKE_SQL_RESOURCE);
+                	sqlfile = getClass().getResourceAsStream(IPLIKE_SQL_RESOURCE);
                 	if (sqlfile == null) {
                         String message = "unable to locate " + IPLIKE_SQL_RESOURCE;
                         m_out.println("FAILED (" + message + ")");
@@ -425,7 +427,10 @@ public class InstallerDb {
         		} catch (Exception e) {
         			m_out.println("FAILED");
         			throw e;
-        		}
+        		} finally {
+        		    // don't forget to close the input stream
+                    closeQuietly(sqlfile);
+                }
         	}
         }
 
@@ -450,6 +455,16 @@ public class InstallerDb {
         }
     }
 
+
+    private void closeQuietly(InputStream sqlfile) {
+        try {
+            if (sqlfile != null) {
+                sqlfile.close();
+            }
+        } catch(IOException e) {
+            
+        }
+    }
 
     public void addStoredProcedures() throws Exception {
         m_triggerDao.reset();
