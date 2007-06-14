@@ -1,4 +1,4 @@
-AM_CPPFLAGS = $(PGFEINCLUDES) $(all_includes)
+AM_CPPFLAGS = $(PGINCLUDES) $(all_includes)
 
 lib_LTLIBRARIES = iplike.la
 iplike_la_SOURCES = iplike.c

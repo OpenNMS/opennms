@@ -37,11 +37,11 @@ fi
 if test -z "$PGCONFIG"; then
 	AC_MSG_ERROR([PostgreSQL is required by PostGIS]);
 fi
-PGFEINCLUDES="-I"`${PGCONFIG} --includedir`
-PGFELIBS="-L'`${PGCONFIG} --libdir`' -lpq "
+PGINCLUDES="-I`${PGCONFIG} --includedir` -I`${PGCONFIG} --includedir-server`"
+PGLIBS="-L'`${PGCONFIG} --libdir`' -lpq "
 
-AC_SUBST(PGFEINCLUDES)
-AC_SUBST(PGFELIBS)
+AC_SUBST(PGINCLUDES)
+AC_SUBST(PGLIBS)
 
 AC_CONFIG_FILES([Makefile])
 
