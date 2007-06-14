@@ -242,6 +242,18 @@
              		<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
              		<parameter key="ds-name" value="dbtransaction"/>
 		</service>
+		<service name="DiskUsage-root" interval="300000" user-defined="false" status="on">
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="retry" value="2"/>
+             		<parameter key="disk" value="/"/>
+             		<parameter key="free" value="15"/>
+		</service>
+		<service name="DiskUsage-home" interval="300000" user-defined="false" status="on">
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="retry" value="2"/>
+             		<parameter key="disk" value="/home"/>
+             		<parameter key="free" value="15"/>
+		</service>
 		<!--
 		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
 		<service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
@@ -328,6 +340,8 @@
 	<monitor service="RadiusAuth"	class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>
 	<monitor service="NRPE"		class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
 	<monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/>
+	<monitor service="DiskUsage-root" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor"/>
+	<monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor"/>
 	<!-- 
 	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
 	 -->

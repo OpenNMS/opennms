@@ -212,6 +212,16 @@
         <property key="retry" value="2" />
         <property key="command" value="_NRPE_CHECK" />
     </protocol-plugin>
+    <protocol-plugin protocol="DiskUsage-root" class-name="org.opennms.netmgt.capsd.plugins.DiskUsagePlugin" scan="on" user-defined="false">
+        <property key="timeout" value="3000" />
+        <property key="retry" value="1" />
+        <property key="disk" value="/" />
+    </protocol-plugin>
+    <protocol-plugin protocol="DiskUsage-home" class-name="org.opennms.netmgt.capsd.plugins.DiskUsagePlugin" scan="on" user-defined="false">
+        <property key="timeout" value="3000" />
+        <property key="retry" value="1" />
+        <property key="disk" value="/home" />
+    </protocol-plugin>
     <!--
     Use the LoopPlugin to force a service for use with PassiveStatusMonitor or the LoopMonitor
     <protocol-plugin protocol="LOOP-BACK" class-name="org.opennms.netmgt.capsd.plugins.LoopPlugin" scan="on" user-defined="false">
