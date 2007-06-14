@@ -46,6 +46,8 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
     	super.setUp();
     	m_processor = new BroadcastEventProcessor();
         m_processor.initExpandRe();
+        
+        m_anticipator.setExpectedDifference(3000);
     }
 
     /**
