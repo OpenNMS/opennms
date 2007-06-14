@@ -32,6 +32,12 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="pgmonIndex" label="Process Group Monitor (SystemEDGE)"
+                  resourceLabel="${pgmonDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <groups>
       <!-- data from standard (mib-2) sources -->
       <group name="mib2-interfaces" ifType="all">
@@ -457,6 +463,19 @@
         <mibObj oid=".1.3.6.1.4.1.546.13.3" instance="0" alias="nhCpuRawUser" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.546.13.4" instance="0" alias="nhCpuRawSystem" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.546.13.4" instance="0" alias="nhCpuRawKernel" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.7" instance="0" alias="nhCpuTotalIdlePct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.8" instance="0" alias="nhCpuTotalUserPct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.9" instance="0" alias="nhCpuTotalSysPct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.10" instance="0" alias="nhCpuTotalWaitPct" type="gauge" />
+      </group>
+      <group name="netHealth-pgmon" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.2" instance="pgmonIndex" alias="pgmonDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.6" instance="pgmonIndex" alias="pgmonNumProcs" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.14" instance="pgmonIndex" alias="pgmonRSS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.15" instance="pgmonIndex" alias="pgmonSize" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.16" instance="pgmonIndex" alias="pgmonThreadCount" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.17" instance="pgmonIndex" alias="pgmonMEM" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.24" instance="pgmonIndex" alias="pgmonMajorPgFlts" type="counter" />
       </group>
 
       <!-- Extreme Systems MIBs -->
@@ -1245,6 +1264,7 @@
           <includeGroup>netHealth-loadavg</includeGroup>
           <includeGroup>netHealth-memory</includeGroup>
           <includeGroup>netHealth-sysstat</includeGroup>
+          <includeGroup>netHealth-pgmon</includeGroup>
         </collect>
       </systemDef>
 
