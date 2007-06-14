@@ -89,6 +89,9 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         network.visit(dbCreater);
         
         
+        
+        getJdbcTemplate().queryForInt("SELECT setval('nodeNxtId', max(nodeid)) FROM node");
+        
     }
     
     public void writeNode(MockNode node) {
