@@ -68,7 +68,8 @@ public class NotifdTest extends NotificationsTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+
+        // XXX Bogus.. need to rework these tests
         m_anticipator.setExpectedDifference(5000);
 
     }
@@ -169,7 +170,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
 
-        verifyAnticipated(finished, 1000);
+        verifyAnticipated(finished, 3000);
 
     }
     
