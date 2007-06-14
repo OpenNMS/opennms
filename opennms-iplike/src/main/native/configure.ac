@@ -1,7 +1,7 @@
 AC_INIT([iplike],[1.0])
 AC_CONFIG_HEADERS([config.h])
 
-AM_INIT_AUTOMAKE([1.9 foreign])
+AM_INIT_AUTOMAKE([1.8 foreign])
 
 AC_ENABLE_SHARED([yes])
 AC_ENABLE_STATIC([no])
