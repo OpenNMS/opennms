@@ -77,11 +77,6 @@ public final class DataSourceFactory implements DataSource {
      */
     private static DataSource m_singleton = null;
 
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_legacy = false;
-    
     private static Map<String, DataSource> m_dataSources = new HashMap<String, DataSource>();
 
     /**
@@ -119,21 +114,8 @@ public final class DataSourceFactory implements DataSource {
         }
 
         File cfgFile = ConfigFileConstants.getConfigFileByName(dsName+"-database.xml");
-        DataSource dataSource = null;
-        if (!isLegacy()) {
-        		dataSource = new C3P0ConnectionFactory(cfgFile.getPath());                
-        } else {
-        		dataSource = new LegacyDatabaseConnectionFactory(cfgFile.getPath());
-        }
+        DataSource dataSource = new C3P0ConnectionFactory(cfgFile.getPath());                
         setInstance(dsName,dataSource);
-    }
-
-    public static boolean isLegacy() {
-        return m_legacy;
-    }
-    
-    public static void setLegacy(boolean legacy) {
-        m_legacy = legacy;
     }
 
 	private static boolean isLoaded(String dsName) {
