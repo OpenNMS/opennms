@@ -6,7 +6,7 @@
 [ -z "$AUTOCONF"   ] && AUTOCONF=autoconf
 [ -z "$AUTOMAKE"   ] && AUTOMAKE=automake
 
-[ -x `which libtoolize 2>/dev/null` ] && LIBTOOLIZE=libtoolize
+[ -x "`which libtoolize 2>/dev/null`" ] && LIBTOOLIZE=libtoolize
 
 $ACLOCAL
 $LIBTOOLIZE --automake --copy --force
