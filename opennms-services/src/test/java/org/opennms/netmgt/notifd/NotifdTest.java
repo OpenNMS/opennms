@@ -65,6 +65,14 @@ import org.opennms.netmgt.xml.event.Tticket;
  */
 public class NotifdTest extends NotificationsTestCase {
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        
+        m_anticipator.setExpectedDifference(5000);
+
+    }
+
     /**
      * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=1022
      * @throws Exception
