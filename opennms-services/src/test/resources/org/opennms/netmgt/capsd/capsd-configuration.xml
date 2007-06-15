@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- 24 hours -->
 <capsd-configuration rescan-frequency="86400000"
-  initial-sleep-time="300000" management-policy="managed"
+  initial-sleep-time="10" management-policy="managed"
   max-suspect-thread-pool-size="6" max-rescan-thread-pool-size="3"
   abort-protocol-scans-if-no-route="false"
   delete-propagation-enabled="true" xmlrpc="false" >
@@ -22,7 +22,7 @@
   </smb-config>
 
   <ip-management policy="managed">
-    <range begin="192.168.0.0" end="192.168.0.255" />
+    <range begin="0.0.0.0" end="255.255.255.255" />
   </ip-management>
 
   <ip-management policy="unmanaged">

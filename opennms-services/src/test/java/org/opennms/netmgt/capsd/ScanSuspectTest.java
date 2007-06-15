@@ -56,21 +56,19 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
 
-public class CapsdTest extends OpenNMSTestCase {
-    private static final int FOREIGN_NODEID = 77;
+public class ScanSuspectTest extends OpenNMSTestCase {
     private Capsd m_capsd;
     private MockSnmpAgent m_agent;
     
     @Override
     protected void setUp() throws Exception {
-
+    	System.setProperty("opennms.db.nextNodeId", "select max(nodeId) + 1 from node");
     	super.setUp();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), this.myLocalHost() + "/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost() + "/9161");
 
         m_capsd = Capsd.getInstance();
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
@@ -93,19 +91,6 @@ public class CapsdTest extends OpenNMSTestCase {
     }
 
     @Override
-    protected void createMockNetwork() {
-        super.createMockNetwork();
-        
-        m_network.addNode(FOREIGN_NODEID, "ForeignNode");
-//        m_network.addInterface(myLocalHost());
-//        m_network.addService("ICMP");
-//        m_network.addService("SNMP");
-        m_network.addInterface("172.20.1.201");
-        m_network.addService("ICMP");
-        m_network.addService("SNMP");
-    }
-
-    @Override
     public String getSnmpConfig() {
         return "<?xml version=\"1.0\"?>\n" + 
                 "<snmp-config "+ 
@@ -123,18 +108,35 @@ public class CapsdTest extends OpenNMSTestCase {
                 "   </definition>\n" + 
                 "\n" + 
                 "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+myLocalHost()+"\">\n" + 
-                "      <specific>172.20.1.201</specific>\n" +
-                "      <specific>172.20.1.204</specific>\n" +
+                "<specific>149.134.45.45</specific>\n" +
+                "<specific>172.16.201.2</specific>\n" +
+                "<specific>172.17.1.230</specific>\n" +
+                "<specific>172.31.1.1</specific>\n" +
+                "<specific>172.31.3.1</specific>\n" +
+                "<specific>172.31.3.9</specific>\n" +
+                "<specific>172.31.3.17</specific>\n" +
+                "<specific>172.31.3.25</specific>\n" +
+                "<specific>172.31.3.33</specific>\n" +
+                "<specific>172.31.3.41</specific>\n" +
+                "<specific>172.31.3.49</specific>\n" +
+                "<specific>172.31.3.57</specific>\n" +
+                "<specific>172.31.3.65</specific>\n" +
+                "<specific>172.31.3.73</specific>\n" +
+                "<specific>172.100.10.1</specific>\n" +
+                "<specific>203.19.73.1</specific>\n" +
+                "<specific>203.220.17.53</specific>\n" +
                 "   </definition>\n" + 
                 "</snmp-config>";
     }
-     @Override
+
+    @Override
     protected void tearDown() throws Exception {
         m_agent.shutDownAndWait();
         super.tearDown();
     }
 
     protected String myLocalHost() {
+        
       try {
           return InetAddress.getLocalHost().getHostAddress();
       } catch (UnknownHostException e) {
@@ -145,39 +147,11 @@ public class CapsdTest extends OpenNMSTestCase {
       return null;
     }
     
-    public final void testRescan() throws Exception {
-        
-        assertEquals("Initally only 1 interface", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
-
+    public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        
-        m_capsd.rescanInterfaceParent(77);
-        
-        Thread.sleep(10000);
-        
+        m_capsd.scanSuspectInterface(this.myLocalHost());
         m_capsd.stop();
-        
-        assertEquals("after scanning should be 5 interfaces", 5, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
-    }
-    
-    public final void testRescanOfForeignNode() throws Exception {
-        
-        m_db.getJdbcTemplate().update("update node set foreignSource='testSource', foreignId='123' where nodeid = ?", FOREIGN_NODEID);
-        
-        assertEquals("Initally only 1 interface", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
-
-        m_capsd.init();
-        m_capsd.start();
-        
-        m_capsd.rescanInterfaceParent(77);
-        
-        Thread.sleep(10000);
-        
-        m_capsd.stop();
-        
-        assertEquals("after scanning should still be 1 since its foreign", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
-
     }
     
 }
