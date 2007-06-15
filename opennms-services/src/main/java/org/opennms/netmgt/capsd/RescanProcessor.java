@@ -3033,6 +3033,11 @@ public final class RescanProcessor implements Runnable {
             return;
         }
         
+        if (dbNodeEntry.getForeignSource() != null) {
+            log.info("Skipping rescan of node "+m_scheduledNode.getNodeId()+" since it was imported with foreign source "+dbNodeEntry.getForeignSource());
+            return;
+        }
+        
         if (log.isDebugEnabled()) {
             log.debug("start rescanning node: " + m_scheduledNode.getNodeId());
         }
