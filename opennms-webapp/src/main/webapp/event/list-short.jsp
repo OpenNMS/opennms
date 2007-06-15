@@ -53,6 +53,7 @@
 		org.opennms.web.event.filter.*
 	"
 %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%--
   This page is written to be the display (view) portion of the EventQueryServlet
@@ -248,7 +249,10 @@
           <th>Ackd</th>
         </tr>
         </thead>     
-      <% for( int i=0; i < events.length; i++ ) { %>        
+      <% for( int i=0; i < events.length; i++ ) {
+        Event event = events[i];
+        pageContext.setAttribute("event", event);
+      %>
         <tr class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <td><input type="checkbox" name="event" value="<%=events[i].getId()%>" /></td>
@@ -274,7 +278,7 @@
           </td>
           <td class="noWrap">
 	              <a href="<%=this.makeLink( parms, new AfterDateFilter(events[i].getTime()), true)%>"  class="filterLink" title="Only show events occurring after this one"><%=addAfterDateFilterString%></a> 
-								<%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%>           
+								<fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/>           
               <a href="<%=this.makeLink( parms, new BeforeDateFilter(events[i].getTime()), true)%>" class="filterLink" title="Only show events occurring before this one"><%=addBeforeDateFilterString%></a>
           </td>
           <td class="noWrap">
@@ -327,7 +331,11 @@
                 </nobr>
               <% } %>              
             <% } %>
-						<%=events[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(events[i].getAcknowledgeTime()) : "&nbsp;"%>
+						<% if (events[i].isAcknowledged()) { %>
+						  <fmt:formatDate value="${event.acknowledgeTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.acknowledgeTime}" type="time" pattern="HH:mm:ss"/>
+						<% } else { %>
+						  &nbsp;
+						<% } %>
 						</div>
           </td>
         </tr>

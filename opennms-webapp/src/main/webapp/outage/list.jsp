@@ -50,6 +50,7 @@
 		java.text.DateFormat
 	"
 %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%--
   This page is written to be the display (view) portion of the OutageQueryServlet
@@ -120,7 +121,11 @@
         <th><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.IFREGAINEDSERVICE, OutageFactory.SortStyle.REVERSE_IFREGAINEDSERVICE, "time service was regained", "Up")%></th>
       </tr>      
       
-      <% for( int i=0; i < outages.length; i++ ) { %>        
+      <%
+        for( int i=0; i < outages.length; i++ ) {
+        Outage outage = outages[i];
+      	pageContext.setAttribute("outage", outage);
+      %>
         <tr class="<%=OutageUtil.getStatusColor(outages[i])%>">
         
           <!-- outage id -->
@@ -178,7 +183,7 @@
             
           <!-- lost service time -->
           <td class="noWrap">
-						<%=DATE_FORMAT.format(outages[i].getLostServiceTime())%>
+	    <fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/>
               <a href="<%=OutageUtil.makeLink( request, parms, new LostServiceDateAfterFilter(outages[i].getLostServiceTime()), true)%>" title="Only show outages beginning after this one"><%=AFTER_ICON%></a>            
               <a href="<%=OutageUtil.makeLink( request, parms, new LostServiceDateBeforeFilter(outages[i].getLostServiceTime()), true)%>" title="Only show outages beginning before this one"><%=BEFORE_ICON%></a>            
           </td>
@@ -187,7 +192,7 @@
           <% Date regainedTime = outages[i].getRegainedServiceTime(); %>
           <% if(regainedTime != null ) { %>
             <td class="noWrap">
-              <%=DATE_FORMAT.format(outages[i].getRegainedServiceTime())%>
+	    <fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/>
                 <a href="<%=OutageUtil.makeLink( request, parms, new RegainedServiceDateAfterFilter(outages[i].getRegainedServiceTime()), true)%>" title="Only show outages resolving after this one"><%=AFTER_ICON%></a>            
                 <a href="<%=OutageUtil.makeLink( request, parms, new RegainedServiceDateBeforeFilter(outages[i].getRegainedServiceTime()), true)%>" title="Only show outages resolving before this one"><%=BEFORE_ICON%></a>            
             </td>
