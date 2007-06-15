@@ -27,6 +27,11 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
@@ -596,31 +601,11 @@
 
       <!-- Net-SNMP MIBs -->
       <group name="net-snmp-disk" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="1" alias="ns-disk-1-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-1-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-1-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-1-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-1-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="2" alias="ns-disk-2-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="2" alias="ns-disk-2-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="2" alias="ns-disk-2-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="2" alias="ns-disk-2-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="2" alias="ns-disk-2-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="3" alias="ns-disk-3-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="3" alias="ns-disk-3-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="3" alias="ns-disk-3-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="3" alias="ns-disk-3-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="3" alias="ns-disk-3-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="4" alias="ns-disk-4-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="4" alias="ns-disk-4-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="4" alias="ns-disk-4-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="4" alias="ns-disk-4-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="4" alias="ns-disk-4-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="5" alias="ns-disk-5-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="5" alias="ns-disk-5-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="5" alias="ns-disk-5-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="5" alias="ns-disk-5-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="5" alias="ns-disk-5-pct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="dskIndex" alias="ns-dskPath" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="dskIndex" alias="ns-dskTotal" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="dskIndex" alias="ns-dskAvail" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="dskIndex" alias="ns-dskUsed" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="dskIndex" alias="ns-dskPercent" type="gauge" />
       </group>
 
       <group name="ucd-loadavg" ifType="ignore">
