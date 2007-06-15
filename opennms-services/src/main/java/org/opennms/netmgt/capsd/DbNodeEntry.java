@@ -143,7 +143,7 @@ final class DbNodeEntry {
      * The SQL statement used to read a node from the database. This record is
      * keyed by the node identifier and distributed poller name.
      */
-    private static final String SQL_LOAD_REC = "SELECT nodeCreateTime, nodeParentID, nodeType, nodeSysOID, nodeSysName, nodeSysDescription, nodeSysLocation, nodeSysContact, nodeLabel, nodeLabelSource, nodeNetBIOSName, nodeDomainName, operatingSystem, lastCapsdPoll FROM node WHERE nodeID = ? AND dpName = ? AND nodeType != 'D'";
+    private static final String SQL_LOAD_REC = "SELECT nodeCreateTime, nodeParentID, nodeType, nodeSysOID, nodeSysName, nodeSysDescription, nodeSysLocation, nodeSysContact, nodeLabel, nodeLabelSource, nodeNetBIOSName, nodeDomainName, operatingSystem, lastCapsdPoll, foreignSource, foreignId FROM node WHERE nodeID = ? AND dpName = ? AND nodeType != 'D'";
 
     /**
      * The SQL statement used to read the list of IP Addresses associated with
@@ -247,6 +247,16 @@ final class DbNodeEntry {
      * The last time the node was scanned.
      */
     private Timestamp m_lastPoll;
+    
+    /**
+     * The foreignSource for the node.
+     */
+    private String m_foreignSource;
+    
+    /**
+     * The foreignId for the node;
+     */
+    private String m_foreignId;
 
     /**
      * The bit map used to determine which elements have changed since the
@@ -285,6 +295,10 @@ final class DbNodeEntry {
     private static final int CHANGED_SYSDESCR = 1 << 13;
 
     private static final int CHANGED_POLLTIME = 1 << 14;
+
+    private static final int CHANGED_FOREIGN_SOURCE = 1 << 15;
+
+    private static final int CHANGED_FOREIGN_ID = 1 << 16;
 
     /**
      * Inserts the new node into the node table of the OpenNMS databasee.
@@ -401,6 +415,17 @@ final class DbNodeEntry {
                 names.append(",lastCapsdPoll");
             }
 
+            if ((m_changed & CHANGED_FOREIGN_SOURCE) == CHANGED_FOREIGN_SOURCE) {
+                values.append(",?");
+                names.append(",foreignSource");
+            }
+            if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID) {
+                values.append(",?");
+                names.append(",foreignId");
+            }
+
+            
+
             names.append(") VALUES (").append(values).append(')');
             log.debug("DbNodeEntry.insert: SQL insert statment = " + names.toString());
 
@@ -461,6 +486,12 @@ final class DbNodeEntry {
             if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
                 stmt.setTimestamp(ndx++, m_lastPoll);
             }
+
+            if ((m_changed & CHANGED_FOREIGN_SOURCE) == CHANGED_FOREIGN_SOURCE)
+                stmt.setString(ndx++, m_foreignSource);
+
+            if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID)
+                stmt.setString(ndx++, m_foreignId);
 
             if (log.isDebugEnabled()) {
                 log.debug("nodeid='" + m_nodeId + "'" + " nodetype='" + new String(new char[] { m_type }) + "'" + " createTime='" + m_createTime + "'" + " lastPoll='" + m_lastPoll + "'" + " dpName='" + m_dpName + "'" + " sysname='" + m_sysname + "'" + " sysoid='" + m_sysoid + "'" + " sysdescr='" + m_sysdescr + "'" + " syslocation='" + m_syslocation + "'" + " syscontact='" + m_syscontact + "'" + " label='" + m_label + "'" + " labelsource='" + new String(new char[] { m_labelSource }) + "'" + " netbios='" + m_nbName + "'" + " domain='" + m_nbDomainName + "'" + " os='" + m_os + "'");
@@ -579,6 +610,16 @@ final class DbNodeEntry {
             comma = ',';
         }
 
+        if ((m_changed & CHANGED_FOREIGN_SOURCE) == CHANGED_FOREIGN_SOURCE) {
+            sqlText.append(comma).append("foreignSource = ?");
+            comma = ',';
+        }
+
+        if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID) {
+            sqlText.append(comma).append("foreignId = ?");
+            comma = ',';
+        }
+
         sqlText.append(" WHERE nodeID = ? AND dpName = ?");
 
         log.debug("DbNodeEntry.update: SQL update statment = " + sqlText.toString());
@@ -681,6 +722,20 @@ final class DbNodeEntry {
                     stmt.setTimestamp(ndx++, m_lastPoll);
                 } else
                     stmt.setNull(ndx++, Types.TIMESTAMP);
+            }
+
+            if ((m_changed & CHANGED_FOREIGN_SOURCE) == CHANGED_FOREIGN_SOURCE) {
+                if (m_foreignSource == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_foreignSource);
+            }
+
+            if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID) {
+                if (m_foreignId == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_foreignId);
             }
 
             stmt.setInt(ndx++, m_nodeId);
@@ -818,6 +873,10 @@ final class DbNodeEntry {
         // get the last poll time
         //
         m_lastPoll = rset.getTimestamp(ndx++);
+        
+        m_foreignSource = rset.getString(ndx++);
+        
+        m_foreignId = rset.getString(ndx++);
 
         rset.close();
         stmt.close();
@@ -864,6 +923,8 @@ final class DbNodeEntry {
         m_nbDomainName = null;
         m_os = null;
         m_lastPoll = null;
+        m_foreignSource = null;
+        m_foreignId = null;
         m_changed = 0;
     }
 
@@ -1492,6 +1553,94 @@ final class DbNodeEntry {
         m_lastPoll = time;
         m_changed |= CHANGED_POLLTIME;
     }
+    
+    /**
+     * Returns the current foreignSource.
+     */
+    String getForeignSource() {
+        return m_foreignSource;
+    }
+
+    /**
+     * Sets the current NetBIOS name.
+     * 
+     * @param name
+     *            The new NetBIOS name.
+     */
+    void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
+        m_changed |= CHANGED_FOREIGN_SOURCE;
+    }
+
+    boolean hasForeignSource() {
+        if ((m_changed & CHANGED_FOREIGN_SOURCE) == CHANGED_FOREIGN_SOURCE)
+            return true;
+        else
+            return false;
+    }
+
+    boolean updateForeignSource(String newForeignSource) {
+        boolean doUpdate = false;
+        if (newForeignSource != null && m_foreignSource != null) {
+            if (!newForeignSource.toUpperCase().equals(m_foreignSource))
+                doUpdate = true;
+        } else if (newForeignSource == null && m_foreignSource == null) {
+            // do nothing
+        } else
+            // one is null the other isn't, do the update
+            doUpdate = true;
+
+        if (doUpdate) {
+            setForeignSource(newForeignSource);
+            return true;
+        } else
+            return false;
+    }
+
+    
+    /**
+     * Returns the current foreignSource.
+     */
+    String getForeignId() {
+        return m_foreignId;
+    }
+
+    /**
+     * Sets the current NetBIOS name.
+     * 
+     * @param name
+     *            The new NetBIOS name.
+     */
+    void setForeignId(String foreignId) {
+        m_foreignId = foreignId;
+        m_changed |= CHANGED_FOREIGN_ID;
+    }
+
+    boolean hasForeignId() {
+        if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID)
+            return true;
+        else
+            return false;
+    }
+
+    boolean updateForeignId(String newForeignId) {
+        boolean doUpdate = false;
+        if (newForeignId != null && m_foreignId != null) {
+            if (!newForeignId.toUpperCase().equals(m_foreignId))
+                doUpdate = true;
+        } else if (newForeignId == null && m_foreignId == null) {
+            // do nothing
+        } else
+            // one is null the other isn't, do the update
+            doUpdate = true;
+
+        if (doUpdate) {
+            setForeignId(newForeignId);
+            return true;
+        } else
+            return false;
+    }
+    
 
     /**
      * Updates the node information in the configured database. If the node does
