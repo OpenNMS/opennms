@@ -1326,7 +1326,7 @@ public class OpenNMSTestCase extends TestCase {
                 "       <specific>10.0.0.2</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\" proxy-host=\"127.0.0.1\">\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\" proxy-host=\""+myLocalHost()+"\">\n" + 
                 "       <specific>10.0.0.3</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
@@ -1410,29 +1410,9 @@ public class OpenNMSTestCase extends TestCase {
         
         if (m_runSupers) {
         
-            m_network = new MockNetwork();
-            m_network.setCriticalService("ICMP");
-            m_network.addNode(1, "Router");
-            m_network.addInterface("192.168.1.1");
-            m_network.addService("ICMP");
-            m_network.addService("SMTP");
-            m_network.addInterface("192.168.1.2");
-            m_network.addService("ICMP");
-            m_network.addService("SMTP");
-            m_network.addNode(2, "Server");
-            m_network.addInterface("192.168.1.3");
-            m_network.addService("ICMP");
-            m_network.addService("HTTP");
-            m_network.addNode(3, "Firewall");
-            m_network.addInterface("192.168.1.4");
-            m_network.addService("SMTP");
-            m_network.addService("HTTP");
-            m_network.addInterface("192.168.1.5");
-            m_network.addService("SMTP");
-            m_network.addService("HTTP");
+            createMockNetwork();
             
-            m_db = new MockDatabase();
-            m_db.populate(m_network);
+            populateDatabase();
             
             DataSourceFactory.setInstance(m_db);
 
@@ -1471,6 +1451,34 @@ public class OpenNMSTestCase extends TestCase {
         
         }
 
+    }
+
+    protected void populateDatabase() throws Exception {
+        m_db = new MockDatabase();
+        m_db.populate(m_network);
+    }
+
+    protected void createMockNetwork() {
+        m_network = new MockNetwork();
+        m_network.setCriticalService("ICMP");
+        m_network.addNode(1, "Router");
+        m_network.addInterface("192.168.1.1");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addInterface("192.168.1.2");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addNode(2, "Server");
+        m_network.addInterface("192.168.1.3");
+        m_network.addService("ICMP");
+        m_network.addService("HTTP");
+        m_network.addNode(3, "Firewall");
+        m_network.addInterface("192.168.1.4");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        m_network.addInterface("192.168.1.5");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
     }
     
     @Override
