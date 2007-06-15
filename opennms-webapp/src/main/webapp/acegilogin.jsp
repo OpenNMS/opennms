@@ -24,10 +24,10 @@
       <c:choose>
         <c:when test="${not empty param.login_error}">
           <%-- This is: AuthenticationProcessingFilter.ACEGI_SECURITY_LAST_USERNAME_KEY --%>
-          <input type='text' name='j_username' value='${ACEGI_SECURITY_LAST_USERNAME}' /><br />
+          <input type='text' id="input_j_username" name='j_username' value='${ACEGI_SECURITY_LAST_USERNAME}' /><br />
         </c:when>
         <c:otherwise>
-          <input type='text' name='j_username' /><br />
+          <input type='text' id="input_j_username" name='j_username' /><br />
         </c:otherwise>
       </c:choose>
       
@@ -40,6 +40,12 @@
     
     <input name="reset" type="reset" value="Reset" />
     <input name="Get in" type="submit" value="Get in" />
+
+    <script type="text/javascript">
+      if (document.getElementById) {
+        document.getElementById('input_j_username').focus();
+      }
+    </script>
   
   </form>
 </div>

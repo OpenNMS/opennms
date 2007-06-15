@@ -46,6 +46,7 @@
 		java.util.*
 	"
 %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%!  
     protected OutageModel model = new OutageModel();
@@ -142,6 +143,7 @@
               <% for( int svcIndex=0; svcIndex < svcList.size(); svcIndex++ ) { %>
                 <%
                     Outage outage = (Outage)svcList.get(svcIndex);
+		    pageContext.setAttribute("outage", outage);
                     int nodeId = outage.getNodeId();
                     String ipAddr = outage.getIpAddress();
 		    int outageId = outage.getId();
@@ -157,7 +159,9 @@
                   <% } %>
                     
                   <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a></td>
-                  <td><%=org.opennms.netmgt.EventConstants.formatToUIString(outage.getTimeDown())%></td>
+		  <td>
+	          <fmt:formatDate value="${outage.timeDown}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.timeDown}" type="time" pattern="HH:mm:ss"/>
+		  </td>
                   <td><a href="outage/detail.jsp?id=<%=outageId%>"><%=outageId%></a></td>
                 </tr>
               <% } /* endfor service */ %>

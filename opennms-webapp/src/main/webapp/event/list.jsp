@@ -54,6 +54,7 @@
 		org.opennms.web.admin.notification.noticeWizard.*
 	"
 %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%--
   This page is written to be the display (view) portion of the EventQueryServlet
@@ -262,7 +263,10 @@
           <th width="10%">Ackd</th>
         </tr>
         </thead>     
-      <% for( int i=0; i < events.length; i++ ) { %>        
+      <% for( int i=0; i < events.length; i++ ) {
+        Event event = events[i];
+      	pageContext.setAttribute("event", event);
+      %>
         <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <td valign="top" rowspan="3" class="divider">
@@ -285,7 +289,7 @@
             <% } %>
           </td>
           <td class="divider">
-            <nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></nobr>
+            <nobr><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterDateFilter(events[i].getTime()), true)%>"  class="filterLink" title="Only show events occurring after this one"><%=addAfterDateFilterString%></a>            
               <a href="<%=this.makeLink( parms, new BeforeDateFilter(events[i].getTime()), true)%>" class="filterLink" title="Only show events occurring before this one"><%=addBeforeDateFilterString%></a>
@@ -378,7 +382,11 @@
             <% } %>
           </td>
           <td valign="top">
-            <%=events[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(events[i].getAcknowledgeTime()) : "&nbsp;"%>
+            <% if (events[i].isAcknowledged()) { %>
+	      <fmt:formatDate value="${event.acknowledgeTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.acknowledgeTime}" type="time" pattern="HH:mm:ss"/>
+            <% } else { %>
+              &nbsp;
+            <% } %>
           </td>
         </tr>
        

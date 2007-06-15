@@ -48,6 +48,7 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.outage.*,java.util.*" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%! 
     OutageModel model = new OutageModel();
@@ -88,7 +89,11 @@
     <th>Outage ID</th>
   </tr>
 
-  <% for( int i=0; i < outages.length; i++ ) { %>
+  <%
+     for( int i=0; i < outages.length; i++ ) {
+     Outage outage = outages[i];
+     pageContext.setAttribute("outage", outage);
+  %>
 		<% if( outages[i].getRegainedServiceTime() == null ) { %>
       <tr class="Critical">
     <% } else { %>
@@ -96,12 +101,12 @@
     <% } %>
       <td class="divider"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>"><%=outages[i].getIpAddress()%></a></td>
       <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
-      <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
+      <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
       
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
         <td class="divider bright"><b>DOWN</b></td>
       <% } else { %>
-        <td class="divider bright"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>      
+        <td class="divider bright"><fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/></td>      
       <% } %>
       <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>       
     </tr>

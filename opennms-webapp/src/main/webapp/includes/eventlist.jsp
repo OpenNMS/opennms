@@ -57,6 +57,7 @@
 		org.opennms.web.MissingParameterException
 	"
 %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%
     //required parameter: node
@@ -175,6 +176,8 @@
 <%
    for( int i=0; i < events.length; i++ ) {
        int severity = events[i].getSeverity();
+       Event event = events[i];
+       pageContext.setAttribute("event", event);
 %>
      <tr class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
@@ -185,7 +188,7 @@
              </nobr>
            </td>
        <% } %>
-       <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
+       <td class="divider"><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></td>
        <td class="divider bright"><%=EventUtil.getSeverityLabel(severity)%></td>
        <td class="divider"><%=events[i].getLogMessage()%></td>
      </tr>

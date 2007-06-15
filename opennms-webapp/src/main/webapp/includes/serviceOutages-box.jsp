@@ -52,6 +52,7 @@
 		java.util.*
 	"
 %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%! 
     OutageModel m_model = new OutageModel();
@@ -85,10 +86,18 @@
     <th>Regained</th>
     <th>Outage ID</th>
   </tr>
-  <%  for(int i=0; i < outages.length; i++) { %>
+  <%
+      for(int i=0; i < outages.length; i++) {
+      Outage outage = outages[i];
+      pageContext.setAttribute("outage", outage);
+  %>
      <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "Critical" : "Normal"%>">
-      <td class="divider"><%=EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
-      <td  class="divider bright"><%=(outages[i].getRegainedServiceTime() == null) ? "DOWN" : EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
+      <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
+      <% if( outages[i].getRegainedServiceTime() == null ) { %>
+        <td class="divider bright"><b>DOWN</b></td>
+      <% } else { %>
+        <td class="divider bright"><fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/></td>      
+      <% } %>
       <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>
     </tr>
   <% } %>
