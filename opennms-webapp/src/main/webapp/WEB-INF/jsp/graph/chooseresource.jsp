@@ -67,14 +67,16 @@
       
       function recursiveIsSomethingSelected(node, depth) {
           for (var i = 0; i < node.length; i++) {
-              if (node[i].length != null) {
+              if (node[i].nodeName.toUpperCase() == "SELECT") {
+                  if (node[i].selectedIndex != -1) {
+                      return true;
+                  } else {
+                      continue;
+                  }
+              } else {
                   if (depth == 0) {
                       alert("Max depth encountered while checking to see if something is selected.  Please report this as a bug.");
                   } else if (recursiveIsSomethingSelected(node[i], depth - 1)) {
-                      return true;
-                  }
-              } else {
-                  if (node[i].selected) {
                       return true;
                   }
               }
@@ -97,14 +99,16 @@
       
       function recursiveSelectAll(node, selected, depth) {
           for (var i = 0; i < node.length; i++) {
-              if (node[i].length != null) {
+              if (node[i].nodeName.toUpperCase() == "SELECT") {
+                  for (var j = 0; j < node[i].options.length; j++) {
+                      node[i].options[j].selected = selected;
+                  }
+              } else {
                   if (depth == 0) {
                       alert("Max depth encountered while setting item selection to " + selected + ".  Please report this as a bug.");
                   } else {
                       recursiveSelectAll(node[i], selected, depth - 1);
                   }
-              } else {
-                  node[i].selected = selected;
               }
           }
       }

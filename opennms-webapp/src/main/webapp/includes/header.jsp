@@ -99,7 +99,7 @@
                 <jsp:useBean id="currentDate" class="java.util.Date" />
                 <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
                 &nbsp;
-                <fmt:formatDate value="${currentDate}" type="time" pattern="H:mm z"/> 
+                <fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/> 
 			</p>
 		</div>
 		<hr />
