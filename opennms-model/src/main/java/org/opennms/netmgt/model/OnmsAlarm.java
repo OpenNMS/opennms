@@ -143,6 +143,9 @@ public class OnmsAlarm implements Serializable {
 
     /** nullable persistent field */
     private String m_clearUei;
+    
+    /** nullable persistent field */
+    private String m_clearKey;
 
     /** persistent field */
     private org.opennms.netmgt.model.OnmsEvent m_lastEvent;
@@ -163,7 +166,7 @@ public class OnmsAlarm implements Serializable {
     private String m_qosAlarmState;
 
     private int m_x733ProbableCause = 0;
-
+    
 	private Map<String, String> m_details;
 
     /** full constructor */
@@ -433,6 +436,15 @@ public class OnmsAlarm implements Serializable {
 
     public void setClearUei(String clearuei) {
         this.m_clearUei = clearuei;
+    }
+
+    @Column(name="clearKey", length=256)
+    public String getClearKey() {
+        return this.m_clearKey;
+    }
+
+    public void setClearKey(String clearKey) {
+        this.m_clearKey = clearKey;
     }
 
     @ManyToOne(fetch=FetchType.LAZY, optional=true)
