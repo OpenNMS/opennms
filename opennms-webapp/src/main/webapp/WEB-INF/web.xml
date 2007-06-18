@@ -167,7 +167,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-30</filter-name>
-    <url-pattern>/alarm/list</url-pattern>
+    <url-pattern>/alarm/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping>
