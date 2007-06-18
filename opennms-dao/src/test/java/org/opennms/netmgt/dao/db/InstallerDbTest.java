@@ -156,6 +156,21 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
         assertNoTablesHaveChanged();
     }
+    
+    public void testInsertCriteria() throws Exception {
+        getInstallerDb().createSequences();
+        getInstallerDb().updatePlPgsql();
+        getInstallerDb().addStoredProcedures();
+
+        getInstallerDb().createTables();
+
+        getInstallerDb().insertData();
+        
+        // try to insert twice
+        getInstallerDb().insertData();
+
+
+    }
 
     public void testUpgradeRevision3952ToCurrent() throws Exception {
         String newCreate = getInstallerDb().getCreateSqlLocation();
