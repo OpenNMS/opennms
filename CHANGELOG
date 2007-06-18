@@ -1,6 +1,18 @@
 1.3.2 to 1.3.3
 ----------------------------------------------------------------------
-- Turned off DHCP monitoring until it gets fixed. 
+- Add a "-Q" option (quick) to the startup script 
+- Beginning of Drools support for correlation.
+- Move contrib/report.sh to bin/generate-report and make it work again.
+- Statistics (TopN) daemon created.
+- Report "supression" available for similar reports.
+- Trouble Ticketing API with CentricCRM integration. 
+- Rewrote bits of the LDAP monitor to produce response time.
+- OpenNMS now builds against Java6.
+- JavaMailer improvements included charset and content type (text/html).
+- The alarm list .jsp is now much more compact in order to display more 
+  on a page. The old one exists as list-long.jsp.
+- The Postgresql iplike function is now it's own project.
+- The clearKey field was added to make automations easier to use.
 - Fixed Bug 1403 which was causing the issnmprimary field to be
   set to "N" for interfaces with IP addresses and no SNMP.
 - Changed a large number of files to make defaults more reasonable.

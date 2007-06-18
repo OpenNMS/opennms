@@ -55,7 +55,7 @@
         <property key="retry" value="1" />
         <property key="lookup" value="localhost" />
     </protocol-plugin>
-    <protocol-plugin protocol="DHCP" class-name="org.opennms.netmgt.capsd.plugins.DhcpPlugin" scan="off" user-defined="false">
+    <protocol-plugin protocol="DHCP" class-name="org.opennms.netmgt.capsd.plugins.DhcpPlugin" scan="on" user-defined="false">
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
     </protocol-plugin>
