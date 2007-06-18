@@ -128,7 +128,7 @@
         </listitem>
 
         <listitem>
-          <para>Locate the OpenNMS webapp logs directory.  This is usually
+          <para>Locate the OpenNMS webapp logs directory. This is usually
           <filename>/var/log/opennms/webapp</filename> or in
           <filename>logs/webapp</filename> under the OpenNMS home directory.
           Run the commands:</para>
@@ -141,7 +141,7 @@
         </listitem>
 
         <listitem>
-          <para>Locate the OpenNMS reports directory.  This is usually
+          <para>Locate the OpenNMS reports directory. This is usually
           <filename>share/reports</filename> under the OpenNMS home directory.
           Run the commands:</para>
 
@@ -203,9 +203,6 @@
 
   <section>
     <title>Prerequisite Package: PostgreSQL</title>
-
-    <para>XXX add a comment about 32-bit vs. 64-bit stuff for the iplike.so
-    module</para>
 
     <para><ulink url="http://www.postgresql.org/">PostgreSQL</ulink> (or
     "Postgres") is a relational database that OpenNMS uses to store
@@ -320,6 +317,25 @@ host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting><
       <para><programlisting><computeroutput># </computeroutput><command>./pg_ctl -D /usr/local/pgsql/data start</command></programlisting></para>
 
       <para>Now you are finished as the <code>postgres</code> user.</para>
+    </section>
+
+    <section>
+      <title>Adding the iplike function</title>
+
+      <para>OpenNMS makes heavy use of a function called "iplike". Since it is
+      written in C, it has been removed from the main OpenNMS code and placed
+      in its own project.</para>
+
+      <para>If a C-based iplike is not installed, the OpenNMS installer will
+      add a version written in the PostgreSQL command language. It will work,
+      but not as quickly as the compiled iplike will.</para>
+
+      <para>To install iplike, simply download the proper package for your
+      distribution. There should be a package for PostgreSQL versions 7.4-8.1,
+      and one for 8.2+. In addition, there will be separate 32-bit and 64-bit
+      versions. It is also possible to download a tarball and do the usual
+      "configure", "make", and "make install". Once installed it should not be
+      required to update it again.</para>
     </section>
   </section>
 </chapter>
