@@ -362,6 +362,54 @@ public class AutomationProcessor implements ReadyRunnable {
 		public String toString() {
 			return m_action.getName();
 		}
+
+        public void checkForRequiredColumns(TriggerResults triggerResults) {
+        	ResultSet triggerResultSet = triggerResults.getResultSet();
+        	if (!resultSetHasRequiredActionColumns(triggerResultSet, getActionColumns())) {
+        		throw new AutomationException("Action "+this+" uses column not defined in trigger: "+triggerResults);
+        	}
+        }
+
+        /**
+         * Helper method that verifies tokens in a config defined action
+         * are available in the ResultSet of the paired trigger
+         * @param rs
+         * @param actionColumns TODO
+         * @param actionSQL
+         * @param processor TODO
+         * @return
+         */
+        public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection actionColumns) {
+            
+            log().debug("resultSetHasRequiredActionColumns: Verifying required action columns in trigger ResultSet...");
+            
+            if (actionColumns.isEmpty()) {
+            	return true;
+            }
+            
+            if (rs == null) {
+            	return false;
+            }
+            
+            boolean verified = true;
+            String actionColumnName = null;
+            
+            Iterator it = actionColumns.iterator();
+            
+            while (it.hasNext()) {
+                actionColumnName = (String)it.next();
+                try {
+                    if (rs.findColumn(actionColumnName) > 0) {
+                    }
+                } catch (SQLException e) {
+                    log().warn("resultSetHasRequiredActionColumns: Trigger ResultSet does NOT have required action columns.  Missing: "+actionColumnName);
+                    log().warn(e.getMessage());
+                    verified = false;
+                }
+            }
+        
+            return verified;
+        }
         
     }
     
@@ -673,7 +721,7 @@ public class AutomationProcessor implements ReadyRunnable {
 		log().debug("runAutomation: running action(s)/actionEvent(s) for : "+m_automation.getName());
 		
         //Verfiy the trigger ResultSet returned the required number of rows and the required columns for the action statement
-        checkForRequiredColumns(triggerResults);
+        m_action.checkForRequiredColumns(triggerResults);
         		
 		if (m_action.processAction(triggerResults)) {
 		    m_actionEvent.processActionEvent(triggerResults);
@@ -701,13 +749,6 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 	}
 
-	public void checkForRequiredColumns(TriggerResults triggerResults) {
-		ResultSet triggerResultSet = triggerResults.getResultSet();
-		if (!resultSetHasRequiredActionColumns(triggerResultSet, m_action.getActionColumns())) {
-			throw new AutomationException("Action "+m_action+" uses column not defined in trigger: "+m_trigger);
-		}
-	}
-
 	protected boolean verifyRowCount(ResultSet triggerResultSet) throws SQLException {
         if (!m_trigger.hasTrigger()) {
             return true;
@@ -729,45 +770,6 @@ public class AutomationProcessor implements ReadyRunnable {
             validRows = false;
 
         return validRows;
-    }
-
-    /**
-     * Helper method that verifies tokens in a config defined action
-     * are available in the ResultSet of the paired trigger
-     * @param rs
-     * @param actionSQL
-     * @return
-     */
-    public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection actionColumns) {
-        
-        log().debug("resultSetHasRequiredActionColumns: Verifying required action columns in trigger ResultSet...");
-        
-        if (actionColumns.isEmpty()) {
-        	return true;
-        }
-        
-        if (rs == null) {
-        	return false;
-        }
-        
-        boolean verified = true;
-        String actionColumnName = null;
-        
-        Iterator it = actionColumns.iterator();
-        
-        while (it.hasNext()) {
-            actionColumnName = (String)it.next();
-            try {
-                if (rs.findColumn(actionColumnName) > 0) {
-                }
-            } catch (SQLException e) {
-                log().warn("resultSetHasRequiredActionColumns: Trigger ResultSet does NOT have required action columns.  Missing: "+actionColumnName);
-                log().warn(e.getMessage());
-                verified = false;
-            }
-        }
-
-        return verified;
     }
 
     /**
