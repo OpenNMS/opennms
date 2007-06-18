@@ -70,6 +70,7 @@ import org.opennms.core.utils.ProcessExec;
 import org.springframework.util.StringUtils;
 
 public class InstallerDb {
+
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
     public static final float POSTGRES_MIN_VERSION = 7.3f;
@@ -112,7 +113,7 @@ public class InstallerDb {
     // private LinkedList m_functions = new LinkedList(); // Unused, not in create.sql
     // private LinkedList m_languages = new LinkedList(); // Unused, not in create.sql
 
-    private HashMap<String, List<String>> m_inserts = new HashMap<String, List<String>>();
+    private HashMap<String, List<Insert>> m_inserts = new HashMap<String, List<Insert>>();
 
     private HashSet<String> m_drops = new HashSet<String>();
 
@@ -155,13 +156,16 @@ public class InstallerDb {
         LinkedList<String> sql_l = new LinkedList<String>();
 
         Pattern seqmappingPattern = Pattern.compile("\\s*--#\\s+install:\\s*"
-                + "(\\S+)\\s+(\\S+)\\s+" + "(\\S+)\\s*.*");
+                + "(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*.*");
         Pattern createPattern = Pattern.compile("(?i)\\s*create\\b.*");
+        Pattern criteriaPattern = Pattern.compile("\\s*--#\\s+criteria:\\s*(.*)");
         Pattern insertPattern = Pattern.compile("(?i)INSERT INTO "
                 + "[\"']?([\\w_]+)[\"']?.*");
         Pattern dropPattern = Pattern.compile("(?i)DROP TABLE [\"']?"
                 + "([\\w_]+)[\"']?.*");
-
+        
+        
+        String criteria = null;
         while ((line = r.readLine()) != null) {
             Matcher m;
 
@@ -173,6 +177,12 @@ public class InstallerDb {
             if (m.matches()) {
                 String[] a = { m.group(2), m.group(3) };
                 m_seqmapping.put(m.group(1), a);
+                continue;
+            }
+            
+            m = criteriaPattern.matcher(line);
+            if (m.matches()) {
+                criteria = m.group(1);
                 continue;
             }
 
@@ -235,20 +245,23 @@ public class InstallerDb {
             m = insertPattern.matcher(line);
             if (m.matches()) {
                 String table = m.group(1);
+                Insert insert = new Insert(table, line, criteria);
+                criteria = null;
                 if (!m_inserts.containsKey(table)) {
-                    m_inserts.put(table, new LinkedList<String>());
+                    m_inserts.put(table, new LinkedList<Insert>());
                 }
-                m_inserts.get(table).add(line);
+                m_inserts.get(table).add(insert);
 
                 continue;
             }
 
             if (line.toLowerCase().startsWith("select setval ")) {
                 String table = "select_setval";
+                Insert insert = new Insert("select_setval", line, null);
                 if (!m_inserts.containsKey(table)) {
-                    m_inserts.put(table, new LinkedList<String>());
+                    m_inserts.put(table, new LinkedList<Insert>());
                 }
-                m_inserts.get(table).add(line);
+                m_inserts.get(table).add(insert);
 
                 sql_l.add(line);
                 continue;
@@ -1914,35 +1927,27 @@ public class InstallerDb {
     // XXX This causes the following Postgres error:
     // ERROR: duplicate key violates unique constraint "pk_dpname"
     public void insertData() throws Exception {
-        Statement st = getConnection().createStatement();
 
         for (String table : getInserts().keySet()) {
-            boolean exists = false;
+            Status status = Status.OK;
 
-            m_out.print("- inserting initial table data for \"" + table
-                    + "\"... ");
-            for (String insert : getInserts().get(table)) {
-                try {
-                    st.execute(insert);
-                } catch (SQLException e) {
-                    /*
-                     * SQL Status codes: 23505: ERROR: duplicate key violates
-                     * unique constraint "%s"
-                     */
-                    if (e.toString().indexOf("duplicate key") != -1
-                            || "23505".equals(e.getSQLState())) {
-                        exists = true;
-                    } else {
-                        throw e;
-                    }
+            m_out.print("- inserting initial table data for \"" + table + "\"... ");
+
+            // XXX: criteria are checked for all inserts before
+            // any of them are done so inserts don't interfere with
+            // other inserts criteria
+            List<Insert> toBeInserted = new LinkedList<Insert>();
+            for (Insert insert : getInserts().get(table)) {
+                if (insert.isCriteriaMet()) {
+                    toBeInserted.add(insert);
                 }
             }
-
-            if (exists) {
-                m_out.println("EXISTS");
-            } else {
-                m_out.println("OK");
+            
+            for(Insert insert : toBeInserted) {
+                status = status.combine(insert.doInsert());
             }
+
+            m_out.println(status);
         }
     }
 
@@ -2191,7 +2196,7 @@ public class InstallerDb {
         return m_indexDao;
     }
 
-    public Map<String, List<String>> getInserts() {
+    public Map<String, List<Insert>> getInserts() {
         return m_inserts;
     }
 
@@ -2734,6 +2739,106 @@ public class InstallerDb {
                 m_connection.close();
             }
         }
+    }
+    
+    enum Status {
+        OK,
+        SKIPPED,
+        EXISTS;
+        
+        Status combine(Status s) {
+            if (this.ordinal() > s.ordinal()) {
+                return this;
+            } else {
+                return s;
+            }
+        }
+    }
+    
+    public class Insert {
+
+        private String m_table;
+        private String m_insertStatement;
+        private String m_criteria;
+
+        public Insert(String table, String line, String criteria) {
+            m_table = table;
+            m_insertStatement = line;
+            m_criteria = criteria;
+        }
+        
+        public String getTable() {
+            return m_table;
+        }
+
+        public String getCriteria() {
+            return m_criteria;
+        }
+
+        public String getInsertStatement() {
+            return m_insertStatement;
+        }
+
+        Status execute() throws SQLException {
+            if (isCriteriaMet()) {
+                return doInsert();
+            } else {
+                return Status.SKIPPED;
+            }
+        }
+
+        private boolean isCriteriaMet() throws SQLException {
+            if (getCriteria() == null) {
+                return true;
+            }
+            Statement st = null;
+            try {
+                st = getConnection().createStatement();
+                ResultSet rs = null;
+                try {
+                    rs = st.executeQuery(getCriteria());
+                    // if we find a row the first column must be 't'
+                    if (rs.next()) {
+                        return rs.getBoolean(1);
+                    }
+                    // other wise return false
+                    return false;
+                } finally {
+                    if (rs != null) {
+                        rs.close();
+                    }
+                }
+            } finally {
+                if (st != null) {
+                    st.close();
+                }
+            }
+        }
+
+        private Status doInsert() throws SQLException {
+            Statement st = null;
+            try {
+                st = getConnection().createStatement();
+                st.execute(getInsertStatement());
+            } catch (SQLException e) {
+                /*
+                 * SQL Status codes: 23505: ERROR: duplicate key violates
+                 * unique constraint "%s"
+                 */
+                if (e.toString().indexOf("duplicate key") != -1
+                        || "23505".equals(e.getSQLState())) {
+                    return Status.EXISTS;
+                } else {
+                    throw e;
+                }
+            } finally {
+                if (st != null) st.close();
+            }
+            return Status.OK;
+        }
+        
+
+
     }
 
 
