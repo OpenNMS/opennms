@@ -166,7 +166,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         ResultSet rs = stmt.executeQuery("select * from events");
         Collection columns = new ArrayList();
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
-        assertTrue(ap.resultSetHasRequiredActionColumns(rs, columns));
+        assertTrue(ap.getAction().resultSetHasRequiredActionColumns(rs, columns));
     }
 
     /**
