@@ -50,7 +50,7 @@
 			threednsTrapVSRedToGreen trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/threednsTrapVSGreenToRed" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/threednsTrapVSGreenToRed" auto-clean="false" clear-key="uei.opennms.org/vendor/f5/traps/threednsTrapVSGreenToRed:%dpname%:%nodeid%:%interface%" />
 </event>
 <event>
 	<mask>
@@ -76,7 +76,7 @@
 			threednsTrapServerRedToGreen trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/threednsTrapServerGreenToRed" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/threednsTrapServerGreenToRed" auto-clean="false" clear-key="uei.opennms.org/vendor/f5/traps/threednsTrapServerGreenToRed:%dpname%:%nodeid%:%interface%" />
 </event>
 <event>
 	<mask>
@@ -243,7 +243,7 @@
 			memberPort=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/loadBalTrapServiceDown`" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/loadBalTrapServiceDown`" auto-clean="false" clear-key="uei.opennms.org/vendor/f5/traps/loadBalTrapServiceDown`:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" />
 </event>
 <event>
 	<mask>
@@ -398,7 +398,7 @@
 			loadBalTrapMessage=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/loadBalTrapRemoveUnit" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/f5/traps/loadBalTrapRemoveUnit" auto-clean="false" clear-key="uei.opennms.org/vendor/f5/traps/loadBalTrapRemoveUnit:%dpname%:%nodeid%:%interface%" />
 </event>
 <!-- End of auto generated data from MIB: LOAD-BAL-SYSTEM-MIB -->
 <!-- Start of auto generated data from MIB: F5-BIGIP-COMMON-MIB -->
@@ -426,7 +426,7 @@
 			bigipAgentStart trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipAgentShutdown" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipAgentShutdown" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipAgentShutdown:%dpname%:%nodeid%:%interface%" />
 </event>
 <event>
 	<mask>
@@ -748,7 +748,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjPort=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipServiceDown" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipServiceDown" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipServiceDown:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" />
 </event>
 <event>
 	<mask>
@@ -820,7 +820,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjNode=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipNodeDown" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipNodeDown" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipNodeDown:%dpname%:%nodeid%:%interface%:%parm[#2]%" />
 </event>
 <event>
 	<mask>
@@ -975,7 +975,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipFeatureFailed" auto-clean="false"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipFeatureFailed" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipFeatureFailed:%dpname%:%nodeid%:%interface%" />
 </event>
 <event>
 	<mask>
