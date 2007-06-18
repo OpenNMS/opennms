@@ -745,6 +745,10 @@ public final class EventUtil {
 		int index1 = -1;
 		int index2 = -1;
 
+		if (inp == null) {
+			return null;
+		}
+		
 		StringBuffer ret = new StringBuffer();
 
 		String tempInp = inp;

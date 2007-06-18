@@ -527,7 +527,11 @@ public final class EventExpander {
             strRet = EventUtil.expandParms(event.getAlarmData().getReductionKey(), event);
             if (strRet != null) {
                 event.getAlarmData().setReductionKey(strRet);
-                strRet = null;
+            }
+            strRet = null;
+            strRet = EventUtil.expandParms(event.getAlarmData().getClearKey(), event);
+            if (strRet != null) {
+            	event.getAlarmData().setClearKey(strRet);
             }
         }
 
@@ -696,6 +700,7 @@ public final class EventExpander {
                 alarmData.setAutoClean(econf.getAlarmData().getAutoClean());
                 alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
                 alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());
+                alarmData.setClearKey(econf.getAlarmData().getClearKey());
                 e.setAlarmData(alarmData);
             }
 

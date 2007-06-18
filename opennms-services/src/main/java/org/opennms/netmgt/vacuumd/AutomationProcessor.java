@@ -286,7 +286,7 @@ public class AutomationProcessor implements ReadyRunnable {
         
         void assignStatementParameters(PreparedStatement stmt, ResultSet rs) throws SQLException {
             List<String> actionColumns = getTokenizedColumns(getActionSQL());        
-            Iterator it = actionColumns.iterator();
+            Iterator<String> it = actionColumns.iterator();
             String actionColumnName = null;
             int i=0;
             while (it.hasNext()) {

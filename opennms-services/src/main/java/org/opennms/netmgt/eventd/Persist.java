@@ -580,14 +580,17 @@ class Persist {
         //Column 25, clearUie
         //Column 26, x733AlarmType
         //Column 27, x733ProbableCause
+        //Column 28, clearKey
         if (event.getAlarmData() == null) {
             m_insStmt.setString(25, null);
             m_insStmt.setString(26, null);
             m_insStmt.setInt(27, -1);
+            m_insStmt.setString(28, null);
         } else {
             m_insStmt.setString(25, Constants.format(event.getAlarmData().getClearUei(), EVENT_UEI_FIELD_SIZE));
             m_insStmt.setString(26, Constants.format(event.getAlarmData().getX733AlarmType(), EVENT_X733_ALARMTYPE_SIZE));
             set(m_insStmt, 27, event.getAlarmData().getX733ProbableCause());
+            set(m_insStmt, 28, event.getAlarmData().getClearKey());
         }
         
         if (log.isDebugEnabled())
