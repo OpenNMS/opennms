@@ -59,11 +59,17 @@
       String critSvc = request.getParameter("critSvc");
       String[] pthData = PathOutageFactory.getCriticalPathData(critIp, critSvc);
       List nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
+  
+      <h3>Path Outage Node List</h3>
+      <table>
+          <tr>
+          <th>Critical Path</th>
+          <th>Status</th>
+          </tr>
 
-      <br>
-      <table class="wdth600">
           <tr class="CellStatus">
-          <td class="<%= pthData[3] %>" colspan="4" align="center">Node List for Critical Path <%= critIp %> <%= critSvc %></td>
+          <td><%= critIp %></td>
+          <td class="<%= pthData[3] %>"><%= critSvc %></td>
           </tr>
 
           <tr>
@@ -78,7 +84,7 @@
                   String nodeid = (String)iter.next();
                   String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
                   <tr class="CellStatus">
-                  <td class="Cleared"><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
+                  <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
                   <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>
                   </tr>
               <% } %>

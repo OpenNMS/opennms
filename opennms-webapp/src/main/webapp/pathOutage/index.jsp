@@ -79,15 +79,15 @@
 			pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
 			<tr class="CellStatus">
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
-					<td class="Cleared">(interface not in DB)</td>
+					<td>(interface not in DB)</td>
 					<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
-						<td class="Cleared"><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
+						<td><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
 						<% } else { %>
-							<td class="Cleared"><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
+							<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
 							<% } %>
-							<td class="Cleared"><%= pth[0] %></td>
+							<td><%= pth[0] %></td>
 							<td class="<%= pthData[3] %>" align="center"><%= pth[1] %></td>
-							<td class="Cleared"><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
+							<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
 						</tr>
 						<% } %>
 </table>
