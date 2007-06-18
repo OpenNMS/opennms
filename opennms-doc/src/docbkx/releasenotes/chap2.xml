@@ -5,13 +5,13 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <para>OpenNMS 1.3.3 is the next step on the road to OpenNMS 2.0. It contains
-  a number of new features and stability improvements over 1.3.2. </para>
+  a number of new features and stability improvements over 1.3.2.</para>
 
   <para>In addition, the first steps in moving the JNI C-based code out of the
   main OpenNMS branch has begun. This will allow OpenNMS to be released in one
   Java package for all platforms and separate, smaller packages for the
   rrdtool, icmp, and iplike JNI code. Since that code doesn't change very
-  often, it should make installing and upgrading OpenNMS much easier. </para>
+  often, it should make installing and upgrading OpenNMS much easier.</para>
 
   <para>The 1.3 branch is known as "unstable". This doesn't reflect on the
   robustness of the code. Rather, unstable referes to the fact that the code
@@ -32,6 +32,24 @@
 
       <para><ulink
       url="http://opennms.org/index.php/OpenNMS_1.3#New_Features">http://opennms.org/index.php/OpenNMS_1.3#New_Features</ulink></para>
+
+      <para>However, there are two main "gotches" of which to be aware.</para>
+
+      <para>The first is that the default RRD file storage has changed. If you
+      want to use the new format, you will need to delete your old RRD/JRobin
+      data. OpenNMS was storage an incredibly large amount of data, especially
+      compared to projects like MRTG. It will now store "as polled" 5 minute
+      samples for a week, hourly samples for two months and daily MIN, MAX and
+      AVERAGE for a year. This reduces the size of the RRD files by more than
+      80%.</para>
+
+      <para>The second one is that the installer no longer installs the
+      Postgresql "iplike" function. It needs to be installed as a separate
+      package (if it already exists in the running installation of Postgresql,
+      then nothing else needs to be done). If the installer does not find
+      iplike it will install a platform independent psql version. That version
+      will work but at a lower performance than the native C code
+      version.</para>
     </section>
 
     <section>
