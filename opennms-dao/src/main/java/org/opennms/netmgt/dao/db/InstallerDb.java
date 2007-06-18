@@ -2300,6 +2300,13 @@ public class InstallerDb {
     }
 
     public void setPgIpLikeLocation(String location) {
+    	if (location != null) {
+    		File iplike = new File(location);
+    		if (!iplike.exists()) {
+    			m_out.println("WARNING: missing " + location + ": OpenNMS will use a slower stored procedure if the native library is not available");
+    		}
+    	}
+    	
         m_pg_iplike = location;
     }
 
