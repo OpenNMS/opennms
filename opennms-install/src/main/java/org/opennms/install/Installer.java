@@ -289,8 +289,10 @@ public class Installer {
         String soext = fetchProperty("build.soext");
         String pg_iplike_dir = fetchProperty("install.postgresql.dir");
 
-        m_installerDb.setPgIpLikeLocation(pg_iplike_dir + File.separator + "iplike." + soext);
-
+        if (pg_iplike_dir != null) {
+        	m_installerDb.setPgIpLikeLocation(pg_iplike_dir + File.separator + "iplike." + soext);
+        }
+        
         m_installerDb.setStoredProcedureDirectory(etcDirectory);
         m_installerDb.setCreateSqlLocation(etcDirectory + File.separator + "create.sql");
     }
@@ -450,18 +452,6 @@ public class Installer {
             verifyFileExists(false, m_installerDb.getCreateSqlLocation(),
                              "create.sql",
                              "install.etc.dir property");
-        }
-
-        if (m_update_iplike) {
-    		String ipLikeLocation = m_installerDb.getPgIpLikeLocation();
-        	try {
-        		verifyFileExists(false, ipLikeLocation,
-                             "iplike module",
-                             "install.postgresql.dir property");
-        	} catch (FileNotFoundException e) {
-        		m_out.println("WARNING: missing " + ipLikeLocation);
-        		m_out.println("  - will attempt to install the PL/PGSQL version instead");
-        	}
         }
 
         if (m_tomcat_conf != null) {
