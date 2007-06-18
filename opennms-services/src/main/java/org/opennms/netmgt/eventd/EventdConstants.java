@@ -83,18 +83,17 @@ public final class EventdConstants {
             "INSERT" +
             "  INTO alarms (alarmID, eventUei, dpName, nodeID, ipaddr, " +
             "               serviceID, reductionKey, alarmType, counter, severity, " +
-            "               lastEventID, firstEventTime, lastEventTime, " +
-            "               description, logMsg, operInstruct, tticketID, " +
-            "               tticketState, mouseOverText, suppressedUntil, " +
+            "               lastEventID, firstEventTime, lastEventTime, description, logMsg, " +
+            "               operInstruct, tticketID, tticketState, mouseOverText, suppressedUntil, " +
             "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime, clearUei, " +
-            "               x733AlarmType, x733ProbableCause) " +
+            "               x733AlarmType, x733ProbableCause, clearKey) " +
             "VALUES (?,?,?,?,?," +
             "        ?,?,?,?,?," +
             "        ?,?,?," +
             "        ?,?,?,?," +
             "        ?,?,?," +
             "        ?,?,?,?,?," +
-            "        ?,?)";
+            "        ?,?,?)";
 
     /**
      * The SQL string used by eventd to update number of duplicate events in
