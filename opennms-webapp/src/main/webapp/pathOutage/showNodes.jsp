@@ -62,16 +62,13 @@
 
       <br>
       <table class="wdth600">
-          <tr>
-          <td class="standardbold" style="background-color: <%= pthData[3]%>" colspan="4" align="center">Node List for Critical Path <%= critIp %> <%= critSvc %></td>
-          </tr>
-          <tr>
-          <td class="standard" colspan="4">&nbsp;</td>
+          <tr class="CellStatus">
+          <td class="<%= pthData[3] %>" colspan="4" align="center">Node List for Critical Path <%= critIp %> <%= critSvc %></td>
           </tr>
 
           <tr>
-          <td class="standardheader" width="40%" align="center"><%= "Node" %></td>
-          <td class="standardheader" width="40%" align="center">Status</td>
+          <th>Node</th>
+          <th>Status</th>
           </tr>
 
 <%        Iterator iter = nodeList.iterator();
@@ -80,9 +77,9 @@
               while( iter.hasNext() ) {
                   String nodeid = (String)iter.next();
                   String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
-                  <tr>
-                  <td class="standard"><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
-                  <td class="standard" style="background-color: <%= labelColor[1] %>"><%= labelColor[2] %></td>
+                  <tr class="CellStatus">
+                  <td class="Cleared"><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
+                  <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>
                   </tr>
               <% } %>
           <% } finally {

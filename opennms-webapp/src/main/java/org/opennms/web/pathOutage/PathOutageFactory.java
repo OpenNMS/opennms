@@ -149,7 +149,7 @@ public class PathOutageFactory extends Object {
         int countManagedSvcs = 0;
         int countOutages = 0;
         String result[] = new String[3];
-        result[1] = "lightblue";
+        result[1] = "Cleared";
         result[2] = "Unmanaged";
 
         PreparedStatement stmt = conn.prepareStatement(GET_NODELABEL_BY_NODEID);
@@ -180,13 +180,13 @@ public class PathOutageFactory extends Object {
             rs.close();
             stmt.close();
             if(countManagedSvcs == countOutages) {
-                result[1] = "red";
+                result[1] = "Critical";
                 result[2] = "All Services Down";
             } else if(countOutages == 0) {
-                result[1] = "green";
+                result[1] = "Normal";
                 result[2] = "All Services Up";
             } else {
-                result[1] = "orange";
+                result[1] = "Minor";
                 result[2] = "Some Services Down";
             }
         }
@@ -273,9 +273,9 @@ public class PathOutageFactory extends Object {
                     count = rs3.getInt(1);
                 }
                 if(count > 0) {
-                    result[3] = "red";
+                    result[3] = "Critical";
                 } else {
-                    result[3] = "green";
+                    result[3] = "Normal";
                 }
                 while (rs3.next()) {
                     result[3] = rs3.getString(1);
@@ -283,7 +283,7 @@ public class PathOutageFactory extends Object {
                 rs3.close();
                 stmt3.close();
             } else {
-                result[3] = "lightblue";
+                result[3] = "Cleared";
             }
         } finally {
             Vault.releaseDbConnection(conn);

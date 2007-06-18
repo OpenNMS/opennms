@@ -77,17 +77,17 @@
 		while( iter2.hasNext() ) {
 			String[] pth = (String[])iter2.next();
 			pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
-			<tr>
+			<tr class="CellStatus">
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
-					<td>(interface not in DB)</td>
+					<td class="Cleared">(interface not in DB)</td>
 					<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
-						<td><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
+						<td class="Cleared"><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
 						<% } else { %>
-							<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
+							<td class="Cleared"><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
 							<% } %>
-							<td><%= pth[0] %></td>
-							<td style="background-color: <%= pthData[3] %>" align="center"><%= pth[1] %></td>
-							<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
+							<td class="Cleared"><%= pth[0] %></td>
+							<td class="<%= pthData[3] %>" align="center"><%= pth[1] %></td>
+							<td class="Cleared"><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
 						</tr>
 						<% } %>
 </table>
