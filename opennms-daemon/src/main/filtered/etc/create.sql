@@ -985,13 +985,15 @@ create table alarms (
 	ossPrimaryKey           VARCHAR(512),
 	x733AlarmType           VARCHAR(31),
 	x733ProbableCause       INTEGER default 0 not null,
-	qosAlarmState           VARCHAR(31)
+	qosAlarmState           VARCHAR(31),
+    clearKey				VARCHAR(256)
 	
 );
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
 CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
+CREATE INDEX alarm_clearkey_idx ON alarms(clearKey);
 CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
 CREATE INDEX alarm_app_dn ON alarms(applicationDN);
 CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
