@@ -59,7 +59,7 @@
                 <rule><![CDATA[isJBoss4 | isJBoss32 | isJVM]]></rule>
             </category>
             <category>
-                <label><![CDATA[DNS & DHCP Servers]]></label>
+                <label><![CDATA[DNS and DHCP Servers]]></label>
                 <comment>This category includes all managed interfaces which are running either DNS (name resolution) servers or DHCP servers.</comment>
                 <normal>99.99</normal>
                 <warning>97</warning>
