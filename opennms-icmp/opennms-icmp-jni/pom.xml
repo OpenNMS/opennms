@@ -9,7 +9,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS ICMP JNI Library</name>
   <modules>
-    <module>opennms-icmp-jni-${platform}</module>
   </modules>
   <dependencies>
     <dependency>
@@ -18,4 +17,31 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>tagging</id>
+      <activation>
+        <property>
+          <name>tagging</name>
+        </property>
+      </activation>
+      <modules>
+        <module>opennms-icmp-jni-freebsd</module>
+        <module>opennms-icmp-jni-linux</module>
+        <module>opennms-icmp-jni-macosx</module>
+        <module>opennms-icmp-jni-solaris</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>normal</id>
+      <activation>
+        <property>
+          <name>!tagging</name>
+        </property>
+      </activation>
+      <modules>
+        <module>opennms-icmp-jni-${platform}</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

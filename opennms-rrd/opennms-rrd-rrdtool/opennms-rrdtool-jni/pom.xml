@@ -8,9 +8,6 @@
   <artifactId>opennms-rrdtool-jni</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS RRDTool JNI Library</name>
-  <modules>
-    <module>opennms-rrdtool-jni-${platform}</module>
-  </modules>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -18,4 +15,31 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>tagging</id>
+      <activation>
+        <property>
+          <name>tagging</name>
+        </property>
+      </activation>
+      <modules>
+        <module>opennms-rrdtool-jni-freebsd</module>
+        <module>opennms-rrdtool-jni-linux</module>
+        <module>opennms-rrdtool-jni-macosx</module>
+        <module>opennms-rrdtool-jni-solaris</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>normal</id>
+      <activation>
+        <property>
+          <name>!tagging</name>
+        </property>
+      </activation>
+      <modules>
+        <module>opennms-rrdtool-jni-${platform}</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
