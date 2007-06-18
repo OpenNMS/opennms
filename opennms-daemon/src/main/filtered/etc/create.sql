@@ -1139,6 +1139,23 @@ create table categories (
 
 CREATE UNIQUE INDEX category_idx ON categories(categoryName);
 
+--##################################################################
+--# The following command adds an initial set of categories if there
+--# are no categories in the category table
+--##################################################################
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories (categoryId, categoryName, categoryDescription) values (nextVal('catNxtId'), 'Routers', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories (categoryId, categoryName, categoryDescription) values (nextVal('catNxtId'), 'Switches', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories (categoryId, categoryName, categoryDescription) values (nextVal('catNxtId'), 'Servers', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories (categoryId, categoryName, categoryDescription) values (nextVal('catNxtId'), 'Production', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories (categoryId, categoryName, categoryDescription) values (nextVal('catNxtId'), 'Test', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories (categoryId, categoryName, categoryDescription) values (nextVal('catNxtId'), 'Development', null);
+
 --########################################################################
 --# category_node table - Many-to-Many mapping table of categories to nodes
 --#
@@ -1364,6 +1381,7 @@ CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifse
 --# The following command adds the initial loopback poller entry to
 --# the 'distPoller' table.
 --##################################################################
+--# criteria: SELECT count(*) = 0 from distPoller where dpName = 'localhost'
 insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dpLastEventPull, dpLastPackagePush, dpAdminState, dpRunState) values ('localhost', '127.0.0.1', 'This is the default poller.', 0.10, null, null, null, 1, 1);
 
 --########################################################################
