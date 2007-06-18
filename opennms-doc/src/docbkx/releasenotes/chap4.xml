@@ -19,10 +19,10 @@
     <para>The following Linux distributions and other unix-like systems are
     supported out-of-the-box with native installation packages.</para>
 
-    <bridgehead>Red Hat Enterprise Linux 3 and Red Hat Enterprise Linux
-    4</bridgehead>
+    <bridgehead>Red Hat Enterprise Linux 3, Red Hat Enterprise Linux 4 and Red
+    Hat Enterprise Linux 5</bridgehead>
 
-    <bridgehead>CentOS 3 and CentOS 4</bridgehead>
+    <bridgehead>CentOS 3, CentOS 4 and CentOS 5</bridgehead>
 
     <bridgehead>Fedora Core 4, Fedora Core 5 and Fedora Core 6 (including 64
     bit).</bridgehead>

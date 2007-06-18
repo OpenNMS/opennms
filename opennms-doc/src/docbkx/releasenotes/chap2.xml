@@ -4,21 +4,45 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-  <para>OpenNMS 1.3.2 represents a major upgrade to the OpenNMS application.
-  It is the first release of the code that will become OpenNMS 2.0, and there
-  is not part of the system that hasn't been touched. For that reason, it is
-  not recommended that this release be used in a production environment. There
-  is also no easy way to upgrade from the 1.2 branch to 1.3.2 as a number of
-  XML configuration files in the OpenNMS <filename>etc</filename> directory
-  will need to be changed.</para>
+  <para>OpenNMS 1.3.3 is the next step on the road to OpenNMS 2.0. It contains
+  a number of new features and stability improvements over 1.3.2. </para>
+
+  <para>In addition, the first steps in moving the JNI C-based code out of the
+  main OpenNMS branch has begun. This will allow OpenNMS to be released in one
+  Java package for all platforms and separate, smaller packages for the
+  rrdtool, icmp, and iplike JNI code. Since that code doesn't change very
+  often, it should make installing and upgrading OpenNMS much easier. </para>
 
   <para>The 1.3 branch is known as "unstable". This doesn't reflect on the
   robustness of the code. Rather, unstable referes to the fact that the code
   is changing rapidly, and the way things worked under 1.2 may be different,
-  at times radically different, than they work now. </para>
+  at times radically different, than they work now.</para>
 
-  <para>That aside, please try out 1.3.2 as it does represent the next
+  <para>That aside, please try out 1.3.3 as it does represent the next
   generation of OpenNMS.</para>
+
+  <section>
+    <title>Changes in OpenNMS 1.3.3</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para>In an attempt to get the release out as fast as possible, we've
+      decided to track new features on the OpenNMS wiki:</para>
+
+      <para><ulink
+      url="http://opennms.org/index.php/OpenNMS_1.3#New_Features">http://opennms.org/index.php/OpenNMS_1.3#New_Features</ulink></para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>The same goes for bugs:</para>
+
+      <para><ulink
+      url="http://opennms.org/index.php/OpenNMS_1.3#Known_Issues">http://opennms.org/index.php/OpenNMS_1.3#Known_Issues</ulink></para>
+    </section>
+  </section>
 
   <section>
     <title>Changes in OpenNMS 1.3.2</title>
