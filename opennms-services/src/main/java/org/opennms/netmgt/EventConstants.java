@@ -777,6 +777,14 @@ public class EventConstants {
     public final static String PARM_PASSIVE_SERVICE_NAME = "passiveServiceName";
     public final static String PARM_PASSIVE_SERVICE_STATUS = "passiveStatus";
     public final static String PARM_PASSIVE_REASON_CODE = "passiveReasonCode";
+    
+    /**
+     * Parms used for configureSnmp events
+     */
+    public static final String PARM_VERSION = "version";
+    public static final String PARM_TIMEOUT = "timeout";
+    public static final String PARM_RETRY_COUNT = "retryCount";
+    public static final String PARM_PORT = "port";
 
     public final static String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
     
