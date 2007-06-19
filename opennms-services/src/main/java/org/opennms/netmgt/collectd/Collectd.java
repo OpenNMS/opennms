@@ -62,6 +62,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -70,6 +71,7 @@ import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
+import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -602,35 +604,25 @@ public final class Collectd extends AbstractServiceDaemon implements
         log().debug("received event, uei = " + event.getUei());
 
         try {
-            if (event.getUei().equals(
-                                      EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
+            if (event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
                 handleScheduledOutagesChanged(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
                 handleConfigureSNMP(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
                 handleNodeGainedService(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
                 handlePrimarySnmpInterfaceChanged(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
                 handleReinitializePrimarySnmpInterface(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
                 handleInterfaceReparented(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.NODE_DELETED_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
                 handleNodeDeleted(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
                 handleDupNodeDeleted(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
                 handleInterfaceDeleted(event);
-            } else if (event.getUei().equals(
-                                             EventConstants.SERVICE_DELETED_EVENT_UEI)) {
+            } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
                 handleServiceDeleted(event);
             }
         } catch (InsufficientInformationException e) {
@@ -673,88 +665,32 @@ public final class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      */
     private void handleConfigureSNMP(Event event) {
-        if (log().isDebugEnabled())
-            log().debug(
-                        "configureSNMPHandler: processing configure SNMP event...");
-
-        // Extract the IP adddress range and SNMP community string from the
-        // event parms.
-        //
-        String firstIPAddress = null;
-        String lastIPAddress = null;
-        String communityString = null;
-        Parms parms = event.getParms();
-        if (parms != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
-
-            Enumeration parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
-
-                // First IP Address
-                if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
-                    firstIPAddress = parmContent;
-                }
-
-                // Last IP Address (optional parameter)
-                else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
-                    lastIPAddress = parmContent;
-                }
-
-                // SNMP community string
-                else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
-                    communityString = parmContent;
-                }
-            }
+        if (log().isDebugEnabled()) {
+            log().debug("configureSNMPHandler: processing configure SNMP event..."+event);
         }
-
-        if (firstIPAddress != null && !firstIPAddress.equals("")) {
-            int begin = new IPv4Address(firstIPAddress).getAddress();
-            int end = begin;
-            if (lastIPAddress != null && !lastIPAddress.equals("")) {
-                end = new IPv4Address(lastIPAddress).getAddress();
-                if (end < begin)
-                    end = begin;
+        
+        SnmpEventInfo info = null;
+        try {
+            info = new SnmpEventInfo(event);
+            
+            if (info == null) {
+                log().error("configureSNMPHandler: event contained invalid parameters.  "+event);
+                return;
             }
 
-            SnmpPeerFactory factory = SnmpPeerFactory.getInstance();
-
-            for (int address = begin; address <= end; address++) {
-                try {
-                    InetAddress ip = InetAddress.getByAddress(new IPv4Address(
-                                                                              address).getAddressBytes());
-
-                    factory.define(ip, communityString);
-                } catch (Exception e) {
-                    log().warn(
-                               "configureSNMPHandler: Failed to process IP address "
-                                       + IPv4Address.addressToString(address)
-                                       + ": " + e.getMessage(), e);
-                }
+            if (StringUtils.isBlank(info.getFirstIPAddress())) {				
+                log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
+                return;
             }
-
-            try {
-                SnmpPeerFactory.saveCurrent();
-            } catch (Exception e) {
-                log().warn(
-                           "configureSNMPHandler: Failed to store SNMP configuration"
-                                   + ": " + e.getMessage(), e);
-            }
+            
+            log().debug("configureSNMPHandler: processing configure SNMP event: "+info);
+            SnmpPeerFactory.getInstance().define(info);
+            SnmpPeerFactory.saveCurrent();
+            log().debug("configureSNMPHandler: process complete. "+info);
+            
+        } catch (Exception e) {
+            log().error("configureSNMPHandler: ",e);
         }
-
-        if (log().isDebugEnabled())
-            log().debug(
-                        "configureSNMPHandler: processing configure SNMP event for IP "
-                                + firstIPAddress + "-" + lastIPAddress
-                                + " completed.");
     }
 
     /**

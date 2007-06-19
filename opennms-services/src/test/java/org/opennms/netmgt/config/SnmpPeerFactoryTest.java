@@ -38,20 +38,119 @@ import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.mock.MockLogAppender;
 
-public class SnmpPeerFactoryTest extends OpenNMSTestCase {
+public class SnmpPeerFactoryTest extends TestCase {
 
-    protected void setUp() throws Exception {
-        super.setVersion(SnmpAgentConfig.VERSION2C);
+    private int m_version;
+
+	protected void setUp() throws Exception {
+        setVersion(SnmpAgentConfig.VERSION2C);
         Reader rdr = new StringReader(getSnmpConfig());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         MockLogAppender.setupLogging(false);
     }
     
-    protected void tearDown() {
+    public void setVersion(int version) {
+        m_version = version;
+    }
+
+
+	/**
+     * String representing snmp-config.xml
+     */
+    public String getSnmpConfig() {
+        return "<?xml version=\"1.0\"?>\n" + 
+                "<snmp-config "+ 
+                " retry=\"3\" timeout=\"3000\"\n" + 
+                " read-community=\"public\"" +
+                " write-community=\"private\"\n" + 
+                " port=\"161\"\n" +
+                " version=\"v1\">\n" +
+                "\n" +
+                "   <definition port=\"9161\" version=\""+myVersion()+"\" " +
+                "       security-name=\"opennmsUser\" \n" + 
+                "       auth-passphrase=\"0p3nNMSv3\" \n" +
+                "       privacy-passphrase=\"0p3nNMSv3\" >\n" +
+                "       <specific>"+myLocalHost()+"</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\">\n" + 
+                "       <specific>10.0.0.1</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\" max-request-size=\"434\">\n" + 
+                "       <specific>10.0.0.2</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\" proxy-host=\""+myLocalHost()+"\">\n" + 
+                "       <specific>10.0.0.3</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v3\" " +
+                "       security-name=\"opennmsUser\" \n" + 
+                "       auth-passphrase=\"0p3nNMSv3\" >\n" +
+                "       <specific>20.20.20.20</specific>\n" +
+                "   </definition>\n" + 
+                "   <definition version=\"v3\" " +
+                "       security-name=\"opennmsRangeUser\" \n" + 
+                "       auth-passphrase=\"0p3nNMSv3\" >\n" +
+                "       <range begin=\"1.1.1.1\" end=\"1.1.1.100\"/>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v1\" read-community=\"rangev1\" max-vars-per-pdu=\"55\"> \n" + 
+                "       <range begin=\"10.0.0.101\" end=\"10.0.0.200\"/>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v2c\" read-community=\"rangev2c\">\n" + 
+                "       <range begin=\"10.0.1.100\" end=\"10.0.5.100\"/>\n" +
+                "       <range begin=\"10.7.20.100\" end=\"10.7.25.100\"/>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v2c\" read-community=\"specificv2c\">\n" + 
+                "       <specific>192.168.0.50</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\">\n" + 
+                "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "</snmp-config>";
+    }
+
+    protected String myLocalHost() {
+        
+//      try {
+//          return InetAddress.getLocalHost().getHostAddress();
+//      } catch (UnknownHostException e) {
+//          e.printStackTrace();
+//          fail("Exception getting localhost");
+//      }
+//      
+//      return null;
+      
+      return "127.0.0.1";
+    }
+    
+	private String myVersion() {
+        switch (m_version) {
+        case SnmpAgentConfig.VERSION1 :
+            return "v1";
+        case SnmpAgentConfig.VERSION2C :
+            return "v2c";
+        case SnmpAgentConfig.VERSION3 :
+            return "v3";
+        default :
+            return "v1";
+        }
+    }
+
+
+
+	protected void tearDown() {
         
     }
     
@@ -195,5 +294,6 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
         assertEquals(agentConfig.getVersion(), SnmpAgentConfig.VERSION2C);
         assertEquals("specificv2c", agentConfig.getReadCommunity());
     }
+    
 
 }
