@@ -334,8 +334,9 @@ host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting><
       distribution. There should be a package for PostgreSQL versions 7.4-8.1,
       and one for 8.2+. In addition, there will be separate 32-bit and 64-bit
       versions. It is also possible to download a tarball and do the usual
-      "configure", "make", and "make install". Once installed it should not be
-      required to update it again.</para>
+      "autogen", "configure", "make", and "make install". Then be sure to run the
+      install script. Once installed it should not be
+      required to update it again with future OpenNMS releases.</para>
     </section>
   </section>
 </chapter>
