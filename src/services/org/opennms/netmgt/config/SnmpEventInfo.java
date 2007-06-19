@@ -156,10 +156,13 @@ public class SnmpEventInfo {
         return m_lastIPAddress;
     }
     public void setLastIPAddress(String lastIPAddress) throws UnknownHostException {
+    	if (isBlank(lastIPAddress)) {
+    		m_last = 0;
+    	}
         m_lastIPAddress = lastIPAddress;
         m_last = SnmpPeerFactory.toLong(InetAddress.getByName(lastIPAddress));
     }
-    public long getFirst() {
+	public long getFirst() {
         return m_first;
     }
     public long getLast() {
@@ -256,6 +259,18 @@ public class SnmpEventInfo {
         return val;
     }
         
+    /**
+     * Handy method for checking empty or null strings
+     * 
+     * @param string
+     * @return
+     */
+    private boolean isBlank(String string) {
+        boolean blank = false;
+        if (string == null || string.trim().length() == 0) blank = true;
+        return blank;
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Info: ");
