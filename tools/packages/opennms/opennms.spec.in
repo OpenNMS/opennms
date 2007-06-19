@@ -323,7 +323,7 @@ mkdir -p $RPM_BUILD_ROOT/var/opennms
 mkdir -p $RPM_BUILD_ROOT/var/log/opennms
 mkdir -p $RPM_BUILD_ROOT/var/log/opennms/controller
 mkdir -p $RPM_BUILD_ROOT/var/log/opennms/daemon
-mkdir -p $RPM_BUILD_ROOT/var/log/opennms/webapps
+mkdir -p $RPM_BUILD_ROOT/var/log/opennms/webapp
 
 ### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
 ### /etc/profile.d
