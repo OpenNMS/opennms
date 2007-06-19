@@ -9,6 +9,8 @@
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
+
+// 06/19/2007 Added support for more Parameters
 //
 // 03/08/2005 Created.
 //
@@ -46,16 +48,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.Util;
 
 /**
  * A servlet that handles configuring SNMP
- *
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
@@ -73,49 +75,50 @@ public class SnmpConfigServlet extends HttpServlet {
         String firstIPAddress = request.getParameter("firstIPAddress");
         String lastIPAddress = request.getParameter("lastIPAddress");
         String communityString = request.getParameter("communityString");
+        String timeout = request.getParameter("timeout");
+        String version = request.getParameter("version");
+        String retryCount = request.getParameter("retryCount");
+        String port = request.getParameter("port");
         if (log.isDebugEnabled())
             log.debug("doPost: firstIPAddress=" + firstIPAddress + ", "
                       + "lastIPAddress=" + lastIPAddress + ", and "
                       + "communityString=" + communityString);
 
+        
+        
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
         newEvent.setSource("web ui");
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
         newEvent.setService("SNMP");
         newEvent.setInterface(firstIPAddress);
-        Parms eventParms = new Parms();
-        newEvent.setParms(eventParms);
-        Parm eventParm = null;
-        Value parmValue = null;
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_FIRST_IP_ADDRESS);
-        parmValue = new Value();
-        parmValue.setContent(firstIPAddress);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_LAST_IP_ADDRESS);
-        parmValue = new Value();
-        parmValue.setContent(lastIPAddress);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_COMMUNITY_STRING);
-        parmValue = new Value();
-        parmValue.setContent(communityString);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
+        
+        EventBuilder builder = new EventBuilder(newEvent);
+        builder.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, firstIPAddress);
+        builder.addParam(EventConstants.PARM_LAST_IP_ADDRESS, lastIPAddress);
+        builder.addParam(EventConstants.PARM_COMMUNITY_STRING, communityString);
+        
+        if ( timeout.length() > 0) {
+        	builder.addParam(EventConstants.PARM_TIMEOUT, timeout);
+        }
+        if ( port.length() > 0 ) {
+        	builder.addParam(EventConstants.PARM_PORT, port);
+        }
+        if ( retryCount.length() > 0 ) {
+        	builder.addParam(EventConstants.PARM_RETRY_COUNT, retryCount);
+        }
+        if ( version.length() > 0 ) {
+        	builder.addParam(EventConstants.PARM_VERSION, version);
+        }
         try {
-            EventProxy eventProxy = Util.createEventProxy();
-            if (eventProxy != null) {
-                eventProxy.send(newEvent);
-            } else {
-                throw new ServletException("Event proxy object is null, unable to send event " + newEvent.getUei());
-            }
+        	EventProxy eventProxy = Util.createEventProxy();
+        	if (eventProxy != null) {
+        		eventProxy.send(builder.getEvent());
+        	} else {
+        		throw new ServletException("Event proxy object is null, unable to send event " + newEvent.getUei());
+        	}
         } catch (Exception e) {
-            throw new ServletException("Could not send event " + newEvent.getUei(), e);
+        	throw new ServletException("Could not send event " + newEvent.getUei(), e);
         }
 
         // forward the request for proper display
