@@ -122,7 +122,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         //Get an alarm in the db
         bringNodeDownCreatingEvent(1);
-        Thread.sleep(500);
+        Thread.sleep(5000);
         
         /*
          * Changes to the automations to the config will
