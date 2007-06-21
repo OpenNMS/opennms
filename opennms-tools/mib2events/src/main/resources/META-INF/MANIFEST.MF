@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: jeffg
+Build-Jdk: 1.5.0_11
+Main-Class: org.opennms.netmgt.mib2events.Mib2Events
