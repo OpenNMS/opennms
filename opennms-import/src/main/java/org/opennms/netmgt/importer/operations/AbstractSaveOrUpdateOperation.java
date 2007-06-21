@@ -160,15 +160,26 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     	int ifIndex = m_collector.getIfIndex(inetAddr);
     	if (ifIndex == -1) return;
 
-    	OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, new Integer(ifIndex), m_node);
-    	snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
-    	snmpIf.setIfName(m_collector.getIfName(ifIndex));
-    	snmpIf.setIfType(getIfType(ifIndex));
-    	snmpIf.setNetMask(getNetMask(ifIndex));
-    	snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
-    	snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
-    	snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
-    	snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
+        // first look to see if an snmpIf was created already
+        OnmsSnmpInterface snmpIf = m_node.getSnmpInterfaceWithIfIndex(ifIndex);
+        
+        if (snmpIf == null) {
+            // if not then create one
+            snmpIf = new OnmsSnmpInterface(ipAddr, new Integer(ifIndex), m_node);
+            snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
+            snmpIf.setIfName(m_collector.getIfName(ifIndex));
+            snmpIf.setIfType(getIfType(ifIndex));
+            snmpIf.setNetMask(getNetMask(ifIndex));
+            snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+            snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
+            snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
+            snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
+        }
+        
+        if (ipIf.getIsSnmpPrimary() == CollectionType.PRIMARY) {
+            // make sure the snmpIf has the ipAddr of the primary interface
+            snmpIf.setIpAddress(ipAddr);
+        }
     	
     	ipIf.setSnmpInterface(snmpIf);
 
