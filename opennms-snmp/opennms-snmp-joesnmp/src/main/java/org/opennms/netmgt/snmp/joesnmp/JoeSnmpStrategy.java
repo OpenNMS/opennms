@@ -106,7 +106,9 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         } catch (SocketException e) {
             log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     	return values;
     }
@@ -137,7 +139,9 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         } catch (SocketException e) {
             log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
         return values;
     }
@@ -169,7 +173,9 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         } catch (SocketException e) {
             log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
         return values;
     }
