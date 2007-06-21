@@ -273,7 +273,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
             log().error("getNext: Could not create Snmp session for Agent: "+agentConfig+". "+e);
         } finally {
             try {
-                session.close();
+                if (session != null) {
+                    session.close();
+                }
             } catch (IOException e) {
                 log().error("send: Error closinging SNMP connection: "+e);
             }
@@ -344,7 +346,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
             log().error("getNext: Could not create Snmp session for Agent: "+agentConfig+". "+e);
         } finally {
             try {
-                session.close();
+                if (session != null) {
+                    session.close();
+                }
             } catch (IOException e) {
                 log().error("send: Error closinging SNMP connection: "+e);
             }
