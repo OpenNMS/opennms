@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Jun 22: Eliminate a static send(...) method and do some various
+//              code cleanup. - dj@opennms.org
 // 2007 Jun 21: Always use SnmpHelpers.createSnmpSession() to create SNMP
 //              sessions, including eliminating static Snmp object used
 //              for sending traps.  Improve error reporting. - dj@opennms.org
@@ -85,26 +87,31 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4JStrategy implements SnmpStrategy {
 
-    public static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
+    private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
+    
+    private static boolean s_initialized = false;
     
     private Snmp4JValueFactory m_valueFactory;
-    
-    static private boolean m_initialized = false;
 
-    //Initialize for v3 communications
+    /**
+     * Initialize for v3 communications
+     */
     private static void initialize() {
-        if (!m_initialized) {
-//            LogFactory.setLogFactory(new Log4jLogFactory());
-            
-            MPv3.setEnterpriseID(5813);
-            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-            SecurityModels.getInstance().addSecurityModel(usm);
-            m_initialized = true;
+        if (s_initialized) {
+            return;
         }
+
+//      LogFactory.setLogFactory(new Log4jLogFactory());
+            
+        MPv3.setEnterpriseID(5813);
+        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        SecurityModels.getInstance().addSecurityModel(usm);
+        
+        s_initialized = true;
     }
     
     public Snmp4JStrategy() {
-        Snmp4JStrategy.initialize();
+        initialize();
     }
     
     /**
@@ -491,35 +498,35 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     public SnmpV1TrapBuilder getV1TrapBuilder() {
-        return new Snmp4JV1TrapBuilder();
+        return new Snmp4JV1TrapBuilder(this);
     }
 
     public SnmpTrapBuilder getV2TrapBuilder() {
-        return new Snmp4JV2TrapBuilder();
+        return new Snmp4JV2TrapBuilder(this);
     }
     
-    public static void send(String agentAddress, int port, String community, PDU pdu) throws Exception {
-        Snmp snmp = SnmpHelpers.createSnmpSession();
+    public void send(String agentAddress, int port, String community, PDU pdu) throws Exception {
+        Snmp session = null;
         
         try {
+            session = SnmpHelpers.createSnmpSession();
+            
             Address targetAddress = GenericAddress.parse("udp:"+agentAddress+"/"+port);
             CommunityTarget target = new CommunityTarget(targetAddress, new OctetString(community.getBytes()));
             target.setVersion(pdu instanceof PDUv1 ? SnmpConstants.version1 : SnmpConstants.version2c);
         
-            snmp.send(pdu, target);
+            session.send(pdu, target);
+        } catch (IOException e) {
+            log().error("send: Could not create Snmp session for " + agentAddress + "/" + port + ": " + e, e);
         } finally {
-            if (snmp != null) {
+            if (session != null) {
                 try {
-                    snmp.close();
+                    session.close();
                 } catch (IOException e) {
-                    staticLog().error("send: Could not close SNMP session: " + e, e);
+                    log().error("send: Could not close SNMP session: " + e, e);
                 }
             }
         }
-    }
-    
-    private static Category staticLog() {
-        return ThreadCategory.getInstance(Snmp4JStrategy.class);
     }
 
     public static void sendTest(String agentAddress, int port, String community, PDU pdu) {

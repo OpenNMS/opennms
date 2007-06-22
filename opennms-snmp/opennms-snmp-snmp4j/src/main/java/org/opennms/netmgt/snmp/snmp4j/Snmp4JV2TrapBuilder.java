@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 22: Be explicit about visibility and pass around the
+//              Snmp4JStrategy that created us. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,16 +45,17 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
+    private Snmp4JStrategy m_strategy;
+    private PDU m_pdu;
     
-    PDU m_pdu;
-    
-    Snmp4JV2TrapBuilder(PDU pdu, int type) {
+    protected Snmp4JV2TrapBuilder(Snmp4JStrategy strategy, PDU pdu, int type) {
+        m_strategy = strategy;
         m_pdu = pdu;
         m_pdu.setType(type);
     }
     
-    Snmp4JV2TrapBuilder() {
-        this(new PDU(), PDU.TRAP);
+    protected Snmp4JV2TrapBuilder(Snmp4JStrategy strategy) {
+        this(strategy, new PDU(), PDU.TRAP);
     }
     
     protected PDU getPDU() {
@@ -57,7 +63,7 @@ public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
     }
 
     public void send(String destAddr, int destPort, String community) throws Exception {
-        Snmp4JStrategy.send(destAddr, destPort, community, m_pdu);
+        m_strategy.send(destAddr, destPort, community, m_pdu);
     }
 
     public void addVarBind(SnmpObjId name, SnmpValue value) {
