@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Jun 22: Iterate over the proper array in the four-argument send
+//              method. - dj@opennms.org
 // 2007 Jun 22: Make the static sendTest(...) method non-static.
 //              - dj@opennms.org
 // 2007 Jun 22: Make the static send(...) method non-static and do some
@@ -346,7 +348,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 
                 retvalues = new Snmp4JValue[responseEvent.getResponse().getVariableBindings().size()];
                 
-                for (int i=0; i<values.length; i++) {
+                for (int i=0; i<retvalues.length; i++) {
                     retvalues[i] = new Snmp4JValue(responseEvent.getResponse().get(i).getVariable());
                 }
                 
