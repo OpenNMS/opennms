@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 22: Be explicit about visibility and pass around the
+//              Snmp4JStrategy that created us. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -41,12 +46,11 @@ import org.snmp4j.smi.OID;
 
 public class Snmp4JV1TrapBuilder extends Snmp4JV2TrapBuilder implements SnmpV1TrapBuilder {
     
-    Snmp4JV1TrapBuilder() {
-        super(new PDUv1(), PDUv1.V1TRAP);
-        
+    protected Snmp4JV1TrapBuilder(Snmp4JStrategy strategy) {
+        super(strategy, new PDUv1(), PDUv1.V1TRAP);
     }
     
-    PDUv1 getPDUv1() {
+    protected PDUv1 getPDUv1() {
         return (PDUv1)getPDU();
     }
     
