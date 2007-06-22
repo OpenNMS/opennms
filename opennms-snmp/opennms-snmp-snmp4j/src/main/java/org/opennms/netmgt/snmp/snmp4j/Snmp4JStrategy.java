@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 21: Always use SnmpHelpers.createSnmpSession() to create SNMP
+//              sessions, including eliminating static Snmp object used
+//              for sending traps.  Improve error reporting. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -84,7 +90,6 @@ public class Snmp4JStrategy implements SnmpStrategy {
     private Snmp4JValueFactory m_valueFactory;
     
     static private boolean m_initialized = false;
-    private static Snmp sm_session;
 
     //Initialize for v3 communications
     private static void initialize() {
@@ -227,7 +232,6 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         try {
             session = SnmpHelpers.createSnmpSession(agentConfig);
-            session = new Snmp(new DefaultUdpTransportMapping());
             session.listen();
             
             session.getUSM().addUser((agentConfig.getSecurityName()),
@@ -270,14 +274,14 @@ public class Snmp4JStrategy implements SnmpStrategy {
             }
             
         } catch (IOException e) {
-            log().error("getNext: Could not create Snmp session for Agent: "+agentConfig+". "+e);
+            log().error("getNext: Could not create Snmp session for Agent: "+agentConfig+". " + e, e);
         } finally {
-            try {
-                if (session != null) {
+            if (session != null) {
+                try {
                     session.close();
+                } catch (IOException e) {
+                    log().error("send: Error closinging SNMP connection: " + e, e);
                 }
-            } catch (IOException e) {
-                log().error("send: Error closinging SNMP connection: "+e);
             }
         }
         return values;
@@ -300,7 +304,6 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         try {
             session = SnmpHelpers.createSnmpSession(agentConfig);
-            session = new Snmp(new DefaultUdpTransportMapping());
             session.listen();
             
             session.getUSM().addUser((agentConfig.getSecurityName()),
@@ -343,14 +346,14 @@ public class Snmp4JStrategy implements SnmpStrategy {
             }
             
         } catch (IOException e) {
-            log().error("getNext: Could not create Snmp session for Agent: "+agentConfig+". "+e);
+            log().error("getNext: Could not create Snmp session for Agent: "+agentConfig+". " + e, e);
         } finally {
-            try {
-                if (session != null) {
+            if (session != null) {
+                try {
                     session.close();
+                } catch (IOException e) {
+                    log().error("send: Error closinging SNMP connection: " + e, e);
                 }
-            } catch (IOException e) {
-                log().error("send: Error closinging SNMP connection: "+e);
             }
         }
         return retvalues;
@@ -496,21 +499,27 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
     
     public static void send(String agentAddress, int port, String community, PDU pdu) throws Exception {
+        Snmp snmp = SnmpHelpers.createSnmpSession();
         
-        Snmp snmp = getSession();
+        try {
+            Address targetAddress = GenericAddress.parse("udp:"+agentAddress+"/"+port);
+            CommunityTarget target = new CommunityTarget(targetAddress, new OctetString(community.getBytes()));
+            target.setVersion(pdu instanceof PDUv1 ? SnmpConstants.version1 : SnmpConstants.version2c);
         
-        Address targetAddress = GenericAddress.parse("udp:"+agentAddress+"/"+port);
-        CommunityTarget target = new CommunityTarget(targetAddress, new OctetString(community.getBytes()));
-        target.setVersion(pdu instanceof PDUv1 ? SnmpConstants.version1 : SnmpConstants.version2c);
-        
-        snmp.send(pdu, target);
-    }
-
-    private static Snmp getSession() throws IOException {
-        if (sm_session == null) {
-            sm_session = new Snmp(new DefaultUdpTransportMapping());
+            snmp.send(pdu, target);
+        } finally {
+            if (snmp != null) {
+                try {
+                    snmp.close();
+                } catch (IOException e) {
+                    staticLog().error("send: Could not close SNMP session: " + e, e);
+                }
+            }
         }
-        return sm_session;
+    }
+    
+    private static Category staticLog() {
+        return ThreadCategory.getInstance(Snmp4JStrategy.class);
     }
 
     public static void sendTest(String agentAddress, int port, String community, PDU pdu) {
