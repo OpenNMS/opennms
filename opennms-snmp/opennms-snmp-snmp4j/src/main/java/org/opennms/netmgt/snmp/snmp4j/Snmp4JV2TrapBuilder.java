@@ -10,8 +10,8 @@
 //
 // Modifications:
 //
-// 2007 Jun 22: Be explicit about visibility and pass around the
-//              Snmp4JStrategy that created us. - dj@opennms.org
+// 2007 Jun 22: Be explicit about visibility, pass around our Snmp4JStrategy,
+//              and don't call static methods. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -73,7 +73,7 @@ public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
     }
 
     public void sendTest(String destAddr, int destPort, String community) throws Exception {
-        Snmp4JStrategy.sendTest(destAddr, destPort, community, m_pdu);
+        m_strategy.sendTest(destAddr, destPort, community, m_pdu);
     }
 
 }

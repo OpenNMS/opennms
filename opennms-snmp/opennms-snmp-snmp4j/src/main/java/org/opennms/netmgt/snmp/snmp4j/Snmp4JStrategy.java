@@ -10,8 +10,10 @@
 //
 // Modifications:
 //
-// 2007 Jun 22: Eliminate a static send(...) method and do some various
-//              code cleanup. - dj@opennms.org
+// 2007 Jun 22: Make the static sendTest(...) method non-static.
+//              - dj@opennms.org
+// 2007 Jun 22: Make the static send(...) method non-static and do some
+//              various code cleanup. - dj@opennms.org
 // 2007 Jun 21: Always use SnmpHelpers.createSnmpSession() to create SNMP
 //              sessions, including eliminating static Snmp object used
 //              for sending traps.  Improve error reporting. - dj@opennms.org
@@ -529,7 +531,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         }
     }
 
-    public static void sendTest(String agentAddress, int port, String community, PDU pdu) {
+    public void sendTest(String agentAddress, int port, String community, PDU pdu) {
         for (RegistrationInfo info : s_registrations.values()) {
             if (port == info.getPort()) {
                 Snmp snmp = info.getSession();
