@@ -10,8 +10,8 @@
 //
 // Modifications:
 //
-// 2007 Jun 22: Iterate over the proper array in the four-argument send
-//              method. - dj@opennms.org
+// 2007 Jun 22: Iterate over the proper array in the four-argument send method
+//              and don't change the input values array. - dj@opennms.org
 // 2007 Jun 22: Make the static sendTest(...) method non-static.
 //              - dj@opennms.org
 // 2007 Jun 22: Make the static send(...) method non-static and do some
@@ -337,7 +337,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             if (responseEvent.getResponse() == null) {
                 log().warn("send: Timeout.  Agent: "+agentConfig);
             } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
-                values[0] = null;
+                retvalues[0] = null;
             } else if (responseEvent.getError() != null) {
                 log().warn("send: Error during get operation.  Error: "+responseEvent.getError().getLocalizedMessage());
             } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
