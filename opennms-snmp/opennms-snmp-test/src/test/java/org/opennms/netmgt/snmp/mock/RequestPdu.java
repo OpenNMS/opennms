@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Use generics to eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -76,7 +80,7 @@ abstract public class RequestPdu extends TestPdu {
             
             // make a list to track the repititions
             int repeaters = size() - nonRepeaters;
-            List repeaterList = new ArrayList(repeaters);
+            List<SnmpObjId> repeaterList = new ArrayList<SnmpObjId>(repeaters);
             for(int i = nonRepeaters; i < size(); i++) {
                 repeaterList.add(getVarBindAt(i).getObjId());
             }
