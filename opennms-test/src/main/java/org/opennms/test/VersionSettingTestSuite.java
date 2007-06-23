@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Eliminate warning caused by unused variable. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -67,7 +71,7 @@ public class VersionSettingTestSuite extends TestSuite {
     
     private void checkForVersionMethod(final Class theClass) {
         try {
-            Method m = theClass.getMethod("setVersion", new Class[] { Integer.TYPE });
+            theClass.getMethod("setVersion", new Class[] { Integer.TYPE });
         } catch (NoSuchMethodException e) {
             addTest(new TestCase("warning") {
                 protected void runTest() {
