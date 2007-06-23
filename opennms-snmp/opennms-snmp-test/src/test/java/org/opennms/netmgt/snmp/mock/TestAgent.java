@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Code formatting and use Java 5 generics to eliminate
+//              warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,11 +38,11 @@ package org.opennms.netmgt.snmp.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -56,7 +61,7 @@ public class TestAgent {
 
     }
     
-    private TreeMap m_agentData = new TreeMap();
+    private SortedMap<SnmpObjId, Object> m_agentData = new TreeMap<SnmpObjId, Object>();
     private boolean isV1 = true;
 
     private int m_maxResponseSize = 100; // this is kind of close to reality
@@ -66,36 +71,36 @@ public class TestAgent {
         if (result == null) {
             generateException(id);
         } else if (result instanceof RuntimeException) {
-            throw (RuntimeException)result;
+            throw (RuntimeException) result;
         } 
-        return (SnmpValue)result;
+        return (SnmpValue) result;
         
     }
 
     private void generateException(SnmpObjId id) {
-        if (m_agentData.isEmpty())
+        if (m_agentData.isEmpty()) {
             throw new AgentNoSuchObjectException();
+        }
         
-        SnmpObjId firstOid = (SnmpObjId)m_agentData.firstKey();
-        SnmpObjId lastOid = (SnmpObjId)m_agentData.lastKey();
+        SnmpObjId firstOid = m_agentData.firstKey();
+        SnmpObjId lastOid = m_agentData.lastKey();
         if (id.compareTo(firstOid) < 0 || id.compareTo(lastOid) > 0)
             throw new AgentNoSuchObjectException();
         throw new AgentNoSuchInstanceException();
     }
 
     public void setAgentData(Properties mibData) {
-        m_agentData = new TreeMap();
-        for (Iterator it = mibData.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry) it.next();
-            SnmpObjId objId = SnmpObjId.get((String)entry.getKey());
+        m_agentData = new TreeMap<SnmpObjId, Object>();
+        for (Entry<Object, Object> entry : mibData.entrySet()) {
+            SnmpObjId objId = SnmpObjId.get(entry.getKey().toString());
             
-            setAgentValue(objId, TestSnmpValue.parseMibValue((String)entry.getValue()));
+            setAgentValue(objId, TestSnmpValue.parseMibValue(entry.getValue().toString()));
         }
     }
 
     public SnmpObjId getFollowingObjId(SnmpObjId id) {
         try {
-            SnmpObjId nextObjId = (SnmpObjId)m_agentData.tailMap(SnmpObjId.get(id, SnmpInstId.INST_ZERO)).firstKey();
+            SnmpObjId nextObjId = m_agentData.tailMap(SnmpObjId.get(id, SnmpInstId.INST_ZERO)).firstKey();
             Object value = m_agentData.get(nextObjId);
             if (value instanceof Redirect) {
                 Redirect redirect = (Redirect) value;
@@ -138,19 +143,19 @@ public class TestAgent {
     }
 
     SnmpValue handleNoSuchObject(SnmpObjId reqObjId, int errIndex) {
-        if (isVersion1())
+        if (isVersion1()) {
             throw new AgentNoSuchNameException(errIndex);
-        
+        }
             
         return TestSnmpValue.NO_SUCH_OBJECT;
     }
     
     SnmpValue handleNoSuchInstance(SnmpObjId reqObjId, int errIndex) {
-        if (isVersion1())
+        if (isVersion1()) {
             throw new AgentNoSuchNameException(errIndex);
+        }
         
         return TestSnmpValue.NO_SUCH_INSTANCE;
-            
     }
 
     SnmpValue getVarBindValue(SnmpObjId objId, int errIndex) {
@@ -167,17 +172,18 @@ public class TestAgent {
 
     TestVarBind getNextResponseVarBind(SnmpObjId lastOid, int errIndex) {
         try {
-        SnmpObjId objId = getFollowingObjId(lastOid);
-        SnmpValue value = getVarBindValue(objId, errIndex);
-        return new TestVarBind(objId, value);
+            SnmpObjId objId = getFollowingObjId(lastOid);
+            SnmpValue value = getVarBindValue(objId, errIndex);
+            return new TestVarBind(objId, value);
         } catch (AgentEndOfMibException e) {
             return handleEndOfMib(lastOid, errIndex);
         }
     }
 
     private TestVarBind handleEndOfMib(SnmpObjId lastOid, int errIndex) {
-        if (isVersion1())
+        if (isVersion1()) {
             throw new AgentNoSuchNameException(errIndex);
+        }
         
         return new TestVarBind(lastOid, TestSnmpValue.END_OF_MIB);
     }
@@ -209,8 +215,4 @@ public class TestAgent {
         m_agentData.put(objId, exception);
         return exception;
     }
-   
-
-
-
 }

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Add serialVersionUID to eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,6 +36,7 @@
 package org.opennms.netmgt.snmp.mock;
 
 public class AgentGenErrException extends AgentIndexException {
+    private static final long serialVersionUID = 1L;
 
     public AgentGenErrException(int errorIndex) {
         super(ResponsePdu.GEN_ERR, errorIndex);
