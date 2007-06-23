@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 23: Use new deduplicated send method. - dj@opennms.org
 // 2007 Jun 22: Be explicit about visibility, pass around our Snmp4JStrategy,
 //              and don't call static methods. - dj@opennms.org
 //
@@ -36,6 +37,7 @@
 //
 package org.opennms.netmgt.snmp.snmp4j;
 
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -63,7 +65,10 @@ public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
     }
 
     public void send(String destAddr, int destPort, String community) throws Exception {
-        m_strategy.send(destAddr, destPort, community, m_pdu);
+        SnmpAgentConfig snmpAgentConfig = m_strategy.buildAgentConfig(destAddr, destPort, community, m_pdu);
+        Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(snmpAgentConfig);
+        
+        m_strategy.send(agentConfig, m_pdu, false);
     }
 
     public void addVarBind(SnmpObjId name, SnmpValue value) {

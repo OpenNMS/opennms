@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Code formatting, wrap debug log messages that aren't
+//              simple strings in isDebugEnabled() tests, and SNMP
+//              version string, session creation, and PDU creation
+//              have moved into Snmp4JAgentConfig. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,7 +43,6 @@ import java.io.IOException;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -51,7 +57,7 @@ import org.snmp4j.smi.VariableBinding;
 
 public class Snmp4JWalker extends SnmpWalker {
     
-    static public abstract class Snmp4JPduBuilder extends WalkerPduBuilder {
+    public static abstract class Snmp4JPduBuilder extends WalkerPduBuilder {
         public Snmp4JPduBuilder(int maxVarsPerPdu) {
             super(maxVarsPerPdu);
         }
@@ -69,8 +75,7 @@ public class Snmp4JWalker extends SnmpWalker {
         }
         
         public void reset() {
-            m_nextPdu = SnmpHelpers.createPDU(getVersion());
-            m_nextPdu.setType(PDU.GETNEXT);
+            m_nextPdu = m_agentConfig.createPdu(PDU.GETNEXT);
         }
 
         public PDU getPdu() {
@@ -100,8 +105,7 @@ public class Snmp4JWalker extends SnmpWalker {
         }
         
         public void reset() {
-            m_bulkPdu = SnmpHelpers.createPDU(getVersion());
-            m_bulkPdu.setType(PDU.GETBULK);
+            m_bulkPdu = m_agentConfig.createPdu(PDU.GETBULK);
         }
 
         public PDU getPdu() {
@@ -126,12 +130,13 @@ public class Snmp4JWalker extends SnmpWalker {
     public class Snmp4JResponseListener implements ResponseListener {
 
         public void processResponse(PDU response) {
-            
             try {
-                log().debug("Received a tracker pdu of type "+PDU.getTypeString(response.getType())+" from "+getAddress()+" of size "+response.size()+" errorStatus = "+response.getErrorStatusText()+" errorIndex = "+response.getErrorIndex());
+                if (log().isDebugEnabled()) {
+                    log().debug("Received a tracker pdu of type "+PDU.getTypeString(response.getType())+" from "+getAddress()+" of size "+response.size()+" errorStatus = "+response.getErrorStatusText()+" errorIndex = "+response.getErrorIndex());
+                }
                 if (response.getType() != PDU.REPORT) {
                     if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
-                        for(int i = 0; i < response.size(); i++) {
+                        for (int i = 0; i < response.size(); i++) {
                             VariableBinding vb = response.get(i);
                             SnmpObjId receivedOid = SnmpObjId.get(vb.getOid().getValue());
                             SnmpValue val = new Snmp4JValue(vb.getVariable());
@@ -151,9 +156,10 @@ public class Snmp4JWalker extends SnmpWalker {
         	// need to cancel this here otherwise SNMP4J Keeps it around forever... go figure
         	m_session.cancel(responseEvent.getRequest(), this);
             if (responseEvent.getError() instanceof InterruptedException) {
-                log().debug("Interruption event.  We have probably tried to close the session due to an error: "+responseEvent.getError());
-            } 
-            else if (responseEvent.getResponse() == null) {
+                if (log().isDebugEnabled()) {
+                    log().debug("Interruption event.  We have probably tried to close the session due to an error: " + responseEvent.getError(), responseEvent.getError());
+                }
+            } else if (responseEvent.getResponse() == null) {
                 handleTimeout(getName()+": snmpTimeoutError for: " + getAddress());
             } else if (responseEvent.getError() != null){
                 handleError(getName()+": snmpInternalError: " + responseEvent.getError() + " for: " + getAddress());
@@ -182,8 +188,9 @@ public class Snmp4JWalker extends SnmpWalker {
     
     public void start() {
         
-        if (log().isDebugEnabled())
-            log().debug("Walking "+getName()+" for "+getAddress()+" using version "+SnmpHelpers.versionString(getVersion())+" with config: "+m_agentConfig);
+        if (log().isDebugEnabled()) {
+            log().debug("Walking "+getName()+" for "+getAddress()+" using version "+m_agentConfig.getVersionString()+" with config: "+m_agentConfig);
+        }
             
         super.start();
     }
@@ -197,11 +204,13 @@ public class Snmp4JWalker extends SnmpWalker {
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException {
         Snmp4JPduBuilder snmp4JPduBuilder = (Snmp4JPduBuilder)pduBuilder;
         if (m_session == null) {
-            m_session = SnmpHelpers.createSnmpSession(m_agentConfig);
+            m_session = m_agentConfig.createSnmpSession();
             m_session.listen();
         }
         
-        log().debug("Sending tracker pdu of size "+snmp4JPduBuilder.getPdu().size());
+        if (log().isDebugEnabled()) {
+            log().debug("Sending tracker pdu of size "+snmp4JPduBuilder.getPdu().size());
+        }
         m_session.send(snmp4JPduBuilder.getPdu(), m_tgt, null, m_listener);
     }
     
