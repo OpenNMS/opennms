@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Format code, move SNMP session creation, PDU creation,
+//              and version string into this class. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,11 +38,16 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
+import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.CommunityTarget;
+import org.snmp4j.PDU;
+import org.snmp4j.ScopedPDU;
+import org.snmp4j.Snmp;
 import org.snmp4j.Target;
+import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
@@ -52,6 +62,7 @@ import org.snmp4j.smi.Address;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4JAgentConfig {
     
@@ -105,6 +116,24 @@ public class Snmp4JAgentConfig {
         return convertVersion(m_config.getVersion());
     }
 
+    /**
+     * Returns a string representation of the SNMP4J version constant
+     * @param version
+     * @return
+     */
+    public String getVersionString() {
+        switch (getVersion()) {
+        case SnmpConstants.version1:
+            return "SNMPv1";
+        case SnmpConstants.version2c:
+            return "SNMPv2c";
+        case SnmpConstants.version3:
+            return "SNMPv3";
+        default:
+            return "unknown: " + getVersion();
+        }
+    }
+
     public String getWriteCommunity() {
         return m_config.getWriteCommunity();
     }
@@ -135,13 +164,12 @@ public class Snmp4JAgentConfig {
      * @return
      */
     private int convertVersion(int version) {
-    
         switch (version) {
-        case SnmpAgentConfig.VERSION3 :
+        case SnmpAgentConfig.VERSION3:
             return SnmpConstants.version3;
-        case SnmpAgentConfig.VERSION2C :
+        case SnmpAgentConfig.VERSION2C:
             return SnmpConstants.version2c;
-        default :
+        default:
             return SnmpConstants.version1;
         }
     }
@@ -173,11 +201,13 @@ public class Snmp4JAgentConfig {
     }
 
     private OID convertPrivProtocol(String privProtocol) {
-    
-        //Returning null here is okay because the SNMP4J library supports
-        //this value as null when creating the Snmp session.
-        if (privProtocol == null)
+        /*
+         * Returning null here is okay because the SNMP4J library supports
+         * this value as null when creating the Snmp session.
+         */
+        if (privProtocol == null) {
             return null;
+        }
         
         if (privProtocol.equals("DES")) {
             return PrivDES.ID;
@@ -205,11 +235,13 @@ public class Snmp4JAgentConfig {
     }
 
     private OID convertAuthProtocol(String authProtocol) {
-        
-        //Returning null here is okay because the SNMP4J library supports
-        //this value as null when creating the Snmp session.
-        if (authProtocol == null)
+        /*
+         * Returning null here is okay because the SNMP4J library supports
+         * this value as null when creating the Snmp session.
+         */
+        if (authProtocol == null) {
             return null;
+        }
         
         if (authProtocol.equals("MD5")) {
             return AuthMD5.ID;
@@ -221,9 +253,8 @@ public class Snmp4JAgentConfig {
     }
 
     protected Target getTarget() {
-    
         Target target = createTarget();
-        target.setVersion((getVersion()));
+        target.setVersion(getVersion());
         target.setRetries(getRetries());
         target.setTimeout(getTimeout());
         target.setAddress(getAddress());
@@ -277,8 +308,6 @@ public class Snmp4JAgentConfig {
      * @return
      */
     private int convertSecurityLevel(int securityLevel) {
-        
-    
         switch (securityLevel) {
         case SnmpAgentConfig.AUTH_NOPRIV :
             securityLevel = SecurityLevel.AUTH_NOPRIV;
@@ -296,12 +325,42 @@ public class Snmp4JAgentConfig {
         return securityLevel;
     }
 
-    UsmUser getUser() {
-        return new UsmUser(getSecurityName(),
-                getAuthProtocol(),
-                getAuthPassPhrase(),
-                getPrivProtocol(),
-                getPrivPassPhrase());
+    public Snmp createSnmpSession() throws IOException {
+        TransportMapping transport = new DefaultUdpTransportMapping();
+        Snmp session = new Snmp(transport);
+        
+        if (isSnmpV3()) {
+            session.getUSM().addUser(getSecurityName(),
+                    new UsmUser(getSecurityName(),
+                            getAuthProtocol(),
+                            getAuthPassPhrase(),
+                            getPrivProtocol(),
+                            getPrivPassPhrase()));
+        }
+        
+        return session;
+    }
+    
+    /**
+     * Creates an SNMP4J PDU based on the SNMP4J version constants.
+     * A v3 request requires a ScopedPDU.
+     * 
+     * @param type
+     * @return
+     */
+    public PDU createPdu(int type) {
+        PDU pdu;
+        
+        switch (getVersion()) {
+        case SnmpConstants.version3:
+            pdu = new ScopedPDU();
+        default:
+            pdu = new PDU();
+        }
+        
+        pdu.setType(type);
+        
+        return pdu;
     }
 
 }
