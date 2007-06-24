@@ -4,19 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 
 @Embeddable
 public class PathElement implements Serializable {
-	
-	private String m_ipAddress;
+    private static final long serialVersionUID = 2437052160139305371L;
+    
+    private String m_ipAddress;
 	private String m_serviceName;
 	
 	public PathElement() {
