@@ -10,6 +10,7 @@
 // 
 // Modifications:
 //
+// 2007 Jun 23: Java 5 generics. - dj@opennms.org
 // 2003 Aug 21: Added the ability to generate a new DatagramSocket on a random
 //		high number port if needed by setting the port to -1.
 //
@@ -274,8 +275,8 @@ public class SnmpPortal extends Object {
                 return;
             }
 
-            final LinkedList fastReceiverQ = new LinkedList();
-            final LinkedList usedBuffers = new LinkedList();
+            final LinkedList<DatagramPacket> fastReceiverQ = new LinkedList<DatagramPacket>();
+            final LinkedList<byte[]> usedBuffers = new LinkedList<byte[]>();
             Thread fastReceiver = new Thread(new Runnable() {
                 public void run() {
                     while (!m_isClosing && Thread.interrupted() == false) {

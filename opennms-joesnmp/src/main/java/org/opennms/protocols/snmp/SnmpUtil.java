@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Java 5 generics and deprecate warnings related to a
+//              class that is referenced for backward-compatatibility.
+//              - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -60,7 +66,7 @@ class SnmpUtil extends Object {
      * The array of dynamically registred SnmpSyntax objects
      * 
      */
-    static ArrayList m_syntaxArray = null;
+    static ArrayList<SnmpSyntax> m_syntaxArray = null;
 
     //
     // when the class is "created" and initiazlied
@@ -68,7 +74,7 @@ class SnmpUtil extends Object {
     // syntax object into.
     //
     static {
-        m_syntaxArray = new ArrayList();
+        m_syntaxArray = new ArrayList<SnmpSyntax>();
     }
 
     /**
@@ -90,7 +96,7 @@ class SnmpUtil extends Object {
             //
             boolean addIt = true;
             for (int x = 0; x < m_syntaxArray.size(); x++) {
-                SnmpSyntax tmp = (SnmpSyntax) m_syntaxArray.get(x);
+                SnmpSyntax tmp = m_syntaxArray.get(x);
                 if (obj.typeId() == tmp.typeId()) {
                     addIt = false;
                     break;
@@ -103,7 +109,10 @@ class SnmpUtil extends Object {
     }
 
     /**
-     * Used to dynamically lookup registered SnmpSyntax objects
+     * Used to dynamically lookup registered SnmpSyntax objects.
+     * 
+     * Deprecation warnings are suppressed because the SnmpV2PartyClock
+     * is supported for backward compatability and is deprecated.
      * 
      * @param asnType
      *            The ASN.1 type to search for
@@ -111,6 +120,7 @@ class SnmpUtil extends Object {
      * @return A new SnmpSyntax object of the appropiate type
      * 
      */
+    @SuppressWarnings("deprecation")
     static SnmpSyntax getSyntaxObject(byte asnType) {
         SnmpSyntax obj = null;
         switch (asnType) {
@@ -180,7 +190,7 @@ class SnmpUtil extends Object {
         if (obj == null) {
             synchronized (m_syntaxArray) {
                 for (int x = m_syntaxArray.size() - 1; x >= 0; --x) {
-                    SnmpSyntax o = (SnmpSyntax) m_syntaxArray.get(x);
+                    SnmpSyntax o = m_syntaxArray.get(x);
                     if (asnType == o.typeId()) {
                         obj = o.duplicate();
                         break; // exit the loop

@@ -10,6 +10,7 @@
 // 
 // Modifications:
 //
+// 2007 Jun 23: Java 5 generics, eliminate unused variables. - dj@opennms.org
 // 2003 Mar 20: Added code to allow the joeSNMP library to answer SNMP requests
 //              to be used in creating SNMP agents.
 //
@@ -122,7 +123,7 @@ public class SnmpSession extends Object {
      * Used to contain a list of outstanding request for the session. The list
      * should only contain SnmpRequest objects!
      */
-    private LinkedList m_requests;
+    private LinkedList<SnmpRequest> m_requests;
 
     /**
      * The SNMP peer to whom this session will communicate with. The peer
@@ -282,9 +283,9 @@ public class SnmpSession extends Object {
         public void run() {
             synchronized (m_requests) {
                 if (m_requests.size() > 0) {
-                    ListIterator iter = m_requests.listIterator(0);
+                    ListIterator<SnmpRequest> iter = m_requests.listIterator(0);
                     while (iter.hasNext()) {
-                        SnmpRequest req = (SnmpRequest) iter.next();
+                        SnmpRequest req = iter.next();
                         if (req.m_expired)
                             iter.remove();
                     }
@@ -376,7 +377,6 @@ public class SnmpSession extends Object {
         //
         // get a suitable buffer (16k)
         //
-        int begin = 0;
         int offset = 0;
         byte[] buf = new byte[16 * 1024];
 
@@ -446,7 +446,6 @@ public class SnmpSession extends Object {
         //
         // get a suitable buffer (16k)
         //
-        int begin = 0;
         int offset = 0;
         byte[] buf = new byte[16 * 1024];
 
@@ -509,9 +508,9 @@ public class SnmpSession extends Object {
     void removeRequest(SnmpRequest req) {
         synchronized (m_requests) {
             if (m_requests.size() > 0) {
-                ListIterator iter = m_requests.listIterator(0);
+                ListIterator<SnmpRequest> iter = m_requests.listIterator(0);
                 while (iter.hasNext()) {
-                    SnmpRequest cmp = (SnmpRequest) iter.next();
+                    SnmpRequest cmp = iter.next();
                     if (req.equals(cmp)) {
                         req.m_expired = true;
                         iter.remove();
@@ -537,10 +536,10 @@ public class SnmpSession extends Object {
     SnmpRequest findRequest(SnmpPduPacket pdu) {
         synchronized (m_requests) {
             if (m_requests.size() > 0) {
-                ListIterator iter = m_requests.listIterator(0);
+                ListIterator<SnmpRequest> iter = m_requests.listIterator(0);
 
                 while (iter.hasNext()) {
-                    SnmpRequest req = (SnmpRequest) iter.next();
+                    SnmpRequest req = iter.next();
                     if (!req.m_expired && req.m_pdu instanceof SnmpPduPacket && ((SnmpPduPacket) req.m_pdu).getRequestId() == pdu.getRequestId()) {
                         return req;
                     }
@@ -645,7 +644,7 @@ public class SnmpSession extends Object {
      */
     public SnmpSession(InetAddress peer) throws SocketException {
         m_sync = new Object();
-        m_requests = new LinkedList();
+        m_requests = new LinkedList<SnmpRequest>();
         m_peer = new SnmpPeer(peer);
         m_timer = new SnmpTimer();
         m_defHandler = null;
@@ -674,7 +673,7 @@ public class SnmpSession extends Object {
      * 
      */
     public SnmpSession(SnmpPeer peer) throws SocketException {
-        m_requests = new LinkedList();
+        m_requests = new LinkedList<SnmpRequest>();
         m_timer = new SnmpTimer();
         m_defHandler = null;
 
@@ -782,9 +781,9 @@ public class SnmpSession extends Object {
             // to make this happen!
             //
             if (m_requests.size() > 0) {
-                ListIterator iter = m_requests.listIterator();
+                ListIterator<SnmpRequest> iter = m_requests.listIterator();
                 while (iter.hasNext()) {
-                    SnmpRequest req = (SnmpRequest) iter.next();
+                    SnmpRequest req = iter.next();
                     if (req.m_expired)
                         iter.remove();
                 }
@@ -816,13 +815,13 @@ public class SnmpSession extends Object {
 
         synchronized (m_requests) {
             if (m_requests.size() > 0) {
-                ListIterator iter = m_requests.listIterator();
+                ListIterator<SnmpRequest> iter = m_requests.listIterator();
                 while (iter.hasNext()) {
                     //
                     // While the method owns the lock remove any expired
                     // request and any request with a matching request id
                     //
-                    SnmpRequest req = (SnmpRequest) iter.next();
+                    SnmpRequest req = iter.next();
                     if (req.m_expired || (req.m_pdu instanceof SnmpPduPacket && ((SnmpPduPacket) req.m_pdu).getRequestId() == requestId)) {
                         req.m_expired = true;
                         iter.remove();
