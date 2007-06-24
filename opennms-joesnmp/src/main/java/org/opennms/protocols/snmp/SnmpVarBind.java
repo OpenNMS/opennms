@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Change return type on duplicate() to SnmpVarBind. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -329,7 +333,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      * 
      * @return A newly created variable
      */
-    public SnmpSyntax duplicate() {
+    public SnmpVarBind duplicate() {
         return new SnmpVarBind(this);
     }
 

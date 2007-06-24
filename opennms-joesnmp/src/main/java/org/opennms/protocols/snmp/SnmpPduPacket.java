@@ -10,6 +10,7 @@
 // 
 // Modifications:
 //
+// 2007 Jun 23: Java 5 generics. - dj@opennms.org
 // 2003 Mar 20: Added code to allow the joeSNMP library to answer SNMP requests
 //              to be used in creating SNMP agents.
 //
@@ -154,7 +155,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
      * The list of variables for this particular PDU. The list may be quite
      * large so long as the packet can be received by the remote appliction
      */
-    private ArrayList m_variables; // from pdu
+    private ArrayList<SnmpVarBind> m_variables; // from pdu
 
     /**
      * The error status in a normal pdu, is is used as the non-repeaters in the
@@ -184,7 +185,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
         m_requestId = 0;
         m_errStatus = 0;
         m_errIndex = 0;
-        m_variables = new ArrayList();
+        m_variables = new ArrayList<SnmpVarBind>();
     }
 
     /**
@@ -203,10 +204,10 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
         m_errIndex = second.m_errIndex;
 
         int sz = second.m_variables.size();
-        m_variables = new ArrayList(sz);
+        m_variables = new ArrayList<SnmpVarBind>(sz);
 
         for (int x = 0; x < sz; x++) {
-            m_variables.add(x, ((SnmpVarBind) (second.m_variables.get(x))).duplicate());
+            m_variables.add(x, second.m_variables.get(x).duplicate());
         }
     }
 

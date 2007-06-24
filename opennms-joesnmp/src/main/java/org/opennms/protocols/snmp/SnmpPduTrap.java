@@ -10,7 +10,8 @@
 // 
 // Modifications:
 //
-// 30 September 2003: Fixed a bad increment in a loop.
+// 2007 Jun 23: Java 5 generics. - dj@opennms.org
+// 2003 Sep 30: Fixed a bad increment in a loop.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -131,7 +132,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
     /**
      * The list of variable bindings for the trap.
      */
-    private ArrayList m_variables;
+    private ArrayList<SnmpVarBind> m_variables;
 
     /**
      * The ASN.1 type for the SNMPv1 Trap.
@@ -183,7 +184,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
         m_generic = 0;
         m_specific = 0;
         m_tstamp = 0L;
-        m_variables = new ArrayList();
+        m_variables = new ArrayList<SnmpVarBind>();
     }
 
     /**
@@ -199,9 +200,9 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
         m_generic = second.m_generic;
         m_specific = second.m_specific;
         m_tstamp = second.m_tstamp;
-        m_variables = new ArrayList(second.m_variables.size());
+        m_variables = new ArrayList<SnmpVarBind>(second.m_variables.size());
         for (int x = 0; x < second.m_variables.size(); x++) {
-            m_variables.add(((SnmpVarBind) (second.m_variables.get(x))).duplicate());
+            m_variables.add(second.m_variables.get(x).duplicate());
         }
     }
 
@@ -350,7 +351,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
      * 
      */
     public SnmpVarBind getVarBindAt(int ndx) {
-        return ((SnmpVarBind) (m_variables.get(ndx)));
+        return m_variables.get(ndx);
     }
 
     /**
@@ -376,7 +377,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
      * 
      */
     public SnmpVarBind removeVarBindAt(int ndx) {
-        return (SnmpVarBind) m_variables.remove(ndx);
+        return m_variables.remove(ndx);
     }
 
     /**
@@ -386,8 +387,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
      * 
      */
     public SnmpVarBind[] toVarBindArray() {
-        SnmpVarBind[] vblist = new SnmpVarBind[m_variables.size()];
-        return (SnmpVarBind[]) m_variables.toArray(vblist);
+        return m_variables.toArray(new SnmpVarBind[m_variables.size()]);
     }
 
     /**
@@ -453,7 +453,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
         //
         int sz = m_variables.size();
         for (int x = 0; x < sz; x++) {
-            SnmpVarBind ref = (SnmpVarBind) m_variables.get(x);
+            SnmpVarBind ref = m_variables.get(x);
             offset = ref.encodeASN(buf, offset, encoder);
         }
 

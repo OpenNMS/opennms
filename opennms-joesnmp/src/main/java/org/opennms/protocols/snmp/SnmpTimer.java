@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -56,7 +60,7 @@ class SnmpTimer extends Object {
     /**
      * The list of runnable objects (stored as TimeoutElement)
      */
-    private LinkedList m_list;
+    private LinkedList<TimeoutElement> m_list;
 
     /**
      * The thread doing the scheduling
@@ -117,7 +121,7 @@ class SnmpTimer extends Object {
          * 
          */
         public void run() {
-            LinkedList toRun = new LinkedList();
+            LinkedList<Runnable> toRun = new LinkedList<Runnable>();
             while (true) {
                 //
                 // syncronize on the object
@@ -151,14 +155,14 @@ class SnmpTimer extends Object {
                     Date now = new Date();
                     boolean done = false;
                     long minTime = Long.MAX_VALUE;
-                    ListIterator iter = m_list.listIterator(0);
+                    ListIterator<TimeoutElement> iter = m_list.listIterator(0);
 
                     while (!done && iter.hasNext()) {
                         try {
                             //
                             // get the next timeout element
                             //
-                            TimeoutElement elem = (TimeoutElement) iter.next();
+                            TimeoutElement elem = iter.next();
                             if (now.after(elem.m_when)) {
                                 //
                                 // The element has expried
@@ -201,10 +205,10 @@ class SnmpTimer extends Object {
                 // process the timeouts, if any
                 //
                 if (toRun.size() != 0) {
-                    ListIterator iter = toRun.listIterator(0);
+                    ListIterator<Runnable> iter = toRun.listIterator(0);
                     try {
                         while (true) {
-                            Runnable runner = (Runnable) iter.next();
+                            Runnable runner = iter.next();
                             iter.remove();
                             runner.run();
                         }
@@ -231,7 +235,7 @@ class SnmpTimer extends Object {
     SnmpTimer() {
         m_exit = false;
         m_sync = new Object();
-        m_list = new LinkedList();
+        m_list = new LinkedList<TimeoutElement>();
         m_thread = new Thread(new Scheduler(), "SnmpTimer");
 
         m_thread.start();

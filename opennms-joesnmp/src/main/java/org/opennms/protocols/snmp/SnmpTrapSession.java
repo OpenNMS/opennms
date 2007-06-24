@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Eliminate unused variables. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -427,7 +431,6 @@ public final class SnmpTrapSession extends Object {
         //
         // get a suitable buffer (16k)
         //
-        int begin = 0;
         int offset = 0;
         byte[] buf = new byte[16 * 1024];
 
@@ -533,7 +536,6 @@ public final class SnmpTrapSession extends Object {
         //
         // get a suitable buffer (16k)
         //
-        int begin = 0;
         int offset = 0;
         byte[] buf = new byte[16 * 1024];
 
