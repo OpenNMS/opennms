@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2007 Jun 23: Add comments about why the tests are disabled and eliminate
+ *              warnings. - dj@opennms.org
  * 2007 Mar 19: Add a test for creating a graph.  Doesn't seem to work yet, though. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -59,17 +61,24 @@ public class JniRrdStrategyTest extends TestCase {
         
         MockLogAppender.setupLogging();
         
-        //System.setProperty("opennms.library.jrrd", findJrrdLibrary().getAbsolutePath());
-        
-        //m_strategy = new JniRrdStrategy();
-        //m_strategy.initialize();
+        // FIXME: This is disabled.  See FIXMEtestGraph for details.
+        if (false) {
+            System.setProperty("opennms.library.jrrd", findJrrdLibrary().getAbsolutePath());
+            
+            m_strategy = new JniRrdStrategy();
+            m_strategy.initialize();
+        }
     }
     
     public void testInitialize() {
         // Do nothing; just checking to see if setUp() worked.
     }
     
-    public void NORUNtestGraph() throws Exception {
+    /*
+     * FIXME: This is disabled since the test doesn't work if building from
+     * scratch.  This should likely be moved into the platform modules.
+     */
+    public void FIXMEtestGraph() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
         String[] command = new String[] {
