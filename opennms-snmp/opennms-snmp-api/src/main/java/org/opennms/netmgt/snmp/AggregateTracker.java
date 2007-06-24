@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Use Java 5 generics and loops, format code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,13 +37,12 @@ package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class AggregateTracker extends CollectionTracker {
 
     private static class ChildTrackerPduBuilder extends PduBuilder {
-        private List m_oids = new ArrayList();
+        private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
         private int m_nonRepeaters = 0;
         private int m_maxRepititions = 0;
         private ResponseProcessor m_responseProcessor;
@@ -86,15 +89,15 @@ public class AggregateTracker extends CollectionTracker {
         }
         
         public void addNonRepeaters(PduBuilder pduBuilder) {
-            for(int i = 0; i < m_nonRepeaters; i++) {
-                SnmpObjId oid = (SnmpObjId)m_oids.get(i);
+            for (int i = 0; i < m_nonRepeaters; i++) {
+                SnmpObjId oid = m_oids.get(i);
                 pduBuilder.addOid(oid);
             }
         }
         
         public void addRepeaters(PduBuilder pduBuilder) {
-            for(int i = m_nonRepeaters; i < m_oids.size(); i++) {
-                SnmpObjId oid = (SnmpObjId)m_oids.get(i);
+            for (int i = m_nonRepeaters; i < m_oids.size(); i++) {
+                SnmpObjId oid = m_oids.get(i);
                 pduBuilder.addOid(oid);
             }
         }
@@ -128,17 +131,16 @@ public class AggregateTracker extends CollectionTracker {
         }
         
         public int getChildIndex(int canonicalIndex) {
-            if (isNonRepeater(canonicalIndex))
+            if (isNonRepeater(canonicalIndex)) {
                 return canonicalIndex - getNonRepeaterStartIndex();
+            }
             
-            if (isRepeater(canonicalIndex))
+            if (isRepeater(canonicalIndex)) {
                 return canonicalIndex - getRepeaterStartIndex();
+            }
             
             throw new IllegalArgumentException("index out of range for tracker "+this);
-    
         }
-        
-        
     }
 
     private class ChildTrackerResponseProcessor implements ResponseProcessor {
@@ -148,11 +150,11 @@ public class AggregateTracker extends CollectionTracker {
     
         private final int m_nonRepeaters;
     
-        private final List m_childPduBuilders;
+        private final List<ChildTrackerPduBuilder> m_childPduBuilders;
         
         private int m_currResponseIndex = 0;
         
-        public ChildTrackerResponseProcessor(PduBuilder pduBuilder, List builders, int nonRepeaters, int repeaters) {
+        public ChildTrackerResponseProcessor(PduBuilder pduBuilder, List<ChildTrackerPduBuilder> builders, int nonRepeaters, int repeaters) {
             this.m_repeaters = repeaters;
             this.m_pduBuilder = pduBuilder;
             this.m_nonRepeaters = nonRepeaters;
@@ -173,32 +175,33 @@ public class AggregateTracker extends CollectionTracker {
     
         private ChildTrackerPduBuilder getChildBuilder(int zeroBasedIndex) {
             int canonicalIndex = getCanonicalIndex(zeroBasedIndex);
-            for (Iterator it = m_childPduBuilders.iterator(); it.hasNext();) {
-                ChildTrackerPduBuilder childBuilder = (ChildTrackerPduBuilder) it.next();
-                if (childBuilder.isNonRepeater(canonicalIndex) || childBuilder.isRepeater(canonicalIndex))
+            for (ChildTrackerPduBuilder childBuilder : m_childPduBuilders) {
+                if (childBuilder.isNonRepeater(canonicalIndex) || childBuilder.isRepeater(canonicalIndex)) {
                     return childBuilder;
+                }
             }
     
             throw new IllegalStateException("Unable to find childBuilder for index "+zeroBasedIndex);
-    
         }
     
         private int getCanonicalIndex(int zeroBasedIndex) {
-            if (zeroBasedIndex <= 0)
+            if (zeroBasedIndex <= 0) {
                 return 0;
-            if (zeroBasedIndex < m_nonRepeaters)
+            }
+            if (zeroBasedIndex < m_nonRepeaters) {
                 return zeroBasedIndex;
+            }
     
             // return the smallest index of the repeater this index refers to 
-            return ((zeroBasedIndex - m_nonRepeaters)%m_repeaters)+m_nonRepeaters;
-                
+            return ((zeroBasedIndex - m_nonRepeaters) % m_repeaters) + m_nonRepeaters;
         }
     
         public boolean processErrors(int errorStatus, int errorIndex) {
             if (errorStatus == TOO_BIG_ERR) {
                 int maxVarsPerPdu = m_pduBuilder.getMaxVarsPerPdu();
-                if (maxVarsPerPdu <= 1)
+                if (maxVarsPerPdu <= 1) {
                     throw new IllegalArgumentException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
+                }
                 m_pduBuilder.setMaxVarsPerPdu(maxVarsPerPdu/2);
                 reportTooBigErr("Reducing maxVarsPerPdu for this request to "+m_pduBuilder.getMaxVarsPerPdu());
                 return true;
@@ -212,19 +215,17 @@ public class AggregateTracker extends CollectionTracker {
                 // contine on.. no need to retry
                 return false;
             }
-            
         }
-
     }
 
     private CollectionTracker[] m_children;
     
-    public AggregateTracker(Collection children) {
+    public AggregateTracker(Collection<Collectable> children) {
         this(children, null);
     }
 
-    public AggregateTracker(Collection children, CollectionTracker parent) {
-        this((Collectable[]) children.toArray(new Collectable[children.size()]), parent);
+    public AggregateTracker(Collection<Collectable> children, CollectionTracker parent) {
+        this(children.toArray(new Collectable[children.size()]), parent);
     }
 
     public AggregateTracker(Collectable[] children) {
@@ -235,7 +236,7 @@ public class AggregateTracker extends CollectionTracker {
         super(parent);
         
         m_children = new CollectionTracker[children.length];
-        for(int i = 0; i < m_children.length; i++) {
+        for (int i = 0; i < m_children.length; i++) {
             m_children[i] = children[i].getCollectionTracker();
             m_children[i].setParent(this);
         }
@@ -243,20 +244,23 @@ public class AggregateTracker extends CollectionTracker {
     
     public void setFailed(boolean failed) {
         super.setFailed(failed);
-        for(int i = 0; i < m_children.length; i++)
-            m_children[i].setFailed(failed);
+        for (CollectionTracker child : m_children) {
+            child.setFailed(failed);
+        }
     }
 
     public void setTimedOut(boolean timedOut) {
         super.setTimedOut(timedOut);
-        for(int i = 0; i < m_children.length; i++)
-            m_children[i].setTimedOut(timedOut);
+        for (CollectionTracker child : m_children) {
+            child.setTimedOut(timedOut);
+        }
     }
 
     public boolean isFinished() {
-        for(int i = 0; i < m_children.length; i++) {
-            if (!m_children[i].isFinished())
+        for (CollectionTracker child : m_children) {
+            if (!child.isFinished()) {
                 return false;
+            }
         }
         return true;
     }
@@ -266,7 +270,7 @@ public class AggregateTracker extends CollectionTracker {
         // first process the child trackers that aren't finished up to maxVars 
         int count = 0;
         int maxVars = parentBuilder.getMaxVarsPerPdu();
-        final List builders = new ArrayList(m_children.length);
+        final List<ChildTrackerPduBuilder> builders = new ArrayList<ChildTrackerPduBuilder>(m_children.length);
         for (int i = 0; i < m_children.length && count < maxVars; i++) {
             CollectionTracker childTracker = m_children[i];
             if (!childTracker.isFinished()) {
@@ -280,8 +284,7 @@ public class AggregateTracker extends CollectionTracker {
         
         // set the nonRepeaters in the passed in pduBuilder and store indices in the childTrackers
         int nonRepeaters = 0;
-        for (Iterator it = builders.iterator(); it.hasNext();) {
-            ChildTrackerPduBuilder childBuilder = (ChildTrackerPduBuilder) it.next();
+        for (ChildTrackerPduBuilder childBuilder : builders) {
             childBuilder.setNonRepeaterStartIndex(nonRepeaters);
             childBuilder.addNonRepeaters(parentBuilder);
             nonRepeaters += childBuilder.getNonRepeaters();
@@ -290,8 +293,7 @@ public class AggregateTracker extends CollectionTracker {
         // set the repeaters in the passed in pduBuilder and store indices in the childTrackers
         int maxRepititions = Integer.MAX_VALUE;
         int repeaters = 0;
-        for (Iterator it = builders.iterator(); it.hasNext();) {
-            ChildTrackerPduBuilder childBuilder = (ChildTrackerPduBuilder) it.next();
+        for (ChildTrackerPduBuilder childBuilder : builders) {
             childBuilder.setRepeaterStartIndex(nonRepeaters+repeaters);
             childBuilder.addRepeaters(parentBuilder);
             maxRepititions = Math.min(maxRepititions, childBuilder.getMaxRepititions());
@@ -306,5 +308,4 @@ public class AggregateTracker extends CollectionTracker {
         // for the child trackers
         return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
     }
-
 }

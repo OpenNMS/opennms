@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Use Java 5 generics to eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +42,7 @@ import java.util.TreeMap;
 
 public abstract class AbstractSnmpStore {
 
-    private Map m_responseMap = new TreeMap();
+    private Map<String, SnmpValue> m_responseMap = new TreeMap<String, SnmpValue>();
     public static final String IFINDEX = "ifIndex";
     public abstract void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val);
 
@@ -75,7 +79,7 @@ public abstract class AbstractSnmpStore {
     }
 
     public SnmpValue getValue(String key) {
-        return (SnmpValue)m_responseMap.get(key);
+        return m_responseMap.get(key);
     }
 
     protected void putValue(String key, SnmpValue value) {
