@@ -8,6 +8,10 @@
 //
 //OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+//Modifications:
+//
+//2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 //Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 //This program is free software; you can redistribute it and/or modify
@@ -65,10 +69,10 @@ public class AbstractMockTestCase extends MockObjectTestCase {
     private DistPollerDao m_distPollerDao;
     private ServiceTypeDao m_svcTypeDao;
     private CategoryDao m_categoryDao;
-    private HashMap m_nodeCache = new HashMap();
+    private HashMap<Integer, OnmsNode> m_nodeCache = new HashMap<Integer, OnmsNode>();
     private Mock m_mockNodeDao;
     private Mock m_mockCategoryDao;
-    private Map m_svcTypes = new HashMap();
+    private Map<String, OnmsServiceType> m_svcTypes = new HashMap<String, OnmsServiceType>();
     private int m_ids;
     private Mock m_svcTypeMock;
     
@@ -108,7 +112,7 @@ public class AbstractMockTestCase extends MockObjectTestCase {
     
     protected OnmsNode createNode(int nodeId) {
         Integer key = new Integer(nodeId);
-        OnmsNode node = (OnmsNode)m_nodeCache.get(key);
+        OnmsNode node = m_nodeCache.get(key);
         if (node == null) {
             node = new OnmsNode();
             node.setId(key);
@@ -185,8 +189,8 @@ public class AbstractMockTestCase extends MockObjectTestCase {
         m_mockNodeDao.expects(once()).method("get").with(eq(new Long(nodeId))).will(returnValue(createNode(nodeId)));
     }
     
-    protected Map getAssetNumberMap() {
-        Map assetNumberMap = new HashMap();
+    protected Map<String, Long> getAssetNumberMap() {
+        Map<String, Long> assetNumberMap = new HashMap<String, Long>();
         assetNumberMap.put("imported:"+"1", new Long(1));
         assetNumberMap.put("imported:"+"2", new Long(2));
         assetNumberMap.put("imported:"+"3", new Long(3));
@@ -269,9 +273,9 @@ public class AbstractMockTestCase extends MockObjectTestCase {
     
     public class ExpectationsVisitor extends AbstractImportVisitor {
         
-        List m_currentNodeConstraints;
+        List<Object> m_currentNodeConstraints;
         int m_ifaceCount;
-        List m_currentIfaceConstraints;
+        List<Object> m_currentIfaceConstraints;
         Map m_assetNumToNodeMap;
         private int m_svcCount;
         
@@ -280,7 +284,7 @@ public class AbstractMockTestCase extends MockObjectTestCase {
         }
         
         public void visitNode(Node node) {
-            m_currentNodeConstraints = new LinkedList();
+            m_currentNodeConstraints = new LinkedList<Object>();
             
             m_currentNodeConstraints.add(isA(OnmsNode.class));
             m_currentNodeConstraints.add(hasPropertyWithValue("assetRecord.assetNumber", "imported:"+(node.getForeignId())));
@@ -291,7 +295,7 @@ public class AbstractMockTestCase extends MockObjectTestCase {
         }
         
         public void visitInterface(Interface iface) {
-            m_currentIfaceConstraints = new LinkedList();
+            m_currentIfaceConstraints = new LinkedList<Object>();
             m_ifaceCount++;
             m_svcCount = 0;
             
@@ -327,7 +331,7 @@ public class AbstractMockTestCase extends MockObjectTestCase {
         }
         
         private Constraint getNodeConstraints() {
-            LinkedList constraints = new LinkedList(m_currentNodeConstraints);
+            LinkedList<Object> constraints = new LinkedList<Object>(m_currentNodeConstraints);
             return andAll(constraints);
         }
         

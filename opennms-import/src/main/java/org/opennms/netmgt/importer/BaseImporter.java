@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Organize imports, use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,6 +37,7 @@ package org.opennms.netmgt.importer;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -55,9 +60,11 @@ import org.opennms.netmgt.importer.operations.InsertOperation;
 import org.opennms.netmgt.importer.operations.UpdateOperation;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
@@ -76,8 +83,8 @@ public class BaseImporter implements ImportOperationFactory {
     private MonitoredServiceDao m_monitoredServiceDao;
     private AssetRecordDao m_assetRecordDao;
     private CategoryDao m_categoryDao;
-    private ThreadLocal m_typeCache = new ThreadLocal();
-    private ThreadLocal m_categoryCache = new ThreadLocal();
+    private ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
+    private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
 	private int m_scanThreads = 50;
 	private int m_writeThreads = 4;
 
@@ -313,7 +320,7 @@ public class BaseImporter implements ImportOperationFactory {
 
 	@SuppressWarnings("unchecked")
     private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
-        return (Map)m_transTemplate.execute(new TransactionCallback() {
+        return (Map<String, Integer>)m_transTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
                 return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
             }
