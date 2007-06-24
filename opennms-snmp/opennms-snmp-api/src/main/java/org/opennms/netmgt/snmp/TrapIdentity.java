@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Add whitespace, be explicit about field visibility, and use
+//              Java 5 generics. - dj@opennms.org  
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,23 +37,26 @@
 package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public class TrapIdentity {
+    private int m_generic;
+    private int m_specific;
+    private String m_enterpriseId;
     
-    int m_generic;
-    int m_specific;
-    String m_enterpriseId;
     /**
      * The standard traps list
      */
-    static final ArrayList GENERIC_TRAPS;
+    private static final List<SnmpObjId> GENERIC_TRAPS;
+    
     /**
      * The dot separator in an OID
      */
-    static final char DOT_CHAR = '.';
+    private static final char DOT_CHAR = '.';
+    
     /**
      * The snmp trap enterprise OID, which if present in a V2 trap is the last
      * varbind.
@@ -56,18 +64,19 @@ public class TrapIdentity {
      * ref - book 'SNMP, SNMPv2, SNMPv3..' by William Stallings, third edition,
      * section 13.1.3
      */
-    static final String SNMP_TRAP_ENTERPRISE_ID = ".1.3.6.1.6.3.1.1.4.3.0";
+    private static final String SNMP_TRAP_ENTERPRISE_ID = ".1.3.6.1.6.3.1.1.4.3.0";
+    
     /**
      * The snmpTraps value to be used in case a standard trap comes in without
      * the SNMP_TRAP_ENTERPRISE_ID as the last varbind.
      */
-    static final String SNMP_TRAPS = ".1.3.6.1.6.3.1.1.5";
+    private static final String SNMP_TRAPS = ".1.3.6.1.6.3.1.1.5";
     
     /**
      * Create the standard traps list - used in v2 processing
      */
     static {
-        GENERIC_TRAPS = new ArrayList();
+        GENERIC_TRAPS = new ArrayList<SnmpObjId>();
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.1")); // coldStart
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.2")); // warmStart
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.3")); // linkDown
@@ -75,8 +84,6 @@ public class TrapIdentity {
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
     }
-    
-
     
     public TrapIdentity(SnmpObjId snmpTrapOid, SnmpObjId lastVarBindOid, SnmpValue lastVarBindValue) {
         String snmpTrapOidValue = snmpTrapOid.toString();
@@ -86,7 +93,6 @@ public class TrapIdentity {
         }
 
         // get the last subid
-        int length = snmpTrapOidValue.length();
         int lastIndex = snmpTrapOidValue.lastIndexOf(TrapIdentity.DOT_CHAR);
         String lastSubIdStr = snmpTrapOidValue.substring(lastIndex + 1);
         int lastSubId = -1;
