@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -97,15 +101,15 @@ public class StringUtils {
         s = buffer.toString();
     
         // split the new string by the whitespaces that were not in quotes
-        ArrayList arrayList = new ArrayList();
+        ArrayList<String> arrayList = new ArrayList<String>();
         StringTokenizer tokenizer = new StringTokenizer(s);
     
         while (tokenizer.hasMoreTokens()) {
-            arrayList.add(tokenizer.nextElement());
+            arrayList.add(tokenizer.nextElement().toString());
         }
     
         // put the strings in the arraylist into a string[]
-        String[] list = (String[]) arrayList.toArray(new String[arrayList.size()]);
+        String[] list = arrayList.toArray(new String[arrayList.size()]);
     
         // change all the delim characters back to spaces
         for (int i = 0; i < list.length; i++) {
@@ -117,7 +121,7 @@ public class StringUtils {
 
     public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted) {
         Category log = ThreadCategory.getInstance(StringUtils.class);
-        List tokenList = new LinkedList();
+        List<String> tokenList = new LinkedList<String>();
     
         StringBuffer currToken = new StringBuffer();
         boolean quoting = false;

@@ -1,6 +1,10 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
+// Modifications:
+//
+// 2007 Jun 23: Use Java 5 generics, rename set to m_set. - dj@opennms.org
+//
 // OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
@@ -42,8 +46,7 @@ import java.util.Set;
  * Provides set functionality for ints.
  */
 public class IntSet {
-
-    Set set = new HashSet();
+    private Set<Integer> m_set = new HashSet<Integer>();
 
     /*
      * (non-Javadoc)
@@ -51,7 +54,7 @@ public class IntSet {
      * @see java.util.Collection#add(java.lang.Object)
      */
     public boolean add(int n) {
-        return set.add(new Integer(n));
+        return m_set.add(new Integer(n));
     }
 
     /*
@@ -60,7 +63,7 @@ public class IntSet {
      * @see java.util.Collection#addAll(java.util.Collection)
      */
     public boolean addAll(IntSet s) {
-        return set.addAll(s.set);
+        return m_set.addAll(s.m_set);
     }
 
     /*
@@ -69,7 +72,7 @@ public class IntSet {
      * @see java.util.Collection#clear()
      */
     public void clear() {
-        set.clear();
+        m_set.clear();
     }
 
     /*
@@ -78,7 +81,7 @@ public class IntSet {
      * @see java.util.Collection#contains(java.lang.Object)
      */
     public boolean contains(int n) {
-        return set.contains(new Integer(n));
+        return m_set.contains(new Integer(n));
     }
 
     /*
@@ -87,7 +90,7 @@ public class IntSet {
      * @see java.util.Collection#containsAll(java.util.Collection)
      */
     public boolean containsAll(IntSet s) {
-        return set.containsAll(s.set);
+        return m_set.containsAll(s.m_set);
     }
 
     /*
@@ -96,7 +99,7 @@ public class IntSet {
      * @see java.util.Collection#isEmpty()
      */
     public boolean isEmpty() {
-        return set.isEmpty();
+        return m_set.isEmpty();
     }
 
     /*
@@ -104,8 +107,8 @@ public class IntSet {
      * 
      * @see java.util.Collection#iterator()
      */
-    public Iterator iterator() {
-        return set.iterator();
+    public Iterator<Integer> iterator() {
+        return m_set.iterator();
     }
 
     /*
@@ -114,7 +117,7 @@ public class IntSet {
      * @see java.util.Collection#remove(java.lang.Object)
      */
     public boolean remove(int n) {
-        return set.remove(new Integer(n));
+        return m_set.remove(new Integer(n));
     }
 
     /*
@@ -123,7 +126,7 @@ public class IntSet {
      * @see java.util.Collection#removeAll(java.util.Collection)
      */
     public boolean removeAll(IntSet s) {
-        return set.remove(s.set);
+        return m_set.remove(s.m_set);
     }
 
     /*
@@ -132,7 +135,7 @@ public class IntSet {
      * @see java.util.Collection#retainAll(java.util.Collection)
      */
     public boolean retainAll(IntSet s) {
-        return set.retainAll(s.set);
+        return m_set.retainAll(s.m_set);
     }
 
     /*
@@ -141,7 +144,7 @@ public class IntSet {
      * @see java.util.Collection#size()
      */
     public int size() {
-        return set.size();
+        return m_set.size();
     }
 
     /*
@@ -153,8 +156,8 @@ public class IntSet {
         int[] array = new int[size()];
 
         int i = 0;
-        for (Iterator it = set.iterator(); it.hasNext(); i++) {
-            Integer element = (Integer) it.next();
+        for (Iterator<Integer> it = m_set.iterator(); it.hasNext(); i++) {
+            Integer element = it.next();
             array[i] = element.intValue();
         }
         return array;
