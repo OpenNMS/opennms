@@ -1,5 +1,9 @@
 // This file is part of the OpenNMS(R) QoSD OSS/J interface.
 //
+// Modifications:
+//
+// 2007 Jun 24: Mark unread fields as unused. - dj@opennms.org
+//
 // Copyright (C) 2006-2007 Craig Gallen, 
 //                         University of Southampton,
 //                         School of Electronics and Computer Science
@@ -125,6 +129,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used to obtain opennms asset information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.AssetRecordDao
 	 */
+	@SuppressWarnings("unused")
 	private static AssetRecordDao _assetRecordDao;
 
 
@@ -140,6 +145,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used to obtain opennms node information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.NodeDao 
 	 */
+	@SuppressWarnings("unused")
 	private static NodeDao _nodeDao;
 
 	/**
@@ -154,6 +160,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used to search and update opennms alarm list
 	 * @see org.opennms.netmgt.dao.AlarmDao
 	 */
+	@SuppressWarnings("unused")
 	private static AlarmDao _alarmDao;
 
 	/**

@@ -1,5 +1,9 @@
 // This file is part of the OpenNMS(R) QoSD OSS/J interface.
 //
+// Modifications:
+//
+// 2007 Jun 24: Mark unread fields as unused. - dj@opennms.org
+//
 // Copyright (C) 2006-2007 Craig Gallen, 
 //                         University of Southampton,
 //                         School of Electronics and Computer Science
@@ -56,6 +60,7 @@ public class QoSDrx implements PausableFiber {
 	 * Used to obtain opennms asset information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.AssetRecordDao
 	 */
+	@SuppressWarnings("unused")
 	private static AssetRecordDao _assetRecordDao;
 
 
@@ -71,6 +76,7 @@ public class QoSDrx implements PausableFiber {
 	 * Used to obtain opennms node information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.NodeDao 
 	 */
+	@SuppressWarnings("unused")
 	private static NodeDao _nodeDao;
 
 	/**
@@ -85,6 +91,7 @@ public class QoSDrx implements PausableFiber {
 	 * Used to search and update opennms alarm list
 	 * @see org.opennms.netmgt.dao.AlarmDao
 	 */
+	@SuppressWarnings("unused")
 	private static AlarmDao _alarmDao;
 
 	/**
@@ -270,10 +277,8 @@ public class QoSDrx implements PausableFiber {
 	 * @return stats
 	 */
 	public String getStats() { 
-		Logger log = getLog();	
-
-
-		return (m_stats == null ? "QoSDrx.getStats(): No Stats Available" : m_stats.toString()); }
+		return (m_stats == null ? "QoSDrx.getStats(): No Stats Available" : m_stats.toString());
+	}
 
 
 }

@@ -1,5 +1,11 @@
 // This file is part of the OpenNMS(R) QoSD OSS/J interface.
 //
+// Modifications:
+//
+// 2007 Jun 24: Organize imports, comment-out (and tag with FIXME)
+//              unused variables, and mark unread fields as "unused".
+//              - dj@opennms.org
+//
 // Copyright (C) 2006-2007 Craig Gallen, 
 //                         University of Southampton,
 //                         School of Electronics and Computer Science
@@ -26,8 +32,6 @@
 package org.openoss.opennms.spring.dao;
 
 import java.util.Date;
-
-//import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,8 +40,6 @@ import javax.oss.fm.monitor.AlarmAckState;
 import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmType;
 import javax.oss.fm.monitor.AlarmValue;
-import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
-
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
@@ -48,9 +50,8 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.TroubleTicketState;
-
 import org.openoss.opennms.spring.qosdrx.QoSDrx;
+import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
 
 
 public class OnmsAlarmOssjMapper {
@@ -94,6 +95,7 @@ public class OnmsAlarmOssjMapper {
 	 * Used to obtain opennms asset information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.AssetRecordDao
 	 */
+	@SuppressWarnings("unused")
 	private static AssetRecordDao _assetRecordDao;
 
 	/**
@@ -108,6 +110,7 @@ public class OnmsAlarmOssjMapper {
 	 * Used to obtain opennms node information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.NodeDao 
 	 */
+	@SuppressWarnings("unused")
 	private static NodeDao _nodeDao;
 
 	/**
@@ -470,11 +473,11 @@ public class OnmsAlarmOssjMapper {
 		// Get some local node information as to where the alarm came from
 		// This includes, what type of managed element the node is
 		// and what its node id and label are.*/
-		String mftr = "NOT_SET";
-		String modelNo = "NOT_SET";
-		String assetserno = "NOT_SET";
-		String nodelabel = "NOT_SET";
-		String alarmIP = "NOT_SET";
+//		String mftr = "NOT_SET"; // FIXME: Not read
+//		String modelNo = "NOT_SET"; // FIXME: Not read
+//		String assetserno = "NOT_SET"; // FIXME: Not read
+//		String nodelabel = "NOT_SET"; // FIXME: Not read
+//		String alarmIP = "NOT_SET"; // FIXME: Not read
 		String managedObjectType = "NOT_SET";
 		String managedObjectInstance =  "NOT_SET"; 
 		String assetManagedObjectType = "NOT_SET";
@@ -490,14 +493,14 @@ public class OnmsAlarmOssjMapper {
 
 				asset =node.getAssetRecord();
 
-				alarmIP = _openNMSalarm.getIpAddr();
-				if (node != null) {
-					nodelabel = node.getLabel();
-				}
+//				alarmIP = _openNMSalarm.getIpAddr(); // Not read
+//				if (node != null) {
+//					nodelabel = node.getLabel(); // Not read
+//				}
 				if (asset != null) {
-					if (asset.getManufacturer()!= null) mftr = asset.getManufacturer();
-					if (asset.getModelNumber()!= null) modelNo = asset.getModelNumber();
-					if (asset.getSerialNumber()!= null) assetserno = asset.getSerialNumber();
+//					if (asset.getManufacturer()!= null) mftr = asset.getManufacturer(); // Not read
+//					if (asset.getModelNumber()!= null) modelNo = asset.getModelNumber(); // Not read
+//					if (asset.getSerialNumber()!= null) assetserno = asset.getSerialNumber(); // Not read
 					if (asset.getDescription()!= null) assetDescription = asset.getDescription();  // TODO was used for managed object class as is 128 char long
 					if (asset.getAddress2()!= null) assetAddress2 = asset.getAddress2();        // TODO was used for managed object instance - as is 256 char long string
 					if (asset.getManagedObjectInstance()!= null) assetManagedObjectInstance = asset.getManagedObjectInstance();
