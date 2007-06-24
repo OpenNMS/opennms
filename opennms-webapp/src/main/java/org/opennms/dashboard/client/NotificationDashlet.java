@@ -1,6 +1,5 @@
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class NotificationDashlet extends Dashlet {
