@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2007 Jun 23: Fix warnings on static members and eliminate warning on
+ *              m_rawFd that is only used in native code. - dj@opennms.org
  * 2007 May 21: Improve logging of shared library loading. - dj@opennms.org
  * 2003 Mar 05: Changes to support response times and more platforms.
  *
@@ -42,6 +44,7 @@ import java.net.DatagramPacket;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ping.Packet;
 
 /**
  * This class provides a bridge between the host operating system so that ICMP
@@ -60,7 +63,10 @@ public final class IcmpSocket {
      * descriptor information about the icmp socket. This needs to be
      * constructed prior to calling the init method, preferable in the
      * constructor.
+     * 
+     * It looks unused, but it is used solely by native code.
      */
+    @SuppressWarnings("unused")
     private FileDescriptor m_rawFd;
 
     /**
@@ -213,7 +219,7 @@ public final class IcmpSocket {
                 System.exit(1);
             }
             try {
-                Thread.currentThread().sleep(1000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 // do nothing
             }
@@ -245,7 +251,7 @@ public final class IcmpSocket {
                         && reply.getIdentity() == m_icmpId) {
                         float rtt = ((float) reply.getPacket().getPingRTT())
                                     / 1000;
-                        System.out.println(reply.getPacket().getNetworkSize()
+                        System.out.println(Packet.getNetworkSize()
                                            + " bytes from "
                                            + pkt.getAddress().getHostAddress()
                                            + ": icmp_seq="

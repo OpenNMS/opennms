@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +35,6 @@
 //
 // Tab Size = 8
 //
-
 package org.opennms.protocols.ip;
 
 /**
@@ -41,6 +44,8 @@ package org.opennms.protocols.ip;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
 public class UnknownIPVersionException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     public UnknownIPVersionException() {
         super();
     }

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 23: Use Java 5 generics, format code. - dj@opennms.org
 // 2003 Mar 05: Cleaned up some ICMP related code.
 // 2002 Nov 13: Added response time stats for ICMP requests.
 // 
@@ -88,7 +89,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
     /**
      * The queue to write the received replies
      */
-    private FifoQueue m_replyQ;
+    private FifoQueue<Reply> m_replyQ;
 
     /**
      * The connection to the icmp daemon.
@@ -179,13 +180,12 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
             }
 
             // Test the match criteria
-            //
             if (reply.isEchoReply() && reply.getIdentity() == m_filterID) {
-                Category log = ThreadCategory.getInstance(getClass());
                 m_replyQ.add(reply);
-	    // The following is a useless log that really, really, messes up capsd.log. Commenting it out.
-            //    if (log.isDebugEnabled())
-            //        log.debug("process: received matching echo reply from host " + pkt.getAddress().getHostAddress());
+                // The following is a useless log that really, really, messes up capsd.log. Commenting it out.
+                //    if (log().isDebugEnabled()) {
+                //        log().debug("process: received matching echo reply from host " + pkt.getAddress().getHostAddress());
+                //    }
             }
         }
     }
@@ -208,7 +208,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      *            The ICMP Identity for matching.
      * 
      */
-    public ReplyReceiver(IcmpSocket portal, FifoQueue replyQ, short filterID) {
+    public ReplyReceiver(IcmpSocket portal, FifoQueue<Reply> replyQ, short filterID) {
         m_portal = portal;
         m_replyQ = replyQ;
         m_filterID = filterID;
@@ -229,8 +229,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * 
      */
     public final synchronized void start() {
-        if (m_worker != null)
+        if (m_worker != null) {
             throw new IllegalStateException("The Fiber is already running or has run");
+        }
 
         m_status = STARTING;
         m_worker = new Thread(this, m_name);
@@ -247,15 +248,18 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * 
      */
     public final synchronized void stop() {
-        if (m_worker == null)
+        if (m_worker == null) {
             throw new IllegalStateException("The Fiber has not been started");
+        }
 
         if (m_worker.isAlive()) {
-            if (m_status != STOPPED)
+            if (m_status != STOPPED) {
                 m_status = STOP_PENDING;
+            }
             m_worker.interrupt();
-        } else
+        } else {
             m_status = STOPPED;
+        }
     }
 
     /**
@@ -266,8 +270,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * 
      */
     public final synchronized void pause() {
-        if (m_worker == null || !m_worker.isAlive())
+        if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
+        }
         m_paused = true;
     }
 
@@ -276,8 +281,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * 
      */
     public final synchronized void resume() {
-        if (m_worker == null || !m_worker.isAlive())
+        if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
+        }
         m_paused = false;
     }
 
@@ -296,8 +302,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * @return The fiber's status.
      */
     public final synchronized int getStatus() {
-        if (m_status == RUNNING && m_paused)
+        if (m_status == RUNNING && m_paused) {
             return PAUSED;
+        }
 
         return m_status;
     }
@@ -316,15 +323,16 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
         try {
             for (;;) {
                 synchronized (this) {
-                    if (m_status == STOP_PENDING)
+                    if (m_status == STOP_PENDING) {
                         break;
+                    }
                 }
                 process(m_portal.receive());
             }
         } catch (Exception e) {
-            Category log = ThreadCategory.getInstance(getClass());
-            if (log.isDebugEnabled())
-                log.debug("run: an exception occured processing the datagram, thread exiting");
+            if (log().isDebugEnabled()) {
+                log().debug("run: an exception occured processing the datagram, thread exiting");
+            }
             return;
         } finally {
             synchronized (this) {
@@ -333,5 +341,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
         }
     }
 
-} // end class ReplyReceiver
-
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+}
