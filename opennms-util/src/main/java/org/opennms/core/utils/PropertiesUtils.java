@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 23: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -64,10 +68,10 @@ public class PropertiesUtils {
     }
 
     public static String substitute(String initialString, SymbolTable symbols) {
-        return substitute(initialString, symbols, new ArrayList());
+        return substitute(initialString, symbols, new ArrayList<String>());
     }
 
-    private static String substitute(String initialString, SymbolTable symTable, List list) {
+    private static String substitute(String initialString, SymbolTable symTable, List<String> list) {
         if (initialString == null) return null;
         
         StringBuffer result = new StringBuffer(initialString);

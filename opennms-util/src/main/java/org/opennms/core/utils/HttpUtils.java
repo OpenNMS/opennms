@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 // 
+// Modifications:
+//
+// 2007 Jun 23: Eliminate depricated method call. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,6 +49,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * Provides convenience methods for use the HTTP POST method.
@@ -228,7 +233,7 @@ public final class HttpUtils extends Object {
         OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), "US-ASCII");
 
         // log data
-        Category log = Category.getInstance("POSTDATALOG");
+        Category log = Logger.getLogger("POSTDATALOG");
         if (log.isDebugEnabled()) {
             String nl = System.getProperty("line.separator");
             log.debug(nl + "HTTP Post: Current time: " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));

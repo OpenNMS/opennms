@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 23: Eliminate deprecated method. - dj@opennms.org
 // 2007 May 12: Dedeplicate and use Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,6 +41,7 @@
 package org.opennms.core.utils;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * This class is designed to work with log4j based on threads and not class
@@ -92,9 +94,9 @@ public class ThreadCategory extends Category {
         String prefix = getPrefix();
 
         if ((prefix != null) && !prefix.equals("")) {
-            return Category.getInstance(prefix + "." + c.getName());
+            return Logger.getLogger(prefix + "." + c.getName());
         } else {
-            return Category.getInstance(c.getName());
+            return Logger.getLogger(c.getName());
         }
     }
 
@@ -115,9 +117,9 @@ public class ThreadCategory extends Category {
         String prefix = getPrefix();
 
         if ((prefix != null) && !prefix.equals("")) {
-            return Category.getInstance(prefix + "." + cname);
+            return Logger.getLogger(prefix + "." + cname);
         } else {
-            return Category.getInstance(cname);
+            return Logger.getLogger(cname);
         }
     }
 
@@ -134,14 +136,14 @@ public class ThreadCategory extends Category {
         String prefix = getPrefix();
         
         if (prefix != null) {
-            return Category.getInstance(prefix);
+            return Logger.getLogger(prefix);
         } else {
             /*
              * Use the default category anywhere that ThreadCategory
              * is instantiated without a prefix, classname, or user-
              * specified string.
              */
-            return Category.getInstance(DEFAULT_CATEGORY);
+            return Logger.getLogger(DEFAULT_CATEGORY);
         }
     }
 

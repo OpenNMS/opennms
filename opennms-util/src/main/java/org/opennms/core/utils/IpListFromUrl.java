@@ -10,7 +10,9 @@
 //
 // Modifications:
 //
-// 31 Jan 2003: Cleaned up some unused imports.
+// 2007 Jun 23: Organize imports, Java 5 generics, create log() method.
+//              - dj@opennms.org
+// 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -37,15 +39,16 @@
 package org.opennms.core.utils;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.List;
+
+import org.apache.log4j.Category;
 
 
 /**
@@ -85,8 +88,8 @@ public class IpListFromUrl extends Object {
      * 
      * @return list of IPs in the file
      */
-    public static java.util.List parse(String url) {
-        java.util.List iplist = new ArrayList();
+    public static List<String> parse(String url) {
+        List<String> iplist = new ArrayList<String>();
 
         try {
             // open the file indicated by the url
@@ -124,16 +127,20 @@ public class IpListFromUrl extends Object {
                 buffer.close();
             } else {
                 // log something
-                ThreadCategory.getInstance(IpListFromUrl.class).warn("URL does not exist: " + url.toString());
+                log().warn("URL does not exist: " + url.toString());
             }
         } catch (MalformedURLException e) {
-            ThreadCategory.getInstance(IpListFromUrl.class).error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
         } catch (FileNotFoundException e) {
-            ThreadCategory.getInstance(IpListFromUrl.class).error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
         } catch (IOException e) {
-            ThreadCategory.getInstance(IpListFromUrl.class).error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
         }
 
         return iplist;
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(IpListFromUrl.class);
     }
 }
