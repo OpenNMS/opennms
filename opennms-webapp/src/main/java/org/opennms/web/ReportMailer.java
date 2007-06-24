@@ -8,6 +8,7 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// 2007 Jun 24: Comment-out unused MONTH_FORMAT_CLASSIC field. - dj@opennms.org
 // 2006 May 30: added a way to choose the date to run the availability reports.
 //
 // Orginal code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -62,7 +63,8 @@ public class ReportMailer extends Object implements Runnable {
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 	
-	private static final String MONTH_FORMAT_CLASSIC = "classic";
+    // FIXME: This is unused
+	//private static final String MONTH_FORMAT_CLASSIC = "classic";
 
     protected String scriptGenerateReport;
 

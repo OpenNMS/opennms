@@ -12,6 +12,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Organize imports. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,7 +40,6 @@
 
 package org.opennms.web;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.util.Date;
 import java.util.Timer;
