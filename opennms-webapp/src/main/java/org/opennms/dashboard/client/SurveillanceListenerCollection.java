@@ -5,7 +5,8 @@ import java.util.Vector;
 
 
 public class SurveillanceListenerCollection extends Vector {
-    
+    private static final long serialVersionUID = 1L;
+
     public void fireAllClicked(Dashlet viewer) {
         for (Iterator it = iterator(); it.hasNext();) {
             SurveillanceListener listener = (SurveillanceListener) it.next();

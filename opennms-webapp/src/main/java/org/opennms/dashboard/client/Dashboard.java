@@ -48,10 +48,10 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         return m_notifications;
     }
 
-    private OutageDashlet createOutageDashlet() {
-        m_outages = new OutageDashlet(this);
-        return m_outages;
-    }
+//    private OutageDashlet createOutageDashlet() {
+//        m_outages = new OutageDashlet(this);
+//        return m_outages;
+//    }
 
     private AlarmDashlet createAlarmDashlet() {
         m_alarms = new AlarmDashlet(this);
