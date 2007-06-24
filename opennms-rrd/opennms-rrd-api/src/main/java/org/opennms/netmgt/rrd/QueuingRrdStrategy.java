@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2007 Jun 23: More Java 5 generics, eliminate extra log(...) methods, and
+ *              eliminate depricated method inside log(). - dj@opennms.org
  * 2007 Apr 05: Use Java 5 generics. - dj@opennms.org
  * 2007 Mar 19: Added createGraphReturnDetails. - dj@opennms.org
  * 2004 Jul 08: Created this file.
@@ -50,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * Provides queueing implementation of RrdStrategy.
@@ -142,15 +145,15 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     private static final long WRITE_THREAD_EXIT_DELAY = RrdConfig.getProperty("org.opennms.rrd.queuing.writethread.exitDelay", 60000L);
 
-    LinkedList filesWithSignificantWork = new LinkedList();
+    LinkedList<String> filesWithSignificantWork = new LinkedList<String>();
 
-    LinkedList filesWithInsignificantWork = new LinkedList();
+    LinkedList<String> filesWithInsignificantWork = new LinkedList<String>();
 
-    Map pendingFileOperations = new HashMap();
+    Map<String, LinkedList<Operation>> pendingFileOperations = new HashMap<String, LinkedList<Operation>>();
 
-    Map fileAssignments = new HashMap();
+    Map<Thread, String> fileAssignments = new HashMap<Thread, String>();
 
-    Set reservedFiles = new HashSet();
+    Set<String> reservedFiles = new HashSet<String>();
 
     long totalOperationsPending = 0;
 
@@ -235,7 +238,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             return significant;
         }
 
-        void addToPendingList(LinkedList pendingOperations) {
+        void addToPendingList(LinkedList<Operation> pendingOperations) {
             pendingOperations.add(this);
         }
 
@@ -255,7 +258,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         Object process(Object rrd) throws Exception {
             // if the rrd is already open we are confused
             if (rrd != null) {
-                log("WHAT! rrd open but not created?");
+                log().debug("WHAT! rrd open but not created?");
                 m_delegate.closeFile(rrd);
                 rrd = null;
             }
@@ -400,13 +403,13 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
         }
 
-        void addToPendingList(LinkedList pendingOperations) {
+        void addToPendingList(LinkedList<Operation> pendingOperations) {
             if (pendingOperations.size() > 0 && pendingOperations.getLast() instanceof ZeroUpdateOperation) {
                 ZeroUpdateOperation zeroOp = (ZeroUpdateOperation) pendingOperations.getLast();
                 try {
                     zeroOp.mergeUpdates(this);
                 } catch (IllegalArgumentException e) {
-                    log(e.getMessage());
+                    log().debug(e.getMessage());
                     super.addToPendingList(pendingOperations);
                 }
             } else {
@@ -425,7 +428,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             if ((colon >= 0) && (Double.parseDouble(update.substring(colon + 1)) == 0.0)) {
                 long initialTimeStamp = Long.parseLong(update.substring(0, colon));
                 if (initialTimeStamp == 0)
-                    log("ZERO ERROR: created a zero update with ts=0 for file: " + fileName + " data: " + update);
+                    log().debug("ZERO ERROR: created a zero update with ts=0 for file: " + fileName + " data: " + update);
 
                 return new ZeroUpdateOperation(fileName, initialTimeStamp);
             }
@@ -474,7 +477,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     
     private Category log() {
-        return Category.getInstance(LOG4J_CATEGORY);
+        return Logger.getLogger(LOG4J_CATEGORY);
     }
 
     private boolean queueIsFull() {
@@ -563,12 +566,12 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      */
     private synchronized void storeAssignment(Operation op) {
         // look and see if there a pending ops list for this file
-        LinkedList pendingOperations = (LinkedList) pendingFileOperations.get(op.getFileName());
+        LinkedList<Operation> pendingOperations = pendingFileOperations.get(op.getFileName());
 
         // if not then we create an ops list for the file and add the file to
         // the work items list
         if (pendingOperations == null) {
-            pendingOperations = new LinkedList();
+            pendingOperations = new LinkedList<Operation>();
             pendingFileOperations.put(op.getFileName(), pendingOperations);
 
             // add the file to the correct list based on what type of work we
@@ -621,7 +624,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         // if more time has elapsed than the next promotion time then promote a
         // file
         if (elapsedMillis > nextPromotionMillis) {
-            String file = (String) filesWithInsignificantWork.removeFirst();
+            String file = filesWithInsignificantWork.removeFirst();
             filesWithSignificantWork.addFirst(file);
             promotionCount++;
         }
@@ -632,9 +635,9 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * Return true if and only if all the operations in the list are
      * insignificant
      */
-    private boolean hasOnlyInsignificant(LinkedList pendingOps) {
-        for (Iterator it = pendingOps.iterator(); it.hasNext();) {
-            Operation op = (Operation) it.next();
+    private boolean hasOnlyInsignificant(LinkedList<Operation> pendingOps) {
+        for (Iterator<Operation> it = pendingOps.iterator(); it.hasNext();) {
+            Operation op = it.next();
             if (op.isSignificant()) {
                 return false;
             }
@@ -663,15 +666,15 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * Return the name of the next file with available work
      */
     private String selectNewAssignment() {
-        for (Iterator it = filesWithSignificantWork.iterator(); it.hasNext();) {
-            String fn = (String) it.next();
+        for (Iterator<String> it = filesWithSignificantWork.iterator(); it.hasNext();) {
+            String fn = it.next();
             if (!reservedFiles.contains(fn)) {
                 it.remove();
                 return fn;
             }
         }
-        for (Iterator it = filesWithInsignificantWork.iterator(); it.hasNext();) {
-            String fn = (String) it.next();
+        for (Iterator<String> it = filesWithInsignificantWork.iterator(); it.hasNext();) {
+            String fn = it.next();
             if (!reservedFiles.contains(fn)) {
                 it.remove();
                 return fn;
@@ -686,7 +689,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      */
     private synchronized void completeAssignment() {
         // remove any existing reservation of the current thread
-        String previousAssignment = (String) fileAssignments.remove(Thread.currentThread());
+        String previousAssignment = fileAssignments.remove(Thread.currentThread());
         if (previousAssignment != null)
             reservedFiles.remove(previousAssignment);
     }
@@ -861,7 +864,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         } catch (Exception e) {
             errors++;
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
-            log("Error upading file " + fileName + ": " + e.getMessage(), e);
+            log().debug("Error upading file " + fileName + ": " + e.getMessage(), e);
         } finally {
             processClose(rrd);
         }
@@ -939,28 +942,11 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     void logLapTime(String message) {
-        log(message + " " + getLapTime());
+        log().debug(message + " " + getLapTime());
     }
     
     void logLapTime(String message, Throwable t) {
-        log(message + " " + getLapTime(), t);
-    }
-
-    /**
-     * @param msg
-     */
-    private void log(String msg) {
-        // get the category logger
-        Category log = Category.getInstance(LOG4J_CATEGORY);
-
-        log.debug(msg);
-    }
-    
-    private void log(String msg, Throwable t) {
-        // get the category logger
-        Category log = Category.getInstance(LOG4J_CATEGORY);
-
-        log.debug(msg, t);
+        log().debug(message + " " + getLapTime(), t);
     }
 
     public String getLapTime() {
