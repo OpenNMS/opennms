@@ -9,6 +9,7 @@
  OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 
  Modifications:
+ 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
  2006 May 11: Added Event parameter support for setting the URL and foreignSource
 
 
@@ -165,7 +166,7 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 		m_eventManager = eventManager;
 	}
 
-	protected ImportOperationsManager createImportOperationsManager(Map assetNumbersToNodes, ImportStatistics stats) {
+	protected ImportOperationsManager createImportOperationsManager(Map<String, Integer> assetNumbersToNodes, ImportStatistics stats) {
 		ImportOperationsManager opsMgr = super.createImportOperationsManager(assetNumbersToNodes, stats);
 		opsMgr.setEventMgr(m_eventManager);
 		return opsMgr;

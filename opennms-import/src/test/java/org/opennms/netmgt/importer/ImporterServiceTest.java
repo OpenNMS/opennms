@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +37,6 @@ package org.opennms.netmgt.importer;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.importer.jmx.ImporterService;
 import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;

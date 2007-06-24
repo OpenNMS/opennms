@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -152,11 +156,11 @@ public class ImportOperationsManager {
     
     class OperationIterator implements Iterator {
     	
-    	Iterator m_iterIter;
+    	Iterator<Iterator> m_iterIter;
     	Iterator m_currentIter;
     	
     	OperationIterator() {
-    		List iters = new ArrayList(3);
+    		List<Iterator> iters = new ArrayList<Iterator>(3);
     		iters.add(new DeleteIterator());
     		iters.add(m_updates.iterator());
     		iters.add(m_inserts.iterator());
@@ -165,7 +169,7 @@ public class ImportOperationsManager {
     	
 		public boolean hasNext() {
 			while((m_currentIter == null || !m_currentIter.hasNext()) && m_iterIter.hasNext()) {
-				m_currentIter = (Iterator)m_iterIter.next();
+				m_currentIter = m_iterIter.next();
 				m_iterIter.remove();
 			}
 			
@@ -239,13 +243,7 @@ public class ImportOperationsManager {
 		m_stats.beginPersisting(oper);
 		log().info("Persist: "+oper);
 
-		// now persiste the changes to the database
-		List events = (List)template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				List result = oper.persist();
-                return result;
-			}
-		});
+		List<Event> events = persistToDatabase(oper, template);
 		
 		m_stats.finishPersisting(oper);
 		
@@ -254,8 +252,8 @@ public class ImportOperationsManager {
 			m_stats.beginSendingEvents(oper, events);
 			log().info("Send Events: "+oper);
 			// now send the events for the update
-			for (Iterator eventIt = events.iterator(); eventIt.hasNext();) {
-				Event event = (Event) eventIt.next();
+			for (Iterator<Event> eventIt = events.iterator(); eventIt.hasNext();) {
+				Event event = eventIt.next();
 				m_eventMgr.sendNow(event);
 			}
 			m_stats.finishSendingEvents(oper, events);
@@ -265,6 +263,24 @@ public class ImportOperationsManager {
 		// clear the cache to we don't use up all the memory
 		dao.clear();
 	}
+
+	/**
+     * Persist the import operation changes to the database.
+     *  
+     * @param oper changes to persist
+     * @param template transaction template in which to perform the persist operation
+     * @return list of events
+	 */
+    @SuppressWarnings("unchecked")
+    private List<Event> persistToDatabase(final ImportOperation oper, TransactionTemplate template) {
+		List<Event> events = (List<Event>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				List<Event> result = oper.persist();
+                return result;
+			}
+		});
+        return events;
+    }
 
 	private Category log() {
 		return ThreadCategory.getInstance(getClass());

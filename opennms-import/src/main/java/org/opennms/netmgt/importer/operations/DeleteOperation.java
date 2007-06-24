@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,13 +37,14 @@
 
 package org.opennms.netmgt.importer.operations;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.xml.event.Event;
 
 public class DeleteOperation extends AbstractImportOperation {
     
@@ -51,15 +56,15 @@ public class DeleteOperation extends AbstractImportOperation {
         m_nodeDao = nodeDao;
     }
 
-    public List persist() {
+    public List<Event> persist() {
 
     	//TODO: whatif node comes back as null?  can this happend?
     	OnmsNode node = m_nodeDao.get(m_nodeId);
-    	if (node == null) return Collections.EMPTY_LIST;
+    	if (node == null) return new ArrayList<Event>(0);
 
     	m_nodeDao.delete(node);
 
-    	final List events = new LinkedList();
+    	final List<Event> events = new LinkedList<Event>();
 
     	EntityVisitor eventAccumlator = new DeleteEventVisitor(events);
 

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -133,7 +137,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 //    
     
     public void testGetOperations() {
-        Map assetNumberMap = getAssetNumberMap("imported:");
+        Map<String, Integer> assetNumberMap = getAssetNumberMap("imported:");
         ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumberMap, getModelImporter());
         opsMgr.setForeignSource("imported:");
         opsMgr.foundNode("1", "node1", "myhouse", "durham");
@@ -232,11 +236,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         final SpecFile specFile = new SpecFile();
         specFile.loadResource(specFileResource);
 
-        Map assetNumbers = (Map)m_transTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
-                return getAssetNumberMap(specFile.getForeignSource());
-            }
-        });
+        Map<String, Integer> assetNumbers = getAssetNumberMapInTransaction(specFile);
         
         final ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumbers, getModelImporter());
         opsMgr.setWriteThreads(writeThreads);
@@ -260,6 +260,17 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         
         opsMgr.persistOperations(m_transTemplate, getNodeDao());
         
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Integer> getAssetNumberMapInTransaction(final SpecFile specFile) {
+        Map<String, Integer> assetNumbers = (Map<String, Integer>) m_transTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                return getAssetNumberMap(specFile.getForeignSource());
+            }
+        });
+        return assetNumbers;
     }
     
     

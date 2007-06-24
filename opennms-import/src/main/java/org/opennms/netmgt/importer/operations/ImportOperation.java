@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,10 +39,12 @@ package org.opennms.netmgt.importer.operations;
 
 import java.util.List;
 
+import org.opennms.netmgt.xml.event.Event;
+
 public interface ImportOperation {
 
 	void gatherAdditionalData();
 	
-    List persist();
+    List<Event> persist();
 
 }

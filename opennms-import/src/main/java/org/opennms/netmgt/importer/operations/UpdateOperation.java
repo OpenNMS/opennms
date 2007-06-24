@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -46,8 +50,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-
-import sun.util.logging.resources.logging;
+import org.opennms.netmgt.xml.event.Event;
 
 public class UpdateOperation extends AbstractSaveOrUpdateOperation {
     
@@ -70,9 +73,9 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             }
         }
 
-        public void execute(List events) {
-            for (Iterator it = getExisting().iterator(); it.hasNext();) {
-                OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
+        public void execute(List<Event> events) {
+            for (Iterator<OnmsMonitoredService> it = getExisting().iterator(); it.hasNext();) {
+                OnmsMonitoredService svc = it.next();
                 OnmsMonitoredService imported = getImportedVersion(svc);
                 if (imported == null) {
                     it.remove();
@@ -86,7 +89,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             addNewServices(events);
         }
 
-        private void addNewServices(List events) {
+        private void addNewServices(List<Event> events) {
             Collection<OnmsMonitoredService> newServices = getNewServices();
             log().debug(getNode().getLabel()+" has "+newServices.size()+" new services.");
             for (OnmsMonitoredService svc : newServices) {
@@ -112,7 +115,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             return (OnmsMonitoredService)m_svcTypToSvcMap.get(svc.getServiceType());
         }
 
-        Set getExisting() {
+        Set<OnmsMonitoredService> getExisting() {
             return m_iface.getMonitoredServices();
         }
 
@@ -128,7 +131,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             m_ipAddrToImportIfs = getIpAddrToInterfaceMap(imported);
         }
 
-        public void execute(List events) {
+        public void execute(List<Event> events) {
             for (Iterator it = getExistingInterfaces().iterator(); it.hasNext();) {
                 OnmsIpInterface iface = (OnmsIpInterface) it.next();
                 OnmsIpInterface imported = getImportedVersion(iface);
@@ -146,7 +149,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             addNewInterfaces(events);
         }
 
-        private void addNewInterfaces(List events) {
+        private void addNewInterfaces(List<Event> events) {
             for (OnmsIpInterface iface : getNewInterfaces()) {
                 m_node.addIpInterface(iface);
                 if (iface.getIfIndex() != null) {
@@ -168,7 +171,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             m_ipAddrToImportIfs.remove(iface.getIpAddress());
         }
 
-        private void update(OnmsIpInterface imported, OnmsIpInterface iface, List events) {
+        private void update(OnmsIpInterface imported, OnmsIpInterface iface, List<Event> events) {
             if (!nullSafeEquals(iface.getIsManaged(), imported.getIsManaged()))
                 iface.setIsManaged(imported.getIsManaged());
             
@@ -211,7 +214,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             
 		}
         
-        private void updateServices(OnmsIpInterface iface, OnmsIpInterface imported, List events) {
+        private void updateServices(OnmsIpInterface iface, OnmsIpInterface imported, List<Event> events) {
             new ServiceUpdater(iface, imported).execute(events);
         }
 
@@ -332,11 +335,11 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 		super(nodeId, foreignSource, foreignId, nodeLabel, building, city);
 	}
 
-	public List doPersist() {
+	public List<Event> doPersist() {
 		OnmsNode imported = getNode();
 		OnmsNode db = getNodeDao().getHierarchy(imported.getId());
 
-		List events = new LinkedList();
+		List<Event> events = new LinkedList<Event>();
 
 		// verify that the node label is still the same
 		if (!db.getLabel().equals(imported.getLabel())) {
@@ -397,7 +400,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             db.setCategories(imported.getCategories());
     }
 
-    private void updateInterfaces(OnmsNode db, OnmsNode imported, List events) {
+    private void updateInterfaces(OnmsNode db, OnmsNode imported, List<Event> events) {
         new InterfaceUpdater(db, imported).execute(events);
     }
 

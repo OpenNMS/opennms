@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -52,6 +56,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.xml.event.Event;
 
 public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperation implements SaveOrUpdateOperation {
 
@@ -113,11 +118,11 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     	updateSnmpData();
 	}
 	
-    public List persist() {
+    public List<Event> persist() {
     	return doPersist();
 	}
 
-    protected abstract List doPersist();
+    protected abstract List<Event> doPersist();
 
 	protected void updateSnmpData() {
 		if (m_collector != null) 

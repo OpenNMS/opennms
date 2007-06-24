@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -41,11 +45,12 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.xml.event.Event;
 
 public final class AddEventVisitor extends AbstractEntityVisitor {
-	private final List m_events;
+	private final List<Event> m_events;
 
-	AddEventVisitor(List events) {
+	AddEventVisitor(List<Event> events) {
 		m_events = events;
 	}
 
