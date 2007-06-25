@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 25: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
 // 2002 Sep 24: Added the ability to select SNMP interfaces for collection.
 //              Code based on original manage/unmanage code.
 //
@@ -63,6 +64,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class SnmpGetNodesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     private static final String SNMP_SERVICE_QUERY = "SELECT serviceid FROM service WHERE servicename = 'SNMP'";
 
     private static final String NODE_QUERY = "SELECT nodeid, nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ifservices WHERE serviceid = ? ) AND nodeid IN (SELECT nodeid FROM ipinterface Where ismanaged != 'D') ORDER BY nodelabel, nodeid";
@@ -90,7 +93,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
 
     private List getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
-        List allNodes = new ArrayList();
+        List<SnmpManagedNode> allNodes = new ArrayList<SnmpManagedNode>();
         int lineCount = 0;
 
         try {

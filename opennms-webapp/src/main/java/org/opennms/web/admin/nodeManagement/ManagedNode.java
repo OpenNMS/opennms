@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -53,12 +57,12 @@ public class ManagedNode {
     /**
      * 
      */
-    protected List interfaces;
+    protected List<ManagedInterface> interfaces;
 
     /**
      */
     public ManagedNode() {
-        interfaces = new ArrayList();
+        interfaces = new ArrayList<ManagedInterface>();
     }
 
     /**
@@ -100,7 +104,7 @@ public class ManagedNode {
 
     /**
      */
-    public List getInterfaces() {
+    public List<ManagedInterface> getInterfaces() {
         return interfaces;
     }
 }

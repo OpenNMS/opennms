@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -52,12 +56,14 @@ import org.opennms.netmgt.config.groups.Group;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AddGroupDutySchedulesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(true);
 
         Group group = (Group) userSession.getAttribute("group.modifyGroup.jsp");
 
-        Vector newSchedule = new Vector();
+        Vector<Object> newSchedule = new Vector<Object>();
 
         int dutyAddCount = Integer.parseInt(request.getParameter("numSchedules"));
 

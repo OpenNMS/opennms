@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Jun 25: Use Java 5 generics and for loops and remove unused variable.
+//              - dj@opennms.org
 // 2002 Sep 24: Added the ability to select SNMP interfaces for collection.
 //              Code based on original manage/unmanage code.
 //
@@ -42,6 +44,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -54,7 +57,6 @@ import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
-import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
 
@@ -88,26 +90,18 @@ public class SnmpManageNodesServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
-        java.util.List allInterfaces = null;
-
-        if (userSession != null) {
-            allInterfaces = (java.util.List) userSession.getAttribute("listInterfacesForNode.snmpselect.jsp");
-        }
+        List<SnmpManagedInterface> allInterfaces = getManagedInterfacesFromSession(userSession);
 
         // the list of all interfaces marked as managed
-        java.util.List interfaceList = getList(request.getParameterValues("collTypeCheck"));
+        List<String> interfaceList = getList(request.getParameterValues("collTypeCheck"));
 
         // the node being modified
         String nodeIdString = request.getParameter("node");
         int currNodeId = Integer.parseInt(nodeIdString);
 
-        // date to set on events sent out
-        String curDate = EventConstants.formatToString(new java.util.Date());
-
         String primeInt = null;
 
-        for (int k = 0; k < allInterfaces.size(); k++) {
-            SnmpManagedInterface testInterface = (SnmpManagedInterface) allInterfaces.get(k);
+        for (SnmpManagedInterface testInterface : allInterfaces) {
             if (testInterface.getNodeid() == currNodeId && "P".equals(testInterface.getStatus()))
                 primeInt = testInterface.getAddress();
         }
@@ -118,8 +112,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
                 connection.setAutoCommit(false);
                 PreparedStatement stmt = connection.prepareStatement(UPDATE_INTERFACE);
 
-                for (int j = 0; j < allInterfaces.size(); j++) {
-                    SnmpManagedInterface curInterface = (SnmpManagedInterface) allInterfaces.get(j);
+                for (SnmpManagedInterface curInterface : allInterfaces) {
                     String intKey = curInterface.getNodeid() + "+" + curInterface.getIfIndex();
 
                     // determine what is managed and unmanged
@@ -157,6 +150,15 @@ public class SnmpManageNodesServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    @SuppressWarnings("unchecked")
+    private List<SnmpManagedInterface> getManagedInterfacesFromSession(HttpSession userSession) {
+        if (userSession == null) {
+            return null;
+        } else {
+            return (List<SnmpManagedInterface>) userSession.getAttribute("listInterfacesForNode.snmpselect.jsp");
+        }
+    }
+
     /**
      */
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
@@ -182,8 +184,8 @@ public class SnmpManageNodesServlet extends HttpServlet {
 
     /**
      */
-    private java.util.List getList(String array[]) {
-        java.util.List newList = new ArrayList();
+    private List<String> getList(String array[]) {
+        List<String> newList = new ArrayList<String>();
 
         if (array != null) {
             for (int i = 0; i < array.length; i++) {

@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Jun 24: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -54,6 +56,8 @@ import org.opennms.core.resource.Vault;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class SetCriticalPathServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
     private static final String SQL_SET_CRITICAL_PATH = "INSERT INTO pathoutage (nodeid, criticalpathip, criticalpathservicename) VALUES (?, ?, ?)";
     private static final String SQL_DELETE_CRITICAL_PATH = "DELETE FROM pathoutage WHERE nodeid=?";
 

@@ -62,12 +62,12 @@ public class GroupInfo {
     /**
      * The list of users in the group
      */
-    private List m_users;
+    private List<String> m_users;
 
     /**
      * The list of duty schedules in the group
      */
-    private List m_dutySchedules;
+    private List<DutySchedule> m_dutySchedules;
 
     /**
      * Default constructor, intializes the users list
@@ -75,8 +75,8 @@ public class GroupInfo {
     public GroupInfo() {
         m_groupName = "";
         m_groupComments = "";
-        m_users = new ArrayList();
-        m_dutySchedules = new Vector();
+        m_users = new ArrayList<String>();
+        m_dutySchedules = new Vector<DutySchedule>();
     }
 
     /**
@@ -171,7 +171,7 @@ public class GroupInfo {
      * @param someSchedules
      *            a list of DutySchedule objects for a group
      */
-    public void setDutySchedule(List someSchedules) {
+    public void setDutySchedule(List<DutySchedule> someSchedules) {
         m_dutySchedules = someSchedules;
     }
 
@@ -189,7 +189,7 @@ public class GroupInfo {
      * 
      * @return the full list of DutySchedules
      */
-    public List getDutySchedules() {
+    public List<DutySchedule> getDutySchedules() {
         return m_dutySchedules;
     }
 
@@ -209,16 +209,13 @@ public class GroupInfo {
             return true;
         }
 
-        DutySchedule curSchedule = null;
-
-        for (int i = 0; i < m_dutySchedules.size(); i++) {
-            curSchedule = (DutySchedule) m_dutySchedules.get(i);
-
+        for (DutySchedule curSchedule : m_dutySchedules) {
             result = curSchedule.isInSchedule(aTime);
 
             // don't continue if the time is in this schedule
-            if (result)
+            if (result) {
                 break;
+            }
         }
 
         return result;
@@ -237,12 +234,12 @@ public class GroupInfo {
         buffer.append("comments = " + m_groupComments + "\n");
         buffer.append("users:\n");
 
-        for (int i = 0; i < m_users.size(); i++) {
-            buffer.append("\t" + (String) m_users.get(i) + "\n");
+        for (String user : m_users) {
+            buffer.append("\t" + user + "\n");
         }
  
-        for (int i = 0; i < m_dutySchedules.size(); i++) {
-            buffer.append(m_dutySchedules.get(i).toString() + "\n");
+        for (DutySchedule dutySchedule : m_dutySchedules) {
+            buffer.append(dutySchedule.toString() + "\n");
         }
 
         return buffer.toString();

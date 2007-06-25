@@ -10,7 +10,8 @@
 //
 //Modifications:
 //
-//2004 Oct 4: Created File.
+//2007 Jun 24: Remove unused variables. - dj@opennms.org
+//2004 Oct 04: Created File.
 //
 //This program is free software; you can redistribute it and/or modify
 //it under the terms of the GNU General Public License as published by
@@ -43,7 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
 import org.opennms.web.element.NetworkElementFactory;
@@ -75,8 +75,6 @@ public class DeleteServiceServlet extends HttpServlet {
 
             int nodeId = Integer.parseInt(request.getParameter("node"));
             String ipAddr = request.getParameter("intf");
-            String ifIndexString = request.getParameter("ifIndex");
-            int ifIndex = (ifIndexString == null || "".equals(ifIndexString)) ? -1 : Integer.parseInt(ifIndexString);
             int serviceId = Integer.parseInt(request.getParameter("service"));
 
             Service service_db = NetworkElementFactory.getService(nodeId, ipAddr, serviceId);
@@ -101,7 +99,6 @@ public class DeleteServiceServlet extends HttpServlet {
     public void checkParameters(HttpServletRequest request) {
         String nodeIdString = request.getParameter("node");
         String ipAddr = request.getParameter("intf");
-        String ifindexString = request.getParameter("ifindex");
         String serviceId = request.getParameter("service");
 
         if (nodeIdString == null) {

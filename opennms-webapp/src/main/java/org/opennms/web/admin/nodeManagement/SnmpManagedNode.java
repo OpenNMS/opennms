@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 25: Use Java 5 generics. - dj@opennms.org
 // 2002 Sep 24: Added the ability to select SNMP interfaces for collection.
 //              Code based on original manage/unmanage code.
 //
@@ -59,12 +60,12 @@ public class SnmpManagedNode {
     /**
      * 
      */
-    protected List interfaces;
+    protected List<SnmpManagedInterface> interfaces;
 
     /**
      */
     public SnmpManagedNode() {
-        interfaces = new ArrayList();
+        interfaces = new ArrayList<SnmpManagedInterface>();
     }
 
     /**
@@ -106,7 +107,7 @@ public class SnmpManagedNode {
 
     /**
      */
-    public List getInterfaces() {
+    public List<SnmpManagedInterface> getInterfaces() {
         return interfaces;
     }
 }

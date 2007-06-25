@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Jun 24: Organize imports, use Java 5 generics and loops, and
+//              comment-out unused fields. - dj@opennms.org
 // 2004 Jan 06: Added support for STATUS_SUSPEND and STATUS_RESUME
 // 2002 Nov 10: Removed "http://" from UEIs and removed references to bluebird.
 //
@@ -45,6 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -54,11 +57,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
-import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
 
@@ -75,7 +79,8 @@ public class ManageNodeServlet extends HttpServlet {
      */
     private static final long serialVersionUID = -544260517139205801L;
 
-    private static final String UPDATE_INTERFACE = "UPDATE ipinterface SET isManaged = ? WHERE ipaddr IN (?)";
+    // FIXME: Should this be deleted?
+    //private static final String UPDATE_INTERFACE = "UPDATE ipinterface SET isManaged = ? WHERE ipaddr IN (?)";
 
     private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? WHERE ipaddr = ? AND nodeID = ? AND serviceid = ?";
 
@@ -89,7 +94,8 @@ public class ManageNodeServlet extends HttpServlet {
 
     public static final String NOTICE_NAME = "Email-Reporting";
 
-    private static final String NOTICE_COMMAND = "/opt/OpenNMS/bin/notify.sh ";
+    // FIXME: Should this be deleted?
+    //private static final String NOTICE_COMMAND = "/opt/OpenNMS/bin/notify.sh ";
 
     public void init() throws ServletException {
         try {
@@ -107,26 +113,22 @@ public class ManageNodeServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
-        java.util.List allNodes = null;
-
-        if (userSession != null) {
-            allNodes = (java.util.List) userSession.getAttribute("interfaces.nodemanagement");
-        }
+        List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
 
         // the list of all interfaces marked as managed
-        java.util.List interfaceList = getList(request.getParameterValues("interfaceCheck"));
+        List<String> interfaceList = getList(request.getParameterValues("interfaceCheck"));
 
         // the list of all services marked as managed
-        java.util.List serviceList = getList(request.getParameterValues("serviceCheck"));
+        List<String> serviceList = getList(request.getParameterValues("serviceCheck"));
 
         // the list of interfaces that need to be put into the URL file
-        java.util.List addToURL = new ArrayList();
+        List<String> addToURL = new ArrayList<String>();
 
         // date to set on events sent out
-        String curDate = EventConstants.formatToString(new java.util.Date());
+        String curDate = EventConstants.formatToString(new Date());
 
-        List unmanageInterfacesList = new ArrayList();
-        List manageInterfacesList = new ArrayList();
+        List<String> unmanageInterfacesList = new ArrayList<String>();
+        List<String> manageInterfacesList = new ArrayList<String>();
 
         try {
             Connection connection = Vault.getDbConnection();
@@ -135,8 +137,7 @@ public class ManageNodeServlet extends HttpServlet {
                 PreparedStatement stmt = connection.prepareStatement(UPDATE_SERVICE);
                 PreparedStatement outagesstmt = connection.prepareStatement(DELETE_SERVICE_OUTAGES);
 
-                for (int j = 0; j < allNodes.size(); j++) {
-                    ManagedInterface curInterface = (ManagedInterface) allNodes.get(j);
+                for (ManagedInterface curInterface : allNodes) {
                     String intKey = curInterface.getNodeid() + "-" + curInterface.getAddress();
 
                     // see if this interface needs added to the url list
@@ -188,7 +189,7 @@ public class ManageNodeServlet extends HttpServlet {
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
-                            this.log("DEBUG: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
+                            log().debug("doPost: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
                             Event newEvent = new Event();
@@ -207,7 +208,7 @@ public class ManageNodeServlet extends HttpServlet {
                             outagesstmt.setString(1, curInterface.getAddress());
                             outagesstmt.setInt(2, curInterface.getNodeid());
                             outagesstmt.setInt(3, curService.getId());
-                            this.log("DEBUG: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
+                            log().debug("doPost: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                             outagesstmt.executeUpdate();
                         }
@@ -239,21 +240,30 @@ public class ManageNodeServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    @SuppressWarnings("unchecked")
+    private List<ManagedInterface> getManagedInterfacesFromSession(HttpSession userSession) {
+        if (userSession == null) {
+            return null;
+        } else {
+            return (List<ManagedInterface>) userSession.getAttribute("interfaces.nodemanagement");
+        }
+    }
+
     /**
      */
-    private void manageInterfaces(List interfaces, Connection connection) throws SQLException {
+    private void manageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
         StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
         query.append("'M'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {
-            query.append("'").append((String) interfaces.get(i)).append("'");
+            query.append("'").append(interfaces.get(i)).append("'");
 
             if (i < interfaces.size() - 1)
                 query.append(",");
         }
         query.append(")");
 
-        this.log("DEBUG: " + query.toString());
+        log().debug("manageInterfaces: query string: " + query);
         Statement update = connection.createStatement();
         update.executeUpdate(query.toString());
         update.close();
@@ -266,14 +276,14 @@ public class ManageNodeServlet extends HttpServlet {
         query.append("'F'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {
-            query.append("'").append((String) interfaces.get(i)).append("'");
+            query.append("'").append(interfaces.get(i)).append("'");
 
             if (i < interfaces.size() - 1)
                 query.append(",");
         }
         query.append(")");
 
-        this.log("DEBUG: " + query.toString());
+        log().debug("unmanageInterfaces: query: " + query);
         Statement update = connection.createStatement();
         update.executeUpdate(query.toString());
         update.close();
@@ -285,14 +295,15 @@ public class ManageNodeServlet extends HttpServlet {
         Event scmRestart = new Event();
         scmRestart.setUei("uei.opennms.org/internal/restartSCM");
         scmRestart.setSource("web ui");
-        scmRestart.setTime(EventConstants.formatToString(new java.util.Date()));
+        scmRestart.setTime(EventConstants.formatToString(new Date()));
 
         sendEvent(scmRestart);
     }
 
     /**
      */
-    private void writeURLFile(java.util.List interfaceList) throws ServletException {
+    // FIXME: This is totally the wrong place to be doing this.
+    private void writeURLFile(List interfaceList) throws ServletException {
         String path = System.getProperty("opennms.home") + File.separator + "etc" + File.separator;
 
         if (path != null) {
@@ -302,7 +313,7 @@ public class ManageNodeServlet extends HttpServlet {
                 FileWriter fileWriter = new FileWriter(fileName);
 
                 for (int i = 0; i < interfaceList.size(); i++) {
-                    fileWriter.write((String) interfaceList.get(i) + System.getProperty("line.separator"));
+                    fileWriter.write(interfaceList.get(i) + System.getProperty("line.separator"));
                 }
 
                 // write out the file and close
@@ -318,8 +329,8 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
-    private java.util.List getList(String array[]) {
-        java.util.List newList = new ArrayList();
+    private List<String> getList(String array[]) {
+        List<String> newList = new ArrayList<String>();
 
         if (array != null) {
             for (int i = 0; i < array.length; i++) {
@@ -338,5 +349,9 @@ public class ManageNodeServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }

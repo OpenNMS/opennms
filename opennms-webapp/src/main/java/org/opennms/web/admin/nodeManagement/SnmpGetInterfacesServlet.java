@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 25: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
 // 2002 Sep 24: Added the ability to select SNMP interfaces for collection.
 //              Code based on original manage/unmanage code.
 //
@@ -62,7 +63,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class SnmpGetInterfacesServlet extends HttpServlet {
-
+    private static final long serialVersionUID = 1L;
+    
     private static final String INTERFACE_QUERY = "SELECT ipinterface.nodeid, ipinterface.ipaddr, ipinterface.ifindex, ipinterface.iphostname, ipinterface.issnmpprimary, snmpinterface.snmpifdescr, snmpinterface.snmpiftype, snmpinterface.snmpifname, snmpinterface.snmpifalias FROM ipinterface, snmpinterface WHERE ipinterface.nodeid=snmpinterface.nodeid AND ipinterface.ifindex=snmpinterface.snmpifindex AND ipinterface.ipaddr=snmpinterface.ipaddr AND ipinterface.nodeid=?;";
 
     public void init() throws ServletException {
@@ -94,9 +96,9 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    private List getNodeInterfaces(HttpSession userSession, int nodeid) throws SQLException {
+    private List<SnmpManagedInterface> getNodeInterfaces(HttpSession userSession, int nodeid) throws SQLException {
         Connection connection = null;
-        List nodeInterfaces = new ArrayList();
+        List<SnmpManagedInterface> nodeInterfaces = new ArrayList<SnmpManagedInterface>();
         int lineCount = 0;
 
         try {
