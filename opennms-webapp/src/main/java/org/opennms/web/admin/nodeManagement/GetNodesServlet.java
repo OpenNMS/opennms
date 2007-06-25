@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
 // 2004 Jan 16: Order interface list by nodeid and ipaddress.
 // 2004 Jan 06: Added support for STATUS_SUSPEND and STATUS_RESUME
 // 2003 Feb 05: Added ORDER BY to SQL statement.
@@ -93,9 +94,9 @@ public class GetNodesServlet extends HttpServlet {
 
     /**
      */
-    private List getAllNodes(HttpSession userSession) throws SQLException {
+    private List<ManagedInterface> getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
-        List allNodes = new ArrayList();
+        List<ManagedInterface> allNodes = new ArrayList<ManagedInterface>();
         int lineCount = 0;
 
         try {

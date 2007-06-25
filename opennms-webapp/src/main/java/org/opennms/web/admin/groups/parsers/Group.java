@@ -69,7 +69,7 @@ public class Group implements Cloneable {
     /**
      * The list of users in the group
      */
-    private List m_users;
+    private List<String> m_users;
 
     /**
      */
@@ -83,13 +83,13 @@ public class Group implements Cloneable {
 
         m_groupName = "";
         m_groupComments = "";
-        m_users = new ArrayList();
+        m_users = new ArrayList<String>();
         m_groupInfo = new GroupInfo();
     }
 
     /**
      */
-    public Object clone() {
+    public Group clone() {
         try {
             super.clone();
         } catch (CloneNotSupportedException e) {
@@ -102,7 +102,7 @@ public class Group implements Cloneable {
         newGroup.setGroupComments(m_groupComments);
 
         for (int i = 0; i < m_users.size(); i++) {
-            newGroup.addUser((String) m_users.get(i));
+            newGroup.addUser(m_users.get(i));
         }
 
         return newGroup;
@@ -219,7 +219,7 @@ public class Group implements Cloneable {
      * 
      * @return the list of users
      */
-    public List getUsers() {
+    public List<String> getUsers() {
         return m_users;
     }
 
@@ -245,8 +245,8 @@ public class Group implements Cloneable {
         buffer.append("comments = " + m_groupComments + "\n");
         buffer.append("users:\n");
 
-        for (int i = 0; i < m_users.size(); i++) {
-            buffer.append("\t" + (String) m_users.get(i) + "\n");
+        for (String user : m_users) {
+            buffer.append("\t" + user + "\n");
         }
 
         return buffer.toString();

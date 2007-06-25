@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Java 5 generics and for loops. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,8 +37,8 @@
 package org.opennms.web.admin.groups.parsers;
 
 import java.util.Collection;
-import java.util.List;
 
+import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.web.parsers.XMLHeader;
 import org.opennms.web.parsers.XMLWriteException;
 import org.opennms.web.parsers.XMLWriter;
@@ -93,9 +97,8 @@ public class GroupsWriter extends XMLWriter {
                 if (curGroup.getUserCount() > 0) {
                     Element membersElement = addEmptyElement(curGroupElement, "userMembers");
 
-                    List users = curGroup.getUsers();
-                    for (int j = 0; j < users.size(); j++) {
-                        addDataElement(membersElement, "userID", (String) users.get(j));
+                    for (String user : curGroup.getUsers()) {
+                        addDataElement(membersElement, "userID", user);
                     }
                 }
 
@@ -103,9 +106,8 @@ public class GroupsWriter extends XMLWriter {
                 if (info.getDutyScheduleCount() > 0) {
                      Element dutyElement = addEmptyElement(curGroupElement, "dutySchedules");
 
-                     List dutySchedules = info.getDutySchedules();
-                     for (int j = 0; j < dutySchedules.size(); j++) {
-                         addDataElement(dutyElement, "schedule", dutySchedules.get(j).toString());
+                     for (DutySchedule dutySchedule : info.getDutySchedules()) {
+                         addDataElement(dutyElement, "schedule", dutySchedule.toString());
                      }
                 }
             }

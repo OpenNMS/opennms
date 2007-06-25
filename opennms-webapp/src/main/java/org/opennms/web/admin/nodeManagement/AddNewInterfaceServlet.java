@@ -10,9 +10,10 @@
 //
 // Modifications:
 //
-// ///07/2003 Use EventProxy to send event.
-// 11/07/2003 Changed the new suspect event source.
-// 11/28/2003 Created.
+// 2007 Jun 24: Add serialVersionUID and organize imports. - dj@opennms.org
+// 2003 Nov 07: Use EventProxy to send event.
+// 2003 Nov 07: Changed the new suspect event source.
+// 2003 Nov 28: Created.
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -54,8 +55,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
 
@@ -66,6 +65,11 @@ import org.opennms.web.Util;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AddNewInterfaceServlet extends HttpServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     private static final String SQL_INTERFACE_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? " + "AND ismanaged in ('M', 'A', 'U', 'F')";
 
     /**

@@ -10,7 +10,8 @@
 //
 //Modifications:
 //
-//2004 Oct 4: Created File.
+//2007 Jun 24: Remove unused variables. - dj@opennms.org
+//2004 Oct 04: Created File.
 //
 //This program is free software; you can redistribute it and/or modify
 //it under the terms of the GNU General Public License as published by
@@ -42,8 +43,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
 
@@ -71,8 +70,6 @@ public class DeleteInterfaceServlet extends HttpServlet {
 
         long nodeId = Long.parseLong(request.getParameter("node"));
         String ipAddr = request.getParameter("intf");
-        String ifIndexString = request.getParameter("ifIndex");
-        int ifIndex = (ifIndexString == null || "".equals(ifIndexString)) ? -1 : Integer.parseInt(ifIndexString);
 
         // TODO provide a way to delete an interface that has a non-unique
         // ipAddr
@@ -97,7 +94,6 @@ public class DeleteInterfaceServlet extends HttpServlet {
     public void checkParameters(HttpServletRequest request) {
         String nodeIdString = request.getParameter("node");
         String ipAddr = request.getParameter("intf");
-        String ifindexString = request.getParameter("ifindex");
 
         if (nodeIdString == null) {
             throw new org.opennms.web.MissingParameterException("node", new String[] { "node", "intf", "ifindex?" });

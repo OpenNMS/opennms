@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2007 Jun 24: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
+//
+// Modifications:
+//
 // 2004 Jan 16: Created.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -61,6 +65,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class GetInterfacesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     private static final String INTERFACE_QUERY = "SELECT ipaddr, isManaged FROM ipinterface " + "WHERE nodeid=? " + "AND ismanaged IN ('M','A','U','F') " + "AND ipaddr <> '0.0.0.0' " + "ORDER BY inet(ipaddr)";
 
     private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, servicename, status FROM ifservices, service " + "WHERE nodeid=? AND ipaddr=? AND status IN ('A','U','F', 'S', 'R') " + "AND ifservices.serviceid = service.serviceid ORDER BY servicename";
@@ -114,9 +120,9 @@ public class GetInterfacesServlet extends HttpServlet {
      * @param nodeId
      *            Id of the node to manage
      */
-    private List getInterfaces(HttpSession userSession, int nodeId) throws SQLException {
+    private List<ManagedInterface> getInterfaces(HttpSession userSession, int nodeId) throws SQLException {
         Connection connection = null;
-        List allInterfaces = new ArrayList();
+        List<ManagedInterface> allInterfaces = new ArrayList<ManagedInterface>();
         int lineCount = 0;
 
         try {

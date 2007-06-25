@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jun 24: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -56,6 +60,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class DeleteGetNodesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
     private static final String NODE_QUERY =
     // "SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
     "SELECT nodeid, nodelabel FROM node WHERE nodetype != 'D' ORDER BY nodelabel, nodeid";
@@ -83,9 +89,9 @@ public class DeleteGetNodesServlet extends HttpServlet {
 
     /**
      */
-    private List getAllNodes(HttpSession userSession) throws SQLException {
+    private List<ManagedNode> getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
-        List allNodes = new ArrayList();
+        List<ManagedNode> allNodes = new ArrayList<ManagedNode>();
         int lineCount = 0;
 
         try {
