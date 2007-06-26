@@ -542,7 +542,6 @@ final class DiscoveryLink implements ReadyRunnable {
 
 						// writing to db using class
 						// DbDAtaLinkInterfaceEntry
-						//TODO make sure not using atinterface.......
 						NodeToNodeLink lk = new NodeToNodeLink(curNodeId,
 								curIfIndex);
 						lk.setNodeparentid(designatednodeid);
@@ -816,7 +815,7 @@ final class DiscoveryLink implements ReadyRunnable {
 									.info("run: nexthop address is broadcast address "
 											+ nexthop.getHostAddress()
 											+ " . Skipping ");
-						//TODO this should be further analized 
+						// FIXME this should be further analized 
 						// working on routeDestNet you can find hosts that
 						// are directly connected with the dest network
 						// This happens when routing is made in such a way:
