@@ -103,4 +103,9 @@ public class CdpInterface {
 	public void setCdpTargetNodeId(int cdpTargetNodeId) {
 		this.cdpTargetNodeId = cdpTargetNodeId;
 	}
+	
+	public String toString() {
+		return "ifindex:"+cdpIfIndex+"TargetIpAddress:"+cdpTargetIpAddr+"targetNodeid:"
+				+cdpTargetNodeId+"cdptargetIfIndex:"+cdpTargetIfIndex;
+	} 
 }
