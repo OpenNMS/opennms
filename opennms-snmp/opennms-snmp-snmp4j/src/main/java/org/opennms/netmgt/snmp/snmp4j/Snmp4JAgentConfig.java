@@ -349,17 +349,8 @@ public class Snmp4JAgentConfig {
      * @return
      */
     public PDU createPdu(int type) {
-        PDU pdu;
-        
-        switch (getVersion()) {
-        case SnmpConstants.version3:
-            pdu = new ScopedPDU();
-        default:
-            pdu = new PDU();
-        }
-        
+        PDU pdu = getVersion() == SnmpConstants.version3 ? new ScopedPDU() : new PDU();
         pdu.setType(type);
-        
         return pdu;
     }
 
