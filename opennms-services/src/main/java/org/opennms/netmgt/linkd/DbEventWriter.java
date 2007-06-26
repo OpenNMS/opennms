@@ -531,7 +531,8 @@ public class DbEventWriter implements Runnable {
 					continue;
 				}
 
-				if (log.isDebugEnabled())	log.debug(" cdp ifindex found " + cdpIfIndex);
+				if (log.isDebugEnabled())
+					log.debug(" cdp ifindex found " + cdpIfIndex);
 
 				String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
 				
@@ -540,7 +541,8 @@ public class DbEventWriter implements Runnable {
 					continue;
 				}
 
-				if (log.isDebugEnabled())	log.debug(" cdp Target device port name found " + cdpTargetDevicePort);
+				if (log.isDebugEnabled())
+					log.debug(" cdp Target device port name found " + cdpTargetDevicePort);
 
 				int targetCdpNodeId = getNodeidFromIp(dbConn, cdpTargetIpAddr);
 
@@ -553,12 +555,18 @@ public class DbEventWriter implements Runnable {
 				int cdpTargetIfindex = getIfIndexByName(
 						dbConn, targetCdpNodeId, cdpTargetDevicePort);
 
-				if (log.isDebugEnabled()) log.debug("No valid if target index found: " + cdpTargetIfindex + "cdp interface not added to Linkable Snmp Node. Skipping");
+				if (cdpTargetIfindex == -1) {
+					log.warn("No valid if target index found: cdp interface not added to Linkable Snmp Node. Skipping");
+					continue;
+				}
+				
 				
 				CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
 				cdpIface.setCdpTargetNodeId(targetCdpNodeId);
 				cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
 				cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
+
+				if (log.isDebugEnabled()) log.debug("Adding cdp interface to Linkable Snmp Node." +  cdpIface.toString());
 				
 				cdpInterfaces.add(cdpIface);
 			}
@@ -1497,6 +1505,7 @@ public class DbEventWriter implements Runnable {
 		stmt.setInt(1, nodeid);
 		stmt.setString(2, ifName);
 		stmt.setString(3, ifName);
+
 		if (log.isDebugEnabled())
 			log.debug("getIfIndexByName: executing query"
 					+ SQL_GET_IFINDEX_SNMPINTERFACE_NAME + "nodeid =" + nodeid + "and ifName=" + ifName);
