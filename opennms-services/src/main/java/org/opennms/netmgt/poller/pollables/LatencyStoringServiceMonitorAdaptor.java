@@ -78,6 +78,13 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 		if (status.getResponseTime() >= 0) {
 			storeResponseTime(svc, status.getResponseTime(), parameters);
 		}
+        if ("true".equals(ParameterMap.getKeyedString(parameters, "invert-status", "false"))) {
+            if (status.isAvailable()) {
+                return PollStatus.unavailable("This is an inverted service and the underlying service has started responding");
+            } else {
+                return PollStatus.available();
+            }
+        }
 		return status;
 	}
 	
