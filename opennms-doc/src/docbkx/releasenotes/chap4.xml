@@ -32,10 +32,33 @@
     <bridgehead>SuSE 9 and SuSE 10</bridgehead>
 
     <formalpara>
+      <title>Debian</title>
+
+      <para>
+        Debian stable (1.2.x) packages (for Sarge and later) are available
+        at the following apt-repository:
+        <programlisting>deb http://debian.opennms.org/ stable main</programlisting>
+      </para>
+
+      <para>
+        Debian unstable (1.3.x) packages (for Etch and later) are available
+        at the following apt-repository:
+        <programlisting>deb http://debian.opennms.org/ unstable main</programlisting>
+      </para>
+
+      <para>
+        For more instructions see this <ulink
+        url="http://opennms.netstatz.com/Debian_ONMS_HOWTO.html#toc2">How-To</ulink>
+        written by Ian MacDonald.
+      </para>
+
+    </formalpara>
+
+    <formalpara>
       <title>MacOSX 10.4 (Tiger)</title>
 
       <para>On MacOSX, the Fink distribution packages of OpenNMS are
-      supported. See <ulink url="http://fink.sf.net/">the Fink web
+      supported. See <ulink url="http://www.finkproject.org/">the Fink web
       site</ulink> for more information on installing and using Fink.</para>
     </formalpara>
 
@@ -44,11 +67,9 @@
     need to update the SHM settings so that the OS allows enough resources for
     PostgreSQL to run with larger buffers.</para>
 
-    <para>To do so, you must edit
-    <emphasis>/System/Library/StartupItems/SystemTuning/SystemTuning</emphasis>
-    so that the sysctl lines look like so (at a minimum): <programlisting> sysctl -w kern.sysv.shmmax=16777216 sysctl -w
-      kern.sysv.shmmin=1 sysctl -w kern.sysv.shmmni=128 sysctl -w
-      kern.sysv.shmseg=32 sysctl -w kern.sysv.shmall=4096 </programlisting></para>
+    <para>There are details for configuring the shared memory segments on
+    <ulink url="http://wiki.finkproject.org/index.php/Shared_Memory_Regions_on_Darwin">the
+    Fink wiki</ulink>.</para>
   </section>
 
   <section id="chap4sect2">
@@ -63,14 +84,6 @@
 
     <para>A number of distributions that used to be supported are still able
     to run OpenNMS but are not officially supported:</para>
-
-    <formalpara>
-      <title>Debian</title>
-
-      <para>With 1.3.2 OpenNMS uses maven to build, and this causes problems
-      with Debian packaging. It is hoped that Debian packages should become
-      available in the near future.</para>
-    </formalpara>
 
     <formalpara>
       <title>Mandrake</title>
