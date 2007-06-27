@@ -369,81 +369,33 @@ public class InstallerDb {
         }
     }
     
-    public void updateIplike() throws Exception {
-        Statement st = getConnection().createStatement();
-
-        boolean insert_iplike = false;
-        
-        m_out.print("- checking if iplike is usable... ");
-        try {
-        	st.execute("SELECT IPLIKE('127.0.0.1', '*.*.*.*')");
-        	m_out.println("YES");
+    public boolean isIpLikeUsable() {
+        Statement st = null;
+        try {            
+            m_out.print("- checking if iplike is usable... ");
+            st = getConnection().createStatement();
+            st.execute("SELECT IPLIKE('127.0.0.1', '*.*.*.*')");
+            m_out.println("YES");
+            return true;
         } catch (SQLException selectException) {
-        	insert_iplike = true;
-        	m_out.println("NO");
+            m_out.println("NO");
+            return false;
+        } finally {
+            closeQuietly(st);
         }
+    }
+    
+    public void updateIplike() throws Exception {
+
+        boolean insert_iplike = !isIpLikeUsable();
         
         if (insert_iplike) {
-        	m_out.print("- removing existing iplike definition (if any)... ");
-        	try {
-        		st.execute("DROP FUNCTION iplike(text,text)");
-        		m_out.println("OK");
-        	} catch (SQLException dropException) {
-        		if (dropException.toString().contains("does not exist")
-        				|| "42883".equals(dropException.getSQLState())) {
-        			m_out.println("OK");
-        		} else {
-        			m_out.println("FAILED");
-        			throw dropException;
-        		}
-        	}
+        	dropExistingIpList();
 
-        	m_out.print("- inserting C iplike function... ");
-            boolean success;
-            if (m_pg_iplike == null) {
-                success = false;
-                
-                m_out.println("SKIPPED (location of iplike function not set)");
-            } else {
-            	try {
-                    st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '"
-                            + m_pg_iplike + "' LANGUAGE 'c' WITH(isstrict)");
-                    
-                    success = true;
-                    m_out.println("OK");
-            	} catch (SQLException e) {
-                    success = false;
-            		m_out.println("FAILED (" + e + ")");
-                }
-            }
+        	boolean success = installCIpLike();
             
             if (!success) {
-                InputStream sqlfile = null;
-        		try {
-                    m_out.print("- inserting PL/pgSQL iplike function... ");
-                    
-                	sqlfile = getClass().getResourceAsStream(IPLIKE_SQL_RESOURCE);
-                	if (sqlfile == null) {
-                        String message = "unable to locate " + IPLIKE_SQL_RESOURCE;
-                        m_out.println("FAILED (" + message + ")");
-                		throw new Exception(message);
-                	}
-                	
-                	BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile));
-                	StringBuffer createFunction = new StringBuffer();
-                	String line;
-                	while ((line = in.readLine()) != null) {
-                		createFunction.append(line).append("\n");
-                	}
-        			st.execute(createFunction.toString());
-        			m_out.println("OK");
-        		} catch (Exception e) {
-        			m_out.println("FAILED");
-        			throw e;
-        		} finally {
-        		    // don't forget to close the input stream
-                    closeQuietly(sqlfile);
-                }
+                setupPlPgsqlIplike();
         	}
         }
 
@@ -451,7 +403,9 @@ public class InstallerDb {
         // does not exist:
         // ERROR: function eventtime(text) does not exist
         m_out.print("- checking for stale eventtime.so references... ");
+        Statement st = null;
         try {
+            st = getConnection().createStatement();
             st.execute("DROP FUNCTION eventtime(text)");
             m_out.println("REMOVED");
         } catch (SQLException e) {
@@ -465,6 +419,89 @@ public class InstallerDb {
             	m_out.println("FAILED");
                 throw e;
             }
+        } finally {
+            closeQuietly(st);
+        }
+    }
+
+    private boolean installCIpLike() {
+        m_out.print("- inserting C iplike function... ");
+        boolean success;
+        if (m_pg_iplike == null) {
+            success = false;
+            
+            m_out.println("SKIPPED (location of iplike function not set)");
+        } else {
+            Statement st = null;
+        	try {
+                st = getConnection().createStatement();
+
+                st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '"
+                        + m_pg_iplike + "' LANGUAGE 'c' WITH(isstrict)");
+                
+                success = true;
+                m_out.println("OK");
+        	} catch (SQLException e) {
+                success = false;
+        		m_out.println("FAILED (" + e + ")");
+            } finally {
+                closeQuietly(st);
+            }
+        }
+        return success;
+    }
+
+    private void dropExistingIpList() throws SQLException {
+        Statement st = null;
+        m_out.print("- removing existing iplike definition (if any)... ");
+        try {
+            st = getConnection().createStatement();
+        	st.execute("DROP FUNCTION iplike(text,text)");
+        	m_out.println("OK");
+        } catch (SQLException dropException) {
+        	if (dropException.toString().contains("does not exist")
+        			|| "42883".equals(dropException.getSQLState())) {
+        		m_out.println("OK");
+        	} else {
+        		m_out.println("FAILED");
+        		throw dropException;
+        	}
+        }
+        finally {
+            closeQuietly(st);
+        }
+    }
+
+    private void setupPlPgsqlIplike() throws Exception {
+        InputStream sqlfile = null;
+        Statement st = null;
+        try {
+            st = getConnection().createStatement();
+            m_out.print("- inserting PL/pgSQL iplike function... ");
+            
+        	sqlfile = getClass().getResourceAsStream(IPLIKE_SQL_RESOURCE);
+        	if (sqlfile == null) {
+                String message = "unable to locate " + IPLIKE_SQL_RESOURCE;
+                m_out.println("FAILED (" + message + ")");
+        		throw new Exception(message);
+        	}
+        	
+        	BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile));
+        	StringBuffer createFunction = new StringBuffer();
+        	String line;
+        	while ((line = in.readLine()) != null) {
+        		createFunction.append(line).append("\n");
+        	}
+        	st.execute(createFunction.toString());
+        	m_out.println("OK");
+        } catch (Exception e) {
+        	m_out.println("FAILED");
+        	throw e;
+        } finally {
+            // don't forget to close the statement
+            closeQuietly(st);
+            // don't forget to close the input stream
+            closeQuietly(sqlfile);
         }
     }
 
@@ -475,6 +512,16 @@ public class InstallerDb {
                 sqlfile.close();
             }
         } catch(IOException e) {
+            
+        }
+    }
+
+    private void closeQuietly(Statement st) {
+        try {
+            if (st != null) {
+                st.close();
+            }
+        } catch(Exception e) {
             
         }
     }
@@ -2839,6 +2886,10 @@ public class InstallerDb {
         
 
 
+    }
+
+    public void setupPgPlSqlIplike() {
+        
     }
 
 
