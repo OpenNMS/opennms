@@ -121,8 +121,9 @@ public class TemporaryDatabase implements DataSource {
          */
 
         if (m_setupIpLike) {
-            m_installerDb.setPgIpLikeLocation(findIpLikeLibrary().getAbsolutePath());
-            m_installerDb.updateIplike();
+            if (!m_installerDb.isIpLikeUsable()) { 
+                m_installerDb.setupPgPlSqlIplike();
+            }
         }
 
         m_installerDb.createTables();
