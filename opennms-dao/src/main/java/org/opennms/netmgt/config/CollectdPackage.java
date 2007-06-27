@@ -118,7 +118,7 @@ public class CollectdPackage {
 
 	public boolean hasIncludeRange(long addr) {
 		Package pkg = getPackage();
-		boolean has_range_include = pkg.getIncludeRangeCount() == 0;
+		boolean has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
 	
 		Enumeration eincs = pkg.enumerateIncludeRange();
 		while (!has_range_include && eincs.hasMoreElements()) {
