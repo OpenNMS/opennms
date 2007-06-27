@@ -458,7 +458,7 @@ abstract public class PollerConfigManager implements PollerConfig {
  
         // if there are NO include rances then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
-        has_range_include = pkg.getIncludeRangeCount() == 0;
+        has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         long addr = IPSorter.convertToLong(iface);
         Enumeration eincs = pkg.enumerateIncludeRange();
