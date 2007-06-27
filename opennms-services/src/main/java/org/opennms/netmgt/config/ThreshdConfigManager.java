@@ -299,6 +299,8 @@ public abstract class ThreshdConfigManager {
         boolean has_specific = false;
         boolean has_range_include = false;
         boolean has_range_exclude = false;
+        
+        has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
     
         long addr = IPSorter.convertToLong(iface);
         Enumeration eincs = pkg.enumerateIncludeRange();

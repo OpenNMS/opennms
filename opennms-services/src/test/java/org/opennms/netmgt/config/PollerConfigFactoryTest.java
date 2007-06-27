@@ -118,6 +118,12 @@ public class PollerConfigFactoryTest extends TestCase {
         network.addInterface("192.169.1.5");
         network.addService("SMTP");
         network.addService("HTTP");
+        network.addNode(4, "TestNode121");
+        network.addInterface("123.12.123.121");
+        network.addService("HTTP");
+        network.addNode(5, "TestNode122");
+        network.addInterface("123.12.123.122");
+        network.addService("HTTP");
         
         MockDatabase db = new MockDatabase();
         db.populate(network);
@@ -213,6 +219,48 @@ public class PollerConfigFactoryTest extends TestCase {
         assertTrue("Expected 192.168.1.1 to be in the package", factory.interfaceInPackage("192.168.1.1", pkg));
         
         
+        
+    }
+    
+    public void testSpecific() throws Exception {
+        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        assertNull(factory.getPackage("TestPkg"));
+        Package pkg = new Package();
+        pkg.setName("TestPkg");
+        
+        Filter filter = new Filter();
+        filter.setContent("IPADDR != '0.0.0.0'");
+        pkg.setFilter(filter);
+        
+        Rrd rrd = new Rrd();
+        rrd.setStep(300);
+        rrd.addRra("RRA:AVERAGE:0.5:1:2016");
+        pkg.setRrd(rrd);
+        
+        Service svc = new Service();
+        svc.setName("TestService");
+        svc.setInterval(300000);
+        pkg.addService(svc);
+        
+        Downtime dt = new Downtime();
+        dt.setBegin(0);
+        pkg.addDowntime(dt);
+        
+        pkg.addSpecific("123.12.123.121");
+        pkg.addSpecific("123.12.123.122");
+        
+        factory.addPackage(pkg);
+        factory.save();
+        
+        assertNotNull(factory.getPackage("TestPkg"));
+        
+        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
+        Package p = newFactory.getPackage("TestPkg");
+        assertNotNull(p);
+        System.out.println(factory.getXml());
+        assertTrue("Expect 123.12.123.121 to be part of the package", newFactory.interfaceInPackage("123.12.123.121", p));
+        assertTrue("Expect 123.12.123.122 to be part of the package", newFactory.interfaceInPackage("123.12.123.122", p));
+        assertFalse("Expected 192.168.1.1 to be excluded from the package", newFactory.interfaceInPackage("192.168.1.1", p));
         
     }
 
