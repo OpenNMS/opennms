@@ -929,6 +929,18 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
+    <profile>
+      <id>tagging</id>
+      <activation>
+        <property>
+          <name>tagging</name>
+        </property>
+      </activation>
+      <modules>
+        <module>opennms-tools</module>
+      </modules>
+    </profile>
+
   </profiles>
 
 

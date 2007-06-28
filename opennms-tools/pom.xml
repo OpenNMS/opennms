@@ -11,6 +11,21 @@
   <name>OpenNMS Tools</name>
   <modules>
     <module>opennms-rrd-stresser</module>
-    <module>mib2events</module>
+    <module>groovy-tools</module>
   </modules>
+  <profiles>
+    <profile>
+      <!-- this profile is only activated while tagging so versions get updated -->
+      <id>tagging</id>
+      <activation>
+        <property>
+          <name>tagging</name>
+        </property>
+      </activation>
+      <modules>
+        <module>centric-troubleticketer</module>
+        <module>mib2events</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
