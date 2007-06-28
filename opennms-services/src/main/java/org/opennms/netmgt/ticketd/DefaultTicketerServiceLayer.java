@@ -155,14 +155,22 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#updateTicketForAlarm(int, java.lang.String)
      */
 	public void updateTicketForAlarm(int alarmId, String ticketId) {
+		
+//      ticket.setState(State.OPEN);
+//      ticket.setDetails(alarm.getDescription());
+//      m_ticketerPlugin.saveOrUpdate(ticket);
+		
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
 		Ticket ticket = m_ticketerPlugin.get(ticketId);
-        ticket.setState(State.OPEN);
-        // TODO what do I do on an update?
-        ticket.setDetails(alarm.getDescription());
-        m_ticketerPlugin.saveOrUpdate(ticket);
         
+		if (ticket.getState() == Ticket.State.CANCELLED) {
+			alarm.setTTicketState(TroubleTicketState.CANCELLED);
+		} else if (ticket.getState() == Ticket.State.CLOSED) {
+			alarm.setTTicketState(TroubleTicketState.CLOSED);
+		} else if (ticket.getState() == Ticket.State.OPEN) {
+			alarm.setTTicketState(TroubleTicketState.OPEN);
+		}
 		alarm.setTTicketState(TroubleTicketState.OPEN);
 		m_alarmDao.saveOrUpdate(alarm);
 	}
