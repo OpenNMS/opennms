@@ -45,9 +45,17 @@
 
 %if "%{platform}" == "linux-centos-4"
 %define initdir         /etc
-%define psql_service    rhdb
+%define psql_service    postgresql
 %define requires        postgresql-server >= 7.4
 %define release_pkg     %{releasenumber}_centos4
+%define platform_match  true
+%endif
+
+%if "%{platform}" == "linux-centos-5"
+%define initdir         /etc
+%define psql_service    postgresql
+%define requires        postgresql-server >= 7.4
+%define release_pkg     %{releasenumber}_centos5
 %define platform_match  true
 %endif
 
@@ -86,7 +94,7 @@
 %if "%{platform}" == "linux-fedora-5"
 %define initdir         /etc
 %define psql_service    postgresql
-%define requires        postgresql-server >= 7.2
+%define requires        postgresql-server >= 7.4
 %define release_pkg     %{releasenumber}_fc5
 %define platform_match  true
 %endif
@@ -94,8 +102,16 @@
 %if "%{platform}" == "linux-fedora-6"
 %define initdir         /etc
 %define psql_service    postgresql
-%define requires        postgresql-server >= 7.2
+%define requires        postgresql-server >= 7.4
 %define release_pkg     %{releasenumber}_fc6
+%define platform_match  true
+%endif
+
+%if "%{platform}" == "linux-fedora-7"
+%define initdir         /etc
+%define psql_service    postgresql
+%define requires        postgresql-server >= 7.4
+%define release_pkg     %{releasenumber}_fc7
 %define platform_match  true
 %endif
 
@@ -173,9 +189,17 @@
 
 %if "%{platform}" == "linux-rhel-4"
 %define	initdir		/etc
-%define psql_service	rhdb
+%define psql_service	postgresql
 %define requires	postgresql-server >= 7.4
 %define release_pkg     %{releasenumber}_rhel4
+%define platform_match	true
+%endif
+
+%if "%{platform}" == "linux-rhel-5"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define requires	postgresql-server >= 7.4
+%define release_pkg     %{releasenumber}_rhel5
 %define platform_match	true
 %endif
 
