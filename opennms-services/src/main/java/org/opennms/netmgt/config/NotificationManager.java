@@ -186,7 +186,7 @@ public abstract class NotificationManager {
                curHasSeverity = true;
             }
            
-            if (curNotif.getStatus().equals("on") && curHasSeverity && curHasUei || "MATCH-ANY-UEI".equals(curNotif.getUei()) && (nodeInterfaceServiceValid(curNotif, event) || !event.hasNodeid())) {
+            if (curNotif.getStatus().equals("on") && curHasSeverity && (curHasUei || "MATCH-ANY-UEI".equals(curNotif.getUei()) && (nodeInterfaceServiceValid(curNotif, event) || !event.hasNodeid()))) {
                 boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
 
                 if (!parmsmatched) {
