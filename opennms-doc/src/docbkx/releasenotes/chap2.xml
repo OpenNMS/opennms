@@ -22,6 +22,80 @@
   generation of OpenNMS.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.3.4</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para>The only new feature is the abilty to invert the result of a
+      monitor. By adding the parameter "invert-status" to a monitor, up
+      becomes down, and down becomes up. Useful for monitoring things, like an
+      ISDN link, that indicate a problem when they are available. This was
+      available for ICMP in 1.2.x, but it has now been ported to deal with all
+      monitors.</para>
+
+      <para>An example of how to use this is as follows. Suppose there are a
+      number of IP addresses on the network that represent ISDN backup lines.
+      Thus a successful "ping" to those IPs means that there is a problem with
+      the network. In other words, up is down.</para>
+
+      <para>First, there needs to be a service in
+      <filename>capsd-configuraion.xml</filename> that defines the "not" ICMP
+      service:</para>
+
+      <para><programlisting>    &lt;protocol-plugin protocol="NotICMP" class-name="org.opennms.netmgt.capsd.plugins.IcmpPlugin" scan="off" user-defined="false"&gt;
+        &lt;property key="timeout" value="2000" /&gt;
+        &lt;property key="retry" value="1" /&gt;
+    &lt;/protocol-plugin&gt;</programlisting></para>
+
+      <para>Note that the scan for this service is "off". There are a number
+      of ways to add services to IP addresses, but an easy one is to use the
+      <filename>send-event.pl</filename> script to send an event to add the
+      service directly:</para>
+
+      <para><programlisting>send-event.pl uei.opennms.org/internal/capsd/updateService localhost \
+ --interface 172.20.1.12 \
+ --service NotICMP \
+ --parm 'nodelabel kenny.opennms.com' \
+ --parm 'action ADD'</programlisting></para>
+
+      <para>This will add the NotICMP service to the node "kenny.opennms.com"
+      on interface "172.20.1.12". Repeat for all other ISDN links.</para>
+
+      <para>Finally the poller has to be told to poll this service. Edit
+      poller-configuration.xml and add:</para>
+
+      <programlisting>                &lt;service name="NotICMP" interval="300000" user-defined="false" status="on"&gt;
+                        &lt;parameter key="invert-status" value="true"/&gt;
+                        &lt;parameter key="retry" value="2"/&gt;
+                        &lt;parameter key="timeout" value="3000"/&gt;
+                        &lt;parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/&gt;
+                        &lt;parameter key="ds-name" value="noticmp"/&gt;
+                &lt;/service&gt;</programlisting>
+
+      <para>and remember to put the monitor at the bottom:</para>
+
+      <para><programlisting>        &lt;monitor service="NotICMP"      class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/&gt;</programlisting></para>
+
+      <para>The key here is the "invert-status" property. This should work
+      with every monitor in the application.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>The reason for this release is a bug involving notificiations. In
+      1.3.3 the ability to match on severities was introduced. For example,
+      you could send a notice on any even that was "Critical". Unfortunately,
+      there was an unfortunately long "if" statement that got pooched when
+      this feature was added. It blocked notifications based on traps. In
+      addition, there was a bug with packages with just &lt;specific&gt; tags
+      (no include-range tags) passing all IP addresses that has been
+      addressed.</para>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.3.3</title>
 
     <section>
