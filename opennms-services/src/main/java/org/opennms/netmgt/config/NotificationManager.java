@@ -185,8 +185,14 @@ public abstract class NotificationManager {
             } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().toLowerCase())) {
                curHasSeverity = true;
             }
+            
+            // The notice has to be "on"
+            // The notice has to match a severity if configured - currHasSeverity should be true if there is no severity rule 
+            // The notice has to match the UEI of the event or MATCH-ANY-UEI
+            // If all those things are true:
+            // Then the service has to match if configured, the interface if configured, and the node if configured.
            
-            if (curNotif.getStatus().equals("on") && curHasSeverity && (curHasUei || ("MATCH-ANY-UEI".equals(curNotif.getUei()) && (nodeInterfaceServiceValid(curNotif, event)) || !event.hasNodeid()))) {
+            if (curNotif.getStatus().equals("on") && curHasSeverity && curHasUei && nodeInterfaceServiceValid(curNotif, event)) {
                 boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
 
                 if (!parmsmatched) {
