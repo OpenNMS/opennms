@@ -39,7 +39,7 @@
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.4
-%define release_pkg     %{rreleasenumber}_centos3
+%define release_pkg     %{releasenumber}_centos3
 %define platform_match	true
 %endif
 
