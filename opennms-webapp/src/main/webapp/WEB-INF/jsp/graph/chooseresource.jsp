@@ -66,6 +66,9 @@
       }
       
       function recursiveIsSomethingSelected(node, depth) {
+         if ((node.nodeName.toUpperCase() == "SELECT") && node.selectedIndex != -1) {
+               return true;
+         }
           for (var i = 0; i < node.length; i++) {
               if (node[i].nodeName.toUpperCase() == "SELECT") {
                   if (node[i].selectedIndex != -1) {
