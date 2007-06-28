@@ -411,6 +411,9 @@ opennms.home = ${opennms.home}
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <use>false</use>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
