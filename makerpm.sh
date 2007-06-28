@@ -23,7 +23,7 @@ else
 	RELEASE=$RELEASE_MAJOR
 fi
 
-VERSION=1.3.3
+VERSION=1.3.5
 PLATFORM=linux-centos-4
 
 if [ -z $JAVA_HOME ]
