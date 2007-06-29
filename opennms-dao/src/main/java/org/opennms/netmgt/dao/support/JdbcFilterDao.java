@@ -324,38 +324,90 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * 
      * @return the sql select statement
      */
-    public String getSQLStatement(String rule) {
+    protected String getSQLStatement(String rule) {
         Start parseTree = parseRule(rule);
         SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
         return translation.getStatement();
     }
 
-    public String getSQLStatement(String rule, long nodeId, String ipaddr, String service) {
+    protected String getSQLStatement(String rule, long nodeId, String ipaddr, String service) {
         Start parseTree = parseRule(rule);
         SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
         translation.setConstraintTranslation(nodeId, ipaddr, service);
         return translation.getStatement();
     }
 
-    public String getIPServiceMappingStatement(String rule) {
+    protected String getIPServiceMappingStatement(String rule) {
         Start parseTree = parseRule(rule);
         SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
         translation.setIPServiceMappingTranslation();
         return translation.getStatement();
     }
 
-    public String getNodeMappingStatement(String rule) {
+    protected String getNodeMappingStatement(String rule) {
         Start parseTree = parseRule(rule);
         SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
         translation.setNodeMappingTranslation();
         return translation.getStatement();
     }
 
-    public String getInterfaceWithServiceStatement(String rule) {
+    protected String getInterfaceWithServiceStatement(String rule) {
         Start parseTree = parseRule(rule);
         SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
         translation.setInterfaceWithServiceTranslation();
         return translation.getStatement();
+    }
+    
+    public boolean isRuleMatching(String rule) {
+        Start parseTree = parseRule(rule);
+        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
+        translation.setNodeMappingTranslation();
+        translation.setLimitCount(1);
+        
+        String sql = translation.getStatement();
+        
+        if (log().isDebugEnabled()) {
+            log().debug("isRuleMatching: rule \"" + rule + "\" : converted to SQL: " + sql);
+        }
+
+        Connection conn = null;
+        
+        try {
+            conn = getDataSource().getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rows = stmt.executeQuery(sql);
+            
+            /**
+             * We only want to check if zero or one rows were fetched, so just
+             * return the output from rows.next(); 
+             */
+            boolean matches = rows.next();
+    
+            try {
+                rows.close();
+            } catch (SQLException e) {
+            }
+    
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+            
+            return matches;
+        } catch (SQLException e) {
+            log().info("SQL Exception occured query results: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        } catch (Exception e) {
+            log().fatal("Exception getting database connection: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
     }
 
     public void walkMatchingNodes(String rule, EntityVisitor visitor) {
