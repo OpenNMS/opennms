@@ -128,7 +128,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
         OnmsNode node = new OnmsNode(distPoller );
         OnmsIpInterface iface = new OnmsIpInterface(opennmsDotOrg.getHostAddress(), node );
-        CollectionAgent agent = CollectionAgent.create(iface, m_transTemplate);
+        CollectionAgent agent = DefaultCollectionAgent.create(iface, m_transTemplate);
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("http-collection", "default");
         EventProxy eproxy = getEventProxy();

@@ -165,7 +165,7 @@ public class BasePersisterTest extends TestCase {
     }
 
     private Attribute buildStringAttribute() {
-        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTempalte);
+        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTempalte);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         

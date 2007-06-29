@@ -109,7 +109,7 @@ public class PersistOperationBuilderTest extends TestCase {
     public void testCommitWithNoDeclaredAttributes() throws Exception {
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTemplate);
+        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTemplate);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
@@ -130,7 +130,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTemplate);
+        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTemplate);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
@@ -162,7 +162,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTemplate);
+        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTemplate);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
