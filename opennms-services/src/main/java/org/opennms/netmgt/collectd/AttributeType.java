@@ -44,6 +44,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -79,8 +80,8 @@ public abstract class AttributeType implements AttributeDefinition {
     // FIXME: CollectionAttribute should be a tracker of its own
     // Also these should be created directly by the DAO rather 
     // than MibObject.
-    public static List getCollectionTrackers(Collection objList) {
-        ArrayList trackers = new ArrayList(objList.size());
+    public static List<Collectable> getCollectionTrackers(Collection<AttributeType> objList) {
+        ArrayList<Collectable> trackers = new ArrayList<Collectable>(objList.size());
         for (Iterator iter = objList.iterator(); iter.hasNext();) {
             AttributeType attrType = (AttributeType) iter.next();
             trackers.add(attrType.getMibObj().getCollectionTracker());
