@@ -345,6 +345,7 @@ public class Installer {
                         break;
 
                     case 'D':
+                        i++;
                     	m_pg_url = getNextArg(argv, i, 'D');
                     	break;
                     	
