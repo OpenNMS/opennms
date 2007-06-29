@@ -8,7 +8,8 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// 2006 Apr 7: Changed replaceNotification to handle preserving the order.
+// 2007 Jun 29: Move filter matching code to JdbcFilterDao and organize imports. - dj@opennms.org
+// 2006 Apr 07: Changed replaceNotification to handle preserving the order.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -75,9 +76,6 @@ import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
 
 /**
@@ -132,12 +130,8 @@ public abstract class NotificationManager {
     public boolean hasUei(String uei) throws IOException, MarshalException, ValidationException {
         update();
     
-        Category log = ThreadCategory.getInstance(getClass());
-
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification notif = (Notification) e.nextElement();
-
-            // ANNOYING: log.debug("hasUei: Checking UEI " + uei + " against " + notif.getUei());
   
             if (uei.equals(notif.getUei()) || "MATCH-ANY-UEI".equals(notif.getUei())) {
                  return true;
@@ -247,64 +241,19 @@ public abstract class NotificationManager {
         
         String rule = "((" + notif.getRule() + ")" + constraints + ")";
 
-        Connection connection = null;
-        Statement stmt = null;
-        ResultSet rows = null;
-        
+        return isRuleMatchingFilter(notif, rule);
+    }
+    
+    private boolean isRuleMatchingFilter(Notification notif, String rule) {
         try {
-            String sql = getInterfaceFilter(rule) + " LIMIT 1";
-    
-            if (log().isDebugEnabled()) {
-                log().debug("getInterfaceFilter returned SQL for notification " + notif.getName() + " with computed rule \"" + rule + "\": " + sql);
-            }
-    
-            connection = getConnection();
-            stmt = connection.createStatement();
-            rows = stmt.executeQuery(sql);
-            
-            /**
-             * We only want to check if zero or one rows were fetched, so just
-             * return the output from rows.next(); 
-             */
-            return rows.next();
-        } catch (SQLException e) {
-            log().error("Filter query threw exception: " + notif.getName() + ": " + notif.getRule(), e);
-            return true;
+            return FilterDaoFactory.getInstance().isRuleMatching(rule);
         } catch (FilterParseException e) {
             log().error("Invalid filter rule for notification " + notif.getName() + ": " + notif.getRule(), e);
             return true;
-        } finally {
-            if (rows != null) {
-                try {
-                    rows.close();
-                } catch (SQLException e) {
-                }
-            }
-
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                }
-            }
-            
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+        } catch (Throwable t) {
+            log().error("Filter query threw exception: " + notif.getName() + ": " + notif.getRule(), t);
+            return true;
         }
-    }
-    
-    
-    /**
-     * @param rule
-     * @return
-     */
-    protected String getInterfaceFilter(String rule) {
-        // Select the Interfaces and Services that match the rule
-        return FilterDaoFactory.getInstance().getInterfaceWithServiceStatement(rule);
     }
 
     /**
