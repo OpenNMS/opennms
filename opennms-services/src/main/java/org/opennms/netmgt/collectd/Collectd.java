@@ -125,7 +125,7 @@ public final class Collectd extends AbstractServiceDaemon implements
 
     private MonitoredServiceDao m_monSvcDao;
 
-    private IpInterfaceDao m_ifSvcDao;
+    private IpInterfaceDao m_ifaceDao;
 
     static class SchedulingCompletedFlag {
         boolean m_schedulingCompleted = false;
@@ -310,7 +310,7 @@ public final class Collectd extends AbstractServiceDaemon implements
     private void scheduleInterfacesWithService(String svcName) {
         log().info("scheduleInterfacesWithService: svcName = " + svcName);
 
-        Collection<OnmsIpInterface> ifsWithServices = getIpInterfaceDao().findHierarchyByServiceType(svcName);
+        Collection<OnmsIpInterface> ifsWithServices = getIpInterfaceDao().findByServiceType(svcName);
         for (OnmsIpInterface iface : ifsWithServices) {
             scheduleInterface(iface, svcName, true);
         }
@@ -350,7 +350,7 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
 	private OnmsIpInterface getIpInterface(int nodeId, String ipAddress) {
-		OnmsNode node = m_nodeDao.getHierarchy(nodeId);
+		OnmsNode node = m_nodeDao.get(nodeId);
         OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
 		return iface;
 	}
@@ -1227,11 +1227,11 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
     public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
-        m_ifSvcDao = ifSvcDao;
+        m_ifaceDao = ifSvcDao;
     }
 
     private IpInterfaceDao getIpInterfaceDao() {
-        return m_ifSvcDao;
+        return m_ifaceDao;
     }
 
     public void setTransactionTemplate(TransactionTemplate transTemplate) {
