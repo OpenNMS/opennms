@@ -116,7 +116,7 @@ final class CollectableService implements ReadyRunnable {
      * 
      */
     protected CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, TransactionTemplate transTemplate) {
-        m_agent = new CollectionAgent(iface);
+        m_agent = CollectionAgent.create(iface, transTemplate);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
@@ -489,7 +489,7 @@ final class CollectableService implements ReadyRunnable {
 
 	private void reinitialize(OnmsIpInterface newIface) {
 		m_spec.release(m_agent);
-		m_agent = new CollectionAgent(newIface);
+		m_agent = CollectionAgent.create(newIface, m_transTemplate);
 		m_spec.initialize(m_agent);
 	}
 

@@ -63,6 +63,9 @@ import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class SnmpCollectorTest extends TestCase {
     private SnmpCollector m_snmpCollector;
@@ -72,6 +75,8 @@ public class SnmpCollectorTest extends TestCase {
     private FileAnticipator m_fileAnticipator;
 
     private File m_snmpRrdDirectory;
+
+    private TransactionTemplate m_transTemplate;
 
     @Override
     protected void setUp() throws Exception {
@@ -89,6 +94,9 @@ public class SnmpCollectorTest extends TestCase {
         m_db.populate(m_network);
 
         DataSourceFactory.setInstance(m_db);
+        
+        PlatformTransactionManager transManager = new DataSourceTransactionManager(m_db);
+        m_transTemplate = new TransactionTemplate(transManager);
         
         m_fileAnticipator = new FileAnticipator();
     }
@@ -154,7 +162,7 @@ public class SnmpCollectorTest extends TestCase {
                                                                    outageCalendars,
                                                                    m_snmpCollector);
 
-        CollectionAgent agent = new CollectionAgent(iface);
+        CollectionAgent agent = CollectionAgent.create(iface, m_transTemplate);
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
         for (String file : new String[] { "tcpActiveOpens", "tcpAttemptFails", "tcpCurrEstab",
@@ -207,7 +215,7 @@ public class SnmpCollectorTest extends TestCase {
                                                                    outageCalendars,
                                                                    m_snmpCollector);
 
-        CollectionAgent agent = new CollectionAgent(iface);
+        CollectionAgent agent = CollectionAgent.create(iface, m_transTemplate);
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
         File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");

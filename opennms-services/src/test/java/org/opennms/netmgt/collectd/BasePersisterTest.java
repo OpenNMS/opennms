@@ -41,6 +41,7 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
+import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * JUnit TestCase for the BasePersister.
@@ -65,6 +67,7 @@ public class BasePersisterTest extends TestCase {
     private BasePersister m_persister;
     private OnmsIpInterface m_intf;
     private OnmsNode m_node;
+    private TransactionTemplate m_transTempalte = new MockTransactionTemplate();
 
     @Override
     protected void setUp() throws Exception {
@@ -162,7 +165,7 @@ public class BasePersisterTest extends TestCase {
     }
 
     private Attribute buildStringAttribute() {
-        CollectionAgent agent = new CollectionAgent(m_intf);
+        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTempalte);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
