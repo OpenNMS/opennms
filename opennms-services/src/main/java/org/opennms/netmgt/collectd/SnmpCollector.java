@@ -393,6 +393,7 @@ public class SnmpCollector implements ServiceCollector {
         } catch (CollectionError e) {
             return e.reportError();
         } catch (Throwable t) {
+            t.printStackTrace();
             return this.unexpected(agent, t);
         }
     }
