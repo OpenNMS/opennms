@@ -1324,8 +1324,8 @@ CREATE TABLE location_specific_status_changes (
     responseTime INTEGER,
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
-    CONSTRAINT location_monitor_fkey1 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE,
-    CONSTRAINT ifservices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
+    CONSTRAINT location_monitor_fkey2 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE,
+    CONSTRAINT ifservices_fkey4 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
 create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
