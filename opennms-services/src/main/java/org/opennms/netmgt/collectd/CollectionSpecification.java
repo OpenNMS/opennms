@@ -213,10 +213,6 @@ public class CollectionSpecification {
 	}
 
 	public boolean scheduledOutage(CollectionAgent agent) {
-		OnmsIpInterface iface = agent.getIpInterface();
-	
-	    Category log = log();
-	
 		boolean outageFound = false;
 	
 	    PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
@@ -234,11 +230,11 @@ public class CollectionSpecification {
 	        // Does the outage apply to the current time?
 	        if (outageFactory.isCurTimeInOutage(outageName)) {
 	            // Does the outage apply to this interface?
-				if ((outageFactory.isNodeIdInOutage(iface.getNode().getId().longValue(), outageName)) ||
-			(outageFactory.isInterfaceInOutage(iface.getIpAddress(), outageName)))
+				if ((outageFactory.isNodeIdInOutage(agent.getNodeId(), outageName)) ||
+			(outageFactory.isInterfaceInOutage(agent.getHostAddress(), outageName)))
 		{
-					if (log.isDebugEnabled())
-	                    log.debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + iface.getIpAddress() + " will not be collected for " + this);
+					if (log().isDebugEnabled())
+	                    log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + agent.getHostAddress() + " will not be collected for " + this);
 	                outageFound = true;
 	                break;
 	            }

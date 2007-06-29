@@ -39,6 +39,7 @@ import java.util.Properties;
 
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
+import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import junit.framework.TestCase;
 
@@ -63,6 +65,7 @@ public class PersistOperationBuilderTest extends TestCase {
     private File m_snmpDirectory;
     private OnmsIpInterface m_intf;
     private OnmsNode m_node;
+    private TransactionTemplate m_transTemplate = new MockTransactionTemplate();
 
     @Override
     protected void setUp() throws Exception {
@@ -106,7 +109,7 @@ public class PersistOperationBuilderTest extends TestCase {
     public void testCommitWithNoDeclaredAttributes() throws Exception {
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = new CollectionAgent(m_intf);
+        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTemplate);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
@@ -127,7 +130,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = new CollectionAgent(m_intf);
+        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTemplate);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
@@ -159,7 +162,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = new CollectionAgent(m_intf);
+        CollectionAgent agent = CollectionAgent.create(m_intf, m_transTemplate);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         

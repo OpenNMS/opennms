@@ -47,6 +47,7 @@ import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
+import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -81,6 +82,9 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected SnmpObjId m_ifDescr;
     protected SnmpObjId m_ifOutOctets;
     protected SnmpObjId m_invalid;
+    
+    protected OnmsNode m_node;
+    protected OnmsIpInterface m_iface;
     
     protected CollectionAgent m_agent;
     private SnmpWalker m_walker;
@@ -255,17 +259,17 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     protected void createAgent(int ifIndex, CollectionType ifCollType) {
-        OnmsNode m_node = new OnmsNode();
+        m_node = new OnmsNode();
         m_node.setSysObjectId(".1.2.3.4.5.6.7");
         
         OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(myLocalHost(), ifIndex, m_node);
     
-    	OnmsIpInterface m_iface = new OnmsIpInterface();
+    	m_iface = new OnmsIpInterface();
         m_iface.setIpAddress(myLocalHost());
     	m_iface.setIsSnmpPrimary(ifCollType);
     	m_iface.setSnmpInterface(snmpIface);
     	m_node.addIpInterface(m_iface);
-        m_agent = new CollectionAgent(m_iface);
+        m_agent = CollectionAgent.create(m_iface, new MockTransactionTemplate());
     }
     
     protected void initializeAgent() {

@@ -59,6 +59,9 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class OpenNMSTestCase extends TestCase {
 
@@ -1398,6 +1401,8 @@ public class OpenNMSTestCase extends TestCase {
     int m_version = SnmpAgentConfig.VERSION1;
 
     private EventProxy m_eventProxy;
+
+    protected TransactionTemplate m_transTemplate;
     
     public void setVersion(int version) {
         m_version = version;
@@ -1450,6 +1455,9 @@ public class OpenNMSTestCase extends TestCase {
             }
         
         }
+        
+        PlatformTransactionManager transManager = new DataSourceTransactionManager(DataSourceFactory.getInstance());
+        m_transTemplate = new TransactionTemplate(transManager);
 
     }
 

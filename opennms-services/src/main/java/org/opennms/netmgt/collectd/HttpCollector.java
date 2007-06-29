@@ -460,7 +460,7 @@ public class HttpCollector implements ServiceCollector {
     
     public void initialize(CollectionAgent agent, Map parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
-        final Integer scheduledNodeKey = new Integer(agent.getNode().getId());
+        final Integer scheduledNodeKey = new Integer(agent.getNodeId());
         final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
         
         if (scheduledAddress != null) {
@@ -474,7 +474,7 @@ public class HttpCollector implements ServiceCollector {
             sb.append(" for address: ");
             sb.append(scheduledAddress);
             sb.append(" already scheduled for collection on node: ");
-            sb.append(agent.getNode().toString());
+            sb.append(agent);
             log().debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {

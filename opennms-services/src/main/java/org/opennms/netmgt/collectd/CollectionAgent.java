@@ -36,12 +36,19 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
@@ -53,6 +60,10 @@ public class CollectionAgent extends IPv4NetworkInterface {
      */
     private static final long serialVersionUID = 6694654071513990997L;
 
+    public static CollectionAgent create(final OnmsIpInterface iface, final TransactionTemplate transTemplate) {
+        return new CollectionAgent(iface, transTemplate);
+    }
+
     // the interface of the Agent
     private OnmsIpInterface m_iface;
 
@@ -60,16 +71,19 @@ public class CollectionAgent extends IPv4NetworkInterface {
     private int m_maxVarsPerPdu = 0;
     private int m_ifCount = -1;
 
-    public CollectionAgent(OnmsIpInterface iface) {
+    private TransactionTemplate m_transTemplate;
+
+    private CollectionAgent(OnmsIpInterface iface, TransactionTemplate transTemplate) {
         super(iface.getInetAddress());
         m_iface = iface;
+        m_transTemplate = transTemplate;
     }
 
-    public OnmsIpInterface getIpInterface() {
+    private OnmsIpInterface getIpInterface() {
         return m_iface;
     }
 
-    public OnmsNode getNode() {
+    private OnmsNode getNode() {
         return m_iface.getNode();
     }
 
@@ -92,15 +106,15 @@ public class CollectionAgent extends IPv4NetworkInterface {
         m_ifCount = ifCount;
     }
 
-    int getSavedIfCount() {
+    public int getSavedIfCount() {
         return m_ifCount;
     }
 
-    int getNodeId() {
+    public int getNodeId() {
         return getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
     }
 
-    int getIfIndex() {
+    private int getIfIndex() {
         return (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
     }
 
@@ -184,6 +198,36 @@ public class CollectionAgent extends IPv4NetworkInterface {
 
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
+    }
+
+    public Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type) {
+        
+        OnmsNode node = getNode();
+    
+    	Set<OnmsSnmpInterface> snmpIfs = node.getSnmpInterfaces();
+    	
+    	if (snmpIfs.size() == 0) {
+            log().debug("no known SNMP interfaces for node " + node);
+    	}
+    	
+        Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfs.size());
+        
+        for(OnmsSnmpInterface snmpIface : snmpIfs) {
+    		logInitializeSnmpIf(snmpIface);
+            ifInfos.add(new IfInfo(type, this, snmpIface));
+    	}
+        return ifInfos;
+    }
+
+    private void logInitializeSnmpIf(OnmsSnmpInterface snmpIface) {
+        if (log().isDebugEnabled()) {
+        	log().debug(
+        			"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
+        			+ ", snmpifname = " + snmpIface.getIfName()
+        			+ ", snmpifdescr = " + snmpIface.getIfDescr()
+        			+ ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
+        	log().debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
+        }
     }
 
 }

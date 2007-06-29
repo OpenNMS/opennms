@@ -364,7 +364,7 @@ public class CollectionSet implements Collectable {
                 + " ifCount: " + getIfNumber().getIfNumber() 
                 + " savedIfCount: " + agent.getSavedIfCount());
     }
-    
+
     public boolean rescanNeeded() {
         
         final RescanNeeded rescanNeeded = new RescanNeeded();

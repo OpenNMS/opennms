@@ -301,7 +301,7 @@ public class NSClientCollector implements ServiceCollector {
     
     public void initialize(CollectionAgent agent, Map parameters) {
         log().debug("initialize: Initializing NSClient collection for agent: "+agent);
-        Integer scheduledNodeKey = new Integer(agent.getNode().getId());
+        Integer scheduledNodeKey = new Integer(agent.getNodeId());
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
         
         if (nodeState != null) {
@@ -313,7 +313,7 @@ public class NSClientCollector implements ServiceCollector {
             sb.append(" for address: ");
             sb.append(nodeState.getAddress());
             sb.append(" already scheduled for collection on node: ");
-            sb.append(agent.getNode().toString());
+            sb.append(agent);
             log().debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
@@ -328,7 +328,7 @@ public class NSClientCollector implements ServiceCollector {
     }
 
     public void release(CollectionAgent agent) {
-        Integer scheduledNodeKey = new Integer(agent.getNode().getId());
+        Integer scheduledNodeKey = new Integer(agent.getNodeId());
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
         if(nodeState!=null) {
             m_scheduledNodes.remove(scheduledNodeKey);

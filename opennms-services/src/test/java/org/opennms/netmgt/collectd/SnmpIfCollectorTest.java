@@ -101,20 +101,6 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
 		
     }
 
-    private Set getSnmpInterfaces() {
-        return m_agent.getNode().getSnmpInterfaces();
-    }
-
-    private SNMPCollectorEntry findEntryWithIfIndex(Integer ifIndex, List entries) {
-        assertNotNull(ifIndex);
-        assertNotNull(entries);
-        for (Iterator it = entries.iterator(); it.hasNext();) {
-            SNMPCollectorEntry entry = (SNMPCollectorEntry) it.next();
-            if (ifIndex.equals(entry.getIfIndex())) return entry;
-        }
-        return null;
-    }
-
     public void testInvalidVar() throws Exception {
         addAttribute("invalid", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
         
@@ -179,7 +165,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     	m_snmpIface.setIfIndex(new Integer(ifIndex));
     	m_snmpIface.setIfType(new Integer(ifType));
     	m_snmpIface.setIfName(ifName);
-    	m_agent.getNode().addSnmpInterface(m_snmpIface);
+    	m_node.addSnmpInterface(m_snmpIface);
         
     	return m_snmpIface;
 

@@ -38,7 +38,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +45,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.config.DataCollectionConfig;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 public class IfResourceType extends DbResourceType {
@@ -58,7 +55,6 @@ public class IfResourceType extends DbResourceType {
         super(agent, snmpCollection);
         m_ifMap = new TreeMap<Integer, IfInfo>();
         addKnownIfResources();
-
     }
     
     private Map<Integer, IfInfo> getIfMap() {
@@ -69,38 +65,12 @@ public class IfResourceType extends DbResourceType {
         getIfMap().put(new Integer(ifInfo.getIndex()), ifInfo);
     }
 
-    void logInitializeSnmpIface(OnmsSnmpInterface snmpIface) {
-        if (log().isDebugEnabled()) {
-    		log().debug(
-    				"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
-    				+ ", snmpifname = " + snmpIface.getIfName()
-    				+ ", snmpifdescr = " + snmpIface.getIfDescr()
-    				+ ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
-    		log().debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
-    	}
-    
-    
-    }
-
-    void addSnmpInterface(OnmsSnmpInterface snmpIface) {
-        addIfInfo(new IfInfo(this, getAgent(), snmpIface));
-    }
-
     void addKnownIfResources() {
-    	CollectionAgent agent = getAgent();
-    	OnmsNode node = agent.getNode();
-    
-    	Set snmpIfs = node.getSnmpInterfaces();
-    	
-    	if (snmpIfs.size() == 0) {
-    		log().debug("no known SNMP interfaces for node " + node);
-    	}
-    	
-    	for (Iterator it = snmpIfs.iterator(); it.hasNext();) {
-    		OnmsSnmpInterface snmpIface = (OnmsSnmpInterface) it.next();
-    		logInitializeSnmpIface(snmpIface);
-    		addSnmpInterface(snmpIface);
-    	}
+    	Set<IfInfo> ifInfos = getAgent().getSnmpInterfaceInfo(this);
+        
+        for(IfInfo ifInfo : ifInfos) {
+            addIfInfo(ifInfo);
+        }
     }
 
     IfInfo getIfInfo(int ifIndex) {
