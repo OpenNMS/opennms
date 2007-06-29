@@ -26,8 +26,15 @@ public interface FilterDao {
     public List<String> getIPList(String rule) throws FilterParseException;
     public boolean isValid(String addr, String rule) throws FilterParseException;
     
-    public String getInterfaceWithServiceStatement(String rule);
-    
+    /**
+     * Does this rule match anything in the database?  In particular, does it
+     * return at least one record from the database?
+     * 
+     * @param rule rule to match on
+     * @return true if there is at least one match, false otherwise
+     */
+    public boolean isRuleMatching(String rule);
+
     public void validateRule(String rule) throws FilterParseException;
     
     public void walkMatchingNodes(String rule, EntityVisitor visitor);

@@ -480,7 +480,7 @@ public class AbstractDaoTestCase extends TestCase {
         m_populate = populate;
     }
 
-    protected Map getAssetNumberMap(String foreignSource) {
+    protected Map<String, Integer> getAssetNumberMap(String foreignSource) {
 //        Map assetNumberMap = new HashMap();
 //        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"1", new Long(1));
 //        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"2", new Long(2));

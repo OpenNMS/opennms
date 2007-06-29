@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 29: Add the ability to set a limit on the number of rows returned. - dj@opennms.org
 // 2006 Aug 15: Throw more specific exceptions in the static initializer - dj@opennms.org
 // 2006 Apr 25: Added setNodeMappingTranslation()
 // 2003 Aug 01: Created a proper Join for rules. Bug #752
@@ -140,6 +141,11 @@ public class SQLTranslation extends DepthFirstAdapter {
      * The starting node of the parse tree
      */
     private Start m_node;
+    
+    /**
+     * The limit count for the filter, or null if there is no limit.
+     */
+    private Integer m_limitCount = null;
 
     /**
      * This method is used to build the join condtions to be added to the where
@@ -434,6 +440,13 @@ public class SQLTranslation extends DepthFirstAdapter {
         m_selectList.add(addColumnToStatement("serviceName"));
         m_selectList.add(addColumnToStatement("nodeID"));
     }
+    
+    /**
+     * Set a limit on the number of rows returned.
+     */
+    public void setLimitCount(Integer count) {
+        m_limitCount = count;
+    }
 
     public void outStart(Start node) {
         // finish the where clause by putting in the join clauses to
@@ -711,7 +724,15 @@ public class SQLTranslation extends DepthFirstAdapter {
         //
         m_node.apply(this);
 
-        return buildSelectClause() + m_from.toString() + m_where.toString();
+        return buildSelectClause() + m_from.toString() + m_where.toString()
+            + buildLimitClause();
     }
 
+    private String buildLimitClause() {
+        if (m_limitCount != null) {
+            return " LIMIT " + m_limitCount;
+        } else {
+            return "";
+        }
+    }
 }
