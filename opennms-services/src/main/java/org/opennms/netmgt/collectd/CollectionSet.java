@@ -248,10 +248,10 @@ public class CollectionSet implements Collectable {
     }
 
     public CollectionTracker getCollectionTracker() {
-        return new AggregateTracker(getAttributeTypes());
+        return new AggregateTracker(AttributeType.getCollectionTrackers(getAttributeTypes()));
     }
 
-    private Collection getAttributeTypes() {
+    private Collection<AttributeType> getAttributeTypes() {
         return m_snmpCollection.getAttributeTypes(m_agent);
     }
 
@@ -271,7 +271,7 @@ public class CollectionSet implements Collectable {
     }
     
     CollectionTracker getTracker() {
-        List trackers = new ArrayList(3);
+        List<Collectable> trackers = new ArrayList<Collectable>(3);
        
         if (getIfNumber() != null) {
         	trackers.add(getIfNumber());
