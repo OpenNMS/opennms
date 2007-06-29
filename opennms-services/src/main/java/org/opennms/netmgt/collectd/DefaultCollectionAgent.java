@@ -37,6 +37,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -47,13 +48,14 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
  */
-public class CollectionAgent extends IPv4NetworkInterface {
+public class DefaultCollectionAgent extends IPv4NetworkInterface implements CollectionAgent {
 
     /**
      * 
@@ -61,7 +63,20 @@ public class CollectionAgent extends IPv4NetworkInterface {
     private static final long serialVersionUID = 6694654071513990997L;
 
     public static CollectionAgent create(final OnmsIpInterface iface, final TransactionTemplate transTemplate) {
-        return new CollectionAgent(iface, transTemplate);
+        CollectionAgent agent = new DefaultCollectionAgent(iface, transTemplate);
+        
+        TransactionProxyFactoryBean bean = new TransactionProxyFactoryBean();
+        bean.setTransactionManager(transTemplate.getTransactionManager());
+        bean.setTarget(agent);
+        
+        Properties props = new Properties();
+        props.put("*", "PROPAGATION_REQUIRED,readOnly");
+        
+        bean.setTransactionAttributes(props);
+        
+        bean.afterPropertiesSet();
+        
+        return (CollectionAgent) bean.getObject();
     }
 
     // the interface of the Agent
@@ -73,7 +88,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
 
     private TransactionTemplate m_transTemplate;
 
-    private CollectionAgent(OnmsIpInterface iface, TransactionTemplate transTemplate) {
+    private DefaultCollectionAgent(OnmsIpInterface iface, TransactionTemplate transTemplate) {
         super(iface.getInetAddress());
         m_iface = iface;
         m_transTemplate = transTemplate;
@@ -87,6 +102,9 @@ public class CollectionAgent extends IPv4NetworkInterface {
         return m_iface.getNode();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#setMaxVarsPerPdu(int)
+     */
     public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
         if (log().isDebugEnabled()) {
@@ -94,22 +112,37 @@ public class CollectionAgent extends IPv4NetworkInterface {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getMaxVarsPerPdu()
+     */
     public int getMaxVarsPerPdu() {
         return m_maxVarsPerPdu;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getHostAddress()
+     */
     public String getHostAddress() {
         return getInetAddress().getHostAddress();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#setSavedIfCount(int)
+     */
     public void setSavedIfCount(int ifCount) {
         m_ifCount = ifCount;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getSavedIfCount()
+     */
     public int getSavedIfCount() {
         return m_ifCount;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeId()
+     */
     public int getNodeId() {
         return getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
     }
@@ -118,6 +151,9 @@ public class CollectionAgent extends IPv4NetworkInterface {
         return (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getSysObjectId()
+     */
     public String getSysObjectId() {
         return getIpInterface().getNode().getSysObjectId();
     }
@@ -184,6 +220,9 @@ public class CollectionAgent extends IPv4NetworkInterface {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#validateAgent()
+     */
     public void validateAgent() {
         logCollectionParms();
         validateIsSnmpPrimary();
@@ -192,14 +231,23 @@ public class CollectionAgent extends IPv4NetworkInterface {
         logCompletion();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#toString()
+     */
     public String toString() {
         return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getAgentConfig()
+     */
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
+     */
     public Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type) {
         
         OnmsNode node = getNode();

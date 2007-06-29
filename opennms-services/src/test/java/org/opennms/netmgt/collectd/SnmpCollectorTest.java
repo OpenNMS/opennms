@@ -162,7 +162,7 @@ public class SnmpCollectorTest extends TestCase {
                                                                    outageCalendars,
                                                                    m_snmpCollector);
 
-        CollectionAgent agent = CollectionAgent.create(iface, m_transTemplate);
+        CollectionAgent agent = DefaultCollectionAgent.create(iface, m_transTemplate);
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
         for (String file : new String[] { "tcpActiveOpens", "tcpAttemptFails", "tcpCurrEstab",
@@ -215,7 +215,7 @@ public class SnmpCollectorTest extends TestCase {
                                                                    outageCalendars,
                                                                    m_snmpCollector);
 
-        CollectionAgent agent = CollectionAgent.create(iface, m_transTemplate);
+        CollectionAgent agent = DefaultCollectionAgent.create(iface, m_transTemplate);
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
         File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");

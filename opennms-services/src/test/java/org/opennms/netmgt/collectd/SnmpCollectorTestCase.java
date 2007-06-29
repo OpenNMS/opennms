@@ -269,7 +269,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     	m_iface.setIsSnmpPrimary(ifCollType);
     	m_iface.setSnmpInterface(snmpIface);
     	m_node.addIpInterface(m_iface);
-        m_agent = CollectionAgent.create(m_iface, new MockTransactionTemplate());
+        m_agent = DefaultCollectionAgent.create(m_iface, new MockTransactionTemplate());
     }
     
     protected void initializeAgent() {
