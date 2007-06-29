@@ -58,28 +58,50 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  */
 final class IfInfo extends DbCollectionResource {
 
-    private OnmsSnmpInterface m_snmpIface;
+    private CollectionType m_collType;
     private SNMPCollectorEntry m_entry;
+    private int m_nodeId;
+    private int m_ifIndex;
+    private int m_ifType;
+    private String m_label;
+    private String m_ifAlias;
 
     public IfInfo(ResourceType def, CollectionAgent agent, OnmsSnmpInterface snmpIface) {
         super(def, agent);
-        m_snmpIface = snmpIface;
+        m_nodeId = snmpIface.getNode().getId();
+        m_collType = snmpIface.getCollectionType();
+        m_ifIndex = snmpIface.getIfIndex();
+        m_ifType = snmpIface.getIfType();
+        m_label = snmpIface.computeLabelForRRD();
+        m_ifAlias = snmpIface.getIfAlias();
+    }
+
+    private int getNodeId() {
+        return m_nodeId;
     }
 
     public int getIndex() {
-        return m_snmpIface.getIfIndex().intValue();
+        return m_ifIndex;
     }
 
     public int getType() {
-        return m_snmpIface.getIfType().intValue();
+        return m_ifType;
     }
 
     public String getLabel() {
-        return m_snmpIface.computeLabelForRRD();
+        return m_label;
+    }
+
+    public void setIfAlias(String ifAlias) {
+        m_ifAlias = ifAlias;
+    }
+
+    String getCurrentIfAlias() {
+        return m_ifAlias;
     }
 
     public CollectionType getCollType() {
-        return m_snmpIface.getCollectionType();
+        return m_collType;
     }
 
     public void setEntry(SNMPCollectorEntry ifEntry) {
@@ -90,9 +112,6 @@ final class IfInfo extends DbCollectionResource {
         return m_entry;
     }
 
-    public void setIfAlias(String ifAlias) {
-        m_snmpIface.setIfAlias(ifAlias);
-    }
 
     /**
      ** @deprecated
@@ -104,10 +123,6 @@ final class IfInfo extends DbCollectionResource {
             return getCurrentIfAlias();
         }
         return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
-    }
-
-    String getCurrentIfAlias() {
-        return m_snmpIface.getIfAlias();
     }
 
     boolean currentAliasIsOutOfDate(String ifAlias) {
@@ -167,13 +182,13 @@ final class IfInfo extends DbCollectionResource {
 
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
+        File nodeDir = new File(rrdBaseDir, String.valueOf(getNodeId()));
         File ifDir = new File(nodeDir, getLabel());
         return ifDir;
     }
 
     public String toString() {
-        return "Node["+getCollectionAgent().getNodeId() + "]/ifIndex[" + getIndex() + ']';
+        return "Node["+ getNodeId() + "]/ifIndex[" + getIndex() + ']';
     }
 
     boolean shouldStore(ServiceParameters serviceParameters) {

@@ -92,6 +92,13 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     private int m_ifCount = -1;
 
     private IpInterfaceDao m_ifaceDao;
+    
+    // cached attributes
+    private int m_nodeId = -1;
+    private InetAddress m_inetAddress = null;
+    private int m_ifIndex = -1;
+    private CollectionType m_collType = null;
+    private String m_sysObjId = null;
 
     private DefaultCollectionAgent(Integer ifaceId, IpInterfaceDao ifaceDao) {
         // we pass in null since we override calls to getAddress and getInetAddress
@@ -115,7 +122,10 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
 
     @Override
     public InetAddress getInetAddress() {
-        return getIpInterface().getInetAddress();
+        if (m_inetAddress == null) {
+            m_inetAddress = getIpInterface().getInetAddress();
+        }
+        return m_inetAddress;
     }
 
     /* (non-Javadoc)
@@ -160,22 +170,36 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeId()
      */
     public int getNodeId() {
-        return getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
+        if (m_nodeId == -1) {
+            m_nodeId = getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
+        }
+        return m_nodeId; 
     }
 
     private int getIfIndex() {
-        return (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
+        if (m_ifIndex == -1) {
+            m_ifIndex = (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
+        }
+        return m_ifIndex;
+        
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSysObjectId()
      */
     public String getSysObjectId() {
-        return getIpInterface().getNode().getSysObjectId();
+        if (m_sysObjId == null) {
+            m_sysObjId = getIpInterface().getNode().getSysObjectId();
+        }
+        return m_sysObjId;
     }
 
     private CollectionType getCollectionType() {
-        return getIpInterface().getIsSnmpPrimary();
+        if (m_collType == null) {
+            m_collType = getIpInterface().getIsSnmpPrimary();
+        }
+        return m_collType;
+        
     }
 
     private void logCompletion() {
