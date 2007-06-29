@@ -37,8 +37,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.easymock.EasyMock;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
+import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -49,6 +52,7 @@ import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import junit.framework.TestCase;
@@ -65,8 +69,9 @@ public class PersistOperationBuilderTest extends TestCase {
     private File m_snmpDirectory;
     private OnmsIpInterface m_intf;
     private OnmsNode m_node;
-    private TransactionTemplate m_transTemplate = new MockTransactionTemplate();
+    private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
 
+    private IpInterfaceDao m_ifDao;
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -81,6 +86,12 @@ public class PersistOperationBuilderTest extends TestCase {
         m_node.setId(1);
         m_intf.setNode(m_node);
         m_intf.setIpAddress("1.1.1.1");
+        m_intf.setId(27);
+        
+        m_ifDao = EasyMock.createMock(IpInterfaceDao.class);
+        EasyMock.expect(m_ifDao.get(m_intf.getId())).andReturn(m_intf).anyTimes();
+        
+        EasyMock.replay(m_ifDao);
         
         // Grumble grumble... side effects... grumble grumble
         if (!s_rrdInitialized) {
@@ -106,10 +117,15 @@ public class PersistOperationBuilderTest extends TestCase {
         super.tearDown();
     }
     
+    private CollectionAgent getCollectionAgent() {
+        
+        return DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
+    }
+    
     public void testCommitWithNoDeclaredAttributes() throws Exception {
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTemplate);
+        CollectionAgent agent = getCollectionAgent();
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
@@ -130,7 +146,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTemplate);
+        CollectionAgent agent = getCollectionAgent();
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
@@ -162,7 +178,7 @@ public class PersistOperationBuilderTest extends TestCase {
         
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTemplate);
+        CollectionAgent agent = getCollectionAgent();
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         

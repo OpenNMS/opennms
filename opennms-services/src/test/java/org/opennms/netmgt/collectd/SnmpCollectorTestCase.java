@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.easymock.EasyMock;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.collectd.Attribute;
@@ -46,7 +47,9 @@ import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
+import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -57,6 +60,7 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
@@ -91,6 +95,8 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected CollectionSet m_collectionSet;
     
     protected MockSnmpAgent m_mockAgent;
+    protected IpInterfaceDao m_ifaceDao;
+    protected EasyMockUtils m_easyMockUtils;
     
     public void setVersion(int version) {
         super.setVersion(version);
@@ -112,8 +118,11 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_invalid = SnmpObjId.get(".1.5.6.1.2.1.1.5");
         m_ifDescr = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.2");
         
-        createAgent(1, CollectionType.PRIMARY);
+        m_easyMockUtils = new EasyMockUtils();
+        m_ifaceDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
 
+        createAgent(1, CollectionType.PRIMARY);
+        
     }
 
     protected void tearDown() throws Exception {
@@ -265,11 +274,19 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(myLocalHost(), ifIndex, m_node);
     
     	m_iface = new OnmsIpInterface();
+        m_iface.setId(123);
         m_iface.setIpAddress(myLocalHost());
     	m_iface.setIsSnmpPrimary(ifCollType);
     	m_iface.setSnmpInterface(snmpIface);
     	m_node.addIpInterface(m_iface);
-        m_agent = DefaultCollectionAgent.create(m_iface, new MockTransactionTemplate());
+        
+
+    	EasyMock.expect(m_ifaceDao.get(m_iface.getId())).andReturn(m_iface).anyTimes();
+        
+        m_easyMockUtils.replayAll();
+        
+        m_agent = DefaultCollectionAgent.create(m_iface.getId(), m_ifaceDao, new MockPlatformTransactionManager());
+        
     }
     
     protected void initializeAgent() {

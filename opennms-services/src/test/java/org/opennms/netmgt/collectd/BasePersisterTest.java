@@ -39,8 +39,11 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
+import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -50,8 +53,10 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
+import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -67,7 +72,9 @@ public class BasePersisterTest extends TestCase {
     private BasePersister m_persister;
     private OnmsIpInterface m_intf;
     private OnmsNode m_node;
-    private TransactionTemplate m_transTempalte = new MockTransactionTemplate();
+    private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
+    private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
+    private IpInterfaceDao m_ifDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -81,8 +88,11 @@ public class BasePersisterTest extends TestCase {
         m_intf = new OnmsIpInterface();
         m_node = new OnmsNode();
         m_node.setId(1);
+        m_intf.setId(25);
         m_intf.setNode(m_node);
         m_intf.setIpAddress("1.1.1.1");
+        
+        m_ifDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
         
         // Grumble grumble... side effects... grumble grumble
         if (!s_rrdInitialized) {
@@ -165,7 +175,12 @@ public class BasePersisterTest extends TestCase {
     }
 
     private Attribute buildStringAttribute() {
-        CollectionAgent agent = DefaultCollectionAgent.create(m_intf, m_transTempalte);
+        
+        EasyMock.expect(m_ifDao.get(m_intf.getId())).andReturn(m_intf).anyTimes();
+        
+        m_easyMockUtils.replayAll();
+        
+        CollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         

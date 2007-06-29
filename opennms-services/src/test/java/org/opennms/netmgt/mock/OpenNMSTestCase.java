@@ -1402,7 +1402,7 @@ public class OpenNMSTestCase extends TestCase {
 
     private EventProxy m_eventProxy;
 
-    protected TransactionTemplate m_transTemplate;
+    protected PlatformTransactionManager m_transMgr;
     
     public void setVersion(int version) {
         m_version = version;
@@ -1456,8 +1456,7 @@ public class OpenNMSTestCase extends TestCase {
         
         }
         
-        PlatformTransactionManager transManager = new DataSourceTransactionManager(DataSourceFactory.getInstance());
-        m_transTemplate = new TransactionTemplate(transManager);
+        m_transMgr = new DataSourceTransactionManager(DataSourceFactory.getInstance());
 
     }
 
