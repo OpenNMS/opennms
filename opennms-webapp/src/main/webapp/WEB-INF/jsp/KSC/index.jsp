@@ -184,7 +184,7 @@
   </div>
 </c:if>
 
-<h3>Node Reports</h3>
+<h3>Node SNMP Interface Reports</h3>
 <div class="boxWrapper">
       <p>Select node for desired performance report</p>
       <form method="get" name="choose_node" action="KSC/customView.htm">
@@ -199,7 +199,7 @@
       </form>
 </div>
 
-<h3>Domain Reports</h3>
+<h3>Domain SNMP Interface Reports</h3>
 <div class="boxWrapper">
       <c:choose>
         <c:when test="${empty domainResources}">
