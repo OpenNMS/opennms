@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 29: Setup the DatabaseSchmeaConfigFactory and FilterDao. - dj@opennms.org
 // 2007 Mar 14: Work around ordering issue in testGetUsersNotified. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -50,8 +51,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
@@ -59,6 +62,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.test.ConfigurationTestUtils;
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
@@ -71,7 +75,11 @@ public class NotifdTest extends NotificationsTestCase {
 
         // XXX Bogus.. need to rework these tests
         m_anticipator.setExpectedDifference(5000);
-
+        
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        
+        FilterDaoFactory.setInstance(null);
+        FilterDaoFactory.getInstance();
     }
 
     /**
