@@ -361,15 +361,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     public boolean isRuleMatching(String rule) {
         Start parseTree = parseRule(rule);
         SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setNodeMappingTranslation();
         translation.setLimitCount(1);
         
         String sql = translation.getStatement();
         
-        if (log().isDebugEnabled()) {
-            log().debug("isRuleMatching: rule \"" + rule + "\" : converted to SQL: " + sql);
-        }
-
         Connection conn = null;
         
         try {
@@ -393,6 +388,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             } catch (SQLException e) {
             }
             
+            if (log().isDebugEnabled()) {
+                log().debug("isRuleMatching: rule \"" + rule + "\" does " + (matches ? "" : "not ") + "match an entry in the database; converted to SQL: " + sql);
+            }
+
             return matches;
         } catch (SQLException e) {
             log().info("SQL Exception occured query results: " + e, e);
