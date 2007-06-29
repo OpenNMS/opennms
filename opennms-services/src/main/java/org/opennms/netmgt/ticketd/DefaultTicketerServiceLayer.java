@@ -170,8 +170,10 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 			alarm.setTTicketState(TroubleTicketState.CLOSED);
 		} else if (ticket.getState() == Ticket.State.OPEN) {
 			alarm.setTTicketState(TroubleTicketState.OPEN);
+		} else {
+			//TODO: need to add failure states
+			alarm.setTTicketState(TroubleTicketState.OPEN);
 		}
-		alarm.setTTicketState(TroubleTicketState.OPEN);
 		m_alarmDao.saveOrUpdate(alarm);
 	}
     
