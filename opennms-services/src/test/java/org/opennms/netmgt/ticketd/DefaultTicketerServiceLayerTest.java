@@ -164,12 +164,15 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
 	 * Test method for {@link org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer#updateTicketForAlarm(int, java.lang.String)}.
 	 */
 	public void testUpdateTicketForAlarm() {
+		
+		m_ticket.setState(Ticket.State.CANCELLED);
+		
         EasyMock.expect(m_alarmDao.get(m_alarm.getId())).andReturn(m_alarm);
         EasyMock.expect(m_ticketerPlugin.get(m_ticket.getId())).andReturn(m_ticket);
         
-        expectUpdatedTicket();
+        //expectUpdatedTicket();
         
-        expectNewAlarmState(TroubleTicketState.OPEN);
+        expectNewAlarmState(TroubleTicketState.CANCELLED);
         
         m_easyMockUtils.replayAll();
 
