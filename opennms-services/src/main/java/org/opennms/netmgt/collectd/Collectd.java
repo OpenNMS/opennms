@@ -412,9 +412,9 @@ public final class Collectd extends AbstractServiceDaemon implements
                  * interface, service and package pairing
                  */
 
-                cSvc = new CollectableService(iface, spec, getScheduler(),
+                cSvc = new CollectableService(iface, m_ifaceDao, spec, getScheduler(),
                                               m_schedulingCompletedFlag,
-                                              m_transTemplate);
+                                              m_transTemplate.getTransactionManager());
 
                 // Add new collectable service to the colleable service list.
                 m_collectableServices.add(cSvc);

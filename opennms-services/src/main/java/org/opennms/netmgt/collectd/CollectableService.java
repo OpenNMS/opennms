@@ -46,11 +46,13 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -99,7 +101,9 @@ final class CollectableService implements ReadyRunnable {
 
 	private CollectionAgent m_agent;
 
-	private TransactionTemplate m_transTemplate;
+	private PlatformTransactionManager m_transMgr;
+
+    private IpInterfaceDao m_ifaceDao;
 
     /**
      * Constructs a new instance of a CollectableService object.
@@ -115,12 +119,13 @@ final class CollectableService implements ReadyRunnable {
      *            Service name
      * 
      */
-    protected CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, TransactionTemplate transTemplate) {
-        m_agent = DefaultCollectionAgent.create(iface, transTemplate);
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) {
+        m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
-        m_transTemplate = transTemplate;
+        m_ifaceDao = ifaceDao;
+        m_transMgr = transMgr;
 
         m_nodeId = iface.getNode().getId().intValue();
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
@@ -489,7 +494,7 @@ final class CollectableService implements ReadyRunnable {
 
 	private void reinitialize(OnmsIpInterface newIface) {
 		m_spec.release(m_agent);
-		m_agent = DefaultCollectionAgent.create(newIface, m_transTemplate);
+		m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao, m_transMgr);
 		m_spec.initialize(m_agent);
 	}
 

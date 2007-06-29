@@ -36,17 +36,22 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.transaction.TransactionManager;
+
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 import org.springframework.transaction.support.TransactionCallback;
@@ -62,11 +67,11 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      */
     private static final long serialVersionUID = 6694654071513990997L;
 
-    public static CollectionAgent create(final OnmsIpInterface iface, final TransactionTemplate transTemplate) {
-        CollectionAgent agent = new DefaultCollectionAgent(iface, transTemplate);
+    public static CollectionAgent create(Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
+        CollectionAgent agent = new DefaultCollectionAgent(ifaceId, ifaceDao);
         
         TransactionProxyFactoryBean bean = new TransactionProxyFactoryBean();
-        bean.setTransactionManager(transTemplate.getTransactionManager());
+        bean.setTransactionManager(transMgr);
         bean.setTarget(agent);
         
         Properties props = new Properties();
@@ -80,26 +85,37 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     }
 
     // the interface of the Agent
-    private OnmsIpInterface m_iface;
+    private Integer m_ifaceId;
 
     // miscellaneous junk?
     private int m_maxVarsPerPdu = 0;
     private int m_ifCount = -1;
 
-    private TransactionTemplate m_transTemplate;
+    private IpInterfaceDao m_ifaceDao;
 
-    private DefaultCollectionAgent(OnmsIpInterface iface, TransactionTemplate transTemplate) {
-        super(iface.getInetAddress());
-        m_iface = iface;
-        m_transTemplate = transTemplate;
+    private DefaultCollectionAgent(Integer ifaceId, IpInterfaceDao ifaceDao) {
+        // we pass in null since we override calls to getAddress and getInetAddress
+        super(null);
+        m_ifaceId = ifaceId;
+        m_ifaceDao = ifaceDao;
     }
 
     private OnmsIpInterface getIpInterface() {
-        return m_iface;
+        return m_ifaceDao.get(m_ifaceId);
     }
 
     private OnmsNode getNode() {
-        return m_iface.getNode();
+        return getIpInterface().getNode();
+    }
+
+    @Override
+    public Object getAddress() {
+        return getInetAddress();
+    }
+
+    @Override
+    public InetAddress getInetAddress() {
+        return getIpInterface().getInetAddress();
     }
 
     /* (non-Javadoc)
@@ -277,5 +293,6 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
         	log().debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
         }
     }
+
 
 }

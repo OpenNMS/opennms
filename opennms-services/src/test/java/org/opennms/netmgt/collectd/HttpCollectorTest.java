@@ -40,9 +40,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.easymock.EasyMock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.NullRrdStrategy;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -127,8 +129,15 @@ public class HttpCollectorTest extends OpenNMSTestCase {
         HttpCollector collector = new HttpCollector();
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
         OnmsNode node = new OnmsNode(distPoller );
+        node.setId(1);
         OnmsIpInterface iface = new OnmsIpInterface(opennmsDotOrg.getHostAddress(), node );
-        CollectionAgent agent = DefaultCollectionAgent.create(iface, m_transTemplate);
+        iface.setId(2);
+        
+        IpInterfaceDao ifDao = EasyMock.createMock(IpInterfaceDao.class);
+        EasyMock.expect(ifDao.get(iface.getId())).andReturn(iface).anyTimes();
+        EasyMock.replay(ifDao);
+        
+        CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifDao, m_transMgr);
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("http-collection", "default");
         EventProxy eproxy = getEventProxy();
