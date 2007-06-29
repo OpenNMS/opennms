@@ -50,9 +50,11 @@ import org.opennms.netmgt.model.RrdRepository;
 final class NodeInfo extends DbCollectionResource {
 
 	private SNMPCollectorEntry m_entry;
+    private int m_nodeId;
 
     public NodeInfo(NodeResourceType def, CollectionAgent agent) {
         super(def, agent);
+        m_nodeId = agent.getNodeId();
     }
     
      public int getType() {
@@ -66,7 +68,7 @@ final class NodeInfo extends DbCollectionResource {
     }
 
     public String toString() {
-        return "Node["+String.valueOf(getCollectionAgent().getNodeId())+']';
+        return "Node["+m_nodeId+']';
     }
 
     public void setEntry(SNMPCollectorEntry nodeEntry) {
