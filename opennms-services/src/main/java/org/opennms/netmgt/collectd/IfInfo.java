@@ -68,12 +68,16 @@ final class IfInfo extends DbCollectionResource {
 
     public IfInfo(ResourceType def, CollectionAgent agent, OnmsSnmpInterface snmpIface) {
         super(def, agent);
-        m_nodeId = snmpIface.getNode().getId();
+        m_nodeId = nullSafeUnbox(snmpIface.getNode().getId(), -1);
         m_collType = snmpIface.getCollectionType();
-        m_ifIndex = snmpIface.getIfIndex();
-        m_ifType = snmpIface.getIfType();
+        m_ifIndex = nullSafeUnbox(snmpIface.getIfIndex(), -1);
+        m_ifType = nullSafeUnbox(snmpIface.getIfType(), -1);
         m_label = snmpIface.computeLabelForRRD();
         m_ifAlias = snmpIface.getIfAlias();
+    }
+    
+    int nullSafeUnbox(Integer num, int dflt) {
+        return (num == null ? dflt : num.intValue());
     }
 
     private int getNodeId() {
