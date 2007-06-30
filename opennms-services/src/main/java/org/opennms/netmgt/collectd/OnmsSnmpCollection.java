@@ -77,6 +77,10 @@ public class OnmsSnmpCollection {
         m_params = params;
         m_maxVarsPerPdu = determineMaxVarsPerPdu(agent);
     }
+    
+    public ServiceParameters getServiceParameters() {
+        return m_params;
+    }
 
     public String getName() {
         return m_params.getCollectionName();
