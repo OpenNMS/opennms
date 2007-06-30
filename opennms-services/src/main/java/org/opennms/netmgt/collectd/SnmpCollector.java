@@ -394,6 +394,7 @@ public class SnmpCollector implements ServiceCollector {
             return e.reportError();
         } catch (Throwable t) {
             t.printStackTrace();
+            log().error("received Throwable: " + t, t);
             return this.unexpected(agent, t);
         }
     }
