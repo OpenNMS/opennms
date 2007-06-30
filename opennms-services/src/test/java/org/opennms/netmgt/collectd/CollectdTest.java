@@ -8,6 +8,10 @@
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
+ * Modifications:
+ *
+ * 2007 Jun 30: Make tests work again. - dj@opennms.org
+ *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -39,16 +43,16 @@ import static org.easymock.EasyMock.isA;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
@@ -56,12 +60,12 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
@@ -85,6 +89,7 @@ public class CollectdTest extends TestCase {
 
     private Collectd m_collectd;
 
+    private FilterDao m_filterDao;
     private EventIpcManager m_eventIpcManager;
     private CollectorConfigDao m_collectorConfigDao;
     private IpInterfaceDao m_ipIfDao;
@@ -118,37 +123,43 @@ public class CollectdTest extends TestCase {
         m_eventIpcManager.removeEventListener(isA(EventListener.class));
         expectLastCall().anyTimes();
 
-        MockNetwork m_network = new MockNetwork();
-        m_network.setCriticalService("ICMP");
-        m_network.addNode(1, "Router");
-        m_network.addInterface("192.168.1.1");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addInterface("192.168.1.2");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addNode(2, "Server");
-        m_network.addInterface("192.168.1.3");
-        m_network.addService("ICMP");
-        m_network.addService("HTTP");
-        m_network.addNode(3, "Firewall");
-        m_network.addInterface("192.168.1.4");
-        m_network.addService("SMTP");
-        m_network.addService("HTTP");
-        m_network.addInterface("192.168.1.5");
-        m_network.addService("SMTP");
-        m_network.addService("HTTP");
+//        MockNetwork m_network = new MockNetwork();
+//        m_network.setCriticalService("ICMP");
+//        m_network.addNode(1, "Router");
+//        m_network.addInterface("192.168.1.1");
+//        m_network.addService("ICMP");
+//        m_network.addService("SMTP");
+//        m_network.addInterface("192.168.1.2");
+//        m_network.addService("ICMP");
+//        m_network.addService("SMTP");
+//        m_network.addNode(2, "Server");
+//        m_network.addInterface("192.168.1.3");
+//        m_network.addService("ICMP");
+//        m_network.addService("HTTP");
+//        m_network.addNode(3, "Firewall");
+//        m_network.addInterface("192.168.1.4");
+//        m_network.addService("SMTP");
+//        m_network.addService("HTTP");
+//        m_network.addInterface("192.168.1.5");
+//        m_network.addService("SMTP");
+//        m_network.addService("HTTP");
+//
+//        MockDatabase m_db = new MockDatabase();
+//        m_db.populate(m_network);
+//
+//        DataSourceFactory.setInstance(m_db);
 
-        MockDatabase m_db = new MockDatabase();
-        m_db.populate(m_network);
-
-        DataSourceFactory.setInstance(m_db);
-
-        Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
-        InputStreamReader r = new InputStreamReader(dbConfig.getInputStream());
-        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(r);
-        r.close();
-        DatabaseSchemaConfigFactory.setInstance(dscf);
+        m_filterDao = EasyMock.createMock(FilterDao.class);
+        List<String> allIps = new ArrayList<String>();
+        allIps.add("192.168.1.1");
+        allIps.add("192.168.1.2");
+        allIps.add("192.168.1.3");
+        allIps.add("192.168.1.4");
+        allIps.add("192.168.1.5");
+        expect(m_filterDao.getIPList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).atLeastOnce();
+        expect(m_filterDao.getIPList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<String>(0)).atLeastOnce();
+        EasyMock.replay(m_filterDao);
+        FilterDaoFactory.setInstance(m_filterDao);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
         InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
@@ -188,6 +199,7 @@ public class CollectdTest extends TestCase {
     public void runTest() throws Throwable {
         super.runTest();
         MockLogAppender.assertNoWarningsOrGreater();
+        EasyMock.verify(m_filterDao);
     }
     
 
@@ -225,6 +237,7 @@ public class CollectdTest extends TestCase {
         OnmsNode node = new OnmsNode();
         node.setId(new Integer(1));
         OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
+        iface.setId(1);
         return iface;
     }
 
@@ -248,19 +261,13 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
-    // FIXME: Fix broken test
-    public void FIXMEtestScheduling() {
-        FIXMEtestNoMatchingSpecs();
-    }
-
-    // FIXME: Fix broken test
-    public void FIXMEtestNoMatchingSpecs() {
+    public void testNoMatchingSpecs() {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
-        List specs = Collections.EMPTY_LIST;
+        List<CollectionSpecification> specs = new ArrayList<CollectionSpecification>(0);
 
         setupCollector(svcName);
-        setupInterface(iface);
+        expect(m_ipIfDao.findByServiceType("SNMP")).andReturn(new ArrayList<OnmsIpInterface>(0));
         setupSpecs(iface, svcName, specs);
         setupTransactionManager();
 
@@ -281,12 +288,12 @@ public class CollectdTest extends TestCase {
     public void testOneMatchingSpec() {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
-        List specs = Collections.singletonList(getCollectionSpecification());
+        List<CollectionSpecification> specs = Collections.singletonList(getCollectionSpecification());
 
         setupCollector(svcName);
         
         m_collector.initialize(isA(CollectionAgent.class), isA(Map.class));
-        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class))).andReturn(ServiceCollector.COLLECTION_SUCCEEDED);
+        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, String.class))).andReturn(ServiceCollector.COLLECTION_SUCCEEDED);
         
         setupInterface(iface);
         setupSpecs(iface, svcName, specs);
@@ -309,6 +316,11 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
+    @SuppressWarnings("unchecked")
+    private static <K, V> Map<K, V> isAMap(Class<K> keyClass, Class<V> valueClass) {
+        return isA(Map.class);
+    }
+
     private void setupTransactionManager() {
         m_transactionManager = m_easyMockUtils.createMock(PlatformTransactionManager.class);
         TransactionTemplate transactionTemplate = new TransactionTemplate(m_transactionManager);
@@ -321,7 +333,7 @@ public class CollectdTest extends TestCase {
         expectLastCall().anyTimes();
     }
 
-    private void setupSpecs(OnmsIpInterface iface, String svcName, List specs) {
+    private void setupSpecs(OnmsIpInterface iface, String svcName, List<CollectionSpecification> specs) {
 //        expect(m_collectorConfigDao.getSpecificationsForInterface(iface, svcName)).andReturn(Collections.singleton(collector));
 
         /*
@@ -333,7 +345,8 @@ public class CollectdTest extends TestCase {
     }
 
     private void setupInterface(OnmsIpInterface iface) {
-        expect(m_ipIfDao.findHierarchyByServiceType("SNMP")).andReturn(Collections.singleton(iface));
+        expect(m_ipIfDao.findByServiceType("SNMP")).andReturn(Collections.singleton(iface));
+        expect(m_ipIfDao.get(iface.getId())).andReturn(iface).atLeastOnce();
     }
 
     private void setupCollector(String svcName) {
