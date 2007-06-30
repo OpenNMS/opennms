@@ -340,6 +340,12 @@ public class SnmpCollector implements ServiceCollector {
      */
     public void initialize(CollectionAgent agent, Map parameters) {
         agent.validateAgent();
+        
+        // XXX: Expermintal code that creates an OnmsSnmpCollection only once
+        ServiceParameters params = new ServiceParameters(parameters);
+        agent.setAttribute("SNMP_COLLECTION", new OnmsSnmpCollection(agent, params));
+        
+        params.logIfAliasConfig();
     }
 
     /**
@@ -350,7 +356,7 @@ public class SnmpCollector implements ServiceCollector {
      *            Network interface to be released.
      */
     public void release(CollectionAgent agent) {
-        // Nothing to release...
+        agent.setAttribute("SNMP_COLLECTION", null);
     }
 
     /**
@@ -367,13 +373,16 @@ public class SnmpCollector implements ServiceCollector {
     public int collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) {
         try {
 
+            // XXX: Experimental code that reuses the OnmsSnmpCollection
+            OnmsSnmpCollection snmpCollection = (OnmsSnmpCollection)agent.getAttribute("SNMP_COLLECTION");
+            ServiceParameters params = snmpCollection.getServiceParameters();
+            
+            // XXX: This code is commented out in light of the expermintal code above
+//            final ServiceParameters params = new ServiceParameters(parameters);
+//            params.logIfAliasConfig();
+//            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
 
             final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
-            final ServiceParameters params = new ServiceParameters(parameters);
-            params.logIfAliasConfig();
-
-            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
-
 
             CollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
             if (!collectionSet.hasDataToCollect()) {
