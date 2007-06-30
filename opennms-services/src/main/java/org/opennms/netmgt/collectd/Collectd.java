@@ -13,6 +13,7 @@
 //
 // Modifications:
 //
+// 2007 Jun 30: Java 5 generics, log when we do match a specification. - dj@oopennms.org
 // 2006 Aug 15: Remove old, incorrect comment. Fix up log message. -
 // dj@opennms.org
 // 2004 Dec 27: Changed SQL_RETRIEVE_INTERFACES to omit interfaces that have
@@ -356,7 +357,7 @@ public final class Collectd extends AbstractServiceDaemon implements
 	}
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
-        Collection matchingSpecs = getSpecificationsForInterface(iface, svcName);
+        Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
         StringBuffer sb;
         
         if (log().isDebugEnabled()) {
@@ -368,8 +369,7 @@ public final class Collectd extends AbstractServiceDaemon implements
             log().debug(sb.toString());
         }
 
-        for (Iterator it = matchingSpecs.iterator(); it.hasNext();) {
-            CollectionSpecification spec = (CollectionSpecification) it.next();
+        for (CollectionSpecification spec : matchingSpecs) {
 
             if (existing == false) {
                 /*
@@ -502,6 +502,17 @@ public final class Collectd extends AbstractServiceDaemon implements
 
             Collection outageCalendars = new LinkedList();
 
+            if (log().isDebugEnabled()) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("getSpecificationsForInterface: address/service: ");
+                sb.append(iface);
+                sb.append("/");
+                sb.append(svcName);
+                sb.append(" scheduled, interface does belong to package: ");
+                sb.append(wpkg.getName());
+                log().debug(sb.toString());
+            }
+            
             matchingPkgs.add(new CollectionSpecification(wpkg, svcName, outageCalendars, getServiceCollector(svcName)));
         }
         return matchingPkgs;
