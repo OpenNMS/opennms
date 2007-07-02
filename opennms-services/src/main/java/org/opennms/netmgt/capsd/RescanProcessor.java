@@ -872,7 +872,7 @@ public final class RescanProcessor implements Runnable {
             if (doesSnmp) {
                 log.debug("updateInterface: the snmp collection passed in is "
                           + "collected via"
-                          + snmpc.getCollectorTargetAddress().getHostAddress());
+                          + (snmpc ==  null ? "No SnmpCollection passed in (snmpc == null)" : snmpc.getCollectorTargetAddress().getHostAddress()));
             }
         }
 
@@ -883,7 +883,7 @@ public final class RescanProcessor implements Runnable {
         DbIpInterfaceEntry dbIpIfEntry =
             DbIpInterfaceEntry.get(dbc,node.getNodeId(), ifaddr);
 
-        if (doesSnmp && snmpc.hasIpAddrTable()) {
+        if (doesSnmp && snmpc != null && snmpc.hasIpAddrTable()) {
             // Attempt to load IP Interface entry from the database
             ifIndex = snmpc.getIfIndex(ifaddr);
             if (log.isDebugEnabled()) {
@@ -1081,7 +1081,7 @@ public final class RescanProcessor implements Runnable {
          * a problem if doesSnmp is false but ifIndex != -1, as the ipInterface
          * entry will point an snmpInterface entry that might not exist.
          */
-        if (doesSnmp) {
+        if (doesSnmp && snmpc != null) {
             // update SNMP info if available
             updateSnmpInfo(dbc, node, snmpc, currIpIfEntry.getIfAddress(),
                            currIpIfEntry.getIfIndex());
@@ -1355,7 +1355,7 @@ public final class RescanProcessor implements Runnable {
         
         DbIpInterfaceEntry currIpIfEntry;
         if (doesSnmp) {
-            if (snmpc.hasIpAddrTable()) {
+            if (snmpc != null && snmpc.hasIpAddrTable()) {
                 ifIndex = snmpc.getIfIndex(ifaddr);
             }
             if (ifIndex == -1) {
