@@ -229,6 +229,13 @@ public abstract class NotificationManager {
          */
         if (event.getNodeid() == 0 && event.getInterface() == null &&
                 event.getService() == null) {
+            if ("MATCH-ANY-UEI".equals(notif.getUei())) {
+               if ("ipaddr != '0.0.0.0'".equals(notif.getRule().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().toLowerCase())) {
+                   return true;
+               } else {
+                   return false;
+               }
+            }
             return true;
         }
 
