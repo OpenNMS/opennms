@@ -114,6 +114,7 @@ public class NotifdTest extends NotificationsTestCase {
     }
 
     // FIXME: latest notifd code seems to fail on this kind of notification
+    // Bug 1954
     public void BROKENtestNewSuspect() throws Exception {
         
         Date date = new Date();
