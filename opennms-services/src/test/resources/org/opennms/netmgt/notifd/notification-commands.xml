@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<notification-commands>
+    <header>
+        <ver>.9</ver>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>master.nmanage.com</mstation>
+    </header>
+    <command binary="false">
+        <name>snmpTrap</name>
+        <execute>org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy</execute>
+        <comment>Class for sending notifications as SNMP Traps</comment>
+        <argument streamed="false">
+            <switch>trapVersion</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapTransport</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapHost</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapPort</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapCommunity</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapEnterprise</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapGeneric</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapSpecific</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>trapVarbind</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>mockNotifier</name>
+        <execute>org.opennms.netmgt.notifd.mock.MockNotificationStrategy</execute>
+        <comment>Mock Class for sending test notifications</comment>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-email</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+</notification-commands>

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<destinationPaths>
+    <header>
+        <rev>1.2</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>localhost</mstation>
+    </header>
+    <path name="trapNotifier" initial-delay="0s">
+        <target>
+            <name>trapd</name>
+            <command>snmpTrap</command>
+        </target>
+    </path>
+    <path name="OnCall" initial-delay="0s">
+        <target>
+            <name>oncall</name>
+            <command>mockNotifier</command>
+        </target>
+    </path>
+    <path name="NoEscalate" initial-delay="0s">
+        <target>
+            <name>InitialGroup</name>
+            <command>mockNotifier</command>
+        </target>
+    </path>
+    <path name="Intervals" initial-delay="0s">
+        <target interval="3s">
+            <name>InitialGroup</name>
+            <command>mockNotifier</command>
+        </target>
+    </path>
+    <path name="Escalate">
+        <target>
+            <name>InitialGroup</name>
+            <command>mockNotifier</command>
+        </target>
+        <escalate delay="2500ms">
+            <target>
+            <name>EscalationGroup</name>
+            <command>mockNotifier</command>
+            </target>
+        </escalate>
+    </path>
+    <path name="UpPath" initial-delay="0s">
+        <target>
+            <name>UpGroup</name>
+            <command>mockNotifier</command>
+        </target>
+    </path>
+</destinationPaths>
