@@ -34,6 +34,7 @@ package org.opennms.netmgt.utils;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -84,6 +85,11 @@ public class EventBuilder {
         m_event.setSource(source);
         return this;
         
+    }
+    
+    public EventBuilder setSeverity(String severity) {
+    	m_event.setSeverity(Constants.getSeverityString(Constants.getSeverity(severity)));
+    	return this;
     }
 
     public EventBuilder setNodeid(int nodeid) {
