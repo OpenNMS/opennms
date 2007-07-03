@@ -557,7 +557,7 @@ create index ifservicves_ipInterfaceId_idx on ifservices(ipInterfaceId);
 --#  eventLogmsg	: The log message for the event
 --#  eventSeverity	: Severity of event
 --#			   1 = Indeterminate
---#			   2 = Cleared (unimplemented at this time)
+--#			   2 = Cleared (implementation is now in alarms)
 --#			   3 = Normal
 --#			   4 = Warning
 --#			   5 = Minor
