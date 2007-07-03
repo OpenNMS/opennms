@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 03: Enable testIplikeAllStars. - dj@opennms.org
 // 2007 Jul 03: Move notifd configuration to a resource. - dj@opennms.org
 // 2007 Jun 29: Add additional tests for nodes without interfaces and interfaces
 //              without services.  Reset FilterDaoFactory on setup. - dj@opennms.org
@@ -182,8 +183,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
                                            false);
     }
     
-    // FIXME .... PopulatedTemporaryDatabaseTestCase doesn't add iplike
-    public void FIXMEtestIplikeAllStars() {
+    public void testIplikeAllStars() {
         doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
                                            1, "192.168.1.1", "HTTP",
                                            "(ipaddr IPLIKE *.*.*.*)",
