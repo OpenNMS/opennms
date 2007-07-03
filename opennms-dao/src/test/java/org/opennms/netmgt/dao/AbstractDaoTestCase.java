@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 03: Remove unused field m_jdbcTemplate. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -192,7 +196,6 @@ public class AbstractDaoTestCase extends TestCase {
     protected boolean m_runTestsInTransaction = true;
     private boolean m_createDb = true;
 	protected OnmsNode m_node1;
-    private JdbcTemplate m_jdbcTemplate;
 
     public boolean isRunTestsInTransaction() {
         return m_runTestsInTransaction;
