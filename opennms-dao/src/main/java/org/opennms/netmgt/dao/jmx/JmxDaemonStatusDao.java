@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.QueryExp;
 
 import org.opennms.netmgt.dao.DaemonStatusDao;
 import org.opennms.netmgt.dao.ServiceInfo;
@@ -64,7 +65,7 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 
 		Set<ObjectName> mBeanNames;
 		try {
-			mBeanNames = mbeanServer.queryNames(new ObjectName("opennms:*"), null);
+            mBeanNames = queryMbeanServerForNames(new ObjectName("opennms:*"), null);
 		} catch (MalformedObjectNameException e) {
 			throw new JmxObjectNameException(
 					"Object name 'opennms:*' was malformed!", e);
@@ -85,6 +86,11 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 		serviceInfo.put("test", new ServiceInfo("test", "started"));
 		return serviceInfo;
 	}
+
+    @SuppressWarnings("unchecked")
+    private Set<ObjectName> queryMbeanServerForNames(ObjectName foo1, QueryExp foo2) {
+        return (Set<ObjectName>) mbeanServer.queryNames(foo1, foo2);
+    }
 	
 	public Collection<ServiceInfo> getCurrentDaemonStatusColl() {
 		// TODO Auto-generated method stub
@@ -94,7 +100,7 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 	public ServiceDaemon getServiceHandle(String service) {
 		Set<ObjectName> mBeanNames;
 		try {
-			mBeanNames = mbeanServer.queryNames(new ObjectName("opennms:Name=" + service + ",*"), null);
+			mBeanNames = queryMbeanServerForNames(new ObjectName("opennms:Name=" + service + ",*"), null);
 		} catch (MalformedObjectNameException e) {
 			throw new JmxObjectNameException("Object name 'opennms:Name=" + service
 					+ ",*' was malformed!", e);

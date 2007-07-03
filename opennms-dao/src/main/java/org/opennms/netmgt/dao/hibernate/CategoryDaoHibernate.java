@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 03: Organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,11 +35,8 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Set;
-
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNode;
 
 public class CategoryDaoHibernate extends AbstractDaoHibernate<OnmsCategory, Integer> implements
 		CategoryDao {

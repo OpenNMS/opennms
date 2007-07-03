@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 03: Remove unused static field. - dj@opennms.org
 // 2006 Aug 15: Remove unused imports, put initialize in a try/finally block. - dj@opennms.org
 // 2004 Dec 21: Changed determination of primary SNMP interface
 // 2003 Nov 11: Merged changes from Rackspace project
@@ -77,9 +78,7 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
  * config is loaded before accessing other convenience methods.
  */
 public class CollectdConfigFactory {
-	final static String SELECT_METHOD_MIN = "min";
-
-	private final static String SELECT_METHOD_MAX = "max";
+    final static String SELECT_METHOD_MIN = "min";
 
 	/**
 	 * The singleton instance of this factory
