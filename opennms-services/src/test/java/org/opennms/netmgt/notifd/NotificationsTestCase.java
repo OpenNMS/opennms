@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 03: Move config files to external resources and indent. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -59,6 +63,7 @@ import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
@@ -74,420 +79,6 @@ public class NotificationsTestCase extends TestCase {
     protected NotificationManager m_notificationManager;
     protected NotificationCommandManager m_notificationCommandManger;
     protected MockDestinationPathManager m_destinationPathManager;
-    private static String NOTIFD_CONFIG_MANAGER = "<?xml version=\"1.0\"?>\n" + 
-                "<notifd-configuration \n" + 
-                "        status=\"on\"\n" + 
-                "        pages-sent=\"SELECT * FROM notifications\"\n" + 
-                "        next-notif-id=\"SELECT nextval(\'notifynxtid\')\"\n" + 
-                "        next-user-notif-id=\"SELECT nextval(\'usernotifynxtid\')\"\n" +     
-                "        next-group-id=\"SELECT nextval(\'notifygrpid\')\"\n" + 
-                "        service-id-sql=\"SELECT serviceID from service where serviceName = ?\"\n" + 
-                "        outstanding-notices-sql=\"SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null\"\n" + 
-                "        acknowledge-id-sql=\"SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?\"\n" + 
-                "        acknowledge-update-sql=\"UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?\"\n" + 
-                "   match-all=\"true\">\n" + 
-                "        \n" + 
-                "   <auto-acknowledge notify = \"true\" uei=\"uei.opennms.org/nodes/serviceResponsive\" \n" + 
-                "                          acknowledge=\"uei.opennms.org/nodes/serviceUnresponsive\">\n" + 
-                "                          <match>nodeid</match>\n" + 
-                "                          <match>interfaceid</match>\n" + 
-                "                          <match>serviceid</match>\n" + 
-                "        </auto-acknowledge>\n" + 
-                "   \n" + 
-                "        <auto-acknowledge uei=\"uei.opennms.org/nodes/nodeRegainedService\" \n" + 
-                "                          acknowledge=\"uei.opennms.org/nodes/nodeLostService\">\n" + 
-                "                          <match>nodeid</match>\n" + 
-                "                          <match>interfaceid</match>\n" + 
-                "                          <match>serviceid</match>\n" + 
-                "        </auto-acknowledge>\n" + 
-                "        \n" + 
-                "        <auto-acknowledge uei=\"uei.opennms.org/nodes/interfaceUp\" \n" + 
-                "                          acknowledge=\"uei.opennms.org/nodes/interfaceDown\">\n" + 
-                "                          <match>nodeid</match>\n" + 
-                "                          <match>interfaceid</match>\n" + 
-                "        </auto-acknowledge>\n" + 
-                "        \n" + 
-                "        <auto-acknowledge uei=\"uei.opennms.org/nodes/nodeUp\" \n" + 
-                "                          acknowledge=\"uei.opennms.org/nodes/nodeDown\">\n" + 
-                "                          <match>nodeid</match>\n" + 
-                "        </auto-acknowledge>\n" + 
-                "        \n" + 
-                "        <queue>\n" + 
-                "                <queue-id>default</queue-id>\n" + 
-                "                <interval>100ms</interval>\n" + 
-                "                <handler-class>\n" + 
-                "                        <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>\n" + 
-                "                </handler-class>\n" + 
-                "        </queue>\n" + 
-                "</notifd-configuration>";
-    private static final String NOTIFICATIONS = "<?xml version=\"1.0\"?>\n" + 
-                "<notifications xmlns=\"http://xmlns.opennms.org/xsd/notifications\">\n" + 
-                "    <header>\n" + 
-                "        <rev>1.2</rev>\n" + 
-                "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
-                "        <mstation>localhost</mstation>\n" + 
-                "    </header>\n" + 
-                "    <notification name=\"New Suspect Test Event\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/internal/discovery/newSuspect</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>NoEscalate</destinationPath>\n" + 
-                "        <text-message>A new interface (%interface%) has been discovered and is being queued for a services scan.</text-message>\n" + 
-                "        <subject>A new interface (%interface%) has been discovered and is being queued for a services scan.</subject>\n" + 
-                "    </notification>" +
-                "    <notification name=\"snmpTrap\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>trapNotifier</destinationPath>\n" + 
-                "        <text-message>All services are down on node %nodeid%.</text-message>\n" + 
-                "        <subject>node %nodeid% down.</subject>\n" + 
-                "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-                "        <parameter name=\"trapVersion\" value=\"v1\" />\n"+
-                "        <parameter name=\"trapTransport\" value=\"UDP\" />\n"+
-                "        <parameter name=\"trapHost\" value=\"localhost\" />\n"+
-                "        <parameter name=\"trapPort\" value=\"162\" />\n"+
-                "        <parameter name=\"trapCommunity\" value=\"public\" />\n"+
-                "        <parameter name=\"trapEnterprise\" value=\".1.3.6.1.4.1.5813\" />\n"+
-                "        <parameter name=\"trapGeneric\" value=\"6\" />\n"+
-                "        <parameter name=\"trapSpecific\" value=\"1\" />\n"+
-                "        <parameter name=\"trapVarbind\" value=\"Node: %nodelabel%; TTicketID: %tticketid%\" />\n"+
-                "    </notification>\n" + 
-                "    <notification name=\"nodeDown\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>NoEscalate</destinationPath>\n" + 
-                "        <text-message>All services are down on node %nodeid%.</text-message>\n" + 
-                "        <subject>node %nodeid% down.</subject>\n" + 
-                "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"nodeUp\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/nodes/nodeUp</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>UpPath</destinationPath>\n" + 
-                "        <text-message>The node which was previously down is now up.</text-message>\n" + 
-                "        <subject>node %nodeid% up.</subject>\n" + 
-                "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"interfaceDown\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/nodes/interfaceDown</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>Escalate</destinationPath>\n" + 
-                "        <text-message>All services are down on interface %interface%, %ifalias%.</text-message>\n" + 
-                "        <subject>interface %interface% down.</subject>\n" + 
-                "        <numeric-message>222-%noticeid%</numeric-message>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"interfaceUp\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/nodes/interfaceUp</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>UpPath</destinationPath>\n" + 
-                "        <text-message>The interface which was previously down is now up.</text-message>\n" + 
-                "        <subject>interface %interface% up.</subject>\n" + 
-                "        <numeric-message>222-%noticeid%</numeric-message>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"nodeLostService\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/nodes/nodeLostService</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>Intervals</destinationPath>\n" + 
-                "        <text-message>Service %service% is down on interface %interface%.</text-message>\n" + 
-                "        <subject>service %service% on %interface% down.</subject>\n" + 
-                "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"nodeRegainedService\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/nodes/nodeRegainedService</uei>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>UpPath</destinationPath>\n" + 
-                "        <text-message>Service %service% on interface %interface% has come back up.</text-message>\n" + 
-                "        <subject>service %service% on %interface% up.</subject>\n" + 
-                "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
-                "    </notification>\n" + 
-                "     <notification name=\"SNMP High disk Threshold Exceeded\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
-                "        <description>high disk threshold exceeded on snmp interface</description>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>NoEscalate</destinationPath>\n" + 
-                "        <text-message>High disk Threshold exceeded on %interface%, %parm[ds]% with %parm[value]%%%</text-message>\n" + 
-                "        <subject>Notice #%noticeid%, High disk Threshold exceeded</subject>\n" + 
-                "        <varbind>\n" + 
-                "            <vbname>ds</vbname>\n" + 
-                "            <vbvalue>dsk-usr-pcent</vbvalue>\n" + 
-                "        </varbind>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"SNMP High loadavg5 Threshold Exceeded\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
-                "        <description>high loadavg5 threshold exceeded on snmp interface</description>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>NoEscalate</destinationPath>\n" + 
-                "        <text-message>High loadavg5 Threshold exceeded on %interface%, %parm[ds]% with %parm[value]%%%</text-message>\n" + 
-                "        <subject>High loadavg5 Threshold exceeded</subject>\n" + 
-                "        <varbind>\n" + 
-                "            <vbname>ds</vbname>\n" + 
-                "            <vbvalue>loadavg5</vbvalue>\n" + 
-                "        </varbind>\n" + 
-                "    </notification>" +
-                "    <notification name=\"nodeTimeTest\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/tests/nodeTimeTest</uei>\n" + 
-	        "        <description>test for properly formatted timestamp in notifications</description>\n" +
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>NoEscalate</destinationPath>\n" + 
-                "        <text-message>Timestamp: %time%.</text-message>\n" + 
-                "        <subject>time %time%.</subject>\n" + 
-                "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"Roled Based Test Event\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/test/roleTestEvent</uei>\n" + 
-                "        <description>Test for notification of roles</description>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>OnCall</destinationPath>\n" + 
-                "        <text-message>Notification Test</text-message>\n" + 
-                "        <subject>notification test</subject>\n" + 
-                "    </notification>\n" +
-                "    <notification name=\"noticeId Expansion Test\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/test/noticeIdExpansion</uei>\n" + 
-                "        <description>Test for noticeId expansion</description>\n" + 
-                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-                "        <destinationPath>NoEscalate</destinationPath>\n" + 
-                "        <text-message>Notification '%noticeid%'</text-message>\n" + 
-                "        <subject>notification '%noticeid%'</subject>\n" + 
-                "    </notification>\n" +
-                "</notifications>\n" + 
-                "";
-    public static final String GROUPS = "<?xml version=\"1.0\"?>\n" + 
-                "<groupinfo>\n" + 
-                "    <header>\n" + 
-                "        <rev>1.3</rev>\n" + 
-                "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
-                "        <mstation>dhcp-219.internal.opennms.org</mstation>\n" + 
-                "    </header>\n" + 
-                "    <groups>\n" + 
-                "        <group>\n" + 
-                "            <name>All</name>\n" + 
-                "            <comments>The group that contains all users</comments>\n" + 
-                "            <user>admin</user>" + 
-                "            <user>brozow</user>" + 
-                "            <user>david</user>" + 
-                "        </group>\n" + 
-                "        <group>\n" + 
-                "            <name>InitialGroup</name>\n" + 
-                "            <comments>The group that gets notified first</comments>\n" + 
-                "            <user>admin</user>" + 
-                "            <user>brozow</user>" + 
-                "        </group>\n" + 
-                "        <group>\n" + 
-                "            <name>EscalationGroup</name>\n" + 
-                "            <comments>The group things escalate to</comments>\n" +
-                "            <user>brozow</user>" + 
-                "            <user>david</user>" + 
-                "        </group>\n" + 
-                "        <group>\n" + 
-                "            <name>UpGroup</name>\n" + 
-                "            <comments>The group things escalate to</comments>\n" +
-                "            <user>upUser</user>" + 
-                "        </group>\n" + 
-                "        <group>\n" + 
-                "            <name>DutyGroup</name>\n" + 
-                "            <comments>The group things escalate to</comments>\n" +
-                "            <user>brozow</user>" +
-                "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
-                "        </group>\n" + 
-                "    </groups>\n" +
-                "    <roles>\n" +
-                "      <role name=\"oncall\" supervisor=\"admin\" description=\"oncall role\" membership-group=\"All\">" + 
-                "           <schedule name=\"brozow\" type=\"weekly\">" +
-                "               <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "           </schedule>\n" +
-                "           <schedule name=\"admin\" type=\"weekly\">" +
-                "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "           </schedule>" +
-                "           <schedule name=\"david\" type=\"weekly\">" +
-                "               <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "           </schedule>" +
-                "       </role>\n" +
-                "       <role name=\"onDuty\" supervisor=\"admin\" description=\"onDuty role\" membership-group=\"All\">" +
-                "           <schedule name=\"brozow\" type=\"weekly\">" +
-                "               <time day=\"sunday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"monday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"tuesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"thursday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"friday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"saturday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "           </schedule>\n" +
-                "       </role>\n" +
-                "   </roles>\n" +
-                "</groupinfo>\n" + 
-                "";
-    public static final String USERS = "<?xml version=\"1.0\"?>\n" + 
-                "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\">\n" + 
-                "   <header>\n" + 
-                "       <rev>.9</rev>\n" + 
-                "           <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
-                "       <mstation>master.nmanage.com</mstation>\n" + 
-                "   </header>\n" + 
-                "   <users>\n" + 
-                "       <user>\n" + 
-                "           <user-id>trapd</user-id>\n" + 
-                "           <full-name>SNMP Trapd</full-name>\n" + 
-                "           <user-comments>User that receives trap notifications</user-comments>\n" +
-                "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-                "           <contact type=\"snmpTrap\" info=\"Destination for SNMP Trap/Notifications\"/>\n" + 
-                "       </user>\n" + 
-                "       <user>\n" + 
-                "           <user-id>brozow</user-id>\n" + 
-                "           <full-name>Mathew Brozowski</full-name>\n" + 
-                "           <user-comments>Test User</user-comments>\n" +
-                "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-                "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
-                "       </user>\n" + 
-                "       <user>\n" + 
-                "           <user-id>admin</user-id>\n" + 
-                "           <full-name>Administrator</full-name>\n" + 
-                "           <user-comments>Default administrator, do not delete</user-comments>\n" +
-                "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-                "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
-                "       </user>\n" + 
-                "       <user>\n" + 
-                "           <user-id>upUser</user-id>\n" + 
-                "           <full-name>User that receives up notifications</full-name>\n" + 
-                "           <user-comments>Default administrator, do not delete</user-comments>\n" +
-                "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-                "           <contact type=\"email\" info=\"up@opennms.org\"/>\n" + 
-                "       </user>\n" + 
-                "       <user>\n" + 
-                "           <user-id>david</user-id>\n" + 
-                "           <full-name>David Hustace</full-name>\n" +
-                "           <user-comments>A cool dude!</user-comments>\n" + 
-                "           <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>\n" + 
-                "           <contact type=\"email\" info=\"david@opennms.org\"/>\n" + 
-                "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
-                "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
-//                "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
-                "       </user>\n" + 
-                "   </users>\n" + 
-                "</userinfo>\n" + 
-                "";
-    private static final String DESTINATION_PATHS = "<?xml version=\"1.0\"?>\n" + 
-                "<destinationPaths>\n" + 
-                "    <header>\n" + 
-                "        <rev>1.2</rev>\n" + 
-                "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
-                "        <mstation>localhost</mstation>\n" + 
-                "    </header>\n" + 
-                "    <path name=\"trapNotifier\" initial-delay=\"0s\">\n" + 
-                "        <target>\n" + 
-                "            <name>trapd</name>\n" + 
-                "            <command>snmpTrap</command>\n" + 
-                "        </target>\n" + 
-                "    </path>\n" + 
-                "    <path name=\"OnCall\" initial-delay=\"0s\">\n" + 
-                "        <target>\n" + 
-                "            <name>oncall</name>\n" + 
-                "            <command>mockNotifier</command>\n" + 
-                "        </target>\n" + 
-                "    </path>\n" + 
-                "    <path name=\"NoEscalate\" initial-delay=\"0s\">\n" + 
-                "        <target>\n" + 
-                "            <name>InitialGroup</name>\n" + 
-                "            <command>mockNotifier</command>\n" + 
-                "        </target>\n" + 
-                "    </path>\n" + 
-                "    <path name=\"Intervals\" initial-delay=\"0s\">\n" + 
-                "        <target interval=\"3s\">\n" + 
-                "            <name>InitialGroup</name>\n" + 
-                "            <command>mockNotifier</command>\n" + 
-                "        </target>\n" + 
-                "    </path>\n" + 
-                "    <path name=\"Escalate\">\n" + 
-                "        <target>\n" + 
-                "            <name>InitialGroup</name>\n" + 
-                "            <command>mockNotifier</command>\n" + 
-                "        </target>\n" + 
-                "        <escalate delay=\"2500ms\">\n" + 
-                "            <target>\n" + 
-                "            <name>EscalationGroup</name>\n" + 
-                "            <command>mockNotifier</command>\n" + 
-                "            </target>\n" + 
-                "        </escalate>\n" + 
-                "    </path>\n" + 
-                "    <path name=\"UpPath\" initial-delay=\"0s\">\n" + 
-                "        <target>\n" + 
-                "            <name>UpGroup</name>\n" + 
-                "            <command>mockNotifier</command>\n" + 
-                "        </target>\n" + 
-                "    </path>\n" + 
-                "</destinationPaths>\n" + 
-                "";
-    private static final String NOTIFICATION_COMMANDS = "<?xml version=\"1.0\"?>\n" + 
-                "<notification-commands>\n" + 
-                "    <header>\n" + 
-                "        <ver>.9</ver>\n" + 
-                "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
-                "        <mstation>master.nmanage.com</mstation>\n" + 
-                "    </header>\n" + 
-                "    <command binary=\"false\">\n" + 
-                "        <name>snmpTrap</name>\n" + 
-                "        <execute>org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy</execute>\n" + 
-                "        <comment>Class for sending notifications as SNMP Traps</comment>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapVersion</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapTransport</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapHost</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapPort</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapCommunity</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapEnterprise</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapGeneric</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapSpecific</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>trapVarbind</switch>\n" + 
-                "        </argument>\n" + 
-                "    </command>\n" + 
-                "    <command binary=\"false\">\n" + 
-                "        <name>mockNotifier</name>\n" + 
-                "        <execute>org.opennms.netmgt.notifd.mock.MockNotificationStrategy</execute>\n" + 
-                "        <comment>Mock Class for sending test notifications</comment>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>-subject</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>-email</switch>\n" + 
-                "        </argument>\n" + 
-                "        <argument streamed=\"false\">\n" + 
-                "            <switch>-tm</switch>\n" + 
-                "        </argument>\n" + 
-                "    </command>\n" + 
-                "</notification-commands>";
     protected MockDatabase m_db;
     protected MockNetwork m_network;
     protected NotificationAnticipator m_anticipator;
@@ -506,16 +97,16 @@ public class NotificationsTestCase extends TestCase {
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
         
-        m_notifdConfig = new MockNotifdConfigManager(NOTIFD_CONFIG_MANAGER);
+        m_notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/notifd-configuration.xml", new String[0][0]));
         m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());
         m_notifdConfig.setNextUserNotifIdSql(m_db.getNextUserNotifIdSql());
         
         m_groupManager = createGroupManager();
         m_userManager = createUserManager(m_groupManager);
         
-        m_destinationPathManager = new MockDestinationPathManager(DESTINATION_PATHS);        
-        m_notificationCommandManger = new MockNotificationCommandManager(NOTIFICATION_COMMANDS);
-        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATIONS);
+        m_destinationPathManager = new MockDestinationPathManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/destination-paths.xml", new String[0][0]));        
+        m_notificationCommandManger = new MockNotificationCommandManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/notification-commands.xml", new String[0][0]));
+        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/notifications.xml", new String[0][0]));
         m_pollOutagesConfigManager = new MockPollerConfig(m_network);
         
         m_anticipator = new NotificationAnticipator();
@@ -576,12 +167,12 @@ public class NotificationsTestCase extends TestCase {
         return network;
     }
 
-    private MockUserManager createUserManager(MockGroupManager groupManager) throws MarshalException, ValidationException {
-        return new MockUserManager(groupManager, USERS);
+    private MockUserManager createUserManager(MockGroupManager groupManager) throws MarshalException, ValidationException, IOException {
+        return new MockUserManager(groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/users.xml", new String[0][0]));
     }
 
-    private MockGroupManager createGroupManager() throws MarshalException, ValidationException {
-        return new MockGroupManager(GROUPS);
+    private MockGroupManager createGroupManager() throws MarshalException, ValidationException, IOException {
+        return new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/groups.xml", new String[0][0]));
     }
 
     protected void tearDown() throws Exception {
@@ -645,7 +236,7 @@ public class NotificationsTestCase extends TestCase {
     }
 
     protected void verifyAnticipated(long lastNotifyTime, long waitTime, long sleepTime) {
-	m_anticipator.verifyAnticipated(lastNotifyTime, waitTime, sleepTime);
+        m_anticipator.verifyAnticipated(lastNotifyTime, waitTime, sleepTime);
     }
 
     protected void sleep(long millis) {
@@ -660,7 +251,7 @@ public class NotificationsTestCase extends TestCase {
         notification = new MockNotification();
         notification.setExpectedTime(expectedTime);
         notification.setSubject(subject);
-	notification.setTextMsg(textMsg);
+        notification.setTextMsg(textMsg);
         notification.setEmail(email);
         return notification;
     }
