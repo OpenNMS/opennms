@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 03: Eliminate a warning. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,9 +35,9 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsEvent;
@@ -85,7 +89,7 @@ public class OutageDaoTest extends AbstractDaoTestCase {
     }
     
     public void FIXMEtestGetMatchingOutagesWithEmptyServiceList() {
-    	ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 192.168.1.1", Collections.EMPTY_LIST);
+    	ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 192.168.1.1", new ArrayList<String>(0));
     	Collection<OnmsOutage> outages = getOutageDao().matchingCurrentOutages(selector);
     	assertEquals(1, outages.size());
     }
