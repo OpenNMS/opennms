@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Jul 03: Remove non-functional (i.e.: empty) setupPgPlSqlIplike
+//              method and make setupPlPgsqlIplike public. - dj@opennms.org
 // 2007 Jun 10: Rearrange the iplike code a bit and add better error
 //              reporting. - dj@opennms.org
 //
@@ -472,7 +474,7 @@ public class InstallerDb {
         }
     }
 
-    private void setupPlPgsqlIplike() throws Exception {
+    public void setupPlPgsqlIplike() throws Exception {
         InputStream sqlfile = null;
         Statement st = null;
         try {
@@ -2879,7 +2881,9 @@ public class InstallerDb {
                     throw e;
                 }
             } finally {
-                if (st != null) st.close();
+                if (st != null) {
+                    st.close();
+                }
             }
             return Status.OK;
         }
@@ -2887,10 +2891,4 @@ public class InstallerDb {
 
 
     }
-
-    public void setupPgPlSqlIplike() {
-        
-    }
-
-
 }
