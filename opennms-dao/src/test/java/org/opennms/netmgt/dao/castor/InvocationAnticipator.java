@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 03: Use Java 5 generics and format code a bit. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -50,8 +54,8 @@ public class InvocationAnticipator implements InvocationHandler {
 
     }
 
-    private HashMap m_counts = new HashMap();
-    private HashMap m_anticipatedCounts = new HashMap();
+    private HashMap<String, Integer> m_counts = new HashMap<String, Integer>();
+    private HashMap<String, Integer> m_anticipatedCounts = new HashMap<String, Integer>();
     private Class m_clazz;
     private InvocationHandler m_handler = new NullInvocationHandler();
 
@@ -61,8 +65,9 @@ public class InvocationAnticipator implements InvocationHandler {
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         int currentCount = 0;
-        if (m_counts.get(method.getName()) != null)
-            currentCount = ((Integer)m_counts.get(method.getName())).intValue();
+        if (m_counts.get(method.getName()) != null) {
+            currentCount = m_counts.get(method.getName()).intValue();
+        }
         m_counts.put(method.getName(), new Integer(currentCount+1));
 
         return m_handler.invoke(proxy, method, args);
@@ -73,13 +78,17 @@ public class InvocationAnticipator implements InvocationHandler {
     }
 
     public int getCount(String methodName) {
-        if (m_counts.get(methodName) == null) return 0;
-        return ((Integer)m_counts.get(methodName)).intValue();
+        if (m_counts.get(methodName) == null) {
+            return 0;
+        }
+        return m_counts.get(methodName).intValue();
     }
     
     public int getAnticipatedCount(String methodName) {
-        if (m_anticipatedCounts.get(methodName) == null) return 0;
-        return ((Integer)m_anticipatedCounts.get(methodName)).intValue();
+        if (m_anticipatedCounts.get(methodName) == null) {
+            return 0;
+        }
+        return m_anticipatedCounts.get(methodName).intValue();
     }
 
     public void anticipateCalls(int count, String methodName) {
@@ -92,17 +101,17 @@ public class InvocationAnticipator implements InvocationHandler {
     }
 
     private void ensureNoUnanticipated() {
-        HashSet unexpected = new HashSet(m_counts.keySet());
+        HashSet<String> unexpected = new HashSet<String>(m_counts.keySet());
         unexpected.removeAll(m_anticipatedCounts.keySet());
         if (!unexpected.isEmpty()) {
-            String method = (String)unexpected.iterator().next();
+            String method = unexpected.iterator().next();
             DataCollectionConfigFileTest.fail("Unexpected call to method "+method+".  It was called "+getCount(method)+" times");
         }
     }
 
     private void ensureAnticipatedWereReceived() {
-        for (Iterator it = m_anticipatedCounts.keySet().iterator(); it.hasNext();) {
-            String methodName = (String) it.next();
+        for (Iterator<String> it = m_anticipatedCounts.keySet().iterator(); it.hasNext();) {
+            String methodName = it.next();
             DataCollectionConfigFileTest.assertEquals("Unexpected callCount for method "+methodName, getAnticipatedCount(methodName), getCount(methodName));
         }
     }
