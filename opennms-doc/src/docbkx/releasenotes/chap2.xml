@@ -22,6 +22,29 @@
   generation of OpenNMS.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.3.5</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para>There are no new features in 1.3.5.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>The reason for this release is a bug involving notificiations. Due
+      to the move toward database independence some code was introduced that
+      caused notifications on events with a serviceid of null (such as those
+      from traps) to fail. The original problem was misdiagnosed and the
+      attempt to fix it, version 1.3.4, made the problem worse. It has been
+      correctly resolved in this release. In addition, some major changes were
+      made to the way OpenNMS data collection is started in order to use a
+      smaller memory footprint and provide better performance.</para>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.3.4</title>
 
     <section>
@@ -107,24 +130,23 @@
       <para><ulink
       url="http://opennms.org/index.php/OpenNMS_1.3#New_Features">http://opennms.org/index.php/OpenNMS_1.3#New_Features</ulink></para>
 
-      <para>However, there are two main "gotchas" of which to be aware.</para>
+      <para>However, there are two main "gotches" of which to be aware.</para>
 
       <para>The first is that the default RRD file storage has changed. If you
       want to use the new format, you will need to delete your old RRD/JRobin
-      data. OpenNMS was storing an incredibly large amount of data, especially
-      compared to tools like MRTG. It will now store "as polled" five minute
-      samples for a week, averaged hourly samples for two months and minimum,
-      maximum, and averaged daily samples for a year. This reduces the size of
-      the RRD files by more than 80% and has shown significant reductions in
-      the amount of disk I/O needed to handle updates.</para>
+      data. OpenNMS was storage an incredibly large amount of data, especially
+      compared to projects like MRTG. It will now store "as polled" 5 minute
+      samples for a week, hourly samples for two months and daily MIN, MAX and
+      AVERAGE for a year. This reduces the size of the RRD files by more than
+      80%.</para>
 
       <para>The second one is that the installer no longer installs the
-      PostgreSQL "iplike" function. It now needs to be installed as a separate
-      package.  If it already exists in the running installation of PostgreSQL,
-      nothing else needs to be done. If the installer does not find an
-      installed version of iplike it will install a platform-independent
-      PL/pgSQL version. The PL/pgSQL version has the same features of the
-      native C version, but has lower performance.</para>
+      Postgresql "iplike" function. It needs to be installed as a separate
+      package (if it already exists in the running installation of Postgresql,
+      then nothing else needs to be done). If the installer does not find
+      iplike it will install a platform independent psql version. That version
+      will work but at a lower performance than the native C code
+      version.</para>
     </section>
 
     <section>

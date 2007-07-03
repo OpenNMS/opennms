@@ -7,6 +7,20 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <section>
+    <title>OpenNMS 1.3.5 Known Issues</title>
+
+    <para>Notification on the "newSuspect" event will fail. Bug <ulink
+    url="http://bugzilla.opennms.org/show_bug.cgi?id=1954">#1954</ulink></para>
+
+    <para>We are tracking these in <ulink
+    url="http://bugzilla.opennms.org">Bugzilla</ulink> and the OpenNMS
+    wiki:</para>
+
+    <para><ulink
+    url="http://opennms.org/index.php/OpenNMS_1.3#Known_Issues">http://opennms.org/index.php/OpenNMS_1.3#Known_Issues</ulink></para>
+  </section>
+
+  <section>
     <title>OpenNMS 1.3.3 Known Issues</title>
 
     <para>We are tracking these in <ulink
