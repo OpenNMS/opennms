@@ -1175,7 +1175,7 @@
 	  <includeGroup>ucd-loadavg</includeGroup>
 	  <includeGroup>ucd-memory</includeGroup>
 	  <includeGroup>ucd-sysstat</includeGroup>
-	  <includeGroup>ucd-diskio</includeGroup>
+	  <!-- <includeGroup>ucd-diskio</includeGroup> not on by default, may create a lot of files -->
 	  <includeGroup>asterisk-scalars</includeGroup>
 	</collect>
       </systemDef>
@@ -1347,7 +1347,7 @@
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-          <includeGroup>ucd-diskio</includeGroup>
+	  <!-- <includeGroup>ucd-diskio</includeGroup> not on by default, may create a lot of files -->
         </collect>
       </systemDef>
 
@@ -1360,7 +1360,7 @@
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-          <includeGroup>ucd-diskio</includeGroup>
+	  <!-- <includeGroup>ucd-diskio</includeGroup> not on by default, may create a lot of files -->
         </collect>
       </systemDef>
 
