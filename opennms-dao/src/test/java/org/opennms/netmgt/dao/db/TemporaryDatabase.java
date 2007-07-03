@@ -120,9 +120,9 @@ public class TemporaryDatabase implements DataSource {
          * Found this in BaseIntegrationTestCase.
          */
 
-        if (m_setupIpLike) {
+        if (isSetupIpLike()) {
             if (!m_installerDb.isIpLikeUsable()) { 
-                m_installerDb.setupPgPlSqlIplike();
+                m_installerDb.setupPlPgsqlIplike();
             }
         }
 
@@ -130,6 +130,14 @@ public class TemporaryDatabase implements DataSource {
         m_installerDb.insertData();
         m_installerDb.closeConnection();
 
+    }
+
+    public boolean isSetupIpLike() {
+        return m_setupIpLike;
+    }
+
+    public void setSetupIpLike(boolean setupIpLike) {
+        m_setupIpLike = setupIpLike;
     }
 
     protected File findIpLikeLibrary() {
