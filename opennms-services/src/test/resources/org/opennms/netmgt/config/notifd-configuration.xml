@@ -1,0 +1,19 @@
+<notifd-configuration
+    status='on'
+    pages-sent="SELECT * FROM notifications"
+    next-notif-id="SELECT nextval('notifynxtid')"
+    next-user-notif-id="SELECT nextval('userNotifNxtId')"
+    next-group-id="SELECT nextval('notifygrpid')"
+    service-id-sql="SELECT serviceID from service where serviceName = ?"
+    outstanding-notices-sql="SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null"
+    acknowledge-id-sql="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"
+    acknowledge-update-sql="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"
+    match-all='true'>
+  <queue>
+    <queue-id>default</queue-id>
+    <interval>20s</interval>
+    <handler-class>
+      <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>
+    </handler-class>
+  </queue>
+</notifd-configuration>

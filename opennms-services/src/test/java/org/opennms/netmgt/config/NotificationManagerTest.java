@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 03: Move notifd configuration to a resource. - dj@opennms.org
 // 2007 Jun 29: Add additional tests for nodes without interfaces and interfaces
 //              without services.  Reset FilterDaoFactory on setup. - dj@opennms.org
 //
@@ -49,32 +50,12 @@ import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringCon
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.test.ConfigurationTestUtils;
 
 public class NotificationManagerTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private NotificationManagerImpl m_notificationManager;
     private DataSource m_dataSource;
     private NotifdConfigManager m_configManager;
-    
-    private static final String s_notifdConfigurationString =
-        "<notifd-configuration\n"
-        + "    status='on'\n"
-        + "    pages-sent=\"SELECT * FROM notifications\"\n"
-        + "    next-notif-id=\"SELECT nextval('notifynxtid')\"\n"
-        + "    next-user-notif-id=\"SELECT nextval('userNotifNxtId')\"\n"
-        + "    next-group-id=\"SELECT nextval('notifygrpid')\"\n"
-        + "    service-id-sql=\"SELECT serviceID from service where serviceName = ?\"\n"
-        + "    outstanding-notices-sql=\"SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null\"\n"
-        + "    acknowledge-id-sql=\"SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?\"\n"
-        + "     acknowledge-update-sql=\"UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?\"\n"
-        + "    match-all='true'>\n"
-        + "  <queue>\n"
-        + "    <queue-id>default</queue-id>\n"
-        + "    <interval>20s</interval>\n"
-        + "    <handler-class>\n"
-        + "      <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>\n"
-        + "    </handler-class>\n"
-        + "  </queue>\n"
-        + "</notifd-configuration>";
     
     public NotificationManagerTest() {
         System.setProperty("opennms.home", "../opennms-daemon/src/main/filtered");
@@ -92,7 +73,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
 
         FilterDaoFactory.setInstance(null);
         FilterDaoFactory.getInstance();
-        m_configManager = new MockNotifdConfigManager(s_notifdConfigurationString);
+        m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/config/notifd-configuration.xml", new String[0][0]));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         
         assertNotNull("getJdbcTemplate() should not return null", getJdbcTemplate());
