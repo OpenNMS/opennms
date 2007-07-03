@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 03: Add default serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,6 +49,8 @@ import java.io.PrintWriter;
  * 
  */
 public class FilterParseException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+    
     /**
      * The encapsulated throwable if any
      */

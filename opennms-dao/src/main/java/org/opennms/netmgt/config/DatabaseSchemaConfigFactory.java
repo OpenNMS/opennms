@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 03: Use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,11 +42,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,13 +86,14 @@ public final class DatabaseSchemaConfigFactory {
      * The set of tables that can be joined directly or indirectly to the
      * primary table
      */
-    private Set m_joinable = null;
+    // FIXME: m_joinable is never read
+    //private Set m_joinable = null;
 
     /**
      * A map from a table to the join to use to get 'closer' to the primary
      * table
      */
-    private Map m_primaryJoins = null;
+    private Map<String, Join> m_primaryJoins = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -337,17 +342,18 @@ public final class DatabaseSchemaConfigFactory {
     public Join[] getPrimaryJoinsForTable(Table t) {
         Table primary = getPrimaryTable();
 
-        Join j = (Join) m_primaryJoins.get(t.getName());
-        List joins = new LinkedList();
+        Join j = m_primaryJoins.get(t.getName());
+        List<Join> joins = new ArrayList<Join>();
         while (j != null && j.getTable() != null && !j.getTable().equals(primary.getName())) {
             joins.add(j);
-            j = (Join) m_primaryJoins.get(j.getTable());
+            j = m_primaryJoins.get(j.getTable());
         }
 
-        if (j != null)
+        if (j != null) {
             joins.add(j);
+        }
 
-        return (Join[]) joins.toArray(new Join[joins.size()]);
+        return joins.toArray(new Join[joins.size()]);
     }
 
     /**
@@ -355,14 +361,14 @@ public final class DatabaseSchemaConfigFactory {
      */
     private void finishConstruction() {
         Table primary = getPrimaryTable();
-        Set joinableSet = new HashSet();
-        Map primaryJoins = new HashMap();
+        Set<String> joinableSet = new HashSet<String>();
+        Map<String, Join> primaryJoins = new HashMap<String, Join>();
         joinableSet.add(primary.getName());
         int joinableCount = 0;
         // loop until we stop adding entries to the set
         while (joinableCount < joinableSet.size()) {
             joinableCount = joinableSet.size();
-            Set newSet = new HashSet(joinableSet);
+            Set<String> newSet = new HashSet<String>(joinableSet);
             Enumeration e = getDatabaseSchema().enumerateTable();
             // for each table not already in the set
             while (e.hasMoreElements()) {
@@ -381,7 +387,8 @@ public final class DatabaseSchemaConfigFactory {
             }
             joinableSet = newSet;
         }
-        m_joinable = Collections.synchronizedSet(joinableSet);
+        // FIXME: m_joinable is never read
+        //m_joinable = Collections.synchronizedSet(joinableSet);
         m_primaryJoins = Collections.synchronizedMap(primaryJoins);
     }
 

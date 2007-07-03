@@ -147,14 +147,24 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     
     public void processConfiguredResourceTypes() {
     	Map<String,ResourceType> map = new HashMap<String,ResourceType>();
-    	Collection<SnmpCollection> snmpCollections = m_config.getSnmpCollectionCollection();
+    	Collection<SnmpCollection> snmpCollections = getSnmpCollections();
 		for (SnmpCollection collection : snmpCollections) {
-			Collection<ResourceType> resourceTypes = collection.getResourceTypeCollection();
+			Collection<ResourceType> resourceTypes = getResourceTypesForCollection(collection);
 			for (ResourceType resourceType : resourceTypes) {
 				map.put(resourceType.getName(), resourceType);
 			}
 		}
     	m_configuredResourceTypes = map;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<ResourceType> getResourceTypesForCollection(SnmpCollection collection) {
+        return (List<ResourceType>) collection.getResourceTypeCollection();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<SnmpCollection> getSnmpCollections() {
+        return (List<SnmpCollection>) m_config.getSnmpCollectionCollection();
     }
     
     private static String join(String separator, Collection<String> collection) {
@@ -183,11 +193,11 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     	}
     	
     	String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
-		Collection<SnmpCollection> snmpCollections = m_config.getSnmpCollectionCollection();
+		Collection<SnmpCollection> snmpCollections = getSnmpCollections();
 		for (SnmpCollection collection : snmpCollections) {
-			Collection<Group> groups = collection.getGroups().getGroupCollection();
+			Collection<Group> groups = getGroupsForCollection(collection);
 			for (Group group : groups) {
-				Collection<MibObj> mibObjs = group.getMibObjCollection();
+				Collection<MibObj> mibObjs = getMibObjsForGroup(group);
 				for (MibObj mibObj : mibObjs) {
 					String instance = mibObj.getInstance();
 					if (instance == null) {
@@ -208,6 +218,16 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
 			}
 		}
 	}
+
+    @SuppressWarnings("unchecked")
+    private List<MibObj> getMibObjsForGroup(Group group) {
+        return (List<MibObj>) group.getMibObjCollection();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Group> getGroupsForCollection(SnmpCollection collection) {
+        return (List<Group>) collection.getGroups().getGroupCollection();
+    }
 
 	public static void setInstance(DataCollectionConfig instance) {
         m_singleton = instance;
