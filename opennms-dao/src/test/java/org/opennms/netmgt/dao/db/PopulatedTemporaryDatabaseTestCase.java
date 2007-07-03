@@ -93,7 +93,7 @@ public class PopulatedTemporaryDatabaseTestCase extends
          */
 
         if (m_setupIpLike) {
-            m_installerDb.setPgIpLikeLocation(findIpLikeLibrary().getAbsolutePath());
+            m_installerDb.setPgIpLikeLocation(null);
             m_installerDb.updateIplike();
         }
 
