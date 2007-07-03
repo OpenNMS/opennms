@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<notifd-configuration 
+        status="on"
+        pages-sent="SELECT * FROM notifications"
+        next-notif-id="SELECT nextval('notifynxtid')"
+        next-user-notif-id="SELECT nextval('usernotifynxtid')"
+        next-group-id="SELECT nextval('notifygrpid')"
+        service-id-sql="SELECT serviceID from service where serviceName = ?"
+        outstanding-notices-sql="SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null"
+        acknowledge-id-sql="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"
+        acknowledge-update-sql="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"
+   match-all="true">
+        
+   <auto-acknowledge notify = "true" uei="uei.opennms.org/nodes/serviceResponsive" 
+                          acknowledge="uei.opennms.org/nodes/serviceUnresponsive">
+                          <match>nodeid</match>
+                          <match>interfaceid</match>
+                          <match>serviceid</match>
+        </auto-acknowledge>
+   
+        <auto-acknowledge uei="uei.opennms.org/nodes/nodeRegainedService" 
+                          acknowledge="uei.opennms.org/nodes/nodeLostService">
+                          <match>nodeid</match>
+                          <match>interfaceid</match>
+                          <match>serviceid</match>
+        </auto-acknowledge>
+        
+        <auto-acknowledge uei="uei.opennms.org/nodes/interfaceUp" 
+                          acknowledge="uei.opennms.org/nodes/interfaceDown">
+                          <match>nodeid</match>
+                          <match>interfaceid</match>
+        </auto-acknowledge>
+        
+        <auto-acknowledge uei="uei.opennms.org/nodes/nodeUp" 
+                          acknowledge="uei.opennms.org/nodes/nodeDown">
+                          <match>nodeid</match>
+        </auto-acknowledge>
+        
+        <queue>
+                <queue-id>default</queue-id>
+                <interval>100ms</interval>
+                <handler-class>
+                        <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>
+                </handler-class>
+        </queue>
+</notifd-configuration>

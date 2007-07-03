@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<groupinfo>
+    <header>
+        <rev>1.3</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>dhcp-219.internal.opennms.org</mstation>
+    </header>
+    <groups>
+        <group>
+            <name>All</name>
+            <comments>The group that contains all users</comments>
+            <user>admin</user>            <user>brozow</user>            <user>david</user>        </group>
+        <group>
+            <name>InitialGroup</name>
+            <comments>The group that gets notified first</comments>
+            <user>admin</user>            <user>brozow</user>        </group>
+        <group>
+            <name>EscalationGroup</name>
+            <comments>The group things escalate to</comments>
+            <user>brozow</user>            <user>david</user>        </group>
+        <group>
+            <name>UpGroup</name>
+            <comments>The group things escalate to</comments>
+            <user>upUser</user>        </group>
+        <group>
+            <name>DutyGroup</name>
+            <comments>The group things escalate to</comments>
+            <user>brozow</user>           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>
+        </group>
+    </groups>
+    <roles>
+      <role name="oncall" supervisor="admin" description="oncall role" membership-group="All">           <schedule name="brozow" type="weekly">               <time day="sunday" begins="09:00:00" ends="17:00:00"/>
+               <time day="monday" begins="09:00:00" ends="17:00:00"/>
+               <time day="wednesday" begins="09:00:00" ends="17:00:00"/>
+               <time day="friday" begins="09:00:00" ends="17:00:00"/>
+           </schedule>
+           <schedule name="admin" type="weekly">               <time day="sunday" begins="00:00:00" ends="23:59:59"/>
+               <time day="tuesday" begins="09:00:00" ends="17:00:00"/>
+               <time day="thursday" begins="09:00:00" ends="17:00:00"/>
+               <time day="saturday" begins="09:00:00" ends="17:00:00"/>
+           </schedule>           <schedule name="david" type="weekly">               <time day="sunday"    begins="00:00:00" ends="09:00:00"/>
+               <time day="sunday"    begins="17:00:00" ends="23:59:59"/>
+               <time day="monday"    begins="00:00:00" ends="09:00:00"/>
+               <time day="monday"    begins="17:00:00" ends="23:59:59"/>
+               <time day="tuesday"   begins="00:00:00" ends="09:00:00"/>
+               <time day="tuesday"   begins="17:00:00" ends="23:59:59"/>
+               <time day="wednesday" begins="00:00:00" ends="09:00:00"/>
+               <time day="wednesday" begins="17:00:00" ends="23:59:59"/>
+               <time day="thursday"  begins="00:00:00" ends="09:00:00"/>
+               <time day="thursday"  begins="17:00:00" ends="23:59:59"/>
+               <time day="friday"    begins="00:00:00" ends="09:00:00"/>
+               <time day="friday"    begins="17:00:00" ends="23:59:59"/>
+               <time day="saturday"  begins="00:00:00" ends="09:00:00"/>
+               <time day="saturday"  begins="17:00:00" ends="23:59:59"/>
+           </schedule>       </role>
+       <role name="onDuty" supervisor="admin" description="onDuty role" membership-group="All">           <schedule name="brozow" type="weekly">               <time day="sunday" begins="06:00:00" ends="07:00:00"/>
+               <time day="monday" begins="06:00:00" ends="07:00:00"/>
+               <time day="tuesday" begins="06:00:00" ends="07:00:00"/>
+               <time day="wednesday" begins="06:00:00" ends="07:00:00"/>
+               <time day="thursday" begins="06:00:00" ends="07:00:00"/>
+               <time day="friday" begins="06:00:00" ends="07:00:00"/>
+               <time day="saturday" begins="06:00:00" ends="07:00:00"/>
+           </schedule>
+       </role>
+   </roles>
+</groupinfo>

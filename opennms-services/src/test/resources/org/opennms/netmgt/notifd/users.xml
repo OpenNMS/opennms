@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+   <header>
+       <rev>.9</rev>
+           <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+       <mstation>master.nmanage.com</mstation>
+   </header>
+   <users>
+       <user>
+           <user-id>trapd</user-id>
+           <full-name>SNMP Trapd</full-name>
+           <user-comments>User that receives trap notifications</user-comments>
+           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <contact type="snmpTrap" info="Destination for SNMP Trap/Notifications"/>
+       </user>
+       <user>
+           <user-id>brozow</user-id>
+           <full-name>Mathew Brozowski</full-name>
+           <user-comments>Test User</user-comments>
+           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <contact type="email" info="brozow@opennms.org"/>
+       </user>
+       <user>
+           <user-id>admin</user-id>
+           <full-name>Administrator</full-name>
+           <user-comments>Default administrator, do not delete</user-comments>
+           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <contact type="email" info="admin@opennms.org"/>
+       </user>
+       <user>
+           <user-id>upUser</user-id>
+           <full-name>User that receives up notifications</full-name>
+           <user-comments>Default administrator, do not delete</user-comments>
+           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <contact type="email" info="up@opennms.org"/>
+       </user>
+       <user>
+           <user-id>david</user-id>
+           <full-name>David Hustace</full-name>
+           <user-comments>A cool dude!</user-comments>
+           <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>
+           <contact type="email" info="david@opennms.org"/>
+           <contact type="numericPage" info="6789" serviceProvider="ATT"/>
+           <contact type="textPage" info="9876" serviceProvider="Sprint"/>
+       </user>
+   </users>
+</userinfo>
