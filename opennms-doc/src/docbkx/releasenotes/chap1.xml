@@ -4,6 +4,18 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.3.5 is a replacement for the aborted 1.3.4 release. It
+  really fixes the notifications issue. In addition, some performance
+  enhancements have been made to how data collection is started.</para>
+
+  <para>The code word from 1.3.5 is "expelliarmus"</para>
+
+  <para>Release 1.3.4 is a bugfix release against 1.3.3. Hey, release early
+  and often. It fixes an issue with notifications triggered by trap events not
+  working.</para>
+
+  <para>The code word for 1.3.4 is "ooops"</para>
+
   <para>Release 1.3.3 is yet another major step toward OpenNMS 2.0. It should
   be considered much more stable than 1.3.2, so please disregard most of the
   scary warnings below, but if something should break we reserve the right to
