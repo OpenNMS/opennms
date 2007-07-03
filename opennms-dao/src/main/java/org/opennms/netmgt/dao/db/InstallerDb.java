@@ -392,7 +392,7 @@ public class InstallerDb {
         boolean insert_iplike = !isIpLikeUsable();
         
         if (insert_iplike) {
-        	dropExistingIpList();
+        	dropExistingIpLike();
 
         	boolean success = installCIpLike();
             
@@ -453,7 +453,7 @@ public class InstallerDb {
         return success;
     }
 
-    private void dropExistingIpList() throws SQLException {
+    private void dropExistingIpLike() throws SQLException {
         Statement st = null;
         m_out.print("- removing existing iplike definition (if any)... ");
         try {
