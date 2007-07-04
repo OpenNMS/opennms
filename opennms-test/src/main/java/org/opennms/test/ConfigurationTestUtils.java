@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2007 Jul 03: Check for something passing in a Class as an object (as I tend to do,
+//              which breaks tests under Maven 2, but not under Eclipse) and suggest
+//              that 'this' be used instead. - dj@opennms.org
 // 2007 Apr 05: Add methods to get the opennms-daemon src/main/filtered/etc directory
 //              and to set an absolute home directory. - dj@opennms.org
 // 2007 Apr 05: Add methods to get the current directory, top-level project directory,
@@ -62,6 +65,7 @@ public class ConfigurationTestUtils extends Assert {
 
     public static InputStream getInputStreamForResource(Object obj,
             String resource) {
+        assertFalse("obj should not be an instance of java.lang.Class; you usually want to use 'this'", obj instanceof Class);
         InputStream is = obj.getClass().getResourceAsStream(resource);
         assertNotNull("could not get resource '" + resource + "' as an input stream", is);
         return is;
