@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 03: Fix test resource calls. - dj@opennms.org
 // 2007 Jul 03: Enable testIplikeAllStars. - dj@opennms.org
 // 2007 Jul 03: Move notifd configuration to a resource. - dj@opennms.org
 // 2007 Jun 29: Add additional tests for nodes without interfaces and interfaces
@@ -74,7 +75,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
 
         FilterDaoFactory.setInstance(null);
         FilterDaoFactory.getInstance();
-        m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/config/notifd-configuration.xml", new String[0][0]));
+        m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         
         assertNotNull("getJdbcTemplate() should not return null", getJdbcTemplate());
