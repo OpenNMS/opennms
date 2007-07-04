@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 03: Fix calls to ConfigurationTestUtils.getConfigForResourceWithReplacements. - dj@opennms.org
 // 2007 Jul 03: Move config files to external resources and indent. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -97,16 +98,16 @@ public class NotificationsTestCase extends TestCase {
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
         
-        m_notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/notifd-configuration.xml", new String[0][0]));
+        m_notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());
         m_notifdConfig.setNextUserNotifIdSql(m_db.getNextUserNotifIdSql());
         
         m_groupManager = createGroupManager();
         m_userManager = createUserManager(m_groupManager);
         
-        m_destinationPathManager = new MockDestinationPathManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/destination-paths.xml", new String[0][0]));        
-        m_notificationCommandManger = new MockNotificationCommandManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/notification-commands.xml", new String[0][0]));
-        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/notifications.xml", new String[0][0]));
+        m_destinationPathManager = new MockDestinationPathManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "destination-paths.xml"));        
+        m_notificationCommandManger = new MockNotificationCommandManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notification-commands.xml"));
+        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications.xml"));
         m_pollOutagesConfigManager = new MockPollerConfig(m_network);
         
         m_anticipator = new NotificationAnticipator();
@@ -168,11 +169,11 @@ public class NotificationsTestCase extends TestCase {
     }
 
     private MockUserManager createUserManager(MockGroupManager groupManager) throws MarshalException, ValidationException, IOException {
-        return new MockUserManager(groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/users.xml", new String[0][0]));
+        return new MockUserManager(groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "users.xml"));
     }
 
     private MockGroupManager createGroupManager() throws MarshalException, ValidationException, IOException {
-        return new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(getClass(), "/org/opennms/netmgt/notifd/groups.xml", new String[0][0]));
+        return new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "groups.xml"));
     }
 
     protected void tearDown() throws Exception {
