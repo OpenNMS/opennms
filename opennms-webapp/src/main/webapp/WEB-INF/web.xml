@@ -167,9 +167,12 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-30</filter-name>
-    <url-pattern>/alarm/*</url-pattern>
+    <url-pattern>/alarm/list</url-pattern>
   </filter-mapping>
-
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-30</filter-name>
+    <url-pattern>/alarm/detail.jsp</url-pattern>
+  </filter-mapping>
   <filter-mapping>
     <filter-name>eXtremeExport</filter-name>
     <url-pattern>/*</url-pattern>
