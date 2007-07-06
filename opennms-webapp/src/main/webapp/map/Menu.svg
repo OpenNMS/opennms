@@ -116,7 +116,7 @@
 			var childNode = menuSvgDocument.getElementById("DownInfoText");		
 			if (childNode)
 				menuSvgDocument.getElementById("DownInfo").removeChild(childNode);		
-			menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">" +
+				menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">" +
 				"<tspan font-size=\"11\" x=\"5\" dy=\"5\">Click on the element to set</tspan>" +
 				"<tspan font-size=\"11\" x=\"7\" dy=\"15\">the icon to.</tspan>" +
 			"</text>",menuSvgDocument));
@@ -139,16 +139,16 @@
 		menuSvgDocument=htmldocument.embeds[1].getSVGDocument();
 		
 		addLegend();
-		//alert(mapSvgDocument+"map in menu");
-	    
-		// load MAPS and NODES from the server.
-		//LoadMaps();
-		//LoadNodes();
-		
-		doLoadMapsAndNodes();
-		savedMapString = getMapString();
-		
-		}
+
+	 	if(isUserAdmin){
+	 		instantiateRWNormalMenu();
+	 	}else{
+	 		instantiateROMenu();	
+	 	}
+	 	
+	 	enableMenu();
+	 	
+	 	}
 		
 		function doLoadMapsAndNodes(){
 			if(appInited){
@@ -242,172 +242,15 @@
 
 
 	<rect x="0" y="0" id="toolbar" width="100%" height="20px" fill="black" />
-
-	<!-- ***** Map submenu ******-->
-	<g id="MapMenu" display="none" >
-	 <rect id="mapRect" x="0" y="0" width="50" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-	 <text id="mapText" x="8" y="13" fill="white" font-size="11">Map</text> 
-	 <rect onmouseover="openMapMenu(evt); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'mapRect',upColor)" onclick="setMenuOpenFlag(evt, 'Map');" x="0" y="0" width="50" height="20" style="fill:green;fill-opacity:0"/>
-	</g>
-	<g id="MapChoices" display="none" onmouseover="elemColor(evt,'mapRect',downColor)" onmouseout="elemColor(evt,'mapRect',upColor)">
-		<g id="newMapGroup"  > 
-		 <rect id="New" x="0" y="21" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="newText" x="10" y="34" fill="white" font-size="10">New</text> 
-		 <rect onmouseover="elemColor(evt,'New',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'New',upColor)" onclick="newMap();hideAll(evt);menuOpenFlag=false;" x="0" y="21" width="100" height="20" style="fill:green;fill-opacity:0"/>
-		</g>	
-		
-		<g id="openMapGroup" > 
-		 <rect id="Open" x="0" y="41" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="openText" x="10" y="54" fill="white" font-size="10">Open</text> 
-		 <rect x="0" y="41" width="100" height="20" onmouseover="elemColor(evt,'Open',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup');  elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Open',upColor)" onclick="addMapsList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g>		
-
-		<g id="renameMapGroup"> 
-		 <rect id="Rename" x="0" y="61" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="renameText" x="10" y="74" fill="white" font-size="10">Rename</text> 
-		 <rect  x="0" y="61" width="100" height="20" onmouseover="elemColor(evt,'Rename',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Rename',upColor)" onclick="addRenameMapBox(); hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g>	
-		
-		<g id="deleteMapGroup" > 
-		 <rect id="Delete" x="0" y="81" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="deleteText" x="10" y="94" fill="white" font-size="10">Delete</text> 
-		 <rect x="0" y="81" width="100" height="20"  onmouseover="elemColor(evt,'Delete',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Delete',upColor)" onclick="deleteMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
-		</g>
-
-		<g id="saveMapGroup"  > 
-		 <rect id="Save" x="0" y="101" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="saveText" x="10" y="114" fill="white" font-size="10">Save</text> 
-		 <rect x="0" y="101" width="100" height="20" onmouseover="elemColor(evt,'Save',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Save',upColor)" onclick="saveMap();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g> 
-
-		<g id="clearMapGroup" > 
-		 <rect id="Clear" x="0" y="121" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="clearText" x="10" y="134" fill="white" font-size="10">Clear</text> 
-		 <rect x="0" y="121" width="100" height="20"  onmouseover="elemColor(evt,'Clear',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup');  elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Clear',upColor)" onclick="clearMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
-		</g>
+	<svg id="Menu" />
 
 		
-		<g id="closeMapGroup"  >  
-		 <rect id="Close" x="0" y="161" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="closeText" x="10" y="174" fill="white" font-size="10">Close</text> 
-		 <rect x="0" y="161" width="100" height="20" onmouseover="elemColor(evt,'Close',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup');  elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Close',upColor)" onclick="close();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g> 
 		
-		<g id="setBackgroundMapGroup" > 
-		 <rect id="setBackground" x="0" y="141" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="backgroundText" x="10" y="154" fill="white" font-size="10">Set Background...</text> 
-		 <rect x="0" y="141" width="100" height="20" onmouseover=" elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemColor(evt,'setBackground',downColor); elemShow(evt,'setBackgroundMapColorGroup'); elemShow(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'setBackground',upColor); " style="fill:green;fill-opacity:0"/>
-			<g id="setBackgroundMapColorGroup" display="none"> 
-			 <rect id="setBackgroundColor" x="96" y="140" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-			 <text id="backgroundColorText" x="103" y="153" fill="white" font-size="10">Color</text> 
-			 <rect x="96" y="140" width="100" height="20"  onmouseover="elemColor(evt,'setBackgroundColor',downColor)" onmouseout="elemColor(evt,'setBackgroundColor',upColor)" onclick="setBackground(0);  hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
-			</g>
-			<g id="setBackgroundMapImageGroup" display="none"> 
-			 <rect id="setBackgroundImage" x="96" y="160" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-			 <text id="backgroundImageText" x="103" y="173" fill="white" font-size="10">Image</text> 
-			 <rect x="96" y="160" width="100" height="20"  onmouseover="elemColor(evt,'setBackgroundImage',downColor)" onmouseout="elemColor(evt,'setBackgroundImage',upColor)" onclick="addBGImagesList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-			</g>			
-		</g>
-	</g>
-	
-	
-	<!-- ***** Node submenu ******-->
-	<g id="NodeMenu" display="none" >
-	 <rect id="nodeRect" x="51" y="0" width="50" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-	 <text id="nodeText" x="58" y="13" fill="white" font-size="11">Node</text> 
-	 <rect x="51" y="0" width="50" height="20" onmouseover="openNodeMenu(evt); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'nodeRect',upColor)" onclick="setMenuOpenFlag(evt, 'Node')" style="fill:green;fill-opacity:0"/>
-	</g>
-	<g id="NodeChoices" display="none" >
-		<g id="addNodeGroup"  onmouseover="elemColor(evt,'Add',downColor)" onmouseout="elemColor(evt,'Add',upColor)" onclick="addMapElementList();hideAll(evt);menuOpenFlag=false;"> 
-		 <rect id="Add" x="51" y="21" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="addText" x="58" y="34" fill="white" font-size="10">Add</text> 
-		 <rect x="51" y="21" width="100" height="20"  onmouseover="elemColor(evt,'nodeRect',downColor)" onmouseout="elemColor(evt,'nodeRect',upColor)" style="fill:green;fill-opacity:0"/>
-		</g> 
-		<g id="addNodesByCategoryGroup"  onmouseover="elemColor(evt,'AddNodesByCategory',downColor)" onmouseout="elemColor(evt,'AddNodesByCategory',upColor)" onclick="addCategoryList();hideAll(evt);menuOpenFlag=false;"> 
-		 <rect id="AddNodesByCategory" x="51" y="41" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="addNodesByCategoryText" x="58" y="54" fill="white" font-size="10">Add By Category</text> 
-		 <rect x="51" y="41" width="100" height="20"  onmouseover="elemColor(evt,'nodeRect',downColor)" onmouseout="elemColor(evt,'nodeRect',upColor)" style="fill:green;fill-opacity:0"/>
-		</g>
-		<g id="addNodesByLabelGroup"  onmouseover="elemColor(evt,'AddNodesByLabel',downColor)" onmouseout="elemColor(evt,'AddNodesByLabel',upColor)" onclick="addNodeLabelBox();hideAll(evt);menuOpenFlag=false;"> 
-		 <rect id="AddNodesByLabel" x="51" y="61" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="addNodesByLabelText" x="58" y="74" fill="white" font-size="10">Add By Label</text> 
-		 <rect x="51" y="61" width="100" height="20"  onmouseover="elemColor(evt,'nodeRect',downColor)" onmouseout="elemColor(evt,'nodeRect',upColor)" style="fill:green;fill-opacity:0"/>
-		</g>				
-		<g id="addNodeRangeGroup"  onmouseover="elemColor(evt,'AddNodeRange',downColor)" onmouseout="elemColor(evt,'AddNodeRange',upColor)" onclick="addRangeBox();hideAll(evt);menuOpenFlag=false;"> 
-		 <rect id="AddNodeRange" x="51" y="81" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="addNodeRangeText" x="58" y="94" fill="white" font-size="10">Add Range</text> 
-		 <rect x="51" y="81" width="100" height="20"  onmouseover="elemColor(evt,'nodeRect',downColor)" onmouseout="elemColor(evt,'nodeRect',upColor)" style="fill:green;fill-opacity:0"/>
-		</g>		
-		<g id="addNeighGroup"> 
-		 <rect id="AddNeigh" x="51" y="101" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="addNeighText" x="58" y="114" fill="white" font-size="10">Add Neighbors</text> 
-		 <rect  x="51" y="101" width="100" height="20" onmouseover="elemColor(evt,'AddNeigh',downColor)" onmouseout="elemColor(evt,'AddNeigh',upColor)"  onclick="addMapElementNeigh(); hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g> 		
-		<g id="addNodeNeighGroup" > 
-		 <rect id="AddNodeNeigh" x="51" y="121" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="addNodeNeighText" x="58" y="134" fill="white" font-size="10">Add With Neighbors</text> 
-		 <rect  x="51" y="121" width="10" height="20" onmouseover="elemColor(evt,'AddNodeNeigh',downColor)" onmouseout="elemColor(evt,'AddNodeNeigh',upColor)"  onclick="addMapElementNeighList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g> 
-		<g id="addMapGroup" > 
-		 <rect id="AddMap" x="51" y="141" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="addMapText" x="58" y="154" fill="white" font-size="10">Add Map As Node</text> 
-		 <rect  x="51" y="141" width="100" height="20" onmouseover="elemColor(evt,'AddMap',downColor)" onmouseout="elemColor(evt,'AddMap',upColor)"  onclick="addMapAsNodeList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g>	
-		
-		<g id="setIconGroup"  > 
-		 <rect id="SetIcon" x="51" y="161" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="setIconText" x="58" y="174" fill="white" font-size="10">Set Icon</text> 
-		 <rect  x="51" y="161" width="100" height="20" onmouseover="elemColor(evt,'SetIcon',downColor)" onmouseout="elemColor(evt,'SetIcon',upColor)" onclick="addIconList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g> 
-		
-		<g id="setDimensionGroup"  > 
-		 <rect id="SetDimension" x="51" y="181" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="setDimensionText" x="58" y="194" fill="white" font-size="10">Set Dimension</text> 
-		 <rect  x="51" y="181" width="100" height="20" onmouseover="elemColor(evt,'SetDimension',downColor)" onmouseout="elemColor(evt,'SetDimension',upColor)" onclick="addDimensionList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g> 
-		
-		<g id="deleteNodeGroup"  > 
-		 <rect id="DeleteNode" x="51" y="201" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="deleteNodeText" x="58" y="214" fill="white" font-size="10">Delete</text> 
-		 <rect  x="51" y="201" width="100" height="20" onmouseover="elemColor(evt,'DeleteNode',downColor)" onmouseout="elemColor(evt,'DeleteNode',upColor)" onclick="deleteMapElementMenu();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-		</g> 
-	</g>
-	
-	<!-- ***** View submenu ******-->
-	<g id="ViewMenu" display="inline" >
-	 <rect id="viewRect" x="101" y="0" width="50" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-	 <text id="viewText" x="109" y="13" fill="white" font-size="11">View</text> 
-	 <rect onmouseover="openViewMenu(evt); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesBySeverityGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'viewRect',upColor)" onclick="setMenuOpenFlag(evt, 'View');" x="100" y="0" width="50" height="20" style="fill:green;fill-opacity:0"/>
-	</g>	
-	<g id="ViewChoices" display="none" >
-		<g id="colorNodesByGroup" > 
-		 <rect id="colorNodes" x="100" y="21" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-		 <text id="colorNodesText" x="110" y="34" fill="white" font-size="10">View by...</text> 
-		 <rect x="101" y="21" width="100" height="20" onmouseover="elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'setBackgroundMapImageGroup');  elemColor(evt,'colorNodes',downColor); elemShow(evt,'colorNodesByStatusGroup'); elemShow(evt,'colorNodesBySeverityGroup'); elemShow(evt,'colorNodesByAvailGroup')" onmouseout="elemColor(evt,'colorNodes',upColor); " style="fill:green;fill-opacity:0"/>
-			<g id="colorNodesBySeverityGroup" display="none"> 
-			 <rect id="colorNodesBySeverity" x="10" y="21" width="95" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-			 <text id="colorNodesBySeverityText" x="17" y="34" fill="white" font-size="10">Severity</text> 
-			 <rect x="10" y="21" width="95" height="20"  onmouseover="elemColor(evt,'colorNodesBySeverity',downColor)" onmouseout="elemColor(evt,'colorNodesBySeverity',upColor)" onclick="colorSemaphoreBy='S';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
-			</g>
-			<g id="colorNodesByAvailGroup" display="none"> 
-			 <rect id="colorNodesByAvail" x="10" y="41" width="95" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-			 <text id="colorNodesByAvailText" x="17" y="54" fill="white" font-size="10">Availability</text> 
-			 <rect x="10" y="41" width="95" height="20"  onmouseover="elemColor(evt,'colorNodesByAvail',downColor)" onmouseout="elemColor(evt,'colorNodesByAvail',upColor)" onclick="colorSemaphoreBy='A';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-			</g>			
-			<g id="colorNodesByStatusGroup" display="none"> 
-			 <rect id="colorNodesByStatus" x="10" y="61" width="95" height="20" stroke="blue" fill="black" stroke-width="1" /> 
-			 <text id="colorNodesByStatusText" x="17" y="74" fill="white" font-size="10">Status</text> 
-			 <rect x="10" y="61" width="95" height="20"  onmouseover="elemColor(evt,'colorNodesByStatus',downColor)" onmouseout="elemColor(evt,'colorNodesByStatus',upColor)" onclick="colorSemaphoreBy='T';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
-			</g>			
-		</g>
-	</g>
-	
-	
-	
+
 	<!-- ******** end   M E N U ********* -->	
     </svg>
     
-    	<svg  y="190" width="200" height="200" id="TopInfo">
+    	<svg  y="200" width="200" height="200" id="TopInfo">
 		<text id="TopInfoText" x="5" y="20"></text>
 		<g id="nodes" />
 		<g id="categories" />
