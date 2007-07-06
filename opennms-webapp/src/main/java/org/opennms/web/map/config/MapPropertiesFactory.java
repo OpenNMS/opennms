@@ -36,9 +36,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,29 +45,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Category;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
 
 public class MapPropertiesFactory extends Object {
 
-	
 	private static boolean m_loaded = false;
-
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static MapPropertiesFactory m_singleton = null;
 
 	/**
 	 * Descriptive information about this factory.
 	 */
-	protected static final String info = "org.opennms.web.map.MapPropertiesFactory";
+	protected static final String info = "org.opennms.web.map.config.MapPropertiesFactory";
 
 	/**
 	 * Descriptive information about this factory.
@@ -83,7 +73,7 @@ public class MapPropertiesFactory extends Object {
 	 */
 	protected static File mapPropertiesFile;
 
-	protected static String home = null;
+	protected String mapPropertiesFileString;
 
 	/**
 	 * The Log4J category for logging web authentication messages.
@@ -108,21 +98,15 @@ public class MapPropertiesFactory extends Object {
 
 	protected static Map<String,String> bgImagesMap = null;
 
-	protected static Map<String,DataSource> sourcesMap = null;
-	
-	protected static Map nodesPerSource = null;
-	
-	protected static Map<String,MapsFactory> factoriesMap = null;
-	
 	protected static Map<Integer,Link> linksMap = null;
 	
 	protected static Map<Integer,Set<Link>> linksBySnmpTypeMap = null;
 	
 	protected static Map<String,LinkStatus> linkStatusesMap = null;
+
+	protected static String defaultNodeIcon = null;
 	
-	protected static String defaultFactory = null; 
-	
-	protected static String severityMapAs = "avg"; 
+	protected static String defaultMapIcon = null;
 	
 	public final static String MULTILINK_BEST_STATUS ="best"; 
 	
@@ -132,32 +116,122 @@ public class MapPropertiesFactory extends Object {
 	
 	protected static int defaultLink = -1;
 
+	protected static Severity defaultSeverity;
+	
+	protected static Severity indeterminateSeverity;
+	
+	protected static Status unknownStatus;
+	
+	protected static Status defaultStatus;
+	
+	protected static Avail undefinedAvail;
+	
+	protected static Avail disabledAvail;
+	
+	protected static boolean availEnabled=true;
+	
+	protected static boolean doubleClickEnabled=true;
+	
+	protected static boolean contextMenuEnabled=true;
+	
+	protected static boolean reload=false;
+
+	protected static String severityMapAs = "avg"; 
+
+	protected static ContextMenu cmenu;
+	
+	
+	public String getMapPropertiesFileString() {
+		return mapPropertiesFileString;
+	}
+
+	public void setMapPropertiesFileString(String mapPropertiesFileString) {
+		this.mapPropertiesFileString = mapPropertiesFileString;
+	}
+
+	public String getSeverityMapAs() {
+		return severityMapAs;
+	}
+
+	public ContextMenu getContextMenu() {
+		return cmenu;
+	}
+
+	public void setContextMenu(ContextMenu cmenu) {
+		MapPropertiesFactory.cmenu = cmenu;
+	}
+
+	public boolean isContextMenuEnabled() {
+		return contextMenuEnabled;
+	}
+
+	public boolean isDoubleClickEnabled() {
+		return doubleClickEnabled;
+	}
+
+	public boolean isReload() {
+		return reload;
+	}
+
+	
+	public MapPropertiesFactory(String mapPropertiesFileString) {
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+		log = ThreadCategory.getInstance(this.getClass());
+
+		this.mapPropertiesFileString = mapPropertiesFileString;
+
+		if (log.isDebugEnabled())
+			log.debug("Map Properties Configuration file: " + mapPropertiesFileString);
+
+		try {
+			init();
+		} catch (FileNotFoundException e) {
+			log.error("Cannot found configuration file",e);
+		} catch (IOException e) {
+			log.error("Cannot load configuration file",e);
+		}
+		if(log.isDebugEnabled())
+			log.debug("Instantiating MapPropertiesFactory with properties file: "+mapPropertiesFileString);
+	}
+
 	/**
 	 * Create a new instance.
 	 */
-	private MapPropertiesFactory() {
-		ThreadCategory.setPrefix("OpenNMS.Map");
+	public MapPropertiesFactory() {
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		home = Vault.getHomeDir();
-		// configure the files to the given home dir
-		MapPropertiesFactory.mapPropertiesFile = new File(
-				home
-						+ File.separator
-						+ "etc"
-						+ File.separator
-						+ ConfigFileConstants
-								.getFileName(ConfigFileConstants.MAP_PROPERTIES_FILE_NAME));
+		
+		try {
+			init();
+		} catch (FileNotFoundException e) {
+			log.error("Cannot found configuration file",e);
+		} catch (IOException e) {
+			log.error("Cannot load configuration file",e);
+		}
+		if(log.isDebugEnabled())
+			log.debug("Instantiating MapPropertiesFactory");
 	}
+	
 
-	public static synchronized void init() throws FileNotFoundException,
+
+	public synchronized void init() throws FileNotFoundException,
 			IOException {
+		
+		log.info("Init");
+		if (mapPropertiesFileString == null) {
+			MapPropertiesFactory.mapPropertiesFile = ConfigFileConstants.getFile(ConfigFileConstants.MAP_PROPERTIES_FILE_NAME);
+			log.info("Using default map properties file: "+mapPropertiesFile.getPath());
+		}else{ 		
+			MapPropertiesFactory.mapPropertiesFile = new File(mapPropertiesFileString);
+			log.info("Using map properties file: "+mapPropertiesFile.getPath());
+		}
+
 		if (m_loaded) {
 			// init already called - return
 			// to reload, reload() will need to be called
 			return;
 		}
 
-		m_singleton = new MapPropertiesFactory();
 		parseMapProperties();
 		m_loaded = true;
 	}
@@ -167,30 +241,12 @@ public class MapPropertiesFactory extends Object {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static synchronized void reload(boolean reloadPropertiesFile) throws FileNotFoundException,
+	public synchronized void reload(boolean reloadPropertiesFile) throws FileNotFoundException,
 			IOException {
 		if(reloadPropertiesFile){
-			m_singleton = null;
 			m_loaded = false;
 		}
-		//reloadNodesPerSource();
 		init();
-	}
-
-	/**
-	 * Return the singleton instance of this factory.
-	 * 
-	 * @return The current factory instance.
-	 * 
-	 * @throws java.lang.IllegalStateException
-	 *             Thrown if the factory has not yet been initialized.
-	 */
-	public static synchronized MapPropertiesFactory getInstance() {
-		if (!m_loaded)
-			throw new IllegalStateException(
-					"The factory has not been initialized");
-
-		return m_singleton;
 	}
 
 	/**
@@ -215,7 +271,7 @@ public class MapPropertiesFactory extends Object {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public Map getSeveritiesMap() throws IOException, FileNotFoundException {
+	public Map<String,Severity> getSeveritiesMap() {
 		return severitiesMap;
 	}
 
@@ -227,7 +283,7 @@ public class MapPropertiesFactory extends Object {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public Map getAvailabilitiesMap() throws IOException, FileNotFoundException {
+	public Map getAvailabilitiesMap() {
 		return availsMap;
 	}
 
@@ -247,155 +303,62 @@ public class MapPropertiesFactory extends Object {
 		return rightAv;
 	}
 
-	public Avail getDisabledAvail() throws IOException, FileNotFoundException {
-
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String disableAvailId = props.getProperty("avail.enable.false.id");
-		if (disableAvailId == null) {
-			throw new IllegalStateException(
-					"Required Default Status not found.");
-		}
-		Iterator ite = availsMap.values().iterator();
-		while (ite.hasNext()) {
-			Avail av = (Avail) ite.next();
-			if (av.getId() == Integer.parseInt(disableAvailId))
-				return av;
-		}
-		return null;
+	public Avail getDisabledAvail() {
+		return disabledAvail;
 	}
 
-	public boolean enableAvail() throws IOException, FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String enableAvail = props.getProperty("avail.enable");
-		if (enableAvail != null && enableAvail.equalsIgnoreCase("false"))
-			return false;
-		return true;
+	public boolean isAvailEnabled(){
+		return availEnabled;
 	}
 
 	/**
-	 * Gets the 'nodeup' status in map.properties. nodeup status is a required
+	 * Gets the default status in map.properties. default status is a required
 	 * parameter.
 	 * 
-	 * @return nodeup status
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @return default status
 	 */
-	public Status getDefaultStatus() throws IOException, FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String defaultid = props.getProperty("status.default");
-		if (defaultid == null) {
-			throw new IllegalStateException(
-					"Required Default Status not found.");
-		}
-		String id = props.getProperty("status." + defaultid + ".id");
-		String uei = props.getProperty("status." + defaultid + ".uei");
-		String color = props.getProperty("status." + defaultid + ".color");
-		String text = props.getProperty("status." + defaultid + ".text");
-		Status st = new Status(Integer.parseInt(id), uei, color, text);
-		return st;
+	public Status getDefaultStatus() {
+		return defaultStatus;
 	}
 
 	/**
-	 * Gets the 'undefined' status in map.properties. nodeup status is a
+	 * Gets the unknown status in map.properties. unknown status is a
 	 * required parameter.
 	 * 
-	 * @return nodeup status
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @return unknown status
 	 */
-	public Status getUnknownUeiStatus() throws IOException,
-			FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String defaultid = props.getProperty("status.unknown.uei");
-		if (defaultid == null) {
-			throw new IllegalStateException(
-					"Required Unknown Uei Status not found.");
-		}
-		String id = props.getProperty("status." + defaultid + ".id");
-		String uei = props.getProperty("status." + defaultid + ".uei");
-		String color = props.getProperty("status." + defaultid + ".color");
-		String text = props.getProperty("status." + defaultid + ".text");
-		Status st = new Status(Integer.parseInt(id), uei, color, text);
-		return st;
+	public Status getUnknownStatus()  {
+		return unknownStatus;
 	}
 
 	/**
-	 * Gets the 'normal' severity in map.properties. Normal severity is a
+	 * Gets the default severity in map.properties. default severity is a
 	 * required parameter.
 	 * 
-	 * @return Normal severity
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @return default severity
 	 */
-	public Severity getDefaultSeverity() throws IOException,
-			FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String defaultid = props.getProperty("severity.default");
-		if (defaultid == null) {
-			throw new IllegalStateException(
-					"Required Default Severity not found.");
-		}
-
-		String id = props.getProperty("severity." + defaultid + ".id");
-		String label = props.getProperty("severity." + defaultid + ".label");
-		String color = props.getProperty("severity." + defaultid + ".color");
-		Severity se = new Severity(Integer.parseInt(id), label, color);
-		return se;
+	public Severity getDefaultSeverity() {
+		return defaultSeverity;
 	}
 
 	/**
-	 * Gets the 'indeterminate' severity in map.properties. Indeterminate
+	 * Gets the indeterminate severity in map.properties. Indeterminate
 	 * severity is a required parameter.
 	 * 
 	 * @return Indeterminate Severity
-	 * @throws IOException
-	 * @throws FileNotFoundException
 	 */
-	public Severity getIndeterminateSeverity() throws IOException,
-			FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String indeterminateId = props.getProperty("severity.indeterminate");
-		if (indeterminateId == null) {
-			throw new IllegalStateException(
-					"Required Indeterminate Severity not found.");
-		}
-
-		String id = props.getProperty("severity." + indeterminateId + ".id");
-		String label = props.getProperty("severity." + indeterminateId
-				+ ".label");
-		String color = props.getProperty("severity." + indeterminateId
-				+ ".color");
-		Severity se = new Severity(Integer.parseInt(id), label, color);
-		return se;
+	public Severity getIndeterminateSeverity() {
+		return indeterminateSeverity;
 	}
 
 	/**
-	 * Gets the 'undefined' Avilability in map.properties. Undefined
+	 * Gets the undefined Avilability in map.properties. Undefined
 	 * Availability is a required parameter.
 	 * 
 	 * @return Undefined Availability
-	 * @throws IOException
-	 * @throws FileNotFoundException
 	 */
-	public Avail getUndefinedAvail() throws IOException, FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-
-		String id = props.getProperty("avail.undefined.id");
-		String min = props.getProperty("avail.undefined.min");
-		String color = props.getProperty("avail.undefined.color");
-		if (id == null || min == null || color == null) {
-			throw new IllegalStateException(
-					"Required avail.undefined properties not found.");
-		}
-		Avail av = new Avail(Integer.parseInt(id), Integer.parseInt(min), color);
-		return av;
+	public Avail getUndefinedAvail() {
+		return undefinedAvail;
 	}
 
 	/**
@@ -407,17 +370,12 @@ public class MapPropertiesFactory extends Object {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public Map getStatusesMap() throws IOException, FileNotFoundException {
+	public Map<String, Status> getStatusesMap() {
 		return statusesMap;
 	}
 
 	public String getInfo() {
 		return (MapPropertiesFactory.info);
-	}
-
-	
-	public String getSeverityMapAs() {
-		return severityMapAs;
 	}
 
 	public static String getProperty(String key)throws FileNotFoundException,IOException{
@@ -445,8 +403,6 @@ public class MapPropertiesFactory extends Object {
 		availsMap = new HashMap<String,Avail>();
 		iconsMap = new HashMap<String,String>();
 		bgImagesMap = new HashMap<String,String>();
-		sourcesMap = new HashMap<String,DataSource>();
-		factoriesMap = new HashMap<String,MapsFactory>();
 		linksMap = new HashMap<Integer,Link>();
 		linksBySnmpTypeMap = new HashMap<Integer,Set<Link>>();
 		linkStatusesMap = new HashMap<String,LinkStatus>();
@@ -454,177 +410,66 @@ public class MapPropertiesFactory extends Object {
 		// read the file
 		Properties props = new Properties();
 		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-
-		// looks up for sources and their properties
-		if(props.containsKey("sources")){
-			String[] sources = BundleLists.parseBundleList(props
-					.getProperty("sources"));
-			for (int i = 0; i < sources.length; i++) {
-				log.debug("---found source " + sources[i] + "---");
-				// load nodes' filters
-				List filterList = new ArrayList();
-				if(props.containsKey("source." + sources[i] + ".filters")){
-					String[] filters = BundleLists.parseBundleList(props
-							.getProperty("source." + sources[i] + ".filters"));
-					for (int filterCounter = 0; filterCounter < filters.length; filterCounter++) {
-						String table = props.getProperty("source." + sources[i]
-								+ ".filter." + filters[filterCounter] + ".table");
-						String condition = props.getProperty("source." + sources[i]
-								+ ".filter." + filters[filterCounter] + ".condition");
-						log.debug("source." + sources[i] + ".filter."
-								+ filters[filterCounter] + ".table=" + table);
-						log.debug("source." + sources[i] + ".filter."
-								+ filters[filterCounter] + ".field=" + condition);
-						Filter f = new Filter(table, condition);
-						filterList.add(f);
-					}
-				}
-	
-				// load the datasource class to get data
-				String implClass = props.getProperty("source." + sources[i]
-						+ ".class");
-				if(implClass==null){
-					log.error("The property 'class' is mandatory for each source! skipping source "+sources[i]);
-					continue;
-				}
-				log.debug("source." + sources[i] + ".class=" + implClass);
-	
-				// load datasource params
-				HashMap paramsMap = new HashMap();
-				if(props.containsKey("source." + sources[i] + ".params")){
-					String[] params = BundleLists.parseBundleList(props
-							.getProperty("source." + sources[i] + ".params"));
-					for (int paramCounter = 0; paramCounter < params.length; paramCounter++) {
-						String param = props.getProperty("source." + sources[i]
-								+ ".param." + params[paramCounter]);
-						paramsMap.put(params[paramCounter], param);
-						log.debug("source." + sources[i] + ".param."
-								+ params[paramCounter] + "=" + param);
-					}
-				}
-				
-				DataSource ds = new DataSource(sources[i], implClass, paramsMap,
-						(Filter[]) filterList.toArray(new Filter[0]));
-				sourcesMap.put(sources[i], ds);
-				log.debug("---end of source " + sources[i] + "---");
-			}
-		}
-		// look up factories and their properties
-		defaultFactory = props.getProperty("default.factory");
-		if(defaultFactory==null){
-			log.fatal("The property 'default.factory' is mandatory");
-			throw new IllegalStateException("The property 'default.factory' is mandatory");
-		}
 		
-		String[] factories = BundleLists.parseBundleList(props
-				.getProperty("factories"));
-		for (int i = 0; i < factories.length; i++) {
-			log.debug("---found map factory " + factories[i] + "---");
-			
-			// load the map manager class to delete/save maps and elements
-			String managerClass = props.getProperty("factory." + factories[i]
-					+ ".managerclass");
-			if(managerClass==null){
-				log.error("The property 'managerclass' is mandatory for each map factory! skipping factory "+factories[i]);
-				continue;
-			}
-			log.debug("factory." + factories[i] + ".managerclass=" + managerClass);
-			
-			// load the map manager class to delete/save maps and elements
-			String dataSource = props.getProperty("factory." + factories[i]
-					+ ".source");
-			
-			log.debug("factory." + factories[i] + ".source=" + dataSource);
-			// load map factory params
-			HashMap paramsMap = new HashMap();
-			if(props.containsKey("factory." + factories[i] + ".params")){
-				String[] params = BundleLists.parseBundleList(props
-						.getProperty("factory." + factories[i] + ".params"));
-				for (int paramCounter = 0; paramCounter < params.length; paramCounter++) {
-					String param = props.getProperty("factory." + factories[i]
-							+ ".param." + params[paramCounter]);
-					paramsMap.put(params[paramCounter], param);
-					log.debug("factory." + factories[i] + ".param."
-							+ params[paramCounter] + "=" + param);
-				}
-			}
-			// load the modifymaps flag
-			String adminmodify = props.getProperty("factory." + factories[i]
-					+ ".adminmodify");
-			boolean adminMod = true;
-			if(adminmodify!=null && adminmodify.equalsIgnoreCase("false"))
-				adminMod=false;
-			log.debug("factory." + factories[i] + ".adminmodify=" + adminMod);
-			
-			//load the modifymaps flag
-			String allmodify = props.getProperty("factory." + factories[i]
-					+ ".allmodify");
-			boolean allMod = false;
-			if(allmodify!=null && allmodify.equalsIgnoreCase("true"))
-				allMod=true;
-			log.debug("factory." + factories[i] + ".allmodify=" + allMod);
-
-			//load reload flag
-			String reload = props.getProperty("factory." + factories[i]
-					+ ".reload");
-			boolean rel = false;
-			if(reload!=null && reload.equalsIgnoreCase("true"))
-				rel=true;
-			log.debug("factory." + factories[i] + ".reload=" + rel);
-			
-			//load context menu flag
-			String cntxtmenu = props.getProperty("factory." + factories[i]
-					+ ".contextmenu");
-			boolean cntxt = true;
-			if(cntxtmenu!=null && cntxtmenu.equalsIgnoreCase("false"))
-				cntxt=false;
-			log.debug("factory." + factories[i] + ".contextmenu=" + cntxt);			
-
-			//load double click flag
-			String doubleclick = props.getProperty("factory." + factories[i]
-					+ ".doubleclick");
-			boolean dbclick = true;
-			if(doubleclick!=null && doubleclick.equalsIgnoreCase("false"))
-				dbclick=false;
-			log.debug("factory." + factories[i] + ".doubleclick=" + dbclick);			
-			
-			ContextMenu contMenu = null;
-			if(cntxt){
-				String commandList = props.getProperty("factory."+factories[i]+".cmenu.commands");
-				if(commandList!=null){
-					String[] commands = BundleLists.parseBundleList(commandList);
-					if(commands!=null){
-						contMenu = new ContextMenu();
-						for (int j = 0; j < commands.length;j++) {
-							String link = "-";
-							String params = "-";
-							if(!commands[j].equals("-")){
-								//load the link to open for the command
-								link = props.getProperty("factory." + factories[i]+ ".cmenu."+commands[j]+".link");
-								log.debug("factory." + factories[i]+ ".cmenu."+commands[j]+".link="+link);
-								if(link==null){
-									log.warn("link is null! skipping..");
-									continue;
-								}
-								params = props.getProperty("factory." + factories[i]+ ".cmenu."+commands[j]+".params");						
-								log.debug("factory." + factories[i]+ ".cmenu."+commands[j]+".params="+params);
-								if(params==null) params="";
+		//load context menu flag
+		String cntxtmenu = props.getProperty("enable.contextmenu");
+		if(cntxtmenu!=null && cntxtmenu.equalsIgnoreCase("false"))
+			contextMenuEnabled=false;
+		if (log.isDebugEnabled())
+			log.debug("enable.contextmenu=" + cntxtmenu);			
+		// load context menu object only if context menu is enabled
+		
+		cmenu = new ContextMenu();
+		if (contextMenuEnabled) {
+			String commandList = props.getProperty("cmenu.commands");
+			if(commandList!=null){
+				String[] commands = BundleLists.parseBundleList(commandList);
+				if(commands!=null){
+					for (int j = 0; j < commands.length;j++) {
+						String link = "-";
+						String params = "-";
+						if(!commands[j].equals("-")){
+							//load the link to open for the command
+							link = props.getProperty("cmenu."+commands[j]+".link");
+							if (log.isDebugEnabled())
+							log.debug("cmenu."+commands[j]+".link="+link);
+							if(link==null){
+								log.warn("link is null! skipping..");
+								continue;
 							}
-							contMenu.addEntry(commands[j], link, params);
+							params = props.getProperty("cmenu."+commands[j]+".params");						
+							if (log.isDebugEnabled())
+								log.debug("cmenu."+commands[j]+".params="+params);
+							if(params==null) params="";
 						}
+						cmenu.addEntry(commands[j], link, params);
 					}
-				}else{
-					log.warn("Context Menu enabled and No command found for factory "+factories[i]);
 				}
 			}else{
-				log.debug("contextMenu disabled for the factory "+factories[i] +": skipping...");
+				log.warn("Context Menu enabled but No command found!");
 			}
-			MapsFactory df = new MapsFactory( managerClass, adminMod, allMod, rel, cntxt, contMenu, dbclick , dataSource, paramsMap, factories[i]);
-			factoriesMap.put(factories[i], df);
-			log.debug("---end of map factory " + factories[i] + "---");
+
 		}
+		
+		//load double click flag
+		String doubleclick = props.getProperty("enable.doubleclick");
+		if(doubleclick!=null && doubleclick.equalsIgnoreCase("false"))
+			doubleClickEnabled=false;
+		if (log.isDebugEnabled())
+			log.debug("enable.doubleclick=" + doubleclick);			
+		
+		// load reload flag
+		String reloadStr = props.getProperty("enable.reload");
+		if(reloadStr!=null && reloadStr.equalsIgnoreCase("true"))
+			reload=true;
+		
+		if (log.isDebugEnabled())
+			log.debug("enable.reload=" + reloadStr);			
+		
 		// look up severities and their properties
 		severityMapAs=props.getProperty("severity.map", "avg");
+
+		// look up severities and their properties
 		
 		String[] severities = BundleLists.parseBundleList(props
 				.getProperty("severities"));
@@ -652,6 +497,31 @@ public class MapPropertiesFactory extends Object {
 		}
 		Arrays.sort(orderedSeverities);
 
+		String defaultid = props.getProperty("severity.default");
+		if (defaultid == null) {
+			throw new IllegalStateException(
+					"Required Default Severity not found.");
+		}
+
+		String sevid = props.getProperty("severity." + defaultid + ".id");
+		String sevlabel = props.getProperty("severity." + defaultid + ".label");
+		String sevcolor = props.getProperty("severity." + defaultid + ".color");
+		defaultSeverity = new Severity(Integer.parseInt(sevid), sevlabel, sevcolor);
+		
+		
+		String indeterminateId = props.getProperty("severity.indeterminate");
+		if (indeterminateId == null) {
+			throw new IllegalStateException(
+					"Required Indeterminate Severity not found.");
+		}
+
+		String indsevid = props.getProperty("severity." + indeterminateId + ".id");
+		String indsevlabel = props.getProperty("severity." + indeterminateId
+				+ ".label");
+		String indsevcolor = props.getProperty("severity." + indeterminateId
+				+ ".color");
+		indeterminateSeverity = new Severity(Integer.parseInt(indsevid), indsevlabel, indsevcolor);
+		
 		//Links
 		String[] links = BundleLists.parseBundleList(props
 				.getProperty("links"));
@@ -764,6 +634,28 @@ public class MapPropertiesFactory extends Object {
 		}
 		Arrays.sort(orderedStatuses);
 
+		String unknownid = props.getProperty("status.unknown.uei");
+		if (unknownid == null) {
+			throw new IllegalStateException(
+					"Required Unknown Uei Status not found.");
+		}
+		String stid = props.getProperty("status." + unknownid + ".id");
+		String stuei = props.getProperty("status." + unknownid + ".uei");
+		String stcolor = props.getProperty("status." + unknownid + ".color");
+		String sttext = props.getProperty("status." + unknownid + ".text");
+		unknownStatus = new Status(Integer.parseInt(stid), stuei, stcolor, sttext);
+		
+		String defaultstid = props.getProperty("status.default");
+		if (defaultstid == null) {
+			throw new IllegalStateException(
+					"Required Default Status not found.");
+		}
+		String staid = props.getProperty("status." + defaultstid + ".id");
+		String stauei = props.getProperty("status." + defaultstid + ".uei");
+		String stacolor = props.getProperty("status." + defaultstid + ".color");
+		String statext = props.getProperty("status." + defaultstid + ".text");
+		defaultStatus = new Status(Integer.parseInt(staid), stauei, stacolor, statext);
+		
 		// look up statuses and their properties
 		String[] availes = BundleLists.parseBundleList(props
 				.getProperty("availabilities"));
@@ -789,6 +681,35 @@ public class MapPropertiesFactory extends Object {
 			orderedAvails[k++] = (Avail) it.next();
 		}
 		Arrays.sort(orderedAvails);
+		
+		String avid = props.getProperty("avail.undefined.id");
+		String avmin = props.getProperty("avail.undefined.min");
+		String avcolor = props.getProperty("avail.undefined.color");
+		if (avid == null || avmin == null || avcolor == null) {
+			throw new IllegalStateException(
+					"Required avail.undefined properties not found.");
+		}
+		undefinedAvail = new Avail(Integer.parseInt(avid), Integer.parseInt(avmin), avcolor);
+
+		
+		String enableAvail = props.getProperty("avail.enable");
+		if (enableAvail != null && enableAvail.equalsIgnoreCase("false"))
+			availEnabled=false;
+		else availEnabled = true;
+		
+		String disableAvailId = props.getProperty("avail.enable.false.id");
+		if (disableAvailId == null) {
+			throw new IllegalStateException(
+					"Required Default Status not found.");
+		}
+		Iterator ite = availsMap.values().iterator();
+		while (ite.hasNext()) {
+			Avail av = (Avail) ite.next();
+			if (av.getId() == Integer.parseInt(disableAvailId)){
+				disabledAvail=av;
+				break;
+			}
+		}
 
 		// look up icons filenames
 		String[] icons = BundleLists
@@ -801,7 +722,20 @@ public class MapPropertiesFactory extends Object {
 					+ ". Adding it.");
 			iconsMap.put(icons[i], filename);
 		}
-
+		
+		defaultMapIcon = props.getProperty("icon.default.map");
+		log.debug("default map icon: "+defaultMapIcon);
+		if (defaultMapIcon == null) {
+			throw new IllegalStateException(
+					"Required Default Map Icon not found.");
+		}
+		defaultNodeIcon = props.getProperty("icon.default.node");
+		if (defaultNodeIcon == null) {
+			throw new IllegalStateException(
+					"Required Default Icon Node not found.");
+		}
+		log.debug("default node icon: "+defaultNodeIcon);
+		
 		// look up background filenames
 		String[] bg = BundleLists
 				.parseBundleList(props.getProperty("bgimages"));
@@ -813,48 +747,27 @@ public class MapPropertiesFactory extends Object {
 					+ ". Adding it.");
 			bgImagesMap.put(bg[i], filename);
 		}
+
 		propertiesMaps = new Map[] { severitiesMap, statusesMap, availsMap,
-				iconsMap, bgImagesMap, sourcesMap , factoriesMap};
+				iconsMap, bgImagesMap};
 
 		return (propertiesMaps);
 	}
 
-	public Map getSourcesMap() {
-		return sourcesMap;
-	}
-	
-	public Map getFactoriesMap() {
-		return factoriesMap;
-	}
 
-	public Map getIconsMap() {
+	public Map<String,String> getIconsMap() {
 		return iconsMap;
 	}
 
-	public Map getBackgroundImagesMap() {
+	public Map<String,String> getBackgroundImagesMap() {
 		return bgImagesMap;
 	}
 
-	public String getDefaultMapIcon() throws IOException, FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String defaultMapIcon = props.getProperty("icon.default.map");
-		if (defaultMapIcon == null) {
-			throw new IllegalStateException(
-					"Required Default Icon Map not found.");
-		}
+	public String getDefaultMapIcon(){
 		return defaultMapIcon;
 	}
 
-	public String getDefaultNodeIcon() throws IOException,
-			FileNotFoundException {
-		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
-		String defaultNodeIcon = props.getProperty("icon.default.node");
-		if (defaultNodeIcon == null) {
-			throw new IllegalStateException(
-					"Required Default Icon Node not found.");
-		}
+	public String getDefaultNodeIcon() {
 		return defaultNodeIcon;
 	}
 
@@ -885,223 +798,6 @@ public class MapPropertiesFactory extends Object {
 		return orderedStatuses;
 	}
 
-	/**
-	 * return the Class of the first dataSource (of map.properties file)
-	 * matching with the nodeid in input
-	 * 
-	 * @param nodeid
-	 * @return the Class of the first dataSource (of map.properties file)
-	 *         matching with the nodeid in input, null if there are no matches.
-	 */
-	public Class getDataSourceClass(int nodeid){
-		Class ds = null;
-		if(nodesPerSource!=null){
-			Iterator it = nodesPerSource.entrySet().iterator();
-			while(it.hasNext()){
-				Entry entry = (Entry)it.next();
-				String dsName = (String)entry.getKey();
-				Set val = (Set)entry.getValue();
-				if(val.contains(new Integer(nodeid))){
-					DataSource dsource = (DataSource)sourcesMap.get(dsName);
-					try{
-						ds=Class.forName(dsource.getImplClass());
-					}catch(ClassNotFoundException e){
-						log.error(e);
-					}
-					break;
-				}
-			}
-		}
-		return ds;
-	}
-
-	/*
-	 * return the first DataSource (of map.properties file)
-	 * matching with the nodeid in input
-	 * 
-	 * @param nodeid
-	 * @return the first DataSource (of map.properties file)
-	 *         matching with the nodeid in input, null if there are no matches.
-	 
-	public DataSource getDataSource(int nodeid){
-		DataSource ds = null;
-		if(nodesPerSource!=null){
-			Iterator it = nodesPerSource.entrySet().iterator();
-			while(it.hasNext()){
-				Entry entry = (Entry)it.next();
-				String dsName = (String)entry.getKey();
-				Set val = (Set)entry.getValue();
-				if(val.contains(new Integer(nodeid))){
-					ds = (DataSource)sourcesMap.get(dsName);
-					break;
-				}
-			}
-		}
-		return ds;
-	}*/
-	
-	public DataSource getDataSource(String dataSourceLabel){
-		if(sourcesMap!=null){
-			return (DataSource)sourcesMap.get(dataSourceLabel);
-		}
-		return null;
-	}
-	
-	public Set getNodeIdsBySource(String sourceLabel)throws MapsException{
-		DataSource dataSource = (DataSource) sourcesMap.get(sourceLabel);
-		Filter[] filters = dataSource.getFilters();
-		if(filters==null || filters.length==0){
-			return getAllNodes();
-		}
-		Connection conn=null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		HashSet nodes = new HashSet();
-		try {
-			conn = Vault.getDbConnection();
-			String sqlQuery = null;
-			// contructs and execute the query
-			
-			sqlQuery = "select distinct " + filters[0].table + ".nodeid from ";
-			for (int i = 0; i < filters.length; i++) {
-				sqlQuery += filters[i].table;
-				if (i < filters.length - 1) {
-					sqlQuery += ",";
-				}
-			}
-			sqlQuery += " where ";
-			for (int i = 0; i < filters.length; i++) {
-				sqlQuery += filters[i].condition;
-				if (i < filters.length - 1) {
-					sqlQuery += " AND ";
-				}
-			}
-			log.debug("Applying filters for source "+sourceLabel+" '"+sqlQuery+"'");
-			
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(sqlQuery);
-			// add all matching nodes (id) with the source to the Set.
-			while (rs.next()) {
-				nodes.add(new Integer(rs.getInt(1)));
-			}
-			rs.close();
-			stmt.close();
-			conn.close();
-		}catch(Exception e){
-			throw new MapsException("Exception while getting nodes by source label "+e);
-		}	
-		return nodes;
-	}
-	
-	private Set getAllNodes()throws MapsException{
-		Connection conn=null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		HashSet nodes = new HashSet();
-		try {
-			conn = Vault.getDbConnection();
-			String sqlQuery = "select distinct nodeid from ipinterface";
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(sqlQuery);
-			// add all matching nodes (id) with the source to the Set.
-			while (rs.next()) {
-				nodes.add(new Integer(rs.getInt(1)));
-			}
-			rs.close();
-			stmt.close();
-			conn.close();
-		}catch(Exception e){
-			throw new MapsException("Exception while getting all nodes "+e);
-		}
-		return nodes;
-	}
-	/*private static void reloadNodesPerSource() {
-		nodesPerSource = new HashMap();
-		Connection conn=null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			conn = Vault.getDbConnection();
-			Iterator it = sourcesMap.keySet().iterator();
-			while (it.hasNext()) {
-				String key = (String) it.next();
-				DataSource dataSource = (DataSource) sourcesMap.get(key);
-				Filter[] filters = dataSource.getFilters();
-				String sqlQuery = null;
-				// contructs and execute the query
-				if (filters != null) {
-					sqlQuery = "select distinct " + filters[0].table + ".nodeid from ";
-					for (int i = 0; i < filters.length; i++) {
-						sqlQuery += filters[i].table;
-						if (i < filters.length - 1) {
-							sqlQuery += ",";
-						}
-					}
-					sqlQuery += " where ";
-					for (int i = 0; i < filters.length; i++) {
-						sqlQuery += filters[i].condition;
-						if (i < filters.length - 1) {
-							sqlQuery += " AND ";
-						}
-					}
-					log.debug("Applying filters for source "+key+" '"+sqlQuery+"'");
-					HashSet nodes = new HashSet();
-					stmt = conn.createStatement();
-					rs = stmt.executeQuery(sqlQuery);
-					// add all matching nodes (id) with the source to the Set.
-					while (rs.next()) {
-						nodes.add(new Integer(rs.getInt(1)));
-					}
-					nodesPerSource.put(key, nodes);
-				}
-			}
-		} catch (Exception s) {
-			log.error(s);
-			throw new RuntimeException(s);
-		} finally {
-			try {
-				rs.close();
-				stmt.close();
-				Vault.releaseDbConnection(conn);
-			} catch (Exception e) {
-				log.error(e);
-				throw new RuntimeException(e);
-			}
-		}
-		Iterator it = nodesPerSource.keySet().iterator();
-		while(it.hasNext()){
-			String sourceName = (String)it.next();
-			HashSet nodes = (HashSet) nodesPerSource.get(sourceName);
-			log.debug("found association source/nodes -> "+sourceName+"/"+nodes.toString());
-		}
-
-	}*/
-
-	/**
-	 * gets the MapsFactory by the factoryLabel in input
-	 * @param factoryLabel
-	 * @return MapsFactory by the factoryLabel in input
-	 */
-	public MapsFactory getMapsFactory(String factoryLabel){
-		MapsFactory result = null;
-		if(factoriesMap!=null){
-			result=(MapsFactory)factoriesMap.get(factoryLabel);
-		}
-		return result;
-	}
-
-	/**
-	 * gets the default MapsFactory
-	 * @return the default MapsFactory
-	 */
-	public MapsFactory getDefaultFactory() {
-		MapsFactory mf=null;
-		if(defaultFactory!=null && factoriesMap!=null){
-			mf =(MapsFactory)factoriesMap.get(defaultFactory);
-		}
-		return mf;
-	}
-
     public int getSeverity(String severityLabel) {
     	Severity sev = ((Severity)severitiesMap.get(severityLabel));
     	if(sev==null){
@@ -1115,7 +811,7 @@ public class MapPropertiesFactory extends Object {
     	Status status = (Status)statusesMap.get(uei);
     	if(status==null){
     		try {
-        		return getUnknownUeiStatus().getId();
+        		return getUnknownStatus().getId();
     		} catch (Exception e) {
     			throw new RuntimeException("Exception while getting unknown status "+e);
 			}
@@ -1183,16 +879,87 @@ public class MapPropertiesFactory extends Object {
     	return (Link) linksMap.get(defaultLink);
     }
 
-	public Map getLinksMap() {
+	public Map<Integer,Link> getLinksMap() {
 		return linksMap;
 	}
-
-	public Map getLinkStatusesMap() {
+	
+	public Map<String, LinkStatus> getLinkStatusesMap() {
 		return linkStatusesMap;
 	}
     
-	public static String getMultilinkStatus() {
+	public  String getMultilinkStatus() {
 		return multilinkStatus;
 	}
-	
+
+    public List<Avail> getAvails() throws MapsException {
+    	List<Avail> avails = new ArrayList<Avail>();
+    	avails.addAll(Arrays.asList(getOrderedAvails()));
+    	return avails;
+    }
+    
+    public List<Link> getLinks() throws MapsException {
+    	List<Link> links = new ArrayList<Link>();
+    	links.addAll((getLinksMap().values()));
+    	return links;
+    }
+    
+    public List<LinkStatus> getLinkStatuses() throws MapsException {
+    	List<LinkStatus> linkstatutes = new ArrayList<LinkStatus>();
+    	linkstatutes.addAll((getLinkStatusesMap().values()));
+    	return linkstatutes;
+    }
+    
+    public List<Status> getStatuses() throws MapsException {
+    	List<Status> statutes = new ArrayList<Status>();
+    	statutes.addAll(getStatusesMap().values());
+    	return statutes;
+    }
+    
+    public List<Severity> getSeverities() throws MapsException {
+    	List<Severity> sevs = new ArrayList<Severity>(); 
+    	sevs.addAll(getSeveritiesMap().values());
+    	return sevs;
+    }
+    
+    public java.util.Map<String,String> getIcons() throws MapsException{
+    	return getIconsMap();
+    }
+    
+    public java.util.Map<String, String> getBackgroundImages() throws MapsException {
+    	return getBackgroundImagesMap();
+    }
+    
+    public String getDefaultBackgroundColor() {
+    	return "ffffff";
+    }
+    
+    public int getDefaultStatusId() {
+    	return getDefaultStatus().getId();
+    }
+    
+    public String getDefaultSemaphoreColorBy() {
+    	return MapsConstants.COLOR_SEMAPHORE_BY_SEVERITY;
+    }
+
+    public java.util.Map<Integer, String> getMapElementDimensions() {
+    	// TODO To be implemented (via map.properties-MapPropertiesFactory)
+    	java.util.Map<Integer, String> dims = new java.util.TreeMap<Integer, String>();
+    	
+    	dims.put(6,"smallest");
+    	dims.put(10,"very small");
+    	dims.put(15,"small");
+    	dims.put(20,"normal");
+    	dims.put(25,"big");
+    	dims.put(30,"biggest");
+    	
+    	return dims;
+    }
+    
+    public int getDefaultMapElementDimension() {
+    	return 20;
+    }
+    
+
+
+
 }

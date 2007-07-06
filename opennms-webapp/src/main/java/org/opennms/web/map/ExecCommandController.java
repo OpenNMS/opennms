@@ -1,14 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,36 +29,41 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-
 package org.opennms.web.map;
 
+/*
+ * Created on 2-Lug-2007
+ *
+ */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.map.MapsConstants;
+import org.opennms.web.map.view.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+
 
 /**
- * The servlet executes local server command line ping or traceroute
+ * @author mmigliore
  * 
- * @author maumig
+ * this class provides to create pages for executing ping and traceroute commands
+ * 
  */
-public class CommandLineServlet extends HttpServlet {
+public class ExecCommandController implements Controller {
+	Category log;
 
-    protected static Category log =null;
-
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-	    log = ThreadCategory.getInstance(this.getClass());
-	      
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+		log = ThreadCategory.getInstance(this.getClass());
+		
 		String command = request.getParameter("command");
 		String address = request.getParameter("address");
 	    log.info("Executing "+command+ " "+ address+".");
@@ -111,8 +116,8 @@ public class CommandLineServlet extends HttpServlet {
 			}
 
 		} catch (Exception e) {
-			log.error(e);
-			os.write("An error occurred.");
+			log.error("An error occourred while executing command.",e);
+			os.write("An error occourred.");
 		}finally{
 			os.write("</font>" +
 					"<br>" +
@@ -121,10 +126,7 @@ public class CommandLineServlet extends HttpServlet {
 			os.close();
 		}
 
-    }
-	
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
+		return null;
 	}
 	
 	private class Command
@@ -152,4 +154,5 @@ public class CommandLineServlet extends HttpServlet {
 	        p.waitFor();
 	    }
 	}
+
 }

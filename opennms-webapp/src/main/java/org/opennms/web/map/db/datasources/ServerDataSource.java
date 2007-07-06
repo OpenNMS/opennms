@@ -1,4 +1,4 @@
-package org.opennms.web.map.datasources;
+package org.opennms.web.map.db.datasources;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,7 +14,8 @@ import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.map.config.MapPropertiesFactory;
+import org.opennms.web.map.MapsConstants;
+
 
 
 public class ServerDataSource implements DataSourceInterface {
@@ -22,9 +23,7 @@ public class ServerDataSource implements DataSourceInterface {
 	private Map params;
 	boolean initialized = false;
 	private HashMap severityMapping = new HashMap();
-	//private HashMap statusMapping = new HashMap();
 
-	static String LOG4J_CATEGORY = "OpenNMS.Map";
 	static Category log;
 	
 	static final String STATUS_FIELD="ev_status";
@@ -36,23 +35,23 @@ public class ServerDataSource implements DataSourceInterface {
 	final String ASSIGNED_STATUS = "ASSIGNED";
 	final String OPEN_STATUS = "OPEN";
 	
-	private static MapPropertiesFactory mpf=null;
+	//private static MapPropertiesFactory mpf=null;
 	
 	static Connection opennmsConn = null;
 	static Connection externalConn = null;
 
 	
-	public ServerDataSource(){
-		ThreadCategory.setPrefix("OpenNMS.Map");
+	public ServerDataSource(Map params){
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		mpf = MapPropertiesFactory.getInstance();
+		this.params = params;
+		init();
 	}
 	
 	/**
 	 * Before invoking get() method, this method must be invoked.
 	 */
-	public void init(Map params){
-		this.params = params;
+	public void init(){
 		log.debug("Init...getting db connection");
 	
 			try{
@@ -102,33 +101,30 @@ public class ServerDataSource implements DataSourceInterface {
 		}
 	}
 	
-	/**
-	 * @param params is a HashMap that must contain entries for "url","driver","user","password","Critical","Major","Minor","Warning","Normal","Cleared","Indeterminate"
-	 */
-	public int getSeverity(Object id){
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ServerDataSource.class);
-		
+
+	public String getSeverity(Object id){
+
+		String result = "-1";
+
 		try {
-			if (!isInitialized()) init(params);
+			if (!isInitialized()) init();
 		} catch (Exception e) {
 			log.error("exiting: error found " + e);
-			return -1;
+			return "-1";
 		}
 		
-		int result = -1;
 		//get ipaddresses of the node
 		HashSet ipAddrs = getIpAddrById(id);
 		//If there is no ipaddress for the nodeid
 		if(ipAddrs.size()==0){
 			log.warn("No ip address found for node with id "+(Integer)id);
-			return result;
+			return "-1";
 		}
 		// get the severity from external db
 		result = getSev(ipAddrs);
 		// if no severity is found...
-		if(result<0){
-			log.error("No severity found for element with id "+(Integer)id);
+		if(result.equals("-1")){
+			log.warn("No severity found for element with id "+(Integer)id);
 		}
 		return result;
 	}
@@ -157,8 +153,8 @@ public class ServerDataSource implements DataSourceInterface {
 		return ipAddrs;
 	}
 
-	private int getSev(HashSet ipAddrs){
-		int result=-1;
+	private String getSev(HashSet ipAddrs){
+
 		String getDataQuery="select max("+SEVERITY_FIELD+") from "+TABLE_NAME+" where ip_address in (";
 		Iterator it = ipAddrs.iterator();
 		while(it.hasNext()){
@@ -184,35 +180,27 @@ public class ServerDataSource implements DataSourceInterface {
 			stmt.close();
 		} catch (SQLException e1) {
 			log.error("Exception while getting severity "+e1);
-			return -1;
+			return "-1";
 		}
 		
 		String sevLabel = (String)severityMapping.get(value);
 		log.debug("Getting severity mapping for key="+value+": sevLabel="+sevLabel);
 		
-		try {
-			result = mpf.getSeverity(sevLabel);
-			log.debug("Got severity:"+result );
-		} catch (Exception e) {
-			log.error("No severity found for severity label "+sevLabel+ " "+e);
-			result=-1;
-		}
-		return result;
+		return sevLabel;
 	}
 
 	
-	public int getStatus(Object id){
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ServerDataSource.class);
-		
+	public String getStatus(Object id){
+
+		String result = "-1";
+
 		try {
-			if (!isInitialized()) init(params);
+			if (!isInitialized()) init();
 		} catch (Exception e) {
 			log.error("exiting: error found " + e);
-			return -1;
+			return result;
 		}
 		
-		int result = -1;
 		//get ipaddresses of the node
 		HashSet ipAddrs = getIpAddrById(id);
 		//If there is no ipaddress for the nodeid
@@ -223,15 +211,15 @@ public class ServerDataSource implements DataSourceInterface {
 		// get the severity from external db
 		result = getSt(ipAddrs);
 		// if no severity is found...
-		if(result<0){
-			log.error("No severity found for element with id "+(Integer)id);
+		if(result.equals("-1")){
+			log.warn("No severity found for element with id "+(Integer)id);
 		}
 		return result;
 
 	}
 	
-	private int getSt(HashSet ipAddrs){
-		int result=-1;
+	private String getSt(HashSet ipAddrs){
+		
 		String getDataQuery="select "+STATUS_FIELD+" from "+TABLE_NAME+" where ip_address in (";
 		Iterator it = ipAddrs.iterator();
 		while(it.hasNext()){
@@ -270,17 +258,10 @@ public class ServerDataSource implements DataSourceInterface {
 			stmt.close();
 		} catch (SQLException e1) {
 			log.error("Exception while getting status "+e1);
-			return -1;
+			return "-1";
 		}
 		
-		try {
-			result = mpf.getStatus(value);
-			log.debug("Got status:"+result );
-		} catch (Exception e) {
-			log.error("No status found for status label "+value+ " "+e);
-			result=-1;
-		}
-		return result;
+		return value;
 	}
 	
 	public double getAvailability(Object id) {

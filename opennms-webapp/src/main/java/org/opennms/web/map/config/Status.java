@@ -50,12 +50,10 @@ public class Status implements Comparable{
 	private String text;
 	
 	
-	/**
-	 * @param id
-	 * @param uei
-	 * @param color
-	 * @param text
-	 */
+	
+	
+	
+	
 	public Status(int id, String uei, String color, String text) {
 		super();
 		this.id = id;
@@ -63,7 +61,7 @@ public class Status implements Comparable{
 		this.color = color;
 		this.text = text;
 	}
-	
+
 	/**
 	 * Compares the Status to another in input by id.
 	 */
@@ -98,4 +96,5 @@ public class Status implements Comparable{
 	public void setUei(String uei) {
 		this.uei = uei;
 	}
+
 }

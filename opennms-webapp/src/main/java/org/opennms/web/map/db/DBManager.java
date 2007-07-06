@@ -4,13 +4,13 @@
  */
 package org.opennms.web.map.db;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,196 +19,68 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
 import java.util.Set;
 import java.util.TreeMap;
-//import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
-import org.opennms.core.resource.db.SimpleDbConnectionFactory;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.acegisecurity.Authentication;
-import org.opennms.web.event.EventUtil;
-import org.opennms.web.map.MapsException;
-import org.opennms.web.map.config.Avail;
-import org.opennms.web.map.config.DataSource;
-import org.opennms.web.map.config.MapPropertiesFactory;
-import org.opennms.web.map.datasources.DataSourceInterface;
-import org.opennms.web.map.view.VElement;
-import org.opennms.web.map.view.VLink;
-import org.opennms.web.map.view.VMap;
 
+import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.ThreadCategory;
+
+import org.opennms.web.map.MapsConstants;
+import org.opennms.web.map.MapsException;
+
+import org.opennms.web.map.view.VElementInfo;
+import org.opennms.web.map.view.VMapInfo;
 
 /**
  * @author maumig
- * 
- * 
  */
 public class DBManager extends Manager {
 
-	private class LinkInfo {
-		int nodeid;
-		int ifindex;
-		int nodeparentid;
-		int parentifindex;
-		int snmpiftype;
-		long snmpifspeed;
-		int snmpifoperstatus;
-		
-		LinkInfo(int nodeid, int ifindex, int nodeparentid, int parentifindex, int snmpiftype, long snmpifspeed, int snmpifoperstatus) {
-			super();
-			this.nodeid = nodeid;
-			this.ifindex = ifindex;
-			this.nodeparentid = nodeparentid;
-			this.parentifindex = parentifindex;
-			this.snmpiftype = snmpiftype;
-			this.snmpifspeed = snmpifspeed;
-			this.snmpifoperstatus = snmpifoperstatus;
-		}
-		
-		public boolean equals(Object obj) {
-			if (obj instanceof LinkInfo ) {
-				LinkInfo ol = (LinkInfo) obj;
-				return 
-				(ol.nodeid == this.nodeid 
-						&& ol.ifindex == this.ifindex 
-						&& ol.nodeparentid== this.nodeparentid 
-						&& ol.parentifindex == this.parentifindex
-						&& ol.snmpiftype == this.snmpiftype
-						&& ol.snmpifspeed == this.snmpifspeed
-						&& ol.snmpifoperstatus==this.snmpifoperstatus);
-				
-			} 
-			return false;
-		}
-		
-		public int hashCode() {
-			return (3*nodeid)+(5*ifindex)+(7*nodeparentid)+(11*parentifindex)+(13*snmpiftype)+(17*snmpifoperstatus);
-		}
-
-	}
-    
-	public class OutageInfo {
-    	int nodeid;
-    	int status;
-    	float severity;
-    	
-    	protected OutageInfo(int nodeid,int status,float severity) {
-    		this.nodeid = nodeid;
-    		this.severity = severity;
-    		this.status = status;
-    	}
-    	
-    	
-    	public float getSeverity() {
-    		return severity;
-    	}
-
-    	public void setSeverity(float severity) {
-    		this.severity = severity;
-    	}
-    	
-    	public int getStatus() {
-    		return status;
-    	}
-    	
-    	public void setStatus(int status) {
-    		this.status = status;
-    	}
-    }
 	/**
 	 * the map table to use.
 	 */
-	String mapTable = null;
+	String mapTable = "map";
 
 	/**
 	 * the element table to use.
 	 */
-	String elementTable = null;
+	String elementTable = "element";
 
 	Connection m_dbConnection = null;
 
-	MapPropertiesFactory mpf=null;
-	String LOG4J_CATEGORY = "OpenNMS.Map";
-    int defaultStatusId;
-    int defaultSeverityId;
-    int indeterminateSeverityId;
-    Avail undefinedAvail;
-    int unknownStatusId;
-    boolean availEnabled = true;
-    Avail defaultEnableFalseAvail;
-    String calculateSeverityAs;
-
 	Category log = null;
 
-	public DBManager(DataSource dataSource) throws MapsException{
-		super(dataSource);
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+	public DBManager() throws MapsException{
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-	}
-	
-	public DBManager(DataSource dataSource, java.util.Map params)throws MapsException {
-		super(dataSource,params);
 		init();
+		if(log.isDebugEnabled())
+			log.debug("Instantiating DBManager");
 	}
+	/**
+	 * 
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
 
 	void createConnection() throws SQLException, ClassNotFoundException {
 		
-		// create the dbconnection only if not yet created
+		// create the dbconnection only if not yet created and active
 		if (m_dbConnection != null && !m_dbConnection.isClosed())
 			return;
 		
 		log.debug("creating connection");
-		
-		if (m_params == null) {
-			throw new IllegalStateException(
-					"parameters not found while creating db connection.");
-		}
-		String driver = (String) m_params.get("driver");
-		if (driver == null) {
-			throw new IllegalStateException("parameter 'driver' not found.");
-		}
-		String url = (String) m_params.get("url");
-		if (url == null) {
-			throw new IllegalStateException("parameter 'url' not found.");
-		}
-		String user = (String) m_params.get("user");
-		if (user == null) {
-			throw new IllegalStateException("parameter 'user' not found.");
-		}
-		String password = (String) m_params.get("password");
-		if (password == null) {
-			throw new IllegalStateException("parameter 'password' not found.");
-		}
-		log.debug("using parameters: driver="+driver+", url="+url+", user="+user+", password="+password);
-		SimpleDbConnectionFactory m_dbConnectionFactory = new SimpleDbConnectionFactory();
-		m_dbConnectionFactory.init(url, driver, user, password);
-		m_dbConnection = m_dbConnectionFactory.getConnection();
+		m_dbConnection = Vault.getDbConnection();
 	}
-
-	public void init() throws MapsException {
+ 
+	private void init() throws MapsException {
 
 		if(!initialized){
-			ThreadCategory.setPrefix(LOG4J_CATEGORY);
-			log = ThreadCategory.getInstance(this.getClass());
 			log.debug("Init...");
 
-			try {
-				mapTable = (String) m_params.get("maptable");
-				if (mapTable == null) {
-					throw new IllegalStateException(
-							"parameter 'maptable' not found.");
-				}
-				elementTable = (String) m_params.get("elementtable");
-				if (elementTable == null) {
-					throw new IllegalStateException(
-							"parameter 'elementtable' not found.");
-				}
-			} catch (Exception e) {
-				throw new MapsException(e);
-			}
-			
 			try {
 				createConnection();
 			} catch (Exception e) {
@@ -216,22 +88,6 @@ public class DBManager extends Manager {
 				throw new MapsException(e);
 			}
 			
-			try{
-				MapPropertiesFactory.reload(true);
-				mpf=MapPropertiesFactory.getInstance();
-		    	defaultStatusId = mpf.getDefaultStatus().getId();
-		    	defaultSeverityId = mpf.getDefaultSeverity().getId();
-		    	indeterminateSeverityId = mpf.getIndeterminateSeverity().getId();
-		    	undefinedAvail = mpf.getUndefinedAvail();
-		    	unknownStatusId = mpf.getUnknownUeiStatus().getId();
-		    	availEnabled = mpf.enableAvail();
-		    	defaultEnableFalseAvail = mpf.getDisabledAvail();
-		    	calculateSeverityAs = mpf.getSeverityMapAs();
-			}catch(Exception e){
-				log.error("Error while reloading MapPropertiesFactory " +e);
-				throw new MapsException(e);
-			}
-
 			initialized=true;
 		}
 	}
@@ -250,9 +106,6 @@ public class DBManager extends Manager {
 	
 	public void startSession() throws MapsException {
 		if(!isStartedSession()){
-			if(m_params==null){
-				throw new MapsException("Call first Manager(java.util.Map params) constructor");
-			}
 			try {
 				log.debug("setting AutoCommit false db connection...");
 				m_dbConnection.setAutoCommit(false);
@@ -792,7 +645,7 @@ public class DBManager extends Manager {
 		}
 	}
 
-	public java.util.Map getMapsStructure() throws MapsException {
+	public java.util.Map<Integer,Set<Integer>> getMapsStructure() throws MapsException {
 		try {
 			java.util.Map<Integer,Set<Integer>> maps = new HashMap<Integer,Set<Integer>>();
 			String sqlQuery = "select elementid,mapid from " + elementTable
@@ -993,7 +846,7 @@ public class DBManager extends Manager {
 		}
 	}
 
-	public MapMenu[] getAllMapMenus() throws MapsException {
+	public VMapInfo[] getAllMapMenus() throws MapsException {
 		try {
 			final String sqlQuery = "SELECT mapid,mapname,mapowner FROM "
 					+ mapTable +" order by mapname";
@@ -1001,12 +854,12 @@ public class DBManager extends Manager {
 			createConnection();
 			Statement statement = m_dbConnection.createStatement();
 			ResultSet rs = statement.executeQuery(sqlQuery);
-			Vector<MapMenu> maps = rs2MapMenuVector(rs);
+			Vector<VMapInfo> maps = rs2MapMenuVector(rs);
 			// System.out.println(maps);
 
-			MapMenu[] el = null;
+			VMapInfo[] el = null;
 			if (maps != null) {
-				el = new MapMenu[maps.size()];
+				el = new VMapInfo[maps.size()];
 				el = maps.toArray(el);
 			}
 			rs.close();
@@ -1019,7 +872,7 @@ public class DBManager extends Manager {
 		}
 	}
 
-	public MapMenu getMapMenu(int mapId) throws MapsException {
+	public VMapInfo getMapMenu(int mapId) throws MapsException {
 		try {
 			final String sqlQuery = "SELECT mapid,mapname,mapowner FROM "
 					+ mapTable + " where mapId= ?";
@@ -1029,7 +882,7 @@ public class DBManager extends Manager {
 					.prepareStatement(sqlQuery);
 			statement.setInt(1, mapId);
 			ResultSet rs = statement.executeQuery();
-			MapMenu mm = rs2MapMenu(rs);
+			VMapInfo mm = rs2MapMenu(rs);
 			// System.out.println(maps);
 
 			rs.close();
@@ -1043,7 +896,7 @@ public class DBManager extends Manager {
 		}
 	}
 
-	public MapMenu[] getMapsMenuByName(String mapLabel) throws MapsException {
+	public VMapInfo[] getMapsMenuByName(String mapLabel) throws MapsException {
 		try {
 			final String sqlQuery = "SELECT mapid,mapname,mapowner FROM "
 					+ mapTable + " WHERE upper( mapname ) = upper( ? )";
@@ -1053,10 +906,10 @@ public class DBManager extends Manager {
 					.prepareStatement(sqlQuery);
 			statement.setString(1, mapLabel);
 			ResultSet rs = statement.executeQuery();
-			Vector<MapMenu> mapVector = rs2MapMenuVector(rs);
-			MapMenu[] maps = null;
+			Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
+			VMapInfo[] maps = null;
 			if (mapVector != null) {
-				maps = new MapMenu[mapVector.size()];
+				maps = new VMapInfo[mapVector.size()];
 				maps = mapVector.toArray(maps);
 			}
 			rs.close();
@@ -1069,7 +922,7 @@ public class DBManager extends Manager {
 		}
 	}
 	
-	public MapMenu[] getMapsMenuByOwner(String owner) throws MapsException {
+	public VMapInfo[] getMapsMenuByOwner(String owner) throws MapsException {
 		try {
 			final String sqlQuery = "SELECT mapid,mapname,mapowner FROM "
 					+ mapTable + " WHERE upper( mapowner ) = upper( ? )";
@@ -1079,10 +932,10 @@ public class DBManager extends Manager {
 					.prepareStatement(sqlQuery);
 			statement.setString(1, owner);
 			ResultSet rs = statement.executeQuery();
-			Vector<MapMenu> mapVector = rs2MapMenuVector(rs);
-			MapMenu[] maps = null;
+			Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
+			VMapInfo[] maps = null;
 			if (mapVector != null) {
-				maps = new MapMenu[mapVector.size()];
+				maps = new VMapInfo[mapVector.size()];
 				maps = mapVector.toArray(maps);
 			}
 			rs.close();
@@ -1106,309 +959,75 @@ public class DBManager extends Manager {
 		}
 	}
 
-	public ElementInfo[] getAllElementInfo() throws MapsException {
+	public VElementInfo[] getAllElementInfo() throws MapsException {
 		try {
 			final String sqlQuery = " SELECT  nodeid,nodelabel FROM node WHERE nodetype!='D'";
 			createConnection();
 			PreparedStatement statement = m_dbConnection
 					.prepareStatement(sqlQuery);
 			ResultSet rs = statement.executeQuery();
-			Vector<ElementInfo> elements = new Vector<ElementInfo>();
+			Vector<VElementInfo> elements = new Vector<VElementInfo>();
 			while (rs.next()) {
-				ElementInfo ei = new ElementInfo(rs.getInt("nodeid"), "", 0,
+				VElementInfo ei = new VElementInfo(rs.getInt("nodeid"), "", 0,
 						(rs.getString("nodelabel") != null) ? rs
 								.getString("nodelabel") : "("
 								+ rs.getInt("nodeid") + ")");
 				elements.add(ei);
 			}
-			ElementInfo[] el = null;
+			VElementInfo[] el = null;
 			if (elements != null) {
-				el = new ElementInfo[elements.size()];
+				el = new VElementInfo[elements.size()];
 				el = elements.toArray(el);
 			}
 			rs.close();
 			statement.close();
 			return el;
 		} catch (Exception e) {
-			log.error("Exception while getting all ipaddrs");
+			log.error("Exception while getting all element infos", e);
+			throw new MapsException(e); 
+		}
+	}
+
+	public VElementInfo[] getElementInfoLike(String like) throws MapsException {
+		try {
+			final String sqlQuery = " SELECT  nodeid,nodelabel FROM node WHERE nodelabel like '"+like+"%' AND  nodetype!='D'";
+			createConnection();
+			PreparedStatement statement = m_dbConnection
+					.prepareStatement(sqlQuery);
+			ResultSet rs = statement.executeQuery();
+			Vector<VElementInfo> elements = new Vector<VElementInfo>();
+			while (rs.next()) {
+				VElementInfo ei = new VElementInfo(rs.getInt("nodeid"), "", 0,
+						(rs.getString("nodelabel") != null) ? rs
+								.getString("nodelabel") : "("
+								+ rs.getInt("nodeid") + ")");
+				elements.add(ei);
+			}
+			VElementInfo[] el = null;
+			if (elements != null) {
+				el = new VElementInfo[elements.size()];
+				el = elements.toArray(el);
+			}
+			rs.close();
+			statement.close();
+			return el;
+		} catch (Exception e) {
+			log.error("Exception while getting element infos like "+like, e);
 			throw new MapsException(e);
 		}
 	}
 
-    public VLink[] getLinks(VElement[] elems) throws MapsException {
-    	String multilinkStatus = mpf.getMultilinkStatus();
-    	List<VLink> links = new ArrayList<VLink>();
-        
-    	// this is the list of nodes set related to Element
-    	//java.util.List<Set<Integer>> elemNodes = new java.util.ArrayList<Set<Integer>>();
-    	java.util.Map<Integer,Set<Integer>> node2Element = new HashMap<Integer,Set<Integer>>();
-    	
-    	HashSet<Integer> allNodes = new HashSet<Integer>();
+	public List<VElementInfo> getOutagedElements() throws MapsException {
 		try {
-	    	if (elems != null) {
-	        	for (int i = 0; i < elems.length; i++) {
-	        			        		
-	                Set<Integer> nodeids = getNodeidsOnElement(elems[i]);
-	                allNodes.addAll(nodeids);
-	                //elemNodes.add(nodeids);
-	                Iterator<Integer> ite = nodeids.iterator();
-	    	    	while(ite.hasNext()) {
-	    	    		Integer nodeid = ite.next();
-	    	    		Set<Integer> elements = node2Element.get(nodeid);
-	    	    		if (elements == null) elements = new java.util.HashSet<Integer>();
-	    	    		elements.add(new Integer(i));
-	    	    		node2Element.put(nodeid,elements);
-	    	    	}
-	    	    		                	         	}
-	        }else{
-	        	return null;
-	        }
-    		
-	    	log.debug("----------Node2Element----------");
-	    	Iterator<Integer> it = node2Element.keySet().iterator();
-	    	while(it.hasNext()){
-	    		Integer nodeid=it.next();
-	    		log.debug("Node "+nodeid+" contained in Elements "+node2Element.get(nodeid).toString());
-	    	}
-	    	log.debug("----------End of Node2Element----------");
-
-	    	log.debug("----------Link on Elements ----------");
-	    	Set<LinkInfo> linkinfo = getLinksOnElements(allNodes);
-	    	Iterator<LinkInfo> ite = linkinfo.iterator();
-	    	while(ite.hasNext()) {
-	    		LinkInfo linfo = ite.next();
-	    		log.debug(""+linfo.nodeid+"-"+linfo.nodeparentid);
-	    	}
-	    	log.debug("----------End of Link on Elements ----------");
-	    	ite = linkinfo.iterator();
-	    	while(ite.hasNext()) {
-	    		LinkInfo linfo = ite.next();
-	    		log.debug("Getting linkinfo for nodeid "+linfo.nodeid);
-	    		Set<Integer> fE = node2Element.get(linfo.nodeid);
-	    		log.debug("Got "+fE);
-	    		if(fE!=null){
-		    		Iterator<Integer> firstElements = fE.iterator();
-		    		while (firstElements.hasNext()) {
-			    		log.debug("Getting linkinfo for nodeid "+linfo.nodeparentid);
-		    			Set<Integer> sE=node2Element.get(linfo.nodeparentid);
-		    			log.debug("Got "+sE);
-		    			Integer firstNext = firstElements.next();
-		    			if(sE!=null){
-				    		Iterator<Integer> secondElements = sE.iterator();
-				    		VElement first = elems[firstNext.intValue()]; 
-				    		while (secondElements.hasNext()) {
-				    			VElement second = elems[secondElements.next().intValue()];
-				    			if (first.hasSameIdentifier(second)) continue;
-				    			VLink vlink = new VLink(first,second);
-				    			vlink.setLinkOperStatus(linfo.snmpifoperstatus);
-				    			vlink.setLinkTypeId(getLinkTypeId(linfo));
-				    			int index = links.indexOf(vlink);
-				    			if(index!=-1){
-				    				VLink alreadyIn = links.get(index);
-				    				if(alreadyIn.equals(vlink)){
-				    					if(multilinkStatus.equals(mpf.MULTILINK_BEST_STATUS)){
-				    						if(vlink.getLinkOperStatus()<alreadyIn.getLinkOperStatus()){
-				    							log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-				    							links.remove(index);
-				    							links.add(vlink);
-				    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-				    						}
-				    					}else if(vlink.getLinkOperStatus()>alreadyIn.getLinkOperStatus()){
-				    						log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-			    							links.remove(index);
-			    							links.add(vlink);
-			    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-			    						}
-				    				}
-				    			}else{
-					    			log.debug("adding link ("+vlink.hashCode()+") "+vlink.getFirst().getId()+"-"+vlink.getSecond().getId());
-					    			links.add(vlink);
-				    			}
-				    		}
-		    			}
-		    			
-		    		}
-	    		}else{ 
-	    			log.debug("Getting linkinfo for nodeid "+linfo.nodeparentid);
-		    		Set<Integer> ffE = node2Element.get(linfo.nodeparentid);
-		    		log.debug("Got "+ffE);
-	    			if(ffE!=null){
-			    		Iterator<Integer> firstElements = ffE.iterator();
-			    		while (firstElements.hasNext()) {
-				    		log.debug("Getting linkinfo for nodeid "+linfo.nodeparentid);
-			    			Set<Integer> sE=node2Element.get(linfo.nodeparentid);
-			    			log.debug("Got "+sE);
-			    			Integer firstNext = firstElements.next();
-			    			if(sE!=null){
-					    		Iterator<Integer> secondElements = sE.iterator();
-					    		VElement first = elems[firstNext.intValue()]; 
-					    		while (secondElements.hasNext()) {
-					    			VElement second = elems[secondElements.next().intValue()];
-					    			if (first.hasSameIdentifier(second)) continue;
-					    			VLink vlink = new VLink(first,second);
-					    			vlink.setLinkOperStatus(linfo.snmpifoperstatus);
-					    			vlink.setLinkTypeId(getLinkTypeId(linfo));
-					    			int index = links.indexOf(vlink);
-					    			if(index!=-1){
-					    				VLink alreadyIn = links.get(index);
-					    				if(alreadyIn.equals(vlink)){
-					    					if(multilinkStatus.equals(mpf.MULTILINK_BEST_STATUS)){
-					    						if(vlink.getLinkOperStatus()<alreadyIn.getLinkOperStatus()){
-					    							log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-					    							links.remove(index);
-					    							links.add(vlink);
-					    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-					    						}
-					    					}else if(vlink.getLinkOperStatus()>alreadyIn.getLinkOperStatus()){
-					    						log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-				    							links.remove(index);
-				    							links.add(vlink);
-				    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-				    						}
-					    				}
-					    			}else{
-						    			log.debug("adding link ("+vlink.hashCode()+") "+vlink.getFirst().getId()+"-"+vlink.getSecond().getId());
-						    			links.add(vlink);
-					    			}
-					    		}
-			    			}
-			    			
-			    		}
-	    			}
-	    		}
-	    		
-	    	}
-	    	log.debug("Exit...");
-	    	/* old method to restore if new is slower
-	        Iterator ite = elemNodes.iterator();
-	        int firstelemcount = 0;
-	        while (ite.hasNext()) {
-	        	Set firstelemnodes = (TreeSet) ite.next();
-	        	Set<LinkInfo> firstlinkednodes = getLinkedNodeidInfosOnNodes(firstelemnodes);
-	            int secondelemcount = firstelemcount +1;
-	            Iterator sub_ite = elemNodes.subList(secondelemcount,elemNodes.size()).iterator(); 
-	        	while (sub_ite.hasNext()) {
-	        		Iterator node_ite = ((TreeSet) sub_ite.next()).iterator();
-	        		while (node_ite.hasNext()) {
-	        			Integer curNodeId = (Integer) node_ite.next();
-	        			if (firstlinkednodes.contains(curNodeId)) {
-	        				VLink vlink = new VLink(elems[firstelemcount],elems[secondelemcount]);
-	        				vlink.setLinkOperStatus(getLinkOperStatus(vlink));
-	        				vlink.setLinkTypeId(getLinkTypeId(vlink));
-	        				if(!links.contains(vlink)){
-	        					log.debug("adding link "+vlink.getFirst().getId()+vlink.getFirst().getType()+"-"+vlink.getSecond().getId()+vlink.getSecond().getType());
-	        					links.add(vlink);
-	        				}
-	        			}
-	        		}
-	        		secondelemcount++;
-				}
-				firstelemcount++;
-			}
-			*/
-	    	
-    	}catch(Exception e){
-    		log.error(e,e);
-    		throw new MapsException(e);
-    	}
-        return links.toArray(new VLink[0]);
-    }
-    
-    
- 	public VLink[] getLinksOnElement(VElement[] elems,VElement elem) throws MapsException {
- 		if(elems==null || elem==null) return null;
- 		ArrayList<VElement> listOfElems = new ArrayList<VElement>();
- 		for(int i=0;i<elems.length;i++){
- 			if(elems[i]!=null)
- 				listOfElems.add(elems[i]);
- 		}
- 		listOfElems.add(elem);
- 		return getLinks((VElement[])listOfElems.toArray(new VElement[0]));
- 		/*
- 		
-    	HashSet<VLink> links = new HashSet<VLink>();
-        
-    	// this is the list of nodes set related to Element
-    	Set<LinkInfo> linkinfo = null;
-		if (elem != null) {
-            linkinfo = getLinkedNodeidInfosOnNodes(getNodeidsOnElement(elem));
-        } else {
-        	return null;
-        }
-        
-        if (elems != null && linkinfo != null) {
-    		
-        	for (int i = 0; i < elems.length; i++) {
-	    		Iterator node_ite = getNodeidsOnElement(elems[i]).iterator();
-	    		while (node_ite.hasNext()) {
-	    			Integer elemNodeId = (Integer) node_ite.next();
-	    	    	Iterator<LinkInfo> ite = linkinfo.iterator();
-	    	    	while(ite.hasNext()) {
-	    	    		LinkInfo linfo = ite.next();
-	    	    		if (linfo.nodeid != elemNodeId && linfo.nodeparentid != elemNodeId) continue;
-	    				VLink vlink = new VLink(elems[i],elem);
-		    			vlink.setLinkOperStatus(linfo.snmpifoperstatus);
-		    			vlink.setLinkTypeId(getLinkTypeId(linfo));
-		    			log.debug("adding "+vlink.hashCode());
-		    			log.debug(links.toString()+" "+links.add(vlink));
-		       		}
-	    		}
-	    	}
-        }
-        return links.toArray(new VLink[0]);*/
-    }    
-
-    public VElement refreshElement(VElement mapElement) throws MapsException {
-    	Vector<Integer> deletedNodeids= getDeletedNodes();
-    	java.util.Map<Integer,OutageInfo> outagedNodes=getOutagedNodes();
-    	VElement[] velems = {mapElement};
-    	java.util.Map<Integer,Double> avails=getAvails(velems);
-    	Set nodesBySource = new HashSet();
-    	log.debug("m_datasource is "+m_dataSource);
-    	if (m_dataSource != null) nodesBySource = mpf.getNodeIdsBySource(m_dataSource.getLabel());
-    	VElement ve = refresh(mapElement,nodesBySource,deletedNodeids,outagedNodes,avails);
-    	if (ve.equalsIgnorePosition(mapElement)) return null;
-    	return ve;
-    }
-    
-	public VElement[] refreshElements(VElement[] mapElements) throws MapsException {
-		List<VElement> elems = new ArrayList<VElement>();
-    	Vector<Integer> deletedNodeids= getDeletedNodes();
-    	java.util.Map<Integer,OutageInfo> outagedNodes=getOutagedNodes();
-    	java.util.Map<Integer,Double> avails=getAvails(mapElements);
-    	Set nodesBySource = new HashSet();
-    	log.debug("m_datasource is "+m_dataSource);
-    	if (m_dataSource != null) nodesBySource = mpf.getNodeIdsBySource(m_dataSource.getLabel());
-		VElement ve = null;
-		if (mapElements != null) 
-    	for(int i=0;i<mapElements.length;i++){
-    		ve = refresh(mapElements[i],nodesBySource,deletedNodeids,outagedNodes,avails);
-    		if (ve!=null) {
-				elems.add(ve);
-			}
-    	}
-    	return elems.toArray(new VElement[0]);
-
-	}
-	
-	public VMap reloadMap(VMap map) throws MapsException {
-		VElement[] velems = refreshElements((map.getAllElements()));
-		map.addElements(velems);
-		map.removeAllLinks();
-		return map;
-	}
-	
-	private List<ElementInfo> getOutagedVElems() throws MapsException {
-		try {
-			final String sqlQuery = "select distinct  outages.nodeid, eventuei,eventseverity from outages left join events on events.eventid = outages.svclosteventid where ifregainedservice is null order by nodeid";
+			final String sqlQuery = "select distinct outages.nodeid, eventuei,eventseverity from outages left join events on events.eventid = outages.svclosteventid where ifregainedservice is null order by nodeid";
 
 			createConnection();
 			PreparedStatement statement = m_dbConnection
 					.prepareStatement(sqlQuery);
 			ResultSet rs = statement.executeQuery();
-			List<ElementInfo> elems = new ArrayList<ElementInfo>();
+			List<VElementInfo> elems = new ArrayList<VElementInfo>();
 			while (rs.next()) {
-				ElementInfo einfo = new ElementInfo(rs.getInt(1), rs
+				VElementInfo einfo = new VElementInfo(rs.getInt(1), rs
 						.getString(2), rs.getInt(3));
 				elems.add(einfo);
 			}
@@ -1423,7 +1042,7 @@ public class DBManager extends Manager {
 
 	}
 
-	java.util.Map<Integer,Double> getAvails(Element[] mapElements)throws MapsException{
+	public java.util.Map<Integer,Double> getAvails(Element[] mapElements)throws MapsException{
         // get avails for all nodes in map and its submaps
 		java.util.Map<Integer,Double> availsMap = null;
 		log.debug("avail Enabled");
@@ -1510,20 +1129,10 @@ public class DBManager extends Manager {
         return retMap;
     }
     
-    private double getNodeAvailability(Set nodes,java.util.Map availsMap){
-    	Iterator ite = nodes.iterator();
-    	double avail = 0.0;
-    	while (ite.hasNext()) {
-			avail+=((Double)availsMap.get((Integer)ite.next())).doubleValue();
-		}
-		avail = avail/nodes.size();
-		return avail;
-    }
-
-	String getIconName(int elementId, String type) throws MapsException {
+	private String getIconName(int elementId, String type) throws MapsException {
 		log.debug("getting icon name...");
 		try {
-			if (type.equals(VElement.MAP_TYPE))
+			if (type.equals(Element.MAP_TYPE))
 				return "map";
 			final String sqlQuery = "SELECT displaycategory FROM assets WHERE nodeid = ?";
 			log.debug(sqlQuery+ " nodeid="+elementId);
@@ -1540,8 +1149,7 @@ public class DBManager extends Manager {
 			rs.close();
 			statement.close();
 
-			//m_dbConnection.close();
-
+	
 			if (iconName == null || iconName.trim().equals("")) {
 				return "unspecified";
 			}
@@ -1551,168 +1159,6 @@ public class DBManager extends Manager {
 			log.error("Exception while getting icon name");
 			throw new MapsException(e);
 		}
-	}
-	
-    private VElement refresh(VElement mapElement, Set nodesBySource, Vector deletedNodeids, java.util.Map outagedNodes,java.util.Map avails) throws MapsException {
-		VElement ve = (VElement) mapElement.clone();
-		if (log.isDebugEnabled())
-			log.debug("refresh: parsing VElement ID " + ve.getId()
-					+ ve.getType() + ", label:"+ve.getLabel()+" with node by sources: " +nodesBySource.toString() + " deletedNodeids: " + deletedNodeids.toString()
-					+ " outagedNode: " +outagedNodes.keySet().toString());
-
-		double elementAvail = defaultEnableFalseAvail.getMin();
-		int elementStatus = defaultStatusId;
-		float elementSeverity = defaultSeverityId;
-
-		
-		// get status, severity and availability: for each node, look for alternative data
-		// sources; if no source is found or if the data is not retrieved, use opennms. 
-		if (ve.isNode()) {
-			ve.setLabel(getNodeLabel(ve.getId()));
-			//FIRST: get data from OpenNMS
-			if(deletedNodeids.contains(new Integer(ve.getId()))){
-				elementAvail = undefinedAvail.getMin();
-				elementStatus=unknownStatusId;
-				elementSeverity = indeterminateSeverityId;
-			} else{ //if the node isn't deleted
-				
-				if (nodesBySource.contains(new Integer(ve.getId()))) {
-					org.opennms.web.map.datasources.DataSourceInterface dataSourceToUse = getDataSourceImplementation();
-					Object id = new Integer(ve.getId());
-					log.debug("getting status from alternative source " + dataSourceToUse.getClass().getName());
-					int status = dataSourceToUse.getStatus(id);
-					if (status >= 0) {
-						elementStatus = status;
-						log.debug("got status from alternative source. Value is "+elementStatus);
-					}
-					
-					int sev = dataSourceToUse.getSeverity(id);
-					if (sev >= 0) {
-						elementSeverity = sev;
-						log.debug("got severity from alternative source. Value is "+sev);
-					} 
-					if (availEnabled) {
-						double avail = dataSourceToUse.getAvailability(id);
-						if (avail >= 0) {
-							elementAvail = avail;
-							log.debug("got availability from alternative source. Value is "+avail);
-						} 
-					}
-				} else {
-					OutageInfo oi = (OutageInfo) outagedNodes.get(new Integer(ve.getId()));
-					if (oi != null) {
-						elementStatus = oi.getStatus();
-						elementSeverity= oi.getSeverity();
-					}
-	  				if (availEnabled) {
-	   					elementAvail =((Double) avails.get(new Integer(ve.getId()))).doubleValue();
-	   				}				
-					
-				}
-			}				
-		} else { // the element is a Map
-			log.debug("Calculating severity for submap Element " + ve.getId()
-					+ " using '" + calculateSeverityAs + "' mode.");
-			Set nodesonve = getNodeidsOnElement(ve);
-			if (nodesonve != null && nodesonve.size() > 0) {
-				log.debug("found nodes on Map element :" + nodesonve.toString());
-				elementAvail = defaultEnableFalseAvail.getMin();
-				float sev = 0;
-				if (calculateSeverityAs.equalsIgnoreCase("worst")
-						|| calculateSeverityAs.equalsIgnoreCase("best")) {
-					sev = defaultSeverityId;
-				}
-				Iterator ite = nodesonve.iterator();
-				while (ite.hasNext()) {
-					Integer nextNodeId = (Integer) ite.next();
-					if(deletedNodeids.contains(nextNodeId)){
-						elementAvail = undefinedAvail.getMin();
-						elementStatus=unknownStatusId;
-						elementSeverity = indeterminateSeverityId;
-					}else{ //if the node isn't deleted
-						if (nodesBySource.contains(nextNodeId)) {
-							org.opennms.web.map.datasources.DataSourceInterface dataSourceToUse = getDataSourceImplementation();
-							int st = dataSourceToUse.getStatus(nextNodeId);
-							if (st >= 0) {
-								if (st < elementStatus) {
-									elementStatus = st;
-								}
-								log.debug("got status from alternative source. Value is "+st);
-							}
-
-							int tempSeverity = dataSourceToUse.getSeverity(nextNodeId);
-							if (tempSeverity >= 0) {
-								log.debug("got severity from alternative source. Value is "+tempSeverity);
-								if (calculateSeverityAs.equalsIgnoreCase("avg")) {
-									sev += tempSeverity;
-								} else if (calculateSeverityAs
-										.equalsIgnoreCase("worst")) {
-									if (sev > tempSeverity) {
-										sev = tempSeverity;
-									}
-								} else if (calculateSeverityAs
-										.equalsIgnoreCase("best")) {
-									if (sev < tempSeverity) {
-										sev = tempSeverity;
-									}
-								}
-							} 	
-							if (availEnabled) {
-								double avail = dataSourceToUse.getAvailability(nextNodeId);
-								if (avail >= 0) {
-									elementAvail = avail;
-									log.debug("got availability from alternative source. Value is "+avail);
-								} 
-							}
-							
-						} else {
-							OutageInfo oi = (OutageInfo) outagedNodes.get(nextNodeId);
-							if (oi != null) {
-								elementStatus = oi.getStatus();
-								float tempSeverity= oi.getSeverity();
-								if (tempSeverity >= 0) {
-									if (calculateSeverityAs.equalsIgnoreCase("avg")) {
-										sev += tempSeverity;
-									} else if (calculateSeverityAs
-											.equalsIgnoreCase("worst")) {
-										if (sev > tempSeverity) {
-											sev = tempSeverity;
-										}
-									} else if (calculateSeverityAs
-											.equalsIgnoreCase("best")) {
-										if (sev < tempSeverity) {
-											sev = tempSeverity;
-										}
-									}
-								} 	
-							}
-			  				if (availEnabled) {
-			   					elementAvail =((Double) avails.get(nextNodeId)).doubleValue();
-			   				}	
-							
-						}
-					}
-				}
-				if (calculateSeverityAs.equalsIgnoreCase("avg")) {
-					elementSeverity = sev / nodesonve.size();
-				} else {
-					elementSeverity = sev;
-				}
-			} else {
-				log.debug("no nodes on Map element found");
-			}
-		}
-		
-
-		if (log.isDebugEnabled())
-			log.debug("refreshElement: element avail/status/severity "
-					+ elementAvail + "/" + elementStatus + "/"
-					+ elementSeverity);
-
-		ve.setRtc(elementAvail);
-		ve.setStatus(elementStatus);
-		ve.setSeverity(new BigDecimal(elementSeverity + 1 / 2).intValue());
-		return ve;
 	}
 
 	 String getMapName(int id) throws MapsException {
@@ -1738,32 +1184,7 @@ public class DBManager extends Manager {
 		}
 	}
 
-	private String getMapElemName(int mapId, int elemId) throws MapsException {
-		try {
-			final String sqlQuery = "SELECT elementlabel FROM " + elementTable
-					+ " WHERE mapId = ? and elementid= ?";
-
-			createConnection();
-			PreparedStatement statement = m_dbConnection
-					.prepareStatement(sqlQuery);
-			statement.setInt(1, mapId);
-			statement.setInt(2, elemId);
-			ResultSet rs = statement.executeQuery();
-			String label = null;
-			if (rs.next()) {
-				label = rs.getString(1);
-			}
-			rs.close();
-			statement.close();
-			//m_dbConnection.close();
-			return label;
-		} catch (Exception e) {
-			log.error("Exception while getting map elem name");
-			throw new MapsException(e);
-		}
-	}
-
-	private String getNodeLabel(int id) throws MapsException {
+	public String getNodeLabel(int id) throws MapsException {
 		try {
 			final String sqlQuery = "SELECT NODELABEL FROM NODE WHERE NODEID = ?";
 
@@ -1785,45 +1206,12 @@ public class DBManager extends Manager {
 		}
 	}
 
-	private String getSeverityLabel(int severity) throws MapsException {
-		
-		return EventUtil.getSeverityLabel(severity);
-	}	
-	
-	/**
-	 * gets a Vector containing the nodeids of all child nodes
-	 * 
-	 * @return Vector of Integer containing all child nodes' ids
-	 */
-	private Vector<Integer> getNodesFromParentNode(int nodeparentid) throws MapsException {
-		try {
-			final String sqlQuery = "SELECT nodeid  FROM node where nodetype='D' AND nodeparentid = ? ";
-
-			createConnection();
-			PreparedStatement statement = m_dbConnection.prepareStatement(sqlQuery);
-			statement.setInt(1, nodeparentid);
-			ResultSet rs = statement.executeQuery();
-			Vector<Integer> elements = new Vector<Integer>();
-			while (rs.next()) {
-				int nId = rs.getInt(1);
-				elements.add(new Integer(nId));
-			}
-			rs.close();
-			statement.close();
-			//m_dbConnection.close();
-			return elements;
-		} catch (Exception e) {
-			log.error("Exception while getting deleted nodes");
-			throw new MapsException(e);
-		}
-	}
-
 	/**
 	 * gets a Vector containing the nodeids of all deleted nodes
 	 * 
 	 * @return Vector of Integer containing all deleted nodes' ids
 	 */
-	Vector<Integer> getDeletedNodes() throws MapsException {
+	public Vector<Integer> getDeletedNodes() throws MapsException {
 		try {
 			final String sqlQuery = "SELECT nodeid  FROM node where nodetype='D'";
 
@@ -1845,49 +1233,10 @@ public class DBManager extends Manager {
 		}
 	}
 	
-    java.util.Map<Integer,OutageInfo> getOutagedNodes()throws MapsException{
-        java.util.Map<Integer,OutageInfo> outagedNodes = new HashMap<Integer,OutageInfo>();
-        log.debug("Getting outaged elems.");
-        Iterator ite = getOutagedVElems().iterator();
-        log.debug("Outaged elems obtained.");
-		while (ite.hasNext()) {
-			ElementInfo outagelem = (ElementInfo) ite.next();
-			int outageStatus = mpf.getStatus(outagelem.getUei());
-			int outageSeverity = mpf.getSeverity(getSeverityLabel(outagelem.getSeverity()));
-
-
-			if (log.isInfoEnabled())
-				log.info("parsing outaged node with nodeid: " + outagelem.getId() + " severity: " + outagelem.getSeverity() + " severity label: " +getSeverityLabel(outagelem.getSeverity()));
-
-			if (log.isInfoEnabled())
-				log.info("parsing outaged node with nodeid: " + outagelem.getId() + " status: " + outagelem.getUei() + " severity label: " +getSeverityLabel(outagelem.getSeverity()));
-
-			if (log.isDebugEnabled()) 
-    			log.debug("local outaged node status/severity " + outageStatus + "/" + outageSeverity);
-
-			OutageInfo oi = (OutageInfo)outagedNodes.get(new Integer(outagelem.getId())); 
-
-			if (oi != null) {
-				if (oi.getStatus() > outageStatus) {
-					oi.setStatus(outageStatus);
-				}
-				oi.setSeverity((oi.getSeverity()+outageSeverity)/2);
-			} else {
-				int curStatus = outageStatus;
-				float curSeverity = outageSeverity;
-				oi = new OutageInfo(outagelem.getId(),curStatus,curSeverity);
-			}
-			outagedNodes.put(new Integer(outagelem.getId()),oi);
-    		if (log.isDebugEnabled()) 
-    			log.debug("global outaged node status/severity " + outageStatus + "/" + outageSeverity);
-		}
-        return outagedNodes;
-    }    
-    
     /**
      * recursively gets all nodes contained by elem and its submaps (if elem is a map)
      */
-    Set<Integer> getNodeidsOnElement(Element elem) throws MapsException {
+    public Set<Integer> getNodeidsOnElement(Element elem) throws MapsException {
    		Set<Integer> elementNodeIds = new HashSet<Integer>();
 		if (elem.isNode()) {
 			elementNodeIds.add(new Integer(elem.getId()));
@@ -1942,26 +1291,26 @@ public class DBManager extends Manager {
 		return mapVec;
 	}
 
-	private Vector<MapMenu> rs2MapMenuVector(ResultSet rs) throws SQLException {
-		Vector<MapMenu> mapVec = null;
+	private Vector<VMapInfo> rs2MapMenuVector(ResultSet rs) throws SQLException {
+		Vector<VMapInfo> mapVec = null;
 		boolean firstTime = true;
 		while (rs.next()) {
 			if (firstTime) {
-				mapVec = new Vector<MapMenu>();
+				mapVec = new Vector<VMapInfo>();
 				firstTime = false;
 			}
 
-			MapMenu currMap = new MapMenu(rs.getInt("mapId"), rs
+			VMapInfo currMap = new VMapInfo(rs.getInt("mapId"), rs
 					.getString("mapName"), rs.getString("mapOwner"));
 			mapVec.add(currMap);
 		}
 		return mapVec;
 	}
 
-	private MapMenu rs2MapMenu(ResultSet rs) throws SQLException {
-		MapMenu map = null;
+	private VMapInfo rs2MapMenu(ResultSet rs) throws SQLException {
+		VMapInfo map = null;
 		if (rs.next()) {
-			map = new MapMenu(rs.getInt("mapId"), rs.getString("mapName"), rs
+			map = new VMapInfo(rs.getInt("mapId"), rs.getString("mapName"), rs
 					.getString("mapOwner"));
 		}
 		return map;
@@ -2027,43 +1376,7 @@ public class DBManager extends Manager {
 		return vecElem;
 	}
 
-    DataSourceInterface getDataSourceImplementation() throws MapsException {
-		if(m_dataSource==null) return null;
-    	try {
-			java.util.Map params = m_dataSource.getParam();
-	
-			log.debug("dataSource " + m_dataSource.getImplClass()
-					+ " obtained.");
-			Class implClass = Class.forName(m_dataSource.getImplClass());
-			 DataSourceInterface dsi = (org.opennms.web.map.datasources.DataSourceInterface)implClass.newInstance();
-			 
-			 dsi.init(params);
-			 return dsi;
-		} catch (Exception e) {
-			log.error("Error while getting instance of data source " + e);
-			throw new MapsException(e);
-		}
-    }
-    
-    private Set<LinkInfo> getLinkedNodeidInfosOnNodes(Set nodes) throws MapsException {
-   		Set<LinkInfo> linkedNodeIds = new HashSet<LinkInfo>();
-        if (nodes != null) {
-        	Iterator ite = nodes.iterator();
-        	while (ite.hasNext()) {
-        		Integer curnodeid = (Integer) ite.next();
-        		try {
-                    linkedNodeIds.addAll(getLinkedNodeIdOnNode(curnodeid.intValue()));
-        		} catch (SQLException e) {
-					throw new MapsException(e);
-				} catch (ClassNotFoundException c) {
-					throw new MapsException(c);
-				}
-        		
-        	}
-        }
-        return linkedNodeIds;
-    }
-	private Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws SQLException, ClassNotFoundException {
+    public Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws SQLException, ClassNotFoundException {
 	       Set<LinkInfo> nodes = new HashSet<LinkInfo>();
 	        createConnection();
 	        String nodelist="";
@@ -2139,126 +1452,8 @@ public class DBManager extends Manager {
 	         		
 	}
     
-    private Set<LinkInfo> getLinkedNodeIdOnNode(int nodeID) throws SQLException, ClassNotFoundException {
-        Set<LinkInfo> nodes = new HashSet<LinkInfo>();
-        createConnection();
-        
-        PreparedStatement stmt = m_dbConnection
-                .prepareStatement("select datalinkinterface.nodeid, ifindex,nodeparentid, parentifindex, snmpiftype,snmpifspeed,snmpifoperstatus from datalinkinterface left join snmpinterface on nodeparentid = snmpinterface.nodeid where datalinkinterface.nodeid = ? and status != 'D' and datalinkinterface.parentifindex = snmpinterface.snmpifindex");
-        stmt.setInt(1, nodeID);
-        ResultSet rs = stmt.executeQuery();
-	    while (rs.next()) {
-            Object element = new Integer(rs.getInt("nodeid"));
-            int nodeid = -1;
-            if (element != null) {
-                nodeid = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("ifindex"));
-            int ifindex = -1;
-            if (element != null) {
-            	ifindex = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("nodeparentid"));
-            int nodeparentid = -1;
-            if (element != null) {
-            	nodeparentid = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("parentifindex"));
-            int parentifindex = -1;
-            if (element != null) {
-            	parentifindex = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("snmpiftype"));
-            int snmpiftype = -1;
-            if (element != null) {
-            	snmpiftype = ((Integer) element);
-            }
-
-            element = new Long(rs.getLong("snmpifspeed"));
-            long snmpifspeed = -1;
-            if (element != null) {
-            	snmpifspeed = ((Long) element);
-            }
-
-            element = new Integer(rs.getInt("snmpifoperstatus"));
-            int snmpifoperstatus = -1;
-            if (element != null) {
-            	snmpifoperstatus = ((Integer) element);
-            }
-            
-            LinkInfo node = new LinkInfo(nodeid,ifindex,nodeparentid,parentifindex,snmpiftype,snmpifspeed,snmpifoperstatus);
-
-            nodes.add(node);
-        }
-        rs.close();
-        stmt.close();
-        stmt = m_dbConnection.prepareStatement("SELECT datalinkinterface.nodeid, ifindex,nodeparentid, parentifindex, snmpiftype,snmpifspeed,snmpifoperstatus from datalinkinterface left join snmpinterface on nodeparentid = snmpinterface.nodeid where NODEPARENTID = ? and status != 'D' and datalinkinterface.parentifindex = snmpinterface.snmpifindex");
-	    stmt.setInt(1, nodeID);
-	    rs = stmt.executeQuery();
-	    while (rs.next()) {
-            Object element = new Integer(rs.getInt("nodeid"));
-            int nodeid = -1;
-            if (element != null) {
-                nodeid = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("ifindex"));
-            int ifindex = -1;
-            if (element != null) {
-            	ifindex = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("nodeparentid"));
-            int nodeparentid = -1;
-            if (element != null) {
-            	nodeparentid = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("parentifindex"));
-            int parentifindex = -1;
-            if (element != null) {
-            	parentifindex = ((Integer) element);
-            }
-
-            element = new Integer(rs.getInt("snmpiftype"));
-            int snmpiftype = -1;
-            if (element != null) {
-            	snmpiftype = ((Integer) element);
-            }
-
-            element = new Long(rs.getLong("snmpifspeed"));
-            long snmpifspeed = -1;
-            if (element != null) {
-            	snmpifspeed = ((Long) element);
-            }
-
-            element = new Integer(rs.getInt("snmpifoperstatus"));
-            int snmpifoperstatus = -1;
-            if (element != null) {
-            	snmpifoperstatus = ((Integer) element);
-            }
-            
-            LinkInfo node = new LinkInfo(nodeid,ifindex,nodeparentid,parentifindex,snmpiftype,snmpifspeed,snmpifoperstatus);
-
-            nodes.add(node);
-        }
-	    rs.close();
-	    stmt.close();
-        return nodes;
-        
-    }
-    
-    public java.util.Map getElementInfo(int elementId, int mapId, String type) throws MapsException {
-    	//TODO
-    	return null;
-    }
-    
-    public MapMenu[] getVisibleMapsMenu(String user, String userRole) throws MapsException {
-    	MapMenu[] retMaps = null;
+    public VMapInfo[] getVisibleMapsMenu(String user) throws MapsException {
+    	VMapInfo[] retMaps = null;
     	/*
     	 * for the moment, returns all maps.
     	if(userRole.equals(Authentication.ADMIN_ROLE)){
@@ -2270,14 +1465,57 @@ public class DBManager extends Manager {
     	return retMaps;
     }
     
-    /**
-     * gets the id corresponding to the link defined in configuration file. The match is performed first by snmptype, 
-     * then by speed (if more are defined). If there is no match, the default link id is returned. 
-     * @param linkinfo
-     * @return the id corresponding to the link defined in configuration file. If there is no match, the default link id is returned.
-     */
-    private int getLinkTypeId(LinkInfo linkinfo) {
-    	return mpf.getLinkTypeId(linkinfo.snmpiftype, linkinfo.snmpifspeed);
-    }
+	public Set getNodeIdsBySource(String query)throws MapsException{
+		
+		if(query==null ){
+			return getAllNodes();
+		}
+		Connection conn=null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		HashSet nodes = new HashSet();
+		try {
+			conn = Vault.getDbConnection();
+			String sqlQuery = query;
+			log.debug("Applying filters for source "+" '"+sqlQuery+"'");
+			
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sqlQuery);
+			// add all matching nodes (id) with the source to the Set.
+			while (rs.next()) {
+				nodes.add(new Integer(rs.getInt(1)));
+			}
+			rs.close();
+			stmt.close();
+			conn.close();
+		}catch(Exception e){
+			throw new MapsException("Exception while getting nodes by source label "+e);
+		}	
+		return nodes;
+	}
+	
+	private Set getAllNodes()throws MapsException{
+		Connection conn=null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		HashSet nodes = new HashSet();
+		try {
+			conn = Vault.getDbConnection();
+			String sqlQuery = "select distinct nodeid from ipinterface";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sqlQuery);
+			// add all matching nodes (id) with the source to the Set.
+			while (rs.next()) {
+				nodes.add(new Integer(rs.getInt(1)));
+			}
+			rs.close();
+			stmt.close();
+			conn.close();
+		}catch(Exception e){
+			throw new MapsException("Exception while getting all nodes "+e);
+		}
+		return nodes;
+	}
+
     
 }

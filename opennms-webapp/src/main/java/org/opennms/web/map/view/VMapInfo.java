@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package org.opennms.web.map.db;
+package org.opennms.web.map.view;
 
 /**
  * @author micmas
@@ -12,7 +12,7 @@ package org.opennms.web.map.db;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-final public class MapMenu {
+final public class VMapInfo {
 	public static final String DEFAULT_NAME = "NewMap";
 
     private int id = -2;
@@ -25,7 +25,7 @@ final public class MapMenu {
 	 * @param name
 	 * @param owner
 	 */
-	public MapMenu(int id, String name, String owner) {
+	public VMapInfo(int id, String name, String owner) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -44,7 +44,7 @@ final public class MapMenu {
 	}
 	
 	public boolean equals(Object obj){
-		MapMenu otherMapMenu = (MapMenu) obj;
+		VMapInfo otherMapMenu = (VMapInfo) obj;
 		if(id==otherMapMenu.getId()){
 			return true;
 		}

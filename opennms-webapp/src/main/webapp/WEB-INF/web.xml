@@ -64,6 +64,25 @@
     <param-value>http://localhost:8080/opennms/rtc/post</param-value>
   </context-param>
 
+<!-- Map System Subscription parameters -->  
+  <context-param>
+    <description>The username the Map System uses when authenticating itself in an HTTP POST.</description>
+    <param-name>opennms.map-client.http-post.username</param-name>
+    <param-value>map</param-value>
+  </context-param>
+  <context-param>
+    <description>The password the Map System uses when authenticating itself in an HTTP POST.</description>
+    <param-name>opennms.map-client.http-post.password</param-name>
+    <param-value>map</param-value>
+  </context-param>
+  <context-param>
+    <description>
+      The base of a URL that Map System clients use when creating a Map subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
+    </description>
+    <param-name>opennms.map-client.http-post.url</param-name>
+    <param-value>http://localhost:8080/opennms/map/post</param-value>
+  </context-param>
+  
   <filter>
     <filter-name>Acegi Filter Chain Proxy</filter-name>
     <filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
@@ -197,6 +216,14 @@
      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
      <load-on-startup>1</load-on-startup>
    </servlet>
+
+  <!--  servlet that map requests get mapped to -->
+   <servlet>
+     <servlet-name>mapDispatcher</servlet-name>
+     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+     <load-on-startup>2</load-on-startup>
+   </servlet>
+
    <!-- WebStart servlet -->
    <servlet>
       <servlet-name>JnlpDownloadServlet</servlet-name>
@@ -664,60 +691,6 @@
   	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
   </servlet>
   
-  <!-- ********************* servlet for map management ****************** -->
-  <servlet>
-     <servlet-name>InitMapsApplication</servlet-name>
-    <servlet-class>org.opennms.web.map.InitMapsApplicationServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-     <servlet-name>SaveMap</servlet-name>
-    <servlet-class>org.opennms.web.map.SaveMapServlet</servlet-class>
-  </servlet>
-  <servlet>
-     <servlet-name>LoadMaps</servlet-name>
-    <servlet-class>org.opennms.web.map.LoadMapsServlet</servlet-class>
-  </servlet>
-  <servlet>
-     <servlet-name>DeleteMap</servlet-name>
-    <servlet-class>org.opennms.web.map.DeleteMapServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-     <servlet-name>LoadNodes</servlet-name>
-    <servlet-class>org.opennms.web.map.LoadNodesServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-     <servlet-name>ModifyMap</servlet-name>
-    <servlet-class>org.opennms.web.map.ModifyMapServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-     <servlet-name>LoadInfos</servlet-name>
-    <servlet-class>org.opennms.web.map.LoadInfosServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-     <servlet-name>OpenMap</servlet-name>
-    <servlet-class>org.opennms.web.map.OpenMapServlet</servlet-class>
-  </servlet>  
-  
-  <servlet>
-    <servlet-name>NewMap</servlet-name>
-    <servlet-class>org.opennms.web.map.NewMapServlet</servlet-class>
-  </servlet> 
-
-  <servlet>
-     <servlet-name>CloseMap</servlet-name>
-    <servlet-class>org.opennms.web.map.CloseMapServlet</servlet-class>
-  </servlet> 
-  
-  <servlet>
-    <servlet-name>CommandLine</servlet-name>
-    <servlet-class>org.opennms.web.map.CommandLineServlet</servlet-class>
-  </servlet>  
-  
   <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
@@ -739,62 +712,6 @@
         <servlet-name>JnlpDownloadServlet</servlet-name>
         <url-pattern>/webstart/*</url-pattern>
      </servlet-mapping>
-
-  <!-- ******************* servlet for map management ******************--> 
-  <servlet-mapping>
-    <servlet-name>InitMapsApplication</servlet-name>
-    <url-pattern>/map/InitMapsApplication</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>SaveMap</servlet-name>
-    <url-pattern>/map/SaveMap</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>LoadMaps</servlet-name>
-    <url-pattern>/map/LoadMaps</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DeleteMap</servlet-name>
-    <url-pattern>/map/DeleteMap</url-pattern>
-  </servlet-mapping>
-
-
-  <servlet-mapping>
-    <servlet-name>LoadNodes</servlet-name>
-    <url-pattern>/map/LoadNodes</url-pattern>
-  </servlet-mapping>
-
- <servlet-mapping>
-    <servlet-name>ModifyMap</servlet-name>
-    <url-pattern>/map/ModifyMap</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>LoadInfos</servlet-name>
-    <url-pattern>/map/LoadInfos</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>OpenMap</servlet-name>
-    <url-pattern>/map/OpenMap</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>CloseMap</servlet-name>
-    <url-pattern>/map/CloseMap</url-pattern>
-  </servlet-mapping>  
-  
-  <servlet-mapping>
-    <servlet-name>NewMap</servlet-name>
-    <url-pattern>/map/NewMap</url-pattern>
-  </servlet-mapping>  
-  
-  <servlet-mapping>
-    <servlet-name>CommandLine</servlet-name>
-    <url-pattern>/map/CommandLine</url-pattern>
-  </servlet-mapping>  
 
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->  
@@ -1126,6 +1043,12 @@
     <servlet-name>gwtDispatcher</servlet-name>
     <url-pattern>*.gwt</url-pattern>
   </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>mapDispatcher</servlet-name>
+    <url-pattern>*.map</url-pattern>
+  </servlet-mapping>
+  
   
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
@@ -1191,3 +1114,4 @@
   </welcome-file-list>
   
 </web-app>
+

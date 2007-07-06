@@ -6,7 +6,7 @@ public class LinkStatus {
 	boolean flash;
 	
 	
-	LinkStatus(String id, String color, boolean flash) {
+	public LinkStatus(String id, String color, boolean flash) {
 		super();
 		this.id = id;
 		this.color = color;
@@ -19,7 +19,7 @@ public class LinkStatus {
 	public void setColor(String color) {
 		this.color = color;
 	}
-	public boolean isFlash() {
+	public boolean getFlash() {
 		return flash;
 	}
 	public void setFlash(boolean flash) {

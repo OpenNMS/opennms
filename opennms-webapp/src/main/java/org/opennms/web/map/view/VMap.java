@@ -41,7 +41,6 @@ import java.util.List;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -62,7 +61,7 @@ final public class VMap extends Map {
     /**
      *  Create a new VMap with empty name.
      */
-    VMap() {
+    public VMap() {
     	super();
     	super.setName(DEFAULT_NAME);
     }
@@ -128,7 +127,7 @@ final public class VMap extends Map {
      * @param offsetY
      * @param type
      */
-    protected VMap(int id, String name, String background, String owner,
+    public VMap(int id, String name, String background, String owner,
             String accessMode, String userLastModifies, float scale,
             int offsetX, int offsetY, String type, int width, int height) {
         super(id, name, background, owner, accessMode, userLastModifies, scale,
@@ -150,13 +149,21 @@ final public class VMap extends Map {
         }
     }
 
+    public void addElements(List<VElement> elems) {
+        if(elems!=null){
+        	Iterator<VElement> ite = elems.iterator();
+        	while (ite.hasNext()) addElement(ite.next());
+        }
+    }
+
+
     public void addLink(VLink link) {
     	// add a link only if map contains element.
     	VElement first = link.getFirst();
     	VElement second = link.getSecond();
     	addElement(first);
     	addElement(second);
-    	links.put(getLinkId(first.getId(),first.getType(),second.getId(),second.getType(),link.linkTypeId),link);
+    	links.put(link.getId(),link);
     }
 
     public void addLinks(VLink[] vl) {
@@ -166,6 +173,14 @@ final public class VMap extends Map {
         }
     }
  
+    public void addLinks(List<VLink> elems) {
+        if(elems!=null){
+        	Iterator<VLink> ite = elems.iterator();
+        	while (ite.hasNext()) addLink(ite.next());
+        }
+    }
+
+
     public VElement removeElement(int id, String type) {
     	String elementId = (new Integer(id).toString())+type;
     	VElement ve = (VElement) elements.remove(elementId);
@@ -175,8 +190,8 @@ final public class VMap extends Map {
         return ve;
     }
 
-    public VLink removeLink(int id1, String type1, int id2, String type2,int typology) {
-    	VLink vl = (VLink) links.remove(getLinkId(id1,type1,id2,type2, typology));
+    public VLink removeLink(VLink link) {
+    	VLink vl = (VLink) links.remove(link.getId());
     	return vl;
     }
     
@@ -184,7 +199,7 @@ final public class VMap extends Map {
      	VLink[] lnksToDelete = getLinksOnElement(id,type);
     	ArrayList<VLink> links = new ArrayList<VLink>();
     	for(int i=0; i<lnksToDelete.length;i++){
-    		links.add(removeLink(lnksToDelete[i].getFirst().getId(),lnksToDelete[i].getFirst().getType(),lnksToDelete[i].getSecond().getId(),lnksToDelete[i].getSecond().getType(),lnksToDelete[i].getLinkTypeId())); 
+    		links.add(removeLink(lnksToDelete[i])); 
     	}
     	return (VLink[]) links.toArray(new VLink[0]);
     }
@@ -273,29 +288,11 @@ final public class VMap extends Map {
     	return elements.containsKey(elementId);
     }
 
-    public boolean containsLink(int id1, String type1, int id2, String type2, int typology) {
-     	return links.containsKey(getLinkId(id1,type1,id2,type2,typology));
+    public boolean containsLink(VLink link) {
+     	return links.containsKey(link.getId());
     }
 
-    //like client function
-    private String getLinkId(int id1, String type1, int id2, String type2, int typology) {
-    	String  a = id1+type1;
-    	String  b = id2+type2;
-    	String id = a + "-" + b;
-    	int  na = id1;
-    	int  nb = id2;
-    	
-    	if (na > nb) {
-    		id = b + "-" + a;
-    	}
-    	
-    	if (na == nb && type2.equals(VElement.MAP_TYPE)) {
-    		id = b + "-" + a;
-    	}
-    	id=id+"-"+typology;
-    	//alert(id);
-    	return id;    	
-    }
+
     
     public  void setAccessMode(String accessMode) {
     	super.setAccessMode(accessMode);

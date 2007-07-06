@@ -37,7 +37,6 @@
  */
 package org.opennms.web.map.view;
 
-import com.google.gwt.user.client.Element;
 
 
 
@@ -55,6 +54,8 @@ final public class VLink {
 	int linkTypeId;
 
 	int linkOperStatus;
+	
+	String id;
 
 	//the link status
 	String linkOperStatusString;
@@ -62,6 +63,7 @@ final public class VLink {
 	public VLink(VElement elem1, VElement elem2) {
 		this.elem1 = elem1;
 		this.elem2 = elem2;
+		id = getLinkId();
 	}
 	
 	public String getLinkOperStatusString() {
@@ -151,6 +153,35 @@ final public class VLink {
 	
 	public String toString() {
 			return ""+elem1.getId()+elem1.getType()+"-"+elem2.getId()+elem2.getType()+"-"+linkTypeId+"-"+linkOperStatus+" hashCode:"+this.hashCode();
+	}
+	
+    //like client function
+    private String getLinkId() {
+    	int id1=elem1.getId();
+    	int id2=elem2.getId();
+    	String type1=elem1.getType();
+    	String type2=elem2.getType();
+    	int typology=linkTypeId;
+    	String  a = id1+type1;
+    	String  b = id2+type2;
+    	String id = a + "-" + b;
+    	int  na = id1;
+    	int  nb = id2;
+    	
+    	if (na > nb) {
+    		id = b + "-" + a;
+    	}
+    	
+    	if (na == nb && type2.equals(VElement.MAP_TYPE)) {
+    		id = b + "-" + a;
+    	}
+    	id=id+"-"+typology;
+    	//alert(id);
+    	return id;    	
+    }
+    
+    public String getId() {
+		return id;
 	}
 
 }

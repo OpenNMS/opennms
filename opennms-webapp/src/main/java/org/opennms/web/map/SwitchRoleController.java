@@ -35,76 +35,76 @@ package org.opennms.web.map;
  * Created on 8-giu-2005
  *
  */
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.sql.SQLException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
+
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.map.db.ElementInfo;
-import org.opennms.web.map.view.Manager;
+
+import org.opennms.web.map.MapsConstants;
+import org.opennms.web.map.view.*;
+
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+
 
 /**
  * @author mmigliore
- *
+ * 
+ * this class provides to create, manage and delete 
+ * proper session objects to use when working with maps
+ * 
  */
-public class LoadNodesServlet extends HttpServlet {
-
-	
-
+public class SwitchRoleController implements Controller {
 	Category log;
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
-		String action = request.getParameter("action");
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
-		HttpSession session = request.getSession(false);
-		Manager m = (Manager)session.getAttribute("manager");
-
-		String strToSend = action + "OK";
-		log.info("Loading nodes");
-		ElementInfo[] nodeInfos = null;
-		try {
-			if (action.equals(MapsConstants.LOADNODES_ACTION)) {
-				nodeInfos = m.getAllElementInfo();
-				if(nodeInfos!=null){
-					for (int i = 0; i < nodeInfos.length; i++) {
-						ElementInfo n = nodeInfos[i];
-						if (i > 0) {
-							strToSend += "&";
-						}
-		
-						String nodeStr = n.getId() + "+" + n.getLabel();
-						strToSend += nodeStr;
-					}
-				}
-			} else {
-				strToSend = MapsConstants.LOADNODES_ACTION + "Failed";
-			}
-		} catch (MapsException e) {
-			log.error("Error while getting elements' infos "+e.toString());
-			strToSend = MapsConstants.LOADNODES_ACTION + "Failed";
-		}
-		bw.write(strToSend);
-		bw.close();
-		log.info("Sending response to the client '" + strToSend + "'");
-
+	private Manager manager;
+	
+	
+	public Manager getManager() {
+		return manager;
 	}
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doPost(request, response);
+	public void setManager(Manager manager) {
+		this.manager = manager;
+	}
+
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+		log = ThreadCategory.getInstance(this.getClass());
+		String adminModeStr = request.getParameter("adminMode");
+		boolean adminMode = false;
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
+				.getOutputStream()));
+		try {
+			
+			if(adminModeStr!=null ){
+				adminMode=Boolean.parseBoolean(adminModeStr);
+				if (manager.isUserAdmin()){
+					log.info("Swithing to mode admin: "+adminMode);
+					manager.setAdminMode(adminMode);
+					bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.SWITCH_MODE_ACTION));
+				} else {
+					throw new MapsManagementException("Non-admin user ("+request.getRemoteUser()+") invoking switch role action ");
+				}
+			} else{
+				throw new IllegalStateException("Parameter adminMode is null ");
+			}
+		} catch (Exception e) {
+			log.error("Exception found when changing adminMode: ",e);
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SWITCH_MODE_ACTION));
+		} finally {
+			bw.close();
+		}
+		
+
+		return null;
 	}
 
 }
