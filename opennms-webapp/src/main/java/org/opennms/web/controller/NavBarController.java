@@ -119,7 +119,7 @@ public class NavBarController extends AbstractController implements Initializing
                                        "Vulnerabilities"));
         }
         if (mapEnableFile.exists()) {
-            navBar.add(new NavBarEntry("map", "map/index.jsp", "Map"));
+            navBar.add(new NavBarEntry("map", "Index.map", "Map"));
         }
         if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
             navBar.add(new NavBarEntry("admin", "admin/index.jsp", "Admin"));
