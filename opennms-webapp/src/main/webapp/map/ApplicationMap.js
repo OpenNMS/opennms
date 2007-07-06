@@ -95,7 +95,7 @@ function isValidRange(range){
 // map is bean modified since last saving.	
 function getMapString()
 {
-	if(isUserAdmin=="false" || isUserAdmin==false){ // if is not admin, do not generate a string for the map
+	if(isUserAdmin==false){ // if is not admin, do not generate a string for the map
 			  // because, all changes can't be saved from the user (non admin)
 		return "";
 	}
@@ -145,95 +145,60 @@ function getSeverityColor(severity){
 }
 
 function getSemaphoreColorForNode(severity, avail,status){
-	if(colorSemaphoreBy=="A"){
-		return getAvailColor(avail);
-	}else if (colorSemaphoreBy=="T") {
-		return getStatusColor(status);
-	} else {
-		return getSeverityColor(severity);
+	if(isAdminMode){
+		return getStatusColor(UNKNOWN_STATUS);
+	}else{
+		if(colorSemaphoreBy=="A"){
+			return getAvailColor(avail);
+		}else if (colorSemaphoreBy=="T") {
+			return getStatusColor(status);
+		} else {
+			return getSeverityColor(severity);
+		}
 	}
 }
 
 function getSemaphoreFlash(severity, avail){
-	if(colorSemaphoreBy=="A"){
-		var maxmin = -1;
-		var availid;
-		if (avail<0) avail=-1;
-	
-		for (index in AVAIL_MIN) {
-			var min = AVAIL_MIN[index];
-			if (avail >= min && min > maxmin) {
-				maxmin=min;
-				availid = index;
+	if(!isAdminMode){
+		if(colorSemaphoreBy=="A"){
+			var maxmin = -1;
+			var availid;
+			if (avail<0) avail=-1;
+		
+			for (index in AVAIL_MIN) {
+				var min = AVAIL_MIN[index];
+				if (avail >= min && min > maxmin) {
+					maxmin=min;
+					availid = index;
+				}
 			}
-		}
-		return AVAIL_FLASH[availid];
-	}else if (colorSemaphoreBy=="S"){
-		return SEVERITIES_FLASH[severity];
+			return AVAIL_FLASH[availid];
+		}else if (colorSemaphoreBy=="S"){
+			return SEVERITIES_FLASH[severity];
+		} 
 	} 
 	return false;
 }
 
-function InitApplication(){
+/*
+ param createList: if true, the handler have to create the maps list. Nothing, otherwise.
+*/
+var createListOfMaps=false;
+var createListOfMapsToAdd = false;
+function LoadMaps(createList, createListOfMaps2Add){
+	if(createList!=undefined && createList==true)
+		createListOfMaps=true;
+		
+	if(createListOfMaps2Add!=undefined && createListOfMaps2Add==true)
+		createListOfMapsToAdd=true;
+		
 	loading++;
 	assertLoading();
-	postURL ( "InitMapsApplication?action="+INIT_ACTION+"&mapsFactory="+mapsFactory, null, handleInitResponse, "text/xml", null );	
-}
-
-function handleInitResponse(data) {
-	var str = '';
-	if(data.success) {
-		str = data.content;
-		if(testResponse(INIT_ACTION, str)){
-			str=str.substring(INIT_ACTION.length+2,str.length);
-		}
-		else{
-		     alert('Initialization of Maps application failed');
-		     hideAll();
-		     disableMenu();
-			return;
-		}
-		var splitStr = str.split("&");
-		refreshNodesIntervalInSec=parseInt(splitStr[0])*60;
-		isUserAdmin = splitStr[1];
-		var mapToOpen = splitStr[2];
-		refreshNodesIntervalInSec=parseInt(str)*60;
-
-		if(mapToOpen==undefined && isUserAdmin=="false") {
-				alert('Warning: you must specify a map to view');
-				loading--;	
-				assertLoading();				
-				hideAll();
-			    disableMenu();
-				return;
-		}
-
-		if(mapToOpen!=undefined){
-			if(isUserAdmin=="false"){
-				hideAll();
-	     		disableMenu();
-			}
-     		openMap(parseInt(mapToOpen));
-		}
-		loading--;	
-		assertLoading();
-		appInited = true;
-		//start the refresh nodes countdown
-		startRefreshNodesTime();		
-	} else {
-		alert('Initialization of Maps application failed');
-		hideAll();
-	    disableMenu();
-	}
-}
-
-function LoadMaps(){
-	loading++;
-	assertLoading();
-	postURL ( "LoadMaps?action="+LOADMAPS_ACTION+"&mapsFactory="+mapsFactory, null, handleLoadMapsResponse, "text/xml", null );
+	postURL ( baseContext+"LoadMaps."+suffix+"?action="+LOADMAPS_ACTION, null, handleLoadMapsResponse, "text/xml", null );
 }
 
 function handleLoadMapsResponse(data) {
+	
 	var str = '';
 	if(data.success) {
 		maps= [" "];
@@ -242,11 +207,11 @@ function handleLoadMapsResponse(data) {
 		if(testResponse(LOADMAPS_ACTION, str)){
 			str=str.substring(LOADMAPS_ACTION.length+2,str.length);
 		}else{
-		    alert('Loading Maps failed');
-	        loading--;	
+		    alert('Loading Maps failed 1');
+	        	loading--;	
 			assertLoading();
 			hideAll();
-  	        disableMenu();			
+  	        	disableMenu();			
 			return;
 		}
 		var st = str.split("&");
@@ -271,6 +236,12 @@ function handleLoadMapsResponse(data) {
 		loading--;	
 		assertLoading();
 		mapsLoaded=true;
+		if(createListOfMaps)
+			addMapsList();	
+		createListOfMaps=false;	
+		if(createListOfMapsToAdd)
+			addMapAsNodeList();	
+		createListOfMapsToAdd=false;			
 	} else {
 		alert('Loading Maps failed');
 		loading--;	
@@ -280,11 +251,26 @@ function handleLoadMapsResponse(data) {
 	}
 }
 
-function LoadNodes(){
-	loading++;
-	assertLoading();
-	postURL ( "LoadNodes?action="+LOADNODES_ACTION+"&mapsFactory="+mapsFactory, null, handleLoadNodesResponse, "text/xml", null );
-	
+var createAddNodeList = false;
+var createAddWithNeighList = false;
+function LoadNodes(id,textVal,changeType){
+	//loading++;
+	createAddNodeList = false;
+	createAddWithNeighList = false;
+	//assertLoading();
+	var url = baseContext+"LoadNodes."+suffix+"?action="+LOADNODES_ACTION;
+	if(changeType!=undefined ){
+		if(changeType!="release" && textVal!=""){
+			url+="&like="+textVal;
+			if(id=="NodeLabelFilterBox")
+				createAddNodeList = true;
+			else if(id=="NodeWithNeighLabelFilterBox")
+					createAddWithNeighList = true;
+			postURL (url , null, handleLoadNodesResponse, "text/xml", null );
+		}
+	}else{
+		postURL (url , null, handleLoadNodesResponse, "text/xml", null );
+	}
 }
 
 function handleLoadNodesResponse(data) {
@@ -298,8 +284,8 @@ function handleLoadNodesResponse(data) {
 		}else{
 		     alert('Load Nodes failed');
 		     hideAll();
-			 loading--;	
-		     assertLoading();		
+			 //loading--;	
+		     //assertLoading();		
 		     disableMenu();		          
 			return;
 		}
@@ -329,15 +315,21 @@ function handleLoadNodesResponse(data) {
 		}
 		
 		nodeSortAss = assArrayPopulate(nodes,nodeSorts);	
-		loading--;
-		assertLoading();
+		//loading--;
+		//assertLoading();
 		nodesLoaded=true;
 	} else {
 		alert('Loading Nodes has failed');
 		hideAll();
-		loading--;	
-		assertLoading();
+		//loading--;	
+		//assertLoading();
         disableMenu();		
+	}
+	if(createAddNodeList){
+		addMapElementList();
+	}	
+	if(createAddWithNeighList){
+		addMapElementNeighList();
 	}
 }
 
@@ -354,7 +346,7 @@ function addMapElement(){
 	assertLoading();
 	disableMenu();
 	var elem = nodeSortAss[selectedMapElemInList].id;
-	postURL ( "ModifyMap?action="+ADDNODES_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
+	postURL ( baseContext+"AddNodes."+suffix+"?action="+ADDNODES_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addRangeOfNodes(){
@@ -366,7 +358,7 @@ function addRangeOfNodes(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "ModifyMap?action="+ADDRANGE_ACTION+"&elems="+range, null, handleAddElementResponse, "text/xml", null );
+	postURL ( baseContext+"AddNodes."+suffix+"?action="+ADDRANGE_ACTION+"&elems="+range, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addNodesByLabel(){
@@ -378,7 +370,7 @@ function addNodesByLabel(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "ModifyMap?action="+ADDNODES_BY_LABEL_ACTION+"&elems="+label, null, handleAddElementResponse, "text/xml", null );
+	postURL ( baseContext+"AddNodes."+suffix+"?action="+ADDNODES_BY_LABEL_ACTION+"&elems="+label, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addNodesByCategory(){
@@ -389,14 +381,14 @@ function addNodesByCategory(){
 	assertLoading();
 	disableMenu();
 	var catLabel = categorySortAss[selectedCategoryInList];
-	postURL ( "ModifyMap?action="+ADDNODES_BY_CATEGORY_ACTION+"&elems="+escape(catLabel), null, handleAddElementResponse, "text/xml", null );
+	postURL ( baseContext+"AddNodes."+suffix+"?action="+ADDNODES_BY_CATEGORY_ACTION+"&elems="+escape(catLabel), null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapElemNeigh(id){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "ModifyMap?action="+ADDNODES_NEIG_ACTION+"&elems="+id, null, handleAddElementResponse, "text/xml", null );
+	postURL ( baseContext+"AddNodes."+suffix+"?action="+ADDNODES_NEIG_ACTION+"&elems="+id, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapElementWithNeighbors()
@@ -408,7 +400,7 @@ function addMapElementWithNeighbors()
 	assertLoading();
 	disableMenu();
 	var elem = nodeSortAss[selectedMapElemInList].id;
-	postURL ( "ModifyMap?action="+ADDNODES_WITH_NEIG_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
+	postURL ( baseContext+"AddNodes."+suffix+"?action="+ADDNODES_WITH_NEIG_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapAsNode(){ 
@@ -431,7 +423,7 @@ function addMapAsNode(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "ModifyMap?action="+ADDMAPS_ACTION+"&elems="+mapId, null, handleAddElementResponse, "text/xml", null );
+	postURL ( baseContext+"AddMaps."+suffix+"?action="+ADDMAPS_ACTION+"&elems="+mapId, null, handleAddElementResponse, "text/xml", null );
 }
 
 function deleteMapElement(elemMap)
@@ -449,7 +441,7 @@ function deleteMapElement(elemMap)
 		ACTION = DELETENODES_ACTION;
 		id = elemMap.getNodeId();
 	}
-	postURL ( "ModifyMap?action="+ACTION+"&elems="+id, null, handleDeleteNodeResponse, "text/xml", null );
+	postURL ( baseContext+"DeleteElements."+suffix+"?action="+ACTION+"&elems="+id, null, handleDeleteNodeResponse, "text/xml", null );
 }
 
 function getElemInfo(elemMap)
@@ -814,7 +806,7 @@ function setMapElemDimension(dim){
 }
 
 function newMap(){
-	if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
+	if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED && isAdminMode) {
 	 if(confirm('Map \''+currentMapName+'\' not saved, proceed anyway?')==false)
 	 	return;
 	}
@@ -826,13 +818,13 @@ function newMap(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "NewMap?action="+NEWMAP_ACTION+"&MapId="+NEW_MAP+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
+	postURL (  baseContext+"NewMap."+suffix+"?action="+NEWMAP_ACTION+"&MapId="+NEW_MAP+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
 }
 
 function openMap(mapId){ 
+	
 	if(!refreshingMapElems){
-		if(selectedMapInList!=0 || (mapId!=undefined && (typeof mapId)!="object")){
-			if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
+			if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED && isAdminMode) {
 			 if(confirm('Map \''+currentMapName+'\' not saved, proceed anyway?')==false)
 				return;
 			}	
@@ -841,13 +833,18 @@ function openMap(mapId){
 			loading++;
 			assertLoading();
 			disableMenu();
-			var mapIdToOpen = mapId;
-			if(mapIdToOpen==undefined || (typeof mapIdToOpen)=="object")
-				mapIdToOpen = mapSortAss[selectedMapInList].id;
-			//alert("OpenMap: mapIdToOpen="+mapIdToOpen);
-			postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapIdToOpen+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
+			
+			if(mapId!=undefined && (typeof mapId) != "object")
+				postURL ( baseContext+"OpenMap."+suffix+"?action="+OPENMAP_ACTION+"&MapId="+mapId, null, handleLoadingMap, "text/xml", null );
+			else if(selectedMapInList!=0){
+				var mapIdToOpen = mapSortAss[selectedMapInList].id;
+				postURL ( baseContext+"OpenMap."+suffix+"?action="+OPENMAP_ACTION+"&MapId="+mapIdToOpen, null, handleLoadingMap, "text/xml", null );
+			}else{
+				//open the map choosed by the user in the index page
+				postURL ( baseContext+"OpenMap."+suffix+"?action="+OPENMAP_ACTION, null, handleLoadingMap, "text/xml", null );				
+			}
 		}
-	}
+
 }
 
 function handleLoadingMap(data) {
@@ -870,7 +867,7 @@ function handleLoadingMap(data) {
 					str=str.substring(CLOSEMAP_ACTION.length+2,str.length);
 					action = CLOSEMAP_ACTION;
 				}else{			
-					alert('Failed to close map');
+					alert('Failed to load map');
 					loading--;
 					assertLoading();
 					return;
@@ -879,9 +876,9 @@ function handleLoadingMap(data) {
 		}
 	} else {
 		        alert('Failed to reset zoom / pan controls');
-				loading--;
-				assertLoading();
-				return;
+			loading--;
+			assertLoading();
+			return;
 	}
 	//alert(str);
 	var st = str.split("&");
@@ -1110,7 +1107,7 @@ function saveMap() {
 		}
 		//alert(query);
 		
-		postURL ( "SaveMap?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
+		postURL ( baseContext+"SaveMap."+suffix+"?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
 		disableMenu();
 	}else{
 		alert("No maps opened");
@@ -1153,7 +1150,7 @@ function saveMap2(packet, totalPackets) {
 	query+="&packet="+packetInt+"&totalPackets="+totalPackets;
 		
 	//alert(query);
-	postURL ( "SaveMap?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
+	postURL ( baseContext+"SaveMap."+suffix+"?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
 	disableMenu();
 	}else{
 		alert("No maps opened");
@@ -1272,7 +1269,7 @@ function testMapNameLength(evt){
 function deleteMap(){
 	if(currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
 	    if(confirm('Are you sure to delete the map?')==true){ 
-	    	postURL ( "DeleteMap?action="+DELETEMAP_ACTION+"&MapId="+currentMapId, null, handleDeleteResponse, "text/xml", null );
+	    	postURL (baseContext+ "DeleteMap."+suffix+"?action="+DELETEMAP_ACTION, null, handleDeleteResponse, "text/xml", null );
 	    	}else return;
 	}else{
 		alert('No maps opened or saved');
@@ -1350,7 +1347,7 @@ function clearMap(){
     	loading++;
 		assertLoading();
 		disableMenu();
-     	postURL ( "ModifyMap?action="+CLEAR_ACTION+"&elems=", null, handleClearMapResponse, "text/xml", null );
+     	postURL (baseContext+"ClearMap."+suffix+"?action="+CLEAR_ACTION+"&elems=", null, handleClearMapResponse, "text/xml", null );
      }
 }
 
@@ -1402,7 +1399,7 @@ function close(){
 		return;
 	}
 	
-	if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
+	if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED && isAdminMode) {
 	 if(confirm('Map \''+currentMapName+'\' not saved, proceed anyway?')==false)
 	 	return;
 	}
@@ -1414,7 +1411,7 @@ function close(){
 	loading++;
 	assertLoading();
 	disableMenu();
-	postURL ( "CloseMap?action="+CLOSEMAP_ACTION+"&MapId="+MAP_NOT_OPENED+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
+	postURL ( baseContext+"CloseMap."+suffix+"?action="+CLOSEMAP_ACTION+"&MapId="+MAP_NOT_OPENED+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );
 }
 
 
@@ -1434,12 +1431,12 @@ function RefreshNodes(){
 	if(map!=undefined){
 		if(reloadMap){
 			refreshingMapElems=true;
-			postURL ( "ModifyMap?action="+RELOAD_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
+			postURL (baseContext+ "RefreshMap."+suffix+"?action="+RELOAD_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
 			return;
 		}else{
 			if(map.mapElementSize>0){
 				refreshingMapElems=true;
-				postURL ( "ModifyMap?action="+REFRESH_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
+				postURL ( baseContext+ "RefreshMap."+suffix+"?action="+REFRESH_ACTION+"&elems="+elems, null, handleRefreshNodesResponse, "text/xml", null );
 			}else{
 				menuSvgDocument.getElementById("RefreshingText").getStyle().setProperty('display', 'none');
 				enableMenu();
@@ -1698,5 +1695,49 @@ function testResponse(action, response){
 			return true;
 		return false;
 }
+
+function switchToNormalMode(){
+	isAdminMode = false;
+	postURL ( baseContext+"SwitchRole."+suffix+"?action="+SWITCH_MODE_ACTION+"&adminMode="+false, null, handleSwitchRole, "text/xml", null );
+}
+
+function switchToAdminMode(){
+	isAdminMode = true;
+	postURL ( baseContext+"SwitchRole."+suffix+"?action="+SWITCH_MODE_ACTION+"&adminMode="+true, null, handleSwitchRole, "text/xml", null );
+}
+
+		
+function handleSwitchRole(data) {
+	
+	if(data.success) {
+		var str = data.content;
+		if(testResponse(SWITCH_MODE_ACTION, str)){
+			if (isAdminMode) {
+				instantiateRWAdminMenu();
+				removeLegend();
+				for (mapElemId in map.mapElements) {
+					map.mapElements[mapElemId].setSemaphoreColor(getSemaphoreColorForNode(0,0,0));
+					map.mapElements[mapElemId].setSemaphoreFlash(getSemaphoreFlash(0,0));
+				}
+			}else{
+					refreshMapElements();
+					instantiateRWNormalMenu();
+					addLegend();
+			}
+			map.render();
+			return;
+		}					
+	}
+  alert('Failed to switch the role');
+  if (isAdminMode) {
+		isAdminMode=false;
+		addLegend();
+	}else{
+		isAdminMode=true;
+		removeLegend();
+	}
+  return;
+}
+
 
 		
