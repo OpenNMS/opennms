@@ -4,11 +4,16 @@
  */
 package org.opennms.web.map.db;
 
-import java.util.HashMap;
+import java.sql.SQLException;
+
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.view.VElement;
-import org.opennms.web.map.view.VLink;
-import org.opennms.web.map.view.VMap;
+
+import org.opennms.web.map.view.VElementInfo;
+import org.opennms.web.map.view.VMapInfo;
 
 
 /**
@@ -21,22 +26,10 @@ public abstract class Manager {
 	
 	protected boolean initialized=false;
 	
-	org.opennms.web.map.config.DataSource m_dataSource;
-	
-	java.util.Map m_params=new HashMap();
-
-	protected Manager(org.opennms.web.map.config.DataSource dataSource) throws MapsException {
-		m_dataSource=dataSource;
+	public Manager(){
+		
 	}
-
-	public Manager(org.opennms.web.map.config.DataSource dataSource, java.util.Map params)throws MapsException {
-		m_dataSource=dataSource;
-		m_params=params;
-	}
-
 	
-	public abstract void init()throws MapsException ;
-
 	public abstract void finalize() throws MapsException;
 
 	/**
@@ -53,7 +46,6 @@ public abstract class Manager {
 	}
 
 	public abstract boolean isStartedSession() throws MapsException ;
-	
 
 	public abstract void saveMaps(Map[] m) throws MapsException;
 	
@@ -73,6 +65,12 @@ public abstract class Manager {
 
 	public abstract int deleteMap(Map m) throws MapsException;
 
+	/**
+	 * delete the map with id in input
+	 * @param id
+	 * @return number of maps deleted
+	 * @throws MapsException
+	 */
 	public abstract int deleteMap(int id) throws MapsException;
 
 	public abstract void deleteNodeTypeElementsFromAllMaps() throws MapsException ;
@@ -100,7 +98,7 @@ public abstract class Manager {
 	 * @return java.util.Map<Integer,TreeSet> (key=parentMapId, value=set of child maps)
 	*/
     
-	public abstract java.util.Map getMapsStructure() throws MapsException ;
+	public abstract java.util.Map<Integer,Set<Integer>> getMapsStructure() throws MapsException ;
 
     public abstract int countMaps(int mapId) throws MapsException ;
 
@@ -117,41 +115,34 @@ public abstract class Manager {
 	public abstract Map[] getContainerMaps(int id, String type) throws MapsException ;
 	
 	
-	public abstract MapMenu[] getAllMapMenus() throws MapsException ;
+	public abstract VMapInfo[] getAllMapMenus() throws MapsException ;
 	  
-	public abstract MapMenu getMapMenu(int mapId) throws MapsException ;
+	public abstract VMapInfo getMapMenu(int mapId) throws MapsException ;
 	  
-	public abstract MapMenu[] getMapsMenuByName(String mapLabel) throws MapsException ;
+	public abstract VMapInfo[] getMapsMenuByName(String mapLabel) throws MapsException ;
 
-	public abstract MapMenu[] getMapsMenuByOwner(String owner) throws MapsException ;
+	public abstract VMapInfo[] getMapsMenuByOwner(String owner) throws MapsException ;
 	
-	public abstract MapMenu[] getVisibleMapsMenu(String user, String userRole) throws MapsException;
+	public abstract VMapInfo[] getVisibleMapsMenu(String user) throws MapsException;
 	
 	public abstract boolean isElementInMap(int elementId, int mapId, String type) throws MapsException ;
 	  
 
-	public abstract ElementInfo[] getAllElementInfo() throws MapsException ;
+	public abstract VElementInfo[] getAllElementInfo() throws MapsException ;
+	
+	public abstract VElementInfo[] getElementInfoLike(String like) throws MapsException;
 
-	
-	
-	public abstract VLink[] getLinks(VElement[] velems) throws MapsException;
+	public abstract List<VElementInfo> getOutagedElements() throws MapsException;
 
-	public abstract VLink[] getLinksOnElement(VElement[] velems,VElement elem) throws MapsException;
+	public abstract Vector<Integer> getDeletedNodes() throws MapsException;
 
+	public abstract java.util.Map<Integer,Double> getAvails(Element[] mapElements)throws MapsException;
 	
-	public abstract VElement refreshElement(VElement velem) throws MapsException;
+	public abstract String getNodeLabel(int id) throws MapsException;	
 	
-	public abstract VElement[] refreshElements(VElement[] velems) throws MapsException;
+	public abstract Set<Integer> getNodeidsOnElement(Element elem) throws MapsException;
 	
-	public abstract VMap reloadMap(VMap vmap) throws MapsException;
+	public abstract Set getNodeIdsBySource(String query)throws MapsException;
 	
-	/**
-	 * returns a java.util.Map <String, String> containing infos for the element of the map (key, value)
-	 * @param elementId
-	 * @param mapId
-	 * @param type
-	 * @return
-	 * @throws MapsException
-	 */
-	public abstract java.util.Map getElementInfo(int elementId, int mapId, String type)throws MapsException;
+    public abstract Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws SQLException, ClassNotFoundException;
 }

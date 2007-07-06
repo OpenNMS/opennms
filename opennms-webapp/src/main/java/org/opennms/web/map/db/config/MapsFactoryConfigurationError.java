@@ -29,7 +29,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.map;
+package org.opennms.web.map.db.config;
 
 /**
  * Thrown when a problem with configuration with the Maps Factories exists.

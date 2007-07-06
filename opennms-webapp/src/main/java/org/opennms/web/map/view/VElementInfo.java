@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package org.opennms.web.map.db;
+package org.opennms.web.map.view;
 
 /**
  * @author
@@ -12,7 +12,7 @@ package org.opennms.web.map.db;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class ElementInfo implements Cloneable {
+public class VElementInfo implements Cloneable {
     
 	private int id;
 
@@ -45,7 +45,7 @@ public class ElementInfo implements Cloneable {
 	 * @param severity
 	 * @param label
 	 */
-	public ElementInfo(int id, String uei, int severity, String label) {
+	public VElementInfo(int id, String uei, int severity, String label) {
 		super();
 		this.id = id;
 		this.uei = uei;
@@ -58,7 +58,7 @@ public class ElementInfo implements Cloneable {
 	 * @param uei
 	 * @param severity
 	 */
-	public ElementInfo(int id, String uei, int severity) {
+	public VElementInfo(int id, String uei, int severity) {
 		super();
 		this.id = id;
 		this.uei = uei;

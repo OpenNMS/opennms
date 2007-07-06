@@ -10,7 +10,7 @@ public class Link {
 	
 	
 	
-	Link(int id,String speed, String text, String width, int dasharray,int snmptype) {
+	public Link(int id,String speed, String text, String width, int dasharray,int snmptype) {
 		super();
 		this.id=id;
 		this.speed = speed;

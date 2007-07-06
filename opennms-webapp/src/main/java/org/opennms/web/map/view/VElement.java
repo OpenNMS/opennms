@@ -159,11 +159,13 @@ public class VElement extends Element {
         isChild = true;
     }
     
-    final public int getContainerMap()throws VElementNotChildException {
+    final public int getContainerMap()throws VElementNotChildException{
     	if(isChild==true)
     		return getMapId();
     	throw new VElementNotChildException();
     }
     
-    
+    public String toString(){
+    	return getId()+getType();
+    }
 }

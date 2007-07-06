@@ -1,4 +1,4 @@
-package org.opennms.web.map.datasources;
+package org.opennms.web.map.db.datasources;
 
 import java.util.Map;
 
@@ -11,23 +11,20 @@ import java.util.Map;
  */
 public interface DataSourceInterface {
 
-	public void init(Map params);
-	
-	
 	/**
 	 * Gets the status of the element with id in input using params in input 
 	 * @param velem
 	 * @param params
 	 * @return the status of velem, -1 if no status is found for velem
 	 */
-	public int getStatus(Object id);
+	public String getStatus(Object id);
 	/**
 	 * Gets the severity of the element with id in input using params in input 
 	 * @param velem
 	 * @param params
 	 * @return the severity of velem, -1 if no severity is found for velem
 	 */
-	public int getSeverity(Object id);
+	public String getSeverity(Object id);
 	/**
 	 * Gets the availability of the element with id in input using params in input 
 	 * @param velem
