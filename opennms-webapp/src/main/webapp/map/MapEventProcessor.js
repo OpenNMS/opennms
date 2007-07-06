@@ -44,14 +44,13 @@ function onClickMapElement(evt)
 
 		if(mapElement.isNode())
 		{
-			open(baseContext+'element/node.jsp?node='+mapElement.getNodeId(),'','left=0,top=0, width='+screen.width+',height='+screen.height+',toolbar=no,menubar=no,location=no,scrollbars=1,resize=1,minimize=1')
-			//postURL ("element/node.jsp?nodeid="+mapElement.getNodeId()+", null, null, "text/html", null);			
+			openLink('element/node.jsp?node='+mapElement.getNodeId(),'','left=0,top=0, width='+screen.width+',height='+screen.height+',toolbar=no,menubar=no,location=no,scrollbars=1,resize=1,minimize=1')
 		}
 	
 		if(mapElement.isMap())
 		{
 			if(!refreshingMapElems){
-				if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED) {
+				if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED && isAdminMode) {
 					if(confirm('Map \''+currentMapName+'\' not saved, do you want to proceed however?')==false)
 				 		return;
 				}
@@ -62,7 +61,7 @@ function onClickMapElement(evt)
 				loading++;
 				assertLoading();
 				disableMenu();
-				postURL ( "OpenMap?action="+OPENMAP_ACTION+"&MapId="+mapElement.getMapId()+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );			
+				postURL (baseContext+ "OpenMap."+suffix+"?action="+OPENMAP_ACTION+"&MapId="+mapElement.getMapId()+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingMap, "text/xml", null );			
 			}
 		}
 			

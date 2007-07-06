@@ -14,20 +14,200 @@ var downColor = "blue";
 var upColor =  "black";
 
 
+function removeMenuChilds(){
+	var menu = menuSvgDocument.getElementById("Menu");
+	var obj, ls;
+	ls = menu.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  menu.removeChild(obj);
+	}
+}
+function instantiateRWAdminMenu(){
+	removeMenuChilds();
+	var RWAdminMenu = menuSvgDocument.getElementById("Menu");
+	
+
+	// *** MAP MENU ***
+	addMenuElement(RWAdminMenu, "inline", 0, 0 , 50, 20,  "Map", "Map",  "openMapMenu(evt); hideSubMenus(evt);", "elemColor(evt, 'Map',upColor)", "setMenuOpenFlag(evt, 'Map');" );
+	var MapChoices = createGroup(RWAdminMenu, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
+	var action = "New";
+	addMenuElement(MapChoices, "inline", 0, 21 , 100, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "newMap();hideAll(evt);menuOpenFlag=false;");
+	action="Open";
+	addMenuElement(MapChoices, "inline", 0, 41 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "	if(maps!=null && maps.length>0) {addMapsList();}else{LoadMaps(true,false);}  hideAll(evt);menuOpenFlag=false;");
+	action="Close";
+	addMenuElement(MapChoices, "inline", 0, 61 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
+	action="Rename";
+	addMenuElement(MapChoices, "inline", 0, 81 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRenameMapBox(); hideAll(evt);menuOpenFlag=false;");
+	action="Delete";
+	addMenuElement(MapChoices, "inline", 0, 101 , 100, 20, action, action,  "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="Save";
+	addMenuElement(MapChoices, "inline", 0, 121 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "saveMap();hideAll(evt);menuOpenFlag=false;");
+	action="Clear";
+	addMenuElement(MapChoices, "inline", 0, 141 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "clearMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="RefreshMode";
+	addMenuElement(MapChoices, "inline", 0, 181 , 100, 20, action, "Refresh Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToNormalMode();hideAll(evt);menuOpenFlag=false;");
+	action="SetBG";
+	addMenuElement(MapChoices, "inline", 0, 161 , 100, 20, action, "Set Background...", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'SetBGColorGroup'); elemShow(evt,'SetBGImageGroup')" , "elemColor(evt,'"+action+"',upColor)", "elemShow(evt,'SetBGColor'); elemShow(evt,'SetBGImage')");
+	action="SetBGColor";
+	addMenuElement(MapChoices, "none", 96, 160 , 100, 20, action, "Color", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "setBackground(0);  hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="SetBGImage";
+	addMenuElement(MapChoices, "none", 96, 180 , 100, 20, action, "Image", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "addBGImagesList();hideAll(evt);menuOpenFlag=false;");
+
+	// *** NODE MENU ***
+	action='Node';
+	addMenuElement(RWAdminMenu, "inline", 51, 0 , 50, 20,  action, action,  "openNodeMenu(evt); hideSubMenus(evt);", "elemColor(evt, '"+action+"',upColor)", "setMenuOpenFlag(evt, '"+action+"');" );
+	var NodeChoices = createGroup(RWAdminMenu, "NodeChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
+	action = "Add";
+	addMenuElement(NodeChoices, "inline", 51, 21 , 120, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addNodeLabelFilterBox('NodeLabelFilterBox');hideAll(evt);menuOpenFlag=false;");
+	action = "AddByCategory";
+	addMenuElement(NodeChoices, "inline", 51, 41 , 120, 20,  action, "Add By Category", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addCategoryList();hideAll(evt);menuOpenFlag=false;");
+	action = "AddByLabel";
+	addMenuElement(NodeChoices, "inline", 51, 61 , 120, 20,  action, "Add By Label", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addNodeLabelBox();hideAll(evt);menuOpenFlag=false;");
+	action = "AddRange";
+	addMenuElement(NodeChoices, "inline", 51, 81 , 120, 20,  action, "Add Range", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRangeBox();hideAll(evt);menuOpenFlag=false;");
+	action = "AddNeigh";
+	addMenuElement(NodeChoices, "inline", 51, 101 , 120, 20,  action, "Add Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementNeigh(); hideAll(evt);menuOpenFlag=false;");
+	action = "AddNodeNeigh";
+	addMenuElement(NodeChoices, "inline", 51, 121 , 120, 20,  action, "Add With Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addNodeLabelFilterBox('NodeWithNeighLabelFilterBox');hideAll(evt);menuOpenFlag=false;");
+	action = "AddMap";
+	addMenuElement(NodeChoices, "inline", 51, 141 , 120, 20,  action, "Add Map As Node", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "if(maps!=null && maps.length>0) {addMapAsNodeList();}else{LoadMaps(false,true);} hideAll(evt);menuOpenFlag=false;");
+	action = "SetIcon";
+	addMenuElement(NodeChoices, "inline", 51, 161 , 120, 20,  action, "Set Icon", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addIconList();hideAll(evt);menuOpenFlag=false;" );
+	action = "DelNode";
+	addMenuElement(NodeChoices, "inline", 51, 181 , 120, 20,  action, "Delete", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMapElementMenu();hideAll(evt);menuOpenFlag=false;"  );
 
 
-////////////////////////////////
-// SVG Manipulation Functions //
-////////////////////////////////
+}
+
+
+function instantiateRWNormalMenu(){
+	removeMenuChilds();
+	var RWNormalMenu = menuSvgDocument.getElementById("Menu");
+	
+	// *** MAP MENU ***
+	addMenuElement(RWNormalMenu, "inline", 0, 0 , 50, 20,  "Map", "Map",  "openMapMenu(evt); hideSubMenus(evt);", "elemColor(evt, 'Map',upColor)", "setMenuOpenFlag(evt, 'Map');" );
+	var MapChoices = createGroup(RWNormalMenu, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
+	action="Open";
+	addMenuElement(MapChoices, "inline", 0, 21 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "if(maps!=null && maps.length>0) {addMapsList();}else{LoadMaps(true,false);} hideAll(evt);menuOpenFlag=false;");
+	action="Close";
+	addMenuElement(MapChoices, "inline", 0, 41 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
+	action="AdminMode";
+	addMenuElement(MapChoices, "inline", 0, 61 , 100, 20, action, "Admin Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToAdminMode();hideAll(evt);menuOpenFlag=false;");
+	
+	// *** VIEW MENU ***
+	action='View';
+	addMenuElement(RWNormalMenu, "inline", 51, 0 , 50, 20,  action, action,  "openViewMenu(evt); hideSubMenus(evt);", "elemColor(evt, '"+action+"',upColor); hideSubMenus(evt);", "setMenuOpenFlag(evt, '"+action+"');" );
+	var ViewChoices = createGroup(RWNormalMenu, "ViewChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
+	action = "SetDimension";
+	addMenuElement(ViewChoices, "inline", 51, 21 , 100, 20,  action, "Set Dimension", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addDimensionList();hideAll(evt);menuOpenFlag=false;");
+	action="ColorNodesBy";
+	addMenuElement(ViewChoices, "inline", 51, 41 , 100, 20, action, "View by...", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'ColorNodesBySeverityGroup'); elemShow(evt,'ColorNodesByAvailGroup'); elemShow(evt,'ColorNodesByStatusGroup')" , "elemColor(evt,'"+action+"',upColor)");
+	action="ColorNodesBySeverity";
+	addMenuElement(ViewChoices, "none", 120, 41 , 95, 20, action, "Severity", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='S';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="ColorNodesByAvail";
+	addMenuElement(ViewChoices, "none", 120, 61 , 95, 20, action, "Availability", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='A';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;" );
+	action="ColorNodesByStatus";
+	addMenuElement(ViewChoices, "none", 120, 81 , 95, 20, action, "Status", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='T';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;");
+
+}
+
+
+
+function instantiateROMenu(){
+	removeMenuChilds();
+	var ROMenu = menuSvgDocument.getElementById("Menu");
+	
+	// *** MAP MENU ***
+	addMenuElement(ROMenu, "inline", 0, 0 , 50, 20,  "Map", "Map",  "openMapMenu(evt); hideSubMenus(evt);", "elemColor(evt, 'Map',upColor)", "setMenuOpenFlag(evt, 'Map');" );
+	var MapChoices = createGroup(ROMenu, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
+	action="Open";
+	addMenuElement(MapChoices, "inline", 0, 21 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "if(maps!=null && maps.length>0) {addMapsList();}else{LoadMaps(true,false);} hideAll(evt);menuOpenFlag=false;");
+	action="Close";
+	addMenuElement(MapChoices, "inline", 0, 41 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
+
+	
+	// *** VIEW MENU ***
+	action='View';
+	addMenuElement(ROMenu, "inline", 51, 0 , 50, 20,  action, action,  "openViewMenu(evt); hideSubMenus(evt);", "elemColor(evt, '"+action+"',upColor); hideSubMenus(evt);", "setMenuOpenFlag(evt, '"+action+"');" );
+	var ViewChoices = createGroup(ROMenu, "ViewChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
+	action = "SetDimension";
+	addMenuElement(ViewChoices, "inline", 51, 21 , 100, 20,  action, "Set Dimension", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addDimensionList();hideAll(evt);menuOpenFlag=false;");
+	action="ColorNodesBy";
+	addMenuElement(ViewChoices, "inline", 51, 41 , 100, 20, action, "View by...", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'ColorNodesBySeverityGroup'); elemShow(evt,'ColorNodesByAvailGroup'); elemShow(evt,'ColorNodesByStatusGroup')" , "elemColor(evt,'"+action+"',upColor)");
+	action="ColorNodesBySeverity";
+	addMenuElement(ViewChoices, "none", 120, 41 , 95, 20, action, "Severity", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='S';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="ColorNodesByAvail";
+	addMenuElement(ViewChoices, "none", 120, 61 , 95, 20, action, "Availability", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='A';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;" );
+	action="ColorNodesByStatus";
+	addMenuElement(ViewChoices, "none", 120, 81 , 95, 20, action, "Status", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='T';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;");
+
+}
+
+
+
+
+
+
+function createGroup(parentNode, id, display, onmouseoverActions, onmouseoutActions){
+	var group = menuSvgDocument.createElementNS(svgNS,"g");
+	group.setAttributeNS(null,"display",display);
+	group.setAttributeNS(null,"id",id);	
+	group.setAttributeNS(null,"onmouseover",onmouseoverActions);	
+	group.setAttributeNS(null,"onmouseout",onmouseoutActions);	
+	parentNode.appendChild(group);
+	return group;
+}
+
+
+function addMenuElement(parentNode, display, x, y , width, height, action, label, onmouseoverActions, onmouseoutActions, onclickActions){
+	var Menu = menuSvgDocument.createElementNS(svgNS,"g");
+	Menu.setAttributeNS(null,"display",display);
+	Menu.setAttributeNS(null,"id",action+"Group");
+	
+	var Rect = menuSvgDocument.createElementNS(svgNS,"rect");
+	Rect.setAttributeNS(null,"id", action);
+	Rect.setAttributeNS(null,"x", x);
+	Rect.setAttributeNS(null,"y", y);
+	Rect.setAttributeNS(null,"width", width);
+	Rect.setAttributeNS(null,"height", height);
+	Rect.setAttributeNS(null,"stroke", "blue");
+	Rect.setAttributeNS(null,"fill", "black");
+	Rect.setAttributeNS(null,"stroke-width", 1);
+	Menu.appendChild(Rect);
+	
+	var Text = menuSvgDocument.createElementNS(svgNS,"text");
+	Text.setAttributeNS(null,"id", action+"Text");
+	Text.setAttributeNS(null,"x", x+8);
+	Text.setAttributeNS(null,"y", y+13);
+	Text.setAttributeNS(null,"font-size", 11);
+	Text.setAttributeNS(null,"fill", "white");
+	ContentText = menuSvgDocument.createTextNode(label);
+	Text.appendChild(ContentText);
+	Menu.appendChild(Text);
+	
+	var MouseRect = menuSvgDocument.createElementNS(svgNS,"rect");
+	MouseRect.setAttributeNS(null,"onmouseover", onmouseoverActions);
+	MouseRect.setAttributeNS(null,"onmouseout" , onmouseoutActions);
+	MouseRect.setAttributeNS(null,"onclick" , onclickActions);
+	MouseRect.setAttributeNS(null,"x" , x );
+	MouseRect.setAttributeNS(null,"y" , y );
+	MouseRect.setAttributeNS(null,"width" , width );
+	MouseRect.setAttributeNS(null,"height" , height );
+	MouseRect.setAttributeNS(null,"style" , "fill:green;fill-opacity:0" );
+	Menu.appendChild(MouseRect);
+
+	parentNode.appendChild(Menu);
+	return Menu;
+}
 
 // change the fill color of an element
 function elemColor(mouseEvent, elemName, value) {
-
 	// check for AI converted spaces
 	elemName = spaceTrans(elemName)
 
 	// get the element we want to change
-	var thisElem = menuSvgDocument.getElementById(elemName).getStyle()
+	var thisElem = menuSvgDocument.getElementById(elemName).getStyle();
 
 	// perform the fill color change
 	thisElem.setProperty('fill', value)
@@ -66,13 +246,11 @@ function elemStrokeColor(mouseEvent, elemName, value) {
 
 // show an element - note: these work with the display property, not visibility
 function elemShow(mouseEvent, elemName) {
-
-
 	// check for AI converted spaces
 	elemName = spaceTrans(elemName)
 
 	// get the element we want to change
-	var thisElem = menuSvgDocument.getElementById(elemName).getStyle()
+	var thisElem = menuSvgDocument.getElementById(elemName).getStyle();
 	
 	// make the element visible
 	thisElem.setProperty('display', 'inline')
@@ -86,10 +264,13 @@ function elemHide(mouseEvent, elemName) {
 	// check for AI converted spaces
 	elemName = spaceTrans(elemName)
 	// get the element we want to change
-	var thisElem = menuSvgDocument.getElementById(elemName).getStyle()
-	
-	// hide the element
-	thisElem.setProperty('display', 'none')
+	var elem = menuSvgDocument.getElementById(elemName);
+	if(elem!=null){
+		var thisElem = elem.getStyle()
+
+		// hide the element
+		thisElem.setProperty('display', 'none')
+	}
 }
 
 
@@ -136,26 +317,46 @@ function assertLoading(){
 
 // disable the menu 
 function disableMenu(){
-	menuSvgDocument.getElementById("MapMenu").getStyle().setProperty('display', 'none');
-	menuSvgDocument.getElementById("NodeMenu").getStyle().setProperty('display', 'none');
-	menuSvgDocument.getElementById("NodeChoices").getStyle().setProperty('display', 'none');	
-	menuSvgDocument.getElementById("MapChoices").getStyle().setProperty('display', 'none');	
+		var mapMenu = menuSvgDocument.getElementById("Map");
+		if(mapMenu!=null)
+			mapMenu.getStyle().setProperty('display', 'none');
+		
+		var mapChoicesMenu = menuSvgDocument.getElementById("MapChoices");
+		if(mapChoicesMenu!=null)
+			mapChoicesMenu.getStyle().setProperty('display', 'none');			
+		
+		var nodeMenu = 	menuSvgDocument.getElementById("Node");
+		if(nodeMenu)
+			nodeMenu.getStyle().setProperty('display', 'none');
+			
+		var nodeChoicesMenu = 	menuSvgDocument.getElementById("NodeChoices");
+		if(nodeChoicesMenu)
+			nodeChoicesMenu.getStyle().setProperty('display', 'none');			
+			
 }
 
 // enable the menu 
 function enableMenu(){
-	if(isUserAdmin=="false" || isUserAdmin==false){
-		disableMenu();
-	}else{
-		menuSvgDocument.getElementById("MapMenu").getStyle().setProperty('display', 'inline');
-		menuSvgDocument.getElementById("NodeMenu").getStyle().setProperty('display', 'inline');
-		menuSvgDocument.getElementById("ViewMenu").getStyle().setProperty('display', 'inline');
-	}
+//	if(isUserAdmin==false){
+//		disableMenu();
+//	}else{
+		var mapMenu = menuSvgDocument.getElementById("Map");
+		if(mapMenu!=null)
+			mapMenu.getStyle().setProperty('display', 'inline');
+		
+		var nodeMenu = 	menuSvgDocument.getElementById("Node");
+		if(nodeMenu)
+			nodeMenu.getStyle().setProperty('display', 'inline');
+			
+		var viewMenu = 	menuSvgDocument.getElementById("View")
+		if(viewMenu)
+			viewMenu.getStyle().setProperty('display', 'inline');
+//	}
 }
 
 
 function openMapMenu(evt){
-	elemColor(evt,'mapRect',downColor);
+	elemColor(evt,'Map',downColor);
 	if(menuOpenFlag==true){
 		hideAll(evt);
 
@@ -164,7 +365,7 @@ function openMapMenu(evt){
 	}
 
 function openNodeMenu(evt){
-	elemColor(evt,'nodeRect',downColor);
+	elemColor(evt,'Node',downColor);
 	if(menuOpenFlag==true){
 		hideAll(evt);
 
@@ -174,7 +375,7 @@ function openNodeMenu(evt){
 
 
 function openViewMenu(evt){
-	elemColor(evt,'viewRect',downColor);
+	elemColor(evt,'View',downColor);
 	if(menuOpenFlag==true){
 		hideAll(evt);
 		elemShow(evt, "ViewChoices");
@@ -216,10 +417,25 @@ function setMenuOpenFlag(evt, subMenuName){
 		}		
 }
 
+function hideSubMenus(evt){
+	elemHide(evt,'SetBGColorGroup');
+	elemHide(evt,'ColorNodesBySeverityGroup');
+	elemHide(evt,'ColorNodesByStatusGroup');
+	elemHide(evt,'ColorNodesByAvailGroup');
+	elemHide(evt,'SetBGImageGroup');
+}
+
+function removeLegend() {
+	var legendSVG = menuSvgDocument.getElementById("legend");
+	var obj, ls;
+	ls = legendSVG.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  legendSVG.removeChild(obj);
+	}	
+}
+
 function addLegend() {
-
-
-	
 	var legendSVG = menuSvgDocument.getElementById("legend");
 	
 	var legendHeight=legendSVG.getAttribute("height");
@@ -367,16 +583,21 @@ function addLegend() {
 	
 }
 
+//clearInfos: clears infos (top and down). Default is true
 function addMapElementList()
 {
 	if(currentMapId==MAP_NOT_OPENED){
 		alert('No maps opened');
 		return;
 	}
-	clearTopInfo();
-	clearDownInfo();
 	resetFlags();
-	selNodes = new selectionList("nodes",nodes,150,2,19,4,0,mynodesResult);
+	if(selNodes!=null){
+		if(selNodes.exists==true){
+			selNodes.removeSelectionList();
+			selectedMapElemInList=0;
+		}
+	}	
+	selNodes = new selectionList("nodes",nodes,150,2,23,4,0,mynodesResult);
 	selNodes.sortList("asc");
 
 
@@ -558,12 +779,18 @@ function addMapElementNeighList()
 		alert('No maps opened');
 		return;
 	}
-	clearTopInfo();
-	clearDownInfo();
+	resetFlags();
+	if(selNodes!=null){
+		if(selNodes.exists==true){
+			selNodes.removeSelectionList();
+			selectedMapElemInList=0;
+		}
+	}	
 	// set deletingMapElem flag to false ever.
 	resetFlags();
-	selNodes = new selectionList("nodes",nodes,150,2,19,4,0,mynodesResult);
+	selNodes = new selectionList("nodes",nodes,150,2,23,4,0,mynodesResult);
 	selNodes.sortList("asc");
+
 
 
 	//add confirm button to the select list		
@@ -886,26 +1113,27 @@ function addNodeLabelBox(){
         }
 }
 
+function addNodeLabelFilterBox(id){
+	if(currentMapId!=MAP_NOT_OPENED){
+		clearTopInfo();
+		clearDownInfo();
 
-/*
-function testRangeLength(evt){
-	try{
-		var key = evt.getKeyCode();
-		var rangeNode = evt.getTarget();
-		var lastValue = rangeNode.firstChild.nodeValue;
-		// code embedded that discards keys dangerous for application posts to servlet and keys not usefully for range definitions
-		if( (rangeNode.firstChild.nodeValue.length<=32) && ( key==61 || key==8 || key==36 || key==39 || key==45 || key==127 || key==46 || (key>=48 && key<=57) )){
-			lastRangeValue=rangeNode.firstChild.nodeValue;
-		}else{
-			rangeNode.firstChild.nodeValue=lastRangeValue;
-			rangeNode.setAttribute("editable","true");
-		}
-	}catch(e){
-	//catch some problem of text features
-	//do nothing for the moment
-	}
+		var topInfoNode = menuSvgDocument.getElementById("TopInfo");
+		var labelBox = menuSvgDocument.createElementNS(svgNS,"g");
+		labelBox.setAttributeNS(null,"id", id);
+		
+		//first a few styling parameters:
+		var textStyles = {"font-family":"Arial,Helvetica","font-size":12,"fill":"dimgray"};
+		var boxStyles = {"fill":"white","stroke":"dimgray","stroke-width":1.5};
+		var cursorStyles = {"stroke":"black","stroke-width":1.5};
+		var selBoxStyles = {"fill":"blue","opacity":0.5};
+		textbox1 = new textbox(id,labelBox,"",32,2,1,100,17,textStyles,boxStyles,cursorStyles,selBoxStyles,null,LoadNodes);
+		topInfoNode.appendChild(labelBox);
+ 	}else{
+		alert('No maps opened');
+        }
 }
-*/
+
 
 
 function deleteMapElementMenu()
@@ -973,7 +1201,7 @@ function clearTopInfo(){
 	if(selMapElemDim!=null){
 		if(selMapElemDim.exists==true){
 			selMapElemDim.removeSelectionList();
-			selectedMapElemDimInList=3;
+			selectedMapElemDimInList="normal";
 			}
 	}			
 
@@ -995,7 +1223,15 @@ function clearTopInfo(){
 		childNode.parentNode.removeChild(childNode);
 	childNode = menuSvgDocument.getElementById("NodeLabelBox");
 	if (childNode)
-		childNode.parentNode.removeChild(childNode);		
+		childNode.parentNode.removeChild(childNode);	
+	childNode = menuSvgDocument.getElementById("NodeLabelFilterBox");
+	if (childNode)
+		childNode.parentNode.removeChild(childNode);	
+		
+	childNode = menuSvgDocument.getElementById("NodeWithNeighLabelFilterBox");
+	if (childNode)
+		childNode.parentNode.removeChild(childNode);	
+		
 
 } 
 
