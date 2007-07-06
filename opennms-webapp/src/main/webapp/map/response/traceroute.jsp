@@ -97,7 +97,7 @@ function doCommand(){
      }
      
      window.close();
-     window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>map/CommandLine?command='+command+'&address='+address, 'TraceRoute', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
+     window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+command+'&address='+address, 'TraceRoute', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
 }
 </script>
 
