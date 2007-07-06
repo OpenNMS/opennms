@@ -402,3 +402,14 @@ function replaceSpecialChars(myString) {
 		}
 		return myString;
 }
+
+function escapeSpecialChars(strInput)
+{
+  strInput=strInput.replace(/&amp;/g,"&");  
+  strInput=strInput.replace(/&lt;/g,"<");	
+  strInput=strInput.replace(/&gt;/g,">");	
+  strInput=strInput.replace(/&quot;/g,'"');	
+  strInput=strInput.replace(/&apos;/g,"'");	
+  
+  return(strInput);
+}

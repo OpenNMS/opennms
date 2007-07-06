@@ -164,7 +164,7 @@ textbox.prototype.createTextbox = function() {
 		//create text element
 		this.textboxText = document.createElementNS(svgNS,"text");
 		this.textboxText.setAttributeNS(null,"x",(this.x + this.textStyles["font-size"] / 3));
-		this.textboxText.setAttributeNS(null,"y",(this.y + this.boxHeight - ((this.boxHeight - this.textStyles["font-size"]) / 2)));
+		this.textboxText.setAttributeNS(null,"y",(this.y + this.boxHeight - ((this.boxHeight - this.textStyles["font-size"]) / 2)) -2);
 		for (var attrib in this.textStyles) {
 			value = this.textStyles[attrib];
 			if (attrib == "font-size") {
