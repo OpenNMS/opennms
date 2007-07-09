@@ -33,7 +33,7 @@
     <section>
       <title>Bug Fixes</title>
 
-      <para>The reason for this release is a bug involving notificiations. Due
+      <para>The reason for this release is a bug involving notifications. Due
       to the move toward database independence some code was introduced that
       caused notifications on events with a serviceid of null (such as those
       from traps) to fail. The original problem was misdiagnosed and the
