@@ -9,6 +9,14 @@
 
   <tx:annotation-driven />
 
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>WEB-INF/configuration.properties</value>
+      </list>
+    </property>
+  </bean>
+
   <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="viewClass"
 	          value="org.springframework.web.servlet.view.JstlView" />
@@ -21,7 +29,7 @@
   <bean id="mapsConstants" class="org.opennms.web.map.MapsConstants"/>
 
   <bean id="mapsPropertiesFactory" class="org.opennms.web.map.config.MapPropertiesFactory">
-     <constructor-arg value="/data/opennms-trunk/target/opennms-1.3.3-SNAPSHOT/etc/map.properties"/>
+     <constructor-arg value="${opennms.home}/etc/map.properties"/>
   </bean>
 
   <bean id="dbManager" class="org.opennms.web.map.db.DBManager"/>
