@@ -153,6 +153,9 @@
     <property name="graphDao" ref="graphDao"/>
     <property name="rrdDao" ref="rrdDao"/>
   </bean>
+  
+  <bean id="rrdSummaryService" class="org.opennms.web.svclayer.support.DefaultRrdSummaryService">
+  </bean>
 
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
