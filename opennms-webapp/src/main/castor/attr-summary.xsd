@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema targetNamespace="http://xmlns.opennms.org/xsd/attr-summary"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:this="http://xmlns.opennms.org/xsd/attr-summary"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <annotation>
+    <documentation>XML Schema for RRD </documentation>
+  </annotation>
+  
+  <simpleType name="cf">
+    <restriction base="string">
+      <enumeration value="AVERAGE"/>
+      <enumeration value="MAX"/>
+      <enumeration value="MIN"/>
+      <enumeration value="LAST"/>
+      <enumeration value="TOTAL"/>
+    </restriction>
+  </simpleType>
+  
+  <element name="summary">
+    <complexType>
+      <sequence>
+        <element ref="this:resource" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="resource">
+    <complexType>
+      <sequence>
+        <element ref="this:attribute" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="this:resource" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="attribute">
+    <complexType>
+      <sequence>
+        <element ref="this:value" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="value">
+    <complexType>
+      <simpleContent>
+        <extension base="double">
+          <attribute name="function" type="this:cf" />
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+</schema>
