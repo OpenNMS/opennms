@@ -256,6 +256,10 @@
     <property name="rrdGraphService" ref="rrdGraphService"/>
   </bean>
   
+  <bean name="/summary/results.htm" class="org.opennms.web.controller.RrdSummaryController">
+   
+  </bean>
+  
   <!-- KSC reports -->
   <bean name="/KSC/index.htm" class="org.opennms.web.controller.ksc.IndexController">
     <property name="kscReportService" ref="kscReportService"/>
