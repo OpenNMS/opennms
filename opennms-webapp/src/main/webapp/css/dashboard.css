@@ -50,6 +50,7 @@ table.dashboard table > tbody > tr.CellStatus > td {
 
 .pagerLeft {
 	text-align: right;
+      cursor: pointer;
 }
 
 .pagerText {
@@ -58,6 +59,7 @@ table.dashboard table > tbody > tr.CellStatus > td {
 
 .pagerRight {
 	text-align: left;
+      cursor: pointer;
 }
 
 table.pager td {
@@ -133,3 +135,10 @@ table.dashletTitlePanel td {
     font-weight: bold;
 }
 
+td#surveillanceView table tbody tr td table tbody tr.header td {
+      cursor: pointer;
+}
+
+td#surveillanceView table tbody tr td table tbody tr.CellStatus td {
+      cursor: pointer;
+}
