@@ -257,7 +257,7 @@
   </bean>
   
   <bean name="/summary/results.htm" class="org.opennms.web.controller.RrdSummaryController">
-   
+	<property name="rrdSummaryService" ref="rrdSummaryService"/>
   </bean>
   
   <!-- KSC reports -->
