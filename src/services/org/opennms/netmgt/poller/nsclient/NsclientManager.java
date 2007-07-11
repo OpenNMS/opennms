@@ -654,9 +654,10 @@ public class NsclientManager {
                                                                 "").split(
                                                                           "\\s+-\\s+");
             for (int i = 0; i < services.length; i++) {
-            	String stateValue = services[i].split(":\\s+")[1];
-                if (stateValue.equals("Stopped") || stateValue.equals("Unknown"))
+            	String stateValue = services[i].split(":\\s+")[1].trim();
+                if (stateValue.equals("Stopped") || stateValue.equals("Unknown")) {
                     pack.setResultCode(NsclientPacket.RES_STATE_CRIT);
+                }
             }
 
             return pack;
