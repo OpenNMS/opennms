@@ -112,80 +112,85 @@ public class NsclientManager {
     /**
      * Default check type. Not supported.
      */
-    public static final short CHECK_NONE = 0;
+    public static final String CHECK_NONE = "0";
 
     /**
      * The ID for checking the remote client version.
      */
-    public static final short CHECK_CLIENTVERSION = 1;
+    public static final String CHECK_CLIENTVERSION = "1";
 
     /**
      * The ID for checking the remote CPU usage.
      */
-    public static final short CHECK_CPULOAD = 2;
+    public static final String CHECK_CPULOAD = "2";
 
     /**
      * The ID for checking the remote uptime.
      */
-    public static final short CHECK_UPTIME = 3;
+    public static final String CHECK_UPTIME = "3";
 
     /**
      * The ID for checking the remote used disk space.
      */
-    public static final short CHECK_USEDDISKSPACE = 4;
+    public static final String CHECK_USEDDISKSPACE = "4";
 
     /**
      * The ID for checking the state of a remote service.
      */
-    public static final short CHECK_SERVICESTATE = 5;
+    public static final String CHECK_SERVICESTATE = "5";
 
     /**
      * The ID for checking the state of a remote process.
      */
-    public static final short CHECK_PROCSTATE = 6;
+    public static final String CHECK_PROCSTATE = "6";
 
     /**
      * The ID for checking the state of the remote memory usage.
      */
-    public static final short CHECK_MEMUSE = 7;
+    public static final String CHECK_MEMUSE = "7";
 
     /**
      * The ID for checking the value of a remote Perfmon counter.
      */
-    public static final short CHECK_COUNTER = 8;
+    public static final String CHECK_COUNTER = "8";
 
     /**
      * The ID for checking the age of a remote file.
      */
-    public static final short CHECK_FILEAGE = 9;
+    public static final String CHECK_FILEAGE = "9";
 
     /**
      * This check type is used by the NSClient developers as a utility for an
      * easy remote method of looking up potential COUNTER instances. This
      * check type is not currently supported by this manager.
      */
-    public static final short CHECK_INSTANCES = 10;
+    public static final String CHECK_INSTANCES = "10";
+    
+    /**
+     * The ID for checking the size of a directory.  NSClient++ only.
+     */
+    public static final String CHECK_FILESIZE = "CheckFileSize"
 
     /**
      * Stores the String -> CHECK_ id mappings for lookups.
      */
-    public static Map<String, Short> CheckStrings = new HashMap<String, Short>();
+    public static Map<String, String> CheckStrings = new HashMap<String, String>();
     /**
      * This static block initialzies the global check strings map with the
      * default values used for performing string->type->string conversions.
      */
     static {
-        CheckStrings.put("NONE", new Short(CHECK_NONE));
-        CheckStrings.put("CLIENTVERSION", new Short(CHECK_CLIENTVERSION));
-        CheckStrings.put("CPULOAD", new Short(CHECK_CPULOAD));
-        CheckStrings.put("UPTIME", new Short(CHECK_UPTIME));
-        CheckStrings.put("USEDDISKSPACE", new Short(CHECK_USEDDISKSPACE));
-        CheckStrings.put("SERVICESTATE", new Short(CHECK_SERVICESTATE));
-        CheckStrings.put("PROCSTATE", new Short(CHECK_PROCSTATE));
-        CheckStrings.put("MEMUSE", new Short(CHECK_MEMUSE));
-        CheckStrings.put("COUNTER", new Short(CHECK_COUNTER));
-        CheckStrings.put("FILEAGE", new Short(CHECK_FILEAGE));
-        CheckStrings.put("INSTANCES", new Short(CHECK_INSTANCES));
+        CheckStrings.put("NONE", CHECK_NONE);
+        CheckStrings.put("CLIENTVERSION", CHECK_CLIENTVERSION);
+        CheckStrings.put("CPULOAD", CHECK_CPULOAD);
+        CheckStrings.put("UPTIME", CHECK_UPTIME);
+        CheckStrings.put("USEDDISKSPACE", CHECK_USEDDISKSPACE);
+        CheckStrings.put("SERVICESTATE", CHECK_SERVICESTATE);
+        CheckStrings.put("PROCSTATE", CHECK_PROCSTATE);
+        CheckStrings.put("MEMUSE", CHECK_MEMUSE);
+        CheckStrings.put("COUNTER", CHECK_COUNTER);
+        CheckStrings.put("FILEAGE", CHECK_FILEAGE);
+        CheckStrings.put("INSTANCES", CHECK_INSTANCES);
     }
 
     /**
@@ -199,10 +204,10 @@ public class NsclientManager {
      * @see CheckStrings
      * @see convertStringToType
      */
-    public static String convertTypeToString(short type) {
-        for (Map.Entry<String, Short> e : CheckStrings.entrySet()) {
-            short val = e.getValue().shortValue();
-            if (val == type) {
+    public static String convertTypeToString(String type) {
+        for (Map.Entry<String, String> e : CheckStrings.entrySet()) {
+            String val = e.getValue();
+            if (val.equals(type)) {
                 return e.getKey();
             }
         }
@@ -222,8 +227,8 @@ public class NsclientManager {
      * @see CheckStrings
      * @see convertTypeToString
      */
-    public static short convertStringToType(String type) {
-        return CheckStrings.get(type).shortValue();
+    public static String convertStringToType(String type) {
+        return CheckStrings.get(type);
     }
 
     /**
@@ -464,27 +469,26 @@ public class NsclientManager {
      *             this method rethrows NsclientExceptions caused by the check
      *             commands.
      */
-    public NsclientPacket processCheckCommand(short type,
+    public NsclientPacket processCheckCommand(String type,
             NsclientCheckParams param) throws NsclientException {
         try {
-            switch (type) {
-            case CHECK_CLIENTVERSION:
+        	if (type.equals(CHECK_CLIENTVERSION))
                 return checkClientVersion(param);
-            case CHECK_CPULOAD:
+            if (type.equals(CHECK_CPULOAD))
                 return checkCpuLoad(param);
-            case CHECK_UPTIME:
+            if (type.equals(CHECK_UPTIME))
                 return checkUptime(param);
-            case CHECK_SERVICESTATE:
+            if (type.equals(CHECK_SERVICESTATE))
                 return checkServiceState(param);
-            case CHECK_USEDDISKSPACE:
+            if (type.equals(CHECK_USEDDISKSPACE))
                 return checkUsedDiskSpace(param);
-            case CHECK_PROCSTATE:
+            if (type.equals(CHECK_PROCSTATE))
                 return checkProcState(param);
-            case CHECK_MEMUSE:
+            if (type.equals(CHECK_MEMUSE))
                 return checkMemoryUsage(param);
-            case CHECK_COUNTER:
+            if (type.equals(CHECK_COUNTER))
                 return checkPerfCounter(param);
-            case CHECK_FILEAGE:
+            if (type.equals(CHECK_FILEAGE))
                 return checkFileAge(param);
             }
             return null;
@@ -537,34 +541,44 @@ public class NsclientManager {
             // compare.
             pack.setResultCode(NsclientPacket.RES_STATE_CRIT);
             String[] minimum = param.getParamString().split("\\.");
-            String[] remote = pack.getResponse().split("\\.");
+            String[] remote;
+            if (pack.getResponse().contains(" ")) {
+            	// NSClient++ response with the format: NSClient++ 0.2.7 2007-03-06
+            	remote = pack.getResponse().split(" ")[1].split("\\.");
+            } else {
+            	// Oldskool NSClient responds with the format: 2.0.1.0
+            	remote = pack.getResponse().split("\\.");
+            }
 
             // make sure they both contain the same number of version digits.
-            if (remote.length != 4 || minimum.length != 4) {
+            if (remote.length != 4) {
                 pack.setResultCode(NsclientPacket.RES_STATE_UNKNOWN);
                 return pack;
             }
 
             // then convert them to arrays.
-            Integer[] remVer = { new Integer(Integer.parseInt(remote[0])),
-                    new Integer(Integer.parseInt(remote[1])),
-                    new Integer(Integer.parseInt(remote[2])),
-                    new Integer(Integer.parseInt(remote[3])) };
-            Integer[] minVer = { new Integer(Integer.parseInt(minimum[0])),
-                    new Integer(Integer.parseInt(minimum[1])),
-                    new Integer(Integer.parseInt(minimum[2])),
-                    new Integer(Integer.parseInt(minimum[3])) };
+            Integer[] remVer = new Integer[4];
+            Integer[] minVer = new Integer[4];
+            
+            for (int i = 0; i < 4; i++) {
+            	if (minimum[i] != null) {
+            		minVer[i] = Integer.parseInt(minimum[i]);
+            	}
+            	if (remote[i] != null) {
+            		remVer[i] = Integer.parseInt(remote[i]);
+            	}
+            }
 
-            if (remVer[0].compareTo(minVer[0]) > 0) {
+            if (minVer[0] == null || remVer[0].compareTo(minVer[0]) > 0) {
                 pack.setResultCode(NsclientPacket.RES_STATE_OK);
             } else if (remVer[0].compareTo(minVer[0]) == 0) {
-                if (remVer[1].compareTo(minVer[1]) > 0) {
+                if (minVer[1] == null || remVer[1].compareTo(minVer[1]) > 0) {
                     pack.setResultCode(NsclientPacket.RES_STATE_OK);
                 } else if (remVer[1].compareTo(minVer[1]) == 0) {
-                    if (remVer[2].compareTo(minVer[2]) > 0) {
+                    if (minVer[2] == null || remVer[2].compareTo(minVer[2]) > 0) {
                         pack.setResultCode(NsclientPacket.RES_STATE_OK);
                     } else if (remVer[2].compareTo(minVer[2]) == 0) {
-                        if (remVer[3].compareTo(minVer[3]) > 0) {
+                        if (minVer[3] == null || remVer[3].compareTo(minVer[3]) > 0) {
                             pack.setResultCode(NsclientPacket.RES_STATE_OK);
                         } else if (remVer[3].compareTo(minVer[3]) == 0) {
                             pack.setResultCode(NsclientPacket.RES_STATE_OK);
