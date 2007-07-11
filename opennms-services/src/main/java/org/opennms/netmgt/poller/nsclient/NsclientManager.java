@@ -169,7 +169,7 @@ public class NsclientManager {
     /**
      * The ID for checking the size of a directory.  NSClient++ only.
      */
-    public static final String CHECK_FILESIZE = "CheckFileSize"
+    public static final String CHECK_FILESIZE = "CheckFileSize";
 
     /**
      * Stores the String -> CHECK_ id mappings for lookups.
@@ -472,23 +472,31 @@ public class NsclientManager {
     public NsclientPacket processCheckCommand(String type,
             NsclientCheckParams param) throws NsclientException {
         try {
-        	if (type.equals(CHECK_CLIENTVERSION))
+        	if (type.equals(CHECK_CLIENTVERSION)) {
                 return checkClientVersion(param);
-            if (type.equals(CHECK_CPULOAD))
+        	}
+        	else if (type.equals(CHECK_CPULOAD)) {
                 return checkCpuLoad(param);
-            if (type.equals(CHECK_UPTIME))
+        	}
+        	else if (type.equals(CHECK_UPTIME)) {
                 return checkUptime(param);
-            if (type.equals(CHECK_SERVICESTATE))
+        	}
+        	else if (type.equals(CHECK_SERVICESTATE)) {
                 return checkServiceState(param);
-            if (type.equals(CHECK_USEDDISKSPACE))
+        	}
+        	else if (type.equals(CHECK_USEDDISKSPACE)) {
                 return checkUsedDiskSpace(param);
-            if (type.equals(CHECK_PROCSTATE))
+        	}
+        	else if (type.equals(CHECK_PROCSTATE)) {
                 return checkProcState(param);
-            if (type.equals(CHECK_MEMUSE))
+        	}
+        	else if (type.equals(CHECK_MEMUSE)) {
                 return checkMemoryUsage(param);
-            if (type.equals(CHECK_COUNTER))
+        	}
+        	else if (type.equals(CHECK_COUNTER)) {
                 return checkPerfCounter(param);
-            if (type.equals(CHECK_FILEAGE))
+        	}
+        	else if (type.equals(CHECK_FILEAGE)) {
                 return checkFileAge(param);
             }
             return null;
@@ -496,7 +504,7 @@ public class NsclientManager {
             throw e;
         }
     }
-
+    
     /**
      * This method performs a check of the client version on the remote
      * service. From the <code>NsclientCheckParams</code> object passed to
