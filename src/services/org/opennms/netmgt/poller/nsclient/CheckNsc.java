@@ -4,6 +4,7 @@ import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
 import org.opennms.netmgt.poller.nsclient.NsclientManager;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
+import java.util.*;
 
 /**
  * This is an example commandline tool to perform checks against NSClient
@@ -23,25 +24,27 @@ public class CheckNsc {
      */
     public static void main(String[] args) {
         try {
-            NsclientManager client = new NsclientManager(args[0], 1248);
+            ArrayList arguments = new ArrayList();
+            for (int i = 0; i < args.length; i++) {
+                arguments.add(args[i]);
+            }
+
+            String host    = (String)arguments.remove(0);
+            String command = (String)arguments.remove(0);
+
+        	
+            NsclientManager client = new NsclientManager(host, 1248);
             NsclientPacket response = null;
 
             client.setTimeout(5000);
             client.init();
 
-            String param = "";
-            try {
-                param = args[4];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                // don't do anything.
-            }
-
             NsclientCheckParams params = new NsclientCheckParams(
-                                                                 Integer.parseInt(args[2]),
-                                                                 Integer.parseInt(args[3]),
-                                                                 param);
+                                                                 Integer.parseInt((String)arguments.get(1)),
+                                                                 Integer.parseInt((String)arguments.get(2)),
+                                                                 (String)arguments.get(0));
             response = client.processCheckCommand(
-                                                  NsclientManager.convertStringToType(args[1]),
+                                                  NsclientManager.convertStringToType(command),
                                                   params);
             System.out.println("NsclientPlugin: "
                     + args[1]
