@@ -99,17 +99,21 @@ public class CheckNsc {
         	usage("An error occurred processing the command.", e);
         }
         
-        System.out.println("NsclientPlugin: "
-                + command
-                + ": "
-                + NsclientPacket.convertStateToString(response.getResultCode()) /* response.getResultCode() */
-                + " (" + response.getResponse() + ")");
+        if (response == null) {
+        	usage("No response was returned.", null);
+        } else {
+            System.out.println("NsclientPlugin: "
+                    + command
+                    + ": "
+                    + NsclientPacket.convertStateToString(response.getResultCode()) /* response.getResultCode() */
+                    + " (" + response.getResponse() + ")");
+        }
     }
 
 	private static void usage() {
 		usage(null, null);
 	}
-	
+
     private static void usage(String message, Exception e) {
     	StringBuffer sb = new StringBuffer();
     	sb.append("usage: CheckNsc <host>[:port] <command> [[warning level] [critical level] [arg1..argn]]\n");
@@ -125,6 +129,8 @@ public class CheckNsc {
     		sb.append("In addition, an exception occurred:\n");
     		sb.append(message).append("\n");
     		sb.append(e.getStackTrace()).append("\n\n");
+    	} else if (message != null) {
+    		sb.append("Error: " + message + "\n\n");
     	}
     	
     	System.out.print(sb);
