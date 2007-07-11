@@ -173,8 +173,8 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
 
                 if (response.getResultCode() == NsclientPacket.RES_STATE_OK) {
                     serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
-		    log.debug("reason: " + reason );
                     reason = response.getResponse();
+        		    log.debug("reason: " + reason );
 		    // We will receive something like String s = "0.00000"
 
 		    Pattern decimal = Pattern.compile("^[+-]?(?:(\\d+)(?:\\.(\\d*))+|\\.(\\d+))$");
