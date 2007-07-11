@@ -41,7 +41,7 @@ import java.io.File;
 
 public class RrdGraphAttribute implements OnmsAttribute {
 
-    private String m_name;
+	private String m_name;
     private String m_relativePath;
     private String m_rrdFile;
     private OnmsResource m_resource;
@@ -74,4 +74,11 @@ public class RrdGraphAttribute implements OnmsAttribute {
     public String getRrdRelativePath() {
         return m_relativePath + File.separator + m_rrdFile;
     }
+    
+    @Override
+	public String toString() {
+    	return ""+m_resource + '.' + m_name;
+	}
+
+
 }
