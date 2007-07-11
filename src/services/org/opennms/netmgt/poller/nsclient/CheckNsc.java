@@ -29,19 +29,51 @@ public class CheckNsc {
                 arguments.add(args[i]);
             }
 
-            String host    = (String)arguments.remove(0);
-            String command = (String)arguments.remove(0);
+            if (arguments.size() < 2) {
+            	usage();
+            	System.exit(1);
+            }
+            
+            String  host         = (String)arguments.remove(0);
+            String  command      = (String)arguments.remove(0);
+            int warningLevel     = 0;
+            int criticalLevel    = 0;
+            String  clientParams = "";
+            
+            if (!arguments.isEmpty()) {
+            	warningLevel  = Integer.parseInt((String)arguments.remove(0));
+            }
+            
+            if (!arguments.isEmpty()) {
+            	criticalLevel = Integer.parseInt((String)arguments.remove(0));
+            }
 
+            /* whatever's left gets merged into "arg1&arg2&arg3" */
+            if (!arguments.isEmpty()) {
+            	for (int i=0; i < arguments.size(); i++) {
+            		clientParams += arguments.get(i);
+            		if (i < (arguments.size() - 1)) {
+            			clientParams += "&";
+            		}
+            	}
+            }
+            
+            int port = 1248;
+            
+            if (host.contains(":")) {
+            	host = host.split(":")[0];
+            	port = Integer.parseInt(host.split(":")[1]);
+            }
         	
-            NsclientManager client = new NsclientManager(host, 1248);
+            NsclientManager client = new NsclientManager(host, port);
             NsclientPacket response = null;
 
             client.setTimeout(5000);
             client.init();
 
             NsclientCheckParams params = new NsclientCheckParams(
-                                                                 Integer.parseInt((String)arguments.get(1)),
-                                                                 Integer.parseInt((String)arguments.get(2)),
+                                                                 warningLevel,
+                                                                 criticalLevel,
                                                                  (String)arguments.get(0));
             response = client.processCheckCommand(
                                                   NsclientManager.convertStringToType(command),
@@ -57,4 +89,17 @@ public class CheckNsc {
         }
     }
 
+    private static void usage() {
+    	StringBuffer sb = new StringBuffer();
+    	sb.append("usage: CheckNsc <host>[:port] <command> [[warning level] [critical level] [arg1..argn]]\n");
+    	sb.append("\n");
+    	sb.append("  host:           the hostname to connect to (and optionally, the port)\n");
+    	sb.append("  command:        the command to run against NSClient\n");
+    	sb.append("  warning level:  warn if the level is above X\n");
+    	sb.append("  critical level: error if the level is above X\n");
+    	sb.append("\n");
+    	sb.append("  All subsequent arguments are considered arguments to the command.\n\n");
+    	
+    	System.out.print(sb);
+    }
 }
