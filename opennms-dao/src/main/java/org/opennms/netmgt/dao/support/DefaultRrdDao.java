@@ -60,9 +60,16 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     private String m_rrdBinaryPath;
 
     public double getPrintValue(OnmsAttribute attribute, String cf, long start, long end) {
-        Assert.notNull(attribute, "attribute argument must not be null");
-        Assert.notNull(cf, "cf argument must not be null");
-        Assert.isTrue(end > start, "end argument must be after start argument");
+    	return getPrintValue(attribute, cf, cf, start, end);
+    }
+
+	public double getPrintValue(OnmsAttribute attribute,
+			String rraConsolidationFunction, String printConsolidationFunction,
+			long startTimeInMillis, long endTimeInMillis) {
+		Assert.notNull(attribute, "attribute argument must not be null");
+        Assert.notNull(rraConsolidationFunction, "rraConsolicationFunction argument must not be null");
+        Assert.notNull(printConsolidationFunction, "printConsolidationFunction argument must not be null");
+        Assert.isTrue(endTimeInMillis > startTimeInMillis, "end argument must be after start argument");
         Assert.isAssignable(attribute.getClass(), RrdGraphAttribute.class, "attribute argument must be assignable to RrdGraphAttribute");
         
         RrdGraphAttribute rrdAttribute = (RrdGraphAttribute) attribute;
@@ -71,10 +78,10 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
                 m_rrdBinaryPath,
                 "graph",
                 "-",
-                "--start=" + (start / 1000),
-                "--end=" + (end / 1000),
-                "DEF:ds=" + rrdAttribute.getRrdRelativePath() + ":" + attribute.getName() + ":" + cf,
-                "PRINT:ds:" + cf + ":\"%le\""
+                "--start=" + (startTimeInMillis / 1000),
+                "--end=" + (endTimeInMillis / 1000),
+                "DEF:ds=" + rrdAttribute.getRrdRelativePath() + ":" + attribute.getName() + ":" + rraConsolidationFunction,
+                "PRINT:ds:" + printConsolidationFunction + ":\"%le\""
         };
         String commandString = StringUtils.arrayToDelimitedString(command, " ");
 
@@ -97,7 +104,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         }
 
         return Double.parseDouble(printLines[0]);
-    }
+	}
 
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_rrdStrategy != null, "property rrdStrategy must be set and be non-null");

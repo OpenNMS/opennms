@@ -1,6 +1,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.opennms.netmgt.config.attrsummary.Attribute;
 import org.opennms.netmgt.config.attrsummary.Resource;
@@ -8,6 +9,7 @@ import org.opennms.netmgt.config.attrsummary.Summary;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.support.NodeSnmpResourceType;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
@@ -20,6 +22,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 	
 	static class SummaryBuilder {
 		private Summary m_summary;
+		private LinkedList<Resource> m_resourceStack = new LinkedList<Resource>();
 		private Resource m_currResource;
 		private Attribute m_currAttr;
 		
@@ -33,12 +36,22 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 			return m_summary;
 		}
 
-
 		public void addResource(String string) {
 			m_currResource = new Resource();
 			m_currResource.setName(string);
-			m_summary.addResource(m_currResource);
+			addCurrentResource();
 		}
+
+
+		private void addCurrentResource() {
+			if (m_resourceStack.isEmpty()) {
+				m_summary.addResource(m_currResource);
+			} else {
+				m_resourceStack.getFirst().addResource(m_currResource);
+			}
+		}
+		
+		
 		
 		public void addAttribute(String string) {
 			Assert.state(m_currResource != null, "addResource must be called before calling addAttribute");
@@ -69,6 +82,18 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 			checkForCurrAttr();
 			m_currAttr.setMax(max);
 		}
+
+
+		public void pushResource(String label) {
+			addResource(label);
+			m_resourceStack.addFirst(m_currResource);
+		}
+
+
+		public void popResource() {
+			Assert.state(!m_resourceStack.isEmpty(), "cannot pop a resource that has not been pushed!");
+			m_resourceStack.removeFirst();
+		}
 	}
 	
 	public FilterDao m_filterDao;
@@ -81,27 +106,44 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 		
 		m_filterDao.walkMatchingNodes(filterRule, new AbstractEntityVisitor() {
 			public void visitNode(OnmsNode node) {
-				OnmsResource resource = m_resourceDao.getResourceForNode(node);
+				OnmsResource nodeResource = m_resourceDao.getResourceForNode(node);
 				
-				addResource(resource);
+				bldr.pushResource(node.getLabel());
+
+				for(OnmsResource child : nodeResource.getChildResources()) {
+					if (child.getResourceType() instanceof NodeSnmpResourceType) {
+						addAttributes(child.getRrdGraphAttributes().values());
+					} 
+				}
 				
-				for(OnmsResource child : resource.getChildResources()) {
-					addResource(child);
+				for(OnmsResource child : nodeResource.getChildResources()) {
+					if (!(child.getResourceType() instanceof NodeSnmpResourceType)) {
+						addResource(child);
+					}
+				}
+				
+				bldr.popResource();
+			}
+			
+			private void addResource(OnmsResource resource) {
+				addResource(resource, resource.getLabel());
+			}
+
+			private void addResource(OnmsResource resource, String label) {
+				Collection<RrdGraphAttribute> attrs = resource.getRrdGraphAttributes().values();
+				if (attrs.size() > 0) {
+					bldr.addResource(label);
+					addAttributes(attrs);
 				}
 			}
 
-			private void addResource(OnmsResource resource) {
-				Collection<RrdGraphAttribute> attrs = resource.getRrdGraphAttributes().values();
-				if (attrs.size() > 0) {
-					bldr.addResource(resource.getLabel());
-					
-					for(RrdGraphAttribute attr : attrs) {
-						//System.err.println("Getting values for attribute: "+attr);
-						bldr.addAttribute(attr.getName());
-						bldr.setMin(m_rrdDao.getPrintValue(attr, "MIN", startTime, endTime));
-						bldr.setAverage(m_rrdDao.getPrintValue(attr, "AVERAGE", startTime, endTime));
-						bldr.setMax(m_rrdDao.getPrintValue(attr, "MAX", startTime, endTime));
-					}
+			private void addAttributes(Collection<RrdGraphAttribute> attrs) {
+				for(RrdGraphAttribute attr : attrs) {
+					//System.err.println("Getting values for attribute: "+attr);
+					bldr.addAttribute(attr.getName());
+					bldr.setMin(m_rrdDao.getPrintValue(attr, "AVERAGE", "MIN", startTime*1000, endTime*1000));
+					bldr.setAverage(m_rrdDao.getPrintValue(attr, "AVERAGE", "AVERAGE", startTime*1000, endTime*1000));
+					bldr.setMax(m_rrdDao.getPrintValue(attr, "AVERAGE", "MAX", startTime*1000, endTime*1000));
 				}
 			}
 		});

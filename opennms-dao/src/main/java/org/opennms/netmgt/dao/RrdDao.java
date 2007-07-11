@@ -57,6 +57,21 @@ public interface RrdDao {
      * @return value
      */
     public double getPrintValue(OnmsAttribute attribute, String cf, long start, long end);
+    
+    /**
+     * Get the value for an attribute over a period of time.
+     * 
+     * @param attribute the attribute
+     * @param rraConsolidationFunction consolidation function (usually "AVERAGE")
+     * @param printConsolidationFunction applies this function to the result of the above function of the
+     *             given time period
+     * @param startTimeInMillis start time in milliseconds
+     * @param endTimeInMillis end time in milliseconds
+     * @return value
+     */
+    public double getPrintValue(OnmsAttribute attribute,
+			String rraConsolidationFunction, String printConsolidationFunction,
+			long startTimeInMillis, long endTimeInMillis);
 
     /**
      * Create an RRD graph with the given command where RRD files are relative to the workDir.
