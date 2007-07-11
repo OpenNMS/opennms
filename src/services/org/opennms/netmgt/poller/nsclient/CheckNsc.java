@@ -100,7 +100,7 @@ public class CheckNsc {
         }
         
         System.out.println("NsclientPlugin: "
-                + args[1]
+                + command
                 + ": "
                 + NsclientPacket.convertStateToString(response.getResultCode()) /* response.getResultCode() */
                 + " (" + response.getResponse() + ")");
