@@ -60,9 +60,9 @@ public class CheckNsc {
             
             int port = 1248;
             
-            if (host.contains(":")) {
-            	host = host.split(":")[0];
+            if (host.indexOf(":") >= 0) {
             	port = Integer.parseInt(host.split(":")[1]);
+            	host = host.split(":")[0];
             }
         	
             NsclientManager client = new NsclientManager(host, port);
@@ -74,7 +74,7 @@ public class CheckNsc {
             NsclientCheckParams params = new NsclientCheckParams(
                                                                  warningLevel,
                                                                  criticalLevel,
-                                                                 (String)arguments.get(0));
+                                                                 clientParams);
             response = client.processCheckCommand(
                                                   NsclientManager.convertStringToType(command),
                                                   params);
