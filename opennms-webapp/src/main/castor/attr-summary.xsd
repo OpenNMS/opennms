@@ -7,17 +7,7 @@
   <annotation>
     <documentation>XML Schema for RRD </documentation>
   </annotation>
-  
-  <simpleType name="cf">
-    <restriction base="string">
-      <enumeration value="AVERAGE"/>
-      <enumeration value="MAX"/>
-      <enumeration value="MIN"/>
-      <enumeration value="LAST"/>
-      <enumeration value="TOTAL"/>
-    </restriction>
-  </simpleType>
-  
+
   <element name="summary">
     <complexType>
       <sequence>
@@ -29,6 +19,7 @@
   <element name="resource">
     <complexType>
       <sequence>
+        <element ref="this:name" minOccurs="1" maxOccurs="1" />
         <element ref="this:attribute" minOccurs="0" maxOccurs="unbounded"/>
         <element ref="this:resource" minOccurs="0" maxOccurs="unbounded"/>
       </sequence>
@@ -38,19 +29,17 @@
   <element name="attribute">
     <complexType>
       <sequence>
-        <element ref="this:value" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="this:name" minOccurs="1" maxOccurs="1" />
+        <element ref="this:min" minOccurs="0" maxOccurs="1" />
+        <element ref="this:average" minOccurs="0" maxOccurs="1" />
+        <element ref="this:max" minOccurs="0" maxOccurs="1" />
       </sequence>
     </complexType>
   </element>
   
-  <element name="value">
-    <complexType>
-      <simpleContent>
-        <extension base="double">
-          <attribute name="function" type="this:cf" />
-        </extension>
-      </simpleContent>
-    </complexType>
-  </element>
-
+  <element name="name" type="string" />
+  <element name="min" type="double" />
+  <element name="average" type="double" />
+  <element name="max" type="double" />
+  
 </schema>
