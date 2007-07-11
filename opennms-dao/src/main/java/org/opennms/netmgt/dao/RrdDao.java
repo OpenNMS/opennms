@@ -69,9 +69,8 @@ public interface RrdDao {
      * @param endTimeInMillis end time in milliseconds
      * @return value
      */
-    public double getPrintValue(OnmsAttribute attribute,
-			String rraConsolidationFunction, String printConsolidationFunction,
-			long startTimeInMillis, long endTimeInMillis);
+    public double[] getPrintValues(OnmsAttribute attribute,String rraConsolidationFunction, 
+			long startTimeInMillis, long endTimeInMillis, String... printFunctions);
 
     /**
      * Create an RRD graph with the given command where RRD files are relative to the workDir.

@@ -1,7 +1,10 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.config.attrsummary.Attribute;
 import org.opennms.netmgt.config.attrsummary.Resource;
@@ -99,56 +102,173 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 	public FilterDao m_filterDao;
 	public ResourceDao m_resourceDao;
 	public RrdDao m_rrdDao;
+	public Stats m_stats = new Stats();
+	
+	static class OpStats {
+		private String m_name;
+		private int m_count = 0;
+		private long m_total = 0;
+		private long m_lastStarted = -1;
+		
+		OpStats(String n) {
+			m_name = n;
+		}
+		
+		void begin() {
+			m_count++;
+			m_lastStarted = System.nanoTime();
+		}
+		
+		void end() {
+			long ended  = System.nanoTime();
+			Assert.state(m_lastStarted >= 0, "must call begin before calling end");
+			m_total += (ended - m_lastStarted);
+			m_lastStarted = -1;
+		}
+
+		@Override
+		public String toString() {
+			double total = (double)m_total;
+			return String.format("stats: %s: count=%d, totalTime=%f ms ( %f us/call )", m_name, m_count, total/1000000.0, total/(m_count*1000.0));
+		}
+		
+		
+	}
+	
+	static class Stats {
+		Map<String, OpStats> map = new LinkedHashMap<String, OpStats>();
+		public void begin(String operation) {
+			if (!map.containsKey(operation)) {
+				map.put(operation, new OpStats(operation));
+			}
+			map.get(operation).begin();
+		}
+
+		public void end(String operation) {
+			map.get(operation).end();
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder bldr = new StringBuilder(map.size()*50);
+			for (OpStats opStat : map.values()) {
+				bldr.append(opStat);
+				bldr.append('\n');
+			}
+			return bldr.toString();
+		}
+		
+	}
 
 	public Summary getSummary(String filterRule, final long startTime, final long endTime) {
-		final SummaryBuilder bldr = new SummaryBuilder();
+		m_stats.begin("getSummary");
+		try {
+			final SummaryBuilder bldr = new SummaryBuilder();
 
-		
-		m_filterDao.walkMatchingNodes(filterRule, new AbstractEntityVisitor() {
-			public void visitNode(OnmsNode node) {
-				OnmsResource nodeResource = m_resourceDao.getResourceForNode(node);
-				
-				bldr.pushResource(node.getLabel());
 
-				for(OnmsResource child : nodeResource.getChildResources()) {
-					if (child.getResourceType() instanceof NodeSnmpResourceType) {
-						addAttributes(child.getRrdGraphAttributes().values());
-					} 
+			m_filterDao.walkMatchingNodes(filterRule, new AbstractEntityVisitor() {
+				public void visitNode(OnmsNode node) {
+
+					OnmsResource nodeResource = getResourceForNode(node);
+
+					bldr.pushResource(node.getLabel());
+
+					for(OnmsResource child : getChildResources1(nodeResource)) {
+						if (child.getResourceType() instanceof NodeSnmpResourceType) {
+							addAttributes(getResourceGraphAttributes(child));
+						} 
+					}
+
+					for(OnmsResource child : getChildResources2(nodeResource)) {
+						if (!(child.getResourceType() instanceof NodeSnmpResourceType)) {
+							addResource(child);
+						}
+					}
+
+					bldr.popResource();
 				}
-				
-				for(OnmsResource child : nodeResource.getChildResources()) {
-					if (!(child.getResourceType() instanceof NodeSnmpResourceType)) {
-						addResource(child);
+
+				private Collection<RrdGraphAttribute> getResourceGraphAttributes(OnmsResource child) {
+					String op = "getResourceGraphAttributes-"+child.getResourceType().getName();
+					m_stats.begin(op);
+					try {
+						return child.getRrdGraphAttributes().values();
+					} finally {
+						m_stats.end(op);
+					}
+				}
+
+				private List<OnmsResource> getChildResources1(OnmsResource nodeResource) {
+					m_stats.begin("getChildResources1");
+					try {
+						return nodeResource.getChildResources();
+					} finally {
+						m_stats.end("getChildResources1");
+					}
+				}
+
+				private List<OnmsResource> getChildResources2(OnmsResource nodeResource) {
+					m_stats.begin("getChildResources2");
+					try {
+						return nodeResource.getChildResources();
+					} finally {
+						m_stats.end("getChildResources2");
+					}
+				}
+
+				private OnmsResource getResourceForNode(OnmsNode node) {
+					m_stats.begin("getResourceForNode");
+					try {
+						return m_resourceDao.getResourceForNode(node);
+					} finally {
+						m_stats.end("getResourceForNode");
+					}
+				}
+
+				private void addResource(OnmsResource resource) {
+					addResource(resource, resource.getLabel());
+				}
+
+				private void addResource(OnmsResource resource, String label) {
+					Collection<RrdGraphAttribute> attrs = getResourceGraphAttributes(resource);
+					if (attrs.size() > 0) {
+						bldr.addResource(label);
+						addAttributes(attrs);
+					}
+				}
+
+				private void addAttributes(Collection<RrdGraphAttribute> attrs) {
+					m_stats.begin("addAttribute");
+					try {
+						for(RrdGraphAttribute attr : attrs) {
+							//System.err.println("Getting values for attribute: "+attr);
+							bldr.addAttribute(attr.getName());
+							double[] values = getValues(attr);
+							bldr.setMin(values[0]);
+							bldr.setAverage(values[1]);
+							bldr.setMax(values[2]);
+						}
+					} finally {
+						m_stats.end("addAttribute");
 					}
 				}
 				
-				bldr.popResource();
-			}
-			
-			private void addResource(OnmsResource resource) {
-				addResource(resource, resource.getLabel());
-			}
-
-			private void addResource(OnmsResource resource, String label) {
-				Collection<RrdGraphAttribute> attrs = resource.getRrdGraphAttributes().values();
-				if (attrs.size() > 0) {
-					bldr.addResource(label);
-					addAttributes(attrs);
+				private double[] getValues(RrdGraphAttribute attr) {
+					m_stats.begin("getValues");
+					try {
+						return m_rrdDao.getPrintValues(attr, "AVERAGE", startTime*1000, endTime*1000, "MIN", "AVERAGE", "MAX");
+					} finally {
+						m_stats.end("getValues");
+					}
 				}
-			}
 
-			private void addAttributes(Collection<RrdGraphAttribute> attrs) {
-				for(RrdGraphAttribute attr : attrs) {
-					//System.err.println("Getting values for attribute: "+attr);
-					bldr.addAttribute(attr.getName());
-					bldr.setMin(m_rrdDao.getPrintValue(attr, "AVERAGE", "MIN", startTime*1000, endTime*1000));
-					bldr.setAverage(m_rrdDao.getPrintValue(attr, "AVERAGE", "AVERAGE", startTime*1000, endTime*1000));
-					bldr.setMax(m_rrdDao.getPrintValue(attr, "AVERAGE", "MAX", startTime*1000, endTime*1000));
-				}
-			}
-		});
-		
-		return bldr.getSummary();
+			});
+
+			return bldr.getSummary();
+		} finally {
+			m_stats.end("getSummary");
+			System.err.println(m_stats);
+		}
 	}
 
 	public void afterPropertiesSet() throws Exception {

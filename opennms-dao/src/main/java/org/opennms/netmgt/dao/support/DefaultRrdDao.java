@@ -60,17 +60,19 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     private String m_rrdBinaryPath;
 
     public double getPrintValue(OnmsAttribute attribute, String cf, long start, long end) {
-    	return getPrintValue(attribute, cf, cf, start, end);
+    	return getPrintValues(attribute, cf, start, end)[0];
     }
 
-	public double getPrintValue(OnmsAttribute attribute,
-			String rraConsolidationFunction, String printConsolidationFunction,
-			long startTimeInMillis, long endTimeInMillis) {
+	public double[] getPrintValues(OnmsAttribute attribute, String rraConsolidationFunction, long startTimeInMillis, long endTimeInMillis, String... printFunctions) {
 		Assert.notNull(attribute, "attribute argument must not be null");
         Assert.notNull(rraConsolidationFunction, "rraConsolicationFunction argument must not be null");
-        Assert.notNull(printConsolidationFunction, "printConsolidationFunction argument must not be null");
         Assert.isTrue(endTimeInMillis > startTimeInMillis, "end argument must be after start argument");
         Assert.isAssignable(attribute.getClass(), RrdGraphAttribute.class, "attribute argument must be assignable to RrdGraphAttribute");
+
+        // if no printFunctions are given just use the rraConsolidationFunction
+        if (printFunctions.length < 1) {
+        	printFunctions = new String[] { rraConsolidationFunction };
+        }
         
         RrdGraphAttribute rrdAttribute = (RrdGraphAttribute) attribute;
         
@@ -81,9 +83,14 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
                 "--start=" + (startTimeInMillis / 1000),
                 "--end=" + (endTimeInMillis / 1000),
                 "DEF:ds=" + rrdAttribute.getRrdRelativePath() + ":" + attribute.getName() + ":" + rraConsolidationFunction,
-                "PRINT:ds:" + printConsolidationFunction + ":\"%le\""
         };
-        String commandString = StringUtils.arrayToDelimitedString(command, " ");
+        
+        String[] printDefs = new String[printFunctions.length];
+        for(int i = 0; i < printFunctions.length; i++) {
+        	printDefs[i] = "PRINT:ds:" + printFunctions[i] + ":\"%le\""; 
+        }
+        
+        String commandString = StringUtils.arrayToDelimitedString(command, " ") + ' ' + StringUtils.arrayToDelimitedString(printDefs, " ");
 
         RrdGraphDetails graphDetails;
         try {
@@ -99,11 +106,17 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
             throw new DataAccessResourceFailureException("Failure to get print lines from grpah after graphing with command '" + commandString + "'", e);
         }
       
-        if (printLines.length != 1) {
-            throw new ObjectRetrievalFailureException("Returned number of print lines should be 1, but was " + printLines.length, commandString);
+        if (printLines.length != printFunctions.length) {
+            throw new ObjectRetrievalFailureException("Returned number of print lines should be "+printFunctions.length+", but was " + printLines.length, commandString);
         }
 
-        return Double.parseDouble(printLines[0]);
+        double[] values = new double[printLines.length];
+        
+        for(int i = 0; i < printLines.length; i++) {
+        	values[i] = Double.parseDouble(printLines[i]);
+        }
+        
+        return values;
 	}
 
     public void afterPropertiesSet() throws Exception {
