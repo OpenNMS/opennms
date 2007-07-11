@@ -156,7 +156,7 @@ public class NsclientPlugin extends AbstractPlugin {
 
     /**
      * <P>
-     * Test to see if the paassed host-port pair is an endpoint for a TCP
+     * Test to see if the passed host-port pair is an endpoint for a TCP
      * server. If there is a TCP server at the destination value then a
      * connection is made using the params variable data and a check is
      * requested from the remote NSClient service.
