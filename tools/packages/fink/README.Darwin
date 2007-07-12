@@ -64,12 +64,17 @@ Database Setup -- All Platforms
 ------------------------------------------------------------------------------
 
 Make sure PostgreSQL is started before you install.  If it isn't, you will
-have to start it ("sudo @PREFIX@/bin/pgsql.sh start") and try again.  To
-finish the installation, run:
+have to start it ("sudo @PREFIX@/bin/pgsql.sh start") and try again.
 
-  sudo @PREFIX@/var/opennms/bin/install -disU
+Then, create an "opennms" database user, like so:
 
-Note that the "opennms-pgsqlXX" package must match the version of PostgreSQL
+  sudo @PREFIX@/bin/createuser -s -d -r -l -e -U postgres opennms
+
+And finally, to finish the installation, run:
+
+  sudo @PREFIX@/var/opennms/bin/install -disU -u opennms
+
+Note that the "iplike-pgsqlXX" package must match the version of PostgreSQL
 you have installed through fink, or this will fail!
 
 ------------------------------------------------------------------------------
