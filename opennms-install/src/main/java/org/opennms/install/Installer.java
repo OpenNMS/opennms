@@ -287,7 +287,7 @@ public class Installer {
         m_install_servletdir = fetchProperty("install.servlet.dir");
 
         String soext = fetchProperty("build.soext");
-        String pg_iplike_dir = fetchProperty("install.postgresql.dir");
+        String pg_iplike_dir = m_properties.getProperty("install.postgresql.dir");
 
         if (pg_iplike_dir != null) {
         	m_installerDb.setPgIpLikeLocation(pg_iplike_dir + File.separator + "iplike." + soext);
