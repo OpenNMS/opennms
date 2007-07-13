@@ -309,7 +309,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
             } else if (arg.equals("--end")) {
                 if (i + 1 < commandArray.length) {
                     end = Long.parseLong(commandArray[++i]);
-                    log().debug("JRobin end time: " + start);
+                    log().debug("JRobin end time: " + end);
                 } else {
                     throw new IllegalArgumentException("--end must be followed by an end time");
                 }
