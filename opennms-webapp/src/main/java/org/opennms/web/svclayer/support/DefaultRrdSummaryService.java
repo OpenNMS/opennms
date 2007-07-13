@@ -2,7 +2,6 @@ package org.opennms.web.svclayer.support;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,49 +17,117 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.svclayer.RrdSummaryService;
+import org.opennms.web.svclayer.SummarySpecification;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 public class DefaultRrdSummaryService implements RrdSummaryService, InitializingBean {
 	
 	static class SummaryBuilder {
-		private Summary m_summary;
-		private LinkedList<Resource> m_resourceStack = new LinkedList<Resource>();
-		private Resource m_currResource;
+		private SummaryHolder m_root;
+		private ResourceHolder m_currentResource;
 		private Attribute m_currAttr;
 		
+		interface ResourceParent {
+		    public boolean isRoot();
+		    public void addResource(Resource resource);
+		    public void commit();
+		}
+		
+		class SummaryHolder implements ResourceParent {
+		    Summary m_summary = new Summary();
+
+            public void addResource(Resource resource) {
+                m_summary.addResource(resource);
+            }
+
+            public void commit() {
+
+            }
+            
+            public Summary getSummary() {
+                return m_summary;
+            }
+
+            public boolean isRoot() {
+                return true;
+            }
+            
+            public String toString() {
+                return "[root]";
+            }
+		    
+		}
+		
+		class ResourceHolder implements ResourceParent {
+		    ResourceParent m_parent;
+		    boolean m_commited = false;
+            Resource m_resource;
+
+            ResourceHolder(ResourceParent parent, String name) {
+                Assert.notNull(parent, "parent must not be null");
+		        m_parent = parent;
+		        m_resource = new Resource();
+		        m_resource.setName(name);
+            }
+
+            public ResourceParent getParent() {
+                return m_parent;
+            }
+
+            public boolean isCommited() {
+                return m_commited;
+            }
+            
+            public void commit() {
+                if (isCommited()) return;
+                if (m_parent != null) m_parent.commit();
+                addSelf();
+                m_commited = true;
+            }
+            
+            public void addResource(Resource resource) {
+                m_resource.addResource(resource);
+            }
+            
+            protected Attribute addAttribute(String name) {
+                Attribute attr = new Attribute();
+                attr.setName(name);
+                m_resource.addAttribute(attr);
+                commit();
+                return attr;
+            }
+
+            protected void addSelf() {
+                if (getParent() == null) {
+                    m_root.addResource(m_resource);
+                } else {
+                    getParent().addResource(m_resource);
+                }
+            }
+            
+            public String toString() {
+                return (getParent() == null ? "[root]" : getParent().toString())+".["+m_resource.getName()+"]";
+            }
+
+            public boolean isRoot() {
+                return false;
+            }
+
+		}
 		
 		SummaryBuilder() {
-			m_summary = new Summary();
+			m_root = new SummaryHolder();
 		}
 		
 		
 		Summary getSummary() {
-			return m_summary;
+			return m_root.getSummary();
 		}
 
-		public void addResource(String string) {
-			m_currResource = new Resource();
-			m_currResource.setName(string);
-			addCurrentResource();
-		}
-
-
-		private void addCurrentResource() {
-			if (m_resourceStack.isEmpty()) {
-				m_summary.addResource(m_currResource);
-			} else {
-				m_resourceStack.getFirst().addResource(m_currResource);
-			}
-		}
-		
-		
-		
-		public void addAttribute(String string) {
-			Assert.state(m_currResource != null, "addResource must be called before calling addAttribute");
-			m_currAttr = new Attribute();
-			m_currAttr.setName(string);
-			m_currResource.addAttribute(m_currAttr);
+		public void addAttribute(String name) {
+			Assert.state(m_currentResource != null, "addResource must be called before calling addAttribute");
+			m_currAttr = m_currentResource.addAttribute(name);
 		}
 		
 		public void setMin(double min){
@@ -88,14 +155,18 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 
 
 		public void pushResource(String label) {
-			addResource(label);
-			m_resourceStack.addFirst(m_currResource);
+		    ResourceParent parent = (m_currentResource == null ? m_root : m_currentResource);
+		    m_currentResource = new ResourceHolder(parent, label);
 		}
 
 
 		public void popResource() {
-			Assert.state(!m_resourceStack.isEmpty(), "cannot pop a resource that has not been pushed!");
-			m_resourceStack.removeFirst();
+		    Assert.state(m_currentResource != null, "you must push a resource before you can pop one");
+		    if (m_currentResource.getParent().isRoot()) {
+		        m_currentResource = null;
+		    } else {
+		        m_currentResource = (ResourceHolder)m_currentResource.getParent();
+		    }
 		}
 	}
 	
@@ -160,7 +231,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 		
 	}
 
-	public Summary getSummary(String filterRule, final long startTime, final long endTime) {
+	public Summary getSummary(String filterRule, final long startTime, final long endTime, final String attributeSieve) {
 		m_stats.begin("getSummary");
 		try {
 			final SummaryBuilder bldr = new SummaryBuilder();
@@ -232,24 +303,27 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 				private void addResource(OnmsResource resource, String label) {
 					Collection<RrdGraphAttribute> attrs = getResourceGraphAttributes(resource);
 					if (attrs.size() > 0) {
-						bldr.addResource(label);
+						bldr.pushResource(label);
 						addAttributes(attrs);
+						bldr.popResource();
 					}
 				}
 
 				private void addAttributes(Collection<RrdGraphAttribute> attrs) {
-					m_stats.begin("addAttribute");
+					m_stats.begin("addAttributes");
 					try {
 						for(RrdGraphAttribute attr : attrs) {
-							//System.err.println("Getting values for attribute: "+attr);
-							bldr.addAttribute(attr.getName());
-							double[] values = getValues(attr);
-							bldr.setMin(values[0]);
-							bldr.setAverage(values[1]);
-							bldr.setMax(values[2]);
+						    if (attr.getName().matches(attributeSieve)) {
+	                            //System.err.println("Getting values for attribute: "+attr);
+						        bldr.addAttribute(attr.getName());
+						        double[] values = getValues(attr);
+						        bldr.setMin(values[0]);
+						        bldr.setAverage(values[1]);
+						        bldr.setMax(values[2]);
+						    }
 						}
 					} finally {
-						m_stats.end("addAttribute");
+						m_stats.end("addAttributes");
 					}
 				}
 				
@@ -288,5 +362,9 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 	public void setRrdDao(RrdDao rrdDao) {
 		m_rrdDao = rrdDao;
 	}
+
+    public Summary getSummary(SummarySpecification spec) {
+        return getSummary(spec.getFilterRule(), spec.getStartTime(), spec.getEndTime(), spec.getAttributeSieve());
+    }
 
 }

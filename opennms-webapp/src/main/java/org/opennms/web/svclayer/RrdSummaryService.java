@@ -6,6 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly=true)
 public interface RrdSummaryService {
 	
-	Summary getSummary(String filterRule, long startTime, long endTime);
+	Summary getSummary(SummarySpecification specification);
 
 }
