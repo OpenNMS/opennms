@@ -175,7 +175,6 @@
                   <property name="platform.javahOS" value="${platform.javahOS}" />
                   <property name="build.rrd.include.dir" value="${build.rrd.include.dir}" />
                   <property name="build.rrd.lib.dir" value="${build.rrd.lib.dir}" />
-                  <property name="build.postgresql.include.dir" value="${build.postgresql.include.dir}" />
                   <property name="platform.shlib" value="${platform.shlib}" />
                 </ant>
               </tasks>
@@ -459,7 +458,6 @@ opennms.home = ${opennms.home}
     <install.servlet.dir>${install.webapps.dir}/opennms</install.servlet.dir>
     <install.share.dir>${install.dir}/share</install.share.dir>
     <install.bin.dir>${install.dir}/bin</install.bin.dir>
-    <install.postgresql.dir>${install.dir}/lib</install.postgresql.dir>
     <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
@@ -488,8 +486,6 @@ opennms.home = ${opennms.home}
     <build.soext>${platform.shlib}</build.soext>
     <build.jni.compiler.arg />
     <build.jni.linker.arg />
-    <build.postgresql.compiler.arg />
-    <build.postgresql.linker.arg />
     
     <!-- rpm specific -->
     <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>
@@ -617,63 +613,21 @@ opennms.home = ${opennms.home}
     </profile>
 
     <profile>
-      <id>darwinPorts-old-postgresql8</id>
-      <activation>
-        <file>
-          <exists>/opt/local/include/psql8/server/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/opt/local/include/psql8/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-    
+      <id>fink-rrdtool</id>
 
-    <profile>
-      <id>darwinPorts-postgres-postgresql81</id>
       <activation>
         <file>
-          <exists>/opt/local/include/postgresql81/server/postgres.h</exists>
+          <exists>/sw/include/rrd.h</exists>
         </file>
       </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/opt/local/include/postgresql81/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-    
-    <profile>
-      <id>darwinPorts-postgres-postgresql82</id>
-      <activation>
-        <file>
-          <exists>/opt/local/include/postgresql82/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/opt/local/include/postgresql81</build.postgresql.include.dir>
-      </properties>
-    </profile>
-    
-    <profile>
-      <id>fink</id>
-      
-      <activation>
-        <file>
-          <exists>/sw/fink/VERSION</exists>
-        </file>
-      </activation>
-  
+
       <properties>
         <build.rrd.include.dir>/sw/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/sw/lib</build.rrd.lib.dir>
-        <build.postgresql.include.dir>/sw/include/postgresql</build.postgresql.include.dir>
-  
         <install.rrdtool.bin>/sw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-  
+
     <!-- Linux -->
     <profile>
       <id>linux-generic-rrdtool-shared</id>
@@ -736,142 +690,17 @@ opennms.home = ${opennms.home}
     </profile>
 
     <profile>
-      <id>generic-postgres-pgsql-server</id>
-      
-      <activation>
-        <file>
-          <exists>/usr/include/pgsql/server/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>generic-postgres-postgresql-server</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/server/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/postgresql/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>generic-postgres-postgresql</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/postgresql</build.postgresql.include.dir>
-      </properties>
-    </profile>
-    
-    <profile>
-      <id>generic-postgres-8.0</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/8.0/server/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/postgresql/8.0/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-  
-    <profile>
-      <id>generic-postgres-8.1</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/8.1/server/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/postgresql/8.1/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>generic-postgres-8.2</id>
-      <activation>
-        <file>
-          <exists>/usr/include/postgresql/8.2/server/postgres.h</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.postgresql.include.dir>/usr/include/postgresql/8.2/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-
-    <!-- Solaris -->
-    <!--
-         This is for the PostgreSQL package that ships with Solaris 10
-         Update 2 and later.  See this for more information:
-
-         http://www.sun.com/software/solaris/howtoguides/postgresqlhowto.jsp
-      -->
-    <profile>
-      <id>solaris-system-postgresql</id>
-      <activation>
-      	<file>
-	  <exists>/var/sadm/pkg/SUNWpostgr-devel/pkginfo</exists>
-	</file>
-      </activation>
-
-      <properties>
-	<build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>solaris-postgres8</id>
-      <activation>
-      	<file>
-	  <exists>/usr/local/pgsql/lib/libpq.so.3.2</exists>
-	</file>
-      </activation>
-
-      <properties>
-	<build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>solaris-postgres81</id>
-      <activation>
-       <file>
-         <exists>/usr/local/pgsql/lib/libpq.so.4.1</exists>
-       </file>
-      </activation>
-
-      <properties>
-       <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
-      </properties>
-    </profile>
-
-    <profile>
       <id>solaris-local-rrdtool1.0.49</id>
       <activation>
-      	<file>
-	  <exists>/usr/local/rrdtool-1.0.49</exists>
-	</file>
+        <file>
+          <exists>/usr/local/rrdtool-1.0.49</exists>
+        </file>
       </activation>
 
       <properties>
         <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
-	<build.rrd.include.dir>/usr/local/rrdtool-1.0.49/include</build.rrd.include.dir>
-	<build.rrd.lib.dir>/usr/local/rrdtool-1.0.49/lib</build.rrd.lib.dir>
+        <build.rrd.include.dir>/usr/local/rrdtool-1.0.49/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/local/rrdtool-1.0.49/lib</build.rrd.lib.dir>
       </properties>
     </profile>
 
@@ -891,27 +720,8 @@ opennms.home = ${opennms.home}
 
       <properties>
         <install.rrdtool.bin>/opt/csw/bin/rrdtool</install.rrdtool.bin>
-	<build.rrd.include.dir>/opt/csw/include</build.rrd.include.dir>
-	<build.rrd.lib.dir>/opt/csw/lib</build.rrd.lib.dir>
-      </properties>
-    </profile>
-
-    <!--
-         This is for the postgresql package from Blastwave.org.
-         See this for more information:
-
-         http://www.blastwave.org/packages.php/postgresql
-      -->
-    <profile>
-      <id>solaris-blastwave-postgresql</id>
-      <activation>
-      	<file>
-	  <exists>/var/sadm/pkg/CSWpostgresql/pkginfo</exists>
-	</file>
-      </activation>
-
-      <properties>
-	<build.postgresql.include.dir>/opt/csw/postgresql/include/server</build.postgresql.include.dir>
+        <build.rrd.include.dir>/opt/csw/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/opt/csw/lib</build.rrd.lib.dir>
       </properties>
     </profile>
 
@@ -926,8 +736,6 @@ opennms.home = ${opennms.home}
       <properties>
         <build.rrd.include.dir>/usr/local/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
-	<build.postgresql.compiler.arg>-I/usr/local/include</build.postgresql.compiler.arg>
-        <build.postgresql.include.dir>/usr/local/include/postgresql/server</build.postgresql.include.dir>
       </properties>
     </profile>
 -->
@@ -953,19 +761,6 @@ opennms.home = ${opennms.home}
       </activation>
       <properties>
         <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>postgresql-usr-local-include-postgresql-server</id>
-      <activation>
-        <file>
-          <exists>/usr/local/include/postgresql/server/postgres.h</exists>
-        </file>
-      </activation>
-      <properties>
-        <build.postgresql.compiler.arg>-I/usr/local/include</build.postgresql.compiler.arg>
-        <build.postgresql.include.dir>/usr/local/include/postgresql/server</build.postgresql.include.dir>
       </properties>
     </profile>
 
