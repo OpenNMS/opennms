@@ -9,7 +9,6 @@ import java.util.TimerTask;
 
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
-import org.quartz.Scheduler;
 
 public abstract class AbstractCorrelationEngine implements CorrelationEngine {
 
