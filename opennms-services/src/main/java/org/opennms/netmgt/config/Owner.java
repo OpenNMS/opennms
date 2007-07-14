@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 14: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +35,7 @@
 //
 package org.opennms.netmgt.config;
 
-public class Owner implements Comparable {
+public class Owner implements Comparable<Owner> {
     
     private String m_roleid;
     private String m_user;
@@ -83,7 +87,7 @@ public class Owner implements Comparable {
     
     public boolean equals(Object obj) {
         if (obj instanceof Owner) {
-            Owner o = (Owner)obj;
+            Owner o = (Owner) obj;
             return m_user.equals(o.m_user);
         }
         return false;
@@ -93,8 +97,8 @@ public class Owner implements Comparable {
         return m_user.hashCode();
     }
 
-    public int compareTo(Object o) {
-        return m_user.compareTo(((Owner)o).m_user);
+    public int compareTo(Owner o) {
+        return m_user.compareTo(o.m_user);
     }
     
     public String toString() {

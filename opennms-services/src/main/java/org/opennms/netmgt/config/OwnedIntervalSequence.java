@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 14: Use Java 5 generics and indent. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,11 +51,11 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
         super(interval);
     }
     
-    protected Collection combineIntervals(TimeInterval currInt, TimeInterval newInt) {
-        OwnedInterval currInterval = (OwnedInterval)currInt;
+    protected Collection<OwnedInterval> combineIntervals(TimeInterval currInt, TimeInterval newInt) {
+        OwnedInterval currInterval = (OwnedInterval) currInt;
         OwnedInterval newInterval = (OwnedInterval) newInt;
         
-        List newIntervals = new ArrayList(3);
+        List<OwnedInterval> newIntervals = new ArrayList<OwnedInterval>(3);
         
         // Time Intervals stored locally so we can add them in order
         OwnedInterval firstSeg = null;
@@ -99,9 +103,15 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
         midSeg = new OwnedInterval(currInterval.getOwners(), midSegStart, midSegEnd);
         midSeg.addOwners(newInterval.getOwners());
         
-        if (firstSeg != null) newIntervals.add(firstSeg);
-        if (midSeg != null) newIntervals.add(midSeg);
-        if (thirdSeg != null) newIntervals.add(thirdSeg);
+        if (firstSeg != null) {
+            newIntervals.add(firstSeg);
+        }
+        if (midSeg != null) {
+            newIntervals.add(midSeg);
+        }
+        if (thirdSeg != null) {
+            newIntervals.add(thirdSeg);
+        }
         
         
         return newIntervals;
@@ -112,15 +122,15 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
     }
 
     protected TimeIntervalSequence createTail(TimeInterval interval) {
-        return new OwnedIntervalSequence((OwnedInterval)interval);
+        return new OwnedIntervalSequence((OwnedInterval) interval);
     }
 
-    protected Collection separateIntervals(TimeInterval origInt, TimeInterval removedInt) {
+    protected Collection<OwnedInterval> separateIntervals(TimeInterval origInt, TimeInterval removedInt) {
         OwnedInterval origInterval = (OwnedInterval) origInt;
         OwnedInterval removedInterval = (OwnedInterval) removedInt;
         
         // if the original is owned and no owners will be removed keep in intact
-        List reducedOwners = new ArrayList(origInterval.getOwners());
+        List<Owner> reducedOwners = new ArrayList<Owner>(origInterval.getOwners());
         reducedOwners.removeAll(removedInterval.getOwners());
         if (origInterval.isOwned() && removedInterval.isOwned() && reducedOwners.equals(origInterval.getOwners())) {
             // the removedInterval did not have any owners in common with the orignal interval 
@@ -159,13 +169,20 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
         }
         
         // we only add the midSegment if there are remaining owners
-        if (removedInterval.isOwned() && !reducedOwners.isEmpty())
+        if (removedInterval.isOwned() && !reducedOwners.isEmpty()) {
             midSeg = new OwnedInterval(reducedOwners, midSegStart, midSegEnd);
+        }
         
-        List newIntervals = new ArrayList(3);
-        if (firstSeg != null) newIntervals.add(firstSeg);
-        if (midSeg != null) newIntervals.add(midSeg);
-        if (lastSeg != null) newIntervals.add(lastSeg);
+        List<OwnedInterval> newIntervals = new ArrayList<OwnedInterval>(3);
+        if (firstSeg != null) {
+            newIntervals.add(firstSeg);
+        }
+        if (midSeg != null) {
+            newIntervals.add(midSeg);
+        }
+        if (lastSeg != null) {
+            newIntervals.add(lastSeg);
+        }
         
         return newIntervals;
     }

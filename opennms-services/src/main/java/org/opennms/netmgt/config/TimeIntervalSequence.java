@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 14: Use Java 5 generics and indent. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,7 +44,7 @@ import java.util.List;
 // TODO make this implement Collection
 public class TimeIntervalSequence {
     
-    private static class TimeIntervalSeqIter implements Iterator {
+    private static class TimeIntervalSeqIter implements Iterator<TimeInterval> {
 
         private TimeIntervalSequence m_current;
         
@@ -52,7 +56,7 @@ public class TimeIntervalSequence {
             return m_current != null && m_current.m_interval != null;
         }
 
-        public Object next() {
+        public TimeInterval next() {
             TimeInterval interval = m_current.m_interval;
             m_current = m_current.m_tail;
             return interval;
@@ -119,7 +123,7 @@ public class TimeIntervalSequence {
     }
 
     protected Collection combineIntervals(TimeInterval currentInterval, TimeInterval newInterval) {
-        List newIntervals = new ArrayList(3);
+        List<TimeInterval> newIntervals = new ArrayList<TimeInterval>(3);
         
         // overlapping intervals get divided into three non-overlapping segments
         // that are bounded by the below
@@ -164,10 +168,11 @@ public class TimeIntervalSequence {
     }
 
     private void addToTail(TimeInterval interval) {
-        if (m_tail == null)
+        if (m_tail == null) {
             m_tail = createTail(interval);
-        else
+        } else {
             m_tail.addInterval(interval);
+        }
     }
     
     protected TimeInterval createInterval(Date start, Date end) {
@@ -181,22 +186,23 @@ public class TimeIntervalSequence {
     private void removeCurrent() {
         if (m_tail == null) {
             m_interval = null;
-        }
-        else {
+        } else {
             m_interval = m_tail.m_interval;
             m_tail = m_tail.m_tail;
         }
     }
 
     public void removeInterval(TimeInterval removedInterval) {
-        if (m_interval == null) return;
+        if (m_interval == null) {
+            return;
+        }
         
-        if (m_interval.preceeds(removedInterval))
+        if (m_interval.preceeds(removedInterval)) {
             removeFromTail(removedInterval);
-        else if (m_interval.follows(removedInterval))
+        } else if (m_interval.follows(removedInterval)) {
             // no need to do anything because the entire remove interval is before this
             return; 
-        else if (m_interval.overlaps(removedInterval)) {
+        } else if (m_interval.overlaps(removedInterval)) {
             
             TimeInterval origInterval = m_interval;
 
@@ -215,11 +221,10 @@ public class TimeIntervalSequence {
     }
 
     protected Collection separateIntervals(TimeInterval origInterval, TimeInterval removedInterval) {
-        List newIntervals = new ArrayList(2);
+        List<TimeInterval> newIntervals = new ArrayList<TimeInterval>(2);
         if (removedInterval.getEnd().before(origInterval.getEnd())) {
             newIntervals.add(createInterval(removedInterval.getEnd(), origInterval.getEnd()));
         }
-        
         
         // add back any part of the original interval the preceeded the remove interval
         if (origInterval.getStart().before(removedInterval.getStart())) {
@@ -229,11 +234,14 @@ public class TimeIntervalSequence {
     }
 
     private void removeFromTail(TimeInterval interval) {
-        if (m_tail == null) return;
+        if (m_tail == null) {
+            return;
+        }
         
         m_tail.removeInterval(interval);
-        if (m_tail.m_interval == null)
+        if (m_tail.m_interval == null) {
             m_tail = null;
+        }
     }
     
     public void bound(Date start, Date end) {
