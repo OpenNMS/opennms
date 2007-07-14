@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 14: Use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,7 +41,7 @@ import java.util.Date;
 import java.util.List;
 
 public class OwnedInterval extends TimeInterval {
-    List m_owners;
+    private List<Owner> m_owners;
     
     public OwnedInterval(OwnedInterval owned) {
         this(owned.getOwners(), owned.getStart(), owned.getEnd());
@@ -47,39 +51,39 @@ public class OwnedInterval extends TimeInterval {
         this(interval.getStart(), interval.getEnd());
     }
     
-    public OwnedInterval(Object owner, TimeInterval interval) {
+    public OwnedInterval(Owner owner, TimeInterval interval) {
         this(owner, interval.getStart(), interval.getEnd());
     }
     
-    public OwnedInterval(List owners, TimeInterval interval) {
+    public OwnedInterval(List<Owner> owners, TimeInterval interval) {
         this(owners, interval.getStart(), interval.getEnd());
     }
     
     public OwnedInterval(Date start, Date end) {
-        this(Collections.EMPTY_LIST, start, end);
+        this(new ArrayList<Owner>(0), start, end);
     }
     
-    public OwnedInterval(Object owner, Date start, Date end) {
+    public OwnedInterval(Owner owner, Date start, Date end) {
         this(Collections.singletonList(owner), start, end);
     }
     
-    public OwnedInterval(List owners, Date start, Date end) {
+    public OwnedInterval(List<Owner> owners, Date start, Date end) {
         super(start, end);
-        m_owners = new ArrayList(owners);
+        m_owners = new ArrayList<Owner>(owners);
         Collections.sort(m_owners);
     }
     
-    public List getOwners() { return m_owners; }
+    public List<Owner> getOwners() { return m_owners; }
     
-    public void addOwner(Object owner) { m_owners.add(owner); Collections.sort(m_owners); }
+    public void addOwner(Owner owner) { m_owners.add(owner); Collections.sort(m_owners); }
     
-    public void removeOwner(Object owner) { m_owners.remove(owner); }
+    public void removeOwner(Owner owner) { m_owners.remove(owner); }
     
-    public void addOwners(List owners) { m_owners.addAll(owners); Collections.sort(m_owners); }
+    public void addOwners(List<Owner> owners) { m_owners.addAll(owners); Collections.sort(m_owners); }
     
-    public void removeOwners(List owners) { m_owners.removeAll(owners); }
+    public void removeOwners(List<Owner> owners) { m_owners.removeAll(owners); }
     
-    public boolean isOwner(Object owner) { return m_owners.contains(owner); }
+    public boolean isOwner(Owner owner) { return m_owners.contains(owner); }
     
     public boolean isOwned() { return !m_owners.isEmpty(); }
     
@@ -88,8 +92,10 @@ public class OwnedInterval extends TimeInterval {
         if (m_owners.isEmpty()) {
             ownerString = "UNOWNED";
         } else {
-            for(int i = 0; i < m_owners.size(); i++) {
-                if (i != 0) ownerString += ",";
+            for (int i = 0; i < m_owners.size(); i++) {
+                if (i != 0) {
+                    ownerString += ",";
+                }
                 ownerString += m_owners.get(i);
             }
         }
