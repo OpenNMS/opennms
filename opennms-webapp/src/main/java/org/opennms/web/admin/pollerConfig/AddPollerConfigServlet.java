@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 13: Use Java 5 generics to eliminate warnings, remove unused code,
+//              and indent a bit. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,16 +41,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -54,8 +58,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.BundleLists;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -76,21 +78,23 @@ import org.opennms.web.Util;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AddPollerConfigServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     PollerConfiguration pollerConfig = null;
 
     CapsdConfiguration capsdConfig = null;
 
     protected String redirectSuccess;
 
-    HashMap pollerServices = new HashMap();
+    Map<String, Service> pollerServices = new HashMap<String, Service>();
 
-    HashMap capsdProtocols = new HashMap();
+    Map<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
 
-    java.util.List capsdColl = new ArrayList();
+    List<ProtocolPlugin> capsdColl = new ArrayList<ProtocolPlugin>();
 
     org.opennms.netmgt.config.poller.Package pkg = null;
 
-    Collection pluginColl = null;
+    Collection<ProtocolPlugin> pluginColl = null;
 
     Properties props = new Properties();
 
@@ -101,13 +105,9 @@ public class AddPollerConfigServlet extends HttpServlet {
     boolean errorflag = false;
 
     public void init() throws ServletException {
-        String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
-        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-            String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -138,13 +138,9 @@ public class AddPollerConfigServlet extends HttpServlet {
     }
 
     public void reloadFiles() throws ServletException {
-        String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
-        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-            String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -175,41 +171,53 @@ public class AddPollerConfigServlet extends HttpServlet {
     }
 
     public void initCapsdProtocols() {
-        capsdProtocols = new HashMap();
-        pluginColl = capsdConfig.getProtocolPluginCollection();
+        capsdProtocols = new HashMap<String, ProtocolPlugin>();
+        pluginColl = getProtocolPlugins();
         if (pluginColl != null) {
-            Iterator pluginiter = pluginColl.iterator();
+            Iterator<ProtocolPlugin> pluginiter = pluginColl.iterator();
             while (pluginiter.hasNext()) {
-                ProtocolPlugin plugin = (ProtocolPlugin) pluginiter.next();
+                ProtocolPlugin plugin = pluginiter.next();
                 capsdColl.add(plugin);
                 capsdProtocols.put(plugin.getProtocol(), plugin);
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private List<ProtocolPlugin> getProtocolPlugins() {
+        return capsdConfig.getProtocolPluginCollection();
+    }
+
     public void initPollerServices() {
-        pollerServices = new HashMap();
-        Collection packageColl = pollerConfig.getPackageCollection();
+        pollerServices = new HashMap<String, Service>();
+        Collection<org.opennms.netmgt.config.poller.Package> packageColl = getPackages();
         if (packageColl != null) {
-            Iterator pkgiter = packageColl.iterator();
+            Iterator<org.opennms.netmgt.config.poller.Package> pkgiter = packageColl.iterator();
             if (pkgiter.hasNext()) {
-                pkg = (org.opennms.netmgt.config.poller.Package) pkgiter.next();
-                Collection svcColl = pkg.getServiceCollection();
-                Iterator svcIter = svcColl.iterator();
+                pkg = pkgiter.next();
+                Collection<Service> svcColl = getServicesForPackage();
+                Iterator<Service> svcIter = svcColl.iterator();
                 Service svcProp = null;
                 while (svcIter.hasNext()) {
-                    svcProp = (Service) svcIter.next();
+                    svcProp = svcIter.next();
                     pollerServices.put(svcProp.getName(), svcProp);
                 }
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private List<Service> getServicesForPackage() {
+        return pkg.getServiceCollection();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<org.opennms.netmgt.config.poller.Package> getPackages() {
+        return pollerConfig.getPackageCollection();
+    }
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
         String user_id = request.getRemoteUser();
-        Enumeration en = context.getAttributeNames();
 
         errorflag = false;
         reloadFiles();
@@ -221,62 +229,62 @@ public class AddPollerConfigServlet extends HttpServlet {
             String protoArray1 = request.getParameter("protArray1");
             String port1 = request.getParameter("port1");
 
-            java.util.List checkedList = new ArrayList();
-            java.util.List deleteList = new ArrayList();
+            List<String> checkedList = new ArrayList<String>();
             if (name1 != null && !name1.equals("")) {
                 addPollerInfo(check1, name1, port1, user_id, protoArray1, response, request);
-                if (errorflag)
+                if (errorflag) {
                     return;
+                }
                 checkedList.add(name1);
                 addCapsdInfo(name1, port1, user_id, protoArray1, response, request);
                 if (!errorflag) {
                     props.setProperty("service." + name1 + ".protocol", protoArray1);
-                } else
+                } else {
                     return;
+                }
             }
 
             props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
-            StringWriter stringWriter = new StringWriter();
             FileWriter poller_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
             FileWriter capsd_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME));
             try {
                 Marshaller.marshal(pollerConfig, poller_fileWriter);
                 Marshaller.marshal(capsdConfig, capsd_fileWriter);
             } catch (MarshalException e) {
-                e.printStackTrace();
-                throw new ServletException(e.getMessage());
+                throw new ServletException(e);
             } catch (ValidationException e) {
-                e.printStackTrace();
-                throw new ServletException(e.getMessage());
+                throw new ServletException(e);
             }
         }
 
-        if (!errorflag)
+        if (!errorflag) {
             response.sendRedirect(this.redirectSuccess);
+        }
     }
 
     public void addCapsdInfo(String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
-        Collection tmpCapsd = capsdConfig.getProtocolPluginCollection();
-        Iterator iter = tmpCapsd.iterator();
+        Collection<ProtocolPlugin> tmpCapsd = getProtocolPlugins();
+        Iterator<ProtocolPlugin> iter = tmpCapsd.iterator();
         Service pollersvc = null;
         while (iter.hasNext()) {
-            ProtocolPlugin svc = (ProtocolPlugin) iter.next();
+            ProtocolPlugin svc = iter.next();
             if (svc.getProtocol().equals(name)) {
                 // delete from the poller config.
-                Collection tmpPollers = pkg.getServiceCollection();
-                Iterator polleriter = tmpPollers.iterator();
+                Collection<Service> tmpPollers = getServicesForPackage();
+                Iterator<Service> polleriter = tmpPollers.iterator();
                 boolean removePoller = false;
                 while (polleriter.hasNext()) {
-                    pollersvc = (Service) polleriter.next();
+                    pollersvc = polleriter.next();
                     if (pollersvc.getName().equals(name)) {
                         removePoller = true;
                         break;
                     }
                 }
+                
                 if (removePoller) {
-                    Collection tmpPoller = pkg.getServiceCollection();
+                    Collection<Service> tmpPoller = getServicesForPackage();
                     if (tmpPoller.contains(pollersvc) && pollersvc.getName().equals(name)) {
                         errorflag = true;
                         tmpPoller.remove(pollersvc);
@@ -298,8 +306,9 @@ public class AddPollerConfigServlet extends HttpServlet {
             pluginAdd.setUserDefined("true");
             org.opennms.netmgt.config.capsd.Property newprop = new org.opennms.netmgt.config.capsd.Property();
             String banner = "*";
-            if (props.get("banner") != null)
+            if (props.get("banner") != null) {
                 banner = (String) props.get("banner");
+            }
             newprop.setValue(banner);
             newprop.setKey("banner");
             pluginAdd.addProperty(newprop);
@@ -307,10 +316,11 @@ public class AddPollerConfigServlet extends HttpServlet {
             newprop = new org.opennms.netmgt.config.capsd.Property();
             if (port != null && !port.equals("")) {
                 newprop.setValue(port);
-                if (port.indexOf(":") == -1)
+                if (port.indexOf(":") == -1) {
                     newprop.setKey("port");
-                else
+                } else {
                     newprop.setKey("ports");
+                }
                 pluginAdd.addProperty(newprop);
             } else {
                 if (props.get("service." + protocol + ".port") == null || ((String) props.get("service." + protocol + ".port")).equals("")) {
@@ -321,26 +331,30 @@ public class AddPollerConfigServlet extends HttpServlet {
                 } else {
                     port = (String) props.get("service." + protocol + ".port");
                     newprop.setValue(port);
-                    if (port.indexOf(":") == -1)
+                    if (port.indexOf(":") == -1) {
                         newprop.setKey("port");
-                    else
+                    } else {
                         newprop.setKey("ports");
+                    }
                     pluginAdd.addProperty(newprop);
                 }
             }
             newprop = new org.opennms.netmgt.config.capsd.Property();
             String timeout = "3000";
-            if (props.get("timeout") != null)
+            if (props.get("timeout") != null) {
                 timeout = (String) props.get("timeout");
+            }
             newprop.setValue(timeout);
             newprop.setKey("timeout");
-            if (pluginAdd != null)
+            if (pluginAdd != null) {
                 pluginAdd.addProperty(newprop);
+            }
 
             newprop = new org.opennms.netmgt.config.capsd.Property();
             String retry = "3";
-            if (props.get("retry") != null)
+            if (props.get("retry") != null) {
                 retry = (String) props.get("retry");
+            }
             newprop.setValue(retry);
             newprop.setKey("retry");
             if (pluginAdd != null) {
@@ -360,10 +374,10 @@ public class AddPollerConfigServlet extends HttpServlet {
     public void addPollerInfo(String bPolled, String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
-        Collection tmpPollers = pkg.getServiceCollection();
-        Iterator iter = tmpPollers.iterator();
+        Collection<Service> tmpPollers = getServicesForPackage();
+        Iterator<Service> iter = tmpPollers.iterator();
         while (iter.hasNext()) {
-            Service svc = (Service) iter.next();
+            Service svc = iter.next();
             if (svc.getName().equals(name)) {
                 errorflag = true;
                 response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=1&name=" + name);
@@ -376,14 +390,15 @@ public class AddPollerConfigServlet extends HttpServlet {
         if (pkg != null) {
             Service newService = new Service();
             newService.setName(name);
-            if (bPolled != null)
+            if (bPolled != null) {
                 newService.setStatus(bPolled);
-            else
+            } else {
                 newService.setStatus("off");
+            }
             newService.setName(name);
             newService.setUserDefined("true");
 
-            Collection monitorColl = pollerConfig.getMonitorCollection();
+            Collection<Monitor> monitorColl = getMonitors();
             Monitor newMonitor = new Monitor();
             String monitor = (String) props.get("service." + protocol + ".monitor");
             if (monitor != null) {
@@ -395,10 +410,11 @@ public class AddPollerConfigServlet extends HttpServlet {
                 return;
             }
 
-            if (props.get("interval") != null)
+            if (props.get("interval") != null) {
                 newService.setInterval((new Long((String) props.get("interval"))).longValue());
-            else
+            } else {
                 newService.setInterval(300000);
+            }
 
             org.opennms.netmgt.config.poller.Parameter newprop = new org.opennms.netmgt.config.poller.Parameter();
             String timeout = "3000";
@@ -411,16 +427,18 @@ public class AddPollerConfigServlet extends HttpServlet {
 
             newprop = new org.opennms.netmgt.config.poller.Parameter();
             String banner = "*";
-            if (props.get("banner") != null)
+            if (props.get("banner") != null) {
                 banner = (String) props.get("banner");
+            }
             newprop.setValue(banner);
             newprop.setKey("banner");
             newService.addParameter(newprop);
 
             newprop = new org.opennms.netmgt.config.poller.Parameter();
             String retry = "3";
-            if (props.get("retry") != null)
+            if (props.get("retry") != null) {
                 retry = (String) props.get("retry");
+            }
             newprop.setValue(retry);
             newprop.setKey("retry");
             newService.addParameter(newprop);
@@ -433,25 +451,32 @@ public class AddPollerConfigServlet extends HttpServlet {
                     newService = null;
                     response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=0&name=" + "service." + protocol + ".port");
                     return;
-                } else
+                } else {
                     port = (String) props.get("service." + protocol + ".port");
+                }
 
             }
 
             newprop.setValue(port);
-            if (port.indexOf(":") != -1)
+            if (port.indexOf(":") != -1) {
                 newprop.setKey("ports");
-            else
+            } else { 
                 newprop.setKey("port");
+            }
             if (newMonitor != null && newService != null) {
-                if (monitorColl == null)
+                if (monitorColl == null) {
                     pollerConfig.addMonitor(0, newMonitor);
-                else {
+                } else {
                     pollerConfig.addMonitor(newMonitor);
                 }
                 newService.addParameter(newprop);
                 pkg.addService(newService);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Monitor> getMonitors() {
+        return pollerConfig.getMonitorCollection();
     }
 }
