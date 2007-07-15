@@ -84,7 +84,7 @@ public class TimeIntervalSequence {
         m_tail = tail;
     }
     
-    public Iterator iterator() {
+    public Iterator<TimeInterval> iterator() {
         return new TimeIntervalSeqIter(this);
     }
     
