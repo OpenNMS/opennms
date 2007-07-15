@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 14: Fix compilation problems due to change in OwnedInterval and
+//              use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -114,8 +119,8 @@ public class IntervalTestCase extends TestCase {
 
     protected void assertTimeIntervalSequence(TimeInterval[] intervals, TimeIntervalSequence seq) {
         int count  = 0;
-        for (Iterator iter = seq.iterator(); iter.hasNext();) {
-            TimeInterval interval = (TimeInterval) iter.next();
+        for (Iterator<TimeInterval> iter = seq.iterator(); iter.hasNext();) {
+            TimeInterval interval = iter.next();
             assertInterval(intervals[count], interval);
             count++;
         }
@@ -127,7 +132,7 @@ public class IntervalTestCase extends TestCase {
         assertEquals(expected, actual);
     }
 
-    protected OwnedInterval owned(Object owner, TimeInterval interval) {
+    protected OwnedInterval owned(Owner owner, TimeInterval interval) {
         return (owner == null ? new OwnedInterval(interval) : new OwnedInterval(owner, interval));
     }
 
@@ -136,15 +141,15 @@ public class IntervalTestCase extends TestCase {
     }
 
     protected OwnedInterval ownedOne(TimeInterval interval) {
-        return owned("one", interval);
+        return owned(new Owner("one", "one"), interval);
     }
 
     protected OwnedInterval ownedTwo(TimeInterval interval) {
-        return owned("two", interval);
+        return owned(new Owner("two", "two"), interval);
     }
 
     protected OwnedInterval ownedOneAndTwo(TimeInterval interval) {
-        String[] owners = new String[] { "one", "two" };
+        Owner[] owners = new Owner[] { new Owner("one", "one"), new Owner("two", "two") };
         return new OwnedInterval(Arrays.asList(owners), interval);
     }
 
