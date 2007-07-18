@@ -10,6 +10,11 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>jrrd-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
       <scope>compile</scope>
     </dependency>

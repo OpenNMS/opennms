@@ -55,6 +55,11 @@ import java.util.StringTokenizer;
  */
 
 public class Bootstrap {
+	
+    static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
+    static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
+    static final String OPENNMS_HOME_PROPERTY = "opennms.home";
+    
     /**
      * Matches any file that is a directory.
      */
@@ -194,7 +199,7 @@ public class Bootstrap {
     }
 
     /**
-     * Copy properties from a properties file to the system properties.
+     * Copy properties from a property input stream to the system properties.
      * Specific properties are copied from the given InputStream.
      * 
      * @param is
@@ -212,6 +217,46 @@ public class Bootstrap {
             }
         }
     }
+    
+    /**
+     * Copy properties from a property file to the system properties.
+     */
+    static boolean loadProperties(File f) throws IOException {
+    	if (!f.exists()) {
+    		return false;
+    	}
+    	InputStream is = null;
+    	try {
+    		is = new FileInputStream(f);
+    		loadProperties(is);
+    		return true;
+    	}
+    	finally {
+    		if (is != null) {
+    			is.close();
+    		}
+    	}
+    }
+    
+    /**
+     * Load default properties from the specified OpenNMS home into the
+     * system properties.
+     * @param opennmsHome the OpenNMS home directory
+     * @return whether the property file was able to be loaded into the System properties
+     * @throws IOException
+     */
+
+    private static boolean loadDefaultProperties(File opennmsHome) throws IOException {
+		boolean propertiesLoaded = false;
+		File etc = new File(opennmsHome, "etc");
+		File bootstrapFile = new File(etc, BOOT_PROPERTIES_NAME);
+		if (loadProperties(bootstrapFile)) {
+		    propertiesLoaded = true;
+		}
+		File rrdFile = new File(etc, RRD_PROPERTIES_NAME);
+		loadProperties(rrdFile);
+		return propertiesLoaded;
+	}
 
     /**
      * Bootloader main method. Takes the following steps to initialize a
@@ -246,19 +291,13 @@ public class Bootstrap {
      * @param args
      *            Command line arguments
      */
+    
     public static void main(String[] args) throws Exception {
-        final String bootPropertiesName = "bootstrap.properties";
-        final String opennmsHomeProperty = "opennms.home";
-
+        
         boolean propertiesLoaded = false;
-        String opennmsHome = System.getProperty(opennmsHomeProperty);
+        String opennmsHome = System.getProperty(OPENNMS_HOME_PROPERTY);
         if (opennmsHome != null) {
-            File f = new File(opennmsHome + File.separator + "etc"
-                    + File.separator + bootPropertiesName);
-            if (f.exists()) {
-                loadProperties(new FileInputStream(f));
-                propertiesLoaded = true;
-            }
+            propertiesLoaded = loadDefaultProperties(new File(opennmsHome));
         }
 
         /*
@@ -283,14 +322,8 @@ public class Bootstrap {
                         + "\"java -Dopennms.home=... -jar ...\".");
                 System.exit(1);
             }
-            File f = new File(parent.getPath() + File.separator + "etc"
-                    + File.separator + bootPropertiesName);
-            if (f.exists()) {
-                loadProperties(new FileInputStream(f));
-                propertiesLoaded = true;
-            }
-
-            System.setProperty(opennmsHomeProperty, parent.getPath());
+            propertiesLoaded = loadDefaultProperties(parent);
+            System.setProperty(OPENNMS_HOME_PROPERTY, parent.getPath());
         }
         
         final String classToExec = System.getProperty("opennms.manager.class", "org.opennms.netmgt.vmmgr.Controller");
@@ -300,11 +333,18 @@ public class Bootstrap {
 
         String dir = System.getProperty("opennms.classpath");
         if (dir == null) {
-            dir = System.getProperty(opennmsHomeProperty) + File.separator
+            dir = System.getProperty(OPENNMS_HOME_PROPERTY) + File.separator
+            		+ "classes" + File.pathSeparator
+            		+ System.getProperty(OPENNMS_HOME_PROPERTY) + File.separator
                     + "lib" + File.pathSeparator
-                    + System.getProperty(opennmsHomeProperty)
+                    + System.getProperty(OPENNMS_HOME_PROPERTY)
                     + File.separator + "etc";
         }
+
+        if (System.getProperty("org.opennms.rrd.interfaceJar") != null) {
+        	dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
+        }
+        
         final ClassLoader cl = Bootstrap.loadClasses(dir, false);
 
         if (classToExec != null) {
@@ -336,4 +376,5 @@ public class Bootstrap {
             bootstrapper.start();
         }
     }
+
 }

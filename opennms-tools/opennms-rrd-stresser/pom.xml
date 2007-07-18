@@ -54,12 +54,6 @@
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-jni-${platform}</artifactId>
-      <type>${platform.jni}</type>
-      <scope>runtime</scope>
-    </dependency>
 -->
   </dependencies>
 </project>
