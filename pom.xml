@@ -224,20 +224,6 @@ opennms.home = ${opennms.home}
           <target>1.5</target>
         </configuration>
       </plugin>
-<!--
-     2006-10-08: Disabling this because it reports lots of bogus errors
-                 and makes eclipse do things like XML and JSP validation 
-                 that it doesn't otherwise do.
- -->
-<!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <wtpversion>1.0</wtpversion>
-        </configuration>
-      </plugin>
--->
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
@@ -440,7 +426,7 @@ opennms.home = ${opennms.home}
   <properties>
     <!-- maven surefire version added here so it could be overridden -->
     <maven.surefire.plugin.version>2.3</maven.surefire.plugin.version>
-    <maven.eclipse.plugin.version>2.3</maven.eclipse.plugin.version>
+    <maven.eclipse.plugin.version>2.4</maven.eclipse.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
