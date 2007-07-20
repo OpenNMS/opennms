@@ -54,10 +54,14 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
@@ -67,7 +71,6 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class SnmpCollectorTest extends TestCase {
     private SnmpCollector m_snmpCollector;
@@ -96,6 +99,10 @@ public class SnmpCollectorTest extends TestCase {
         m_db.populate(m_network);
 
         DataSourceFactory.setInstance(m_db);
+        
+        MockEventIpcManager eventIpcManager = new MockEventIpcManager();
+        
+        EventIpcManagerFactory.setIpcManager(eventIpcManager);
         
         m_transMgr = new DataSourceTransactionManager(m_db);
         
@@ -145,7 +152,11 @@ public class SnmpCollectorTest extends TestCase {
         OnmsNode node = new OnmsNode();
         node.setId(new Integer(1));
         node.setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
+        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("127.0.0.1", 1, node);
+        snmpIface.setIfName("localhost");
+        snmpIface.setPhysAddr("00:11:22:33:44");
         OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
+        iface.setIsSnmpPrimary(CollectionType.PRIMARY);
         iface.setId(27);
 
         Collection outageCalendars = new LinkedList();
@@ -166,16 +177,35 @@ public class SnmpCollectorTest extends TestCase {
 
         CollectionAgent agent = getCollectionAgent(iface);
         
+
+        
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
         for (String file : new String[] { "tcpActiveOpens", "tcpAttemptFails", "tcpCurrEstab",
                 "tcpEstabResets", "tcpInErrors", "tcpInSegs", "tcpOutRsts", "tcpOutSegs",
                 "tcpPassiveOpens", "tcpRetransSegs" }) {
             m_fileAnticipator.expecting(nodeDir, file + RrdUtils.getExtension());
         }
+        
+        // don't for get to initialize the agent
+        spec.initialize(agent);
 
+        // now do the actual collection
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      spec.collect(agent));
+        
+        
+        System.err.println("FIRST COLLECTION FINISHED");
+
+        // try collecting again
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                spec.collect(agent));
+
+        System.err.println("SECOND COLLECTION FINISHED");
+
+        // release the agent
+        spec.release(agent);
         
         // Wait for any RRD writes to finish up
         Thread.sleep(1000);
@@ -239,9 +269,10 @@ public class SnmpCollectorTest extends TestCase {
         }
 
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
-                     spec.collect(agent));
-
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                spec.collect(agent));
+        
+        
         // Wait for any RRD writes to finish up
         Thread.sleep(1000);
     }

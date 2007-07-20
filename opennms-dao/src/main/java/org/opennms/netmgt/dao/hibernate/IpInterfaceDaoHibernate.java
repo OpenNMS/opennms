@@ -43,9 +43,15 @@ import org.opennms.netmgt.model.OnmsNode;
  *
  */
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
+    
+    String m_findByServiceTypeQuery = null;
 
     public IpInterfaceDaoHibernate() {
         super(OnmsIpInterface.class);
+        
+        
+        m_findByServiceTypeQuery = System.getProperty("org.opennms.dao.ipinterface.findByServiceType", "select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredServices as monSvc where monSvc.serviceType.name = ?");
+        
     }
 
     public OnmsIpInterface get(OnmsNode node, String ipAddress) {
@@ -57,7 +63,8 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     public Collection<OnmsIpInterface> findByServiceType(String svcName) {
-        return find("select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredServices as monSvc where monSvc.serviceType.name = ?", svcName);
+        
+        return find(m_findByServiceTypeQuery, svcName);
     }
 
     public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {

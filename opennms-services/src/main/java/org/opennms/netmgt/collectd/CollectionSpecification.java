@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -59,6 +58,7 @@ public class CollectionSpecification {
   
     //FIXME: Why is this not used?
 	private Collection m_outageCalendars;
+	
 	
 	public CollectionSpecification(CollectdPackage wpkg, String svcName, Collection outageCalendars, ServiceCollector collector) {
 		m_package = wpkg;
@@ -136,6 +136,7 @@ public class CollectionSpecification {
 	@SuppressWarnings("unchecked")
     private void initializeParameters() {
 		Map<String, String> m = new TreeMap<String, String>();
+		m.put("SERVICE", m_svcName);
         StringBuffer sb;
         Collection<Parameter> params = getService().getParameterCollection();
         for (Parameter p : params) {
@@ -189,15 +190,31 @@ public class CollectionSpecification {
 	}
 
 	public void initialize(CollectionAgent agent) {
-		m_collector.initialize(agent, getPropertyMap());
+        Collectd.instrumentation().beginCollectorInitialize(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+	    try {
+	        m_collector.initialize(agent, getPropertyMap());
+	    } finally {
+	        Collectd.instrumentation().endCollectorInitialize(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+	    }
 	}
 
 	public void release(CollectionAgent agent) {
-		m_collector.release(agent);
+        Collectd.instrumentation().beginCollectorRelease(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+	    try {
+	        m_collector.release(agent);
+	    } finally {
+	        Collectd.instrumentation().endCollectorRelease(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+	    }
 	}
 
 	public int collect(CollectionAgent agent) {
-		return getCollector().collect(agent, eventProxy(), getPropertyMap());
+        Collectd.instrumentation().beginCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+	    try {
+	        return getCollector().collect(agent, eventProxy(), getPropertyMap());
+	    } finally {
+	        Collectd.instrumentation().endCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+	    }
+	        
 	}
 
 	private EventProxy eventProxy() {
