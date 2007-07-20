@@ -54,48 +54,48 @@ public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
 
     public void beginCollectorRelease(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("begin "+svcName+" collector.release for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.release: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
     public void endCollectorRelease(int nodeId, String ipAddress, String svcName) {
-        log().debug("end "+svcName+" collector.release for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.release: end: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
     public void beginPersistingServiceData(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("begin persisting "+svcName+" data for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.collect: persistDataQueueing: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
     public void endPersistingServiceData(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("end persisting "+svcName+" data for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.collect: persistDataQueueing: end: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
     public void beginCollectorInitialize(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("begin "+svcName+" collector.initialize for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.initialize: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
     public void endCollectorInitialize(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("end "+svcName+" collector.initialize for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.initialize: end: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
     public void beginScheduleInterface(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("begin schedule interface for svc "+nodeId+"/"+ipAddress+"/"+svcName);
+        log().debug("scheduleInterfaceWithService: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
     public void endScheduleInterface(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("end schedule interface for svc "+nodeId+"/"+ipAddress+"/"+svcName);
+        log().debug("scheduleInterfaceWithService: end: "+nodeId+"/"+ipAddress+"/"+svcName);
 
     }
 
