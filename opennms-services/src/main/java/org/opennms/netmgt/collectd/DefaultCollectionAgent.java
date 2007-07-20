@@ -241,7 +241,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     }
 
     private void validatePrimaryIfIndex() {
-        if (getIfIndex() == -1) {
+        if (getIfIndex() < 0) {
             // allow this for nodes without ipAddrTables
             // throw new RuntimeException("Unable to retrieve ifIndex for
             // interface " + ipAddr.getHostAddress());

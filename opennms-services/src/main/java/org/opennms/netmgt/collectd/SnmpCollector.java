@@ -340,6 +340,12 @@ public class SnmpCollector implements ServiceCollector {
      */
     public void initialize(CollectionAgent agent, Map parameters) {
         agent.validateAgent();
+        
+        // XXX: Expermintal code that creates an OnmsSnmpCollection only once
+        ServiceParameters params = new ServiceParameters(parameters);
+        agent.setAttribute("SNMP_COLLECTION", new OnmsSnmpCollection(agent, params));
+        
+        params.logIfAliasConfig();
     }
 
     /**
@@ -366,10 +372,16 @@ public class SnmpCollector implements ServiceCollector {
      */
     public int collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) {
         try {
+            
 
-            final ServiceParameters params = new ServiceParameters(parameters);
-            params.logIfAliasConfig();
-            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
+            // XXX: Experimental code that reuses the OnmsSnmpCollection
+            OnmsSnmpCollection snmpCollection = (OnmsSnmpCollection)agent.getAttribute("SNMP_COLLECTION");
+            ServiceParameters params = snmpCollection.getServiceParameters();
+            
+            // XXX: This code is commented out in light of the expermintal code above
+//            final ServiceParameters params = new ServiceParameters(parameters);
+//            params.logIfAliasConfig();
+//            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
 
             final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
 
@@ -377,14 +389,14 @@ public class SnmpCollector implements ServiceCollector {
             if (!collectionSet.hasDataToCollect()) {
                 logNoDataToCollect(agent);
             }
-
-            collectionSet.collect();
+            
+            collectData(collectionSet);
 
             if (collectionSet.rescanNeeded()) {
                 forceRescanState.rescanIndicated();
             }
 
-            collectionSet.saveAttributes(params);
+            persistData(params, collectionSet);
 
             // return the status of the collection
             return ServiceCollector.COLLECTION_SUCCEEDED;
@@ -394,6 +406,24 @@ public class SnmpCollector implements ServiceCollector {
             t.printStackTrace();
             log().error("received Throwable: " + t, t);
             return this.unexpected(agent, t);
+        }
+    }
+
+    private void persistData(ServiceParameters params, CollectionSet collectionSet) {
+        Collectd.instrumentation().beginPersistingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
+        try {
+            collectionSet.saveAttributes(params);
+        } finally {
+            Collectd.instrumentation().endPersistingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
+        }
+    }
+
+    private void collectData(CollectionSet collectionSet) throws CollectionWarning {
+        Collectd.instrumentation().beginCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
+        try {
+            collectionSet.collect();
+        } finally {
+            Collectd.instrumentation().endCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
         }
     }
 
