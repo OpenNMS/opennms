@@ -1,54 +1,54 @@
 package org.opennms.netmgt.collectd;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.Logger;
 
 public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
 
-    public void beginScheduleExistingInterfaces() {
-        log().debug("begin scheduling interfaces");
+    private Category log() {
+        return Logger.getLogger("Instrumentation.Collectd");
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    public void beginScheduleExistingInterfaces() {
+        log().debug("scheduleExistingInterfaces: begin");
     }
 
     public void endScheduleExistingInterfaces() {
-        log().debug("end scheduling interfaces");
+        log().debug("schedulingExistingInterfaces: end");
     }
 
     public void beginScheduleInterfacesWithService(String svcName) {
-        log().debug("begin scheduling interfaces with service: "+svcName);
+        log().debug("scheduleInterfacesWithService: begin: "+svcName);
     }
 
     public void endScheduleInterfacesWithService(String svcName) {
-        log().debug("end scheduling interfaces with service: "+svcName);
+        log().debug("scheduleInterfacesWithService: end: "+svcName);
     }
 
     public void beginFindInterfacesWithService(String svcName) {
-        log().debug("begin find interfaces with service: "+svcName);
+        log().debug("scheduleFindInterfacesWithService: begin: "+svcName);
     }
 
     public void endFindInterfacesWithService(String svcName, int count) {
-        log().debug("end find interfaces with service: "+svcName+". found "+count+" interfaces.");
+        log().debug("scheduleFindInterfacesWithService: end: "+svcName+". found "+count+" interfaces.");
     }
 
     public void beginCollectingServiceData(int nodeId, String ipAddress, String svcName) {
-        log().debug("begin collecting "+svcName+" data for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.collect: collectData: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
     }
 
     public void endCollectingServiceData(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("end collecting "+svcName+" data for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.collect: collectData: end: "+nodeId+"/"+ipAddress+"/"+svcName);
     }
 
     public void beginCollectorCollect(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("begin "+svcName+" collector.collect for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.collect: begin:"+nodeId+"/"+ipAddress+"/"+svcName);
     }
 
     public void endCollectorCollect(int nodeId, String ipAddress, String svcName) {
-        log().debug("end "+svcName+" collector.collect for if "+nodeId+"/"+ipAddress);
+        log().debug("collector.collect: end:"+nodeId+"/"+ipAddress+"/"+svcName);
         
     }
 
