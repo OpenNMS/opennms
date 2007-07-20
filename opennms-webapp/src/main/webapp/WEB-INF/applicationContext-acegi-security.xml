@@ -77,6 +77,14 @@
        "%%%put LDAP server address here%%%" and that you set the attribute
        in the user's entry that you store OpenNMS roles in where it says
        "%%%put role attribute here%%%". :-)
+       
+        If you want to use groups to grant access use bean groupLdapAuthoritiesPopulator
+        and reference it in bean ldapAuthenticationProvider against default userAttributeLdapAuthoritiesPopulator
+		you have to set property: userGroups,adminGroups,rtcGroup,readonlyGroups,dashboardGroups
+		and list groups that are granted access with role:
+		ROLE_USER,ROLE_ADMIN,ROLE_RTC_ROLE_READONLY,ROLE_DASHBOARD
+	
+       
    -->
   <!-- 
   <bean id="initialDirContextFactory"
@@ -104,6 +112,29 @@
         class="org.opennms.web.acegisecurity.UserAttributeLdapAuthoritiesPopulator">
     <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
     <constructor-arg><value>%%%put role attribute here%%%</value></constructor-arg>
+  </bean>
+
+  <bean id="groupLdapAuthoritiesPopulator"
+       class="org.opennms.web.acegisecurity.UserGroupLdapAuthoritiesPopulator">
+   <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
+   <constructor-arg>
+     <value>%%% put your search group path here%%%</value>
+   </constructor-arg>
+   <property name="groupRoleAttribute"><value>cn</value></property>
+   <property name="searchSubtree"><value>false</value></property>
+   <property name="convertToUpperCase"><value>true</value></property>
+   <property name="userGroups">
+        <list>
+                <value>OPENNMS_USER</value>
+                <value>OPENNMS_ADMIN</value>
+                <value>any group</value>
+        </list>
+   </property>
+   <property name="adminGroups">
+        <list>
+                <value>OPENNMS_ADMIN</value>
+        </list>
+   </property>
   </bean>
 
   <bean id="ldapAuthenticationProvider"
