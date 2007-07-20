@@ -92,13 +92,29 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.ip.IPv4Address;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.ClassUtils;
 
 public final class Collectd extends AbstractServiceDaemon implements
         EventListener {
+    
+    private static CollectdInstrumentation s_instrumentation = null;
+    
+    public static CollectdInstrumentation instrumentation() {
+        if (s_instrumentation == null) {
+            String className = System.getProperty("org.opennms.collectd.instrumentationClass", DefaultCollectdInstrumentation.class.getName());
+            try { 
+                s_instrumentation = (CollectdInstrumentation) ClassUtils.forName(className).newInstance();
+            } catch (Exception e) {
+                s_instrumentation = new DefaultCollectdInstrumentation();
+            }
+        }
+
+        return s_instrumentation;
+    }
+    
     /**
      * Log4j category
      */
@@ -161,6 +177,9 @@ public final class Collectd extends AbstractServiceDaemon implements
 
     protected void onInit() {
         log().debug("init: Initializing collection daemon");
+        
+        // make sure the instrumentation gets initialized
+        instrumentation();
         
         instantiateCollectors();
 
@@ -294,27 +313,52 @@ public final class Collectd extends AbstractServiceDaemon implements
      *             if database errors encountered.
      */
     private void scheduleExistingInterfaces() throws SQLException {
+        
+        instrumentation().beginScheduleExistingInterfaces();
+        try {
 
-        m_transTemplate.execute(new TransactionCallback() {
+            m_transTemplate.execute(new TransactionCallback() {
 
-            public Object doInTransaction(TransactionStatus status) {
-                // Loop through collectors and schedule for each one present
-                for (Iterator it = getCollectorNames().iterator(); it.hasNext();) {
-                    scheduleInterfacesWithService((String) it.next());
+                public Object doInTransaction(TransactionStatus status) {
+                    // Loop through collectors and schedule for each one present
+                    for (Iterator it = getCollectorNames().iterator(); it.hasNext();) {
+                        scheduleInterfacesWithService((String) it.next());
+                    }
+                    return null;
                 }
-                return null;
-            }
 
-        });
+            });
+        
+        } finally {
+            instrumentation().endScheduleExistingInterfaces();
+        }
     }
 
     private void scheduleInterfacesWithService(String svcName) {
+        instrumentation().beginScheduleInterfacesWithService(svcName);
+        try {
         log().info("scheduleInterfacesWithService: svcName = " + svcName);
 
-        Collection<OnmsIpInterface> ifsWithServices = getIpInterfaceDao().findByServiceType(svcName);
+        Collection<OnmsIpInterface> ifsWithServices = findInterfacesWithService(svcName);
         for (OnmsIpInterface iface : ifsWithServices) {
             scheduleInterface(iface, svcName, true);
         }
+        } finally {
+            instrumentation().endScheduleInterfacesWithService(svcName);
+        }
+    }
+
+    private Collection<OnmsIpInterface> findInterfacesWithService(String svcName) {
+        instrumentation().beginFindInterfacesWithService(svcName);
+        int count = -1;
+        try {
+           Collection<OnmsIpInterface> ifaces = getIpInterfaceDao().findByServiceType(svcName);
+           count = ifaces.size();
+           return ifaces;
+        } finally {
+            instrumentation().endFindInterfacesWithService(svcName, count);
+        }
+        	
     }
 
     /**
@@ -357,6 +401,10 @@ public final class Collectd extends AbstractServiceDaemon implements
 	}
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
+        
+        instrumentation().beginScheduleInterface(iface.getNode().getId(), iface.getIpAddress(), svcName);
+        try {
+        
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
         StringBuffer sb;
         
@@ -451,6 +499,10 @@ public final class Collectd extends AbstractServiceDaemon implements
                 log().error(sb.toString(), t);
             }
         } // end while more packages exist
+        
+        } finally {
+            instrumentation().endScheduleInterface(iface.getNode().getId(), iface.getIpAddress(), svcName);
+        }
     }
 
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
