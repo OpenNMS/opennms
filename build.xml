@@ -53,32 +53,5 @@ or ${platform.jdk.include.dir}.
 Please make sure that you have a full Java Development Kit installed.
     </fail>
 
-    <condition property="compile.check.rrd.include">
-      <available file="${build.rrd.include.dir}/rrd.h"/>
-    </condition>
-
-    <fail unless="compile.check.rrd.include">
-     Could not find rrd.h include file in ${build.rrd.include.dir}.
-     Please make sure that you have the rrdtool development files installed
-     or, if they are installed in a non-standard location, you may need
-     to set the build.rrd.include.dir property to the directory that
-     contains rrd.h.  See README.build for details on setting properties.
-    </fail>
-
-    <condition property="compile.check.rrd.lib">
-      <or>
-        <available file="${build.rrd.lib.dir}/librrd.a"/>
-        <available file="${build.rrd.lib.dir}/librrd.${platform.shlib}"/>
-      </or>
-    </condition>
-
-    <fail unless="compile.check.rrd.lib">
-     Could not find librrd.a or librrd.${platform.shlib} library in ${build.rrd.lib.dir}.
-     Please make sure that you have the rrdtool development files installed
-     or, if they are installed in a non-standard location, you may need
-     to set the build.rrd.lib.dir property to the directory that
-     contains librrd.a or librrd.${platform.shlib}.  See README.build for details on setting
-     properties.
-    </fail>
   </target>
 </project>
