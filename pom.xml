@@ -173,8 +173,6 @@
                   <property name="platform" value="${platform}" />
                   <property name="platform.jdk.include.dir" value="${platform.jdk.include.dir}" />
                   <property name="platform.javahOS" value="${platform.javahOS}" />
-                  <property name="build.rrd.include.dir" value="${build.rrd.include.dir}" />
-                  <property name="build.rrd.lib.dir" value="${build.rrd.lib.dir}" />
                   <property name="platform.shlib" value="${platform.shlib}" />
                 </ant>
               </tasks>
@@ -580,20 +578,16 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
-    <!-- Mac OS X -->
     <profile>
-      <id>darwinPorts</id>
+      <id>opt-local-rrdtool</id>
       
       <activation>
         <file>
-          <exists>/opt/local/bin/port</exists>
+          <exists>/opt/local/bin/rrdtool</exists>
         </file>
       </activation>
   
       <properties>
-        <build.rrd.include.dir>/opt/local/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/opt/local/lib</build.rrd.lib.dir>
-  
         <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
@@ -603,90 +597,39 @@ opennms.home = ${opennms.home}
 
       <activation>
         <file>
-          <exists>/sw/include/rrd.h</exists>
+          <exists>/sw/bin/rrdtool</exists>
         </file>
       </activation>
 
       <properties>
-        <build.rrd.include.dir>/sw/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/sw/lib</build.rrd.lib.dir>
         <install.rrdtool.bin>/sw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
 
-    <!-- Linux -->
-    <profile>
-      <id>linux-generic-rrdtool-shared</id>
-      
-      <activation>
-        <file>
-          <exists>/usr/lib/librrd.so</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-      </properties>
-    </profile>
 
     <profile>
-      <id>linux-generic-rrdtool-static</id>
-      
+      <id>usr-local-bin-rrdtool</id>
       <activation>
         <file>
-          <exists>/usr/lib/librrd.a</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>linux-64bit-generic-rrdtool-shared</id>
-      
-      <activation>
-        <file>
-          <exists>/usr/lib64/librrd.so</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib64</build.rrd.lib.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>linux-64bit-generic-rrdtool-static</id>
-      
-      <activation>
-        <file>
-          <exists>/usr/lib64/librrd.a</exists>
-        </file>
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/lib64</build.rrd.lib.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>solaris-local-rrdtool1.0.49</id>
-      <activation>
-        <file>
-          <exists>/usr/local/rrdtool-1.0.49</exists>
+          <exists>/usr/local/rrdtool/bin/rrdtool</exists>
         </file>
       </activation>
 
       <properties>
         <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
-        <build.rrd.include.dir>/usr/local/rrdtool-1.0.49/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/local/rrdtool-1.0.49/lib</build.rrd.lib.dir>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>usr-local-rrdtool-bin-rrdtool</id>
+      <activation>
+        <file>
+          <exists>/usr/local/rrdtool/bin/rrdtool</exists>
+        </file>
+      </activation>
+
+      <properties>
+        <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
 
@@ -706,47 +649,6 @@ opennms.home = ${opennms.home}
 
       <properties>
         <install.rrdtool.bin>/opt/csw/bin/rrdtool</install.rrdtool.bin>
-        <build.rrd.include.dir>/opt/csw/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/opt/csw/lib</build.rrd.lib.dir>
-      </properties>
-    </profile>
-
-    <!-- FreeBSD -->
-<!--
-    <profile>
-      <id>freebsd-ports</id>
-      <activation>
-        .... don't know how to activate this ....
-      </activation>
-  
-      <properties>
-        <build.rrd.include.dir>/usr/local/include</build.rrd.include.dir>
-        <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
-      </properties>
-    </profile>
--->
- 
-    <profile>
-      <id>rrd-usr-local-include</id>
-      <activation>
-        <file>
-          <exists>/usr/local/include/rrd.h</exists>
-        </file>
-      </activation>
-      <properties>
-        <build.rrd.include.dir>/usr/local/include</build.rrd.include.dir>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>rrd-usr-local-lib</id>
-      <activation>
-        <file>
-          <exists>/usr/local/lib/librrd.so</exists>
-        </file>
-      </activation>
-      <properties>
-        <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
       </properties>
     </profile>
 
