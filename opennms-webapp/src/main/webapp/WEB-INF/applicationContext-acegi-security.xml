@@ -80,7 +80,7 @@
        
         If you want to use groups to grant access use bean groupLdapAuthoritiesPopulator
         and reference it in bean ldapAuthenticationProvider against default userAttributeLdapAuthoritiesPopulator
-		you have to set property: userGroups,adminGroups,rtcGroup,readonlyGroups,dashboardGroups
+		you have to set property: userGroups,adminGroups,rtcGroups,readonlyGroups,dashboardGroups
 		and list groups that are granted access with role:
 		ROLE_USER,ROLE_ADMIN,ROLE_RTC_ROLE_READONLY,ROLE_DASHBOARD
 	
