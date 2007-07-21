@@ -37,20 +37,14 @@
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
-import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
@@ -63,51 +57,25 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     private static final long serialVersionUID = 6694654071513990997L;
 
     public static CollectionAgent create(Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
-        CollectionAgent agent = new DefaultCollectionAgent(ifaceId, ifaceDao);
-        
-        TransactionProxyFactoryBean bean = new TransactionProxyFactoryBean();
-        bean.setTransactionManager(transMgr);
-        bean.setTarget(agent);
-        
-        Properties props = new Properties();
-        props.put("*", "PROPAGATION_REQUIRED,readOnly");
-        
-        bean.setTransactionAttributes(props);
-        
-        bean.afterPropertiesSet();
-        
-        return (CollectionAgent) bean.getObject();
+        return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
     }
-
-    // the interface of the Agent
-    private Integer m_ifaceId;
 
     // miscellaneous junk?
     private int m_maxVarsPerPdu = 0;
     private int m_ifCount = -1;
 
-    private IpInterfaceDao m_ifaceDao;
-    
-    // cached attributes
+        // cached attributes
     private int m_nodeId = -1;
     private InetAddress m_inetAddress = null;
     private int m_ifIndex = -1;
     private CollectionType m_collType = null;
     private String m_sysObjId = null;
+    
+    private CollectionAgentService m_transactionalAgent;
 
-    private DefaultCollectionAgent(Integer ifaceId, IpInterfaceDao ifaceDao) {
-        // we pass in null since we override calls to getAddress and getInetAddress
+    private DefaultCollectionAgent(CollectionAgentService transactionalAgent) {
         super(null);
-        m_ifaceId = ifaceId;
-        m_ifaceDao = ifaceDao;
-    }
-
-    private OnmsIpInterface getIpInterface() {
-        return m_ifaceDao.get(m_ifaceId);
-    }
-
-    private OnmsNode getNode() {
-        return getIpInterface().getNode();
+        m_transactionalAgent = transactionalAgent;
     }
 
     @Override
@@ -118,7 +86,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     @Override
     public InetAddress getInetAddress() {
         if (m_inetAddress == null) {
-            m_inetAddress = getIpInterface().getInetAddress();
+            m_inetAddress = m_transactionalAgent.getInetAddress();
         }
         return m_inetAddress;
     }
@@ -166,14 +134,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      */
     public int getNodeId() {
         if (m_nodeId == -1) {
-            m_nodeId = getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
+            m_nodeId = m_transactionalAgent.getNodeId();
         }
         return m_nodeId; 
     }
 
     private int getIfIndex() {
         if (m_ifIndex == -1) {
-            m_ifIndex = (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
+            m_ifIndex = m_transactionalAgent.getIfIndex();
         }
         return m_ifIndex;
         
@@ -184,14 +152,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      */
     public String getSysObjectId() {
         if (m_sysObjId == null) {
-            m_sysObjId = getIpInterface().getNode().getSysObjectId();
+            m_sysObjId = m_transactionalAgent.getSysObjectId();
         }
         return m_sysObjId;
     }
 
     private CollectionType getCollectionType() {
         if (m_collType == null) {
-            m_collType = getIpInterface().getIsSnmpPrimary();
+            m_collType = m_transactionalAgent.getCollectionType();
         }
         return m_collType;
         
@@ -284,34 +252,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
      */
     public Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type) {
-        
-        OnmsNode node = getNode();
-    
-    	Set<OnmsSnmpInterface> snmpIfs = node.getSnmpInterfaces();
-    	
-    	if (snmpIfs.size() == 0) {
-            log().debug("no known SNMP interfaces for node " + node);
-    	}
-    	
-        Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfs.size());
-        
-        for(OnmsSnmpInterface snmpIface : snmpIfs) {
-    		logInitializeSnmpIf(snmpIface);
-            ifInfos.add(new IfInfo(type, this, snmpIface));
-    	}
-        return ifInfos;
+        return m_transactionalAgent.getSnmpInterfaceInfo(type, this);
     }
-
-    private void logInitializeSnmpIf(OnmsSnmpInterface snmpIface) {
-        if (log().isDebugEnabled()) {
-        	log().debug(
-        			"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
-        			+ ", snmpifname = " + snmpIface.getIfName()
-        			+ ", snmpifdescr = " + snmpIface.getIfDescr()
-        			+ ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
-        	log().debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
-        }
-    }
-
 
 }
