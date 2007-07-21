@@ -196,6 +196,9 @@ public class SnmpCollectorTest extends TestCase {
         
         
         System.err.println("FIRST COLLECTION FINISHED");
+        
+        //need a one second time elapse to update the RRD
+        Thread.sleep(1000);
 
         // try collecting again
         assertEquals("collection status",
