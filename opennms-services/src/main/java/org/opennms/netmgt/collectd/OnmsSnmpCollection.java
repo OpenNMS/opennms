@@ -77,7 +77,7 @@ public class OnmsSnmpCollection {
         m_params = params;
         m_maxVarsPerPdu = determineMaxVarsPerPdu(agent);
         
-        if (Boolean.getBoolean("org.opennms.netmgt.collectd.OnmsSnmpCollection.loadResourcesTypesInInit")) {
+        if (Boolean.getBoolean("org.opennms.netmgt.collectd.OnmsSnmpCollection.loadResourceTypesInInit")) {
             getResourceTypes(agent);
         }
         
