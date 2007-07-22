@@ -33,6 +33,7 @@ package org.opennms.mock.snmp;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
@@ -44,9 +45,12 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.springframework.core.io.ClassPathResource;
@@ -102,8 +106,19 @@ public class MockSnmpAgentTest extends TestCase {
 	}
 
 	public void testGet() throws IOException, InterruptedException {
-		PDU pdu = new PDU();
-		pdu.add(new VariableBinding(new OID("1.3.5.1.1.1.0.1")));
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        
+        agt.updateValue("1.3.5.1.1.3.0", new Integer32(77));
+        
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
+        
+	}
+
+    private void assertResultFromGet(String oidStr, int expectedSyntax,
+            Integer32 expected) throws UnknownHostException, IOException {
+        PDU pdu = new PDU();
+		OID oid = new OID(oidStr);
+        pdu.add(new VariableBinding(oid));
 		pdu.setType(PDU.GET);
 		
 		CommunityTarget target = new CommunityTarget();
@@ -117,14 +132,23 @@ public class MockSnmpAgentTest extends TestCase {
 			Snmp snmp = new Snmp(transport);
 			transport.listen();
 
-			ResponseEvent response = snmp.send(pdu, target);
-			if (response.getResponse() == null) {
-				fail("request timed out");
-			}
+			ResponseEvent e = snmp.send(pdu, target);
+			PDU response = e.getResponse();
+			assertNotNull("request timed out", response);
+			
+			VariableBinding vb = response.get(0);
+			assertNotNull(vb);
+			assertNotNull(vb.getVariable());
+			assertEquals(oid, vb.getOid());
+			assertEquals(expectedSyntax, vb.getSyntax());
+			Variable val = vb.getVariable();
+			assertNotNull(val);
+			assertEquals(expected, val);
+
 		} finally {	
 			if (transport != null) {
 				transport.close();
 			}
 		}
-	}
+    }
 }

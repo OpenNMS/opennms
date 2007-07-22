@@ -37,14 +37,15 @@ import java.net.BindException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.opennms.mock.snmp.MockSnmpMOLoader;
-import org.opennms.mock.snmp.PropsMockSnmpMOLoaderImpl;
+import junit.framework.Assert;
+
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
 import org.snmp4j.agent.DuplicateRegistrationException;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.io.ImportModes;
+import org.snmp4j.agent.mo.MOScalar;
 import org.snmp4j.agent.mo.MOTableRow;
 import org.snmp4j.agent.mo.snmp.RowStatus;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB;
@@ -64,6 +65,8 @@ import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.Counter32;
+import org.snmp4j.smi.Counter64;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -93,6 +96,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private Resource m_moFile;
     private boolean m_running;
     private boolean m_stopped;
+    private ArrayList<ManagedObject> m_moList;
 
     /*
      * Creates the mock agent with files to read and store the boot counter,
@@ -410,8 +414,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
     @Override
     protected void registerManagedObjects() {
-        ArrayList<ManagedObject> moList = createMockMOs();
-        Iterator<ManagedObject> moListIter = moList.iterator();
+        m_moList = createMockMOs();
+        Iterator<ManagedObject> moListIter = m_moList.iterator();
         while (moListIter.hasNext()) {
             try {
                 server.register(moListIter.next(), null);
@@ -431,4 +435,42 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         MockSnmpMOLoader moLoader = new PropsMockSnmpMOLoaderImpl(m_moFile);
         return moLoader.loadMOs();
     }
+    
+    public MOScalar findScalarForOid(OID oid) {
+        for(ManagedObject mo : m_moList) {
+            MOScalar scalar = (MOScalar)mo;
+            if (oid.equals(scalar.getID())) {
+                return scalar;
+            }
+        } 
+        return null;
+    }
+    
+    public void updateValue(OID oid, Variable value) {
+        MOScalar scalar = findScalarForOid(oid);
+        Assert.assertNotNull("Unable to find oid in mib for mockAgent: "+oid, scalar);
+        scalar.setValue(value);
+    }
+    
+    public void updateValue(String oid, Variable value) {
+        updateValue(new OID(oid), value);
+    }
+    
+    public void updateIntValue(String oid, int val) {
+        updateValue(oid, new Integer32(val));
+    }
+    
+    public void updateStringValue(String oid, String val) {
+        updateValue(oid, new OctetString(val));
+    }
+    
+    public void updateCounter32Value(String oid, int val) {
+        updateValue(oid, new Counter32(val));
+    }
+    
+    public void updateCounter64Value(String oid, long val) {
+        updateValue(oid, new Counter64(val));
+    }
+    
+
 }
