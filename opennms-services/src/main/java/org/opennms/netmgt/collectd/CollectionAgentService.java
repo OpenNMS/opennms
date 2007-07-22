@@ -20,7 +20,7 @@ public interface CollectionAgentService {
     
     public abstract SnmpAgentConfig getAgentConfig();
 
-    public abstract Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type, CollectionAgent agent);
+    public abstract Set<SnmpIfData> getSnmpInterfaceData();
     
     public abstract InetAddress getInetAddress();
 
