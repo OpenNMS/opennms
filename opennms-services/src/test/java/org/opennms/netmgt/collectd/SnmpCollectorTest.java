@@ -226,8 +226,9 @@ public class SnmpCollectorTest extends TestCase {
        
         
         int numUpdates = 2;
-        int stepSize = 1;
+        int stepSizeInSecs = 1;
         
+        int stepSizeInMillis = stepSizeInSecs*1000;
         
         // don't for get to initialize the agent
         spec.initialize(agent);
@@ -236,11 +237,11 @@ public class SnmpCollectorTest extends TestCase {
         
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
-        assertEquals(123.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSize*1000, stepSize*1000));
+        assertEquals(123.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
         
         // This is the value from snmpTestData1.properties
         // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
-        assertEquals(1234567.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSize*1000, stepSize*1000));
+        assertEquals(1234567.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
         
         // now update the data in the agent
         m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
@@ -249,8 +250,8 @@ public class SnmpCollectorTest extends TestCase {
         collectNTimes(spec, agent, numUpdates);
 
         // by now the values should be the new values
-        assertEquals(456.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSize*1000, stepSize*1000));
-        assertEquals(7654321.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSize*1000, stepSize*1000));
+        assertEquals(456.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(7654321.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
         
 
         // release the agent
