@@ -367,4 +367,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
     }
 
+    public void addIpInterface(OnmsIpInterface iface) {
+        m_ipInterfaces.add(iface);
+    }
+
 }
