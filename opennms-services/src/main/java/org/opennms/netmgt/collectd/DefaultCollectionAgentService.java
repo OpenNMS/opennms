@@ -147,8 +147,23 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
      */
-    public Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type, CollectionAgent agent) {
+    public Set<SnmpIfData> getSnmpInterfaceData() {
         
+        Set<OnmsSnmpInterface> snmpIfs = getSnmpInterfaces();
+    	
+        Set<SnmpIfData> ifData = new LinkedHashSet<SnmpIfData>(snmpIfs.size());
+        
+        for(OnmsSnmpInterface snmpIface : snmpIfs) {
+    		logInitializeSnmpIf(snmpIface);
+    		SnmpIfData snmpIfData = new SnmpIfData(snmpIface);
+    		ifData.add(snmpIfData);
+            //ifInfos.add(new IfInfo(type, agent, snmpIfData));
+    	}
+        return ifData;
+    }
+
+
+    private Set<OnmsSnmpInterface> getSnmpInterfaces() {
         OnmsNode node = getNode();
     
     	Set<OnmsSnmpInterface> snmpIfs = node.getSnmpInterfaces();
@@ -156,14 +171,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     	if (snmpIfs.size() == 0) {
             log().debug("no known SNMP interfaces for node " + node);
     	}
-    	
-        Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfs.size());
-        
-        for(OnmsSnmpInterface snmpIface : snmpIfs) {
-    		logInitializeSnmpIf(snmpIface);
-            ifInfos.add(new IfInfo(type, agent, snmpIface));
-    	}
-        return ifInfos;
+        return snmpIfs;
     }
 
     private void logInitializeSnmpIf(OnmsSnmpInterface snmpIface) {

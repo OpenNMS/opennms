@@ -43,7 +43,6 @@ import java.io.File;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
@@ -66,20 +65,16 @@ final class IfInfo extends DbCollectionResource {
     private String m_label;
     private String m_ifAlias;
 
-    public IfInfo(ResourceType def, CollectionAgent agent, OnmsSnmpInterface snmpIface) {
+    public IfInfo(ResourceType def, CollectionAgent agent, SnmpIfData snmpIfData) {
         super(def, agent);
-        m_nodeId = nullSafeUnbox(snmpIface.getNode().getId(), -1);
-        m_collType = snmpIface.getCollectionType();
-        m_ifIndex = nullSafeUnbox(snmpIface.getIfIndex(), -1);
-        m_ifType = nullSafeUnbox(snmpIface.getIfType(), -1);
-        m_label = snmpIface.computeLabelForRRD();
-        m_ifAlias = snmpIface.getIfAlias();
+        m_nodeId = snmpIfData.getNodeId();
+        m_collType = snmpIfData.getCollectionType();
+        m_ifIndex = snmpIfData.getIfIndex();
+        m_ifType = snmpIfData.getIfType();
+        m_label = snmpIfData.getLabelForRRD();
+        m_ifAlias = snmpIfData.getIfAlias();
     }
     
-    int nullSafeUnbox(Integer num, int dflt) {
-        return (num == null ? dflt : num.intValue());
-    }
-
     private int getNodeId() {
         return m_nodeId;
     }
