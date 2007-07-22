@@ -167,6 +167,11 @@ public class SnmpCollectorTest extends TestCase {
         anticipateRrdFiles(nodeDir, "tcpInErrors", "tcpInSegs");
         anticipateRrdFiles(nodeDir, "tcpOutRsts", "tcpOutSegs");
         
+        File ifDir = anticipatePath(nodeDir, "fw0");
+        anticipateRrdFiles(ifDir, "ifInDiscards", "ifInErrors", "ifInNUcastpkts",
+        		"ifInOctets", "ifInUcastpkts", "ifOutErrors", "ifOutNUcastPkts",
+        		"ifOutOctets", "ifOutUcastPkts");
+        
         // don't for get to initialize the agent
         spec.initialize(agent);
 
