@@ -208,10 +208,17 @@ public class SnmpCollectorTest extends TestCase {
 
         CollectionAgent agent = createCollectionAgent(iface);
         
+        // node level collection
         File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
         anticipateRrdFiles(nodeDir, "tcpCurrEstab");
         
+        // interface level collection
+        File ifDir = anticipatePath(nodeDir, "fw0");
+        anticipateRrdFiles(ifDir, "ifInOctets");
+        
         File rrdFile = new File(nodeDir, rrd("tcpCurrEstab"));
+        File ifRrdFile = new File(ifDir, rrd("ifInOctets"));
+       
         
         int numUpdates = 2;
         int stepSize = 1;
@@ -222,18 +229,23 @@ public class SnmpCollectorTest extends TestCase {
         
         collectNTimes(spec, agent, numUpdates);
         
-        // This is the value from snmpTestData1.properites
+        // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
         assertEquals(123.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSize*1000, stepSize*1000));
         
+        // This is the value from snmpTestData1.properties
+        // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
+        assertEquals(1234567.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSize*1000, stepSize*1000));
+        
         // now update the data in the agent
         m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
-        
+        m_agent.updateCounter32Value(".1.3.6.1.2.1.2.2.1.10.6", 7654321);
         
         collectNTimes(spec, agent, numUpdates);
 
-        // by now the value should be the new value
+        // by now the values should be the new values
         assertEquals(456.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSize*1000, stepSize*1000));
+        assertEquals(7654321.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSize*1000, stepSize*1000));
         
 
         // release the agent
@@ -242,9 +254,6 @@ public class SnmpCollectorTest extends TestCase {
         // Wait for any RRD writes to finish up
         Thread.sleep(1000);
         
-
-
-
     }
 
     private void collectNTimes(CollectionSpecification spec,
@@ -411,9 +420,16 @@ public class SnmpCollectorTest extends TestCase {
         OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("127.0.0.1", 1, node);
         snmpIface.setIfName("localhost");
         snmpIface.setPhysAddr("00:11:22:33:44");
+        OnmsSnmpInterface snmpIface2 = new OnmsSnmpInterface("127.0.0.1", 6, node);
+        snmpIface2.setIfName("fw0");
+        snmpIface2.setPhysAddr("44:33:22:11:00");
+        snmpIface2.setIfType(144);
         OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
         iface.setId(27);
         iface.setIsSnmpPrimary(CollectionType.PRIMARY);
+        iface.setSnmpInterface(snmpIface2);
+        
+        snmpIface2.addIpInterface(iface);
         return iface;
     }
 
