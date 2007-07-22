@@ -57,6 +57,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	
 	public PropsMockSnmpMOLoaderImpl(Resource myMoFile) {
 		m_moFile = myMoFile;
+		
 	}
 	
 	public ArrayList<ManagedObject> loadMOs() {
@@ -82,7 +83,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	protected static ManagedObject getMOFromPropString(String oidStr, String valStr) {
 	    OID moOID = new OID(oidStr);
 
-	    ManagedObject newMO;
+	    MOScalar newMO;
 	    Variable newVar;
 
 	    if ("\"\"".equals(valStr)) {
@@ -125,6 +126,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	        }
 	    }
 	    newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, newVar);
+	    newMO.setVolatile(true);
 	    return newMO;
 	}
 }
