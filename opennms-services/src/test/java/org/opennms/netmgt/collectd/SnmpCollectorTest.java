@@ -242,6 +242,7 @@ public class SnmpCollectorTest extends TestCase {
         node.setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
         OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
         iface.setId(27);
+        iface.setIsSnmpPrimary(CollectionType.PRIMARY);
 
         Collection outageCalendars = new LinkedList();
 
@@ -260,6 +261,7 @@ public class SnmpCollectorTest extends TestCase {
                                                                    m_snmpCollector);
 
         CollectionAgent agent = getCollectionAgent(iface);
+        spec.initialize(agent);
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
         File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");
