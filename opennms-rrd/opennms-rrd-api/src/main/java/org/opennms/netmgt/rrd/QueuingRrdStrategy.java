@@ -788,6 +788,13 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.fetchLastValue(rrdFile, ds, interval);
     }
     
+    public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException, RrdException {
+        // TODO: handle queued values with fetch. Fetch could pull values off
+        // the queue or force
+        // an immediate file update.
+        return m_delegate.fetchLastValue(rrdFile, ds, consolidationFunction, interval);
+    }
+    
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         // TODO: handle queued values with fetch. Fetch could pull values off
         // the queue or force
