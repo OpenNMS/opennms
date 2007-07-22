@@ -14,7 +14,7 @@ public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
     }
 
     public void endScheduleExistingInterfaces() {
-        log().debug("schedulingExistingInterfaces: end");
+        log().debug("scheduleExistingInterfaces: end");
     }
 
     public void beginScheduleInterfacesWithService(String svcName) {
@@ -97,6 +97,11 @@ public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
             String svcName) {
         log().debug("scheduleInterfaceWithService: end: "+nodeId+"/"+ipAddress+"/"+svcName);
 
+    }
+
+    public void reportCollectionError(int nodeId, String ipAddress,
+            String svcName, CollectionError e) {
+        log().debug("collector.collect: error: "+nodeId+"/"+ipAddress+"/"+svcName+": "+e);
     }
 
 }
