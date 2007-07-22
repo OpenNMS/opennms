@@ -111,4 +111,10 @@ public class NullRrdStrategy implements RrdStrategy {
         return ".nullRrd";
     }
 
+    public Double fetchLastValue(String rrdFile, String ds,
+            String consolidationFunction, int interval)
+            throws NumberFormatException, RrdException {
+        return null;
+    }
+
 }

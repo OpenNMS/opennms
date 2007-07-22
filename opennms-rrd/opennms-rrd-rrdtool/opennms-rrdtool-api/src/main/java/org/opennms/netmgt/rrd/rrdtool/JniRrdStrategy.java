@@ -200,6 +200,10 @@ public class JniRrdStrategy implements RrdStrategy {
      * Interface.
      */
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
+        return fetchLastValue(rrdFile, ds, "AVERAGE", interval);
+    }
+
+    public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) {
         checkState("fetchLastValue");
 
         /*
@@ -227,7 +231,7 @@ public class JniRrdStrategy implements RrdStrategy {
          */
         
         // TODO: Combine fetchLastValueInRange and fetchLastValue
-        String fetchCmd = "fetch " + rrdFile + " AVERAGE -s now-" + interval / 1000 + " -e now-" + interval / 1000;
+        String fetchCmd = "fetch " + rrdFile + " "+consolidationFunction+" -s now-" + interval / 1000 + " -e now-" + interval / 1000;
 
         if (log().isDebugEnabled()) {
             log().debug("fetch: Issuing RRD command: " + fetchCmd);

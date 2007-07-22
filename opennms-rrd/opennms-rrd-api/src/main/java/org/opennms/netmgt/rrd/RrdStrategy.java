@@ -158,6 +158,25 @@ public interface RrdStrategy {
      */
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException;
 
+    
+    /**
+     * Fetches the last value from the round robin database with the given name.
+     * The interval passed in should be the interval associated with the round
+     * robin database.
+     * 
+     * @param rrdFile
+     *            a name the represents a round robin database
+     * @param ds
+     *            a name the represents a data source to be used
+     * @param interval
+     *            a step interval of the round robin database
+     * @return The last value as a Double (if the last value didn't exist
+     *         returns a Double.NaN)
+     * @throws NumberFormatException
+     * @throws RrdException
+     */
+    public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException, RrdException;
+
     /**
      * Fetches the last value from the round robin database with the given name
      * within a time range. The interval passed in should be the interval 

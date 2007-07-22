@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import junit.framework.TestCase;
@@ -62,7 +63,9 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
@@ -191,6 +194,106 @@ public class SnmpCollectorTest extends TestCase {
         // Wait for any RRD writes to finish up
         Thread.sleep(1000);
     }
+    
+    public void testPersist() throws Exception {
+        initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
+
+        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-persistTest-config.xml");
+
+        createSnmpCollector();
+
+        OnmsIpInterface iface = createInterface();
+
+        CollectionSpecification spec = createCollectionSpec("SNMP");
+
+        CollectionAgent agent = createCollectionAgent(iface);
+        
+        File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
+        anticipateRrdFiles(nodeDir, "tcpCurrEstab");
+        
+        File rrdFile = new File(nodeDir, rrd("tcpCurrEstab"));
+        
+        int numUpdates = 2;
+        int stepSize = 1;
+        
+        
+        // don't for get to initialize the agent
+        spec.initialize(agent);
+        
+        collectNTimes(spec, agent, numUpdates);
+        
+        // This is the value from snmpTestData1.properites
+        //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
+        assertEquals(123.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSize*1000, stepSize*1000));
+        
+        // now update the data in the agent
+        m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
+        
+        
+        collectNTimes(spec, agent, numUpdates);
+
+        // by now the value should be the new value
+        assertEquals(456.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSize*1000, stepSize*1000));
+        
+
+        // release the agent
+        spec.release(agent);
+        
+        // Wait for any RRD writes to finish up
+        Thread.sleep(1000);
+        
+
+
+
+    }
+
+    private void collectNTimes(CollectionSpecification spec,
+            CollectionAgent agent, int numUpdates) throws InterruptedException {
+        for(int i = 0; i < numUpdates; i++) {
+
+            // now do the actual collection
+            assertEquals("collection status",
+                    ServiceCollector.COLLECTION_SUCCEEDED,
+                    spec.collect(agent));
+        
+        
+            System.err.println("COLLECTION "+i+" FINISHED");
+        
+            //need a one second time elapse to update the RRD
+            Thread.sleep(1000);
+        }
+    }
+    
+    public void testUsingFetch() throws Exception {
+
+        int stepSize = 1;
+        int numUpdates = 2;
+
+        long start = System.currentTimeMillis();
+
+        File snmpDir = getSnmpRrdDirectory();
+        anticipateRrdFiles(snmpDir, "test");
+        
+        File rrdFile = new File(snmpDir, rrd("test"));
+        
+        RrdStrategy m_rrdStrategy = RrdUtils.getStrategy();
+        
+        
+        
+        RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
+        Object def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        m_rrdStrategy.createFile(def);
+                
+        Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
+        for (int i = 0; i < numUpdates; i++) {
+            m_rrdStrategy.updateFile(rrdFileObject, "test", (start/1000 - stepSize*(numUpdates-i)) + ":1");
+        }
+        m_rrdStrategy.closeFile(rrdFileObject);
+        
+
+        assertEquals(1.0, m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSize*1000, stepSize*1000));
+       
+    }
 
     public void testBrocadeCollect() throws Exception {
         initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
@@ -200,7 +303,6 @@ public class SnmpCollectorTest extends TestCase {
         createSnmpCollector();
 
         OnmsIpInterface iface = createInterface();
-        iface.setIsSnmpPrimary(CollectionType.PRIMARY);
 
         CollectionSpecification spec = createCollectionSpec("SNMP");
 
