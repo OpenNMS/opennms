@@ -37,6 +37,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -71,11 +72,16 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     private CollectionType m_collType = null;
     private String m_sysObjId = null;
     
-    private CollectionAgentService m_transactionalAgent;
+    private CollectionAgentService m_agentService;
+    private Set<SnmpIfData> m_snmpIfData;
 
-    private DefaultCollectionAgent(CollectionAgentService transactionalAgent) {
+    private DefaultCollectionAgent(CollectionAgentService agentService) {
         super(null);
-        m_transactionalAgent = transactionalAgent;
+        m_agentService = agentService;
+        
+        if (Boolean.getBoolean("org.opennms.netmgt.collectd.DefaultCollectionAgent.loadSnmpDataOnInit")) {
+            getSnmpInterfaceData();
+        }
     }
 
     @Override
@@ -86,7 +92,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     @Override
     public InetAddress getInetAddress() {
         if (m_inetAddress == null) {
-            m_inetAddress = m_transactionalAgent.getInetAddress();
+            m_inetAddress = m_agentService.getInetAddress();
         }
         return m_inetAddress;
     }
@@ -134,14 +140,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      */
     public int getNodeId() {
         if (m_nodeId == -1) {
-            m_nodeId = m_transactionalAgent.getNodeId();
+            m_nodeId = m_agentService.getNodeId();
         }
         return m_nodeId; 
     }
 
     private int getIfIndex() {
         if (m_ifIndex == -1) {
-            m_ifIndex = m_transactionalAgent.getIfIndex();
+            m_ifIndex = m_agentService.getIfIndex();
         }
         return m_ifIndex;
         
@@ -152,14 +158,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      */
     public String getSysObjectId() {
         if (m_sysObjId == null) {
-            m_sysObjId = m_transactionalAgent.getSysObjectId();
+            m_sysObjId = m_agentService.getSysObjectId();
         }
         return m_sysObjId;
     }
 
     private CollectionType getCollectionType() {
         if (m_collType == null) {
-            m_collType = m_transactionalAgent.getCollectionType();
+            m_collType = m_agentService.getCollectionType();
         }
         return m_collType;
         
@@ -247,12 +253,29 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
     }
+    
+    private Set<SnmpIfData> getSnmpInterfaceData() {
+        if (m_snmpIfData == null) {
+            m_snmpIfData = m_agentService.getSnmpInterfaceData();
+        }
+        return m_snmpIfData;
+        
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
      */
     public Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type) {
-        return m_transactionalAgent.getSnmpInterfaceInfo(type, this);
+        Set<SnmpIfData> snmpIfData = getSnmpInterfaceData();
+        
+        Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfData.size());
+        
+        for (SnmpIfData ifData : snmpIfData) {
+            IfInfo ifInfo = new IfInfo(type, this, ifData);
+            ifInfos.add(ifInfo);
+        }
+        
+        return ifInfos;
     }
 
 }
