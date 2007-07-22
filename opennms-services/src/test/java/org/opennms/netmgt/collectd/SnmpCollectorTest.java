@@ -82,6 +82,14 @@ public class SnmpCollectorTest extends TestCase {
     private File m_snmpRrdDirectory;
 
     private PlatformTransactionManager m_transMgr;
+    
+    final String SNMP_CONFIG = "<?xml version=\"1.0\"?>\n"
+        + "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n"
+        + "               read-community=\"public\"\n"
+        + "               version=\"v1\">\n" + "</snmp-config>\n";
+
+
+
 
     @Override
     protected void setUp() throws Exception {
@@ -104,6 +112,15 @@ public class SnmpCollectorTest extends TestCase {
         
         EventIpcManagerFactory.setIpcManager(eventIpcManager);
         
+        //RrdConfig.loadProperties(new ByteArrayInputStream(s_rrdConfig.getBytes()));
+        RrdTestUtils.initialize();
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringReader(SNMP_CONFIG)));
+        
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
+        rdr.close();
+
         m_transMgr = new DataSourceTransactionManager(m_db);
         
         m_fileAnticipator = new FileAnticipator();
@@ -127,64 +144,25 @@ public class SnmpCollectorTest extends TestCase {
         super.tearDown();
     }
 
-    public void testInstantiate() throws Exception {
-        new SnmpCollector();
-    }
-
-    public void testInitialize() throws Exception {
-        initialize();
-    }
-
     public void testCollect() throws Exception {
-        String svcName = "SNMP";
+        initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
 
-        String m_snmpConfig = "<?xml version=\"1.0\"?>\n"
-                + "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n"
-                + "               read-community=\"public\"\n"
-                + "               version=\"v1\">\n" + "</snmp-config>\n";
+        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-config.xml");
 
-        initializeAgent();
+        createSnmpCollector();
 
-        Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-config.xml");
-        initialize(new StringReader(m_snmpConfig), dataCollectionConfig);
-        dataCollectionConfig.close();
+        OnmsIpInterface iface = createInterface();
 
-        OnmsNode node = new OnmsNode();
-        node.setId(new Integer(1));
-        node.setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
-        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("127.0.0.1", 1, node);
-        snmpIface.setIfName("localhost");
-        snmpIface.setPhysAddr("00:11:22:33:44");
-        OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
-        iface.setIsSnmpPrimary(CollectionType.PRIMARY);
-        iface.setId(27);
+        CollectionSpecification spec = createCollectionSpec("SNMP");
 
-        Collection outageCalendars = new LinkedList();
-
-        Package pkg = new Package();
-        Filter filter = new Filter();
-        filter.setContent("IPADDR IPLIKE *.*.*.*");
-        pkg.setFilter(filter);
-        Service service = new Service();
-        service.setName(svcName);
-        pkg.addService(service);
-
-        CollectdPackage wpkg = new CollectdPackage(pkg, "foo", false);
-        CollectionSpecification spec = new CollectionSpecification(wpkg,
-                                                                   svcName,
-                                                                   outageCalendars,
-                                                                   m_snmpCollector);
-
-        CollectionAgent agent = getCollectionAgent(iface);
+        CollectionAgent agent = createCollectionAgent(iface);
         
-
-        
-        File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
-        for (String file : new String[] { "tcpActiveOpens", "tcpAttemptFails", "tcpCurrEstab",
-                "tcpEstabResets", "tcpInErrors", "tcpInSegs", "tcpOutRsts", "tcpOutSegs",
-                "tcpPassiveOpens", "tcpRetransSegs" }) {
-            m_fileAnticipator.expecting(nodeDir, file + RrdUtils.getExtension());
-        }
+        File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
+        anticipateRrdFiles(nodeDir, "tcpActiveOpens", "tcpAttemptFails");
+        anticipateRrdFiles(nodeDir, "tcpPassiveOpens", "tcpRetransSegs");
+        anticipateRrdFiles(nodeDir, "tcpCurrEstab", "tcpEstabResets");
+        anticipateRrdFiles(nodeDir, "tcpInErrors", "tcpInSegs");
+        anticipateRrdFiles(nodeDir, "tcpOutRsts", "tcpOutSegs");
         
         // don't for get to initialize the agent
         spec.initialize(agent);
@@ -214,36 +192,98 @@ public class SnmpCollectorTest extends TestCase {
         Thread.sleep(1000);
     }
 
-    private CollectionAgent getCollectionAgent(OnmsIpInterface iface) {
-        IpInterfaceDao ifDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(ifDao.get(iface.getId())).andReturn(iface).anyTimes();
-        EasyMock.replay(ifDao);
-        CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifDao, m_transMgr);
-        return agent;
-    }
-
     public void testBrocadeCollect() throws Exception {
-        String svcName = "SNMP";
-
-        String m_snmpConfig = "<?xml version=\"1.0\"?>\n"
-                + "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n"
-                + "               read-community=\"public\"\n"
-                + "               version=\"v1\">\n" + "</snmp-config>\n";
-
         initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
 
-        Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-brocade-config.xml");
+        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-brocade-config.xml");
 
-        initialize(new StringReader(m_snmpConfig), dataCollectionConfig);
-        dataCollectionConfig.close();
+        createSnmpCollector();
 
-        OnmsNode node = new OnmsNode();
-        node.setId(new Integer(1));
-        node.setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
-        OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
-        iface.setId(27);
+        OnmsIpInterface iface = createInterface();
         iface.setIsSnmpPrimary(CollectionType.PRIMARY);
 
+        CollectionSpecification spec = createCollectionSpec("SNMP");
+
+        CollectionAgent agent = createCollectionAgent(iface);
+
+        File brocadeDir = anticipatePath(getSnmpRrdDirectory(), "1", "brocadeFCPortIndex"); 
+        for (int i = 1; i <= 8; i++) {
+            File brocadeIndexDir = anticipatePath(brocadeDir, Integer.toString(i));
+            anticipateFiles(brocadeIndexDir, "strings.properties");
+            anticipateRrdFiles(brocadeIndexDir, "swFCPortTxWords", "swFCPortRxWords");
+        }
+
+        // don't for get to initialize the agent
+        spec.initialize(agent);
+
+        // now do the actual collection
+        assertEquals("collection status",
+                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     spec.collect(agent));
+        
+        
+        System.err.println("FIRST COLLECTION FINISHED");
+        
+        //need a one second time elapse to update the RRD
+        Thread.sleep(1000);
+
+        // try collecting again
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                spec.collect(agent));
+
+        System.err.println("SECOND COLLECTION FINISHED");
+
+        // release the agent
+        spec.release(agent);
+        
+        // Wait for any RRD writes to finish up
+        Thread.sleep(1000);
+        
+    }
+
+    private String rrd(String file) {
+        return file + RrdUtils.getExtension();
+    }
+
+    private void anticipateFiles(File baseDir, String... fileNames) {
+        for (String fileName : fileNames) {
+            m_fileAnticipator.expecting(baseDir, fileName);
+        }
+    }
+    
+    private void anticipateRrdFiles(File baseDir, String... rrdBaseNames) {
+        for(String rrdBaseName : rrdBaseNames) {
+            m_fileAnticipator.expecting(baseDir, rrd(rrdBaseName));
+        }
+    }
+
+    private File anticipatePath(File rootDir, String... pathElements) {
+        File parent = rootDir;
+        assertTrue(pathElements.length > 0);
+        for (String pathElement : pathElements) {
+            parent = m_fileAnticipator.expecting(parent, pathElement);
+        }
+        return parent;
+        
+    }
+
+    private void initializeDataCollectionConfig(String dataCollectionConfig)
+            throws IOException, MarshalException, ValidationException,
+            RrdException {
+        
+        Reader rdr = getDataCollectionConfigReader(dataCollectionConfig);
+        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(rdr));
+        rdr.close();
+        
+    }
+
+    private void createSnmpCollector() {
+        m_snmpCollector = new SnmpCollector();
+        m_snmpCollector.initialize(null); // no properties are passed
+    }
+
+    private CollectionSpecification createCollectionSpec(String svcName) {
         Collection outageCalendars = new LinkedList();
 
         Package pkg = new Package();
@@ -259,53 +299,28 @@ public class SnmpCollectorTest extends TestCase {
                                                                    svcName,
                                                                    outageCalendars,
                                                                    m_snmpCollector);
-
-        CollectionAgent agent = getCollectionAgent(iface);
-        spec.initialize(agent);
-        
-        File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
-        File brocadeDir = m_fileAnticipator.expecting(nodeDir, "brocadeFCPortIndex");
-        for (int i = 1; i <= 8; i++) {
-            File brocadeIndexDir = m_fileAnticipator.expecting(brocadeDir, Integer.toString(i));
-            m_fileAnticipator.expecting(brocadeIndexDir, "strings.properties");
-            for (String file : new String[] { "swFCPortTxWords", "swFCPortRxWords" }) {
-                m_fileAnticipator.expecting(brocadeIndexDir, file + RrdUtils.getExtension());
-            }
-        }
-
-        assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
-                spec.collect(agent));
-        
-        
-        // Wait for any RRD writes to finish up
-        Thread.sleep(1000);
+        return spec;
     }
 
-    public void initialize(Reader snmpConfig, Reader dataCollectionConfig)
-            throws MarshalException, ValidationException, IOException, RrdException {
-        //RrdConfig.loadProperties(new ByteArrayInputStream(s_rrdConfig.getBytes()));
-        RrdTestUtils.initialize();
-
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfig));
-        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(dataCollectionConfig));
-
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-        rdr.close();
-
-        m_snmpCollector = new SnmpCollector();
-        m_snmpCollector.initialize(null); // no properties are passed
+    private OnmsIpInterface createInterface() {
+        OnmsNode node = new OnmsNode();
+        node.setId(new Integer(1));
+        node.setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
+        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("127.0.0.1", 1, node);
+        snmpIface.setIfName("localhost");
+        snmpIface.setPhysAddr("00:11:22:33:44");
+        OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
+        iface.setId(27);
+        iface.setIsSnmpPrimary(CollectionType.PRIMARY);
+        return iface;
     }
 
-    public void initialize() throws IOException, MarshalException, ValidationException, RrdException {
-        Reader snmpConfig = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/snmp-config.xml");
-        Reader dataCollectionConfig = getDataCollectionConfigReader("/org/opennms/netmgt/config/datacollection-config.xml");
-
-        initialize(snmpConfig, dataCollectionConfig);
-
-        snmpConfig.close();
-        dataCollectionConfig.close();
+    private CollectionAgent createCollectionAgent(OnmsIpInterface iface) {
+        IpInterfaceDao ifDao = EasyMock.createMock(IpInterfaceDao.class);
+        EasyMock.expect(ifDao.get(iface.getId())).andReturn(iface).anyTimes();
+        EasyMock.replay(ifDao);
+        CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifDao, m_transMgr);
+        return agent;
     }
 
     private Reader getDataCollectionConfigReader(String classPathLocation) throws IOException {
@@ -324,7 +339,4 @@ public class SnmpCollectorTest extends TestCase {
                                                   "127.0.0.1/1691");
     }
 
-    private void initializeAgent() throws InterruptedException {
-        initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
-    }
 }
