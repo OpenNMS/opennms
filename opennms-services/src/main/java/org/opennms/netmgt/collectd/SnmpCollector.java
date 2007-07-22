@@ -401,6 +401,7 @@ public class SnmpCollector implements ServiceCollector {
             // return the status of the collection
             return ServiceCollector.COLLECTION_SUCCEEDED;
         } catch (CollectionError e) {
+            Collectd.instrumentation().reportCollectionError(agent.getNodeId(), agent.getHostAddress(), serviceName(), e);
             return e.reportError();
         } catch (Throwable t) {
             t.printStackTrace();

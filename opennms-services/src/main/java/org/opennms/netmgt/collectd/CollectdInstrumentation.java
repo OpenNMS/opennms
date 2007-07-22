@@ -20,6 +20,7 @@ public interface CollectdInstrumentation {
     public void endCollectingServiceData(int nodeId, String ipAddress, String svcName);
     public void beginPersistingServiceData(int nodeId, String ipAddress, String svcName);
     public void endPersistingServiceData(int nodeId, String ipAddress, String svcName);
+    public void reportCollectionError(int nodeid, String ipAddress, String svcName, CollectionError e);
     
 
 }
