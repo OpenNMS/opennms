@@ -414,7 +414,7 @@ public class SnmpCollector implements ServiceCollector {
         try {
             collectionSet.saveAttributes(params);
         } finally {
-            Collectd.instrumentation().beginPersistingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
+            Collectd.instrumentation().endPersistingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
         }
     }
 
