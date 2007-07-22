@@ -37,8 +37,6 @@ import java.net.BindException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import junit.framework.Assert;
-
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
@@ -91,6 +89,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     static {
         LogFactory.setLogFactory(new Log4jLogFactory());
     }
+    
 
     protected String m_address;
     private Resource m_moFile;
@@ -448,10 +447,16 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     
     public void updateValue(OID oid, Variable value) {
         MOScalar scalar = findScalarForOid(oid);
-        Assert.assertNotNull("Unable to find oid in mib for mockAgent: "+oid, scalar);
+        assertNotNull("Unable to find oid in mib for mockAgent: "+oid, scalar);
         scalar.setValue(value);
     }
     
+    private void assertNotNull(String string, Object o) {
+        if (o == null) {
+            throw new IllegalStateException(string);
+        }
+    }
+
     public void updateValue(String oid, Variable value) {
         updateValue(new OID(oid), value);
     }
