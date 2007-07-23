@@ -1,4 +1,4 @@
-package org.opennms.netmgt;
+package org.opennms.netmgt.ping;
 
 /*
  * $Id: Ping.java 7736 2007-03-07 02:28:01Z dfs $
@@ -110,7 +110,7 @@ public class Ping {
 
     socket.write(host, sendData, offset, length);
   }
-
+  
 
   public void receive(InetAddress host) throws IOException {
     socket.read(host, recvData);
