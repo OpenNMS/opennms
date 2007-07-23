@@ -40,23 +40,16 @@ import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.Ping.EchoReplyListener;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.icmp.IcmpSocket;
-import org.opennms.netmgt.Ping;
-import org.savarese.vserv.tcpip.ICMPEchoPacket;
-import org.savarese.vserv.tcpip.OctetConverter;
 
 /**
  * This class provides Capsd with the ability to check for ICMP support on new
@@ -106,11 +99,11 @@ public final class IcmpPlugin extends AbstractPlugin {
     private static IcmpSocket m_icmpSock = null; // delayed creation
 
     /**
-     * The set used to lookup thread identifiers -- the map of long thread
+     * The set used to lookup thread identifiers The map of long thread
      * identifiers to Packets that must be signaled. The mapped objects are
      * instances of the {@link org.opennms.netmgt.ping.Reply Reply}class.
      */
-    private static Map<Integer, Boolean> m_waiting = Collections.synchronizedMap(new TreeMap<Integer, Boolean>());
+    private static Map m_waiting = Collections.synchronizedMap(new TreeMap());
 
     /**
      * The thread used to receive and process replies.
@@ -122,128 +115,105 @@ public final class IcmpPlugin extends AbstractPlugin {
      * the pingable address and a signaled state.
      * 
      */
-    
-//    private static final class Ping {
-//        /**
-//         * The address being pinged
-//         */
-//        private final InetAddress m_addr;
-//
-//        /**
-//         * The state of the ping
-//         */
-//        private boolean m_signaled;
-//
-//        /**
-//         * Constructs a new ping object
-//         */
-//        Ping(InetAddress addr) {
-//            m_addr = addr;
-//        }
-//
-//        /**
-//         * Returns true if signaled.
-//         */
-//        synchronized boolean isSignaled() {
-//            return m_signaled;
-//        }
-//
-//        /**
-//         * Sets the signaled state and awakes the blocked threads.
-//         */
-//        synchronized void signal() {
-//            m_signaled = true;
-//            notifyAll();
-//        }
-//
-//        /**
-//         * Returns true if the passed address is the target of the ping.
-//         */
-//        boolean isTarget(InetAddress addr) {
-//            return m_addr.equals(addr);
-//        }
-//    }
+    private static final class Ping {
+        /**
+         * The address being pinged
+         */
+        private final InetAddress m_addr;
 
-    /**
-     * Constructs a new monitor.
-     */
-    public IcmpPlugin() throws IOException {
-//        synchronized (IcmpPlugin.class) {
-//            if (m_worker == null) {
-//                // Create a receiver queue
-//                //
-//                final FifoQueueImpl q = new FifoQueueImpl();
-//
-//                // Open a socket
-//                //
-//                m_icmpSock = new IcmpSocket();
-//
-//                // Start the receiver
-//                //
-//                m_receiver = new ReplyReceiver(m_icmpSock, q, FILTER_ID);
-//                m_receiver.start();
-//
-//                // Start the processor
-//                //
-//                m_worker = new Thread(new Runnable() {
-//                    public void run() {
-//                        for (;;) {
-//                            Reply pong = null;
-//                            try {
-//                                pong = (Reply) q.remove();
-//                            } catch (InterruptedException ex) {
-//                                break;
-//                            } catch (Exception ex) {
-//                                ThreadCategory.getInstance(this.getClass()).error("Error processing response queue", ex);
-//                            }
-//
-//                            Long key = new Long(pong.getPacket().getTID());
-//                            Ping ping = (Ping) m_waiting.get(key);
-//                            if (ping != null && ping.isTarget(pong.getAddress()))
-//                                ping.signal();
-//                        }
-//                    }
-//                }, "IcmpPlugin-Receiver");
-//                m_worker.setDaemon(true);
-//                m_worker.start();
-//            }
-//        }
-    }
+        /**
+         * The state of the ping
+         */
+        private boolean m_signaled;
 
-    private class EchoReplyListener {
-    	private int tidKey;
-    	EchoReplyListener(int tidKey) {
-    		this.tidKey = tidKey;
-    	}
-    	
-        public void notifyEchoReply(ICMPEchoPacket packet,
-                byte[] data, int dataOffset) {
-        	Category log = ThreadCategory.getInstance(this.getClass());
-        	long end   = System.nanoTime();
-        	long start = OctetConverter.octetsToLong(data, dataOffset);
-        	double rtt = (double)(end - start) / 1e6;
-        	m_waiting.put(tidKey, true);
-        	log.info(packet.getICMPPacketByteLength() + 
-        			" bytes: icmp_seq=" + packet.getSequenceNumber() +
-        			" ttl=" + packet.getTTL() +
-        			" time=" + rtt + " ms");
+        /**
+         * Constructs a new ping object
+         */
+        Ping(InetAddress addr) {
+            m_addr = addr;
         }
 
-    };
-    
+        /**
+         * Returns true if signaled.
+         */
+        synchronized boolean isSignaled() {
+            return m_signaled;
+        }
+
+        /**
+         * Sets the signaled state and awakes the blocked threads.
+         */
+        synchronized void signal() {
+            m_signaled = true;
+            notifyAll();
+        }
+
+        /**
+         * Returns true if the passed address is the target of the ping.
+         */
+        boolean isTarget(InetAddress addr) {
+            return m_addr.equals(addr);
+        }
+    }
+
     /**
-	 * Builds a datagram compatable with the ping ReplyReceiver class.
-	 */
-// private synchronized static DatagramPacket getDatagram(InetAddress addr, long
-// tid) {
-//        Packet iPkt = new Packet(tid);
-//        iPkt.setIdentity(FILTER_ID);
-//        iPkt.setSequenceId(m_seqid++);
-//        iPkt.computeChecksum();
-//
-//        byte[] data = iPkt.toBytes();
-//        return new DatagramPacket(data, data.length, addr, 0);
-//    }
+     * Construts a new monitor.
+     */
+    public IcmpPlugin() throws IOException {
+        synchronized (IcmpPlugin.class) {
+            if (m_worker == null) {
+                // Create a receiver queue
+                //
+                final FifoQueueImpl q = new FifoQueueImpl();
+
+                // Open a socket
+                //
+                m_icmpSock = new IcmpSocket();
+
+                // Start the receiver
+                //
+                m_receiver = new ReplyReceiver(m_icmpSock, q, FILTER_ID);
+                m_receiver.start();
+
+                // Start the processor
+                //
+                m_worker = new Thread(new Runnable() {
+                    public void run() {
+                        for (;;) {
+                            Reply pong = null;
+                            try {
+                                pong = (Reply) q.remove();
+                            } catch (InterruptedException ex) {
+                                break;
+                            } catch (Exception ex) {
+                                ThreadCategory.getInstance(this.getClass()).error("Error processing response queue", ex);
+                            }
+
+                            Long key = new Long(pong.getPacket().getTID());
+                            Ping ping = (Ping) m_waiting.get(key);
+                            if (ping != null && ping.isTarget(pong.getAddress()))
+                                ping.signal();
+                        }
+                    }
+                }, "IcmpPlugin-Receiver");
+                m_worker.setDaemon(true);
+                m_worker.start();
+            }
+        }
+    }
+
+    /**
+     * Builds a datagram compatable with the ping ReplyReceiver class.
+     */
+    private synchronized static DatagramPacket getDatagram(InetAddress addr, long tid) {
+        Packet iPkt = new Packet(tid);
+        iPkt.setIdentity(FILTER_ID);
+        iPkt.setSequenceId(m_seqid++);
+        iPkt.computeChecksum();
+
+        byte[] data = iPkt.toBytes();
+        return new DatagramPacket(data, data.length, addr, 0);
+    }
 
     /**
      * This method is used to ping a remote host to test for ICMP support. If
@@ -260,54 +230,54 @@ public final class IcmpPlugin extends AbstractPlugin {
      * @return True if the host is reachable and responsed with an echo reply.
      * 
      */
-    private boolean isPingable(final InetAddress ipv4Addr, int retries, long timeout) {
+    private boolean isPingable(InetAddress ipv4Addr, int retries, long timeout) {
         Category log = ThreadCategory.getInstance(this.getClass());
 
-        final String hostname = ipv4Addr.getCanonicalHostName();
-        final String hostaddr = ipv4Addr.getHostAddress();
-        final int count = retries + 1;
-        boolean pingable = false;
-
         // Find an appropritate thread id
-        Integer tidKey = null;
-        int tid = Thread.currentThread().hashCode();
+        //
+        Long tidKey = null;
+        long tid = (long) Thread.currentThread().hashCode();
         synchronized (m_waiting) {
-            while (m_waiting.containsKey(tidKey = new Integer(tid)))
+            while (m_waiting.containsKey(tidKey = new Long(tid)))
                 ++tid;
         }
 
-        Ping ping = null;
-        try {
-        	ping = new Ping(tidKey.intValue());
-        	m_waiting.put(tidKey, false);
-        } catch (IOException ioE) {
-        	log.info("isPingable: failed to send to address " + ipv4Addr, ioE);
+        DatagramPacket pkt = getDatagram(ipv4Addr, tid);
+        Ping reply = new Ping(ipv4Addr);
+        m_waiting.put(tidKey, reply);
+
+        for (int attempts = 0; attempts <= retries && !reply.isSignaled(); ++attempts) {
+            // Send the datagram and wait
+            //
+            synchronized (reply) {
+                try {
+                    m_icmpSock.send(pkt);
+                } catch (IOException ioE) {
+                    log.info("isPingable: Failed to send to address " + ipv4Addr, ioE);
+                    break;
+                } catch (Throwable t) {
+                    log.info("isPingable: Undeclared throwable exception caught sending to " + ipv4Addr, t);
+                    break;
+                }
+
+                try {
+                    reply.wait(timeout);
+                } catch (InterruptedException ex) {
+                    // interrupted so return, reset interrupt.
+                    //
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
         }
 
-        EchoReplyListener erl = new EchoReplyListener(tidKey);
+        m_waiting.remove(tidKey);
 
-        log.info("PING " + hostname + " (" + hostaddr + ") " +
-                ping.getRequestDataLength() + "(" +
-                ping.getRequestPacketLength() + ") bytes of data");
-        
-        for (int attempts = 0; attempts <= retries && !(boolean)m_waiting.get(tidKey); ++attempts) {
-        	try {
-        		ping.sendEchoRequest(ipv4Addr);
-        	} catch (IOException ioE) {
-        		log.info("isPingable: Failed to send to address " + ipv4Addr, ioE);
-        		break;
-        	}
-    //    	synchronized (ping) {
-				try {
-					ping.receiveEchoReply(ipv4Addr);
-				} catch (Exception e) {
-					Thread.currentThread().interrupt();
-					break;
-				}
-		//	}
-        }
+        boolean pingable = false;
+        if (reply.isSignaled())
+            pingable = true;
 
-        return (boolean)m_waiting.get(tidKey);
+        return pingable;
     }
 
     /**
