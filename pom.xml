@@ -1208,6 +1208,11 @@ opennms.home = ${opennms.home}
         <version>1.2.15</version>
       </dependency>
       <dependency>
+        <groupId>org.savarese</groupId>
+        <artifactId>rocksaw</artifactId>
+        <version>0.5.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.snmp4j</groupId>
         <artifactId>snmp4j</artifactId>
         <version>1.8.1</version>
