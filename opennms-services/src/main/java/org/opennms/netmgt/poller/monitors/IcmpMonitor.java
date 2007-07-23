@@ -184,7 +184,7 @@ final public class IcmpMonitor extends IPv4Monitor {
     }
 
     /**
-     * Construts a new monitor.
+     * Constructs a new monitor.
      */
     public IcmpMonitor() throws IOException {
         synchronized (IcmpMonitor.class) {
