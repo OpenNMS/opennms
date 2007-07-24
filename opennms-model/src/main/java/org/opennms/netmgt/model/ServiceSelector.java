@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 23: Minor whitespace changes. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,12 +44,11 @@ import java.util.List;
  *
  */
 public class ServiceSelector {
-	
 	private String m_filterRule;
 	private List<String> m_serviceNames;
 	
 	
-	public ServiceSelector(String filterRule, List<String>serviceNames) {
+	public ServiceSelector(String filterRule, List<String> serviceNames) {
 		m_filterRule = filterRule;
 		m_serviceNames = serviceNames;
 	}
