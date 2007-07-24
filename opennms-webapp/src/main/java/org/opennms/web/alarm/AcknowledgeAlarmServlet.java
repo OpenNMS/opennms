@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
 // 2005 Apr 18: This file created from AcknowledgeEventServlet.java
 //
 // Original Code Base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -55,6 +58,8 @@ import org.opennms.web.MissingParameterException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AcknowledgeAlarmServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     public final static String ACKNOWLEDGE_ACTION = "1";
 
     public final static String UNACKNOWLEDGE_ACTION = "2";

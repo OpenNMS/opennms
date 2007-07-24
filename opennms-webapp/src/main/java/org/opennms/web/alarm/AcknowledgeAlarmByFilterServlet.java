@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: Created this file from AcknowledgeEventByFilterServlet
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -57,7 +60,8 @@ import org.opennms.web.alarm.filter.Filter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AcknowledgeAlarmByFilterServlet extends HttpServlet {
-
+    private static final long serialVersionUID = 1L;
+    
     /** The URL to redirect the client to in case of success. */
     protected String redirectSuccess;
 
@@ -94,7 +98,7 @@ public class AcknowledgeAlarmByFilterServlet extends HttpServlet {
         }
 
         // handle the filter parameters
-        ArrayList filterArray = new ArrayList();
+        ArrayList<Filter> filterArray = new ArrayList<Filter>();
         for (int i = 0; i < filterStrings.length; i++) {
             Filter filter = AlarmUtil.getFilter(filterStrings[i]);
             if (filter != null) {
@@ -102,8 +106,7 @@ public class AcknowledgeAlarmByFilterServlet extends HttpServlet {
             }
         }
 
-        Filter[] filters = new Filter[filterArray.size()];
-        filters = (Filter[]) filterArray.toArray(filters);
+        Filter[] filters = filterArray.toArray(new Filter[filterArray.size()]);
 
         try {
             if (action.equals(AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION)) {

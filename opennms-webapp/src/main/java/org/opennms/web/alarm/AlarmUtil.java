@@ -8,7 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// 18 Apr 2005: This file created from EventUtil.java
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+// 2005 Apr 18: This file created from EventUtil.java
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -34,9 +37,11 @@
 
 package org.opennms.web.alarm;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
@@ -64,15 +69,19 @@ import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 
 public abstract class AlarmUtil extends Object {
-    protected static final HashMap colors;
+    protected static final Map<Integer, String> colors;
 
-    protected static final HashMap labels;
+    protected static final Map<Integer, String> labels;
 
-    protected static final HashMap sortStyles;
+    protected static final Map<AlarmFactory.SortStyle, String> sortStyles;
+    
+    protected static final Map<String, AlarmFactory.SortStyle> sortStylesString;
 
-    protected static final HashMap ackTypes;
+    protected static final Map<AlarmFactory.AcknowledgeType, String> ackTypes;
 
-    protected static final List severities;
+    protected static final Map<String, AlarmFactory.AcknowledgeType> ackTypesString;
+
+    protected static final List<Integer> severities;
 
     public static final String ANY_SERVICES_OPTION = "Any";
 
@@ -81,7 +90,7 @@ public abstract class AlarmUtil extends Object {
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
 
     static {
-        severities = new java.util.ArrayList();
+        severities = new ArrayList<Integer>();
         severities.add(new Integer(Alarm.INDETERMINATE_SEVERITY));
         severities.add(new Integer(Alarm.CLEARED_SEVERITY));
         severities.add(new Integer(Alarm.NORMAL_SEVERITY));
@@ -90,7 +99,7 @@ public abstract class AlarmUtil extends Object {
         severities.add(new Integer(Alarm.MAJOR_SEVERITY));
         severities.add(new Integer(Alarm.CRITICAL_SEVERITY));
 
-        colors = new java.util.HashMap();
+        colors = new HashMap<Integer, String>();
         colors.put(new Integer(Alarm.INDETERMINATE_SEVERITY), "lightblue");
         colors.put(new Integer(Alarm.CLEARED_SEVERITY), "white");
         colors.put(new Integer(Alarm.NORMAL_SEVERITY), "green");
@@ -99,7 +108,7 @@ public abstract class AlarmUtil extends Object {
         colors.put(new Integer(Alarm.MAJOR_SEVERITY), "orange");
         colors.put(new Integer(Alarm.CRITICAL_SEVERITY), "red");
 
-        labels = new java.util.HashMap();
+        labels = new HashMap<Integer, String>();
         labels.put(new Integer(Alarm.INDETERMINATE_SEVERITY), "Indeterminate");
         labels.put(new Integer(Alarm.CLEARED_SEVERITY), "Cleared");
         labels.put(new Integer(Alarm.NORMAL_SEVERITY), "Normal");
@@ -108,26 +117,27 @@ public abstract class AlarmUtil extends Object {
         labels.put(new Integer(Alarm.MAJOR_SEVERITY), "Major");
         labels.put(new Integer(Alarm.CRITICAL_SEVERITY), "Critical");
 
-        sortStyles = new java.util.HashMap();
-        sortStyles.put("severity", AlarmFactory.SortStyle.SEVERITY);
-        sortStyles.put("lasteventtime", AlarmFactory.SortStyle.LASTEVENTTIME);
-        sortStyles.put("firsteventtime", AlarmFactory.SortStyle.FIRSTEVENTTIME);
-        sortStyles.put("node", AlarmFactory.SortStyle.NODE);
-        sortStyles.put("interface", AlarmFactory.SortStyle.INTERFACE);
-        sortStyles.put("service", AlarmFactory.SortStyle.SERVICE);
-        sortStyles.put("poller", AlarmFactory.SortStyle.POLLER);
-        sortStyles.put("id", AlarmFactory.SortStyle.ID);
-        sortStyles.put("count", AlarmFactory.SortStyle.COUNT);
-        sortStyles.put("rev_severity", AlarmFactory.SortStyle.REVERSE_SEVERITY);
-        sortStyles.put("rev_lasteventtime", AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME);
-        sortStyles.put("rev_firsteventtime", AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME);
-        sortStyles.put("rev_node", AlarmFactory.SortStyle.REVERSE_NODE);
-        sortStyles.put("rev_interface", AlarmFactory.SortStyle.REVERSE_INTERFACE);
-        sortStyles.put("rev_service", AlarmFactory.SortStyle.REVERSE_SERVICE);
-        sortStyles.put("rev_poller", AlarmFactory.SortStyle.REVERSE_POLLER);
-        sortStyles.put("rev_id", AlarmFactory.SortStyle.REVERSE_ID);
-        sortStyles.put("rev_count", AlarmFactory.SortStyle.REVERSE_COUNT);
+        sortStylesString = new HashMap<String, AlarmFactory.SortStyle>();
+        sortStylesString.put("severity", AlarmFactory.SortStyle.SEVERITY);
+        sortStylesString.put("lasteventtime", AlarmFactory.SortStyle.LASTEVENTTIME);
+        sortStylesString.put("firsteventtime", AlarmFactory.SortStyle.FIRSTEVENTTIME);
+        sortStylesString.put("node", AlarmFactory.SortStyle.NODE);
+        sortStylesString.put("interface", AlarmFactory.SortStyle.INTERFACE);
+        sortStylesString.put("service", AlarmFactory.SortStyle.SERVICE);
+        sortStylesString.put("poller", AlarmFactory.SortStyle.POLLER);
+        sortStylesString.put("id", AlarmFactory.SortStyle.ID);
+        sortStylesString.put("count", AlarmFactory.SortStyle.COUNT);
+        sortStylesString.put("rev_severity", AlarmFactory.SortStyle.REVERSE_SEVERITY);
+        sortStylesString.put("rev_lasteventtime", AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME);
+        sortStylesString.put("rev_firsteventtime", AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME);
+        sortStylesString.put("rev_node", AlarmFactory.SortStyle.REVERSE_NODE);
+        sortStylesString.put("rev_interface", AlarmFactory.SortStyle.REVERSE_INTERFACE);
+        sortStylesString.put("rev_service", AlarmFactory.SortStyle.REVERSE_SERVICE);
+        sortStylesString.put("rev_poller", AlarmFactory.SortStyle.REVERSE_POLLER);
+        sortStylesString.put("rev_id", AlarmFactory.SortStyle.REVERSE_ID);
+        sortStylesString.put("rev_count", AlarmFactory.SortStyle.REVERSE_COUNT);
 
+        sortStyles = new HashMap<AlarmFactory.SortStyle, String>();
         sortStyles.put(AlarmFactory.SortStyle.SEVERITY, "severity");
         sortStyles.put(AlarmFactory.SortStyle.LASTEVENTTIME, "lasteventtime");
         sortStyles.put(AlarmFactory.SortStyle.FIRSTEVENTTIME, "firsteventtime");
@@ -147,10 +157,12 @@ public abstract class AlarmUtil extends Object {
         sortStyles.put(AlarmFactory.SortStyle.REVERSE_ID, "rev_id");
         sortStyles.put(AlarmFactory.SortStyle.REVERSE_COUNT, "rev_count");
 
-        ackTypes = new java.util.HashMap();
-        ackTypes.put("ack", AlarmFactory.AcknowledgeType.ACKNOWLEDGED);
-        ackTypes.put("unack", AlarmFactory.AcknowledgeType.UNACKNOWLEDGED);
-        ackTypes.put("both", AlarmFactory.AcknowledgeType.BOTH);
+        ackTypesString = new HashMap<String, AlarmFactory.AcknowledgeType>();
+        ackTypesString.put("ack", AlarmFactory.AcknowledgeType.ACKNOWLEDGED);
+        ackTypesString.put("unack", AlarmFactory.AcknowledgeType.UNACKNOWLEDGED);
+        ackTypesString.put("both", AlarmFactory.AcknowledgeType.BOTH);
+
+        ackTypes = new HashMap<AlarmFactory.AcknowledgeType, String>();
         ackTypes.put(AlarmFactory.AcknowledgeType.ACKNOWLEDGED, "ack");
         ackTypes.put(AlarmFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
         ackTypes.put(AlarmFactory.AcknowledgeType.BOTH, "both");
@@ -161,15 +173,15 @@ public abstract class AlarmUtil extends Object {
     }
 
     public static int getSeverityId(int index) {
-        return ((Integer) severities.get(index)).intValue();
+        return severities.get(index).intValue();
     }
 
     public static String getSeverityColor(int severity) {
-        return ((String) colors.get(new Integer(severity)));
+        return colors.get(new Integer(severity));
     }
 
     public static String getSeverityLabel(int severity) {
-        return ((String) labels.get(new Integer(severity)));
+        return labels.get(new Integer(severity));
     }
 
     public static AlarmFactory.SortStyle getSortStyle(String sortStyleString) {
@@ -177,7 +189,7 @@ public abstract class AlarmUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (AlarmFactory.SortStyle) sortStyles.get(sortStyleString.toLowerCase());
+        return sortStylesString.get(sortStyleString.toLowerCase());
     }
 
     public static String getSortStyleString(AlarmFactory.SortStyle sortStyle) {
@@ -185,7 +197,7 @@ public abstract class AlarmUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (String) sortStyles.get(sortStyle);
+        return sortStyles.get(sortStyle);
     }
 
     public static AlarmFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
@@ -193,7 +205,7 @@ public abstract class AlarmUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (AlarmFactory.AcknowledgeType) ackTypes.get(ackTypeString.toLowerCase());
+        return ackTypesString.get(ackTypeString.toLowerCase());
     }
 
     public static String getAcknowledgeTypeString(AlarmFactory.AcknowledgeType ackType) {
@@ -201,7 +213,7 @@ public abstract class AlarmUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (String) ackTypes.get(ackType);
+        return ackTypes.get(ackType);
     }
 
     public static Filter getFilter(String filterString) {
@@ -261,7 +273,7 @@ public abstract class AlarmUtil extends Object {
             filter = new AfterFirstEventTimeFilter(Long.parseLong(value));
         }
 
-        return (filter);
+        return filter;
     }
 
     public static String getFilterString(Filter filter) {
@@ -269,7 +281,7 @@ public abstract class AlarmUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (filter.getDescription());
+        return filter.getDescription();
     }
 
     public static final int LAST_HOUR_RELATIVE_TIME = 1;

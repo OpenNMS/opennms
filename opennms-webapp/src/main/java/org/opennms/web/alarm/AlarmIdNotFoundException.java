@@ -6,6 +6,9 @@
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
 // 2005 Apr 18: Created this file from EventIdNotFoundException.java
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -35,6 +38,8 @@
 package org.opennms.web.alarm;
 
 public class AlarmIdNotFoundException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     protected String badId;
 
     protected String message;

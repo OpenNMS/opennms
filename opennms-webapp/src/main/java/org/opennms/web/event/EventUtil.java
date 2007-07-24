@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2005 Sep 30: Added getSeverityClass and supporting code for
 //              CSS conversion. -- DJ Gregor
 //
@@ -37,9 +38,11 @@
 
 package org.opennms.web.event;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.opennms.web.event.filter.AcknowledgedByFilter;
@@ -66,17 +69,21 @@ import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.event.filter.AlarmIDFilter;
 
 public abstract class EventUtil extends Object {
-    protected static final HashMap colors;
+    protected static final Map<Integer, String> colors;
 
-    protected static final HashMap classes;
+    protected static final Map<Integer, String> classes;
 
-    protected static final HashMap labels;
+    protected static final Map<Integer, String> labels;
 
-    protected static final HashMap sortStyles;
+    protected static final Map<EventFactory.SortStyle, String> sortStyles;
+    
+    protected static final Map<String, EventFactory.SortStyle> sortStylesString;
 
-    protected static final HashMap ackTypes;
+    protected static final Map<EventFactory.AcknowledgeType, String> ackTypes;
+    
+    protected static final Map<String, EventFactory.AcknowledgeType> ackTypesString;
 
-    protected static final List severities;
+    protected static final List<Integer> severities;
 
     public static final String ANY_SERVICES_OPTION = "Any";
 
@@ -85,7 +92,7 @@ public abstract class EventUtil extends Object {
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
 
     static {
-        severities = new java.util.ArrayList();
+        severities = new ArrayList<Integer>();
         severities.add(new Integer(Event.INDETERMINATE_SEVERITY));
         severities.add(new Integer(Event.CLEARED_SEVERITY));
         severities.add(new Integer(Event.NORMAL_SEVERITY));
@@ -94,7 +101,7 @@ public abstract class EventUtil extends Object {
         severities.add(new Integer(Event.MAJOR_SEVERITY));
         severities.add(new Integer(Event.CRITICAL_SEVERITY));
 
-        classes = new java.util.HashMap();
+        classes = new HashMap<Integer, String>();
         classes.put(new Integer(Event.INDETERMINATE_SEVERITY), "sev_indeterminate");
         classes.put(new Integer(Event.CLEARED_SEVERITY), "sev_cleared");
         classes.put(new Integer(Event.NORMAL_SEVERITY), "sev_normal");
@@ -103,7 +110,7 @@ public abstract class EventUtil extends Object {
         classes.put(new Integer(Event.MAJOR_SEVERITY), "sev_major");
         classes.put(new Integer(Event.CRITICAL_SEVERITY), "sev_critical");
 
-        colors = new java.util.HashMap();
+        colors = new HashMap<Integer, String>();
         colors.put(new Integer(Event.INDETERMINATE_SEVERITY), "lightblue");
         colors.put(new Integer(Event.CLEARED_SEVERITY), "white");
         colors.put(new Integer(Event.NORMAL_SEVERITY), "green");
@@ -112,7 +119,7 @@ public abstract class EventUtil extends Object {
         colors.put(new Integer(Event.MAJOR_SEVERITY), "orange");
         colors.put(new Integer(Event.CRITICAL_SEVERITY), "red");
 
-        labels = new java.util.HashMap();
+        labels = new HashMap<Integer, String>();
         labels.put(new Integer(Event.INDETERMINATE_SEVERITY), "Indeterminate");
         labels.put(new Integer(Event.CLEARED_SEVERITY), "Cleared");
         labels.put(new Integer(Event.NORMAL_SEVERITY), "Normal");
@@ -121,22 +128,23 @@ public abstract class EventUtil extends Object {
         labels.put(new Integer(Event.MAJOR_SEVERITY), "Major");
         labels.put(new Integer(Event.CRITICAL_SEVERITY), "Critical");
 
-        sortStyles = new java.util.HashMap();
-        sortStyles.put("severity", EventFactory.SortStyle.SEVERITY);
-        sortStyles.put("time", EventFactory.SortStyle.TIME);
-        sortStyles.put("node", EventFactory.SortStyle.NODE);
-        sortStyles.put("interface", EventFactory.SortStyle.INTERFACE);
-        sortStyles.put("service", EventFactory.SortStyle.SERVICE);
-        sortStyles.put("poller", EventFactory.SortStyle.POLLER);
-        sortStyles.put("id", EventFactory.SortStyle.ID);
-        sortStyles.put("rev_severity", EventFactory.SortStyle.REVERSE_SEVERITY);
-        sortStyles.put("rev_time", EventFactory.SortStyle.REVERSE_TIME);
-        sortStyles.put("rev_node", EventFactory.SortStyle.REVERSE_NODE);
-        sortStyles.put("rev_interface", EventFactory.SortStyle.REVERSE_INTERFACE);
-        sortStyles.put("rev_service", EventFactory.SortStyle.REVERSE_SERVICE);
-        sortStyles.put("rev_poller", EventFactory.SortStyle.REVERSE_POLLER);
-        sortStyles.put("rev_id", EventFactory.SortStyle.REVERSE_ID);
+        sortStylesString = new HashMap<String, EventFactory.SortStyle>();
+        sortStylesString.put("severity", EventFactory.SortStyle.SEVERITY);
+        sortStylesString.put("time", EventFactory.SortStyle.TIME);
+        sortStylesString.put("node", EventFactory.SortStyle.NODE);
+        sortStylesString.put("interface", EventFactory.SortStyle.INTERFACE);
+        sortStylesString.put("service", EventFactory.SortStyle.SERVICE);
+        sortStylesString.put("poller", EventFactory.SortStyle.POLLER);
+        sortStylesString.put("id", EventFactory.SortStyle.ID);
+        sortStylesString.put("rev_severity", EventFactory.SortStyle.REVERSE_SEVERITY);
+        sortStylesString.put("rev_time", EventFactory.SortStyle.REVERSE_TIME);
+        sortStylesString.put("rev_node", EventFactory.SortStyle.REVERSE_NODE);
+        sortStylesString.put("rev_interface", EventFactory.SortStyle.REVERSE_INTERFACE);
+        sortStylesString.put("rev_service", EventFactory.SortStyle.REVERSE_SERVICE);
+        sortStylesString.put("rev_poller", EventFactory.SortStyle.REVERSE_POLLER);
+        sortStylesString.put("rev_id", EventFactory.SortStyle.REVERSE_ID);
 
+        sortStyles = new HashMap<EventFactory.SortStyle, String>();
         sortStyles.put(EventFactory.SortStyle.SEVERITY, "severity");
         sortStyles.put(EventFactory.SortStyle.TIME, "time");
         sortStyles.put(EventFactory.SortStyle.NODE, "node");
@@ -152,10 +160,12 @@ public abstract class EventUtil extends Object {
         sortStyles.put(EventFactory.SortStyle.REVERSE_POLLER, "rev_poller");
         sortStyles.put(EventFactory.SortStyle.REVERSE_ID, "rev_id");
 
-        ackTypes = new java.util.HashMap();
-        ackTypes.put("ack", EventFactory.AcknowledgeType.ACKNOWLEDGED);
-        ackTypes.put("unack", EventFactory.AcknowledgeType.UNACKNOWLEDGED);
-        ackTypes.put("both", EventFactory.AcknowledgeType.BOTH);
+        ackTypesString = new HashMap<String, EventFactory.AcknowledgeType>();
+        ackTypesString.put("ack", EventFactory.AcknowledgeType.ACKNOWLEDGED);
+        ackTypesString.put("unack", EventFactory.AcknowledgeType.UNACKNOWLEDGED);
+        ackTypesString.put("both", EventFactory.AcknowledgeType.BOTH);
+
+        ackTypes = new HashMap<EventFactory.AcknowledgeType, String>();
         ackTypes.put(EventFactory.AcknowledgeType.ACKNOWLEDGED, "ack");
         ackTypes.put(EventFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
         ackTypes.put(EventFactory.AcknowledgeType.BOTH, "both");
@@ -166,19 +176,19 @@ public abstract class EventUtil extends Object {
     }
 
     public static int getSeverityId(int index) {
-        return ((Integer) severities.get(index)).intValue();
+        return severities.get(index).intValue();
     }
 
     public static String getSeverityColor(int severity) {
-        return ((String) colors.get(new Integer(severity)));
+        return colors.get(new Integer(severity));
     }
 
     public static String getSeverityClass(int severity) {
-        return ((String) classes.get(new Integer(severity)));
+        return classes.get(new Integer(severity));
     }
 
     public static String getSeverityLabel(int severity) {
-        return ((String) labels.get(new Integer(severity)));
+        return labels.get(new Integer(severity));
     }
 
     public static EventFactory.SortStyle getSortStyle(String sortStyleString) {
@@ -186,7 +196,7 @@ public abstract class EventUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (EventFactory.SortStyle) sortStyles.get(sortStyleString.toLowerCase());
+        return sortStylesString.get(sortStyleString.toLowerCase());
     }
 
     public static String getSortStyleString(EventFactory.SortStyle sortStyle) {
@@ -194,7 +204,7 @@ public abstract class EventUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (String) sortStyles.get(sortStyle);
+        return sortStyles.get(sortStyle);
     }
 
     public static EventFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
@@ -202,7 +212,7 @@ public abstract class EventUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (EventFactory.AcknowledgeType) ackTypes.get(ackTypeString.toLowerCase());
+        return ackTypesString.get(ackTypeString.toLowerCase());
     }
 
     public static String getAcknowledgeTypeString(EventFactory.AcknowledgeType ackType) {
@@ -210,7 +220,7 @@ public abstract class EventUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (String) ackTypes.get(ackType);
+        return ackTypes.get(ackType);
     }
 
     public static Filter getFilter(String filterString) {
@@ -268,7 +278,7 @@ public abstract class EventUtil extends Object {
             filter = new AlarmIDFilter(Integer.parseInt(value));
         }
 
-        return (filter);
+        return filter;
     }
 
     public static String getFilterString(Filter filter) {
@@ -276,7 +286,7 @@ public abstract class EventUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (filter.getDescription());
+        return filter.getDescription();
     }
 
     public static final int LAST_HOUR_RELATIVE_TIME = 1;

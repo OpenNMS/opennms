@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -1003,9 +1007,10 @@ public class EventFactory extends Object {
      * containing event information into an array of <code>Event</code>
      * objects.
      */
+    // FIXME: Don't reuse the same "element" variable for multiple objects.
     protected static Event[] rs2Events(ResultSet rs) throws SQLException {
         Event[] events = null;
-        Vector vector = new Vector();
+        Vector<Event> vector = new Vector<Event>();
 
         while (rs.next()) {
             Event event = new Event();
@@ -1113,7 +1118,7 @@ public class EventFactory extends Object {
         events = new Event[vector.size()];
 
         for (int i = 0; i < events.length; i++) {
-            events[i] = (Event) vector.elementAt(i);
+            events[i] = vector.elementAt(i);
         }
 
         return events;
