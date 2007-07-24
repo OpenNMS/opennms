@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -62,13 +66,13 @@ public class Notification {
     /**
      * The list of users or other notifications to include in this notification
      */
-    private List m_targets;
+    private List<NotificationTarget> m_targets;
 
     /**
      * Default constructor, initializes members
      */
     public Notification() {
-        m_targets = new ArrayList();
+        m_targets = new ArrayList<NotificationTarget>();
     }
 
     /**
@@ -168,7 +172,7 @@ public class Notification {
      * 
      * @return the list of targets.
      */
-    public List getTargets() {
+    public List<NotificationTarget> getTargets() {
         return m_targets;
     }
 }

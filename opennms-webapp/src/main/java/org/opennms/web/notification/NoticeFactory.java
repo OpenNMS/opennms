@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -872,9 +876,10 @@ public class NoticeFactory extends Object {
      * containing notice information into an array of <code>Notification</code>
      * objects.
      */
+    // FIXME: Don't use the single variable "element" for different objects. - dj@opennms.org
     protected static Notification[] rs2Notices(ResultSet rs) throws SQLException {
         Notification[] notices = null;
-        Vector vector = new Vector();
+        Vector<Notification> vector = new Vector<Notification>();
 
         while (rs.next()) {
             Notification notice = new Notification();
@@ -921,7 +926,7 @@ public class NoticeFactory extends Object {
         notices = new Notification[vector.size()];
 
         for (int i = 0; i < notices.length; i++) {
-            notices[i] = (Notification) vector.elementAt(i);
+            notices[i] = vector.elementAt(i);
         }
 
         return notices;

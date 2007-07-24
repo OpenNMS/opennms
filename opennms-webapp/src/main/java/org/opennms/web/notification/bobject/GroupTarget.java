@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -53,7 +57,7 @@ public class GroupTarget extends NotificationTarget {
     /**
      * The User object associated with this target
      */
-    private List m_userTargets;
+    private List<UserTarget> m_userTargets;
 
     /**
      * The command name to use to contact this user
@@ -64,7 +68,7 @@ public class GroupTarget extends NotificationTarget {
      * Default Constructor
      */
     public GroupTarget() {
-        m_userTargets = new ArrayList();
+        m_userTargets = new ArrayList<UserTarget>();
     }
 
     /**
@@ -120,7 +124,7 @@ public class GroupTarget extends NotificationTarget {
      * 
      * @return the list of user targets.
      */
-    public List getUserTargets() {
+    public List<UserTarget> getUserTargets() {
         return m_userTargets;
     }
 
