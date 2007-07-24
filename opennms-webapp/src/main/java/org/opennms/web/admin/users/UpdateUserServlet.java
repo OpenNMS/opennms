@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID, Java 5 generics, eliminate use of a Vector as a structure. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,8 +38,9 @@ package org.opennms.web.admin.users;
 
 import java.io.IOException;
 import java.text.ChoiceFormat;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -56,6 +61,8 @@ import org.opennms.netmgt.config.users.User;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class UpdateUserServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
 
@@ -114,10 +121,10 @@ public class UpdateUserServlet extends HttpServlet {
             newUser.addContact(tmpContact);
 
             // build the duty schedule data structure
-            Vector newSchedule = new Vector();
+            List<Boolean> newSchedule = new ArrayList<Boolean>(7);
             ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
 
-            Collection dutySchedules = newUser.getDutyScheduleCollection();
+            Collection<String> dutySchedules = getDutySchedulesForUser(newUser);
             dutySchedules.clear();
 
             int dutyCount = Integer.parseInt(request.getParameter("dutySchedules"));
@@ -128,17 +135,13 @@ public class UpdateUserServlet extends HttpServlet {
                 if (deleteFlag == null) {
                     for (int i = 0; i < 7; i++) {
                         String curDayFlag = request.getParameter("duty" + duties + days.format(i));
-                        if (curDayFlag != null) {
-                            newSchedule.addElement(new Boolean(true));
-                        } else {
-                            newSchedule.addElement(new Boolean(false));
-                        }
+                        newSchedule.add(new Boolean(curDayFlag != null));
                     }
 
-                    newSchedule.addElement(request.getParameter("duty" + duties + "Begin"));
-                    newSchedule.addElement(request.getParameter("duty" + duties + "End"));
+                    int startTime = Integer.parseInt(request.getParameter("duty" + duties + "Begin"));
+                    int stopTime = Integer.parseInt(request.getParameter("duty" + duties + "End"));
 
-                    DutySchedule newDuty = new DutySchedule(newSchedule);
+                    DutySchedule newDuty = new DutySchedule(newSchedule, startTime, stopTime);
                     dutySchedules.add(newDuty.toString());
                 }
             }
@@ -149,6 +152,11 @@ public class UpdateUserServlet extends HttpServlet {
         // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(request.getParameter("redirect"));
         dispatcher.forward(request, response);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getDutySchedulesForUser(User newUser) {
+        return newUser.getDutyScheduleCollection();
     }
     
 }

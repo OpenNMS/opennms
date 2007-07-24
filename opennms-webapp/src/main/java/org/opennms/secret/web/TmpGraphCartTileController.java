@@ -12,6 +12,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 23: Organize imports and comment-out unused methods to eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,15 +40,12 @@
 package org.opennms.secret.web;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts.tiles.ComponentContext;
-import org.opennms.netmgt.config.rrd.Datasources;
-import org.opennms.netmgt.config.rrd.Rrd_graph_def;
 import org.opennms.secret.model.DataSource;
 import org.opennms.secret.model.GraphDataElement;
 import org.opennms.secret.model.GraphDataLine;
@@ -68,15 +69,16 @@ public class TmpGraphCartTileController extends ComponentControllerSupport {
         addDataSource(graphDef, ds);
      }
 
-    private LinkedList getGraphDataSources(GraphDefinition graphDef) {
-    		LinkedList gdes = new LinkedList();
-         gdes = graphDef.getGraphDataElements();
-//        if (gdes == null) {
-//            gdes = new Datasources();
-//            graph.setDatasources(dataSources);
-//        }
-        return gdes;
-    }
+    // FIXME: This is unused
+//    private LinkedList getGraphDataSources(GraphDefinition graphDef) {
+//        LinkedList gdes = new LinkedList();
+//        gdes = graphDef.getGraphDataElements();
+////        if (gdes == null) {
+////            gdes = new Datasources();
+////            graph.setDatasources(dataSources);
+////        }
+//        return gdes;
+//    }
 
     private void addDataSource(GraphDefinition graphDef, DataSource ds) {
         if (graphDef != null ) {
@@ -121,13 +123,14 @@ public class TmpGraphCartTileController extends ComponentControllerSupport {
         }
     }
     
-    private String getAddedDataSource(HttpServletRequest request) {
-        return (String)request.getParameter("add");
-    }
-
-    private String getRemovedDataSource(HttpServletRequest request) {
-        return (String)request.getParameter("remove");
-    }
+//    FIXME: These are unused
+//    private String getAddedDataSource(HttpServletRequest request) {
+//        return (String)request.getParameter("add");
+//    }
+//
+//    private String getRemovedDataSource(HttpServletRequest request) {
+//        return (String)request.getParameter("remove");
+//    }
 
 	private GraphDefinition getGraphDef(HttpServletRequest request) {
 	    HttpSession session = request.getSession();

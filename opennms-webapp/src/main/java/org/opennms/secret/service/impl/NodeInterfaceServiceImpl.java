@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 23: Suppress warnings for unused code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,6 +43,7 @@ import org.opennms.secret.model.NodeInterface;
 import org.opennms.secret.service.NodeInterfaceService;
 
 public class NodeInterfaceServiceImpl implements NodeInterfaceService {
+    @SuppressWarnings("unused")
     private NodeInterfaceDao m_nodeInterfaceDao;
     
     public void setNodeInterfaceDao(NodeInterfaceDao nodeInterfaceDao) {

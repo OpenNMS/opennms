@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics and for loops. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +38,6 @@ package org.opennms.web.admin.views.parsers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -59,22 +62,22 @@ public class View implements Cloneable {
 
     /**
      */
-    private List m_userMembers;
+    private List<String> m_userMembers;
 
     /**
      */
-    private List m_groupMembers;
+    private List<String> m_groupMembers;
 
     /**
      */
-    private List m_categories;
+    private List<Category> m_categories;
 
     /**
      */
     public View() {
-        m_userMembers = new ArrayList();
-        m_groupMembers = new ArrayList();
-        m_categories = new ArrayList();
+        m_userMembers = new ArrayList<String>();
+        m_groupMembers = new ArrayList<String>();
+        m_categories = new ArrayList<Category>();
     }
 
     /**
@@ -93,17 +96,16 @@ public class View implements Cloneable {
         newView.setViewComments(m_viewComments);
         newView.setCommon(m_commonRule);
 
-        for (int i = 0; i < m_userMembers.size(); i++) {
-            newView.addUserMember((String) m_userMembers.get(i));
+        for (String userMember : m_userMembers) {
+            newView.addUserMember(userMember);
         }
 
-        for (int j = 0; j < m_groupMembers.size(); j++) {
-            newView.addGroupMember((String) m_groupMembers.get(j));
+        for (String groupMember : m_groupMembers) {
+            newView.addGroupMember(groupMember);
         }
 
-        for (int k = 0; k < m_categories.size(); k++) {
-            Category curOldCategory = (Category) m_categories.get(k);
-            newView.addCategory((Category) curOldCategory.clone());
+        for (Category category : m_categories) {
+            newView.addCategory(category.clone());
         }
 
         return newView;
@@ -172,13 +174,13 @@ public class View implements Cloneable {
 
     /**
      */
-    public List getUserMembers() {
+    public List<String> getUserMembers() {
         return m_userMembers;
     }
 
     /**
      */
-    public void setUserMembers(List users) {
+    public void setUserMembers(List<String> users) {
         m_userMembers = users;
     }
 
@@ -202,20 +204,20 @@ public class View implements Cloneable {
 
     /**
      */
-    public List getGroupMembers() {
+    public List<String> getGroupMembers() {
         return m_groupMembers;
     }
 
     /**
      */
-    public void setGroupMembers(List groups) {
+    public void setGroupMembers(List<String> groups) {
         m_groupMembers = groups;
     }
 
     /**
      */
-    public List getMembers() {
-        List all = new ArrayList();
+    public List<String> getMembers() {
+        List<String> all = new ArrayList<String>();
 
         all.addAll(m_userMembers);
         all.addAll(m_groupMembers);
@@ -255,18 +257,17 @@ public class View implements Cloneable {
 
     /**
      */
-    public List getCategories() {
+    public List<Category> getCategories() {
         return m_categories;
     }
 
     /**
      */
-    public Map getCategoriesMap() {
-        Map categoriesMap = new HashMap();
+    public Map<String, Category> getCategoriesMap() {
+        Map<String, Category> categoriesMap = new HashMap<String, Category>();
 
-        for (int i = 0; i < m_categories.size(); i++) {
-            Category curCategory = (Category) m_categories.get(i);
-            categoriesMap.put(curCategory.getLabel(), curCategory);
+        for (Category category : m_categories) {
+            categoriesMap.put(category.getLabel(), category);
         }
 
         return categoriesMap;
@@ -274,18 +275,17 @@ public class View implements Cloneable {
 
     /**
      */
-    public void setCategories(List categories) {
+    public void setCategories(List<Category> categories) {
         m_categories = categories;
     }
 
     /**
      */
-    public void setCategories(Map categories) {
+    public void setCategories(Map<String, Category> categories) {
         m_categories.clear();
 
-        Iterator i = categories.keySet().iterator();
-        while (i.hasNext()) {
-            m_categories.add((Category) categories.get(i.next()));
+        for (Category category : categories.values()) {
+            m_categories.add(category);
         }
     }
 

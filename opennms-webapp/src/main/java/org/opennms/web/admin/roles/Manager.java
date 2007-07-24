@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Fomrat code, Java 5 generics and for loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,7 +41,6 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
@@ -93,7 +96,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         }
     }
     
-    private Collection getBackingUsers() {
+    private Collection<User> getBackingUsers() {
         try {
             return m_userManager.getUsers().values();
         } catch (MarshalException e) {
@@ -121,7 +124,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         }
     }
     
-    private Collection getBackingGroups() {
+    private Collection<Group> getBackingGroups() {
         try {
             return m_groupManager.getGroups().values();
         } catch (MarshalException e) {
@@ -133,13 +136,13 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         }
     }
     
-    private Collection getUsersScheduleForRole(WebRole role, Date time) {
+    private Collection<WebUser> getUsersScheduleForRole(WebRole role, Date time) {
         try {
             
             String[] users = m_userManager.getUsersScheduledForRole(role.getName(), new Date());
-            List webUsers = new ArrayList(users.length);
-            for (int i = 0; i < users.length; i++) {
-                webUsers.add(getWebUser(users[i]));
+            List<WebUser> webUsers = new ArrayList<WebUser>(users.length);
+            for (String user : users) {
+                webUsers.add(getWebUser(user));
             }
             return webUsers;
             
@@ -159,37 +162,42 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
 
     private WebUser getWebUser(String userName) {
         User u = getBackingUser(userName);
-        if (u == null)
+        if (u == null) {
             return new InvalidUser(userName);
-        else
+        } else {
             return new ManagedUser(u);
+        }
     }
     
     private WebUser getWebUser(User user) {
-        if (user == null)
+        if (user == null) {
             return new InvalidUser("Select A Valid User...");
-        else
+        } else {
             return new ManagedUser(user);
+        }
     }
     
     private WebGroup getWebGroup(String groupName) {
         Group g = getBackingGroup(groupName);
-        if (g == null)
+        if (g == null) {
             return new InvalidGroup(groupName);
-        else
+        } else {
             return new ManagedGroup(g);
+        }
     }
     
     private WebGroup getWebGroup(Group group) {
-        if (group == null)
+        if (group == null) {
             return new InvalidGroup("Select a valid group...");
-        else
+        } else {
             return new ManagedGroup(group);
+        }
     }
     
     private ManagedRole getManagedRole(WebRole webRole) {
-        if (webRole instanceof ManagedRole)
-            return (ManagedRole)webRole;
+        if (webRole instanceof ManagedRole) {
+            return (ManagedRole) webRole;
+        }
         
         ManagedRole mgdRole = new ManagedRole();
         mgdRole.setName(webRole.getName());
@@ -248,18 +256,21 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         public void save() {
             try {
                 Role role = (m_role == null ? new Role() : m_role);
-                if (m_flags.get(DESCR))
+                if (m_flags.get(DESCR)) {
                     role.setDescription(super.getDescription());
-                if (m_flags.get(USER))
+                }
+                if (m_flags.get(USER)) {
                     role.setSupervisor(super.getDefaultUser().getName());
-                if (m_flags.get(GROUP))
+                }
+                if (m_flags.get(GROUP)) {
                     role.setMembershipGroup(super.getMembershipGroup().getName());
-                if (m_flags.get(NAME))
+                }
+                if (m_flags.get(NAME)) {
                     role.setName(super.getName());
+                }
                 
-                Collection newEntries = getNewEntries();
-                for (Iterator it = newEntries.iterator(); it.hasNext();) {
-                    WebSchedEntry entry = (WebSchedEntry) it.next();
+                Collection<WebSchedEntry> newEntries = getNewEntries();
+                for (WebSchedEntry entry : newEntries) {
                     entry.update(role);
                 }
                 
@@ -274,9 +285,10 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
             }
             
         }
-        public Collection getCurrentUsers() {
-            if (m_role == null)
-                return Collections.EMPTY_LIST;
+        public Collection<WebUser> getCurrentUsers() {
+            if (m_role == null) {
+                return new ArrayList<WebUser>(0);
+            }
             return getUsersScheduleForRole(this, new Date());
         }
         public WebCalendar getCalendar(Date month) {
@@ -315,12 +327,16 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         ManagedGroup(Group group) {
             super(group.getName());
             
-            List users = new ArrayList();
-            for (Iterator it = group.getUserCollection().iterator(); it.hasNext();) {
-                String userId = (String) it.next();
+            List<WebUser> users = new ArrayList<WebUser>();
+            for (String userId : getUsers(group)) {
                 users.add(getWebUser(userId));
             }
             super.setUsers(users);
+        }
+        
+        @SuppressWarnings("unchecked")
+        private List<String> getUsers(Group group) {
+            return group.getUserCollection();
         }
         
     }
@@ -330,11 +346,10 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         m_userManager = userManager;
     }
 
-    public Collection getRoles() {
-        Collection roles = m_groupManager.getRoles();
-        List webRoles = new ArrayList(roles.size());
-        for (Iterator it = roles.iterator(); it.hasNext();) {
-            Role role = (Role) it.next();
+    public Collection<WebRole> getRoles() {
+        Collection<Role> roles = m_groupManager.getRoles();
+        List<WebRole> webRoles = new ArrayList<WebRole>(roles.size());
+        for (Role role : roles) {
             webRoles.add(getWebRole(role));
         }
         return webRoles;
@@ -362,10 +377,9 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         }
     }
 
-    public Collection getUsers() {
-        List users = new ArrayList();
-        for (Iterator it = getBackingUsers().iterator(); it.hasNext();) {
-            User u = (User) it.next();
+    public Collection<WebUser> getUsers() {
+        List<WebUser> users = new ArrayList<WebUser>();
+        for (User u : getBackingUsers()) {
             users.add(getWebUser(u));
         }
         return users;
@@ -375,10 +389,9 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         return getWebUser(name);
     }
 
-    public Collection getGroups() {
-        List groups = new ArrayList();
-        for (Iterator it = getBackingGroups().iterator(); it.hasNext();) {
-            Group group = (Group) it.next();
+    public Collection<WebGroup> getGroups() {
+        List<WebGroup> groups = new ArrayList<WebGroup>();
+        for (Group group : getBackingGroups()) {
             groups.add(getWebGroup(group));
         }
         return groups;

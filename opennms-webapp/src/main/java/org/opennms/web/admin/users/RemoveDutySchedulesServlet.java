@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID, Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -42,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.web.admin.users.parsers.DutySchedule;
 import org.opennms.web.admin.users.parsers.NotificationInfo;
 import org.opennms.web.admin.users.parsers.User;
 
@@ -52,13 +57,15 @@ import org.opennms.web.admin.users.parsers.User;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class RemoveDutySchedulesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(true);
 
         User user = (User) userSession.getAttribute("user.modifyUser.jsp");
         NotificationInfo notif = user.getNotificationInfo();
 
-        List dutySchedules = notif.getDutySchedules();
+        List<DutySchedule> dutySchedules = notif.getDutySchedules();
 
         int dutyCount = Integer.parseInt(request.getParameter("dutySchedules"));
         for (int i = 0; i < dutyCount; i++) {

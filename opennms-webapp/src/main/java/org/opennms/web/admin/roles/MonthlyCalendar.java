@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -86,13 +90,13 @@ public class MonthlyCalendar extends AbstractWebCalendar {
 
     public Week[] getWeeks() {
         Calendar weekBegin = getDateOfFirstWeek();
-        List weeks = new ArrayList(6);
+        List<Week> weeks = new ArrayList<Week>(6);
         do {
             weeks.add(new Week(weekBegin.getTime(), m_role, m_groupManager));
             weekBegin.add(Calendar.DAY_OF_YEAR, 7);
         } while (isThisMonth(weekBegin));
         
-        return (Week[]) weeks.toArray(new Week[weeks.size()]);
+        return weeks.toArray(new Week[weeks.size()]);
     }
 
     private boolean isThisMonth(Calendar weekBegin) {

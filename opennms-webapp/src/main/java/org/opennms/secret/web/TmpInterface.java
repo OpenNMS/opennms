@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 23: Use Java 5 generics to eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -51,16 +55,16 @@ public class TmpInterface {
 	public String getIfDescr() {
 		return m_label;
 	}
-	public Collection getServices() {
-		List list = new LinkedList();
+	public Collection<TmpService> getServices() {
+		List<TmpService> list = new LinkedList<TmpService>();
 		for (int i = 0; i < svcNames.length; i++) {
 			String svcName = svcNames[i];
 			list.add(new TmpService(svcName));
 		}
 		return list;
 	}
-	public Collection getDataSources() {
-		List list = new LinkedList();
+	public Collection<TmpDataSource> getDataSources() {
+		List<TmpDataSource> list = new LinkedList<TmpDataSource>();
 		for (int i = 0; i < ifDSNames.length; i++) {
 			String name = ifDSNames[i];
 			String label = ifDSLabels[i];
