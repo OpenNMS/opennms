@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 23: Organize imports, use Java 5 generics and remove unused code to eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,15 +36,13 @@
 package org.opennms.secret.web;
 
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.opennms.secret.model.DataSource;
 import org.opennms.secret.model.InterfaceService;
@@ -55,12 +57,9 @@ import org.opennms.secret.service.NodeService;
 import org.opennms.secret.service.ServiceService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.throwaway.ThrowawayController;
 
 //public class NodeController implements ThrowawayController {
 public class NodeController implements Controller {
-    private static final String s_dataSourcesSessionAttribute = "dataSources";
-
     private Long nodeId = new Long(0); // XXX This is hard-coded.  It shouldn't be. ;-)
     private NodeService m_nodeService;
     private NodeInterfaceService m_nodeInterfaceService;
@@ -82,7 +81,7 @@ public class NodeController implements Controller {
         node.setDataSources(dataSources);
         
         HashSet interfaces = m_nodeInterfaceService.getInterfaces(node.getNode());
-        HashSet newInterfaces = new HashSet();
+        HashSet<NodeInterfaceDataSources> newInterfaces = new HashSet<NodeInterfaceDataSources>();
         for (Iterator i = interfaces.iterator(); i.hasNext(); ) {
             NodeInterface ni = (NodeInterface) i.next();
             NodeInterfaceDataSources iface = new NodeInterfaceDataSources();
@@ -91,8 +90,8 @@ public class NodeController implements Controller {
             dataSources = m_dataSourceService.getDataSourcesByInterface(iface.getNodeInterface());
             iface.setDataSources(dataSources);
 
-            HashSet services = m_serviceService.getServices(iface.getNodeInterface());
-            HashSet newServices = new HashSet();
+            Set services = m_serviceService.getServices(iface.getNodeInterface());
+            Set<InterfaceServiceDataSource> newServices = new HashSet<InterfaceServiceDataSource>();
             for (Iterator j = services.iterator(); j.hasNext(); ) {
                 InterfaceService is = (InterfaceService) j.next();
                 InterfaceServiceDataSource service = new InterfaceServiceDataSource();

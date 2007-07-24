@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,7 +49,7 @@ public abstract class WebRole {
     private String m_description;
     private WebUser m_defaultUser;
     private WebGroup m_membershipGroup;
-    private List m_newEntries = new ArrayList();;
+    private List<WebSchedEntry> m_newEntries = new ArrayList<WebSchedEntry>();
     
     
     public WebRole() {
@@ -102,7 +106,7 @@ public abstract class WebRole {
         m_newEntries.add(entry);
     }
     
-    public Collection getNewEntries() {
+    public Collection<WebSchedEntry> getNewEntries() {
         return m_newEntries;
     }
     

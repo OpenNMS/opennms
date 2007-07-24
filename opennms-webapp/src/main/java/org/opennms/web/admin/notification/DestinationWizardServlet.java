@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 23: Add serialVersionUID, comment-out unused fields, and use Java 5 generics to eliminate warnings. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -60,6 +64,8 @@ import org.opennms.web.Util;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class DestinationWizardServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     private String SOURCE_PAGE_PATHS = "destinationPaths.jsp";
 
     private String SOURCE_PAGE_OUTLINE = "pathOutline.jsp";
@@ -70,11 +76,12 @@ public class DestinationWizardServlet extends HttpServlet {
 
     private String SOURCE_PAGE_COMMANDS = "chooseCommands.jsp";
 
-    private String SOURCE_PAGE_NAME = "pathName.jsp";
-
-    private String SOURCE_PAGE_ESCALATE_REMOVE = "removeEscalation.jsp";
-
-    private String SOURCE_PAGE_ESCALATE_ADD = "addEscalation.jsp";
+    // FIXME: Unused
+//    private String SOURCE_PAGE_NAME = "pathName.jsp";
+//
+//    private String SOURCE_PAGE_ESCALATE_REMOVE = "removeEscalation.jsp";
+//
+//    private String SOURCE_PAGE_ESCALATE_ADD = "addEscalation.jsp";
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
@@ -136,7 +143,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 Escalate newEscalate = new Escalate();
                 path.addEscalate(index, newEscalate);
 
-                Map requestParams = new HashMap();
+                Map<String, Object> requestParams = new HashMap<String, Object>();
                 requestParams.put("targetIndex", request.getParameter("index"));
                 redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
             } else if (action.equals("remove")) {
@@ -144,7 +151,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 removeEscalation(path, index);
                 redirectString.append(SOURCE_PAGE_OUTLINE);
             } else if (action.equals("edit")) {
-                Map requestParams = new HashMap();
+                Map<String, Object> requestParams = new HashMap<String, Object>();
                 requestParams.put("targetIndex", request.getParameter("index"));
                 redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
             } else if (action.equals("finish")) {
@@ -278,7 +285,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 }
             }
 
-            Map requestParams = new HashMap();
+            Map<String, Object> requestParams = new HashMap<String, Object>();
             requestParams.put("targetIndex", request.getParameter("targetIndex"));
             String redirectPage = request.getParameter("nextPage");
             redirectString.append(redirectPage);
@@ -306,7 +313,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 }
             }
 
-            Map requestParams = new HashMap();
+            Map<String, Object> requestParams = new HashMap<String, Object>();
             requestParams.put("targetIndex", request.getParameter("targetIndex"));
             redirectString.append(SOURCE_PAGE_COMMANDS).append(makeQueryString(requestParams));
         } else if (sourcePage.equals(SOURCE_PAGE_COMMANDS)) {

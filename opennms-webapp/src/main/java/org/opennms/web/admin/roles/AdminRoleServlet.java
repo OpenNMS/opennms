@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 13: Add serialVersionUID to eliminate warning and organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,7 +41,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,8 +55,9 @@ import org.opennms.netmgt.config.groups.Schedule;
  * Servlet implementation class for Servlet: AdminRoleServlet
  *
  */
- public class AdminRoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
-
+public class AdminRoleServlet extends HttpServlet implements Servlet {
+    private static final long serialVersionUID = 1L;
+    
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
     private static final String VIEW = "/admin/userGroupView/roles/view.jsp";
     private static final String EDIT_DETAILS = "/admin/userGroupView/roles/editDetails.jsp";
@@ -71,7 +78,6 @@ import org.opennms.netmgt.config.groups.Schedule;
         public String execute(HttpServletRequest request, HttpServletResponse response) {
             return LIST;
         }
-        
     }
     
     private class DeleteAction implements Action {
@@ -80,7 +86,6 @@ import org.opennms.netmgt.config.groups.Schedule;
             Action list = new ListAction();
             return list.execute(request, response);
         }
-        
     }
     
     private class ViewAction implements Action {

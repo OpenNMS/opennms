@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 23: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -55,11 +59,13 @@ import org.opennms.core.resource.Vault;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class ServiceNoticeUpdateServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
     private static final String UPDATE_SERVICE = "UPDATE ifservices SET notify = ? WHERE nodeID = ? AND ipaddr = ? AND serviceid = ?";
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
-        Map servicesCheckedMap = (Map) userSession.getAttribute("service.notify.map");
+        Map<String, String> servicesCheckedMap = getServicesChecked(userSession);
 
         String checkedServices[] = request.getParameterValues("serviceCheck");
 
@@ -84,6 +90,11 @@ public class ServiceNoticeUpdateServlet extends HttpServlet {
         }
 
         response.sendRedirect("index.jsp");
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getServicesChecked(HttpSession userSession) {
+        return (Map<String, String>) userSession.getAttribute("service.notify.map");
     }
 
     /**

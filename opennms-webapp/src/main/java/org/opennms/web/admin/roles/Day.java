@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 14: Format code, use Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -79,7 +83,7 @@ public class Day {
     
     public CalendarEntry[] getEntries() {
         try {
-            List entries = new ArrayList();
+            List<CalendarEntry> entries = new ArrayList<CalendarEntry>();
             
             OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
             
@@ -89,21 +93,21 @@ public class Day {
                 entries.add(entry);
             }
             
-            return (CalendarEntry[]) entries.toArray(new CalendarEntry[entries.size()]);
+            return entries.toArray(new CalendarEntry[entries.size()]);
         } catch (Exception e) {
-            throw new WebRolesException("Unable to get schedule entries: "+e.getMessage(), e);
+            throw new WebRolesException("Unable to get schedule entries: " + e.getMessage(), e);
         }
     }
 
-    private String ownerString(List owners) {
+    private String ownerString(List<Owner> owners) {
         boolean first = true;
         StringBuffer buf = new StringBuffer();
-        for (Iterator it = owners.iterator(); it.hasNext();) {
-            Owner owner = (Owner) it.next();
-            if (first)
+        for (Owner owner : owners) {
+            if (first) {
                 first = false;
-            else 
+            } else { 
                 buf.append(", ");
+            }
             buf.append(owner.getUser());
         }
         return buf.toString();

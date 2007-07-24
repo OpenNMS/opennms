@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics, add clone() and getDaysAsBooleanList. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,9 +36,11 @@
 
 package org.opennms.web.admin.users.parsers;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -215,6 +221,19 @@ public class DutySchedule {
     public int getStopTime() {
         return m_stopTime;
     }
+    
+    /**
+     * Gets the days this DutySchedule is active.
+     * 
+     * @return the days this DutySchedule is active.
+     */
+    public List<Boolean> getDaysAsBooleanList() {
+        List<Boolean> list = new ArrayList<Boolean>(m_days.size());
+        for (int i = 0; i < m_days.size(); i++) {
+            list.add(m_days.get(i));
+        }
+        return list;
+    }
 
     /**
      * Gets the Vector representation of the DutySchedule. This method formats
@@ -225,9 +244,10 @@ public class DutySchedule {
      * DutySchedule(Vector) constructor to create a new DutySchedule
      * 
      * @return a Vector properly formatted to reflect this DutySchedule
+     * @deprecated call the individual getters 
      */
-    public Vector getAsVector() {
-        Vector vector = new Vector();
+    public Vector<Object> getAsVector() {
+        Vector<Object> vector = new Vector<Object>();
 
         for (int i = 0; i < 7; i++) {
             vector.add(new Boolean(m_days.get(i)));
@@ -353,5 +373,9 @@ public class DutySchedule {
     
     public boolean hasDay(int aDay) {
         return m_days.get(aDay);
+    }
+    
+    public DutySchedule clone() {
+        return new DutySchedule(toString());
     }
 }

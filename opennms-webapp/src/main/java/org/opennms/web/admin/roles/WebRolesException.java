@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 14: Add default serialVersionUID. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,6 +36,7 @@
 package org.opennms.web.admin.roles;
 
 public class WebRolesException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     public WebRolesException() {
         super();

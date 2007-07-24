@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Format code, Java 5 generics, comment-out unused code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,8 +39,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -46,17 +51,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 public class ScheduleEditorServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     
-    private ScheduleManager m_schedMgr;
-    private HashMap m_ops = new HashMap();
-    private HashMap m_maps = new HashMap();
+    private Map<String, ScheduleOp> m_ops = new HashMap<String, ScheduleOp>();
+    private Map<String, SingleMapping> m_maps = new HashMap<String, SingleMapping>();
     private ScheduleOp m_defaultOp;
     private ScheduleMapping m_defaultMapping;
     private String m_defaultView;
@@ -86,7 +91,7 @@ public class ScheduleEditorServlet extends HttpServlet {
             } else {
                 try {
                     FileReader reader = new FileReader(m_fileName);
-                    m_outages = (Outages)Unmarshaller.unmarshal(Outages.class, reader);
+                    m_outages = CastorUtils.unmarshal(Outages.class, reader);
                     reader.close();
                 } catch (MarshalException e) {
                     throw new ServletException("Unable to unmarshal "+m_fileName, e);
@@ -121,8 +126,13 @@ public class ScheduleEditorServlet extends HttpServlet {
         }
 
         public void deleteSchedule(int index) throws ServletException {
-            ArrayList outages = m_outages.getOutageCollection();
+            List<Outage> outages = getOutages();
             outages.remove(index);
+        }
+
+        @SuppressWarnings("unchecked")
+        private List<Outage> getOutages() {
+            return m_outages.getOutageCollection();
         }
 
         public void addSchedule(BasicSchedule schedule) throws ServletException {
@@ -205,7 +215,8 @@ public class ScheduleEditorServlet extends HttpServlet {
     
     class DisplayOp implements ScheduleOp {
         public String doOp(HttpServletRequest request, HttpServletResponse response, ScheduleMapping map) throws ServletException {
-            ScheduleManager schedMgr = getSchedMgr(request);
+            // FIXME: schedMgr isn't used
+            //ScheduleManager schedMgr = getSchedMgr(request);
             return map.get("success");
         }
     }
@@ -244,25 +255,34 @@ public class ScheduleEditorServlet extends HttpServlet {
     
     ScheduleOp getOp(String cmd) {
         
-        if (cmd == null) return m_defaultOp;
+        if (cmd == null) {
+            return m_defaultOp;
+        }
         
-        ScheduleOp op = (ScheduleOp)m_ops.get(cmd);
-        if (op == null) throw new IllegalArgumentException("Unrecognized operation "+cmd);
+        ScheduleOp op = m_ops.get(cmd);
+        if (op == null) {
+            throw new IllegalArgumentException("Unrecognized operation "+cmd);
+        }
         
         return op;
     }
     
     ScheduleMapping getMap(String cmd) {
-        if (cmd == null) return m_defaultMapping;
-        ScheduleMapping map = (ScheduleMapping)m_maps.get(cmd);
-        if (map == null) return m_defaultMapping;
+        if (cmd == null) {
+            return m_defaultMapping;
+        }
+        ScheduleMapping map = m_maps.get(cmd);
+        if (map == null) {
+            return m_defaultMapping;
+        }
         return map;
     }
     
     void showView(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException {
         String nextView = view;
-        if (nextView == null)
+        if (nextView == null) {
             nextView = m_defaultView;
+        }
         
         // forward the request for proper display
         RequestDispatcher dispatcher = request.getRequestDispatcher(view);
@@ -290,7 +310,7 @@ public class ScheduleEditorServlet extends HttpServlet {
    
 
     private ScheduleManager getSchedMgr(HttpServletRequest request) throws ServletException {
-        ScheduleManager schedMgr = (ScheduleManager)request.getSession().getAttribute("schedMgr");
+        ScheduleManager schedMgr = (ScheduleManager) request.getSession().getAttribute("schedMgr");
         String fileName = request.getParameter("file");
         if (schedMgr == null || (fileName != null && !fileName.equals(schedMgr.getFileName()))) { 
             schedMgr = new OutageManager();

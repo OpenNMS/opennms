@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics and for loops. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +37,6 @@
 package org.opennms.web.admin.users.parsers;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.opennms.web.parsers.XMLHeader;
 import org.opennms.web.parsers.XMLWriteException;
@@ -134,9 +137,8 @@ public class UsersWriter extends XMLWriter {
                 if (info.getDutyScheduleCount() > 0) {
                     Element dutyElement = addEmptyElement(curUserElement, "dutySchedules");
 
-                    List dutySchedules = info.getDutySchedules();
-                    for (int j = 0; j < dutySchedules.size(); j++) {
-                        addDataElement(dutyElement, "schedule", dutySchedules.get(j).toString());
+                    for(DutySchedule dutySchedule : info.getDutySchedules()) {
+                        addDataElement(dutyElement, "schedule", dutySchedule.toString());
                     }
                 }
             }
