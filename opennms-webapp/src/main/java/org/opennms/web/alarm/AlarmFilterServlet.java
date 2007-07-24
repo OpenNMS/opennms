@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventFilterServlet.java
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -37,6 +40,7 @@ package org.opennms.web.alarm;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -54,6 +58,8 @@ import org.opennms.web.alarm.filter.Filter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AlarmFilterServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     public static final int DEFAULT_LIMIT = 10;
 
     public static final int DEFAULT_MULTIPLE = 0;
@@ -96,7 +102,7 @@ public class AlarmFilterServlet extends HttpServlet {
 
         // handle the filter parameters
         String[] filterStrings = request.getParameterValues("filter");
-        ArrayList filterArray = new ArrayList();
+        List<Filter> filterArray = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
                 Filter filter = AlarmUtil.getFilter(filterStrings[i]);

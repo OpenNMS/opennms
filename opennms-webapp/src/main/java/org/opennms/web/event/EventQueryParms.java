@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,7 +36,7 @@
 
 package org.opennms.web.event;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.web.event.filter.Filter;
 
@@ -47,7 +51,7 @@ public class EventQueryParms extends Object {
 
     public EventFactory.AcknowledgeType ackType;
 
-    public ArrayList filters;
+    public List<Filter> filters;
 
     public int limit;
 
@@ -58,8 +62,6 @@ public class EventQueryParms extends Object {
      * of Filter instances.
      */
     public Filter[] getFilters() {
-        Filter[] filters = new Filter[this.filters.size()];
-        filters = (Filter[]) this.filters.toArray(filters);
-        return (filters);
+        return this.filters.toArray(new Filter[this.filters.size()]);
     }
 }
