@@ -9,7 +9,6 @@ import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.svclayer.TroubleTicketProxy;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 
 public class DefaultTroubleTicketProxy implements TroubleTicketProxy {

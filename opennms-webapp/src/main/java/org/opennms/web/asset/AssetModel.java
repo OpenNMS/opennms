@@ -10,6 +10,7 @@
 //
 // Modifications:
 // 
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2006 Aug 08: Bug #1547: Fix for FROM clause missing entry for node table. - dj@opennms.org
 // 2004 Jan 06: Added support for Display, Notify, Poller, and Threshold categories
 // 2003 Feb 05: Added ORDER BY to SQL statement.
@@ -44,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Vector;
 
 import org.opennms.core.resource.Vault;
@@ -232,7 +234,7 @@ public class AssetModel extends Object {
 */
         MatchingAsset[] assets = new MatchingAsset[0];
         Connection conn = Vault.getDbConnection();
-        Vector vector = new Vector();
+        Vector<MatchingAsset> vector = new Vector<MatchingAsset>();
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS." + columnName + " FROM ASSETS, NODE WHERE LOWER(ASSETS." + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
@@ -261,15 +263,15 @@ public class AssetModel extends Object {
         assets = new MatchingAsset[vector.size()];
 
         for (int i = 0; i < assets.length; i++) {
-            assets[i] = (MatchingAsset) vector.elementAt(i);
+            assets[i] = vector.elementAt(i);
         }
 
-        return (assets);
+        return assets;
     }
 
     protected static Asset[] rs2Assets(ResultSet rs) throws SQLException {
         Asset[] assets = null;
-        Vector vector = new Vector();
+        Vector<Asset> vector = new Vector<Asset>();
 
         while (rs.next()) {
             Asset asset = new Asset();
@@ -317,7 +319,7 @@ public class AssetModel extends Object {
             asset.setComments(rs.getString("comment"));
 
             element = rs.getTimestamp("lastModifiedDate");
-            asset.lastModifiedDate = new java.util.Date(((Timestamp) element).getTime());
+            asset.lastModifiedDate = new Date(((Timestamp) element).getTime());
 
             vector.addElement(asset);
         }
@@ -325,17 +327,18 @@ public class AssetModel extends Object {
         assets = new Asset[vector.size()];
 
         for (int i = 0; i < assets.length; i++) {
-            assets[i] = (Asset) vector.elementAt(i);
+            assets[i] = vector.elementAt(i);
         }
 
         return assets;
     }
 
     public static String[][] getColumns() {
-        return (s_columns);
+        return s_columns;
     }
 
     //TODO: no one is calling this now... delete soon.
+    @SuppressWarnings("unused")
     private static boolean isColumnValid(String column) {
         if (column == null) {
             throw new IllegalArgumentException("column cannot be null");

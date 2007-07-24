@@ -10,6 +10,9 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // 2004 Jan 06: Added support for Display, Notify, Poller and Threshold categories
 //
 // This program is free software; you can redistribute it and/or modify
@@ -61,6 +64,7 @@ import org.opennms.web.Util;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class ImportAssetsServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
     /** The URL to redirect the client to in case of success. */
     protected String redirectSuccess;
@@ -121,15 +125,15 @@ public class ImportAssetsServlet extends HttpServlet {
         }
     }
 
-    public List decodeAssetsText(String text) {
-        List list = new ArrayList();
+    public List<Asset> decodeAssetsText(String text) {
+        List<Asset> list = new ArrayList<Asset>();
 
-        ArrayList lines = this.splitfields(text, "\r\n", -1);
+        List<String> lines = this.splitfields(text, "\r\n", -1);
         int lineCount = lines.size();
 
         for (int i = 0; i < lineCount; i++) {
-            String line = (String) lines.get(i);
-            ArrayList tokens = this.splitfields(line, ",", -1);
+            String line = lines.get(i);
+            List<String> tokens = this.splitfields(line, ",", -1);
 
             try {
                 if (tokens.size() != 39) {
@@ -186,12 +190,12 @@ public class ImportAssetsServlet extends HttpServlet {
             }
         }
 
-        return (list);
+        return list;
     }
 
-    public List getCurrentAssetNodesList() throws SQLException {
+    public List<Integer> getCurrentAssetNodesList() throws SQLException {
         Connection conn = Vault.getDbConnection();
-        ArrayList list = new ArrayList();
+        List<Integer> list = new ArrayList<Integer>();
 
         try {
             Statement stmt = conn.createStatement();
@@ -207,23 +211,25 @@ public class ImportAssetsServlet extends HttpServlet {
             Vault.releaseDbConnection(conn);
         }
 
-        return (list);
+        return list;
     }
 
-    private ArrayList splitfields(String string, String sep, int maxsplit) {
-        ArrayList list = new ArrayList();
+    private List<String> splitfields(String string, String sep, int maxsplit) {
+        List<String> list = new ArrayList<String>();
 
         int length = string.length();
-        if (maxsplit < 0)
+        if (maxsplit < 0) {
             maxsplit = length;
+        }
 
         int lastbreak = 0;
         int splits = 0;
         int sepLength = sep.length();
         while (splits < maxsplit) {
             int index = string.indexOf(sep, lastbreak);
-            if (index == -1)
+            if (index == -1) {
                 break;
+            }
             splits += 1;
             list.add(string.substring(lastbreak, index));
             lastbreak = index + sepLength;

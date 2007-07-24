@@ -14,6 +14,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Suppress warnings on unused code. - dj@opennms.org
 // 2004 Oct 16: Created CategoryList class with most of guts of the code
 //              from category-box.jsp.
 // 2004 Oct 01: Added a color change when disconnected from OpenNMS.
@@ -221,10 +222,11 @@ public class CategoryList {
     }
 
     /*
-     * XXX This isn't used. This functionality is in category-box.jsp. XXX It is
-     * marked private so that no one can use it unless they fix XXX its
-     * accessability and this comment. :-P
+     * FIXME: This isn't used. This functionality is in category-box.jsp.
+     *        It is marked private so that no one can use it unless they fix
+     *        its accessability and this comment. :-P
      */
+    @SuppressWarnings("unused")
     private void printBox(JspWriter out, HttpServletResponse response) throws IOException, MarshalException, ValidationException {
 
         Map categoryData = getCategoryData();

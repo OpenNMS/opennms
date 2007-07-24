@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,20 +35,13 @@
 //
 package org.opennms.web.svclayer.outage;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.extremecomponents.table.bean.Column;
 import org.extremecomponents.table.cell.Cell;
 import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.table.view.html.ColumnBuilder;
-import org.opennms.web.outage.Outage;
-
-import org.apache.commons.lang.StringUtils;
 
 public class SuppressOutageCheckBox implements Cell {
 	public String getExportDisplay(TableModel model, Column column) {

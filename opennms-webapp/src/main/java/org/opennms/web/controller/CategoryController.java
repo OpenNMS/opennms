@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Remove unused code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -50,8 +54,6 @@ public class CategoryController extends AbstractController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        OnmsCategory category = null;
-        
         String removeCategoryIdString = request.getParameter("removeCategoryId");
         String newCategoryName = request.getParameter("newCategoryName");
         String categoryIdString = request.getParameter("categoryid");

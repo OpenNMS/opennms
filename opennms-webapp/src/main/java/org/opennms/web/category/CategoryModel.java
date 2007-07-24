@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -106,7 +110,7 @@ public class CategoryModel extends Object {
      * Return a mapping of category names to instances.
      */
     public Map<String, Category> getCategoryMap() {
-        return (Map<String, Category>) m_categoryMap.clone();
+        return new HashMap<String, Category>(m_categoryMap);
     }
 
     /**
@@ -227,7 +231,7 @@ public class CategoryModel extends Object {
      * nodes for the last 24 hours. If there are no managed services on these
      * nodes, then a value of -1 is returned.
      */
-    public Map getNodeAvailability(Set nodeIds) throws SQLException {
+    public Map<Integer, Double> getNodeAvailability(Set nodeIds) throws SQLException {
         Calendar cal = new GregorianCalendar();
         Date now = cal.getTime();
         cal.add(Calendar.DATE, -1);
@@ -240,7 +244,7 @@ public class CategoryModel extends Object {
      * nodes from the given start time until the given end time. If there are no
      * managed services on these nodes, then a value of -1 is returned.
      */
-    public Map getNodeAvailability(Set nodeIds, Date start, Date end) throws SQLException {
+    public Map<Integer, Double> getNodeAvailability(Set nodeIds, Date start, Date end) throws SQLException {
     	if(nodeIds==null || nodeIds.size()==0){
     		throw new IllegalArgumentException("Cannot take nodeIds null or with length 0.");
     	}
@@ -258,15 +262,15 @@ public class CategoryModel extends Object {
 
         double avail = -1;
         int nodeid = 0;
-        Map retMap = new TreeMap();
+        Map<Integer, Double> retMap = new TreeMap<Integer, Double>();
         Connection conn = Vault.getDbConnection();
 
         try {
         	StringBuffer sb = new StringBuffer("select nodeid, getManagePercentAvailNodeWindow(nodeid, ?, ?)  from node where nodeid in (");
         	Iterator it = nodeIds.iterator();
-        	while(it.hasNext()){
+        	while (it.hasNext()){
         		sb.append(it.next());
-        		if(it.hasNext()){
+        		if (it.hasNext()) {
         			sb.append(", ");
         		}
         	}
