@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics and for loops. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -99,12 +103,10 @@ public class UserInfo extends Object implements Cloneable {
         notifClone.setNumericalPin(m_notifInfo.getNumericalPin());
         notifClone.setTextService(m_notifInfo.getTextService());
         notifClone.setTextPin(m_notifInfo.getTextPin());
-        List dutySchedules = m_notifInfo.getDutySchedules();
+        List<DutySchedule> dutySchedules = m_notifInfo.getDutySchedules();
 
-        DutySchedule curDutySchedule = null;
-
-        for (int i = 0; i < dutySchedules.size(); i++) {
-            curDutySchedule = new DutySchedule(((DutySchedule) dutySchedules.get(i)).toString());
+        for (DutySchedule dutySchedule : dutySchedules) {
+            DutySchedule curDutySchedule = new DutySchedule(dutySchedule.toString());
             notifClone.addDutySchedule(curDutySchedule);
         }
 

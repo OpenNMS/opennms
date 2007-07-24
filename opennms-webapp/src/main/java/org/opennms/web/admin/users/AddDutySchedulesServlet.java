@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID and eliminate use of a Vector acting as a structure passed to a method. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +37,9 @@
 package org.opennms.web.admin.users;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -52,27 +58,28 @@ import org.opennms.netmgt.config.users.User;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AddDutySchedulesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    private static final List<Boolean> FALSE_LIST;
+    
+    static {
+        List<Boolean> list = new ArrayList<Boolean>(7);
+        for (int i = 0; i < 7; i++) {
+            list.add(Boolean.FALSE);
+        }
+        
+        FALSE_LIST = Collections.unmodifiableList(list);
+    }
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(true);
 
         User user = (User) userSession.getAttribute("user.modifyUser.jsp");
-        // NotificationInfo notif = user.getNotificationInfo();
-
-        Vector newSchedule = new Vector();
 
         int dutyAddCount = Integer.parseInt(request.getParameter("numSchedules"));
 
         for (int j = 0; j < dutyAddCount; j++) {
-            // add 7 false boolean values for each day of the week
-            for (int i = 0; i < 7; i++) {
-                newSchedule.addElement(new Boolean(false));
-            }
-
-            // add two strings for the begin and end time
-            newSchedule.addElement("0");
-            newSchedule.addElement("0");
-
-            user.addDutySchedule((new DutySchedule(newSchedule)).toString());
+            user.addDutySchedule((new DutySchedule(new ArrayList<Boolean>(FALSE_LIST), 0, 0)).toString());
         }
 
         // forward the request for proper display

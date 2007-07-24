@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Formatting. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,16 +39,17 @@ import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.UserFactory;
 
 public class AppContext {
-    
     private static Manager s_manager = null;
+    
     public static void init() throws Exception {
         GroupFactory.init();
         UserFactory.init();
     }
     
     private static Manager getManager() {
-        if (s_manager == null)
+        if (s_manager == null) {
             s_manager = new Manager(GroupFactory.getInstance(), UserFactory.getInstance());
+        }
         
         return s_manager;
     }

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics and for loops, make clone() return Category instead of Object. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -57,7 +61,7 @@ public class Category implements Cloneable {
 
     /**
      */
-    private List m_services;
+    private List<String> m_services;
 
     /**
      */
@@ -66,7 +70,7 @@ public class Category implements Cloneable {
     /**
      */
     public Category() {
-        m_services = new ArrayList();
+        m_services = new ArrayList<String>();
     }
 
     /**
@@ -77,12 +81,12 @@ public class Category implements Cloneable {
         m_normal = aNormal;
         m_warning = aWarning;
         m_comments = "";
-        m_services = new ArrayList();
+        m_services = new ArrayList<String>();
     }
 
     /**
      */
-    public Object clone() {
+    public Category clone() {
         try {
             super.clone();
         } catch (CloneNotSupportedException e) {
@@ -92,8 +96,8 @@ public class Category implements Cloneable {
         Category newCategory = new Category(m_label, m_rule, m_normal, m_warning);
         newCategory.setComments(m_comments);
 
-        for (int i = 0; i < m_services.size(); i++) {
-            newCategory.addService((String) m_services.get(i));
+        for (String service : m_services) {
+            newCategory.addService(service);
         }
 
         return newCategory;
@@ -203,7 +207,7 @@ public class Category implements Cloneable {
      * 
      * @return the list of services.
      */
-    public List getServices() {
+    public List<String> getServices() {
         return m_services;
     }
 
@@ -213,7 +217,7 @@ public class Category implements Cloneable {
      * @param services
      *            a list of service names
      */
-    public void setServices(List services) {
+    public void setServices(List<String> services) {
         m_services = services;
     }
 

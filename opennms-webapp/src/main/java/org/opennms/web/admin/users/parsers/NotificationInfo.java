@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Format code, Java 5 generics and for loops, use ArrayList instead of Vector. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,9 +36,9 @@
 
 package org.opennms.web.admin.users.parsers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * This class stores notification information for a user
@@ -85,7 +89,7 @@ public class NotificationInfo implements Cloneable {
     /**
      * The list of duty schedules associated with this user
      */
-    private List m_dutySchedules;
+    private List<DutySchedule> m_dutySchedules;
 
     /**
      * Default constructor, initializes the member variables
@@ -98,7 +102,7 @@ public class NotificationInfo implements Cloneable {
         m_numericalPin = "";
         m_textService = "";
         m_textPin = "";
-        m_dutySchedules = new Vector();
+        m_dutySchedules = new ArrayList<DutySchedule>();
     }
 
     /**
@@ -120,10 +124,8 @@ public class NotificationInfo implements Cloneable {
         newInfo.setTextService(m_textService);
         newInfo.setTextPin(m_textPin);
 
-        for (int i = 0; i < m_dutySchedules.size(); i++) {
-            DutySchedule curOldSched = (DutySchedule) m_dutySchedules.get(i);
-            DutySchedule curNewSched = new DutySchedule(curOldSched.toString());
-            newInfo.addDutySchedule(curNewSched);
+        for (DutySchedule dutySchedule : m_dutySchedules) {
+            newInfo.addDutySchedule(dutySchedule.clone());
         }
 
         return newInfo;
@@ -215,7 +217,7 @@ public class NotificationInfo implements Cloneable {
      * @param someSchedules
      *            a list of DutySchedule objects for a user
      */
-    public void setDutySchedule(List someSchedules) {
+    public void setDutySchedule(List<DutySchedule> someSchedules) {
         m_dutySchedules = someSchedules;
     }
 
@@ -296,7 +298,7 @@ public class NotificationInfo implements Cloneable {
      * 
      * @return the full list of DutySchedules
      */
-    public List getDutySchedules() {
+    public List<DutySchedule> getDutySchedules() {
         return m_dutySchedules;
     }
 
@@ -316,16 +318,13 @@ public class NotificationInfo implements Cloneable {
             return true;
         }
 
-        DutySchedule curSchedule = null;
-
-        for (int i = 0; i < m_dutySchedules.size(); i++) {
-            curSchedule = (DutySchedule) m_dutySchedules.get(i);
-
+        for (DutySchedule curSchedule : m_dutySchedules) {
             result = curSchedule.isInSchedule(aTime);
 
             // don't continue if the time is in this schedule
-            if (result)
+            if (result) {
                 break;
+            }
         }
 
         return result;
@@ -347,8 +346,8 @@ public class NotificationInfo implements Cloneable {
         buffer.append("text service      = " + m_textService + "\n");
         buffer.append("text pin          = " + m_textPin + "\n");
 
-        for (int i = 0; i < m_dutySchedules.size(); i++) {
-            buffer.append(m_dutySchedules.get(i).toString() + "\n");
+        for (DutySchedule dutySchedule : m_dutySchedules) {
+            buffer.append(dutySchedule.toString() + "\n");
         }
 
         return buffer.toString();

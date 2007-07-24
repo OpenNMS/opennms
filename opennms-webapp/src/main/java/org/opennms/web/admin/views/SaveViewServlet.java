@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -51,6 +55,8 @@ import org.opennms.netmgt.config.views.View;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class SaveViewServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(false);
 

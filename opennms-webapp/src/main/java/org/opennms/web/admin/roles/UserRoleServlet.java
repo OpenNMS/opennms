@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics, eliminate unused methods. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -46,7 +50,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
  public class UserRoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
-
+    private static final long serialVersionUID = 1L;
+    
     private static final String LIST = "/roles/list.jsp";
     private static final String VIEW = "/roles/view.jsp";
     
@@ -129,20 +134,9 @@ import javax.servlet.http.HttpServletResponse;
         } catch (Exception e) {
             throw new ServletException("Error initializing RolesServlet", e);
         }
-        
-
     }
 
     private WebRoleManager getRoleManager() {
         return AppContext.getWebRoleManager();
     }
-    
-    private WebUserManager getUserManager() {
-        return AppContext.getWebUserManager();
-    }
-
-    private WebGroupManager getGroupManager() {
-        return AppContext.getWebGroupManager();
-    }
-
 }
