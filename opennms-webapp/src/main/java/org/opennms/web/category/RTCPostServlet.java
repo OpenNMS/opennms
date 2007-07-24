@@ -10,7 +10,9 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
 // 2006 Aug 22: Better error reporting when we can't parse XML. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -52,6 +54,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.Util;
 
 public class RTCPostServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     protected CategoryModel model;
 
     protected org.apache.log4j.Category log = ThreadCategory.getInstance("RTC");

@@ -8,6 +8,7 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// 2007 Jul 24: Organize imports, add serialVersionUID. - dj@opennms.org
 // 2006 Aug 24: Fix MissingParameterExceptions and always return the list of
 //              required parameters. - dj@opennms.org
 // 2006 May 30: added a way to choose the date to run the availability reports.
@@ -48,7 +49,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.ReportMailer;
@@ -59,7 +59,7 @@ import org.opennms.web.ReportMailer;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AvailabilityServlet extends HttpServlet {
-    static Category log = Category.getInstance(AvailabilityServlet.class.getName());
+    private static final long serialVersionUID = 1L;
 
     protected String xslFileName;
 
@@ -269,4 +269,5 @@ public class AvailabilityServlet extends HttpServlet {
             out.write(b, 0, length);
         }
     }
+
 }

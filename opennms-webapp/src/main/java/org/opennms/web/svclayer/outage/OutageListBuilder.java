@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Organize imports, eliminate unused code - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,14 +35,11 @@
 //
 package org.opennms.web.svclayer.outage;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -51,8 +52,6 @@ public class OutageListBuilder {
 	public List theTable(Collection<OnmsOutage> foundOutages) {
 
 		List<Map<String, Object>> theTable = new LinkedList<Map<String, Object>>();
-		Locale locale = Locale.getDefault();
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss",locale);
 		
 
 		for (Iterator iter = foundOutages.iterator(); iter.hasNext();) {

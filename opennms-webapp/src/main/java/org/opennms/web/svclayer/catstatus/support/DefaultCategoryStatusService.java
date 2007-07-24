@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Organize imports, Java 5 generics, format code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +38,7 @@ package org.opennms.web.svclayer.catstatus.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.viewsdisplay.Section;
@@ -58,26 +62,19 @@ import org.opennms.web.svclayer.dao.ViewDisplayDao;
  *
  */
 public class DefaultCategoryStatusService implements CategoryStatusService {
-
-	
 	private ViewDisplayDao m_viewDisplayDao;
 	private CategoryConfigDao m_categoryConfigDao;
-	private OutageDao m_outagedao;
+	private OutageDao m_outageDao;
 	
 	public Collection<StatusSection> getCategoriesStatus() {
-		
-		Collection <StatusSection> statusSections = new ArrayList<StatusSection>();
 		View view = m_viewDisplayDao.getView();
 
-		Collection sections = view.getSectionCollection();
+		Collection<Section> sections = getSectionsForView(view);
 		
-		for (Iterator iter = sections.iterator(); iter.hasNext();) {
-			Section section = (Section) iter.next();
-			StatusSection statusSection = createSection(section);
-				
-			statusSections.add(statusSection);
+        Collection<StatusSection> statusSections = new ArrayList<StatusSection>();
+		for (Section section : sections) {
+			statusSections.add(createSection(section));
 		}
-		
 		
 		return statusSections;
 	}
@@ -87,10 +84,9 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		
 		statusSection.setName(section.getSectionName());
 			
-		Collection categories = section.getCategoryCollection();
+		Collection<String> categories = getCategoriesForSection(section);
 		
-		for (Iterator iter = categories.iterator(); iter.hasNext();){
-			String category =  (String) iter.next();
+		for (String category : categories) {
 			StatusCategory statusCategory = createCategory(category);
 			statusSection.addCategory(statusCategory);
 		}
@@ -98,10 +94,8 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		return statusSection;
 	}
 
-
 	private StatusCategory createCategory(String category) {
-
-		Collection <OnmsOutage>outages; 
+		Collection<OnmsOutage> outages; 
 		
 		CategoryBuilder categoryBuilder = new CategoryBuilder();
 		
@@ -110,10 +104,9 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		
 		//statusCategory.setComment(categoryDetail.getCategoryComment());	
 		statusCategory.setLabel(category);
-		
 				
-		ServiceSelector selector = new ServiceSelector(categoryDetail.getRule(),categoryDetail.getServiceCollection());
-		outages = m_outagedao.matchingCurrentOutages(selector);
+		ServiceSelector selector = new ServiceSelector(categoryDetail.getRule(), getServicesForCategory(categoryDetail));
+		outages = m_outageDao.matchingCurrentOutages(selector);
 		
 		for (OnmsOutage outage : outages) {
 			OnmsMonitoredService monitoredService = outage.getMonitoredService();
@@ -140,19 +133,30 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		
 	}
 
-		
 	public void setViewDisplayDao(ViewDisplayDao viewDisplayDao){	
 		m_viewDisplayDao = viewDisplayDao;
 	}
 
 	public void setCategoryConfigDao(CategoryConfigDao categoryDao){
 		m_categoryConfigDao = categoryDao;
-		
 	}
 
 	public void setOutageDao(OutageDao outageDao) {
-	
-		m_outagedao = outageDao;
+		m_outageDao = outageDao;
 	}
-	
+
+    @SuppressWarnings("unchecked")
+    private List<Section> getSectionsForView(View view) {
+        return view.getSectionCollection();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getCategoriesForSection(Section section) {
+        return section.getCategoryCollection();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getServicesForCategory(Category categoryDetail) {
+        return categoryDetail.getServiceCollection();
+    }
 }

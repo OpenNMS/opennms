@@ -10,6 +10,7 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2007 Jul 24: Organize imports. - dj@opennms.org
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Jan 06: Added support for Display, Notify, Poller and Threshold Categories
 //
@@ -45,16 +46,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 
 public class ModifyAssetServlet extends HttpServlet {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 9203659232262966182L;
+    
     protected AssetModel model;
 
     public void init() throws ServletException {

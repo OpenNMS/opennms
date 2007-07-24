@@ -11,6 +11,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2006 Aug 25: Small HTML fix. - dj@opennms.org
 // 2006 Aug 15: HTML fix from bug #1558. - dj@opennms.org
 // 2006 Apr 17: File created
@@ -58,7 +59,7 @@
     
 
 <%
-        List testPaths = PathOutageFactory.getAllCriticalPaths();
+        List<String[]> testPaths = PathOutageFactory.getAllCriticalPaths();
         String dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
         String[] pthData = PathOutageFactory.getCriticalPathData(dcpip, "ICMP");
 %>
@@ -73,9 +74,9 @@
 			<th><%= "Critical Path Service" %></th>
 			<th># of Nodes</th>
 		</tr>
-		<%          Iterator iter2 = testPaths.iterator();
+		<%          Iterator<String[]> iter2 = testPaths.iterator();
 		while( iter2.hasNext() ) {
-			String[] pth = (String[])iter2.next();
+			String[] pth = iter2.next();
 			pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
 			<tr class="CellStatus">
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>

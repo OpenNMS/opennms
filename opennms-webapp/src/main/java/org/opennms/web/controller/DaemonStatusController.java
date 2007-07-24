@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics and comment-out unused code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -42,7 +46,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.dao.ServiceInfo;
 import org.opennms.web.svclayer.daemonstatus.DaemonStatusService;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -60,10 +63,10 @@ public class DaemonStatusController extends SimpleFormController {
      }
 
 	@Override
-	protected Map referenceData(HttpServletRequest arg0) throws Exception {
+	protected Map<String, Collection<ServiceInfo>> referenceData(HttpServletRequest arg0) throws Exception {
 		// TODO Auto-generated method stub
-		Map referenceData = new HashMap();
-		Collection daemons = daemonStatusService.getCurrentDaemonStatusColl();
+		Map<String, Collection<ServiceInfo>> referenceData = new HashMap<String, Collection<ServiceInfo>>();
+		Collection<ServiceInfo> daemons = daemonStatusService.getCurrentDaemonStatusColl();
 		logger.debug("number of daemons:" + daemons.size());
 		referenceData.put("daemons", daemons);
 		return referenceData;
@@ -72,9 +75,10 @@ public class DaemonStatusController extends SimpleFormController {
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse arg1, Object arg2, BindException arg3) throws Exception {
 		// TODO Auto-generated method stub
-		Map<String, ServiceInfo> daemons = 
-			daemonStatusService.performOperationOnDaemons(ServletRequestUtils.getStringParameter(request, "operation"),
-				ServletRequestUtils.getStringParameters(request, "values"));
+        // FIXME: This isn't used
+//		Map<String, ServiceInfo> daemons = 
+//			daemonStatusService.performOperationOnDaemons(ServletRequestUtils.getStringParameter(request, "operation"),
+//				ServletRequestUtils.getStringParameters(request, "values"));
 		ModelAndView modelAndView = super.onSubmit(request, arg1, arg2, arg3);
 		modelAndView.addAllObjects(referenceData(request));
 		return modelAndView;
