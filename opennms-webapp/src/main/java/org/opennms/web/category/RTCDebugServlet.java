@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,6 +49,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
 public class RTCDebugServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
     protected CategoryModel model;
 
     public void init() throws ServletException {

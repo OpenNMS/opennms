@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -41,6 +45,8 @@ package org.opennms.web.parsers;
  * @version 1.1.1.1
  */
 public class XMLWriteException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Default constructor, calls the Exception constructor.
      * 

@@ -10,6 +10,9 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
 // 2004 Jan 06: Added support for Display, Notify, Poller and Threshold categories
 //
 // This program is free software; you can redistribute it and/or modify
@@ -49,7 +52,8 @@ import org.opennms.web.element.NetworkElementFactory;
  * Exports the assets database to a comma-seperated values text file.
  */
 public class ExportAssetsServlet extends HttpServlet {
-
+    private static final long serialVersionUID = 1L;
+    
     protected AssetModel model;
 
     public void init() throws ServletException {

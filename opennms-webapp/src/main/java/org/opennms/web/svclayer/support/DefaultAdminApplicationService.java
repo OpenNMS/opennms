@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,12 +38,10 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.web.svclayer.AdminApplicationService;

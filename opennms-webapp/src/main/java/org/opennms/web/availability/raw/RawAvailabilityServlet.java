@@ -8,6 +8,7 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// 2007 Jul 24: Add serialVersionUID, refactor logging. - dj@opennms.org
 // 2006 May 30: added a way to choose the date to run the availability reports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -45,7 +46,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
 import org.opennms.report.availability.AvailabilityReport;
 import org.opennms.web.MissingParameterException;
@@ -56,7 +57,7 @@ import org.opennms.web.MissingParameterException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class RawAvailabilityServlet extends HttpServlet {
-    static Category log = Category.getInstance(RawAvailabilityServlet.class.getName());
+    private static final long serialVersionUID = 1L;
 
     public void init() throws ServletException {
     }
@@ -93,8 +94,7 @@ public class RawAvailabilityServlet extends HttpServlet {
             AvailabilityReport report = new AvailabilityReport(username, startMonth, startDate, startYear);
             report.getReportData(urlReplace, category, "all", null, startMonth, startDate, startYear);
 
-            if (log.isDebugEnabled())
-                log.info("Generated Report Data... ");
+            log().info("Generated Report Data... ");
 
             Reader xml = new FileReader(Vault.getHomeDir() + "/share/reports/AvailReport.xml");
             Writer out = response.getWriter();
@@ -105,6 +105,10 @@ public class RawAvailabilityServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException("AvailabilityServlet: ", e);
         }
+    }
+    
+    public Logger log() {
+        return Logger.getLogger(getClass());
     }
 
     /**

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Organize imports, Java 5 generics. - dj@opennms.org
 // 2006 Apr 27: reworked getLabelAndStatus
 // 2006 Apr 25: replaced getNodeLabelAndColor with getLabelAndStatus to
 //              speed things up
@@ -47,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.EventConstants;
 
 /**
  * The source for all path outage business objects (nodes, critical path IPs,
@@ -83,9 +83,9 @@ public class PathOutageFactory extends Object {
      * Retrieve all the critical paths
      * from the database
      */
-    public static List getAllCriticalPaths() throws SQLException {
+    public static List<String[]> getAllCriticalPaths() throws SQLException {
         Connection conn = Vault.getDbConnection();
-        List paths = new ArrayList();
+        List<String[]> paths = new ArrayList<String[]>();
 
         try {
             PreparedStatement stmt = conn.prepareStatement(GET_CRITICAL_PATHS);
@@ -115,9 +115,9 @@ public class PathOutageFactory extends Object {
      * @param criticalPathServiceName
      *            service name for the critical path
      */
-    public static List getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
+    public static List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         Connection conn = Vault.getDbConnection();
-        List pathNodes = new ArrayList();
+        List<String> pathNodes = new ArrayList<String>();
 
         try {
             PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);

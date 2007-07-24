@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2006 Aug 15: HTML fix from bug #1558. - dj@opennms.org
 // 2006 Apr 25: improved speed and appearance
 // 2006 Apr 17: Created file
@@ -58,7 +59,7 @@
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
       String[] pthData = PathOutageFactory.getCriticalPathData(critIp, critSvc);
-      List nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
+      List<String> nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
   
       <h3>Path Outage Node List</h3>
       <table>
@@ -77,11 +78,11 @@
           <th>Status</th>
           </tr>
 
-<%        Iterator iter = nodeList.iterator();
+<%        Iterator<String> iter = nodeList.iterator();
           Connection conn = Vault.getDbConnection();
           try {
               while( iter.hasNext() ) {
-                  String nodeid = (String)iter.next();
+                  String nodeid = iter.next();
                   String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
                   <tr class="CellStatus">
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>

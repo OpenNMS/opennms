@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID, refactor logging. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -46,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
 
@@ -55,9 +60,9 @@ import org.opennms.web.MissingParameterException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class MailerServlet extends HttpServlet {
-    protected static final String[] REQUIRED_FIELDS = new String[] { "sendto", "subject", "username", "msg" };
+    private static final long serialVersionUID = 1L;
 
-    protected Category log = Category.getInstance("WEB.MAIL");
+    protected static final String[] REQUIRED_FIELDS = new String[] { "sendto", "subject", "username", "msg" };
 
     protected String redirectSuccess;
 
@@ -84,7 +89,9 @@ public class MailerServlet extends HttpServlet {
         String msg = request.getParameter("msg");
         String username = request.getRemoteUser();
 
-        this.log.debug("To: " + sendto + ", Subject: " + subject + ", message: " + msg + ", username: " + username);
+        if (log().isDebugEnabled()) {
+            log().debug("To: " + sendto + ", Subject: " + subject + ", message: " + msg + ", username: " + username);
+        }
 
         if (sendto == null) {
             throw new MissingParameterException("sendto", REQUIRED_FIELDS);
@@ -120,7 +127,7 @@ public class MailerServlet extends HttpServlet {
             String errorMessage = tempErr.toString();
 
             // log the error message
-            this.log.warn("Read from stderr: " + errorMessage);
+            log().warn("Read from stderr: " + errorMessage);
 
             // send the error message to the client
             response.setContentType("text/plain");
@@ -130,5 +137,9 @@ public class MailerServlet extends HttpServlet {
         } else {
             response.sendRedirect(this.redirectSuccess);
         }
+    }
+    
+    private Category log() {
+        return Logger.getLogger("WEB.MAIL");
     }
 }

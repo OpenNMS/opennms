@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Organize imports, Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -51,6 +55,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -65,6 +70,8 @@ import java.net.UnknownHostException;
  * La servlet prende i seguenti parametri dal file web.xml
  */
 public final class ManageSnmpIntfServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     protected int snmpServiceId;
 
     protected SnmpPeerFactory snmpPeerFactory;
@@ -122,7 +129,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
             snmpServices = NetworkElementFactory.getServicesOnNode(nodeId,
                     this.snmpServiceId);
             if (snmpServices != null && snmpServices.length > 0) {
-                ArrayList ips = new ArrayList();
+                List<InetAddress> ips = new ArrayList<InetAddress>();
                 for (int i = 0; i < snmpServices.length; i++) {
                     ips.add(InetAddress.getByName(snmpServices[i]
                             .getIpAddress()));

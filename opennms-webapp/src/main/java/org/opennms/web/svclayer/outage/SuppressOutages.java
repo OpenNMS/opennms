@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Organize imports, format code, remove unused code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,15 +37,11 @@ package org.opennms.web.svclayer.outage;
 
 import java.util.GregorianCalendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.opennms.netmgt.model.OnmsOutage;
 
 public class SuppressOutages {
 
 	private static Integer LONG_TIME = new Integer(100);
-
-	private static final Log log = LogFactory.getLog(SuppressOutages.class);
 
 	public void suppress(Integer outageid, String time,OutageService outageService, String suppressor) {
 
@@ -64,9 +64,9 @@ public class SuppressOutages {
 		if (time != "") {
 
 			if (time == "-2") {
-				outage.setSuppressTime(null);
+			    outage.setSuppressTime(null);
 			} else {
-			outage.setSuppressTime(suppress.getTime());
+			    outage.setSuppressTime(suppress.getTime());
 			}
 			outage.setSuppressedBy(suppressor);
 			outageService.update(outage);
