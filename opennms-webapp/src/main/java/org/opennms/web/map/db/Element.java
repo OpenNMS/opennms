@@ -6,6 +6,8 @@
  */
 package org.opennms.web.map.db;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.opennms.web.map.MapsException;
 
 /**
@@ -156,13 +158,11 @@ public class Element implements Cloneable {
         this.id = id;
     }
 
-    public Object clone() {
+    public Element clone() {
         try {
-            Element e;
-            e = (Element) super.clone();
-            return e;
+            return (Element) super.clone();
         } catch (CloneNotSupportedException e) {
-            return null;
+            throw new UndeclaredThrowableException(e, "CloneNotSupportedException thrown while calling super.clone(), which is odd since we implement the Cloneable interface");
         }
     }
     
