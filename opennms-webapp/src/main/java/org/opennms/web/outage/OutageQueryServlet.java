@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class OutageQueryServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Parses the query string to determine what type of outage query to perform

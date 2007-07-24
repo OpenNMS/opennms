@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Java 5 generics, refactor logging. - dj@opennms.org
 // 2003 Apr 01: Fixed bug with number of notifications outstanding.
 // 2003 Jan 08: Changed SQL "= null" to "is null" to work with Postgres 7.2.
 //
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
 
 public class NotificationModel extends Object {
@@ -98,10 +100,9 @@ public class NotificationModel extends Object {
 
     private final String USER_OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
 
-    /**
-     * Static Log4j logging category
-     */
-    private static Category m_logger = Category.getInstance(NotificationModel.class.getName());
+    private Category log() {
+        return Logger.getLogger(getClass());
+    }
 
     public Notification getNoticeInfo(int id) throws SQLException {
         Notification nbean = new Notification();
@@ -114,15 +115,16 @@ public class NotificationModel extends Object {
             sentTo.setInt(1, id);
             ResultSet sentToResults = sentTo.executeQuery();
 
-            List sentToList = new ArrayList();
+            List<NoticeSentTo> sentToList = new ArrayList<NoticeSentTo>();
             while (sentToResults.next()) {
                 NoticeSentTo newSentTo = new NoticeSentTo();
                 newSentTo.setUserId(sentToResults.getString(USERID));
                 Timestamp ts = sentToResults.getTimestamp(NOTICE_TIME);
-                if (ts != null)
+                if (ts != null) {
                     newSentTo.setTime(ts.getTime());
-                else
+                } else {
                     newSentTo.setTime(0);
+                }
                 newSentTo.setMedia(sentToResults.getString(MEDIA));
                 newSentTo.setContactInfo(sentToResults.getString(CONTACT));
                 sentToList.add(newSentTo);
@@ -135,6 +137,7 @@ public class NotificationModel extends Object {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
+            // FIXME: Don't reuse the "element" variable for different objects.
             while (rs.next()) {
                 Object element = rs.getString(TXT_MESG);
                 nbean.m_txtMsg = (String) element;
@@ -149,10 +152,11 @@ public class NotificationModel extends Object {
                 nbean.m_timeSent = ((Timestamp) element).getTime();
 
                 element = rs.getTimestamp(REPLYTIME);
-                if (element != null)
+                if (element != null) {
                     nbean.m_timeReply = ((Timestamp) element).getTime();
-                else
+                } else {
                     nbean.m_timeReply = 0;
+                }
 
                 element = rs.getString(ANS_BY);
                 nbean.m_responder = (String) element;
@@ -183,9 +187,7 @@ public class NotificationModel extends Object {
             rs.close();
             pstmt.close();
         } catch (SQLException e) {
-            m_logger.debug("Problem getting data from the notifications table.");
-            m_logger.debug("Error: " + e.getLocalizedMessage());
-
+            log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -210,9 +212,7 @@ public class NotificationModel extends Object {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            m_logger.debug("allNotifications: Problem getting data from the notifications table.");
-            m_logger.debug("allNotifications: Error: " + e.getLocalizedMessage());
-
+            log().error("allNotifications: Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -230,7 +230,7 @@ public class NotificationModel extends Object {
      */
     protected Notification[] rs2NotifyBean(Connection conn, ResultSet rs) throws SQLException {
         Notification[] notices = null;
-        Vector vector = new Vector();
+        Vector<Notification> vector = new Vector<Notification>();
 
         // Format the results.
         try {
@@ -287,15 +287,14 @@ public class NotificationModel extends Object {
                 vector.addElement(nbean);
             }
         } catch (SQLException e) {
-            m_logger.debug("Error:" + e.getLocalizedMessage());
-            m_logger.debug("Error occured in rs2NotifyBean");
+            log().error("Error occurred in rs2NotifyBean: " + e, e);
             throw e;
         }
 
         notices = new Notification[vector.size()];
 
         for (int i = 0; i < notices.length; i++) {
-            notices[i] = (Notification) vector.elementAt(i);
+            notices[i] = vector.elementAt(i);
         }
 
         return notices;
@@ -317,14 +316,13 @@ public class NotificationModel extends Object {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            m_logger.debug("Problem getting data from the notifications table.");
-            m_logger.debug("Error: " + e.getLocalizedMessage());
+            log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
         }
 
-        return (notices);
+        return notices;
     }
 
     /**
@@ -346,14 +344,13 @@ public class NotificationModel extends Object {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            m_logger.debug("Problem getting data from the notifications table.");
-            m_logger.debug("Error: " + e.getLocalizedMessage());
+            log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
         }
 
-        return (count);
+        return count;
     }
 
     /**
@@ -380,8 +377,7 @@ public class NotificationModel extends Object {
             rs.close();
             pstmt.close();
         } catch (SQLException e) {
-            m_logger.debug("Problem getting data from the notifications table.");
-            m_logger.debug("Error: " + e.getLocalizedMessage());
+            log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -408,8 +404,7 @@ public class NotificationModel extends Object {
             rs.close();
             pstmt.close();
         } catch (SQLException e) {
-            m_logger.debug("Problem getting data from the notifications table.");
-            m_logger.debug("Error: " + e.getLocalizedMessage());
+            log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -438,8 +433,7 @@ public class NotificationModel extends Object {
 
             pstmt.close();
         } catch (SQLException e) {
-            m_logger.debug("Problem acknowledging.");
-            m_logger.debug("Error: " + e.getLocalizedMessage());
+            log().error("Problem acknowledging notification " + noticeId + " as answered by '" + name + "': " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -474,8 +468,7 @@ public class NotificationModel extends Object {
             // Close prepared statement.
             pstmt.close();
         } catch (SQLException e) {
-            m_logger.debug("Problem getting data from the notifications table.");
-            m_logger.debug("Error: " + e.getLocalizedMessage());
+            log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -499,18 +492,20 @@ public class NotificationModel extends Object {
      * This method is used for formatting the date attributes in a proper
      * format.
      */
-    private String appendZero(String values) {
-        int len = values.length();
-        if (values != null) {
-            if (len >= 0 && len < 2) {
-                while (2 - len > 0) {
-                    values = "0" + values;
-                    len++;
-                }
-            } else if (len > 2)
-                m_logger.debug("Incorrect attributes for time");
-        }
-        return values;
-    }
+    // FIXME: This is unused; if we don't need it, remove it
+//    private String appendZero(String values) {
+//        int len = values.length();
+//        if (values != null) {
+//            if (len >= 0 && len < 2) {
+//                while (2 - len > 0) {
+//                    values = "0" + values;
+//                    len++;
+//                }
+//            } else if (len > 2) {
+//                log().debug("Incorrect attributes for time: len > 2; len = " + len);
+//            }
+//        }
+//        return values;
+//    }
 
 }

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,6 +43,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
@@ -535,8 +540,9 @@ public class OutageFactory extends Object {
      */
     protected static Outage[] rs2Outages(ResultSet rs) throws SQLException {
         Outage[] outages = null;
-        ArrayList list = new ArrayList();
+        List<Outage> list = new ArrayList<Outage>();
 
+        // FIXME: Don't reuse the "element" variable for multiple objects.
         while (rs.next()) {
             Outage outage = new Outage();
 
@@ -594,7 +600,7 @@ public class OutageFactory extends Object {
             list.add(outage);
         }
 
-        outages = (Outage[]) list.toArray(new Outage[list.size()]);
+        outages = list.toArray(new Outage[list.size()]);
 
         return outages;
     }
