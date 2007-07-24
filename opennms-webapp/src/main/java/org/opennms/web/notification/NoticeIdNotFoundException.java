@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,6 +37,8 @@
 package org.opennms.web.notification;
 
 public class NoticeIdNotFoundException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     protected String badId;
 
     protected String message;

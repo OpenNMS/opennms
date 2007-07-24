@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -58,7 +62,7 @@ public class Command {
      * The types of the command, useful for supporting classes to do things
      * based on what this command is for. Basically an identifying name.
      */
-    private List m_types;
+    private List<String> m_types;
 
     /**
      * The comments for the command
@@ -68,7 +72,7 @@ public class Command {
     /**
      * The map of arguments in the command
      */
-    private List m_arguments;
+    private List<Argument> m_arguments;
 
     /**
      * A boolean that indicates if this command requires data passed to it from
@@ -80,8 +84,8 @@ public class Command {
      * Default constructor, intializes the members
      */
     public Command() {
-        m_arguments = new ArrayList();
-        m_types = new ArrayList();
+        m_arguments = new ArrayList<Argument>();
+        m_types = new ArrayList<String>();
         m_useStream = false;
     }
 
@@ -98,16 +102,12 @@ public class Command {
         copy.setCommandComments(m_commandComments);
         copy.setUseStream(m_useStream);
 
-        for (int j = 0; j < m_types.size(); j++) {
-            copy.addType((String) m_types.get(j));
+        for (String type : m_types) {
+            copy.addType(type);
         }
 
-        Argument newArg = null;
-        Argument oldArg = null;
-
-        for (int i = 0; i < m_arguments.size(); i++) {
-            newArg = new Argument();
-            oldArg = (Argument) m_arguments.get(i);
+        for (Argument oldArg : m_arguments) {
+            Argument newArg = new Argument();
 
             newArg.setSwitch(oldArg.getSwitch());
             newArg.setSubstitution(oldArg.getSubstitution());
@@ -164,7 +164,7 @@ public class Command {
      * @return the type
      */
     public String getType() {
-        return (String) m_types.get(0);
+        return m_types.get(0);
     }
 
     /**
@@ -226,11 +226,7 @@ public class Command {
      *            the value to set
      */
     public void setArgumentValue(String aSwitch, String aValue) {
-        Argument arg = null;
-
-        for (int i = 0; i < m_arguments.size(); i++) {
-            arg = (Argument) m_arguments.get(i);
-
+        for (Argument arg : m_arguments) {
             if (arg.getSwitch().equals(aSwitch)) {
                 arg.setValue(aValue);
                 break;
@@ -247,9 +243,7 @@ public class Command {
      * @return true if the command has the switch, false otherwise
      */
     public boolean hasSwitch(String aSwitch) {
-        List switches = getArgumentSwitches();
-
-        return switches.contains(aSwitch);
+        return getArgumentSwitches().contains(aSwitch);
     }
 
     /**
@@ -258,11 +252,11 @@ public class Command {
      * 
      * @return a list of parameter switches
      */
-    public List getArgumentSwitches() {
-        List switches = new ArrayList();
+    public List<String> getArgumentSwitches() {
+        List<String> switches = new ArrayList<String>();
 
-        for (int i = 0; i < m_arguments.size(); i++) {
-            switches.add(((Argument) m_arguments.get(i)).getSwitch());
+        for (Argument argument : m_arguments) {
+            switches.add(argument.getSwitch());
         }
 
         return switches;
@@ -277,15 +271,12 @@ public class Command {
     public int execute() {
         int returnCode = 0;
 
-        List args = new ArrayList();
-        Argument curArg = null;
+        List<String> args = new ArrayList<String>();
 
         args.add(m_commandName);
 
         // put the non streamed arguments into the argument array
-        for (int i = 0; i < m_arguments.size(); i++) {
-            curArg = (Argument) m_arguments.get(i);
-
+        for (Argument curArg : m_arguments) {
             // only non streamed arguments go into this list
             if (!curArg.isStreamed()) {
                 if (!curArg.getSubstitution().equals("")) {
@@ -301,8 +292,7 @@ public class Command {
 
         try {
             // set up the process
-            String arguments[] = new String[args.size()];
-            arguments = (String[]) args.toArray(arguments);
+            String[] arguments = args.toArray(new String[args.size()]);
 
             Process command = Runtime.getRuntime().exec(arguments);
 
@@ -315,9 +305,7 @@ public class Command {
 
                 // now write each streamed argument to the processes input
                 // buffer
-                for (int i = 0; i < m_arguments.size(); i++) {
-                    curArg = (Argument) m_arguments.get(i);
-
+                for (Argument curArg : m_arguments) {
                     if (curArg.isStreamed()) {
                         if (!curArg.getSubstitution().equals("")) {
                             buffer.append(curArg.getSubstitution());
@@ -357,10 +345,7 @@ public class Command {
 
         buffer.append(m_commandName + " ");
 
-        Argument arg = null;
-
-        for (int i = 0; i < m_arguments.size(); i++) {
-            arg = (Argument) m_arguments.get(i);
+        for (Argument arg : m_arguments) {
             buffer.append(arg.getSubstitution() + " " + arg.getValue());
         }
 
@@ -424,15 +409,15 @@ public class Command {
         s = buffer.toString();
 
         // split the new string by the whitespaces that were not in quotes
-        ArrayList arrayList = new ArrayList();
+        List<String> arrayList = new ArrayList<String>();
         StringTokenizer tokenizer = new StringTokenizer(s);
 
         while (tokenizer.hasMoreTokens()) {
-            arrayList.add(tokenizer.nextElement());
+            arrayList.add(tokenizer.nextElement().toString());
         }
 
         // put the strings in the arraylist into a string[]
-        String[] list = (String[]) arrayList.toArray(new String[arrayList.size()]);
+        String[] list = arrayList.toArray(new String[arrayList.size()]);
 
         // change all the delim characters back to spaces
         for (int i = 0; i < list.length; i++) {

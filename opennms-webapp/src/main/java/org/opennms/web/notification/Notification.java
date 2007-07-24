@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics and some code formatting. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -41,7 +45,7 @@ import java.util.List;
 public class Notification {
     // Fields from the notifications table.
     // User id of the person being paged.
-    public List m_sentTo;
+    public List<NoticeSentTo> m_sentTo;
 
     // Text Message being sent in the page
     public String m_txtMsg;
@@ -85,7 +89,7 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(List sentToList, int notifyId, String txtMsg, String numMsg, long timeSent, long timeReply, String responder, int nodeid, String interfaceID, int svcId, String svcName, int eventid) {
+    public Notification(List<NoticeSentTo> sentToList, int notifyId, String txtMsg, String numMsg, long timeSent, long timeReply, String responder, int nodeid, String interfaceID, int svcId, String svcName, int eventid) {
         m_sentTo = sentToList;
         m_notifyID = notifyId;
         m_txtMsg = txtMsg;
@@ -100,7 +104,7 @@ public class Notification {
         m_eventId = eventid;
     }
 
-    public List getSentTo() {
+    public List<NoticeSentTo> getSentTo() {
         return (this.m_sentTo);
     }
 
@@ -122,8 +126,9 @@ public class Notification {
 
     public Date getTimeReplied() {
 
-        if (this.m_timeReply == 0)
+        if (this.m_timeReply == 0) {
             return null;
+        }
 
         return (new Date(this.m_timeReply));
     }

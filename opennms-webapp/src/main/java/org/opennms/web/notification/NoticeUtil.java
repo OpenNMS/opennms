@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,31 +37,36 @@
 package org.opennms.web.notification;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public abstract class NoticeUtil extends Object {
-    protected static final HashMap sortStyles;
+    protected static final Map<String, NoticeFactory.SortStyle> sortStylesString;
+    protected static final Map<NoticeFactory.SortStyle, String> sortStyles;
 
-    protected static final HashMap ackTypes;
+    protected static final Map<String, NoticeFactory.AcknowledgeType> ackTypesString;
+    protected static final Map<NoticeFactory.AcknowledgeType, String> ackTypes;
 
     static {
-        sortStyles = new java.util.HashMap();
-        sortStyles.put("user", NoticeFactory.SortStyle.USER);
-        sortStyles.put("responder", NoticeFactory.SortStyle.RESPONDER);
-        sortStyles.put("pagetime", NoticeFactory.SortStyle.PAGETIME);
-        sortStyles.put("respondtime", NoticeFactory.SortStyle.RESPONDTIME);
-        sortStyles.put("node", NoticeFactory.SortStyle.NODE);
-        sortStyles.put("interface", NoticeFactory.SortStyle.INTERFACE);
-        sortStyles.put("service", NoticeFactory.SortStyle.SERVICE);
-        sortStyles.put("id", NoticeFactory.SortStyle.ID);
-        sortStyles.put("rev_user", NoticeFactory.SortStyle.REVERSE_USER);
-        sortStyles.put("rev_responder", NoticeFactory.SortStyle.REVERSE_RESPONDER);
-        sortStyles.put("rev_pagetime", NoticeFactory.SortStyle.REVERSE_PAGETIME);
-        sortStyles.put("rev_respondtime", NoticeFactory.SortStyle.REVERSE_RESPONDTIME);
-        sortStyles.put("rev_node", NoticeFactory.SortStyle.REVERSE_NODE);
-        sortStyles.put("rev_interface", NoticeFactory.SortStyle.REVERSE_INTERFACE);
-        sortStyles.put("rev_service", NoticeFactory.SortStyle.REVERSE_SERVICE);
-        sortStyles.put("rev_id", NoticeFactory.SortStyle.REVERSE_ID);
+        sortStylesString = new HashMap<String, NoticeFactory.SortStyle>();
+        sortStylesString.put("user", NoticeFactory.SortStyle.USER);
+        sortStylesString.put("responder", NoticeFactory.SortStyle.RESPONDER);
+        sortStylesString.put("pagetime", NoticeFactory.SortStyle.PAGETIME);
+        sortStylesString.put("respondtime", NoticeFactory.SortStyle.RESPONDTIME);
+        sortStylesString.put("node", NoticeFactory.SortStyle.NODE);
+        sortStylesString.put("interface", NoticeFactory.SortStyle.INTERFACE);
+        sortStylesString.put("service", NoticeFactory.SortStyle.SERVICE);
+        sortStylesString.put("id", NoticeFactory.SortStyle.ID);
+        sortStylesString.put("rev_user", NoticeFactory.SortStyle.REVERSE_USER);
+        sortStylesString.put("rev_responder", NoticeFactory.SortStyle.REVERSE_RESPONDER);
+        sortStylesString.put("rev_pagetime", NoticeFactory.SortStyle.REVERSE_PAGETIME);
+        sortStylesString.put("rev_respondtime", NoticeFactory.SortStyle.REVERSE_RESPONDTIME);
+        sortStylesString.put("rev_node", NoticeFactory.SortStyle.REVERSE_NODE);
+        sortStylesString.put("rev_interface", NoticeFactory.SortStyle.REVERSE_INTERFACE);
+        sortStylesString.put("rev_service", NoticeFactory.SortStyle.REVERSE_SERVICE);
+        sortStylesString.put("rev_id", NoticeFactory.SortStyle.REVERSE_ID);
+        
+        sortStyles = new HashMap<NoticeFactory.SortStyle, String>();
         sortStyles.put(NoticeFactory.SortStyle.USER, "user");
         sortStyles.put(NoticeFactory.SortStyle.RESPONDER, "responder");
         sortStyles.put(NoticeFactory.SortStyle.PAGETIME, "pagetime");
@@ -75,9 +84,11 @@ public abstract class NoticeUtil extends Object {
         sortStyles.put(NoticeFactory.SortStyle.REVERSE_SERVICE, "rev_service");
         sortStyles.put(NoticeFactory.SortStyle.REVERSE_ID, "rev_id");
 
-        ackTypes = new java.util.HashMap();
-        ackTypes.put("ack", NoticeFactory.AcknowledgeType.ACKNOWLEDGED);
-        ackTypes.put("unack", NoticeFactory.AcknowledgeType.UNACKNOWLEDGED);
+        ackTypesString = new HashMap<String, NoticeFactory.AcknowledgeType>();
+        ackTypesString.put("ack", NoticeFactory.AcknowledgeType.ACKNOWLEDGED);
+        ackTypesString.put("unack", NoticeFactory.AcknowledgeType.UNACKNOWLEDGED);
+
+        ackTypes = new HashMap<NoticeFactory.AcknowledgeType, String>();
         ackTypes.put(NoticeFactory.AcknowledgeType.ACKNOWLEDGED, "ack");
         ackTypes.put(NoticeFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
     }
@@ -87,7 +98,7 @@ public abstract class NoticeUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (NoticeFactory.SortStyle) sortStyles.get(sortStyleString.toLowerCase());
+        return sortStylesString.get(sortStyleString.toLowerCase());
     }
 
     public static String getSortStyleString(NoticeFactory.SortStyle sortStyle) {
@@ -95,7 +106,7 @@ public abstract class NoticeUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (String) sortStyles.get(sortStyle);
+        return sortStyles.get(sortStyle);
     }
 
     public static NoticeFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
@@ -103,7 +114,7 @@ public abstract class NoticeUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (NoticeFactory.AcknowledgeType) ackTypes.get(ackTypeString.toLowerCase());
+        return ackTypesString.get(ackTypeString.toLowerCase());
     }
 
     public static String getAcknowledgeTypeString(NoticeFactory.AcknowledgeType ackType) {
@@ -111,7 +122,7 @@ public abstract class NoticeUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (String) ackTypes.get(ackType);
+        return ackTypes.get(ackType);
     }
 
     public static NoticeFactory.Filter getFilter(String filterString) {
@@ -137,7 +148,7 @@ public abstract class NoticeUtil extends Object {
             filter = new NoticeFactory.ServiceFilter(Integer.parseInt(value));
         }
 
-        return (filter);
+        return filter;
     }
 
     public static String getFilterString(NoticeFactory.Filter filter) {
@@ -145,7 +156,7 @@ public abstract class NoticeUtil extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (filter.getDescription());
+        return filter.getDescription();
     }
 
 }

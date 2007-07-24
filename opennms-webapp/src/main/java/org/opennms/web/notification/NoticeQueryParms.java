@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,7 +36,7 @@
 
 package org.opennms.web.notification;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Convenience data structure for holding the arguments to an notice query.
@@ -45,7 +49,7 @@ public class NoticeQueryParms extends Object {
 
     public NoticeFactory.AcknowledgeType ackType;
 
-    public ArrayList filters;
+    public List<NoticeFactory.Filter> filters;
 
     public int limit;
 
@@ -56,8 +60,6 @@ public class NoticeQueryParms extends Object {
      * of EventFactory.Filter instances.
      */
     public NoticeFactory.Filter[] getFilters() {
-        NoticeFactory.Filter[] filters = new NoticeFactory.Filter[this.filters.size()];
-        filters = (NoticeFactory.Filter[]) this.filters.toArray(filters);
-        return (filters);
+        return this.filters.toArray(new NoticeFactory.Filter[this.filters.size()]);
     }
 }
