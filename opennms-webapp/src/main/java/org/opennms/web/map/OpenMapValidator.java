@@ -2,10 +2,7 @@ package org.opennms.web.map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import mx4j.ImplementationException;
-
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
 public class OpenMapValidator extends MapApplianceValidator {
 	public boolean supports(Class aClass) {

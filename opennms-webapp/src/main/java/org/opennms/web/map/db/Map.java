@@ -8,12 +8,7 @@ package org.opennms.web.map.db;
 
 import java.sql.Timestamp;
 
-/**
- * @author
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- */
+// FIXME: We really need to rename this class so that it doesn't have the same class name as java.util.Map
 public class Map {
 
     private int id;

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -115,10 +119,10 @@ public class RefreshMapController implements Controller {
 
 				// get all links on map
 				//List links = null;
-				List links = manager.getLinks(velements);
+				List<VLink> links = manager.getLinks(velements);
 
 				// add links to map
-				map.addLinks((VLink[]) links.toArray(new VLink[0]));
+				map.addLinks(links.toArray(new VLink[links.size()]));
 			} 
 			
 			if (action.equals(MapsConstants.RELOAD_ACTION)) {
@@ -141,10 +145,10 @@ public class RefreshMapController implements Controller {
 
 				// get all links on map
 				//List links = null;
-				List links = manager.getLinks(velements);
+				List<VLink> links = manager.getLinks(velements);
 
 				// add links to map
-				map.addLinks((VLink[]) links.toArray(new VLink[0]));
+				map.addLinks(links.toArray(new VLink[links.size()]));
 			}
 			
 			if(map==null){

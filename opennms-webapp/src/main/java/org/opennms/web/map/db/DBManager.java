@@ -1465,15 +1465,14 @@ public class DBManager extends Manager {
     	return retMaps;
     }
     
-	public Set getNodeIdsBySource(String query)throws MapsException{
-		
-		if(query==null ){
+	public Set<Integer> getNodeIdsBySource(String query) throws MapsException {
+		if (query == null) {
 			return getAllNodes();
 		}
 		Connection conn=null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		HashSet nodes = new HashSet();
+		Set<Integer> nodes = new HashSet<Integer>();
 		try {
 			conn = Vault.getDbConnection();
 			String sqlQuery = query;
@@ -1488,17 +1487,17 @@ public class DBManager extends Manager {
 			rs.close();
 			stmt.close();
 			conn.close();
-		}catch(Exception e){
+		} catch(Exception e) {
 			throw new MapsException("Exception while getting nodes by source label "+e);
 		}	
 		return nodes;
 	}
 	
-	private Set getAllNodes()throws MapsException{
+	private Set<Integer> getAllNodes() throws MapsException {
 		Connection conn=null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		HashSet nodes = new HashSet();
+		Set<Integer> nodes = new HashSet<Integer>();
 		try {
 			conn = Vault.getDbConnection();
 			String sqlQuery = "select distinct nodeid from ipinterface";
@@ -1511,7 +1510,7 @@ public class DBManager extends Manager {
 			rs.close();
 			stmt.close();
 			conn.close();
-		}catch(Exception e){
+		} catch(Exception e) {
 			throw new MapsException("Exception while getting all nodes "+e);
 		}
 		return nodes;

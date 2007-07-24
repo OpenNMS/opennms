@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
@@ -22,7 +24,7 @@ public class ServerDataSource implements DataSourceInterface {
 
 	private Map params;
 	boolean initialized = false;
-	private HashMap severityMapping = new HashMap();
+	private Map<String, String> severityMapping = new HashMap<String, String>();
 
 	static Category log;
 	
@@ -114,7 +116,7 @@ public class ServerDataSource implements DataSourceInterface {
 		}
 		
 		//get ipaddresses of the node
-		HashSet ipAddrs = getIpAddrById(id);
+		Set<String> ipAddrs = getIpAddrById(id);
 		//If there is no ipaddress for the nodeid
 		if(ipAddrs.size()==0){
 			log.warn("No ip address found for node with id "+(Integer)id);
@@ -129,10 +131,10 @@ public class ServerDataSource implements DataSourceInterface {
 		return result;
 	}
 
-	private HashSet getIpAddrById(Object id){
+	private Set<String> getIpAddrById(Object id){
 		//get ipaddresses of the node
 		String sqlQueryIFaces= "select distinct ipaddr from ipinterface where ipaddr!='0.0.0.0' and nodeid=?";
-		HashSet ipAddrs = new HashSet();
+		Set<String> ipAddrs = new HashSet<String>();
 		PreparedStatement ps;
 		int nodeId=0;
 		
@@ -153,14 +155,14 @@ public class ServerDataSource implements DataSourceInterface {
 		return ipAddrs;
 	}
 
-	private String getSev(HashSet ipAddrs){
+	private String getSev(Set<String> ipAddrs){
 
 		String getDataQuery="select max("+SEVERITY_FIELD+") from "+TABLE_NAME+" where ip_address in (";
-		Iterator it = ipAddrs.iterator();
-		while(it.hasNext()){
-			String ip = (String) it.next();
+		Iterator<String> it = ipAddrs.iterator();
+		while (it.hasNext()) {
+			String ip = it.next();
 			getDataQuery+="'"+ip+"'";
-			if(it.hasNext()){
+			if (it.hasNext()) {
 				getDataQuery+=",";
 			}
 		}
@@ -202,7 +204,7 @@ public class ServerDataSource implements DataSourceInterface {
 		}
 		
 		//get ipaddresses of the node
-		HashSet ipAddrs = getIpAddrById(id);
+		Set<String> ipAddrs = getIpAddrById(id);
 		//If there is no ipaddress for the nodeid
 		if(ipAddrs.size()==0){
 			log.warn("No ip address found for node with id "+(Integer)id);
@@ -218,14 +220,14 @@ public class ServerDataSource implements DataSourceInterface {
 
 	}
 	
-	private String getSt(HashSet ipAddrs){
+	private String getSt(Set<String> ipAddrs){
 		
 		String getDataQuery="select "+STATUS_FIELD+" from "+TABLE_NAME+" where ip_address in (";
-		Iterator it = ipAddrs.iterator();
-		while(it.hasNext()){
-			String ip = (String) it.next();
+		Iterator<String> it = ipAddrs.iterator();
+		while (it.hasNext()) {
+			String ip = it.next();
 			getDataQuery+="'"+ip+"'";
-			if(it.hasNext()){
+			if (it.hasNext()) {
 				getDataQuery+=",";
 			}
 		}

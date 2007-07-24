@@ -7,8 +7,9 @@ package org.opennms.web.map;
  *
  */
 public final class MapsConstants extends JSTLConstants{
-	
-	public static final String LOG4J_CATEGORY = "OpenNMS.Map";
+    private static final long serialVersionUID = 1L;
+
+    public static final String LOG4J_CATEGORY = "OpenNMS.Map";
 	
 	public static final int MAP_NOT_OPENED = -1;
 	
@@ -102,7 +103,7 @@ public final class MapsConstants extends JSTLConstants{
 	public static final String COLOR_SEMAPHORE_BY_AVAILABILITY = "A";
 	
 	
-	public MapsConstants(){
+	public MapsConstants() {
 		super();
 	}
 }
