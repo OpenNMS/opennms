@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -65,6 +71,8 @@ import org.opennms.web.event.filter.SeverityFilter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class EventQueryServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The list of parameters that are extracted by this servlet and not passed
      * on to the {@link EventFilterServlet EventFilterServlet}.
@@ -92,7 +100,7 @@ public class EventQueryServlet extends HttpServlet {
      * the {@link EventFilterServlet EventFilterServlet}.
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ArrayList filterArray = new ArrayList();
+        List<Filter> filterArray = new ArrayList<Filter>();
 
         // convenient syntax for LogMessageSubstringFilter
         String msgSubstring = request.getParameter("msgsub");
@@ -171,11 +179,11 @@ public class EventQueryServlet extends HttpServlet {
             String[] filterStrings = new String[filterArray.size()];
 
             for (int i = 0; i < filterStrings.length; i++) {
-                Filter filter = (Filter) filterArray.get(i);
+                Filter filter = filterArray.get(i);
                 filterStrings[i] = EventUtil.getFilterString(filter);
             }
 
-            HashMap paramAdditions = new HashMap();
+            Map<String, Object> paramAdditions = new HashMap<String, Object>();
             paramAdditions.put("filter", filterStrings);
 
             queryString = Util.makeQueryString(request, paramAdditions, IGNORE_LIST);

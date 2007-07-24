@@ -8,7 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// 18 Apr 2005: This file created from EventQueryParms.java
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+// 2005 Apr 18: This file created from EventQueryParms.java
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -34,7 +37,7 @@
 
 package org.opennms.web.alarm;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.web.alarm.filter.Filter;
 
@@ -49,7 +52,7 @@ public class AlarmQueryParms extends Object {
 
     public AlarmFactory.AcknowledgeType ackType;
 
-    public ArrayList filters;
+    public List<Filter> filters;
 
     public int limit;
 
@@ -60,8 +63,6 @@ public class AlarmQueryParms extends Object {
      * of Filter instances.
      */
     public Filter[] getFilters() {
-        Filter[] filters = new Filter[this.filters.size()];
-        filters = (Filter[]) this.filters.toArray(filters);
-        return (filters);
+        return this.filters.toArray(new Filter[this.filters.size()]);
     }
 }

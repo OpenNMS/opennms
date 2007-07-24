@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Java 5 generics and format code. - dj@opennms.org
 // 2004 Feb 11: Change the search string logic from 'OR' to 'AND'.
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -37,6 +38,7 @@
 package org.opennms.web.event.filter;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -57,7 +59,7 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         }
 
         StringTokenizer tokenizer = new StringTokenizer(stringList);
-        ArrayList list = new ArrayList();
+        List<String> list = new ArrayList<String>();
 
         while (tokenizer.hasMoreTokens()) {
             list.add(tokenizer.nextToken());
@@ -67,7 +69,7 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
             throw new IllegalArgumentException("Cannot take a zero-length list of substrings");
         }
 
-        this.substrings = (String[]) list.toArray(new String[list.size()]);
+        this.substrings = list.toArray(new String[list.size()]);
     }
 
     public LogMessageMatchesAnyFilter(String[] substrings) {
@@ -90,7 +92,7 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
     }
 
     public String getDescription() {
-        return (TYPE + "=" + this.getQueryString());
+        return TYPE + "=" + this.getQueryString();
     }
 
     public String getTextDescription() {
@@ -102,15 +104,15 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
     }
 
     public String toString() {
-        return ("<LogMessageMatchesAnyFilter: " + this.getDescription() + ">");
+        return "<LogMessageMatchesAnyFilter: " + this.getDescription() + ">";
     }
 
     public String[] getSubstrings() {
-        return (this.substrings);
+        return this.substrings;
     }
 
     public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
+        return this.toString().equals(obj.toString());
     }
 
     public String getQueryString() {
@@ -122,7 +124,7 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
             buffer.append(this.substrings[i]);
         }
 
-        return (buffer.toString());
+        return buffer.toString();
     }
 
 }

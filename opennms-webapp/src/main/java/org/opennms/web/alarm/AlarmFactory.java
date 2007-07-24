@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventFactory.java
 //
 // Original Code Base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -951,9 +954,10 @@ public class AlarmFactory extends Object {
      * containing event information into an array of <code>Alarm</code>
      * objects.
      */
+    // FIXME: Don't reuse the same "element" variable for different objects
     protected static Alarm[] rs2Alarms(ResultSet rs) throws SQLException {
         Alarm[] alarms = null;
-        Vector vector = new Vector();
+        Vector<Alarm> vector = new Vector<Alarm>();
 
         while (rs.next()) {
             Alarm alarm = new Alarm();
@@ -1050,7 +1054,7 @@ public class AlarmFactory extends Object {
         alarms = new Alarm[vector.size()];
 
         for (int i = 0; i < alarms.length; i++) {
-            alarms[i] = (Alarm) vector.elementAt(i);
+            alarms[i] = vector.elementAt(i);
         }
 
         return alarms;
