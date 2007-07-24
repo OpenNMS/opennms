@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics and refactor logging. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,11 +40,13 @@ import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.util.Assert;
 
 /**
  * This class holds information on the duty schedules that users can have.
@@ -55,8 +61,6 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  */
 public class DutySchedule {
-    Category log = ThreadCategory.getInstance(this.getClass());
-
     /**
      * Each boolean in the bit set represents a day of the week. Monday = 0,
      * Tuesday = 1 ... Sunday = 6
@@ -136,6 +140,29 @@ public class DutySchedule {
         m_stopTime = Integer.parseInt((String) aSchedule.get(8));
     }
 
+    /**
+     * This constructor is designed to convert from a Vector filled with 7
+     * Boolean objects and two String objects into the BitSet and integer start
+     * and stop time. Very useful for the ModifyUser screen when it is
+     * converting from a table display to save the information to a string
+     * format for the users.xml.
+     * 
+     * @param aSchedule
+     *            filled with 7 Boolean objects and two String objects
+     */
+    public DutySchedule(List<Boolean> schedule, int start, int end) {
+        Assert.notNull(schedule, "argument schedule must not be null");
+        Assert.isTrue(schedule.size() == 7, "argument schedule must contain exactly seven Boolean objects");
+        
+        m_days = new BitSet(7);
+        
+        for (int i = 0; i < 7; i++) {
+            m_days.set(i, schedule.get(i).booleanValue());
+        }
+
+        m_startTime = start;
+        m_stopTime = end;
+    }
     /**
      * This constructor is designed to build a new DutySchedule from a String
      * representation formatted as such. <day_of_week_abbr><start>- <stop>eg.
@@ -231,7 +258,7 @@ public class DutySchedule {
      * @return A Vector properly formatted to reflect this DutySchedule.
      */
     public Vector getAsVector() {
-        Vector vector = new Vector();
+        Vector<Object> vector = new Vector<Object>();
 
         for (int i = 0; i < 7; i++) {
             vector.add(new Boolean(m_days.get(i)));
@@ -361,58 +388,52 @@ public class DutySchedule {
             // does i correspond to today?
             if (CALENDAR_DAY_MAPPING[i] == nTime.get(Calendar.DAY_OF_WEEK)) {
                 itoday = i;
-                if (log.isDebugEnabled()) {
-                    log.debug("nextInSchedule: day of week is " + i);
+                if (log().isDebugEnabled()) {
+                    log().debug("nextInSchedule: day of week is " + i);
                 }
             }
 
             //is duty schedule for today?
             //see if the now time corresponds to a day when the user is on duty
             if (m_days.get(i) && CALENDAR_DAY_MAPPING[i] == nTime.get(Calendar.DAY_OF_WEEK)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("nextInSchedule: Today is in schedule");
-                }
+                log().debug("nextInSchedule: Today is in schedule");
                 //is start time > current time?
                 if (startMillis > dateMillis) {
                     next = startMillis - dateMillis;
-                    if (log.isDebugEnabled()) {
-                        log.debug("nextInSchedule: duty starts in " + next + " millisec");
+                    if (log().isDebugEnabled()) {
+                        log().debug("nextInSchedule: duty starts in " + next + " millisec");
                      }
                 } else {
                     //is end time >= now
                     if (endMillis >= dateMillis) {
                         next = 0;
-                        if (log.isDebugEnabled()) {
-                            log.debug("nextInSchedule: on duty now");
-                        }
+                        log().debug("nextInSchedule: on duty now");
                     }
                 }
             }
         }
-        if(next >= 0) {
+        if (next >= 0) {
             return next;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("nextInSchedule: Remainder of today is not in schedule");
-        }
+        log().debug("nextInSchedule: Remainder of today is not in schedule");
         int ndays = -1;
         for (int i = 0; i < 7; i++) {
-            if(m_days.get(i)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("nextInSchedule: day " + i + " is in schedule");
+            if (m_days.get(i)) {
+                if (log().isDebugEnabled()) {
+                    log().debug("nextInSchedule: day " + i + " is in schedule");
                 }
                 ndays = i - itoday;
-                if( ndays <= 0 ) {
+                if (ndays <= 0) {
                     ndays += 7;
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("nextInSchedule: day " + i + " is " + ndays + " from today");
+                if (log().isDebugEnabled()) {
+                    log().debug("nextInSchedule: day " + i + " is " + ndays + " from today");
                 }
                 tempnext = (86400000 * ndays) - dateMillis + startMillis;
-                if(tempnext < next || next == -1) {
+                if (tempnext < next || next == -1) {
                     next = tempnext;
-                    if (log.isDebugEnabled()) {
-                        log.debug("nextInSchedule: duty begins in " + next + " millisecs");
+                    if (log().isDebugEnabled()) {
+                        log().debug("nextInSchedule: duty begins in " + next + " millisecs");
                     }
                 }
             }
@@ -474,5 +495,9 @@ public class DutySchedule {
     
     public boolean hasDay(int aDay) {
         return m_days.get(aDay);
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }
