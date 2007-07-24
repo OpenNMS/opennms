@@ -16,10 +16,11 @@ import org.opennms.core.utils.ThreadCategory;
  * Map is unmodifiable after initialization.
  *
  */
-public class JSTLConstants extends HashMap {
-	private boolean initialised = false;
- 
+public class JSTLConstants extends HashMap<String, Object> {
+    private static final long serialVersionUID = 1L;
     
+    private boolean initialised = false;
+     
 	public JSTLConstants() {
 		Category log = ThreadCategory.getInstance(MapsConstants.LOG4J_CATEGORY);
 		Class c = this.getClass();
@@ -40,31 +41,35 @@ public class JSTLConstants extends HashMap {
 	}
  
 	public void clear() {
-		if (!initialised)
+		if (!initialised) {
 			super.clear();
-		else
+        } else {
 			throw new UnsupportedOperationException("Cannot modify this map");
+        }
 	}
  
-	public Object put(Object key, Object value) {
-		if (!initialised)
+	public Object put(String key, Object value) {
+		if (!initialised) {
 			return super.put(key, value);
-		else
+        } else {
 			throw new UnsupportedOperationException("Cannot modify this map");
+        }
 	}
  
-	public void putAll(Map m) {
-		if (!initialised)
+	public void putAll(Map<? extends String, ? extends Object> m) {
+		if (!initialised) {
 			super.putAll(m);
-		else
+        } else {
 			throw new UnsupportedOperationException("Cannot modify this map");
+        }
 	}
  
-	public Object remove(Object key) {
-		if (!initialised)
+	public Object remove(String key) {
+		if (!initialised) {
 			return super.remove(key);
-		else
+        } else {
 			throw new UnsupportedOperationException("Cannot modify this map");
+        }
 	}
 }
  

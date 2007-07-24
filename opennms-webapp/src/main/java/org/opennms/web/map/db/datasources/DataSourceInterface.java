@@ -1,6 +1,5 @@
 package org.opennms.web.map.db.datasources;
 
-import java.util.Map;
 
 
 /**

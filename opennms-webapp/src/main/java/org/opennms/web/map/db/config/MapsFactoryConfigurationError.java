@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,6 +41,7 @@ package org.opennms.web.map.db.config;
  * the property file 'appmap.properties' cannot be found or instantiated.
  */
 public class MapsFactoryConfigurationError extends Error {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Create a new MapsFactoryConfigurationError with no detail mesage.

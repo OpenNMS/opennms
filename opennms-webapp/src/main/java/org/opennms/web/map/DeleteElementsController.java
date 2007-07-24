@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,25 +43,16 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
-
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.config.CatFactory;
-import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.element.Node;
-import org.opennms.web.map.MapsConstants;
-import org.opennms.web.map.view.*;
-
+import org.opennms.web.map.view.Manager;
+import org.opennms.web.map.view.VElement;
+import org.opennms.web.map.view.VMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 

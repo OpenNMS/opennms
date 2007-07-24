@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Jul 24: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -670,9 +674,9 @@ public class ManagerDefaultImpl implements Manager {
      * @return a List with the MapMenu objects.
      * @throws MapsException
      */
-    public List getMapsMenuTreeByName(String mapName) throws 
+    public List<VMapInfo> getMapsMenuTreeByName(String mapName) throws 
             MapNotFoundException, MapsException {
-    	  List mapsInTreesList = new ArrayList();
+    	  List<VMapInfo> mapsInTreesList = new ArrayList<VMapInfo>();
 	      //
 	      VMapInfo[] mapsMenu = null;
 	      try{
@@ -680,37 +684,40 @@ public class ManagerDefaultImpl implements Manager {
 	      }catch(MapNotFoundException mnf){
 	      	//do nothing...
 	      }
-	      if(mapsMenu!=null){
+	      if (mapsMenu != null) {
 	      	  // find all accessible maps for the user,
 	      	  // for all maps (and theirs tree of maps) with name like mapName. 
-	      	  for(int k=0; k<mapsMenu.length;k++){
+	      	  for (int k = 0; k < mapsMenu.length; k++) {
 	      	  	  //build a map in wich each entry is [mapparentid, listofchildsids]
-			      java.util.Map parent_child = new HashMap();
-			      parent_child = dbManager.getMapsStructure();
-			      List childList = new ArrayList();
+			      java.util.Map<Integer, Set<Integer>> parent_child = dbManager.getMapsStructure();
+			      List<Integer> childList = new ArrayList<Integer>();
+                  
 			      preorderVisit(new Integer(mapsMenu[k].getId()), childList, parent_child);
-			      for(int i=0; i<childList.size(); i++){
-			      	preorderVisit((Integer)childList.get(i), childList, parent_child);
+                  
+			      for (int i = 0; i < childList.size(); i++) {
+			          preorderVisit(childList.get(i), childList, parent_child);
 			      }
+                  
 			      //adds all sub-tree of maps to the visible map list
-			      for(int i=0; i<childList.size(); i++){
-			      	mapsInTreesList.add(getMapMenu(((Integer)childList.get(i)).intValue()));
+			      for (int i = 0; i < childList.size(); i++) {
+			          mapsInTreesList.add(getMapMenu(childList.get(i).intValue()));
 			      }
 	      	  }
 	      }
         return mapsInTreesList;
     }
     
-    private void preorderVisit(Integer rootElem, List treeElems, java.util.Map maps){
-       	Set childs = (Set)maps.get(rootElem);
-       	if(!treeElems.contains(rootElem)){
+    private void preorderVisit(Integer rootElem, List<Integer> treeElems, java.util.Map<Integer, Set<Integer>> maps) {
+       	Set<Integer> childs = maps.get(rootElem);
+       	if (!treeElems.contains(rootElem)) {
        		treeElems.add(rootElem);
        	}
-       	if(childs!=null){
-	    	Iterator it = childs.iterator();
-	    	while(it.hasNext()){
-	    		Integer child = (Integer)it.next();
-	    		if(!treeElems.contains(child)){
+        
+       	if (childs != null) {
+	    	Iterator<Integer> it = childs.iterator();
+	    	while (it.hasNext()) {
+	    		Integer child = it.next();
+	    		if (!treeElems.contains(child)) {
 	    			treeElems.add(child);
 	    		}
 	    		preorderVisit(child, treeElems, maps);
@@ -991,9 +998,10 @@ public class ManagerDefaultImpl implements Manager {
 		VElement[] elems = parentMap.getAllElements();
 		if (elems == null) return false;
 		Set<Integer> childSet = new TreeSet<Integer>();
-		for (int i=0; i<elems.length;i++) {
-			if (elems[i].getType().equals(VElement.MAP_TYPE))
+		for (int i = 0; i < elems.length; i++) {
+			if (elems[i].getType().equals(VElement.MAP_TYPE)) {
 				childSet.add(new Integer(elems[i].getId()));
+            }
 		}
 	    
 		log.debug("List of sub-maps before preorder visit "+childSet.toString());
@@ -1001,7 +1009,7 @@ public class ManagerDefaultImpl implements Manager {
 	    maps.put(new Integer(parentMap.getId()),childSet);
 
 	    while (childSet.size() > 0) {
-		    childSet = preorderVisit(childSet,maps);
+		    childSet = preorderVisit(childSet, maps);
 	
 		    log.debug("List of sub-maps  "+childSet.toString());
 	
@@ -1013,12 +1021,14 @@ public class ManagerDefaultImpl implements Manager {
 	
 	}
 
-    private Set<Integer> preorderVisit(Set treeElems,java.util.Map maps){
+    private Set<Integer> preorderVisit(Set<Integer> treeElems, java.util.Map<Integer, Set<Integer>> maps) {
     	Set<Integer> childset = new TreeSet<Integer>();
-    	Iterator it = treeElems.iterator();
-    	while(it.hasNext()){
-    		Set curset = (Set) maps.get((Integer) it.next());
-    		if (curset != null) childset.addAll(curset);
+    	Iterator<Integer> it = treeElems.iterator();
+    	while (it.hasNext()) {
+    		Set<Integer> curset = maps.get(it.next());
+    		if (curset != null) {
+                childset.addAll(curset);
+            }
     	}
     	return childset;
     }
