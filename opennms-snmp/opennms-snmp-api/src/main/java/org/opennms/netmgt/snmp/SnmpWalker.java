@@ -60,7 +60,7 @@ public abstract class SnmpWalker {
     private ResponseProcessor m_responseProcessor;
     private int m_maxVarsPerPdu;
     
-    protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
+    protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepititions, CollectionTracker tracker) {
         m_address = address;
         m_signal = new BarrierSignaler(1);
         
@@ -69,6 +69,7 @@ public abstract class SnmpWalker {
         m_error = false;
         
         m_tracker = tracker;
+        m_tracker.setMaxRepititions(maxRepititions);
         
         m_maxVarsPerPdu = maxVarsPerPdu;
 
