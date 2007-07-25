@@ -45,10 +45,10 @@ import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
@@ -206,7 +206,7 @@ public final class IcmpPlugin extends AbstractPlugin {
      * Builds a datagram compatable with the ping ReplyReceiver class.
      */
     private synchronized static DatagramPacket getDatagram(InetAddress addr, long tid) {
-        Packet iPkt = new Packet(tid);
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(tid);
         iPkt.setIdentity(FILTER_ID);
         iPkt.setSequenceId(m_seqid++);
         iPkt.computeChecksum();

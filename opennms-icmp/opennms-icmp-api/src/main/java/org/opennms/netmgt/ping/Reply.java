@@ -43,10 +43,12 @@ package org.opennms.netmgt.ping;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+import org.opennms.protocols.icmp.ICMPEchoPacket;
+
 /**
  * <p>
  * This class is use to encapsulate an ICMP reply that conforms to the
- * {@link Packet packet}class. The reply must be of type ICMP Echo Reply and be
+ * {@link ICMPEchoPacket packet}class. The reply must be of type ICMP Echo Reply and be
  * the correct length.
  * </p>
  * 
@@ -69,7 +71,7 @@ public final class Reply {
     /**
      * The received packet.
      */
-    private final Packet m_packet;
+    private final ICMPEchoPacket m_packet;
 
     /**
      * Constructs a new reply with the passed address and packet as the contents
@@ -81,7 +83,7 @@ public final class Reply {
      *            The received packet.
      * 
      */
-    private Reply(InetAddress addr, Packet pkt) {
+    private Reply(InetAddress addr, ICMPEchoPacket pkt) {
         m_packet = pkt;
         m_address = addr;
     }
@@ -111,7 +113,7 @@ public final class Reply {
     /**
      * Returns the ICMP packet for the reply.
      */
-    public final Packet getPacket() {
+    public final ICMPEchoPacket getPacket() {
         return m_packet;
     }
 
@@ -140,13 +142,13 @@ public final class Reply {
     public static Reply create(DatagramPacket packet) {
         // Check the packet length
         //
-        if (packet.getData().length != Packet.getNetworkSize()) {
+        if (packet.getData().length != ICMPEchoPacket.getNetworkSize()) {
             throw new IllegalArgumentException("The packet is not the correct network size");
         }
 
         // Construct a new packet
         //
-        Packet pkt = new Packet(packet.getData());
+        ICMPEchoPacket pkt = new ICMPEchoPacket(packet.getData());
         if (pkt.getReceivedTime() == 0)
             pkt.setReceivedTime();
 
