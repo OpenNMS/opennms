@@ -51,6 +51,11 @@ public class SingleInstanceTracker extends CollectionTracker {
         m_inst = inst;
         m_oid = SnmpObjId.get(m_base, m_inst);
     }
+    
+    @Override
+    public void setMaxRepititions(int maxRepititions) {
+        // do nothing since we are not a repeater
+    }
 
     public boolean isFinished() {
         return m_finished;
@@ -114,5 +119,6 @@ public class SingleInstanceTracker extends CollectionTracker {
     protected void receivedEndOfMib() {
         m_finished = true;
     }
+
 
 }
