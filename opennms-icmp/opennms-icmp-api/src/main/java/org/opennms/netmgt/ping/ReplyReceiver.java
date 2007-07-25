@@ -49,6 +49,7 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
@@ -142,7 +143,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * <ul>
      * <li>ICMP Type == Echo Reply</li>
      * <li>ICMP Identity == Filter ID</li>
-     * <li>ICMP Length =={@link Packet#getNetworkSize Packet.getNetworkSize()}
+     * <li>ICMP Length =={@link ICMPEchoPacket#getNetworkSize Packet.getNetworkSize()}
      * </li>
      * </ul>
      * 
@@ -197,7 +198,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * processed by the receiver, replies matching the criteria are added to the
      * queue. Each reply must be of type ICMP Echo Reply, its identity must
      * match the filterID, and its length must be equal to the
-     * {@link Packet ping packet's}length.
+     * {@link ICMPEchoPacket ping packet's}length.
      * </p>
      * 
      * @param portal

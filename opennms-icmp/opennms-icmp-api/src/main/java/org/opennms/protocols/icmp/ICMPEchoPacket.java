@@ -38,9 +38,8 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.ping;
+package org.opennms.protocols.icmp;
 
-import org.opennms.protocols.icmp.ICMPHeader;
 import org.opennms.protocols.ip.OC16ChecksumProducer;
 
 /**
@@ -53,7 +52,7 @@ import org.opennms.protocols.ip.OC16ChecksumProducer;
  * @version 1.1.1.1
  * 
  */
-public final class Packet extends ICMPHeader {
+public final class ICMPEchoPacket extends ICMPHeader {
     /**
      * Unique named padding that is placed in front of the incremental padding.
      */
@@ -114,7 +113,7 @@ public final class Packet extends ICMPHeader {
      * @exception java.lang.UnsupportedOperationException
      *                Always thrown.
      */
-    private Packet() {
+    private ICMPEchoPacket() {
         throw new java.lang.UnsupportedOperationException("illegal constructor call");
     }
 
@@ -129,7 +128,7 @@ public final class Packet extends ICMPHeader {
      * 
      * @see java.lang.System#currentTimeMillis
      */
-    public Packet(long tid) {
+    public ICMPEchoPacket(long tid) {
         super(ICMPHeader.TYPE_ECHO_REQUEST, (byte) 0);
         setNextSequenceId();
 
@@ -152,7 +151,7 @@ public final class Packet extends ICMPHeader {
      * @param buf
      *            The buffer containing a refected ping packet.
      */
-    public Packet(byte[] buf) {
+    public ICMPEchoPacket(byte[] buf) {
         m_pad = null; // ensure loadFromBuffer allocates pad
         loadFromBuffer(buf, 0);
     }

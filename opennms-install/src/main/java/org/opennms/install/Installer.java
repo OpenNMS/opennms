@@ -59,6 +59,7 @@ import javax.sql.DataSource;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
+import org.opennms.netmgt.ping.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.springframework.util.StringUtils;
 
@@ -818,15 +819,15 @@ public class Installer {
 
         short m_icmpId = 2;
 
-        IcmpSocket.Stuff s = new IcmpSocket.Stuff(m_socket, m_icmpId);
+        Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
         Thread t = new Thread(s);
         t.start();
 
         int count = 3;
         for (long attempt = 0; attempt < count; attempt++) {
             // build a packet
-            org.opennms.netmgt.ping.Packet pingPkt =
-                new org.opennms.netmgt.ping.Packet(attempt);
+            org.opennms.protocols.icmp.ICMPEchoPacket pingPkt =
+                new org.opennms.protocols.icmp.ICMPEchoPacket(attempt);
             pingPkt.setIdentity(m_icmpId);
             pingPkt.computeChecksum();
         
