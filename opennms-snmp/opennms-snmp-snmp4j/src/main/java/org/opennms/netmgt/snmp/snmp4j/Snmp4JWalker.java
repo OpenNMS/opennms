@@ -178,7 +178,7 @@ public class Snmp4JWalker extends SnmpWalker {
     private Snmp4JAgentConfig m_agentConfig;
 
     public Snmp4JWalker(Snmp4JAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
+        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepititions(), tracker);
         
         m_agentConfig = agentConfig;
         

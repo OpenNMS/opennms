@@ -55,6 +55,7 @@ public class SnmpAgentConfig {
     public static final int AUTH_PRIV = 3;
     public static final String DEFAULT_READ_COMMUNITY = "public";
     public static final int DEFAULT_MAX_VARS_PER_PDU = 10;
+    public static final int DEFAULT_MAX_REPITITIONS = 2;
     public static final String DEFAULT_WRITE_COMMUNITY = "private";
     public static final int DEFAULT_SECURITY_LEVEL = NOAUTH_NOPRIV;
     public static final String DEFAULT_SECURITY_NAME = "opennmsUser";
@@ -73,6 +74,7 @@ public class SnmpAgentConfig {
     private String m_securityName;
     private String m_readCommunity;
     private int m_maxVarsPerPdu;
+    private int m_maxRepititions;
     private String m_writeCommunity;
     private String m_authPassPhrase;
     private String m_authProtocol;
@@ -103,6 +105,7 @@ public class SnmpAgentConfig {
         m_privPassPhrase = DEFAULT_PRIV_PASS_PHRASE;
         m_readCommunity = DEFAULT_READ_COMMUNITY;
         m_maxVarsPerPdu = DEFAULT_MAX_VARS_PER_PDU;
+        m_maxRepititions = DEFAULT_MAX_REPITITIONS;
         m_writeCommunity = DEFAULT_WRITE_COMMUNITY;
     }
     
@@ -114,6 +117,7 @@ public class SnmpAgentConfig {
         buff.append(", Timeout: "+m_timeout);
         buff.append(", Retries: "+m_retries);
         buff.append(", MaxVarsPerPdu: "+m_maxVarsPerPdu);
+        buff.append(", MaxRepititions: "+m_maxRepititions);
         buff.append(", Max request size: "+m_maxRequestSize);
         buff.append(", Version: "+m_version);
         buff.append(", ProxyForAddress: "+m_proxyFor);
@@ -208,6 +212,14 @@ public class SnmpAgentConfig {
 
     public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
+    }
+    
+    public int getMaxRepititions() {
+        return m_maxRepititions;
+    }
+
+    public void setMaxRepititions(int maxRepititions) {
+        m_maxRepititions = maxRepititions;
     }
 
     public String getWriteCommunity() {

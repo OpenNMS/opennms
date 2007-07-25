@@ -166,7 +166,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     private SnmpSession m_session;
 
     public JoeSnmpWalker(JoeSnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
+        super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepititions(), tracker);
         m_peer = getPeer(agentConfig);
         m_handler = new JoeSnmpResponseHandler();
     }

@@ -91,6 +91,10 @@ public class Snmp4JAgentConfig {
     public int getMaxVarsPerPdu() {
         return m_config.getMaxVarsPerPdu();
     }
+    
+    public int getMaxRepititions() {
+        return m_config.getMaxRepititions();
+    }
 
     public int getPort() {
         return m_config.getPort();
