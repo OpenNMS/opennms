@@ -58,6 +58,7 @@ public class Bootstrap {
 	
     static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
     static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
+    static final String LIBRARY_PROPERTIES_NAME = "libraries.properties";
     static final String OPENNMS_HOME_PROPERTY = "opennms.home";
     
     /**
@@ -255,6 +256,8 @@ public class Bootstrap {
 		}
 		File rrdFile = new File(etc, RRD_PROPERTIES_NAME);
 		loadProperties(rrdFile);
+		File libraryFile = new File(etc, LIBRARY_PROPERTIES_NAME);
+		loadProperties(libraryFile);
 		return propertiesLoaded;
 	}
 
@@ -341,6 +344,10 @@ public class Bootstrap {
                     + File.separator + "etc";
         }
 
+        if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
+        	dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
+        }
+        
         if (System.getProperty("org.opennms.rrd.interfaceJar") != null) {
         	dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
         }
