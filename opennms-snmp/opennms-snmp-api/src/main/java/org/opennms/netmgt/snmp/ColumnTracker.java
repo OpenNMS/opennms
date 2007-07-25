@@ -36,11 +36,21 @@ public class ColumnTracker extends CollectionTracker {
     private SnmpObjId m_base;
     private SnmpObjId m_last;
     private boolean m_finished = false;
-    private int m_maxRepetitions = 10;
+    private int m_maxRepetitions;
 
     public ColumnTracker(SnmpObjId base) {
+        this(base, 2);
+    }
+    
+    public ColumnTracker(SnmpObjId base, int maxRepititions) {
         m_base = base;
         m_last = base;
+        m_maxRepetitions = maxRepititions; 
+    }
+    
+    @Override
+    public void setMaxRepititions(int maxRepititions) {
+        m_maxRepetitions = maxRepititions;
     }
 
     public boolean isFinished() {

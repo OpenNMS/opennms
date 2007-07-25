@@ -76,6 +76,8 @@ public class AggregateTracker extends CollectionTracker {
             return hasRepeaters() ? m_maxRepititions : Integer.MAX_VALUE;
         }
         
+        
+        
         public int size() {
             return m_oids.size();
         }
@@ -253,6 +255,13 @@ public class AggregateTracker extends CollectionTracker {
         super.setTimedOut(timedOut);
         for (CollectionTracker child : m_children) {
             child.setTimedOut(timedOut);
+        }
+    }
+    
+    @Override
+    public void setMaxRepititions(int maxRepititions) {
+        for (CollectionTracker child : m_children) {
+            child.setMaxRepititions(maxRepititions);
         }
     }
 
