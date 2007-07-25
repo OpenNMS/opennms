@@ -51,9 +51,9 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 final class PingManager implements Runnable, PausableFiber {
@@ -171,7 +171,7 @@ final class PingManager implements Runnable, PausableFiber {
 
                 // build a packet
                 //
-                Packet pingPkt = new Packet(m_fiberId);
+                ICMPEchoPacket pingPkt = new ICMPEchoPacket(m_fiberId);
                 pingPkt.setIdentity(m_icmpId);
                 pingPkt.computeChecksum();
 
@@ -464,7 +464,7 @@ final class PingManager implements Runnable, PausableFiber {
 
         /**
          * Returns the identifier that is placed in the ping
-         * {@link org.opennms.netmgt.ping.Packet packet}.
+         * {@link org.opennms.protocols.icmp.ICMPEchoPacket packet}.
          * 
          * @return The thread id for the packet.
          */

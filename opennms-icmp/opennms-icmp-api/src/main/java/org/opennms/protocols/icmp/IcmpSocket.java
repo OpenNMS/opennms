@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2007 Jul 25: Move 'main' and related code to a Ping class. Make the code
+ *              separable from OpenNMS.
  * 2007 Jun 23: Fix warnings on static members and eliminate warning on
  *              m_rawFd that is only used in native code. - dj@opennms.org
  * 2007 May 21: Improve logging of shared library loading. - dj@opennms.org
@@ -42,10 +44,6 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ping.Packet;
-
 /**
  * This class provides a bridge between the host operating system so that ICMP
  * messages may be sent and received.
@@ -57,6 +55,12 @@ import org.opennms.netmgt.ping.Packet;
 public final class IcmpSocket {
     private static final String LIBRARY_NAME = "jicmp";
     private static final String PROPERTY_NAME = "opennms.library.jicmp";
+    private static final String LOGGER_PROPERTY_NAME = "opennms.logger.jicmp";
+    
+    public interface Logger {
+        public void debug(String msg);
+        public void info(String msg);
+    }
 
     /**
      * This instance is used by the native code to save and store file
@@ -103,8 +107,22 @@ public final class IcmpSocket {
         initSocket();
     }
     
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    private Logger log() {
+        try {
+            if (System.getProperty(LOGGER_PROPERTY_NAME) != null) {
+                return (Logger)Class.forName(System.getProperty(LOGGER_PROPERTY_NAME)).newInstance();
+            }
+        } catch (Exception e) {
+            System.err.println("[WARN] Unable to create jicmp logger from property "+LOGGER_PROPERTY_NAME+" with value "+System.getProperty(LOGGER_PROPERTY_NAME)+". "+e);
+        }
+        return new Logger() {
+            public void debug(String msg) {
+                System.err.println("[DEBUG] "+msg);
+            }
+            public void info(String msg) {
+                System.err.println("[INFO] "+msg);
+            }
+        };
     }
 
     /**
@@ -134,138 +152,10 @@ public final class IcmpSocket {
     public final native void send(DatagramPacket packet) throws IOException;
 
     /**
-     * This method is used to close and release the resources assocated with the
+     * This method is used to close and release the resources associated with the
      * instance. The file descriptor is closed at the operating system level and
      * any subsequent calls to this instance should result in exceptions being
      * generated.
      */
     public final native void close();
-
-    public static void main(String[] argv) {
-	if (argv.length != 1) {
-            System.err.println("incorrect number of command-line arguments.");
-            System.err.println("usage: java -cp ... "
-                               + IcmpSocket.class.getName() + " <host>");
-            System.exit(1);
-        }
- 
-        String host = argv[0];
-
-        IcmpSocket m_socket = null;
-
-        try {
-            m_socket = new IcmpSocket();
-	} catch (UnsatisfiedLinkError e) {
-            System.err.println("UnsatisfiedLinkError while creating an "
-                               + "IcmpSocket.  Most likely failed to load "
-                               + "libjicmp.so.  Try setting the property "
-                               + "'opennms.library.jicmp' to point at the "
-                               + "full path name of the libjicmp.so shared "
-                               + "library "
-                               + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
-            e.printStackTrace();
-            System.exit(1);
-	} catch (NoClassDefFoundError e) {
-            System.err.println("NoClassDefFoundError while creating an "
-                               + "IcmpSocket.  Most likely failed to load "
-                               + "libjicmp.so.");
-            e.printStackTrace();
-            System.exit(1);
-	} catch (IOException e) {
-            System.err.println("IOException while creating an "
-                               + "IcmpSocket.");
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-	java.net.InetAddress addr = null;
-        try {
-	    addr = java.net.InetAddress.getByName(host);
-        } catch (java.net.UnknownHostException e) {
-            System.err.println("UnknownHostException when looking up "
-                               + host + ".");
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        System.out.println("PING " + host + " (" + addr.getHostAddress()
-                           + "): 56 data bytes");
-
-	short m_icmpId = 2;
-
-        Stuff s = new Stuff(m_socket, m_icmpId);
-        Thread t = new Thread(s);
-        t.start();
-
-        for (long m_fiberId = 0; true; m_fiberId++) {
-    	    // build a packet
-            org.opennms.netmgt.ping.Packet pingPkt =
-                new org.opennms.netmgt.ping.Packet(m_fiberId);
-            pingPkt.setIdentity(m_icmpId);
-            pingPkt.computeChecksum();
-    
-            // convert it to a datagram to be sent
-            byte[] buf = pingPkt.toBytes();
-            DatagramPacket sendPkt =
-                new DatagramPacket(buf, buf.length, addr, 0);
-            buf = null;
-            pingPkt = null;
-
-            try {
-                m_socket.send(sendPkt);
-            } catch (IOException e) {
-                System.err.println("IOException received when sending packet.");
-                e.printStackTrace();
-                System.exit(1);
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
-        }
-    }
-
-    public static class Stuff implements Runnable {
-        private IcmpSocket m_socket;
-	private short m_icmpId;
-
-        public Stuff(IcmpSocket socket, short icmpId) {
-            m_socket = socket;
-            m_icmpId = icmpId;
-        }
-
-        public void run() {
-            try {
-                while (true) {
-                    DatagramPacket pkt = m_socket.receive();
-                    org.opennms.netmgt.ping.Reply reply;
-                    try {
-                        reply = org.opennms.netmgt.ping.Reply.create(pkt);
-                    } catch (Throwable t) {
-                        // do nothing but skip this packet
-                        continue;
-                    }
-            
-                    if (reply.isEchoReply()
-                        && reply.getIdentity() == m_icmpId) {
-                        float rtt = ((float) reply.getPacket().getPingRTT())
-                                    / 1000;
-                        System.out.println(Packet.getNetworkSize()
-                                           + " bytes from "
-                                           + pkt.getAddress().getHostAddress()
-                                           + ": icmp_seq="
-                                           + reply.getPacket().getTID()
-                                           + ". time="
-                                           + rtt + " ms");
-                    }
-                }
-            } catch (Throwable t) {
-                System.err.println("An exception occured processing the "
-                                   + "datagram, thread exiting.");
-                t.printStackTrace();
-                System.exit(1);
-            }
-        }
-    }
 }

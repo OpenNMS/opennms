@@ -54,7 +54,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.netmgt.poller.Distributable;
@@ -63,6 +62,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
@@ -143,7 +143,7 @@ final public class IcmpMonitor extends IPv4Monitor {
         /**
          * The ping packet (contains sent/received time stamps)
          */
-        private Packet m_packet;
+        private ICMPEchoPacket m_packet;
 
         /**
          * Constructs a new ping object
@@ -174,11 +174,11 @@ final public class IcmpMonitor extends IPv4Monitor {
             return m_addr.equals(addr);
         }
 
-        void setPacket(Packet packet) {
+        void setPacket(ICMPEchoPacket packet) {
             m_packet = packet;
         }
 
-        Packet getPacket() {
+        ICMPEchoPacket getPacket() {
             return m_packet;
         }
     }
@@ -243,7 +243,7 @@ final public class IcmpMonitor extends IPv4Monitor {
      * Builds a datagram compatable with the ping ReplyReceiver class.
      */
     private synchronized static DatagramPacket getDatagram(InetAddress addr, long tid) {
-        Packet iPkt = new Packet(tid);
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(tid);
         iPkt.setIdentity(FILTER_ID);
         iPkt.setSequenceId(m_seqid++);
 
@@ -337,7 +337,7 @@ final public class IcmpMonitor extends IPv4Monitor {
             serviceStatus = PollStatus.available();
 
             // Determine round-trip-time for the ping packet
-            Packet replyPkt = reply.getPacket();
+            ICMPEchoPacket replyPkt = reply.getPacket();
             if (replyPkt != null) {
                 long rtt = replyPkt.getPingRTT();
                 serviceStatus.setResponseTime(rtt);
