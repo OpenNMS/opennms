@@ -10,6 +10,11 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>jicmp-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
       <scope>compile</scope>
     </dependency>

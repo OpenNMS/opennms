@@ -69,8 +69,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jni-${platform}</artifactId>
-      <type>${platform.jni}</type>
+      <artifactId>opennms-icmp-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -90,13 +89,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jni-${platform}</artifactId>
-      <type>${platform.jni}</type>
-      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

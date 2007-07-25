@@ -108,6 +108,8 @@ public class Installer {
 
     String m_install_servletdir = null;
 
+    String m_library_search_path = null;
+    
     String m_fix_constraint_name = null;
 
     boolean m_fix_constraint_remove_rows = false;
@@ -146,6 +148,19 @@ public class Installer {
                                     m_pg_user, m_pg_pass);
         m_installerDb.setDataSource(opennmsDataSource);
 
+        /*
+         * make sure we can load the ICMP library before we go any farther
+         */
+        
+        String icmp_path = findLibrary("jicmp", m_library_search_path);
+        if (icmp_path == null) {
+        	throw new Exception("Unable to load the jicmp\nlibrary.  Make sure you have it installed, and use the -l option to set the path to locate it, if necessary.");
+        }
+
+        String jrrd_path = findLibrary("jrrd", m_library_search_path);
+        
+        writeLibraryConfig(icmp_path, jrrd_path);
+        
         /*
          * Everything needs to use the administrative data source until
          * we verify that the opennms database is created below (and where
@@ -353,7 +368,12 @@ public class Installer {
                     case 'i':
                         m_do_inserts = true;
                         break;
-
+                    
+                    case 'l':
+                    	i++;
+                    	m_library_search_path = getNextArg(argv, i, 'l');
+                    	break;
+                    	
                     case 'n':
                         m_skip_constraints = true;
 
@@ -713,6 +733,8 @@ public class Installer {
         m_out.println("   -w    location of tomcat's context directory");
         m_out.println("         (usually under conf/Catalina/localhost)");
         m_out.println("");
+        m_out.println("   -l    library search path");
+        m_out.println("");
         m_out.println("   -r    run as an RPM install (does nothing)");
         m_out.println("   -x    turn on debugging for database data "
                 + "transformation");
@@ -777,6 +799,51 @@ public class Installer {
         return null;
     }
 
+    public String findLibrary(String libname, String path) {
+    	String fullname = System.mapLibraryName(libname);
+
+    	String defaultPath = System.getProperty("java.library.path");
+    	if (defaultPath != null) {
+    		if (path != null) {
+    			path += File.pathSeparator + defaultPath;
+    		} else {
+    			path = defaultPath;
+    		}
+    	}
+    	
+    	if (path != null) {
+    		String[] paths = path.split(File.pathSeparator);
+    		for (int i = 0; i < paths.length; i++) {
+    			try {
+    				String fullpath = paths[i] + File.separator + fullname;
+        			System.load(fullpath);
+        			return fullpath;
+       			} catch (UnsatisfiedLinkError ule) {
+       				// fall through and try the next one
+       			}
+    		}
+    	}
+    	return null;
+    }
+    
+    public void writeLibraryConfig(String jicmp_path, String jrrd_path) throws IOException {
+    	Properties libraryProps = new Properties();
+
+    	if (jicmp_path != null && jicmp_path.length() != 0) {
+    		libraryProps.put("opennms.library.jicmp", jicmp_path);
+    	}
+    	
+    	if (jrrd_path != null && jrrd_path.length() != 0) {
+    		libraryProps.put("opennms.library.jrrd", jrrd_path);
+    	}
+    	
+        File f = new File(m_opennms_home + File.separator + "etc"
+                + File.separator + "libraries.properties");
+        f.createNewFile();
+        FileOutputStream os = new FileOutputStream(f);
+    	libraryProps.store(os, null);
+    }
+    
     public void pingLocalhost() throws IOException {
         String host = "127.0.0.1";
 

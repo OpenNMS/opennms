@@ -690,6 +690,11 @@ opennms.home = ${opennms.home}
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>jicmp-api</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>jrrd-api</artifactId>
         <version>1.0</version>
       </dependency>
