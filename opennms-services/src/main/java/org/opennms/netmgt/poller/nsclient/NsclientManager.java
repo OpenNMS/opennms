@@ -633,7 +633,7 @@ public class NsclientManager {
                 }
             }
 
-            // if a crtical percent was configured, check it, overriding
+            // if a critical percent was configured, check it, overriding
             // warning percent.
             if (param.getCriticalPercent() != 0) {
                 if (Integer.parseInt(pack.getResponse()) > param.getCriticalPercent()) {
@@ -854,8 +854,8 @@ public class NsclientManager {
 
             // parse out the response
             String[] results = pack.getResponse().split("&");
-            float memCommitLimit = Float.parseFloat(results[0]);
-            float memCommitByte = Float.parseFloat(results[1]);
+            float memCommitLimit = Float.parseFloat(results[0].replace(",", "."));
+            float memCommitByte = Float.parseFloat(results[1].replace(",", "."));
             float memUsedPerc = (memCommitByte / memCommitLimit) * 100;
 
             // if a warning percent was configured, check it.
@@ -865,7 +865,7 @@ public class NsclientManager {
                 }
             }
 
-            // if a crtical percent was configured, check it, overriding
+            // if a critical percent was configured, check it, overriding
             // warning percent.
             if (param.getCriticalPercent() != 0) {
                 if (memUsedPerc > (float) param.getCriticalPercent()) {
@@ -881,7 +881,7 @@ public class NsclientManager {
     /**
      * This method performs a check of a perfmon object as defined by the
      * 'parameter' string. An example of this string would be:
-     * \Memory(_Total)\Pool Paged Bytes - the warning and crtical members of
+     * \Memory(_Total)\Pool Paged Bytes - the warning and critical members of
      * param will define thresholds used to validate the perfmon object value.
      * 
      * @param param
@@ -909,7 +909,7 @@ public class NsclientManager {
             }
 
             // parse out the response.
-            float counterValue = Float.parseFloat(pack.getResponse());
+            float counterValue = Float.parseFloat(pack.getResponse().replace(",", "."));
 
             // if a warning percent was configured, check it.
             if (param.getWarningPercent() != 0) {
@@ -918,7 +918,7 @@ public class NsclientManager {
                 }
             }
 
-            // if a crtical percent was configured, check it, overriding
+            // if a critical percent was configured, check it, overriding
             // warning percent.
             if (param.getCriticalPercent() != 0) {
                 if (counterValue > (float) param.getCriticalPercent()) {
