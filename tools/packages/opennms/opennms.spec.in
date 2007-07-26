@@ -2,7 +2,7 @@
 #  $Id$
 #
 # The version used to be passed from build.xml. It's hardcoded here
-%{!?version:%define version 1.3.2}
+%{!?version:%define version 1.3.6}
 # The release number is set to 0 unless overridden
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix is equal to $OPENMS_HOME
@@ -30,214 +30,8 @@
 
 %define debug_package %{nil}
 
-%define platform_matched %{nil}
-
 # Don't put Java or any of the packages that Java might depend on in the
 # requires line.  See bug #1144.
-
-%if "%{platform}" == "linux-centos-3"
-%define	initdir		/etc
-%define psql_service	rhdb
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_centos3
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-centos-4"
-%define initdir         /etc
-%define psql_service    postgresql
-%define requires        postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_centos4
-%define platform_match  true
-%endif
-
-%if "%{platform}" == "linux-centos-5"
-%define initdir         /etc
-%define psql_service    postgresql
-%define requires        postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_centos5
-%define platform_match  true
-%endif
-
-%if "%{platform}" == "linux-fedora-1"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_fc1
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-fedora-2"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_fc2
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-fedora-3"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_fc3
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-fedora-4"
-%define initdir         /etc
-%define psql_service    postgresql
-%define requires        postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_fc4
-%define platform_match  true
-%endif
-
-%if "%{platform}" == "linux-fedora-5"
-%define initdir         /etc
-%define psql_service    postgresql
-%define requires        postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_fc5
-%define platform_match  true
-%endif
-
-%if "%{platform}" == "linux-fedora-6"
-%define initdir         /etc
-%define psql_service    postgresql
-%define requires        postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_fc6
-%define platform_match  true
-%endif
-
-%if "%{platform}" == "linux-fedora-7"
-%define initdir         /etc
-%define psql_service    postgresql
-%define requires        postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_fc7
-%define platform_match  true
-%endif
-
-%if "%{platform}" == "linux-mandrake-7"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_mdk7
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-mandrake-8"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_mdk8
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-mandrake-90"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_mdk90
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-mandrake-92"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4, postgresql-pl >= 7.4
-%define release_pkg     %{releasenumber}_mdk92
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-mandrake-10"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4, postgresql-pl >= 7.4
-%define release_pkg     %{releasenumber}_mdk10
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-redhat-7"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires        postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_rhl7
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-redhat-8"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_rhl8
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-redhat-9"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_rhl9
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-rhel-3"
-%define	initdir		/etc
-%define psql_service	rhdb
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_rhel3
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-rhel-4"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_rhel4
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-rhel-5"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_rhel5
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-suse-7"
-%define	initdir		/etc/rc.d
-%define psql_service	postgres
-%define requires        postgres >= 7.4
-%define release_pkg     %{releasenumber}_suse7
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-suse-8"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql >= 7.4, postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_suse8
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-suse-9"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql >= 7.4, postgresql-server >= 7.4
-%define release_pkg     %{releasenumber}_suse9
-%define platform_match	true
-%endif
-
-%if "%{platform}" == "linux-suse-10"
-%define	initdir		/etc
-%define psql_service	postgresql
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define release_pkg     %{releasenumber}_suse10
-%define platform_match	true
-%endif
-
-%if "%{platform_match}" != "true"
-%error error - platform macro (or rpm.platform property when building from ant) not defined or set to an invalid platform.
-%endif
 
 %if "%{buildtests}" == "true"
 %define buildtests	1
@@ -257,10 +51,11 @@
 
 Name:			opennms
 Summary:		Enterprise-grade network management platform
-Release:		%release_pkg
+Release:		%releasenumber
 Version:		%version
 License:		LGPL/GPL
 Group:			Applications/System
+BuildArch:		noarch
 
 Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			https://sourceforge.net/project/showfiles.php?group_id=4141
@@ -268,7 +63,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		rrdtool >= 1.2, %{requires}
+Requires:		jrrd, jicmp, postgresql-server >= 7.4
 
 %description
 OpenNMS is an enterprise-grade network management package.
@@ -460,7 +255,12 @@ else
 fi
 
 rm -f %{instprefix}/etc/configured
-ln -s %{instprefix}/bin/opennms %{initdir}/init.d/opennms
+for dir in /etc /etc/rc.d; do
+	if [ -d "$dir" ]; then
+		ln -sf %{instprefix}/bin/opennms $dir/init.d/opennms
+		break
+	fi
+done
 
 echo ""
 echo " *** Installation complete.  You must still run the installer and"
@@ -468,6 +268,10 @@ echo " *** make a few other changes before you start OpenNMS.  See the"
 echo " *** install guide and release notes for details."
 
 %changelog
+* Wed Jul 25 2007 Benjamin Reed <ranger@opennms.org>
+- Updated to be noarch, now that all native code has been moved to
+  separate packages
+
 * Fri Jan 05 2007 DJ Gregor <dj@opennms.org>
 - Change the postgresql versions to 7.4.  The installer will not work
   with anything earlier than 7.4.
