@@ -141,6 +141,11 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jspc-maven-plugin</artifactId>
+        <version>1.4.6</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>native-maven-plugin</artifactId>
         <version>1.0-alpha-2</version>
       </plugin>
