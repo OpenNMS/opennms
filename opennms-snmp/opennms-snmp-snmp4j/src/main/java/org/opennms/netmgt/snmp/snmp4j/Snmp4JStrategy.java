@@ -131,7 +131,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * Not yet implemented.  Use a walker.
      */
     public SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oid) {
-        return null;
+    	throw new UnsupportedOperationException("Snmp4JStrategy.getBulk not yet implemented.");
     }
 
     public SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value) {

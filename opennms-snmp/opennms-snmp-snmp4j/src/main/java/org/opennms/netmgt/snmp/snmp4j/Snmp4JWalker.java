@@ -178,7 +178,7 @@ public class Snmp4JWalker extends SnmpWalker {
     private Snmp4JAgentConfig m_agentConfig;
 
     public Snmp4JWalker(Snmp4JAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepititions(), tracker);
+        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), tracker);
         
         m_agentConfig = agentConfig;
         
@@ -189,7 +189,7 @@ public class Snmp4JWalker extends SnmpWalker {
     public void start() {
         
         if (log().isDebugEnabled()) {
-            log().debug("Walking "+getName()+" for "+getAddress()+" using version "+m_agentConfig.getVersionString()+" with config: "+m_agentConfig);
+            log().info("Walking "+getName()+" for "+getAddress()+" using version "+m_agentConfig.getVersionString()+" with config: "+m_agentConfig);
         }
             
         super.start();
