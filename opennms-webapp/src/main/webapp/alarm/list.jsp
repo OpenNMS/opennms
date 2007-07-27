@@ -191,7 +191,7 @@
       <!-- menu -->
       <div id="linkbar">
       <ul>
-      <li><a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all alarms</a></li>
+      <li><a href="<%=this.makeLink( parms, new ArrayList<org.opennms.web.alarm.filter.Filter>())%>" title="Remove all search constraints" >View all alarms</a></li>
       <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
       <li><a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       <li>
@@ -470,13 +470,13 @@
     }
 
     
-    public String getFiltersAsString(ArrayList filters ) {
+    public String getFiltersAsString(List<org.opennms.web.alarm.filter.Filter> filters ) {
         StringBuffer buffer = new StringBuffer();
     
         if( filters != null ) {
             for( int i=0; i < filters.size(); i++ ) {
                 buffer.append( "&filter=" );
-                String filterString = AlarmUtil.getFilterString((org.opennms.web.alarm.filter.Filter)filters.get(i));
+                String filterString = AlarmUtil.getFilterString(filters.get(i));
                 buffer.append( java.net.URLEncoder.encode(filterString) );
             }
         }      
@@ -484,7 +484,7 @@
         return( buffer.toString() );
     }
 
-    public String makeLink( AlarmFactory.SortStyle sortStyle, AlarmFactory.AcknowledgeType ackType, ArrayList filters, int limit ) {
+    public String makeLink( AlarmFactory.SortStyle sortStyle, AlarmFactory.AcknowledgeType ackType, List<org.opennms.web.alarm.filter.Filter> filters, int limit ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
       buffer.append( AlarmUtil.getSortStyleString(sortStyle) );
@@ -496,7 +496,7 @@
     }
 
     public String eventMakeLink( AlarmQueryParms parms, org.opennms.web.alarm.filter.Filter filter, boolean add ) {
-      ArrayList filters = new ArrayList( parms.filters );
+      List<org.opennms.web.alarm.filter.Filter> filters = new ArrayList<org.opennms.web.alarm.filter.Filter>( parms.filters );
       if( add ) {
         filters.add( filter );
       }
@@ -529,13 +529,13 @@
     }
 
 
-    public String makeLink( AlarmQueryParms parms, ArrayList filters ) {
+    public String makeLink( AlarmQueryParms parms, List<org.opennms.web.alarm.filter.Filter> filters ) {
       return( this.makeLink( parms.sortStyle, parms.ackType, filters, parms.limit) );
     }
 
 
     public String makeLink( AlarmQueryParms parms, org.opennms.web.alarm.filter.Filter filter, boolean add ) {
-      ArrayList newList = new ArrayList( parms.filters );
+      List<org.opennms.web.alarm.filter.Filter> newList = new ArrayList<org.opennms.web.alarm.filter.Filter>( parms.filters );
       if( add ) {
         newList.add( filter );
       }

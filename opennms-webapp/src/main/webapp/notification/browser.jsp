@@ -361,7 +361,7 @@
     }
 
 
-    public String makeLink( NoticeFactory.SortStyle sortStyle, NoticeFactory.AcknowledgeType ackType, ArrayList filters ) {
+    public String makeLink( NoticeFactory.SortStyle sortStyle, NoticeFactory.AcknowledgeType ackType, List filters ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
       buffer.append( NoticeUtil.getSortStyleString(sortStyle) );
@@ -395,7 +395,7 @@
     }
 
 
-    public String makeLink( NoticeQueryParms parms, ArrayList filters ) {
+    public String makeLink( NoticeQueryParms parms, List filters ) {
       return( this.makeLink( parms.sortStyle, parms.ackType, filters) );
     }
 
