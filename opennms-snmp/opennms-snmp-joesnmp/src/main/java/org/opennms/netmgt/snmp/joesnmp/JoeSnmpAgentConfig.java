@@ -65,8 +65,8 @@ public class JoeSnmpAgentConfig {
         return m_config.getMaxVarsPerPdu();
     }
     
-    public int getMaxRepititions() {
-        return m_config.getMaxRepititions();
+    public int getMaxRepetitions() {
+        return m_config.getMaxRepetitions();
     }
     
     public int getPort() {
@@ -133,8 +133,8 @@ public class JoeSnmpAgentConfig {
         m_config.setMaxVarsPerPdu(maxVarsPerPdu);
     }
     
-    public void setMaxRepititions(int maxRepititions) {
-        m_config.setMaxRepititions(maxRepititions);
+    public void setMaxRepetitions(int maxRepetitions) {
+        m_config.setMaxRepetitions(maxRepetitions);
     }
 
     public void setPort(int port) {
