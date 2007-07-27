@@ -72,14 +72,14 @@
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-        <webResources>
-          <resource>
-            <filtering>true</filtering>
-            <directory>${basedir}/src/main/web-filtered</directory>
-          </resource>
-          <resource>
-            <directory>${project.build.directory}/${moduleName}</directory>
-          </resource>
+          <webResources>
+            <resource>
+              <filtering>true</filtering>
+              <directory>${basedir}/src/main/web-filtered</directory>
+            </resource>
+            <resource>
+              <directory>${project.build.directory}/${moduleName}</directory>
+            </resource>
           </webResources>
         </configuration>
       </plugin>
@@ -111,7 +111,23 @@
             <type>embedded</type>
           </container>
         </configuration>
-    </plugin>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jspc-maven-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jspc</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -268,7 +284,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -367,7 +383,7 @@
     <dependency>
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
