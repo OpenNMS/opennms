@@ -61,6 +61,10 @@ public interface ReadyRunnable extends Runnable {
     public boolean equals(ReadyRunnable runnable);
 
     public String getInfo();
+    
+    public String getPackageName();
+    
+    public void setPackageName(String pkg);
 
     
 }

@@ -110,7 +110,7 @@ final class LinkdEventProcessor implements EventListener {
      * Unsubscribe from eventd
      */
     public void close() {
-        getLinkd().getIpcManager().removeEventListener(this);
+        getLinkd().getEventMgr().removeEventListener(this);
     }
 
     /**
@@ -133,7 +133,7 @@ final class LinkdEventProcessor implements EventListener {
         // node regained service
         ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
 
-        getLinkd().getIpcManager().addEventListener(this, ueiList);
+        getLinkd().getEventMgr().addEventListener(this, ueiList);
     }
 
     /**

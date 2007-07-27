@@ -31,27 +31,27 @@
 //
 package org.opennms.netmgt.linkd;
 
-import java.beans.PropertyVetoException;
-import java.io.*;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.Map.Entry;
+
+import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.*;
+
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.core.fiber.*;
+import org.opennms.netmgt.linkd.QueryManager;
 
-public class Linkd implements PausableFiber {
+import org.opennms.netmgt.xml.event.Event;
+
+public class Linkd extends AbstractServiceDaemon {
 
 	/**
 	 * The log4j category used to log messages.
@@ -64,11 +64,6 @@ public class Linkd implements PausableFiber {
 	private static final Linkd m_singleton = new Linkd();
 
 	/**
-	 * Current status of this fiber
-	 */
-	private int m_status;
-
-	/**
 	 * Rescan scheduler thread
 	 */
 	private Scheduler m_scheduler;
@@ -79,16 +74,16 @@ public class Linkd implements PausableFiber {
 	private LinkdEventProcessor m_receiver;
 
 	/**
-	 * HashMap that contains Linkable Snmp Nodes by primary ip address.
+	 * List that contains Linkable Nodes.
 	 */
 
-	private HashMap<String,LinkableNode> snmpprimaryip2nodes;
+	private List<LinkableNode> nodes;
 
 	/**
-	 * HashMap that contains SnmpCollection by nodeid.
+	 * HashMap that contains SnmpCollections by package.
 	 */
 
-	private HashMap<Integer,SnmpCollection> nodeid2snmpcollection;
+	private List<String> activepackages;
 	
 
 	/**
@@ -96,272 +91,92 @@ public class Linkd implements PausableFiber {
 	 */
 	private EventIpcManager m_eventMgr;
 
-	private boolean scheduledDiscoveryLink = false;
-
 	/**
-	 * the snmp poll interval in ms
+	 * Tha data source to use
 	 */
+    private DataSource m_dbConnectionFactory;
 
-	private static long m_snmp_poll_interval = 1800000;
-
-	/**
-	 * the initial sleep time interval in ms
-	 */
-
-	private static long m_initial_sleep_time = 300000;
-
-	/**
-	 * the discovery link time interval in ms
-	 */
-
-	private static long m_discovery_link_interval = 600000;
-
-	/**
-	 * boolean operator that tells if to do auto discovery
-	 */
-
-	private static boolean m_auto_discovery = false;
-
+    /**
+     * The Db connection read and write handler
+     */
+    private QueryManager m_queryMgr = new DbEventWriter();    
+    
+    /**
+    * Linkd Configuration Initialization
+    */
+    
+    private LinkdConfig m_linkdConfig;
+	
 	/**
 	 * the list of ipaddress for which new suspect event is sent
 	 */
 
 	private List<String> newSuspenctEventsIpAddr= null;
 	
-	private Linkd() {
-		m_scheduler = null;
-		m_status = START_PENDING;
+	public Linkd() {
+		super("OpenNMS.Linkd");
 	}
 
 	public static Linkd getInstance() {
 		return m_singleton;
 	}
 
-	public synchronized void init() {
-
+	public Category log() {
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance();
+		return ThreadCategory.getInstance();
+	}
+	
+	public synchronized void onInit() {
 
-		if (log.isInfoEnabled())
-			log
+
+		if (log().isInfoEnabled())
+			log()
 					.info("init: Category Level Set to "
-							+ log.getLevel().toString());
+							+ log().getLevel().toString());
 
-		// Initialize the Capsd configuration factory.
-		//
-		try {
-			CapsdConfigFactory.init();
-		} catch (MarshalException ex) {
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (ValidationException ex) {
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (IOException ex) {
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-
-		// Initialize the Linkd configuration factory.
-		//
-		try {
-			LinkdConfigFactory.init();
-		} catch (ClassNotFoundException ex) {
-			log.error("init: Failed to load linkd configuration file ", ex);
-			return;
-		} catch (MarshalException ex) {
-			log.error("init: Failed to load linkd configuration file ", ex);
-			return;
-		} catch (ValidationException ex) {
-			log.error("init: Failed to load linkd configuration file ", ex);
-			return;
-		} catch (IOException ex) {
-			log.error("init: Failed to load linkd configuration file ", ex);
-			return;
-		}
-
-		snmpprimaryip2nodes = new HashMap<String,LinkableNode>();
-
-		nodeid2snmpcollection = new HashMap<Integer,SnmpCollection>();
+		m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
 		
-		// Initialize the SNMP Peer Factory
-		//
-		try {
-			SnmpPeerFactory.reload();
-		} catch (MarshalException ex) {
-			log.error("Failed to load SNMP configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (ValidationException ex) {
-			log.error("Failed to load SNMP configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (IOException ex) {
-			log.error("Failed to load SNMP configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+		nodes = new ArrayList<LinkableNode>();
 
-		// Initialize the Database configuration factory
-		//
-        // Initialize the Database configuration factory
-        try {
-            DataSourceFactory.init();
-        } catch (IOException ie) {
-            log.fatal("IOException loading database config", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log.fatal("Marshall Exception loading database config", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log.fatal("Validation Exception loading database config", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (ClassNotFoundException ce) {
-            log.fatal("Class lookup failure loading database config", ce);
-            throw new UndeclaredThrowableException(ce);
-        } catch (PropertyVetoException pve) {
-            log.fatal("Property veto failure loading database config", pve);
-            throw new UndeclaredThrowableException(pve);
-        } catch (SQLException sqle) {
-            log.fatal("SQL exception loading database config", sqle);
-            throw new UndeclaredThrowableException(sqle);
-        }
-
-
-		try {
-			m_initial_sleep_time = LinkdConfigFactory.getInstance()
-					.getInitialSleepTime();
-		} catch (Throwable t) {
-			log
-					.error("init: Failed to load Initial Sleep Time from linkd configuration file "
-							+ t);
-		}
-
-		try {
-			m_snmp_poll_interval = LinkdConfigFactory.getInstance()
-					.getSnmpPollInterval();
-		} catch (Throwable t) {
-			log
-					.error("init: Failed to load Snmp Poll Interval from linkd configuration file "
-							+ t);
-		}
-
-		try {
-			m_discovery_link_interval = LinkdConfigFactory.getInstance()
-					.getDiscoveryLinkInterval();
-		} catch (Throwable t) {
-			log
-					.error("init: Failed to load Discovery Link Interval from linkd configuration file "
-							+ t);
-		}
-
-		try {
-			m_auto_discovery = LinkdConfigFactory.getInstance()
-					.autoDiscovery();
-		} catch (Throwable t) {
-			log
-					.error("init: Failed to load Auto Discovery from linkd configuration file "
-							+ t);
-		}
-
-		java.sql.Connection dbConn = null;
-
-		try {
-			dbConn = DataSourceFactory.getInstance().getConnection();
-			if (log.isDebugEnabled()) {
-				log
-						.debug("init: Loading Snmp nodes");
-			}
-			snmpprimaryip2nodes = LinkdConfigFactory.getInstance()
-						.getLinkableNodes(dbConn);
-			nodeid2snmpcollection = LinkdConfigFactory.getInstance().getSnmpColls(dbConn);
-			LinkdConfigFactory.getInstance().updateDeletedNodes(dbConn);
-		} catch (SQLException sqlE) {
-			log
-					.fatal(
-							"SQL Exception while syncing node object with database information.",
-							sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		} catch (Throwable t) {
-			log
-					.fatal(
-							"Unknown error while syncing node object with database information.",
-							t);
-			throw new UndeclaredThrowableException(t);
-		} finally {
-			try {
-				if (dbConn != null) {
-					dbConn.close();
-				}
-			} catch (Exception e) {
+		activepackages = new ArrayList<String>();
 		
-			}
+		try {
+			nodes = m_queryMgr.getSnmpNodeList();
+			m_queryMgr.updateDeletedNodes();
+		} catch (SQLException e) {
+	    	log().fatal("SQL exception executing on database", e);
+	        throw new UndeclaredThrowableException(e);
 		}
-
+		
 		// Create a scheduler
 		//
 		try {
-			if (log.isDebugEnabled())
-				log.debug("init: Creating link scheduler");
+			if (log().isDebugEnabled())
+				log().debug("init: Creating link scheduler");
 
-			m_scheduler = new Scheduler("Linkd", LinkdConfigFactory
-					.getInstance().getThreads());
+			m_scheduler = new Scheduler("Linkd", m_linkdConfig.getThreads());
 		} catch (RuntimeException e) {
-			log.fatal("init: Failed to create linkd scheduler", e);
+			log().fatal("init: Failed to create linkd scheduler", e);
 			throw e;
 		} catch (Throwable t) {
-			log
+			log()
 					.error("init: Failed to load threads from linkd configuration file "
 							+ t);
 		}
 
+		// Load and schedule snmpcollection
 		// Schedule the snmp data collection on nodes
-		//
-
-		if (log.isDebugEnabled())
-			log.debug("init: scheduling "
-					+ snmpprimaryip2nodes.size() + " Snmp Collections ");
-
-		SnmpCollection snmpCollector = null;
-
-		Iterator<SnmpCollection> ite = nodeid2snmpcollection.values().iterator();
-		while (ite.hasNext()) {
-			snmpCollector = ite.next();
-			log.debug("init: scheduling Snmp Collection for ip "
-					+ snmpCollector.getTarget().getHostAddress());
-			synchronized (snmpCollector) {
-				if (snmpCollector.getScheduler() == null) {
-					snmpCollector.setScheduler(m_scheduler);
-				}
-				snmpCollector.setPollInterval(m_snmp_poll_interval);
-				snmpCollector.setInitialSleepTime(m_initial_sleep_time);
-				m_initial_sleep_time = m_initial_sleep_time	+ 30000;
-			}
-				snmpCollector.schedule();
-		}
-			// Schedule the discovery link on nodes
-			//
-		if (!nodeid2snmpcollection.isEmpty()) {
-			DiscoveryLink discoveryLink = new DiscoveryLink();
-			if (log.isDebugEnabled())
-				log
-						.debug("init: scheduling Discovery Link");
-	
-			synchronized (discoveryLink) {
-				if (discoveryLink.getScheduler() == null) {
-					discoveryLink.setScheduler(m_scheduler);
-				}
-				discoveryLink.setSnmpPollInterval(m_snmp_poll_interval);
-				discoveryLink.setDiscoveryInterval(m_discovery_link_interval);
-				discoveryLink.setInitialSleepTime(m_initial_sleep_time);
-			}
-			discoveryLink.schedule();
-			scheduledDiscoveryLink = true;
-		}
-
-		// Create the IPCMANAGER
+		// and construct package2snmpcollection that contains nodes with snmpcollections
 		
-		EventIpcManagerFactory.init();
-		m_eventMgr = EventIpcManagerFactory.getIpcManager();
-		if (log.isDebugEnabled()) {
-			log.debug("init: Creating event Manager");
+		if (log().isDebugEnabled())
+			log().debug("init: scheduling Ready Runnuble for active packages: " + activepackages.size());
+
+		Iterator<LinkableNode> ite = nodes.iterator();
+
+		while (ite.hasNext()) {
+			//Schedule snmp collection for node and also 
+			//schedule discovery link on package where is not active 
+			scheduleCollectionForNode(ite.next());
 		}
 
 		// initialize the ipaddrsentevents
@@ -371,59 +186,82 @@ public class Linkd implements PausableFiber {
 		// Create an event receiver.
 		//
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("init: Creating event broadcast event receiver");
+			if (log().isDebugEnabled()) {
+				log().debug("init: Creating event broadcast event receiver");
 			}
 
 			m_receiver = new LinkdEventProcessor(this);
 		} catch (Throwable t) {
-			log.error(
+			log().error(
 					"init: Failed to initialized the broadcast event receiver",
 					t);
 			throw new UndeclaredThrowableException(t);
 		}
 		
-		if (log.isInfoEnabled())
-			log.info("init: LINKD CONFIGURATION INITIALIZED");
+		if (log().isInfoEnabled())
+			log().info("init: LINKD CONFIGURATION INITIALIZED");
 
 	}
+	
+	/**
+	 * This method schedule snmpcollection for node
+	 * for each package
+	 * Also schedule discovery link on package 
+	 * when not still activated
+	 * @param node
+	 */
+	private void scheduleCollectionForNode(LinkableNode node) {
 
-	public synchronized void start() {
-		m_status = STARTING;
+		List<SnmpCollection> snmpcollOnNode = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid());
+		Iterator<SnmpCollection>  coll_ite = snmpcollOnNode.iterator();
+		while (coll_ite.hasNext()) {
+			SnmpCollection snmpcoll = coll_ite.next();
+			if (activepackages.contains(snmpcoll.getPackageName())) {
+				if (log().isDebugEnabled())
+					log().debug("ScheduleCollectionForNode: package active: " +snmpcoll.getPackageName());
+			} else {
+				// schedule discoverylink
+				if (log().isDebugEnabled())
+					log().debug("ScheduleCollectionForNode: Schedulink Discovery Link for Active Package: " + snmpcoll.getPackageName());
+				DiscoveryLink discovery = m_linkdConfig.getDiscoveryLink(snmpcoll.getPackageName());
+	   			if (discovery.getScheduler() == null) {
+	   				discovery.setScheduler(m_scheduler);
+	    		}
+	    		discovery.schedule();
+	    		activepackages.add(snmpcoll.getPackageName());
 
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-		// get the category logger
-		Category log = ThreadCategory.getInstance();
-
-		if (log.isDebugEnabled())
-			log.debug("start: Starting Linkd");
+			}
+			if (snmpcoll.getScheduler() == null) {
+					snmpcoll.setScheduler(m_scheduler);
+			}
+			if (log().isDebugEnabled())
+				log().debug("ScheduleCollectionForNode: Schedulink Snmp Collection for Package/Nodeid: "
+						+ snmpcoll.getPackageName() +"/"+node.getNodeId() + "/" +snmpcoll.getInfo());
+			snmpcoll.schedule();
+		}
+	}
+	
+	public synchronized void onStart() {
 
 		// start the scheduler
 		//
 		try {
-			if (log.isDebugEnabled())
-				log.debug("start: Starting linkd scheduler");
+			if (log().isDebugEnabled())
+				log().debug("start: Starting linkd scheduler");
 
 			m_scheduler.start();
 		} catch (RuntimeException e) {
-				log.fatal("start: Failed to start scheduler", e);
+				log().fatal("start: Failed to start scheduler", e);
 			throw e;
 		}
 
 		// Set the status of the service as running.
 		//
-		m_status = RUNNING;
-
-		if (log.isInfoEnabled())
-			log.info("start: Linkd running");
 
 	}
 
-	public synchronized void stop() {
+	public synchronized void onStop() {
 
-		m_status = STOP_PENDING;
 		// Stop the scheduler
 		m_scheduler.stop();
 		// Stop the broadcast event receiver
@@ -431,285 +269,175 @@ public class Linkd implements PausableFiber {
 		m_receiver.close();
 
 		m_scheduler = null;
-		m_status = STOPPED;
-		Category log = ThreadCategory.getInstance();
-		if (log.isInfoEnabled())
-			log.info("stop: Linkd stopped");
 
 	}
 
-	public synchronized void reload() throws IOException {
-
-	}
-
-	public synchronized void pause() {
-		if (m_status != RUNNING)
-			return;
-
-		m_status = PAUSE_PENDING;
+	public synchronized void onPause() {
 		m_scheduler.pause();
-		m_status = PAUSED;
-
-		Category log = ThreadCategory.getInstance();
-		if (log.isInfoEnabled())
-			log.info("pause: Linkd paused");
 	}
 
-	public synchronized void resume() {
-		if (m_status != PAUSED)
-			return;
-
-		m_status = RESUME_PENDING;
+	public synchronized void onResume() {
 		m_scheduler.resume();
-		m_status = RUNNING;
-
-		Category log = ThreadCategory.getInstance();
-		if (log.isInfoEnabled())
-			log.info("resume: Linkd resumed");
 	}
 
-	public String getName() {
-		return "OpenNMS.Linkd";
-	}
-
-	public int getStatus() {
-		return m_status;
-	}
-
-	public LinkableNode[] getSnmpLinkableNodes() {
-		synchronized (snmpprimaryip2nodes) {
-			return (LinkableNode[]) snmpprimaryip2nodes.values().toArray(
-					new LinkableNode[0]);
+	public Collection<LinkableNode> getLinkableNodes() {
+		synchronized (nodes) {
+			return nodes;
 		}
 	}
 
-	void scheduleNodeCollection(int nid) {
-
-		Category log = ThreadCategory.getInstance();
-		java.sql.Connection dbConn = null;
-		SnmpCollection coll = null;
-		boolean scheduleSnmpCollection = true;
-		
-		// First of all get SnmpCollection
-		try {
-			dbConn = DataSourceFactory.getInstance().getConnection();
-			if (log.isDebugEnabled()) {
-				log.debug("scheduleNodeCollection: Loading node " + nid
-						+ " from database");
+	public Collection<LinkableNode> getLinkableNodesOnPackage(String pkg) {
+		Collection<LinkableNode> nodesOnPkg = new ArrayList<LinkableNode>();
+		synchronized (nodes) {
+			Iterator<LinkableNode> ite = nodes.iterator();
+			while (ite.hasNext()) {
+				LinkableNode node = ite.next();
+				if (m_linkdConfig.interfaceInPackage(node.getSnmpPrimaryIpAddr(), m_linkdConfig.getPackage(pkg)))
+					nodesOnPkg.add(node);
 			}
-			try {
-				coll = LinkdConfigFactory.getInstance().getSnmpCollection(
-						dbConn, nid);
-				if (coll == null) {
-					log.warn("scheduleNodeCollection: Failed to get Linkable node from LinkdConfigFactory. Exiting");
-					return;
-				}
-			} catch (UnknownHostException h) {
-					log.warn("scheduleNodeCollection: Failed to get Linkable node from LinkdConfigFactory"
-									+ h);
+			return nodesOnPkg;
+		}
+	}
+
+	void scheduleNodeCollection(int nodeid) {
+
+		LinkableNode node = null;
+		// database changed need reload packageiplist
+		m_linkdConfig.createPackageIpListMap();
+		
+
+		// First of all get Linkable Node
+		if (log().isDebugEnabled()) {
+			log().debug("scheduleNodeCollection: Loading node " + nodeid
+					+ " from database");
+		}
+		try {
+
+			node = m_queryMgr.getSnmpNode(nodeid);
+			if (node == null) {
+				log().warn("scheduleNodeCollection: Failed to get Linkable node from DataBase. Exiting");
+				return;
 			}
 		} catch (SQLException sqlE) {
-			log
-					.fatal(
-							"scheduleNodeCollection: SQL Exception while syncing node object with database information.",
-							sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		} catch (Throwable t) {
-			log
-					.fatal(
-							"scheduleNodeCollection: Unknown error while syncing node object with database information.",
-							t);
-			throw new UndeclaredThrowableException(t);
-		} finally {
-			try {
-				if (dbConn != null) {
-					dbConn.close();
-				}
-			} catch (SQLException e) {
-				log
-						.error(
-								"scheduleNodeCollection: SQL Exception while syncing node object with database information.",
-								e);
-			}
-		}
-
-		// you have to test if an old collection for this node exists 
-		if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
-			SnmpCollection oldColl = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
-			if (oldColl.equals(coll)) {
-				scheduleSnmpCollection = false;
-				coll = oldColl;
-			} else {
-				// the new collection is change
-				// first of all unschedule
-				// second remove from hash
-				oldColl.unschedule();
-				synchronized (snmpprimaryip2nodes) {
-					snmpprimaryip2nodes.remove(getLinkableNodeKey(nid));
-				}
-			}
-		}
-			
-		// this means that same snmpcollection exists
-		if (scheduleSnmpCollection && snmpprimaryip2nodes.containsKey(coll.getTarget().getHostAddress())) {
-			// this means that collection is the same but nodes should be different
-			scheduleSnmpCollection = false;
-			
-			LinkableNode oldNode = (LinkableNode) snmpprimaryip2nodes
-					.get(coll.getTarget().getHostAddress());
-
-			// first of all set status to D on linkd tables for old node if
-			// different from new
-			if (nid != oldNode.getNodeId()) {
-				DbEventWriter dbwriter = new DbEventWriter(oldNode.getNodeId(),
-						DbEventWriter.ACTION_DELETE);
-				dbwriter.run();
-				nodeid2snmpcollection.remove(new Integer(oldNode.getNodeId()));
-			} else {
-				coll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
-			}
-		}
+			log().error("scheduleNodeCollection: " +
+					"SQL Exception while syncing node object with database information.",sqlE);
+			return;
+		} 
+		nodes.add(node);
 		
-		LinkableNode node = new LinkableNode(nid,coll.getTarget().getHostAddress());
-		
-		synchronized (nodeid2snmpcollection) {
-			snmpprimaryip2nodes.put(coll.getTarget().getHostAddress(), node);
-		}
-		
-		synchronized (snmpprimaryip2nodes) {
-			nodeid2snmpcollection.put(new Integer(nid), coll);
-		}
-
-		
-		// schedule collection if
-		if (scheduleSnmpCollection) {
-			synchronized (coll) {
-				if (coll.getScheduler() == null) {
-					coll.setScheduler(m_scheduler);
-				}
-				coll.setPollInterval(m_snmp_poll_interval);
-				coll.setInitialSleepTime(0);
-				coll.schedule();
-			}
-			
-			if (!scheduledDiscoveryLink) {
-				DiscoveryLink discoveryLink = new DiscoveryLink();
-	
-				if (log.isDebugEnabled())
-					log
-							.debug("scheduleNodeCollection: scheduling Discovery Link");
-				synchronized (discoveryLink) {
-					if (discoveryLink.getScheduler() == null) {
-						discoveryLink.setScheduler(m_scheduler);
-					}
-					discoveryLink.setSnmpPollInterval(m_snmp_poll_interval);
-					discoveryLink.setDiscoveryInterval(m_discovery_link_interval);
-					discoveryLink.setInitialSleepTime(0);
-				}
-				discoveryLink.schedule();
-				scheduledDiscoveryLink = true;
-			}
-		}
+		scheduleCollectionForNode(node);
 
 	}
 
-	void wakeUpNodeCollection(int nid) {
+	void wakeUpNodeCollection(int nodeid) {
 
-		SnmpCollection snmpcoll = null;
-		synchronized (nodeid2snmpcollection) {
-			if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
-				snmpcoll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
-			}
-		}
+		LinkableNode node = getNode(nodeid);
 
-		// work on snmpcollection
-		ReadyRunnable rr = m_scheduler.getReadyRunnable(snmpcoll);
-
-		if (rr == null) {
-			scheduleNodeCollection(nid);
+		
+		if (node == null) {
+			log().warn("wakeUpNodeCollection: schedulink a node not found: " + nodeid);
+			scheduleNodeCollection(nodeid);
 		} else {
-			rr.wakeUp();
-			nodeid2snmpcollection.put(new Integer(nid), (SnmpCollection)rr);
-		}
-	}
-
-	void deleteNode(int nid) {
-
-		Category log = ThreadCategory.getInstance();
-
-		SnmpCollection collection = null;
-		if (log.isDebugEnabled())
-			log.debug("deleteNode: deleting LinkableNode for node "
-					+ nid);
-		
-		if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
-			collection = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
-		} else log.warn("deleteNode: no snmp collection found for node " + nid);
-			
-		String nodekey = getLinkableNodeKey(nid);
-
-		//test if collectionkey is the same
-		if (nodekey != null) {
-			if (log.isInfoEnabled())
-				log.info("deleteNode: removing linkable node for nodeid " + nid + " key " + nodekey);
-			synchronized (snmpprimaryip2nodes) {
-				snmpprimaryip2nodes.remove(nodekey);
-			}
-		} else {
-			if (log.isInfoEnabled())
-				log.info("deleteNode: no linkable node found for nodeid " + nid);
-		}
-
-		if (collection != null) {
-			// a nodeid with the same collection exists so
-			// verify that rr exists if not add
-			// else do nothing
-			ReadyRunnable rr = m_scheduler.getReadyRunnable(collection);
-			if (rr == null) {
-				log.warn("deleteNode: Failed to get " + collection.getInfo() 
-										+ " with nodeid "
-										+ nid);
-			} else {
-				rr.unschedule();
+			// get collections
+			// get readyRunnuble
+			// wakeup RR
+			Iterator<SnmpCollection> ite = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
+			if (log().isDebugEnabled())
+				log().debug("wakeUpNodeCollection: get Snmp Collection from Scratch! Iterating on found.");
+			while (ite.hasNext()) {
+				ReadyRunnable rr = getReadyRunnable(ite.next());
+				if (rr == null) {
+					log().warn("wakeUpNodeCollection: found null ReadyRunnable");
+					return;
+				} else {
+					rr.wakeUp();
+				}	
 			}
 		}
-
-		DbEventWriter dbwriter = new DbEventWriter(nid, DbEventWriter.ACTION_DELETE);
-		dbwriter.run();
 
 	}
 
-	void suspendNodeCollection(int nid) {
-		
-		SnmpCollection snmpcoll = null;
-		synchronized (nodeid2snmpcollection) {
-			if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
-				snmpcoll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
-			}
-		}
+	void deleteNode(int nodeid) {
 
-		// work on snmpcollection
-		ReadyRunnable rr = m_scheduler.getReadyRunnable(snmpcoll);
+		if (log().isDebugEnabled())
+			log().debug("deleteNode: deleting LinkableNode for node "
+					+ nodeid);
 
-		if (rr == null) {
-			scheduleNodeCollection(nid);
-			synchronized (nodeid2snmpcollection) {
-				if (nodeid2snmpcollection.containsKey(new Integer(nid))) {
-					snmpcoll = (SnmpCollection) nodeid2snmpcollection.get(new Integer(nid));
-				}
-			}
-			rr = m_scheduler.getReadyRunnable(snmpcoll);
+		try {
+			m_queryMgr.update(nodeid, QueryManager.ACTION_DELETE);
+		} catch (SQLException sqlE) {
+			log().error("scheduleNodeCollection: " +
+				"SQL Exception while syncing node object with database information.",sqlE);
 		} 
 		
-		if (rr != null) rr.suspend();
-		nodeid2snmpcollection.put(new Integer(nid), (SnmpCollection)rr);
+
+		LinkableNode node = removeNode(nodeid);
+
+		if (node == null) {
+			log().warn("deleteNode: node not found: " + nodeid);
+		} else {
+			Iterator<SnmpCollection> ite = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
+			if (log().isDebugEnabled())
+				log().debug("deleteNode: get Snmp Collection from Scratch! Iterating on found.");
+
+			while (ite.hasNext()) {
+				ReadyRunnable rr = getReadyRunnable(ite.next());
+				
+				if (rr == null) {
+					log().warn("deleteNode: found null ReadyRunnable");
+					return;
+				} else {
+					rr.unschedule();
+				}	
+
+			}
+			
+		}
+
+		// database changed need reload packageiplist
+		m_linkdConfig.createPackageIpListMap();
+
+	}
+
+	void suspendNodeCollection(int nodeid) {
 		
-		DbEventWriter dbwriter = new DbEventWriter(nid, DbEventWriter.ACTION_UPTODATE);
-		dbwriter.run();
+		if (log().isDebugEnabled())
+			log().debug("suspendNodeCollection: suspend collection LinkableNode for node "
+					+ nodeid);
+
+		try {
+			m_queryMgr.update(nodeid, QueryManager.ACTION_UPTODATE);
+		} catch (SQLException sqlE) {
+			log().error("suspendNodeCollection: " +
+				"SQL Exception while syncing node object with database information.",sqlE);
+		} 
+
+		LinkableNode node = getNode(nodeid);
+
+		if (node == null) {
+			log().warn("suspendNodeCollection: found null ReadyRunnable");
+		} else {
+			// get collections
+			// get readyRunnuble
+			// suspend RR
+			if (log().isDebugEnabled())
+				log().debug("suspendNodeCollection: get Snmp Collection from Scratch! Iterating on found.");
+			Iterator<SnmpCollection> ite = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
+			while (ite.hasNext()) {
+				ReadyRunnable rr = getReadyRunnable(ite.next());
+				if (rr == null) {
+					log().warn("suspendNodeCollection: suspend: node not found: " + nodeid);
+					return;
+				} else {
+					rr.suspend();
+				}	
+			}
+		}
+
 	}
 
 	/**
-	 * Method that updates info in hash snmpprimaryip2nodes and also save info
+	 * Method that updates info in List nodes and also save info
 	 * into database. This method is called by SnmpCollection after all stuff is
 	 * done
 	 * 
@@ -718,23 +446,21 @@ public class Linkd implements PausableFiber {
 
 	void updateNodeSnmpCollection(SnmpCollection snmpcoll) {
 
-		Category log = ThreadCategory.getInstance();
-		synchronized (snmpprimaryip2nodes) {
-			if (snmpprimaryip2nodes.containsKey(snmpcoll.getTarget()
-					.getHostAddress())) {
-				LinkableNode node = (LinkableNode) snmpprimaryip2nodes.get(snmpcoll
-						.getTarget().getHostAddress());
-				DbEventWriter dbwriter = new DbEventWriter(node.getNodeId(), snmpcoll);
-				dbwriter.setAutoDiscovery(m_auto_discovery);
-				dbwriter.run();
-				node = dbwriter.getLinkableNode();
-				snmpprimaryip2nodes.put(snmpcoll.getTarget().getHostAddress(),
-						node);
-			} else {
-					log
-							.warn("updateNodeSnmpCollection: cannot find Linkable SNMP Node element in hash snmpprimaryip2nodes");
-			}
+		LinkableNode node = removeNode(snmpcoll.getTarget().getHostAddress());
+		if (node == null) {
+			log().error("No node found for snmp collection: " + snmpcoll.getInfo() + " unscheduling!");
+			m_scheduler.unschedule(snmpcoll);
+			return;
 		}
+		
+		try {
+			node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
+		} catch (SQLException e) {
+			log().error("Failed to save on db snmpcollection/package: " + snmpcoll.getPackageName()+"/"+snmpcoll.getInfo() + " " + e);
+			return;
+		}
+		nodes.add(node);
+
 	}
 	/**
 	 * Method that uses info in hash snmpprimaryip2nodes and also save info
@@ -746,8 +472,11 @@ public class Linkd implements PausableFiber {
 
 	void updateDiscoveryLinkCollection(DiscoveryLink discover) {
 
-		DbEventWriter dbwriter = new DbEventWriter(discover);
-		dbwriter.run();
+		try {
+			m_queryMgr.storeDiscoveryLink(discover);
+		} catch (SQLException e) {
+			log().error("Failed to save discoverylink on database for package:" + discover.getPackageName());
+		}
 	}
 	
 	/**
@@ -757,40 +486,116 @@ public class Linkd implements PausableFiber {
 	 *            The interface for which the newSuspect event is to be
 	 *            generated
 	 */
-	void sendNewSuspectEvent(String ipInterface,String ipowner) {
+	void sendNewSuspectEvent(String ipInterface,String ipowner, String pkgName) {
 		// construct event with 'linkd' as source
-		
-		// first of all verify that ipaddress has been not sent
-		if (!newSuspenctEventsIpAddr.contains(ipInterface)) {
-			
-			Event event = new Event();
-			event.setSource("linkd");
-			event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-			event.setHost(ipowner);
-			event.setInterface(ipInterface);
-			event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 
-			// send the event to eventd
-			m_eventMgr.sendNow(event);
+		org.opennms.netmgt.config.linkd.Package pkg = m_linkdConfig.getPackage(pkgName);
+
+		if (m_linkdConfig.autoDiscovery() || (pkg.hasAutoDiscovery() && pkg.getAutoDiscovery() && m_linkdConfig.interfaceInPackage(ipInterface, pkg))) {
+			// first of all verify that ipaddress has been not sent
+			if (!newSuspenctEventsIpAddr.contains(ipInterface)) {
+				
+				Event event = new Event();
+				event.setSource("linkd");
+				event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+				event.setHost(ipowner);
+				event.setInterface(ipInterface);
+				event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+
+				// send the event to eventd
+				m_eventMgr.sendNow(event);
+				
+				newSuspenctEventsIpAddr.add(ipInterface);
+			}
 			
-			newSuspenctEventsIpAddr.add(ipInterface);
 		}
 	}
 
-	EventIpcManager getIpcManager() {
+
+	public DataSource getDbConnectionFactory() {
+		return m_dbConnectionFactory;
+	}
+
+	public void setDbConnectionFactory(DataSource connectionFactory) {
+		m_dbConnectionFactory = connectionFactory;
+	}
+
+	public EventIpcManager getEventMgr() {
 		return m_eventMgr;
 	}
 
-	private String getLinkableNodeKey(int nid) {
-		synchronized (snmpprimaryip2nodes) {
-			Iterator<Entry<String, LinkableNode>> it = snmpprimaryip2nodes.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<String, LinkableNode> entry = it.next();
-				if ( entry.getValue().getNodeId() == nid ) return entry.getKey();
+	public void setEventMgr(EventIpcManager mgr) {
+		m_eventMgr = mgr;
+	}
+
+	public LinkdConfig getLinkdConfig() {
+		return m_linkdConfig;
+	}
+
+	public void setLinkdConfig(LinkdConfig config) {
+		m_linkdConfig = config;
+	}
+	
+	private LinkableNode getNode(int nodeid) {
+		synchronized (nodes) {
+			Iterator<LinkableNode> ite = nodes.iterator();
+			while (ite.hasNext()) {
+				LinkableNode node = ite.next();
+				if (node.getNodeId() == nodeid) return node;
 			}
 		}
 		return null;
 	}
 
+	private LinkableNode getNode(String ipaddr) {
+		synchronized (nodes) {
+			Iterator<LinkableNode> ite = nodes.iterator();
+			while (ite.hasNext()) {
+				LinkableNode node = ite.next();
+				if (node.getSnmpPrimaryIpAddr().equals(ipaddr)) return node;
+			}
+		}
+		return null;
+	}
+	
+
+	private LinkableNode removeNode(int nodeid) {
+		List<LinkableNode> nodeses = new ArrayList<LinkableNode>();
+		LinkableNode node = null;
+		synchronized (nodes) {
+			Iterator<LinkableNode> ite = nodes.iterator();
+			while (ite.hasNext()) {
+				 LinkableNode curNode = ite.next();
+				if (node.getNodeId() == nodeid) node=curNode;
+				else nodeses.add(curNode);
+			}
+			nodes = nodeses;
+		}
+		return node;
+	}
+
+	private LinkableNode removeNode(String ipaddr) {
+		List<LinkableNode> nodeses = new ArrayList<LinkableNode>();
+		LinkableNode node = null;
+		synchronized (nodes) {
+			Iterator<LinkableNode> ite = nodes.iterator();
+			while (ite.hasNext()) {
+				 LinkableNode curNode = ite.next();
+				if (curNode.getSnmpPrimaryIpAddr().equals(ipaddr)) node=curNode;
+				else nodeses.add(curNode);
+			}
+			nodes = nodeses;
+		}
+		return node;
+	}
+	
+	private ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
+		if (log().isDebugEnabled()) {
+			log().debug("getReadyRunnable: get ReadyRunnable from scheduler: " + runnable.getInfo());
+		}
+		
+		return m_scheduler.getReadyRunnable(runnable);
+		
+	}
 
 }
