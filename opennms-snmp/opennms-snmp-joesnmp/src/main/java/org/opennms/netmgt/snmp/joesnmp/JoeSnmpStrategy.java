@@ -244,8 +244,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     }
 
     public SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new UnsupportedOperationException("JoeSnmpStrategy.getBulk() not yet implemented.");
     }
 
     public static class RegistrationInfo {
