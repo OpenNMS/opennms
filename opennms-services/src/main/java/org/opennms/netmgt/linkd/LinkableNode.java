@@ -36,6 +36,8 @@ public class LinkableNode extends Object {
 	int m_nodeId;
 
 	String m_snmpprimaryaddr;
+	
+	String m_sysoid;
 
 	List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
 	
@@ -55,16 +57,11 @@ public class LinkableNode extends Object {
 	 * the list of bridge port that are backbone bridge ports ou that are
 	 * link between switches
 	 */
-	List<Integer> BackBoneBridgePorts = new java.util.ArrayList<Integer>();
+	List<Integer> backBoneBridgePorts = new java.util.ArrayList<Integer>();
 
-	/**
-	 * the list of port that are CDP ports ou that are
-	 * link between Cisco Devices
-	 */
+	List<Vlan> vlans = new java.util.ArrayList<Vlan>();
 
-//	List<Integer> CdpPorts = new java.util.ArrayList<Integer>();
-	
-	List<String> BridgeIdentifiers = new java.util.ArrayList<String>();
+	List<String> bridgeIdentifiers = new java.util.ArrayList<String>();
 	
 	HashMap<String,List<BridgeStpInterface>> BridgeStpInterfaces = new HashMap<String,List<BridgeStpInterface>>();
 
@@ -84,9 +81,10 @@ public class LinkableNode extends Object {
 		"default constructor not supported");
 	}
 
-	public LinkableNode(int nodeId, String snmprimaryaddr) {
+	public LinkableNode(int nodeId, String snmprimaryaddr,String sysoid) {
 		m_nodeId = nodeId;
 		m_snmpprimaryaddr = snmprimaryaddr;
+		m_sysoid = sysoid;
 	}
 
 	public String toString() {
@@ -187,7 +185,7 @@ public class LinkableNode extends Object {
 	 * @return Returns the backBoneBridgePorts.
 	 */
 	List<Integer> getBackBoneBridgePorts() {
-		return BackBoneBridgePorts;
+		return backBoneBridgePorts;
 	}
 
 	/**
@@ -195,51 +193,33 @@ public class LinkableNode extends Object {
 	 *            The backBoneBridgePorts to set.
 	 */
 	void setBackBoneBridgePorts(List<Integer> backBoneBridgePorts) {
-		BackBoneBridgePorts = backBoneBridgePorts;
+		this.backBoneBridgePorts = backBoneBridgePorts;
 	}
 
+	/**
+	 * return true if bridgeport is a backbone port
+	 * @param bridgeport
+	 * @return
+	 */
 	boolean isBackBoneBridgePort(int bridgeport) {
-		return BackBoneBridgePorts.contains(new Integer(bridgeport));
+		return backBoneBridgePorts.contains(new Integer(bridgeport));
 	}
 
+	/**
+	 * add bridgeport to backbone ports
+	 * @param bridgeport
+	 */
 	void addBackBoneBridgePorts(int bridgeport) {
-		if (BackBoneBridgePorts.contains(new Integer(bridgeport)))
+		if (backBoneBridgePorts.contains(new Integer(bridgeport)))
 			return;
-		BackBoneBridgePorts.add(new Integer(bridgeport));
+		backBoneBridgePorts.add(new Integer(bridgeport));
 	}
 
-	/**
-	 * @return Returns the backBoneBridgePorts.
-	 */
-/*
-	List getCdpPorts() {
-		return CdpPorts;
-	}
-*/
-	/**
-	 * @param backBoneBridgePorts
-	 *            The backBoneBridgePorts to set.
-	 */
-/*
- 	void setCdpPorts(List<Integer> cdpPorts) {
-		CdpPorts = cdpPorts;
-	}
-
-	boolean isCdpPort(int ifindex) {
-		return CdpPorts.contains(new Integer(ifindex));
-	}
-
-	void addCdpPorts(int ifindex) {
-		if (CdpPorts.contains(new Integer(ifindex)))
-			return;
-		CdpPorts.add(new Integer(ifindex));
-	}
-*/
 	/**
 	 * @return Returns the bridgeIdentifiers.
 	 */
-	List getBridgeIdentifiers() {
-		return BridgeIdentifiers;
+	List<String> getBridgeIdentifiers() {
+		return bridgeIdentifiers;
 	}
 
 	/**
@@ -248,26 +228,26 @@ public class LinkableNode extends Object {
 	 */
 	void setBridgeIdentifiers(List<String> bridgeIdentifiers) {
 		if (bridgeIdentifiers == null || bridgeIdentifiers.isEmpty() ) return;
-		BridgeIdentifiers = bridgeIdentifiers;
+		this.bridgeIdentifiers = bridgeIdentifiers;
 		isBridgeNode = true;
 	}
 
 	void addBridgeIdentifier(String bridge, String vlan) {
 		vlanBridgeIdentifier.put(vlan, bridge);
-		if (BridgeIdentifiers.contains(bridge))
+		if (bridgeIdentifiers.contains(bridge))
 			return;
-		BridgeIdentifiers.add(bridge);
+		bridgeIdentifiers.add(bridge);
 		isBridgeNode = true;
 	}
 
 	boolean isBridgeIdentifier(String bridge) {
-		return BridgeIdentifiers.contains(bridge);
+		return bridgeIdentifiers.contains(bridge);
 	}
 
 	void addBridgeIdentifier(String bridge) {
-		if (BridgeIdentifiers.contains(bridge))
+		if (bridgeIdentifiers.contains(bridge))
 			return;
-		BridgeIdentifiers.add(bridge);
+		bridgeIdentifiers.add(bridge);
 		isBridgeNode = true;
 	}
 
@@ -298,6 +278,9 @@ public class LinkableNode extends Object {
 		return false;
 	}
 
+	boolean hasMacAddresses() {
+		return !portMacs.isEmpty();
+	}
 	String getVlan(String macAddress) {
 		return (String) macsVlan.get(macAddress);
 	}
@@ -403,5 +386,21 @@ public class LinkableNode extends Object {
 		}
 		stpifs.add(stpIface);
 		BridgeStpInterfaces.put(vlanindex, stpifs);
+	}
+
+	public String getSysoid() {
+		return m_sysoid;
+	}
+
+	public void setSysoid(String m_sysoid) {
+		this.m_sysoid = m_sysoid;
+	}
+
+	public List<Vlan> getVlans() {
+		return vlans;
+	}
+
+	public void setVlans(List<Vlan> vlans) {
+		this.vlans = vlans;
 	}
 }

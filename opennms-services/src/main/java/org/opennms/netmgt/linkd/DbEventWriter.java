@@ -38,24 +38,26 @@
 
 package org.opennms.netmgt.linkd;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+
+import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
-import org.opennms.netmgt.config.DataSourceFactory;
 
-import org.opennms.netmgt.linkd.SnmpCollection.Vlan;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTableEntry;
@@ -69,83 +71,33 @@ import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 
 /**
  * <P>
- * This class is used to store informations owned by SnmpCollection
- * and DiscoveryLink Classes in DB. 
- * When saving Snmp Collection it populate Bean LinkableNode
- * with information for DiscoveryLink.
- * It performes data test for DiscoveryLink.
- * Also take correct action on DB tables in case node is deleted
- * service SNMP is discovered, service SNMP is Lost and Regained
+ * This class is used to store informations owned by SnmpCollection and
+ * DiscoveryLink Classes in DB. When saving Snmp Collection it populate Bean
+ * LinkableNode with information for DiscoveryLink. It performes data test for
+ * DiscoveryLink. Also take correct action on DB tables in case node is deleted
+ * service SNMP is discovered, service SNMP is Lost and Regained Also this class
+ * holds
  * </P>
- *
+ * 
  * @author antonio
  * 
- *  
- * */
+ * 
+ */
 
-public class DbEventWriter implements Runnable {
+public class DbEventWriter implements QueryManager {
 
-	static final char ACTION_UPTODATE = 'N';
+	DataSource dbConnectionFactory;
 
-	static final char ACTION_DELETE = 'D';
+	/**
+	 * Query to select info for specific node
+	 */
+	private static final String SQL_SELECT_SNMP_NODE = "SELECT nodesysoid, ipaddr FROM node "
+			+ "LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid "
+			+ "WHERE node.nodeid = ? AND nodetype = 'A' AND issnmpprimary = 'P'";
 
-	static final char ACTION_STORE = 'S';
+
 	
-	static final char ACTION_STORE_LINKS = 'A';
-
-	/**
-	 * The status of the info in FDB table entry The meanings of the value is
-	 * other(1): none of the following. This would include the case where some
-	 * other MIB object (not the corresponding instance of dot1dTpFdbPort, nor
-	 * an entry in the dot1dStaticTable) is being used to determine if and how
-	 * frames addressed to the value of the corresponding instance of
-	 * dot1dTpFdbAddress are being forwarded.
-	 */
-	private static final int SNMP_DOT1D_FDB_STATUS_OTHER = 1;
-
-	/**
-	 * The status of the info in FDB table entry The status of this entry. The
-	 * meanings of the values are: invalid(2) : this entry is not longer valid
-	 * (e.g., it was learned but has since aged-out), but has not yet been
-	 * flushed from the table.
-	 */
-	private static final int SNMP_DOT1D_FDB_STATUS_INVALID = 2;
-
-	/**
-	 * The status of the info in FDB table entry The status of this entry. The
-	 * meanings of the values are: learned(3) : the value of the corresponding
-	 * instance of dot1dTpFdbPort was learned, and is being used.
-	 */
-	private static final int SNMP_DOT1D_FDB_STATUS_LEARNED = 3;
-
-	/**
-	 * The status of the info in FDB table entry The status of this entry. The
-	 * meanings of the values are: self(4) : the value of the corresponding
-	 * instance of dot1dTpFdbAddress represents one of the bridge's addresses.
-	 * The corresponding instance of dot1dTpFdbPort indicates which of the
-	 * bridge's ports has this address.
-	 */
-	private static final int SNMP_DOT1D_FDB_STATUS_SELF = 4;
-
-	/**
-	 * mgmt(5) : the value of the corresponding instance of dot1dTpFdbAddress is
-	 * also the value of an existing instance of dot1dStaticAddress.
-	 */
-	private static final int SNMP_DOT1D_FDB_STATUS_MGMT = 5;
-
-	/**
-	 * the int that indicated cdp address type
-	 * 
-	 */
-	
-	private static final int CDP_ADDRESS_TYPE_IP_ADDRESS = 1;
-	LinkableNode m_node;
-	
-	SnmpCollection m_snmpcoll;
-
-	DiscoveryLink m_discovery;
-
-	int m_nodeId;
+	private static final String SQL_SELECT_SNMP_IP_ADDR = "SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'";
 
 	private static final String SQL_GET_NODEID = "SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?";
 
@@ -153,8 +105,10 @@ public class DbEventWriter implements Runnable {
 
 	private static final String SQL_GET_NODEID_IFINDEX_IPINT = "SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?";
 
-	private static final String SQL_UPDATE_DATAINTERFACE = "UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'";
-	
+
+	private static final String SQL_UPDATE_DATALINKINTERFACE = "UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'";
+
+
 	private static final String SQL_UPDATE_ATINTERFACE = "UPDATE atinterface set status = 'N'  WHERE sourcenodeid = ? AND lastpolltime < ? AND status = 'A'";
 
 	private static final String SQL_UPDATE_IPROUTEINTERFACE = "UPDATE iprouteinterface set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
@@ -162,6 +116,9 @@ public class DbEventWriter implements Runnable {
 	private static final String SQL_UPDATE_STPNODE = "UPDATE stpnode set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
 
 	private static final String SQL_UPDATE_STPINTERFACE = "UPDATE stpinterface set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
+
+	private static final String SQL_UPDATE_VLAN = "UPDATE vlan set status = 'N'  WHERE nodeid =? AND lastpolltime < ? AND status = 'A'";
+
 
 	private static final String SQL_UPDATE_ATINTERFACE_STATUS = "UPDATE atinterface set status = ?  WHERE sourcenodeid = ? OR nodeid = ?";
 
@@ -171,129 +128,79 @@ public class DbEventWriter implements Runnable {
 
 	private static final String SQL_UPDATE_STPINTERFACE_STATUS = "UPDATE stpinterface set status = ? WHERE nodeid = ? ";
 
+	private static final String SQL_UPDATE_VLAN_STATUS = "UPDATE vlan set status = ?  WHERE nodeid = ? ";
+
 	private static final String SQL_UPDATE_DATALINKINTERFACE_STATUS = "UPDATE datalinkinterface set status = ? WHERE nodeid = ? OR nodeparentid = ? ";
+	
 
 	private static final String SQL_GET_NODEID_IFINDEX = "SELECT atinterface.nodeid, snmpinterface.snmpifindex from atinterface left JOIN snmpinterface ON atinterface.nodeid = snmpinterface.nodeid AND atinterface.ipaddr = snmpinterface.ipaddr WHERE atphysaddr = ? AND status = 'A'";
-	
+
 	private static final String SQL_GET_SNMPIFTYPE = "SELECT snmpiftype FROM snmpinterface WHERE nodeid = ? AND snmpifindex = ?";
 
 	private static final String SQL_GET_IFINDEX_SNMPINTERFACE_NAME = "SELECT snmpifindex FROM snmpinterface WHERE nodeid = ? AND (snmpifname = ? OR snmpifdescr = ?) ";
-	
+
 	private static final String SQL_GET_SNMPPHYSADDR_SNMPINTERFACE = "SELECT snmpphysaddr FROM snmpinterface WHERE nodeid = ? AND  snmpphysaddr <> ''";
 
-	private char action = ACTION_STORE;
+	/**
+	 * query to select SNMP nodes
+	 */
+	private static final String SQL_SELECT_SNMP_NODES = "SELECT node.nodeid, nodesysoid, ipaddr FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND issnmpprimary = 'P'";
+
+	/**
+	 * update status to D on node maked as Deleted on table Nodes
+	 */
+	private static final String SQL_UPDATE_VLAN_D = "UPDATE vlan set status = 'D' WHERE nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) AND status <> 'D' ";
 	
-	/**
-	 * A boolean used to decide if performs autodiscovery
-	 */
+	private static final String SQL_UPDATE_ATINTERFACE_D = "UPDATE atinterface set status = 'D' WHERE nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) AND status <> 'D' ";
 
-	private boolean autoDiscovery = false;
+	private static final String SQL_UPDATE_STPNODE_D = "UPDATE stpnode set status = 'D' WHERE nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) AND status <> 'D'";
 
-	/**
-	 * @param m_snmpcoll
-	 */
+	private static final String SQL_UPDATE_STPINTERFACE_D = "UPDATE stpinterface set status = 'D' WHERE nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) AND status <> 'D'";
 
-	public DbEventWriter(int nodeid, SnmpCollection m_snmpcoll) {
+	private static final String SQL_UPDATE_IPROUTEINTERFACE_D = "UPDATE iprouteinterface set status = 'D' WHERE nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) AND status <> 'D'";
 
-		super();
-		this.m_nodeId = nodeid;
-		this.m_node = new LinkableNode(nodeid,m_snmpcoll.getTarget().getHostAddress());
-		this.m_snmpcoll = m_snmpcoll;
+	private static final String SQL_UPDATE_DATALINKINTERFACE_D = "UPDATE datalinkinterface set status = 'D' WHERE (nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) OR nodeparentid IN (SELECT nodeid from node WHERE nodetype = 'D' )) AND status <> 'D'";
 
+	public DbEventWriter() {
+
+	}
+
+	private Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
+
+	private Connection getConnection() throws SQLException {
+		return dbConnectionFactory.getConnection();
 	}
 
 	/**
 	 * 
-	 * @param nodeid
-	 * @param action
-	 */
-	public DbEventWriter(int nodeid, char action) {
-
-		super();
-		m_node = null;
-		this.m_nodeId = nodeid;
-		this.action = action;
-	}
-
-	public DbEventWriter (DiscoveryLink discoverLink) {
-		m_node = null;
-		m_discovery = discoverLink;
-		this.action = ACTION_STORE_LINKS;
-	}
-
-	public void run() {
-
-		Category log = ThreadCategory.getInstance(getClass());
-		Connection dbConn = null;
-		Timestamp now = new Timestamp(System.currentTimeMillis());
-
-		try {
-			dbConn = DataSourceFactory.getInstance().getConnection();
-			if (log.isDebugEnabled()) {
-				log.debug("run: Storing information into database");
-			}
-			if (action == ACTION_STORE)
-				storeSnmpCollection(dbConn, now);
-			else if (action == ACTION_UPTODATE || action == ACTION_DELETE)
-				update(dbConn, action);
-			else if (action == ACTION_STORE_LINKS)
-				storeDiscoveryLink(dbConn,now);
-			else
-				log.warn("Unknown action: " + action + " . Exiting");
-		} catch (SQLException sqlE) {
-			log
-					.fatal(
-							"SQL Exception while syncing node object with database information.",
-							sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		} catch (Throwable t) {
-			log
-					.fatal(
-							"Unknown error while syncing node object with database information.",
-							t);
-			throw new UndeclaredThrowableException(t);
-		} finally {
-			try {
-				if (dbConn != null) {
-					dbConn.close();
-				}
-			} catch (Exception e) {
-				log
-						.fatal(
-								"Unknown error while closing database connection.",
-								e);
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param dbConn
-	 * @param now
+	 * @param discovery
 	 * @throws SQLException
 	 */
-	private void storeDiscoveryLink(Connection dbConn, Timestamp now) throws SQLException,
-			UnknownHostException {
+	public void storeDiscoveryLink(DiscoveryLink discovery) throws SQLException {
 
-		Category log = ThreadCategory.getInstance(getClass());
-		
+		Connection dbConn = getConnection();
+		Timestamp now = new Timestamp(System.currentTimeMillis());
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 
-		NodeToNodeLink[] links = m_discovery.getLinks();
-		
-		if (log.isDebugEnabled()) {
-			log.debug("storelink: Storing " + links.length + " NodeToNodeLink information into database");
+		NodeToNodeLink[] links = discovery.getLinks();
+
+		if (log().isDebugEnabled()) {
+			log().debug(
+					"storelink: Storing " + links.length
+							+ " NodeToNodeLink information into database");
 		}
-		for (int i=0; i <links.length; i++) {
+		for (int i = 0; i < links.length; i++) {
 			NodeToNodeLink lk = links[i];
 			int nodeid = lk.getNodeId();
 			int ifindex = lk.getIfindex();
 			int nodeparentid = lk.getNodeparentid();
 			int parentifindex = lk.getParentifindex();
-			
-			DbDataLinkInterfaceEntry dbentry = DbDataLinkInterfaceEntry.get(dbConn,
-					nodeid, ifindex);
+
+			DbDataLinkInterfaceEntry dbentry = DbDataLinkInterfaceEntry.get(
+					dbConn, nodeid, ifindex);
 			if (dbentry == null) {
 				// Create a new entry
 				dbentry = DbDataLinkInterfaceEntry.create(nodeid, ifindex);
@@ -308,22 +215,25 @@ public class DbEventWriter implements Runnable {
 			// now parsing simmetrical and setting to D if necessary
 
 			dbentry = DbDataLinkInterfaceEntry.get(dbConn, nodeparentid,
-						parentifindex);
+					parentifindex);
 
 			if (dbentry != null) {
 				if (dbentry.get_nodeparentid() == nodeid
 						&& dbentry.get_parentifindex() == ifindex
 						&& dbentry.get_status() != DbDataLinkInterfaceEntry.STATUS_DELETE) {
-					dbentry.updateStatus(DbDataLinkInterfaceEntry.STATUS_DELETE);
+					dbentry
+							.updateStatus(DbDataLinkInterfaceEntry.STATUS_DELETE);
 					dbentry.store(dbConn);
 				}
 			}
 		}
-		
-		MacToNodeLink[] linkmacs = m_discovery.getMacLinks();
-		
-		if (log.isDebugEnabled()) {
-			log.debug("storelink: Storing " + linkmacs.length + " MacToNodeLink information into database");
+
+		MacToNodeLink[] linkmacs = discovery.getMacLinks();
+
+		if (log().isDebugEnabled()) {
+			log().debug(
+					"storelink: Storing " + linkmacs.length
+							+ " MacToNodeLink information into database");
 		}
 		for (int i = 0; i < linkmacs.length; i++) {
 			MacToNodeLink lkm = linkmacs[i];
@@ -335,20 +245,21 @@ public class DbEventWriter implements Runnable {
 
 			stmt.setString(1, macaddr);
 
-			
 			rs = stmt.executeQuery();
-			
-			if (log.isDebugEnabled())
-				log.debug("storelink: finding nodeid,ifindex on DB. Sql Statement "
-					+ SQL_GET_NODEID_IFINDEX + " with mac address " + macaddr);
+
+			if (log().isDebugEnabled())
+				log().debug(
+						"storelink: finding nodeid,ifindex on DB. Sql Statement "
+								+ SQL_GET_NODEID_IFINDEX + " with mac address "
+								+ macaddr);
 
 			if (!rs.next()) {
 				rs.close();
 				stmt.close();
-				if (log.isDebugEnabled())
-					log.debug("storelink: no nodeid found on DB for mac address "
-						+ macaddr
-						+ " on link. .... Skipping");
+				if (log().isDebugEnabled())
+					log().debug(
+							"storelink: no nodeid found on DB for mac address "
+									+ macaddr + " on link. .... Skipping");
 				continue;
 			}
 
@@ -360,27 +271,27 @@ public class DbEventWriter implements Runnable {
 			if (rs.wasNull()) {
 				rs.close();
 				stmt.close();
-				if (log.isDebugEnabled())
-					log.debug("storelink: no nodeid found on DB for mac address "
-						+ macaddr
-						+ " on link. .... Skipping");
+				if (log().isDebugEnabled())
+					log().debug(
+							"storelink: no nodeid found on DB for mac address "
+									+ macaddr + " on link. .... Skipping");
 				continue;
 			}
 
 			int ifindex = rs.getInt(ndx++);
 			if (rs.wasNull()) {
-				if (log.isDebugEnabled())
-					log.debug("storelink: no ifindex found on DB for mac address "
-						+ macaddr
-						+ " on link.");
+				if (log().isDebugEnabled())
+					log().debug(
+							"storelink: no ifindex found on DB for mac address "
+									+ macaddr + " on link.");
 				ifindex = -1;
 			}
 
 			rs.close();
 			stmt.close();
 
-			DbDataLinkInterfaceEntry dbentry = DbDataLinkInterfaceEntry.get(dbConn,
-					nodeid, ifindex);
+			DbDataLinkInterfaceEntry dbentry = DbDataLinkInterfaceEntry.get(
+					dbConn, nodeid, ifindex);
 			if (dbentry == null) {
 				// Create a new entry
 				dbentry = DbDataLinkInterfaceEntry.create(nodeid, ifindex);
@@ -392,86 +303,83 @@ public class DbEventWriter implements Runnable {
 
 			dbentry.store(dbConn);
 
-			
 		}
-		
-		stmt = dbConn.prepareStatement(SQL_UPDATE_DATAINTERFACE);
+
+		stmt = dbConn.prepareStatement(SQL_UPDATE_DATALINKINTERFACE);
 		stmt.setTimestamp(1, now);
 
 		int i = stmt.executeUpdate();
 		stmt.close();
-		if (log.isDebugEnabled())
-			log
-					.debug("storelink: datalinkinterface - updated to NOT ACTIVE status "
+		if (log().isDebugEnabled())
+			log().debug(
+					"storelink: datalinkinterface - updated to NOT ACTIVE status "
 							+ i + " rows ");
-
-
-
 	}
-			
-	/**
-	 * 
-	 * @param dbConn
-	 * @param now
-	 * @throws SQLException
-	 */
-	private void storeSnmpCollection(Connection dbConn, Timestamp now) throws SQLException,
-			UnknownHostException {
 
-		Category log = ThreadCategory.getInstance(getClass());
-//		Iterator ite = null;
+	public LinkableNode storeSnmpCollection(LinkableNode node,
+			SnmpCollection snmpcoll) throws SQLException {
 
-		int nodeid = m_node.getNodeId();
+		Connection dbConn = getConnection();
+		Timestamp now = new Timestamp(System.currentTimeMillis());
 
-		if (m_snmpcoll.hasIpNetToMediaTable()) {
-			Iterator ite1 = m_snmpcoll.getIpNetToMediaTable().getEntries().iterator();
-			if (log.isDebugEnabled())
-				log
-						.debug("store: saving IpNetToMediaTable to atinterface table in DB");
+		if (snmpcoll.hasIpNetToMediaTable()) {
+			Iterator ite1 = snmpcoll.getIpNetToMediaTable().getEntries()
+					.iterator();
+			if (log().isDebugEnabled())
+				log()
+						.debug(
+								"store: saving IpNetToMediaTable to atinterface table in DB");
 			// the AtInterfaces used by LinkableNode where to save info
 			java.util.List<AtInterface> atInterfaces = new java.util.ArrayList<AtInterface>();
 			while (ite1.hasNext()) {
 
 				IpNetToMediaTableEntry ent = (IpNetToMediaTableEntry) ite1
 						.next();
-				
+
 				int ifindex = ent.getIpNetToMediaIfIndex();
-				
-				if ( ifindex < 0 ) {
-					log.warn("store: invalid ifindex " + ifindex);
+
+				if (ifindex < 0) {
+					log().warn("store: invalid ifindex " + ifindex);
 					continue;
 				}
-				
+
 				InetAddress ipaddress = ent.getIpNetToMediaNetAddress();
 
-				if (ipaddress == null || ipaddress.isLoopbackAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) {
-					log.warn("store: ipNetToMedia invalid ip " + ipaddress.getHostAddress());
+				if (ipaddress == null || ipaddress.isLoopbackAddress()
+						|| ipaddress.getHostAddress().equals("0.0.0.0")) {
+					log().warn(
+							"store: ipNetToMedia invalid ip "
+									+ ipaddress.getHostAddress());
 					continue;
 				}
 
 				String physAddr = ent.getIpNetToMediaPhysAddress();
-				
-				if ( physAddr == null || physAddr.equals("000000000000") || physAddr.equalsIgnoreCase("ffffffffffff")) {
-					log.warn("store: ipNetToMedia invalid mac address " + physAddr
-							+ " for ip " + ipaddress.getHostAddress());
+
+				if (physAddr == null || physAddr.equals("000000000000")
+						|| physAddr.equalsIgnoreCase("ffffffffffff")) {
+					log().warn(
+							"store: ipNetToMedia invalid mac address "
+									+ physAddr + " for ip "
+									+ ipaddress.getHostAddress());
 					continue;
 				}
 
-
-				if (log.isDebugEnabled())
-					log.debug("store: trying save ipNetToMedia info: ipaddr " + ipaddress.getHostName()
-							+ " mac address " + physAddr + " ifindex "
-							+ ifindex);
+				if (log().isDebugEnabled())
+					log().debug(
+							"store: trying save ipNetToMedia info: ipaddr "
+									+ ipaddress.getHostName() + " mac address "
+									+ physAddr + " ifindex " + ifindex);
 
 				// get an At interface but without setting mac address
 				AtInterface at = getNodeidIfindexFromIp(dbConn, ipaddress);
 				if (at == null) {
-						log.warn("getNodeidIfindexFromIp: no nodeid found for ipaddress "
-								+ ipaddress + ".");
-					sendNewSuspectEvent(ipaddress);
+					log().warn(
+							"getNodeidIfindexFromIp: no nodeid found for ipaddress "
+									+ ipaddress + ".");
+					sendNewSuspectEvent(ipaddress, snmpcoll.getTarget(),snmpcoll.getPackageName());
 					continue;
 				}
-				//set the mac address
+				// set the mac address
 				at.setMacAddress(physAddr);
 				// add At Inteface to list of valid interfaces
 				atInterfaces.add(at);
@@ -479,15 +387,15 @@ public class DbEventWriter implements Runnable {
 				// Save in DB
 				DbAtInterfaceEntry atInterfaceEntry = DbAtInterfaceEntry.get(
 						dbConn, at.getNodeId(), ipaddress.getHostAddress());
-				
+
 				if (atInterfaceEntry == null) {
-					atInterfaceEntry = DbAtInterfaceEntry.create(at.getNodeId(),
-							ipaddress.getHostAddress());
+					atInterfaceEntry = DbAtInterfaceEntry.create(
+							at.getNodeId(), ipaddress.getHostAddress());
 				}
 
 				// update object
 				atInterfaceEntry.updateAtPhysAddr(physAddr);
-				atInterfaceEntry.updateSourceNodeId(nodeid);
+				atInterfaceEntry.updateSourceNodeId(node.getNodeId());
 				atInterfaceEntry.updateIfIndex(ifindex);
 				atInterfaceEntry.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
 				atInterfaceEntry.set_lastpolltime(now);
@@ -496,180 +404,221 @@ public class DbEventWriter implements Runnable {
 				atInterfaceEntry.store(dbConn);
 			}
 			// set AtInterfaces in LinkableNode
-			m_node.setAtInterfaces(atInterfaces);
+			node.setAtInterfaces(atInterfaces);
 		}
 
-		if (m_snmpcoll.hasCdpCacheTable()) {
-			if (log.isDebugEnabled())
-				log
-						.debug("store: saving CdpCacheTable into SnmpLinkableNode");
+		if (snmpcoll.hasCdpCacheTable()) {
+			if (log().isDebugEnabled())
+				log()
+						.debug(
+								"store: saving CdpCacheTable into SnmpLinkableNode");
 			java.util.List<CdpInterface> cdpInterfaces = new java.util.ArrayList<CdpInterface>();
-			Iterator ite2 = m_snmpcoll.getCdpCacheTable()
-					.getEntries().iterator();
+			Iterator ite2 = snmpcoll.getCdpCacheTable().getEntries().iterator();
 			while (ite2.hasNext()) {
 				CdpCacheTableEntry cdpEntry = (CdpCacheTableEntry) ite2.next();
 				int cdpAddrType = cdpEntry.getCdpCacheAddressType();
 
 				if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
-					log.warn(" cdp Address Type not valid " + cdpAddrType);
+					log().warn(" cdp Address Type not valid " + cdpAddrType);
 					continue;
 				}
 
 				InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheAddress();
-				
-				if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddr.getHostAddress().equals("0.0.0.0")) {
-					log.warn(" cdp Ip Address is not valid " + cdpTargetIpAddr);
-					continue;
-				}
-				
-				if (log.isDebugEnabled())	log.debug(" cdp ip address found " + cdpTargetIpAddr.getHostAddress());
-				
-				int cdpIfIndex = cdpEntry.getCdpCacheIfIndex();
-				
-				if (cdpIfIndex < 0 ) {
-					log.warn(" cdpIfIndex not valid " + cdpIfIndex);
+
+				if (cdpTargetIpAddr == null
+						|| cdpTargetIpAddr.isLoopbackAddress()
+						|| cdpTargetIpAddr.getHostAddress().equals("0.0.0.0")) {
+					log().warn(
+							" cdp Ip Address is not valid " + cdpTargetIpAddr);
 					continue;
 				}
 
-				if (log.isDebugEnabled())
-					log.debug(" cdp ifindex found " + cdpIfIndex);
+				if (log().isDebugEnabled())
+					log().debug(
+							" cdp ip address found "
+									+ cdpTargetIpAddr.getHostAddress());
+
+				int cdpIfIndex = cdpEntry.getCdpCacheIfIndex();
+
+				if (cdpIfIndex < 0) {
+					log().warn(" cdpIfIndex not valid " + cdpIfIndex);
+					continue;
+				}
+
+				if (log().isDebugEnabled())
+					log().debug(" cdp ifindex found " + cdpIfIndex);
 
 				String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
-				
-				if (cdpTargetDevicePort == null ) {
-					log.warn(" cdpTargetDevicePort null. Skipping. " );
+
+				if (cdpTargetDevicePort == null) {
+					log().warn(" cdpTargetDevicePort null. Skipping. ");
 					continue;
 				}
 
-				if (log.isDebugEnabled())
-					log.debug(" cdp Target device port name found " + cdpTargetDevicePort);
+				if (log().isDebugEnabled())
+					log().debug(
+							" cdp Target device port name found "
+									+ cdpTargetDevicePort);
 
 				int targetCdpNodeId = getNodeidFromIp(dbConn, cdpTargetIpAddr);
 
-				if (targetCdpNodeId == -1 ) {
-					log.warn("No nodeid found: cdp interface not added to Linkable Snmp Node. Skipping");
-					sendNewSuspectEvent(cdpTargetIpAddr);
+				if (targetCdpNodeId == -1) {
+					log()
+							.warn(
+									"No nodeid found: cdp interface not added to Linkable Snmp Node. Skipping");
+					sendNewSuspectEvent(cdpTargetIpAddr,snmpcoll.getTarget(),snmpcoll.getPackageName());
 					continue;
 				}
 
-				int cdpTargetIfindex = getIfIndexByName(
-						dbConn, targetCdpNodeId, cdpTargetDevicePort);
+				int cdpTargetIfindex = getIfIndexByName(dbConn,
+						targetCdpNodeId, cdpTargetDevicePort);
 
 				if (cdpTargetIfindex == -1) {
-					log.warn("No valid if target index found: cdp interface not added to Linkable Snmp Node. Skipping");
+					log()
+							.warn(
+									"No valid if target index found: cdp interface not added to Linkable Snmp Node. Skipping");
 					continue;
 				}
-				
-				
+
 				CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
 				cdpIface.setCdpTargetNodeId(targetCdpNodeId);
 				cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
 				cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
 
-				if (log.isDebugEnabled()) log.debug("Adding cdp interface to Linkable Snmp Node." +  cdpIface.toString());
-				
+				if (log().isDebugEnabled())
+					log().debug(
+							"Adding cdp interface to Linkable Snmp Node."
+									+ cdpIface.toString());
+
 				cdpInterfaces.add(cdpIface);
 			}
-			m_node.setCdpInterfaces(cdpInterfaces);
+			node.setCdpInterfaces(cdpInterfaces);
 		}
 
-		if (m_snmpcoll.hasRouteTable()) {
+		if (snmpcoll.hasRouteTable()) {
 			java.util.List<RouterInterface> routeInterfaces = new java.util.ArrayList<RouterInterface>();
-			
-			Iterator ite3 = m_snmpcoll.getIpRouteTable().getEntries()
-					.iterator();
-			if (log.isDebugEnabled())
-				log
-						.debug("store: saving ipRouteTable to iprouteinterface table in DB");
+
+			Iterator ite3 = snmpcoll.getIpRouteTable().getEntries().iterator();
+			if (log().isDebugEnabled())
+				log()
+						.debug(
+								"store: saving ipRouteTable to iprouteinterface table in DB");
 			while (ite3.hasNext()) {
 				IpRouteTableEntry ent = (IpRouteTableEntry) ite3.next();
 
 				int ifindex = ent.getIpRouteIfIndex();
 
 				if (ifindex < 0) {
-					log.warn("store: Not valid ifindex" + ifindex 
-							+ " Skipping...");
+					log().warn(
+							"store: Not valid ifindex" + ifindex
+									+ " Skipping...");
 					continue;
 				}
 
 				InetAddress nexthop = ent.getIpRouteNextHop();
 
 				if (nexthop == null) {
-					log.warn("storeSnmpCollection: next hop null found skipping.");
-					continue;
-				}
-				
-				InetAddress routedest = ent.getIpRouteDest();
-				if (routedest == null) {
-					log.warn("storeSnmpCollection: route dest null found skipping.");
-					continue;
-				}
-				InetAddress routemask = ent.getIpRouteMask();
-				
-				if (routemask == null) {
-					log.warn("storeSnmpCollection: route dest null found skipping.");
+					log()
+							.warn(
+									"storeSnmpCollection: next hop null found skipping.");
 					continue;
 				}
 
-				if (log.isDebugEnabled()) {
-					log.debug("storeSnmpCollection: parsing routedest/routemask/nexthop: " 
-							+ routedest + "/" 
-							+ routemask + "/"
-							+ nexthop + " ifindex " + (ifindex < 1 ? "less than 1" : ifindex));
-					
+				InetAddress routedest = ent.getIpRouteDest();
+				if (routedest == null) {
+					log()
+							.warn(
+									"storeSnmpCollection: route dest null found skipping.");
+					continue;
 				}
-				
+				InetAddress routemask = ent.getIpRouteMask();
+
+				if (routemask == null) {
+					log()
+							.warn(
+									"storeSnmpCollection: route dest null found skipping.");
+					continue;
+				}
+
+				if (log().isDebugEnabled()) {
+					log().debug(
+							"storeSnmpCollection: parsing routedest/routemask/nexthop: "
+									+ routedest + "/" + routemask + "/"
+									+ nexthop + " ifindex "
+									+ (ifindex < 1 ? "less than 1" : ifindex));
+
+				}
 
 				int routemetric1 = ent.getIpRouteMetric1();
 
 				/**
-				 *  FIXME: send routedest 0.0.0.0 to discoverylink  
-				 *  remeber that now nexthop 0.0.0.0 is not 
-				 *  parsed, anyway we should analize this case in link discovery
-				 *  so here is the place where you can have this info saved for
-				 *  now is discarded. See DiscoveryLink for more details......
+				 * FIXME: send routedest 0.0.0.0 to discoverylink remeber that
+				 * now nexthop 0.0.0.0 is not parsed, anyway we should analize
+				 * this case in link discovery so here is the place where you
+				 * can have this info saved for now is discarded. See
+				 * DiscoveryLink for more details......
 				 * 
-				**/
-				
-				// the routerinterface constructor set nodeid, ifindex, netmask for nexthop address
+				 */
+
+				// the routerinterface constructor set nodeid, ifindex, netmask
+				// for nexthop address
 				// try to find on snmpinterface table
-				RouterInterface routeIface = getNodeidMaskFromIp(dbConn,nexthop);
+				RouterInterface routeIface = getNodeidMaskFromIp(dbConn,
+						nexthop);
 
 				// if target node is not snmp node always try to find info
 				// on ipinterface table
 				if (routeIface == null) {
 					routeIface = getNodeFromIp(dbConn, nexthop);
 				}
-					
+
 				if (routeIface == null) {
-					log.warn("store: No nodeid found for next hop ip" + nexthop 
-							+ " Skipping ip route interface add to Linkable Snmp Node");
+					log()
+							.warn(
+									"store: No nodeid found for next hop ip"
+											+ nexthop
+											+ " Skipping ip route interface add to Linkable Snmp Node");
 					// try to find it in ipinterface
-					sendNewSuspectEvent(nexthop);
+					sendNewSuspectEvent(nexthop,snmpcoll.getTarget(),snmpcoll.getPackageName());
 				} else {
 					int snmpiftype = -2;
-                    
-					if (ifindex > 0) snmpiftype = getSnmpIfType(dbConn, nodeid, ifindex);
+
+					if (ifindex > 0)
+						snmpiftype = getSnmpIfType(dbConn, node.getNodeId(),
+								ifindex);
 
 					if (snmpiftype == -1) {
-						log.warn("store: interface has wrong or null snmpiftype "
-								+ snmpiftype + " . Skipping saving to discoverylink. ");
+						log()
+								.warn(
+										"store: interface has wrong or null snmpiftype "
+												+ snmpiftype
+												+ " . Skipping saving to discoverylink. ");
 					} else if (nexthop.isLoopbackAddress()) {
-						if (log.isInfoEnabled()) 
-							log.info("storeSnmpCollection: next hop loopbackaddress found. Skipping saving to discoverylink.");
+						if (log().isInfoEnabled())
+							log()
+									.info(
+											"storeSnmpCollection: next hop loopbackaddress found. Skipping saving 	to discoverylink.");
 					} else if (nexthop.getHostAddress().equals("0.0.0.0")) {
-						if (log.isInfoEnabled()) 
-							log.info("storeSnmpCollection: next hop broadcast address found. Skipping saving to discoverylink.");
+						if (log().isInfoEnabled())
+							log()
+									.info(
+											"storeSnmpCollection: next hop broadcast address found. Skipping saving to discoverylink.");
 					} else if (nexthop.isMulticastAddress()) {
-						if (log.isInfoEnabled()) 
-							log.info("storeSnmpCollection: next hop multicast address found. Skipping saving to discoverylink.");
+						if (log().isInfoEnabled())
+							log()
+									.info(
+											"storeSnmpCollection: next hop multicast address found. Skipping saving to discoverylink.");
 					} else if (routemetric1 < 0) {
-						if (log.isInfoEnabled()) 
-							log.info("storeSnmpCollection: route metric is invalid. Skipping saving to discoverylink.");
+						if (log().isInfoEnabled())
+							log()
+									.info(
+											"storeSnmpCollection: route metric is invalid. Skipping saving to discoverylink.");
 					} else {
-						if (log.isDebugEnabled())
-							log.debug("store: interface has snmpiftype "
-										+ snmpiftype + " . Adding to DiscoverLink ");
+						if (log().isDebugEnabled())
+							log().debug(
+									"store: interface has snmpiftype "
+											+ snmpiftype
+											+ " . Adding to DiscoverLink ");
 
 						routeIface.setRouteDest(routedest);
 						routeIface.setRoutemask(routemask);
@@ -678,12 +627,12 @@ public class DbEventWriter implements Runnable {
 						routeIface.setMetric(routemetric1);
 						routeIface.setNextHop(nexthop);
 						routeInterfaces.add(routeIface);
-						
+
 					}
 				}
 
 				int routemetric2 = ent.getIpRouteMetric2();
-				int routemetric3  =ent.getIpRouteMetric3();
+				int routemetric3 = ent.getIpRouteMetric3();
 				int routemetric4 = ent.getIpRouteMetric4();
 				int routemetric5 = ent.getIpRouteMetric5();
 				int routetype = ent.getIpRouteType();
@@ -691,18 +640,21 @@ public class DbEventWriter implements Runnable {
 
 				// always save info to DB
 				DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry
-						.get(dbConn, nodeid, routedest.getHostAddress());
+						.get(dbConn, node.getNodeId(), routedest
+								.getHostAddress());
 				if (iprouteInterfaceEntry == null) {
 					// Create a new entry
-					iprouteInterfaceEntry = DbIpRouteInterfaceEntry.create(
-							m_node.getNodeId(), routedest.getHostAddress());
+					iprouteInterfaceEntry = DbIpRouteInterfaceEntry.create(node
+							.getNodeId(), routedest.getHostAddress());
 				}
 				// update object
-				iprouteInterfaceEntry.updateRouteMask(routemask.getHostAddress());
-				iprouteInterfaceEntry.updateRouteNextHop(nexthop.getHostAddress());
+				iprouteInterfaceEntry.updateRouteMask(routemask
+						.getHostAddress());
+				iprouteInterfaceEntry.updateRouteNextHop(nexthop
+						.getHostAddress());
 				iprouteInterfaceEntry.updateIfIndex(ifindex);
-                
-                //okay to autobox these since were checking for null
+
+				// okay to autobox these since were checking for null
 				iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
 				iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
 				iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
@@ -717,110 +669,122 @@ public class DbEventWriter implements Runnable {
 				// store object in database
 				iprouteInterfaceEntry.store(dbConn);
 			}
-			m_node.setRouteInterfaces(routeInterfaces);
+			node.setRouteInterfaces(routeInterfaces);
 		}
 
-		if (log.isDebugEnabled())
-			log.debug("store: saving VlanTable in DB");
+		if (log().isDebugEnabled())
+			log().debug("store: saving VlanTable in DB");
 
-		if (m_snmpcoll.hasVlanTable()) {
-						
-			Iterator ite3 = m_snmpcoll.getVlanTable().getEntries()
-					.iterator();
-			if (log.isDebugEnabled())
-				log
-						.debug("store: saving Snmp Vlan Table to vlan table in DB");
+		if (snmpcoll.hasVlanTable()) {
+
+			List<Vlan> vlans = new ArrayList<Vlan>();
+			Iterator ite3 = snmpcoll.getVlanTable().getEntries().iterator();
+			if (log().isDebugEnabled())
+				log()
+						.debug(
+								"store: saving Snmp Vlan Table to vlan table in DB");
 			while (ite3.hasNext()) {
 				SnmpTableEntry ent = (SnmpTableEntry) ite3.next();
 
 				Integer vlanindex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 
 				if (vlanindex == null || vlanindex < 0) {
-					log.warn("store: Not valid vlan ifindex" + vlanindex 
-							+ " Skipping...");
+					log().warn(
+							"store: Not valid vlan ifindex" + vlanindex
+									+ " Skipping...");
 					continue;
 				}
-				
-				String vlanName = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
-				if (vlanName == null ) {
-					log.warn("store: Null vlan name. forcing to default...");
+
+				String vlanName = ent
+						.getDisplayString(VlanCollectorEntry.VLAN_NAME);
+				if (vlanName == null) {
+					log().warn("store: Null vlan name. forcing to default...");
 					vlanName = "default";
 				}
 
 				Integer vlantype = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
-				Integer vlanstatus = ent.getInt32(VlanCollectorEntry.VLAN_STATUS);
-				
+				Integer vlanstatus = ent
+						.getInt32(VlanCollectorEntry.VLAN_STATUS);
+
 				// always save info to DB
-				DbVlanEntry vlanEntry = DbVlanEntry
-						.get(dbConn, nodeid, vlanindex);
+				DbVlanEntry vlanEntry = DbVlanEntry.get(dbConn, node
+						.getNodeId(), vlanindex);
 				if (vlanEntry == null) {
 					// Create a new entry
-					vlanEntry = DbVlanEntry.create(
-							m_node.getNodeId(), vlanindex);
+					vlanEntry = DbVlanEntry.create(node.getNodeId(), vlanindex);
 				}
-				
+
 				vlanEntry.updateVlanName(vlanName);
-                //okay to autobox these since were checking for null
+				// okay to autobox these since were checking for null
 				if (vlantype != null)
 					vlanEntry.updateVlanType(vlantype);
+				else vlantype=-1;
 				if (vlanstatus != null)
 					vlanEntry.updateVlanStatus(vlanstatus);
-				vlanEntry
-						.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
+				else vlanstatus = -1;
+				vlanEntry.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
 				vlanEntry.set_lastpolltime(now);
 
 				// store object in database
 				vlanEntry.store(dbConn);
+				Vlan vlan = new Vlan(vlanindex,vlanName,vlanstatus,vlantype);
+
+				vlans.add(vlan);
 			}
+			node.setVlans(vlans);
 		}
 
-		if (log.isDebugEnabled())
-			log.debug("store: saving SnmpVlanCollection's in DB");
-		
-		Iterator<Entry<Vlan,SnmpVlanCollection>> ite4 = m_snmpcoll.getSnmpVlanCollections().entrySet().iterator();
-		
+		if (log().isDebugEnabled())
+			log().debug("store: saving SnmpVlanCollection's in DB");
+
+		Iterator<Entry<Vlan, SnmpVlanCollection>> ite4 = snmpcoll
+				.getSnmpVlanCollections().entrySet().iterator();
+
 		SnmpVlanCollection snmpVlanColl = null;
 		Vlan vlan = null;
 		while (ite4.hasNext()) {
-			
-			Entry<Vlan,SnmpVlanCollection> entry = ite4.next();
+
+			Entry<Vlan, SnmpVlanCollection> entry = ite4.next();
 
 			vlan = entry.getKey();
 
-			
-			int vlanid = vlan.getVlanindex();
-			String vlanname = vlan.getVlanname();
+			int vlanid = vlan.getVlanIndex();
+			String vlanname = vlan.getVlanName();
 			String vlanindex = Integer.toString(vlanid);
-			if (log.isDebugEnabled())
-				log
-						.debug("store: parsing VLAN "
-								+ vlanindex + " VLAN_NAME " + vlanname);
+			if (log().isDebugEnabled())
+				log().debug(
+						"store: parsing VLAN " + vlanindex + " VLAN_NAME "
+								+ vlanname);
 
 			snmpVlanColl = entry.getValue();
 
 			if (snmpVlanColl.hasDot1dBase()) {
-				if (log.isDebugEnabled())
-					log
-							.debug("store: saving Dot1dBaseGroup in stpnode table");
+				if (log().isDebugEnabled())
+					log()
+							.debug(
+									"store: saving Dot1dBaseGroup in stpnode table");
 
-				Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl.getDot1dBase();
-				
+				Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl
+						.getDot1dBase();
+
 				String baseBridgeAddress = dod1db.getBridgeAddress();
-				if (baseBridgeAddress == null || baseBridgeAddress == "000000000000") {
-					log.warn("store: invalid base bridge address " + baseBridgeAddress);
+				if (baseBridgeAddress == null
+						|| baseBridgeAddress == "000000000000") {
+					log().warn(
+							"store: invalid base bridge address "
+									+ baseBridgeAddress);
 				} else {
-					m_node.addBridgeIdentifier(baseBridgeAddress,vlanindex);
+					node.addBridgeIdentifier(baseBridgeAddress, vlanindex);
 					int basenumports = dod1db.getNumberOfPorts();
 
-					
 					int bridgetype = dod1db.getBridgeType();
-					
+
 					DbStpNodeEntry dbStpNodeEntry = DbStpNodeEntry.get(dbConn,
-						m_node.getNodeId(), vlanid);
+							node.getNodeId(), vlanid);
 					if (dbStpNodeEntry == null) {
 						// Create a new entry
-						dbStpNodeEntry = DbStpNodeEntry.create(m_node
-							.getNodeId(), vlanid);
+						dbStpNodeEntry = DbStpNodeEntry.create(
+								node.getNodeId(), vlanid);
 					}
 					// update object
 
@@ -828,30 +792,40 @@ public class DbEventWriter implements Runnable {
 					dbStpNodeEntry.updateBaseNumPorts(basenumports);
 					dbStpNodeEntry.updateBaseType(bridgetype);
 					dbStpNodeEntry.updateBaseVlanName(vlanname);
-				
+
 					if (snmpVlanColl.hasDot1dStp()) {
-						if (log.isDebugEnabled())
-							log
-								.debug("store: adding Dot1dStpGroup in stpnode table");
+						if (log().isDebugEnabled())
+							log()
+									.debug(
+											"store: adding Dot1dStpGroup in stpnode table");
 
 						Dot1dStpGroup dod1stp = (Dot1dStpGroup) snmpVlanColl
-							.getDot1dStp();
+								.getDot1dStp();
 						int protospec = dod1stp.getStpProtocolSpecification();
 						int stppriority = dod1stp.getStpPriority();
 						int stprootcost = dod1stp.getStpRootCost();
 						int stprootport = dod1stp.getStpRootPort();
-						String stpDesignatedRoot = dod1stp.getStpDesignatedRoot();
+						String stpDesignatedRoot = dod1stp
+								.getStpDesignatedRoot();
 
-						if (stpDesignatedRoot == null || stpDesignatedRoot == "0000000000000000") {
-							if (log.isDebugEnabled()) log.debug("store: Dot1dStpGroup found stpDesignatedRoot " + stpDesignatedRoot + " not adding to Linkable node");
+						if (stpDesignatedRoot == null
+								|| stpDesignatedRoot == "0000000000000000") {
+							if (log().isDebugEnabled())
+								log()
+										.debug(
+												"store: Dot1dStpGroup found stpDesignatedRoot "
+														+ stpDesignatedRoot
+														+ " not adding to Linkable node");
 							stpDesignatedRoot = "0000000000000000";
 						} else {
-							m_node.setVlanStpRoot(vlanindex,stpDesignatedRoot);
+							node.setVlanStpRoot(vlanindex, stpDesignatedRoot);
 						}
-						
-						dbStpNodeEntry.updateStpProtocolSpecification(protospec);
+
+						dbStpNodeEntry
+								.updateStpProtocolSpecification(protospec);
 						dbStpNodeEntry.updateStpPriority(stppriority);
-						dbStpNodeEntry.updateStpDesignatedRoot(stpDesignatedRoot);
+						dbStpNodeEntry
+								.updateStpDesignatedRoot(stpDesignatedRoot);
 						dbStpNodeEntry.updateStpRootCost(stprootcost);
 						dbStpNodeEntry.updateStpRootPort(stprootport);
 					}
@@ -859,103 +833,136 @@ public class DbEventWriter implements Runnable {
 					dbStpNodeEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
 					dbStpNodeEntry.set_lastpolltime(now);
 					dbStpNodeEntry.store(dbConn);
-				
-					// FIXME implement vlan table.....
-					// so you can store vlan tables properly
-					// depending on vlan collection entry set
-					
+
 					if (snmpVlanColl.hasDot1dBasePortTable()) {
 						Iterator sub_ite = snmpVlanColl.getDot1dBasePortTable()
-							.getEntries().iterator();
-						if (log.isDebugEnabled())
-							log
-								.debug("store: saving Dot1dBasePortTable in stpinterface table");
+								.getEntries().iterator();
+						if (log().isDebugEnabled())
+							log()
+									.debug(
+											"store: saving Dot1dBasePortTable in stpinterface table");
 						while (sub_ite.hasNext()) {
 							Dot1dBasePortTableEntry dot1dbaseptentry = (Dot1dBasePortTableEntry) sub_ite
-								.next();
-							
+									.next();
+
 							int baseport = dot1dbaseptentry.getBaseBridgePort();
-							int ifindex = dot1dbaseptentry.getBaseBridgePortIfindex();
-							
-							if (baseport == -1 || ifindex == -1 ) {
-								log.warn("store: Dot1dBasePortTable invalid baseport or ifindex " + baseport + " / " + ifindex);
+							int ifindex = dot1dbaseptentry
+									.getBaseBridgePortIfindex();
+
+							if (baseport == -1 || ifindex == -1) {
+								log().warn(
+										"store: Dot1dBasePortTable invalid baseport or ifindex "
+												+ baseport + " / " + ifindex);
 								continue;
 							}
-						
-							m_node.setIfIndexBridgePort(ifindex,baseport);
-						
+
+							node.setIfIndexBridgePort(ifindex, baseport);
+
 							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
-								.get(dbConn, m_node.getNodeId(),
-										baseport, vlanid);
+									.get(dbConn, node.getNodeId(), baseport,
+											vlanid);
 							if (dbStpIntEntry == null) {
-							// Create a new entry
-								dbStpIntEntry = DbStpInterfaceEntry.create(
-									m_node.getNodeId(), baseport, vlanid);
+								// Create a new entry
+								dbStpIntEntry = DbStpInterfaceEntry.create(node
+										.getNodeId(), baseport, vlanid);
 							}
-							
+
 							dbStpIntEntry.updateIfIndex(ifindex);
-							dbStpIntEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+							dbStpIntEntry
+									.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
 							dbStpIntEntry.set_lastpolltime(now);
 							dbStpIntEntry.store(dbConn);
 						}
 					}
 
 					if (snmpVlanColl.hasDot1dStpPortTable()) {
-						if (log.isDebugEnabled())
-							log
-								.debug(" store: adding Dot1dStpPortTable in stpinterface table");
+						if (log().isDebugEnabled())
+							log()
+									.debug(
+											" store: adding Dot1dStpPortTable in stpinterface table");
 						Iterator sub_ite = snmpVlanColl.getDot1dStpPortTable()
-							.getEntries().iterator();
+								.getEntries().iterator();
 						while (sub_ite.hasNext()) {
 							Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
-								.next();
+									.next();
 							int stpport = dot1dstpptentry.getDot1dStpPort();
-							
-							if (stpport == -1 ) {
-								log.warn("store: Dot1dStpPortTable found invalid stp port. Skipping");
+
+							if (stpport == -1) {
+								log()
+										.warn(
+												"store: Dot1dStpPortTable found invalid stp port. Skipping");
 								continue;
 							}
-							
-							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
-								.get(dbConn, m_node.getNodeId(),
-										stpport, vlanid);
-							if (dbStpIntEntry == null) {
-							// Cannot create the object becouse must exists the dot1dbase
-							// object!!!!!
-								log
-										.warn("store: StpInterface not found in database when storing STP info"
-												+ " for bridge node with nodeid "
-												+ m_node.getNodeId()
-												+ " bridgeport number "
-												+ stpport
-												+ " and vlan index "
-												+ vlanindex
-												+ " skipping.");
-							} else {
-								
-								String stpPortDesignatedBridge = dot1dstpptentry.getDot1dStpPortDesignatedBridge();
-								String stpPortDesignatedPort = dot1dstpptentry.getDot1dStpPortDesignatedPort();
 
-								if (stpPortDesignatedBridge == null || stpPortDesignatedBridge.equals("0000000000000000")) {
-									log.warn("store: "+ stpPortDesignatedBridge + " designated bridge is invalid not adding to discoveryLink");
+							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
+									.get(dbConn, node.getNodeId(), stpport,
+											vlanid);
+							if (dbStpIntEntry == null) {
+								// Cannot create the object becouse must exists
+								// the dot1dbase
+								// object!!!!!
+								log()
+										.warn(
+												"store: StpInterface not found in database when storing STP info"
+														+ " for bridge node with nodeid "
+														+ node.getNodeId()
+														+ " bridgeport number "
+														+ stpport
+														+ " and vlan index "
+														+ vlanindex
+														+ " skipping.");
+							} else {
+
+								String stpPortDesignatedBridge = dot1dstpptentry
+										.getDot1dStpPortDesignatedBridge();
+								String stpPortDesignatedPort = dot1dstpptentry
+										.getDot1dStpPortDesignatedPort();
+
+								if (stpPortDesignatedBridge == null
+										|| stpPortDesignatedBridge
+												.equals("0000000000000000")) {
+									log()
+											.warn(
+													"store: "
+															+ stpPortDesignatedBridge
+															+ " designated bridge is invalid not adding to discoveryLink");
 									stpPortDesignatedBridge = "0000000000000000";
-								} else if (stpPortDesignatedPort == null || stpPortDesignatedPort.equals("0000")) {
-									log.warn("store: " + stpPortDesignatedPort + " designated port is invalid not adding to discoveryLink");
+								} else if (stpPortDesignatedPort == null
+										|| stpPortDesignatedPort.equals("0000")) {
+									log()
+											.warn(
+													"store: "
+															+ stpPortDesignatedPort
+															+ " designated port is invalid not adding to discoveryLink");
 									stpPortDesignatedPort = "0000";
 								} else {
-									BridgeStpInterface stpIface = new BridgeStpInterface(stpport,vlanindex);
-									stpIface.setStpPortDesignatedBridge(stpPortDesignatedBridge);
-									stpIface.setStpPortDesignatedPort(stpPortDesignatedPort);
-									m_node.addStpInterface(stpIface);
+									BridgeStpInterface stpIface = new BridgeStpInterface(
+											stpport, vlanindex);
+									stpIface
+											.setStpPortDesignatedBridge(stpPortDesignatedBridge);
+									stpIface
+											.setStpPortDesignatedPort(stpPortDesignatedPort);
+									node.addStpInterface(stpIface);
 								}
 
-								dbStpIntEntry.updateStpPortState(dot1dstpptentry.getDot1dStpPortState());
-								dbStpIntEntry.updateStpPortPathCost(dot1dstpptentry.getDot1dStpPortPathCost());
-								dbStpIntEntry.updateStpportDesignatedBridge(stpPortDesignatedBridge);
-								dbStpIntEntry.updateStpportDesignatedRoot(dot1dstpptentry.getDot1dStpPortDesignatedRoot());
-								dbStpIntEntry.updateStpPortDesignatedCost(dot1dstpptentry.getDot1dStpPortDesignatedCost());
-								dbStpIntEntry.updateStpportDesignatedPort(stpPortDesignatedPort);
-								dbStpIntEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+								dbStpIntEntry
+										.updateStpPortState(dot1dstpptentry
+												.getDot1dStpPortState());
+								dbStpIntEntry
+										.updateStpPortPathCost(dot1dstpptentry
+												.getDot1dStpPortPathCost());
+								dbStpIntEntry
+										.updateStpportDesignatedBridge(stpPortDesignatedBridge);
+								dbStpIntEntry
+										.updateStpportDesignatedRoot(dot1dstpptentry
+												.getDot1dStpPortDesignatedRoot());
+								dbStpIntEntry
+										.updateStpPortDesignatedCost(dot1dstpptentry
+												.getDot1dStpPortDesignatedCost());
+								dbStpIntEntry
+										.updateStpportDesignatedPort(stpPortDesignatedPort);
+								dbStpIntEntry
+										.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
 								dbStpIntEntry.set_lastpolltime(now);
 
 								dbStpIntEntry.store(dbConn);
@@ -963,314 +970,372 @@ public class DbEventWriter implements Runnable {
 							}
 						}
 					}
-				
+
 					if (snmpVlanColl.hasDot1dTpFdbTable()) {
-						if (log.isDebugEnabled())
-							log
-									.debug("store: parsing Dot1dTpFdbTable");
+						if (log().isDebugEnabled())
+							log().debug("store: parsing Dot1dTpFdbTable");
 
 						Iterator subite = snmpVlanColl.getDot1dFdbTable()
-							.getEntries().iterator();
+								.getEntries().iterator();
 						while (subite.hasNext()) {
 							Dot1dTpFdbTableEntry dot1dfdbentry = (Dot1dTpFdbTableEntry) subite
-								.next();
-							String curMacAddress = dot1dfdbentry.getDot1dTpFdbAddress();
-							
-							if (curMacAddress == null || curMacAddress.equals("000000000000")) {
-									log.warn("store: Dot1dTpFdbTable invalid macaddress "
-										+ curMacAddress + " Skipping.");
+									.next();
+							String curMacAddress = dot1dfdbentry
+									.getDot1dTpFdbAddress();
+
+							if (curMacAddress == null
+									|| curMacAddress.equals("000000000000")) {
+								log().warn(
+										"store: Dot1dTpFdbTable invalid macaddress "
+												+ curMacAddress + " Skipping.");
 								continue;
 							}
 
-							if (log.isDebugEnabled())
-								log.debug("store: Dot1dTpFdbTable found macaddress "
-									+ curMacAddress);
+							if (log().isDebugEnabled())
+								log().debug(
+										"store: Dot1dTpFdbTable found macaddress "
+												+ curMacAddress);
 
 							int fdbport = dot1dfdbentry.getDot1dTpFdbPort();
 
-							if (fdbport == 0 || fdbport == -1 ) {
-								if (log.isDebugEnabled())
-									log.debug("store: Dot1dTpFdbTable mac learned on invalid port "
-										+ fdbport + " . Skipping");
+							if (fdbport == 0 || fdbport == -1) {
+								if (log().isDebugEnabled())
+									log().debug(
+											"store: Dot1dTpFdbTable mac learned on invalid port "
+													+ fdbport + " . Skipping");
 								continue;
 							}
 
-							if (log.isDebugEnabled())
-								log
-									.debug("store: Dot1dTpFdbTable mac address found "
-											+ " on bridge port "
-											+ fdbport);
+							if (log().isDebugEnabled())
+								log().debug(
+										"store: Dot1dTpFdbTable mac address found "
+												+ " on bridge port " + fdbport);
 
-							int curfdbstatus = dot1dfdbentry.getDot1dTpFdbStatus();
+							int curfdbstatus = dot1dfdbentry
+									.getDot1dTpFdbStatus();
 
 							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
-								m_node.addMacAddress(fdbport,
-									curMacAddress, vlanindex);
-								if (log.isDebugEnabled())
-									log.debug("store: Dot1dTpFdbTable found learned status"
-												+ " on bridge port ");
+								node.addMacAddress(fdbport, curMacAddress,
+										vlanindex);
+								if (log().isDebugEnabled())
+									log().debug(
+											"store: Dot1dTpFdbTable found learned status"
+													+ " on bridge port ");
 							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-								m_node.addBridgeIdentifier(curMacAddress);
-								if (log.isDebugEnabled())
-									log.debug("store: Dot1dTpFdbTable mac is bridge identifier");
+								node.addBridgeIdentifier(curMacAddress);
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: Dot1dTpFdbTable mac is bridge identifier");
 							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
-								if (log.isDebugEnabled())
-									log.debug("store: Dot1dTpFdbTable found INVALID status. Skipping");
-							} else	if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-								if (log.isDebugEnabled())
-									log.debug("store: Dot1dTpFdbTable found MGMT status. Skipping");
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: Dot1dTpFdbTable found INVALID status. Skipping");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: Dot1dTpFdbTable found MGMT status. Skipping");
 							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-								if (log.isDebugEnabled())
-									log.debug("store: Dot1dTpFdbTable found OTHER status. Skipping");
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: Dot1dTpFdbTable found OTHER status. Skipping");
 							} else if (curfdbstatus == -1) {
-								log.warn("store: Dot1dTpFdbTable null status found. Skipping");
+								log()
+										.warn(
+												"store: Dot1dTpFdbTable null status found. Skipping");
 							}
 						}
 					}
 
 					if (snmpVlanColl.hasQBridgeDot1dTpFdbTable()) {
-						if (log.isDebugEnabled())
-							log
-									.debug("store: parsing QBridgeDot1dTpFdbTable");
+						if (log().isDebugEnabled())
+							log()
+									.debug(
+											"store: parsing QBridgeDot1dTpFdbTable");
 
-						Iterator subite = snmpVlanColl.getQBridgeDot1dFdbTable()
-							.getEntries().iterator();
+						Iterator subite = snmpVlanColl
+								.getQBridgeDot1dFdbTable().getEntries()
+								.iterator();
 						while (subite.hasNext()) {
 							QBridgeDot1dTpFdbTableEntry dot1dfdbentry = (QBridgeDot1dTpFdbTableEntry) subite
-								.next();
+									.next();
 
-							String curMacAddress = dot1dfdbentry.getQBridgeDot1dTpFdbAddress();
+							String curMacAddress = dot1dfdbentry
+									.getQBridgeDot1dTpFdbAddress();
 
-							if (curMacAddress == null || curMacAddress.equals("000000000000")) {
-								log.warn("store: QBridgeDot1dTpFdbTable invalid macaddress "
-									+ curMacAddress + " Skipping.");
+							if (curMacAddress == null
+									|| curMacAddress.equals("000000000000")) {
+								log().warn(
+										"store: QBridgeDot1dTpFdbTable invalid macaddress "
+												+ curMacAddress + " Skipping.");
 								continue;
 							}
 
-							if (log.isDebugEnabled())
-								log.debug("store: Dot1dTpFdbTable found macaddress "
-									+ curMacAddress);
+							if (log().isDebugEnabled())
+								log().debug(
+										"store: Dot1dTpFdbTable found macaddress "
+												+ curMacAddress);
 
-							int fdbport = dot1dfdbentry.getQBridgeDot1dTpFdbPort();
+							int fdbport = dot1dfdbentry
+									.getQBridgeDot1dTpFdbPort();
 
-							if (fdbport == 0 || fdbport == -1 ) {
-								if (log.isDebugEnabled())
-									log.debug("store: QBridgeDot1dTpFdbTable mac learned on invalid port "
-										+ fdbport + " . Skipping");
+							if (fdbport == 0 || fdbport == -1) {
+								if (log().isDebugEnabled())
+									log().debug(
+											"store: QBridgeDot1dTpFdbTable mac learned on invalid port "
+													+ fdbport + " . Skipping");
 								continue;
 							}
 
-							if (log.isDebugEnabled())
-								log
-									.debug("store: QBridgeDot1dTpFdbTable mac address found "
-											+ " on bridge port "
-											+ fdbport);
+							if (log().isDebugEnabled())
+								log().debug(
+										"store: QBridgeDot1dTpFdbTable mac address found "
+												+ " on bridge port " + fdbport);
 
-							int curfdbstatus = dot1dfdbentry.getQBridgeDot1dTpFdbStatus();
+							int curfdbstatus = dot1dfdbentry
+									.getQBridgeDot1dTpFdbStatus();
 
 							if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
-								m_node.addMacAddress(fdbport,
-									curMacAddress, vlanindex);
-								if (log.isDebugEnabled())
-									log.debug("store: QBridgeDot1dTpFdbTable found learned status"
-												+ " on bridge port ");
+								node.addMacAddress(fdbport, curMacAddress,
+										vlanindex);
+								if (log().isDebugEnabled())
+									log().debug(
+											"store: QBridgeDot1dTpFdbTable found learned status"
+													+ " on bridge port ");
 							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-								m_node.addBridgeIdentifier(curMacAddress);
-								if (log.isDebugEnabled())
-									log.debug("store: QBridgeDot1dTpFdbTable mac is bridge identifier");
+								node.addBridgeIdentifier(curMacAddress);
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: QBridgeDot1dTpFdbTable mac is bridge identifier");
 							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
-								if (log.isDebugEnabled())
-									log.debug("store: QBridgeDot1dTpFdbTable found INVALID status. Skipping");
-							} else	if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-								if (log.isDebugEnabled())
-									log.debug("store: QBridgeDot1dTpFdbTable found MGMT status. Skipping");
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: QBridgeDot1dTpFdbTable found INVALID status. Skipping");
+							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: QBridgeDot1dTpFdbTable found MGMT status. Skipping");
 							} else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-								if (log.isDebugEnabled())
-									log.debug("store: QBridgeDot1dTpFdbTable found OTHER status. Skipping");
+								if (log().isDebugEnabled())
+									log()
+											.debug(
+													"store: QBridgeDot1dTpFdbTable found OTHER status. Skipping");
 							} else if (curfdbstatus == -1) {
-								log.warn("store: QBridgeDot1dTpFdbTable null status found. Skipping");
+								log()
+										.warn(
+												"store: QBridgeDot1dTpFdbTable null status found. Skipping");
 							}
 						}
 					}
 
-					//now adding bridge identifier mac addresses of switch from snmpinterface
-					setBridgeIdentifierFromSnmpInterface(dbConn);
+					// now adding bridge identifier mac addresses of switch from
+					// snmpinterface
+					PreparedStatement stmt = null;
+					stmt = dbConn
+							.prepareStatement(SQL_GET_SNMPPHYSADDR_SNMPINTERFACE);
+					stmt.setInt(1, node.getNodeId());
+
+					ResultSet rs = stmt.executeQuery();
+
+					while (rs.next()) {
+						String macaddr = rs.getString("snmpphysaddr");
+						if (macaddr == null)
+							continue;
+						node.addBridgeIdentifier(macaddr);
+						if (log().isDebugEnabled())
+							log().debug(
+									"setBridgeIdentifierFromSnmpInterface: found bridge identifier "
+											+ macaddr
+											+ " from snmpinterface db table");
+					}
+
 				}
 			}
 		}
-		update(dbConn, now);
-		
-	}	
-	
-	private void update(Connection dbConn, Timestamp now) throws SQLException {
-	
-		Category log = ThreadCategory.getInstance(getClass());
+		update(dbConn, now, node.getNodeId());
+		return node;
+
+	}
+
+	private void update(Connection dbConn, Timestamp now, int nodeid)
+			throws SQLException {
+
 		PreparedStatement stmt = null;
 
 		int i = 0;
 		stmt = dbConn.prepareStatement(SQL_UPDATE_ATINTERFACE);
-		stmt.setInt(1, m_node.getNodeId());
+		stmt.setInt(1, nodeid);
 		stmt.setTimestamp(2, now);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("store: SQL statement " + SQL_UPDATE_ATINTERFACE + ". " + i
-					+ " rows UPDATED for nodeid=" + m_node.getNodeId()
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"store: SQL statement " + SQL_UPDATE_ATINTERFACE + ". " + i
+							+ " rows UPDATED for nodeid=" + nodeid + ".");
+
+		stmt.close();
+
+		stmt = dbConn.prepareStatement(SQL_UPDATE_VLAN);
+		stmt.setInt(1, nodeid);
+		stmt.setTimestamp(2, now);
+
+		i = stmt.executeUpdate();
+		if (log().isDebugEnabled())
+			log().debug(
+					"store: SQL statement " + SQL_UPDATE_VLAN
+							+ ". " + i + " rows UPDATED for nodeid=" + nodeid
+							+ ".");
 
 		stmt.close();
 
 		stmt = dbConn.prepareStatement(SQL_UPDATE_IPROUTEINTERFACE);
-		stmt.setInt(1, m_node.getNodeId());
+		stmt.setInt(1, nodeid);
 		stmt.setTimestamp(2, now);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("store: SQL statement " + SQL_UPDATE_IPROUTEINTERFACE + ". " + i
-					+ " rows UPDATED for nodeid=" + m_node.getNodeId()
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"store: SQL statement " + SQL_UPDATE_IPROUTEINTERFACE
+							+ ". " + i + " rows UPDATED for nodeid=" + nodeid
+							+ ".");
 
 		stmt.close();
 
 		stmt = dbConn.prepareStatement(SQL_UPDATE_STPNODE);
-		stmt.setInt(1, m_node.getNodeId());
+		stmt.setInt(1, nodeid);
 		stmt.setTimestamp(2, now);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("store: SQL statement " + SQL_UPDATE_STPNODE + ". " + i
-					+ " rows UPDATED for nodeid=" + m_node.getNodeId()
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"store: SQL statement " + SQL_UPDATE_STPNODE + ". " + i
+							+ " rows UPDATED for nodeid=" + nodeid + ".");
 		stmt.close();
 
 		stmt = dbConn.prepareStatement(SQL_UPDATE_STPINTERFACE);
-		stmt.setInt(1, m_node.getNodeId());
+		stmt.setInt(1, nodeid);
 		stmt.setTimestamp(2, now);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("store: SQL statement " + SQL_UPDATE_STPINTERFACE + ". " + i
-					+ " rows UPDATED for nodeid=" + m_node.getNodeId()
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"store: SQL statement " + SQL_UPDATE_STPINTERFACE + ". "
+							+ i + " rows UPDATED for nodeid=" + nodeid + ".");
 		stmt.close();
 	}
 
-	private void update(Connection dbConn, char status) throws SQLException {
+	public void update(int nodeid, char status) throws SQLException {
 
-		Category log = ThreadCategory.getInstance(getClass());
+		Connection dbConn = getConnection();
 		PreparedStatement stmt = null;
 
 		int i = 0;
-		stmt = dbConn.prepareStatement(SQL_UPDATE_ATINTERFACE_STATUS);
+
+		stmt = dbConn.prepareStatement(SQL_UPDATE_VLAN_STATUS);
 		stmt.setString(1, new String(new char[] { status }));
-		stmt.setInt(2, m_nodeId);
-		stmt.setInt(3, m_nodeId);
+		stmt.setInt(2, nodeid);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("update: SQL statement " + SQL_UPDATE_ATINTERFACE_STATUS + ". " + i
-					+ " rows UPDATED for nodeid=" + m_nodeId
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"update: SQL statement " + SQL_UPDATE_VLAN_STATUS + ". "
+							+ i + " rows UPDATED for nodeid=" + nodeid + ".");
+		stmt.close();
+
+		stmt = dbConn.prepareStatement(SQL_UPDATE_ATINTERFACE_STATUS);
+		stmt.setString(1, new String(new char[] { status }));
+		stmt.setInt(2, nodeid);
+		stmt.setInt(3, nodeid);
+
+		i = stmt.executeUpdate();
+		if (log().isDebugEnabled())
+			log().debug(
+					"update: SQL statement " + SQL_UPDATE_ATINTERFACE_STATUS
+							+ ". " + i + " rows UPDATED for nodeid=" + nodeid
+							+ ".");
 		stmt.close();
 
 		stmt = dbConn.prepareStatement(SQL_UPDATE_IPROUTEINTERFACE_STATUS);
 		stmt.setString(1, new String(new char[] { status }));
-		stmt.setInt(2, m_nodeId);
+		stmt.setInt(2, nodeid);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("update: SQL statement " + SQL_UPDATE_IPROUTEINTERFACE_STATUS + ". " + i
-					+ " rows UPDATED for nodeid=" + m_nodeId
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"update: SQL statement "
+							+ SQL_UPDATE_IPROUTEINTERFACE_STATUS + ". " + i
+							+ " rows UPDATED for nodeid=" + nodeid + ".");
 		stmt.close();
 
 		stmt = dbConn.prepareStatement(SQL_UPDATE_STPNODE_STATUS);
 		stmt.setString(1, new String(new char[] { status }));
-		stmt.setInt(2, m_nodeId);
+		stmt.setInt(2, nodeid);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("update: SQL statement " + SQL_UPDATE_STPNODE_STATUS + ". " + i
-					+ " rows UPDATED for nodeid=" + m_nodeId
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"update: SQL statement " + SQL_UPDATE_STPNODE_STATUS + ". "
+							+ i + " rows UPDATED for nodeid=" + nodeid + ".");
 		stmt.close();
 
 		stmt = dbConn.prepareStatement(SQL_UPDATE_STPINTERFACE_STATUS);
 		stmt.setString(1, new String(new char[] { status }));
-		stmt.setInt(2, m_nodeId);
+		stmt.setInt(2, nodeid);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("update: SQL statement " + SQL_UPDATE_STPINTERFACE_STATUS + ". " + i
-					+ " rows UPDATED for nodeid=" + m_nodeId
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"update: SQL statement " + SQL_UPDATE_STPINTERFACE_STATUS
+							+ ". " + i + " rows UPDATED for nodeid=" + nodeid
+							+ ".");
 		stmt.close();
 
 		stmt = dbConn.prepareStatement(SQL_UPDATE_DATALINKINTERFACE_STATUS);
 		stmt.setString(1, new String(new char[] { status }));
-		stmt.setInt(2, m_nodeId);
-		stmt.setInt(3, m_nodeId);
+		stmt.setInt(2, nodeid);
+		stmt.setInt(3, nodeid);
 
 		i = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("update: SQL statement " + SQL_UPDATE_DATALINKINTERFACE_STATUS + ". " + i
-					+ " rows UPDATED for nodeid=" + m_nodeId
-					+ ".");
+		if (log().isDebugEnabled())
+			log().debug(
+					"update: SQL statement "
+							+ SQL_UPDATE_DATALINKINTERFACE_STATUS + ". " + i
+							+ " rows UPDATED for nodeid=" + nodeid + ".");
 		stmt.close();
 
 	}
 
-	private void setBridgeIdentifierFromSnmpInterface(Connection dbConn) throws SQLException {
-
-		Category log = ThreadCategory.getInstance(getClass());
-
-		PreparedStatement stmt = null;
-		stmt = dbConn.prepareStatement(SQL_GET_SNMPPHYSADDR_SNMPINTERFACE);
-		stmt.setInt(1, m_node.getNodeId());
-		
-		ResultSet rs = stmt.executeQuery();
-
-		while (rs.next()) {
-			String macaddr = rs.getString("snmpphysaddr");
-			if (macaddr == null)
-				continue;
-			m_node.addBridgeIdentifier(macaddr);
-			if (log.isDebugEnabled())
-				log
-						.debug("setBridgeIdentifierFromSnmpInterface: found bridge identifier "
-								+ macaddr
-								+ " from snmpinterface db table");
-		}
-
-
-	}
-
-
-
 	private int getNodeidFromIp(Connection dbConn, InetAddress ipaddr)
 			throws SQLException {
 
+		if (ipaddr.isLoopbackAddress()
+				|| ipaddr.getHostAddress().equals("0.0.0.0"))
+			return -1;
 
-		if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return -1;
-
-		Category log = ThreadCategory.getInstance(getClass());
-		
 		int nodeid = -1;
-		
+
 		PreparedStatement stmt = null;
 		stmt = dbConn.prepareStatement(SQL_GET_NODEID);
 		stmt.setString(1, ipaddr.getHostAddress());
 
-		if (log.isDebugEnabled())
-			log.debug("getNodeidFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + ipaddr.getHostAddress());
+		if (log().isDebugEnabled())
+			log().debug(
+					"getNodeidFromIp: executing query " + SQL_GET_NODEID
+							+ " with ip address=" + ipaddr.getHostAddress());
 
 		ResultSet rs = stmt.executeQuery();
 
 		if (!rs.next()) {
 			rs.close();
 			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("getNodeidFromIp: no entries found in ipinterface");
+			if (log().isDebugEnabled())
+				log().debug("getNodeidFromIp: no entries found in ipinterface");
 			return -1;
 		}
 		// extract the values.
@@ -1283,8 +1348,8 @@ public class DbEventWriter implements Runnable {
 		if (rs.wasNull())
 			nodeid = -1;
 
-		if (log.isDebugEnabled())
-			log.debug("getNodeidFromIp: found nodeid " + nodeid);
+		if (log().isDebugEnabled())
+			log().debug("getNodeidFromIp: found nodeid " + nodeid);
 
 		stmt.close();
 
@@ -1292,31 +1357,35 @@ public class DbEventWriter implements Runnable {
 
 	}
 
-	private RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress ipaddr)
-	throws SQLException {
-		if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
-			
-		Category log = ThreadCategory.getInstance(getClass());
-			
+	private RouterInterface getNodeidMaskFromIp(Connection dbConn,
+			InetAddress ipaddr) throws SQLException {
+		if (ipaddr.isLoopbackAddress()
+				|| ipaddr.getHostAddress().equals("0.0.0.0"))
+			return null;
+
 		int nodeid = -1;
 		int ifindex = -1;
 		String netmask = null;
-		
+
 		PreparedStatement stmt = null;
 		stmt = dbConn.prepareStatement(SQL_GET_NODEID__IFINDEX_MASK);
 		stmt.setString(1, ipaddr.getHostAddress());
-			
-		if (log.isDebugEnabled())
-			log.debug("getNodeidMaskFromIp: executing query " + SQL_GET_NODEID__IFINDEX_MASK + " with ip address=" + ipaddr.getHostAddress());
-			
-			
+
+		if (log().isDebugEnabled())
+			log().debug(
+					"getNodeidMaskFromIp: executing query "
+							+ SQL_GET_NODEID__IFINDEX_MASK
+							+ " with ip address=" + ipaddr.getHostAddress());
+
 		ResultSet rs = stmt.executeQuery();
-			
+
 		if (!rs.next()) {
 			rs.close();
 			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("getNodeidMaskFromIp: no entries found in snmpinterface");
+			if (log().isDebugEnabled())
+				log()
+						.debug(
+								"getNodeidMaskFromIp: no entries found in snmpinterface");
 			return null;
 		}
 		// extract the values.
@@ -1327,56 +1396,57 @@ public class DbEventWriter implements Runnable {
 		if (rs.wasNull()) {
 			rs.close();
 			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("getNodeidMaskFromIp: no nodeid found");
+			if (log().isDebugEnabled())
+				log().debug("getNodeidMaskFromIp: no nodeid found");
 			return null;
 		}
 
 		ifindex = rs.getInt("snmpifindex");
 		if (rs.wasNull()) {
-			if (log.isDebugEnabled())
-				log.debug("getNodeidMaskFromIp: no snmsnmpifindex found");
+			if (log().isDebugEnabled())
+				log().debug("getNodeidMaskFromIp: no snmsnmpifindex found");
 			ifindex = -1;
 		}
 
 		netmask = rs.getString("snmpipadentnetmask");
 		if (rs.wasNull()) {
-			if (log.isDebugEnabled())
-				log.debug("getNodeidMaskFromIp: no snmpipadentnetmask found");
+			if (log().isDebugEnabled())
+				log().debug("getNodeidMaskFromIp: no snmpipadentnetmask found");
 			netmask = "255.255.255.255";
 		}
 
 		rs.close();
 		stmt.close();
-		RouterInterface ri = new RouterInterface(nodeid,ifindex,netmask);
+		RouterInterface ri = new RouterInterface(nodeid, ifindex, netmask);
 		return ri;
-		
+
 	}
 
 	private RouterInterface getNodeFromIp(Connection dbConn, InetAddress ipaddr)
-	throws SQLException {
-		if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
-			
-		Category log = ThreadCategory.getInstance(getClass());
-			
+			throws SQLException {
+		if (ipaddr.isLoopbackAddress()
+				|| ipaddr.getHostAddress().equals("0.0.0.0"))
+			return null;
+
 		int nodeid = -1;
 		int ifindex = -1;
-		
+
 		PreparedStatement stmt = null;
 		stmt = dbConn.prepareStatement(SQL_GET_NODEID);
 		stmt.setString(1, ipaddr.getHostAddress());
-			
-		if (log.isDebugEnabled())
-			log.debug("getNodeFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + ipaddr.getHostAddress());
-			
-			
+
+		if (log().isDebugEnabled())
+			log().debug(
+					"getNodeFromIp: executing query " + SQL_GET_NODEID
+							+ " with ip address=" + ipaddr.getHostAddress());
+
 		ResultSet rs = stmt.executeQuery();
-			
+
 		if (!rs.next()) {
 			rs.close();
 			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("getNodeFromIp: no entries found in snmpinterface");
+			if (log().isDebugEnabled())
+				log().debug("getNodeFromIp: no entries found in snmpinterface");
 			return null;
 		}
 		// extract the values.
@@ -1387,35 +1457,38 @@ public class DbEventWriter implements Runnable {
 		if (rs.wasNull()) {
 			rs.close();
 			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("getNodeFromIp: no nodeid found");
+			if (log().isDebugEnabled())
+				log().debug("getNodeFromIp: no nodeid found");
 			return null;
 		}
 
 		rs.close();
 		stmt.close();
-		RouterInterface ri = new RouterInterface(nodeid,ifindex);
+		RouterInterface ri = new RouterInterface(nodeid, ifindex);
 		return ri;
-		
+
 	}
 
-	private AtInterface getNodeidIfindexFromIp(Connection dbConn, InetAddress ipaddr)
-	throws SQLException {
+	private AtInterface getNodeidIfindexFromIp(Connection dbConn,
+			InetAddress ipaddr) throws SQLException {
 
+		if (ipaddr.isLoopbackAddress()
+				|| ipaddr.getHostAddress().equals("0.0.0.0"))
+			return null;
 
-		if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
-		
-		Category log = ThreadCategory.getInstance(getClass());
-		
 		int atnodeid = -1;
 		int atifindex = -1;
-		
-		PreparedStatement stmt = dbConn.prepareStatement(SQL_GET_NODEID_IFINDEX_IPINT);
-	
+
+		PreparedStatement stmt = dbConn
+				.prepareStatement(SQL_GET_NODEID_IFINDEX_IPINT);
+
 		stmt.setString(1, ipaddr.getHostAddress());
 
-		if (log.isDebugEnabled()) 
-			log.debug("getNodeidIfindexFromIp: executing SQL Statement " + SQL_GET_NODEID_IFINDEX_IPINT + " with ip address=" + ipaddr.getHostAddress());
+		if (log().isDebugEnabled())
+			log().debug(
+					"getNodeidIfindexFromIp: executing SQL Statement "
+							+ SQL_GET_NODEID_IFINDEX_IPINT
+							+ " with ip address=" + ipaddr.getHostAddress());
 		ResultSet rs = stmt.executeQuery();
 
 		if (!rs.next()) {
@@ -1423,35 +1496,37 @@ public class DbEventWriter implements Runnable {
 			stmt.close();
 			return null;
 		}
-		
+
 		atnodeid = rs.getInt("nodeid");
 		if (rs.wasNull()) {
 			return null;
 		}
 		// save info for DiscoveryLink
-		AtInterface ati = new AtInterface(atnodeid,ipaddr.getHostAddress());
+		AtInterface ati = new AtInterface(atnodeid, ipaddr.getHostAddress());
 
 		// get ifindex if exists
 		atifindex = rs.getInt("ifindex");
 		if (rs.wasNull()) {
-			if (log.isInfoEnabled())
-				log.info("getNodeidIfindexFromIp: nodeid "+ atnodeid +" no ifindex (-1) found for ipaddress "
-						+ ipaddr + ".");
+			if (log().isInfoEnabled())
+				log().info(
+						"getNodeidIfindexFromIp: nodeid " + atnodeid
+								+ " no ifindex (-1) found for ipaddress "
+								+ ipaddr + ".");
 		} else {
-			if (log.isInfoEnabled())
-				log.info("getNodeidIfindexFromIp: nodeid "+ atnodeid +" ifindex " + atifindex + " found for ipaddress "
-						+ ipaddr + ".");
+			if (log().isInfoEnabled())
+				log().info(
+						"getNodeidIfindexFromIp: nodeid " + atnodeid
+								+ " ifindex " + atifindex
+								+ " found for ipaddress " + ipaddr + ".");
 			ati.setIfindex(atifindex);
 		}
-		
-		return ati;
-		
-	}
 
+		return ati;
+
+	}
 
 	private int getSnmpIfType(Connection dbConn, int nodeid, int ifindex)
 			throws SQLException {
-		Category log = ThreadCategory.getInstance(getClass());
 
 		int snmpiftype = -1;
 		PreparedStatement stmt = null;
@@ -1459,18 +1534,19 @@ public class DbEventWriter implements Runnable {
 		stmt.setInt(1, nodeid);
 		stmt.setInt(2, ifindex);
 
-		if (log.isDebugEnabled())
-			log.debug("getSnmpIfType: executing query "
-					+ SQL_GET_SNMPIFTYPE + " with nodeid=" + nodeid + " and ifindex=" + ifindex);
+		if (log().isDebugEnabled())
+			log().debug(
+					"getSnmpIfType: executing query " + SQL_GET_SNMPIFTYPE
+							+ " with nodeid=" + nodeid + " and ifindex="
+							+ ifindex);
 
 		ResultSet rs = stmt.executeQuery();
 
 		if (!rs.next()) {
 			rs.close();
 			stmt.close();
-			if (log.isDebugEnabled())
-				log
-						.debug("getSnmpIfType: no entries found in snmpinterface");
+			if (log().isDebugEnabled())
+				log().debug("getSnmpIfType: no entries found in snmpinterface");
 			return -1;
 		}
 
@@ -1484,9 +1560,9 @@ public class DbEventWriter implements Runnable {
 		if (rs.wasNull())
 			snmpiftype = -1;
 
-		if (log.isDebugEnabled())
-			log
-					.debug("getSnmpIfType: found in snmpinterface snmpiftype="
+		if (log().isDebugEnabled())
+			log().debug(
+					"getSnmpIfType: found in snmpinterface snmpiftype="
 							+ snmpiftype);
 
 		stmt.close();
@@ -1494,11 +1570,9 @@ public class DbEventWriter implements Runnable {
 		return snmpiftype;
 
 	}
-	
-	private int getIfIndexByName(Connection dbConn,
-			int nodeid, String ifName) throws SQLException {
 
-		Category log = ThreadCategory.getInstance(getClass());
+	private int getIfIndexByName(Connection dbConn, int nodeid, String ifName)
+			throws SQLException {
 
 		PreparedStatement stmt = null;
 		stmt = dbConn.prepareStatement(SQL_GET_IFINDEX_SNMPINTERFACE_NAME);
@@ -1506,18 +1580,20 @@ public class DbEventWriter implements Runnable {
 		stmt.setString(2, ifName);
 		stmt.setString(3, ifName);
 
-		if (log.isDebugEnabled())
-			log.debug("getIfIndexByName: executing query"
-					+ SQL_GET_IFINDEX_SNMPINTERFACE_NAME + "nodeid =" + nodeid + "and ifName=" + ifName);
+		if (log().isDebugEnabled())
+			log().debug(
+					"getIfIndexByName: executing query"
+							+ SQL_GET_IFINDEX_SNMPINTERFACE_NAME + "nodeid ="
+							+ nodeid + "and ifName=" + ifName);
 
 		ResultSet rs = stmt.executeQuery();
 
 		if (!rs.next()) {
 			rs.close();
 			stmt.close();
-			if (log.isDebugEnabled())
-				log
-						.debug("getIfIndexByName: no entries found in snmpinterface");
+			if (log().isDebugEnabled())
+				log().debug(
+						"getIfIndexByName: no entries found in snmpinterface");
 			return -1;
 		}
 
@@ -1526,55 +1602,210 @@ public class DbEventWriter implements Runnable {
 		int ndx = 1;
 
 		if (rs.wasNull()) {
-			
-			if (log.isDebugEnabled())
-				log
-						.debug("getIfIndexByName: no entries found in snmpinterface");
+
+			if (log().isDebugEnabled())
+				log().debug(
+						"getIfIndexByName: no entries found in snmpinterface");
 			return -1;
-			
+
 		}
 
 		int ifindex = rs.getInt(ndx++);
 
-		if (log.isDebugEnabled())
-			log.debug("getIfIndexByName: found ifindex="
-					+ ifindex);
+		if (log().isDebugEnabled())
+			log().debug("getIfIndexByName: found ifindex=" + ifindex);
 
 		stmt.close();
 
 		return ifindex;
 	}
 
-	public LinkableNode getLinkableNode() {
-		return m_node;
+	private void sendNewSuspectEvent(InetAddress ipaddress, InetAddress ipowner, String name) {
+		if (log().isDebugEnabled())
+			log().debug(
+					"sendNewSuspectEvent:  found ip address to send :"
+							+ ipaddress);
+
+		if (ipaddress.isLoopbackAddress() || ipaddress.isMulticastAddress()
+				|| ipaddress.getHostAddress().equals("0.0.0.0")) {
+			if (log().isDebugEnabled())
+				log()
+						.debug(
+								"sendNewSuspectEvent: not sending event for invalid ip address");
+		} else {
+			if (log().isDebugEnabled())
+				log()
+						.debug(
+								"sendNewSuspectEvent: sending event for valid ip address");
+			Linkd.getInstance().sendNewSuspectEvent(
+					ipaddress.getHostAddress(),
+					ipowner.getHostAddress(),name);
+		}
+	}
+
+	public void setDbConnectionFactory(DataSource dbConnectionFactory) {
+		this.dbConnectionFactory = dbConnectionFactory;
+	}
+
+	public LinkableNode getSnmpNode(int nodeid) throws SQLException {
+		
+		Connection dbConn = getConnection();
+		LinkableNode node = null;
+
+		PreparedStatement stmt = dbConn.prepareStatement(SQL_SELECT_SNMP_NODE);
+		stmt.setInt(1, nodeid);
+		if (log().isDebugEnabled())
+			log().debug("getSnmpCollection: execute '" + SQL_SELECT_SNMP_NODE + "' with nodeid ="+nodeid);
+
+		ResultSet rs = stmt.executeQuery();
+
+		while (rs.next()) {
+			String sysoid = rs.getString("nodesysoid");
+			if (sysoid == null)
+				sysoid = "-1";
+			String ipaddr = rs.getString("ipaddr");
+			if (log().isDebugEnabled())
+				log().debug("getSnmpCollection: found nodeid "
+						+ nodeid + " ipaddr " + ipaddr + " sysoid " + sysoid);
+
+			node = new LinkableNode(nodeid,ipaddr,sysoid);
+		}
+		rs.close();
+		stmt.close();
+
+		return node;
+
 	}
 	
-	
-	
-	private void sendNewSuspectEvent(InetAddress ipaddress) {
-		if (isAutoDiscovery()) { 
-			Category log = ThreadCategory.getInstance(getClass());
-			if (log.isDebugEnabled())
-				log.debug("sendNewSuspectEvent:  found ip address to send :" + ipaddress);
+	public List<LinkableNode> getSnmpNodeList() throws SQLException {
 
-			if (ipaddress.isLoopbackAddress() || ipaddress.isMulticastAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) {
-				if (log.isDebugEnabled())
-					log.debug("sendNewSuspectEvent: not sending event for invalid ip address");
-			} else {
-					if (log.isDebugEnabled())
-						log.debug("sendNewSuspectEvent: sending event for valid ip address");
-					Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), m_snmpcoll.getTarget().getHostAddress());
-			}
+		Connection dbConn = getConnection();
+
+		List<LinkableNode> linknodes = new ArrayList<LinkableNode>();
+		PreparedStatement ps = dbConn.prepareStatement(SQL_SELECT_SNMP_NODES);
+
+		ResultSet rs = ps.executeQuery();
+		if (log().isDebugEnabled())
+			log().debug(
+					"getNodesInfo: execute query: \" " + SQL_SELECT_SNMP_NODES
+							+ "\"");
+
+		while (rs.next()) {
+			int nodeid = rs.getInt("nodeid");
+			String ipaddr = rs.getString("ipaddr");
+			String sysoid = rs.getString("nodesysoid");
+			if (sysoid == null)
+				sysoid = "-1";
+			if (log().isDebugEnabled())
+				log().debug(
+						"getNodesInfo: found node element: nodeid " + nodeid
+								+ " ipaddr " + ipaddr + " sysoid " + sysoid);
+
+			LinkableNode node = new LinkableNode(nodeid, ipaddr,sysoid);
+			linknodes.add(node);
+
+
+		}
+
+		rs.close();
+		ps.close();
+
+		if (log().isDebugEnabled())
+			log().debug("getNodesInfo: found " + linknodes.size()
+
+			+ " snmp primary ip nodes");
+
+		return linknodes;
+}
+	
+	public void updateDeletedNodes() throws SQLException {
+
+		Connection dbConn = getConnection();
+
+		// update atinterface
+		int i = 0;
+		PreparedStatement ps = dbConn
+				.prepareStatement(SQL_UPDATE_ATINTERFACE_D);
+		i = ps.executeUpdate();
+		if (log().isInfoEnabled()) {
+			log().info("updateDeletedNodes: execute '" + SQL_UPDATE_ATINTERFACE_D
+					+ "' updated rows: " + i);
+		}
+
+		// update vlan
+		ps = dbConn.prepareStatement(SQL_UPDATE_VLAN_D);
+		i = ps.executeUpdate();
+		if (log().isInfoEnabled()) {
+			log().info("updateDeletedNodes: execute '" + SQL_UPDATE_VLAN_D + "' updated rows: "
+					+ i);
+		}
+
+		// update stpnode
+		ps = dbConn.prepareStatement(SQL_UPDATE_STPNODE_D);
+		i = ps.executeUpdate();
+		if (log().isInfoEnabled()) {
+			log().info("updateDeletedNodes: execute '" + SQL_UPDATE_STPNODE_D + "' updated rows: "
+					+ i);
+		}
+
+		// update stpinterface
+		ps = dbConn.prepareStatement(SQL_UPDATE_STPINTERFACE_D);
+		i = ps.executeUpdate();
+		if (log().isInfoEnabled()) {
+			log().info("updateDeletedNodes: execute '" + SQL_UPDATE_STPINTERFACE_D
+					+ "' updated rows: " + i);
+		}
+
+		// update iprouteinterface
+		ps = dbConn.prepareStatement(SQL_UPDATE_IPROUTEINTERFACE_D);
+		i = ps.executeUpdate();
+		if (log().isInfoEnabled()) {
+			log().info("updateDeletedNodes: execute '" + SQL_UPDATE_IPROUTEINTERFACE_D
+					+ "'updated rows: " + i);
+		}
+
+		// update datalinkinterface
+		ps = dbConn.prepareStatement(SQL_UPDATE_DATALINKINTERFACE_D);
+		i = ps.executeUpdate();
+		if (log().isInfoEnabled()) {
+			log().info("updateDeletedNodes: execute '" + SQL_UPDATE_DATALINKINTERFACE_D
+					+ "' updated rows: " + i);
 		}
 
 	}
 
-	public boolean isAutoDiscovery() {
-		return autoDiscovery;
-	}
+	public String getSnmpPrimaryIp(int nodeid)
+	throws SQLException {
 
-	public void setAutoDiscovery(boolean autoDiscovery) {
-		this.autoDiscovery = autoDiscovery;
+		Connection dbConn = getConnection();
+		/**
+		 * Query to select info for specific node
+		 */
+		
+		String ipaddr = null;
+		PreparedStatement stmt = dbConn.prepareStatement(SQL_SELECT_SNMP_IP_ADDR);
+		stmt.setInt(1, nodeid);
+		if (log().isDebugEnabled())
+			log().debug("getSnmpPrimaryIp: SQL statement = " + stmt.toString());
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		while (rs.next()) {
+			ipaddr = rs.getString("ipaddr");
+			if (ipaddr == null)
+				return null;
+			if (log().isDebugEnabled())
+				log().debug("getSnmpPrimaryIp: found node element: nodeid " + nodeid
+						+ " ipaddr " + ipaddr);
+		
+		
+		}
+		rs.close();
+		stmt.close();
+		
+		return 	ipaddr;
+	
 	}
 	
+
 }

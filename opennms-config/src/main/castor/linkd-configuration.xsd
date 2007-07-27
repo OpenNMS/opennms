@@ -1,68 +1,175 @@
 <?xml version="1.0"?>
 <schema targetNamespace="http://xmlns.opennms.org/xsd/config/linkd"
-    xmlns="http://www.w3.org/2001/XMLSchema"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:this="http://xmlns.opennms.org/xsd/config/linkd"
-    xmlns:ns2="http://www.w3.org/1999/xhtml"
-    xmlns:ns="http://www.w3.org/2001/XMLSchema"
-    xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
-  <annotation>
-    <documentation>XML Schema for the linkd-configuration.xml configuration
-    file. Version: $Id: linkd-configuration.xsd 3400 2006-10-03 22:01:41Z rssntn67 $</documentation>
-  </annotation>
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/linkd"
+	xmlns:ns2="http://www.w3.org/1999/xhtml"
+	xmlns:ns="http://www.w3.org/2001/XMLSchema"
+	xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+	<annotation>
+		<documentation>
+			XML Schema for the linkd-configuration.xml configuration
+			file. Version: $Id: linkd-configuration.xsd 3400 2006-10-03
+			22:01:41Z rssntn67 $
+		</documentation>
+	</annotation>
 
 	<element name="linkd-configuration">
-    <annotation>
-      <documentation>Top-level element for the linkd-configuration.xml
-      configuration file.</documentation>
-    </annotation>
+		<annotation>
+			<documentation>
+				Top-level element for the linkd-configuration.xml
+				configuration file.
+			</documentation>
+		</annotation>
 
 		<complexType>
 			<sequence>
 				<element ref="this:vlans" minOccurs="1" maxOccurs="1">
-    		     <annotation>
-            		<documentation>A section to get specific Vendors Vlan informations.</documentation>
-          		 </annotation>
-          		</element>	
- 			</sequence>
-			
-			<attribute name="initial_sleep_time" type="long" use="required">
-			  <annotation>
-          		<documentation>The initial sleep time in msec before starting Snmp Collection.</documentation>
-        	  </annotation>
+					<annotation>
+						<documentation>
+							A section to get specific Vendors Vlan
+							informations.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="1"
+					ref="this:package">
+					<annotation>
+						<documentation>
+							Package encapsulating addresses, data to be
+							collected for these addresses, etc..
+						</documentation>
+					</annotation>
+				</element>
+
+			</sequence>
+
+			<attribute name="initial_sleep_time" type="long"
+				use="required">
+				<annotation>
+					<documentation>
+						The initial sleep time in msec before starting
+						Snmp Collection.
+					</documentation>
+				</annotation>
 			</attribute>
 
-			<attribute name="snmp_poll_interval" type="long" use="required">
-        	  <annotation>
-          		<documentation>Snmp Poll Time interval in msec.</documentation>
-        	  </annotation>
+			<attribute name="snmp_poll_interval" type="long"
+				use="required">
+				<annotation>
+					<documentation>
+						Snmp Poll Time interval in msec.
+					</documentation>
+				</annotation>
 			</attribute>
 
-			<attribute name="discovery_link_interval" type="long" use="required">
-        	  <annotation>
-          		<documentation>Time interval in msec from last snmp collection and link discovery.</documentation>
-        	  </annotation>
+			<attribute name="discovery_link_interval" type="long"
+				use="required">
+				<annotation>
+					<documentation>
+						Time interval in msec from last snmp collection
+						and link discovery.
+					</documentation>
+				</annotation>
 			</attribute>
 
 			<attribute name="threads" type="int" use="required">
-        	  <annotation>
-          		<documentation>The max number of threads used for polling snmp devices.</documentation>
-        	  </annotation>
+				<annotation>
+					<documentation>
+						The max number of threads used for polling snmp
+						devices.
+					</documentation>
+				</annotation>
 			</attribute>
 
-			<attribute name="auto-discovery" type="boolean" use="required">
-        	  <annotation>
-          		<documentation>Whether ip addresses from devices unknown to OpenNMS should
-          		generate newSuspect events.</documentation>
-        	  </annotation>
-	        </attribute>
+			<attribute name="auto-discovery" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether ip addresses from devices unknown to
+						OpenNMS should generate newSuspect events.
+						This flags overwrite auto-discovery package flags.
+					</documentation>
+				</annotation>
+			</attribute>
 
-			<attribute name="enable-vlan-discovery" type="boolean" use="required">
-        	  <annotation>
-          		<documentation>Whether Linkd has to find Vlans on devices to performs
-          		 snmp data (Bridge) collection .</documentation>
-        	  </annotation>
-	        </attribute>
+			<attribute name="enable-vlan-discovery" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find Vlans on devices to
+						performs snmp data (Bridge) collection .
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery-using-routes" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links on devices using
+						ip routes.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery-using-bridge" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links on devices using
+						bridge info.
+					</documentation>
+				</annotation>
+			</attribute>
+
+
+			<attribute name="download-routes-info" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to download ip routes on
+						devices and save to database also if
+						discovery-using-routes is false.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery-using-cdp" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links on devices using
+						cisco discovery protocol.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="download-stp-node" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to download Bridge Spanning
+						Tree informations on devices and save to
+						database table stpnode also if
+						discovery-using-bridge is false.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="download-stp-table" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to download Spanning Tree
+						table on devices and save to database table
+						stpinterface also if discovery-using-bridge is
+						false.
+					</documentation>
+				</annotation>
+			</attribute>
+
 		</complexType>
 	</element>
 
@@ -70,11 +177,15 @@
 		<complexType>
 			<sequence>
 				<!---  -->
-				<element ref="this:vendor" minOccurs="1" maxOccurs="unbounded">
-    		     <annotation>
-            		<documentation>Identifies right class to get Vlans from specific vendor devices sysoids.</documentation>
-          		 </annotation>
-          		</element>	
+				<element ref="this:vendor" minOccurs="1"
+					maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							Identifies right class to get Vlans from
+							specific vendor devices sysoids.
+						</documentation>
+					</annotation>
+				</element>
 			</sequence>
 		</complexType>
 	</element>
@@ -82,79 +193,293 @@
 	<element name="vendor">
 		<complexType>
 			<sequence>
-				<element name="specific" type="string" minOccurs="1" maxOccurs="unbounded">
-    		     <annotation>
-            		<documentation>Specific sysoid submask node to be polled to get vlan.</documentation>
-          		 </annotation>
-          		</element>	
-				
-				<element ref="this:include-range" minOccurs="0" maxOccurs="unbounded">
-    		     <annotation>
-            		<documentation>Range of sysoids submask nodes to be polled to get vlan</documentation>
-          		 </annotation>
-          		</element>	
+				<element name="specific" type="string" minOccurs="1"
+					maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							Specific sysoid submask node to be polled to
+							get vlan.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element ref="this:include-range" minOccurs="0"
+					maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							Range of sysoids submask nodes to be polled
+							to get vlan
+						</documentation>
+					</annotation>
+				</element>
 
 				<!--- -->
-				<element ref="this:exclude-range" minOccurs="0" maxOccurs="unbounded">
-    		     <annotation>
-            		<documentation>Range of sysoid submask nodes to be excluded from the polling to get vlan</documentation>
-          		 </annotation>
-          		</element>	
-				
+				<element ref="this:exclude-range" minOccurs="0"
+					maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							Range of sysoid submask nodes to be excluded
+							from the polling to get vlan
+						</documentation>
+					</annotation>
+				</element>
+
 			</sequence>
 
 			<!---  -->
-			<attribute name="vendor_name" type="string" use="required">
-    		     <annotation>
-            		<documentation>Vendor identifier.</documentation>
-          		 </annotation>
-          	</attribute>	
+			<attribute name="vendor_name" type="string"
+				use="required">
+				<annotation>
+					<documentation>Vendor identifier.</documentation>
+				</annotation>
+			</attribute>
 
 			<!---  -->
-			<attribute name="sysoidRootMask" type="string" use="required">
-    		     <annotation>
-            		<documentation>Vendor sysoid root identifier.</documentation>
-          		 </annotation>
-          	</attribute>
-			
+			<attribute name="sysoidRootMask" type="string"
+				use="required">
+				<annotation>
+					<documentation>
+						Vendor sysoid root identifier.
+					</documentation>
+				</annotation>
+			</attribute>
+
 			<!--  -->
 			<attribute name="class-name" type="string" use="required">
-    		     <annotation>
-            		<documentation>Java Class Name to get Vlans Info on matching Sysoids.</documentation>
-          		 </annotation>
-          	</attribute>
+				<annotation>
+					<documentation>
+						Java Class Name to get Vlans Info on matching
+						Sysoids.
+					</documentation>
+				</annotation>
+			</attribute>
 
 		</complexType>
 	</element>
-	
+
 	<!--- a range of addresses to be polled - if the starting address is greater than
-	      the ending address, they are simply swapped
+		the ending address, they are simply swapped
 	-->
 	<element name="include-range">
 		<complexType>
-			<sequence>
-				<!--- starting address of the range -->
-				<element name="begin" type="string" minOccurs="1" maxOccurs="1"/>
+	<attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting address of the range.</documentation>
+        </annotation>
+      </attribute>
 
-				<!--- ending address of the range -->
-				<element name="end" type="string" minOccurs="1" maxOccurs="1"/>
-			</sequence>
-
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending address of the range.</documentation>
+        </annotation>
+      </attribute>
+		
 		</complexType>
 	</element>
 
 	<!--- the range of addresses to be excluded from the polling -->
 	<element name="exclude-range">
 		<complexType>
-			<sequence>
-				<!--- starting address of the range -->
-				<element name="begin" type="string" minOccurs="1" maxOccurs="1"/>
+	<attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting address of the range.</documentation>
+        </annotation>
+      </attribute>
 
-				<!--- ending address of the range -->
-				<element name="end" type="string" minOccurs="1" maxOccurs="1"/>
-			</sequence>
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending address of the range.</documentation>
+        </annotation>
+      </attribute>
 		</complexType>
 	</element>
-	
+
+	<element name="package">
+		<annotation>
+			<documentation>
+				Package encapsulating addresses, services to be polled
+				for these addresses, etc..
+			</documentation>
+		</annotation>
+
+		<complexType>
+			<sequence>
+				<element maxOccurs="1" minOccurs="1"
+					ref="this:filter">
+					<annotation>
+						<documentation>
+							A rule which adresses belonging to this
+							package must pass. This package is applied
+							only to addresses that pass this filter.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0"
+					name="specific" type="string">
+					<annotation>
+						<documentation>
+							Adresses in this package
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0"
+					ref="this:include-range">
+					<annotation>
+						<documentation>
+							Range of adresses in this package.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0"
+					ref="this:exclude-range">
+					<annotation>
+						<documentation>
+							Range of adresses to be excluded from this
+							package.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0"
+					name="include-url" type="string">
+					<annotation>
+						<documentation>
+							A file URL holding specific addresses to be
+							polled. Each line in the URL file can be one
+							of: &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
+							or &lt;IP&gt; or #&lt;comments&gt;. Lines
+							starting with a '#' are ignored and so are
+							characters after a '&lt;space&gt;#' in a
+							line.
+						</documentation>
+					</annotation>
+				</element>
+
+
+			</sequence>
+
+			<attribute name="name" type="string" use="required">
+				<annotation>
+					<documentation>
+						Name or identifier for this package.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="snmp_poll_interval" type="long">
+				<annotation>
+					<documentation>
+						Snmp Poll Time interval in msec.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery_link_interval" type="long">
+				<annotation>
+					<documentation>
+						Time interval in msec from last snmp collection
+						and link discovery.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="auto-discovery" type="boolean">
+				<annotation>
+					<documentation>
+						Whether ip addresses from devices unknown to
+						OpenNMS should generate newSuspect events.
+						This flad did not override general flag!
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="enable-vlan-discovery" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find Vlans on devices to
+						performs snmp data (Bridge) collection .
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery-using-routes" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links on devices using
+						ip routes.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery-using-bridge" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links on devices using
+						bridge info.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="download-routes-info" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to download ip routes on
+						devices and save to database also if
+						discovery-using-routes is false.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery-using-cdp" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links on devices using
+						cisco discovery protocol.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="download-stp-node" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to download Bridge Spanning
+						Tree informations on devices and save to
+						database table stpnode also if
+						discovery-using-bridge is false.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="download-stp-table" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to download Spanning Tree
+						table on devices and save to database table
+						stpinterface also if discovery-using-bridge is
+						false.
+					</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="filter">
+		<annotation>
+			<documentation>
+				A rule which adresses belonging to this package must
+				pass. This package is applied only to addresses that
+				pass this filter
+			</documentation>
+		</annotation>
+
+		<complexType>
+			<simpleContent>
+				<extension base="string" />
+			</simpleContent>
+		</complexType>
+	</element>
+
 
 </schema>
