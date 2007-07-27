@@ -23,31 +23,16 @@
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
 
-# build type modifiers
-%{!?builddocs:%define builddocs 1}
-%{!?buildtests:%define buildtests 0}
-%{!?platform:%define platform linux-centos-4}
-
+# keep RPM from making an empty debug package
 %define debug_package %{nil}
+
+%define with_tomcat	tomcat5
+
+%define with_tests	0%{nil}
+%define with_docs	1%{nil}
 
 # Don't put Java or any of the packages that Java might depend on in the
 # requires line.  See bug #1144.
-
-%if "%{buildtests}" == "true"
-%define buildtests	1
-%endif
-
-%if "%{buildtests}" == "yes"
-%define buildtests	1
-%endif
-
-%if "%{buildtests}" == "false"
-%define buildtests	0
-%endif
-
-%if "%{buildtests}" == "no"
-%define buildtests	0
-%endif
 
 Name:			opennms
 Summary:		Enterprise-grade network management platform
@@ -69,7 +54,7 @@ Requires:		jrrd, jicmp, postgresql-server >= 7.4
 OpenNMS is an enterprise-grade network management package.
 This is the 1.3 unstable tree.
 
-%if "%builddocs" == "1"
+%if %{with_docs}
 %package docs
 Summary:	Documentation for the OpenNMS network management platform
 Group:		Applications/System
@@ -82,7 +67,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	rrdtool >= 1.2, opennms = %{version}-%{release_pkg}
+Requires:	rrdtool >= 1.2, opennms = %{version}-%{release}, %{with_tomcat}
 
 %description webapp
 The web UI for OpenNMS.
@@ -116,12 +101,13 @@ rm -rf $RPM_BUILD_ROOT
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-if [ x"%{buildtests}" = x"1" ]; then
-	EXTRA_TARGETS="$EXTRA_TARGETS test"
-fi
-if [ x"%{builddocs}" = x"1" ]; then
-	EXTRA_TARGETS="$EXTRA_TARGETS docs"
-fi
+%if %{with_tests}
+EXTRA_TARGETS="$EXTRA_TARGETS test"
+%endif
+
+%if %{with_docs}
+EXTRA_TARGETS="$EXTRA_TARGETS docs"
+%endif
 
 echo "=== RUNNING INSTALL ==="
 
@@ -160,7 +146,7 @@ export OPENNMS_HOME PATH
 
 END
 
-%if "%builddocs" == "1"
+%if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{releasenumber}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
@@ -207,7 +193,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{bindir}/*
 %attr(755,root,root)	%{instprefix}/contrib
-%if "%builddocs" == "1"
+%if %{with_docs}
 %attr(755,root,root)	%{instprefix}/docs
 %endif
 %attr(755,root,root)	%{instprefix}/lib
@@ -216,7 +202,7 @@ rm -rf $RPM_BUILD_ROOT
 			%{sharedir}
 			%{logdir}
 
-%if "%builddocs" == "1"
+%if %{with_docs}
 %files docs
 %defattr(644 root root 755)
 %{_docdir}/%{name}-%{version}
