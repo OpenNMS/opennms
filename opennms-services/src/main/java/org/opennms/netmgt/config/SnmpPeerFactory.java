@@ -52,7 +52,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -433,10 +432,6 @@ public final class SnmpPeerFactory extends PeerFactory {
         agentConfig.setPrivProtocol(determinePrivProtocol(def));
         agentConfig.setReadCommunity(determineReadCommunity(def));
         agentConfig.setWriteCommunity(determineWriteCommunity(def));
-        
-        //TODO: need to work on the Proxy flag.  Probalby should add a proxy host field
-        //to the SnmpAgentConfig.
-        
     }
     
     /**
@@ -453,6 +448,7 @@ public final class SnmpPeerFactory extends PeerFactory {
         agentConfig.setTimeout((int)determineTimeout(def));
         agentConfig.setMaxRequestSize(determineMaxRequestSize(def));
         agentConfig.setMaxVarsPerPdu(determineMaxVarsPerPdu(def));
+        agentConfig.setMaxRepetitions(determineMaxRepetitions(def));
         InetAddress proxyHost = determineProxyHost(def);
         
         if (proxyHost != null) {
@@ -461,7 +457,13 @@ public final class SnmpPeerFactory extends PeerFactory {
         }
     }
 
-    private InetAddress determineProxyHost(Definition def) {
+    private int determineMaxRepetitions(Definition def) {
+        return (def.getMaxRepetitions() == 0 ? 
+                (m_config.getMaxRepetitions() == 0 ?
+                  SnmpAgentConfig.DEFAULT_MAX_REPETITIONS : m_config.getMaxRepetitions()) : def.getMaxRepetitions());
+    }
+
+	private InetAddress determineProxyHost(Definition def) {
         InetAddress inetAddr = null;
         String address = def.getProxyHost() == null ? 
                 (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
