@@ -114,7 +114,7 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       <specific>192.168.0.50</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\">\n" + 
+                "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\" max-repetitions=\"7\" >\n" + 
                 "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
                 "   </definition>\n" + 
                 "\n" + 
@@ -217,10 +217,20 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.168.*.2"));
         assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "10.168.0.1"));
         assertTrue(SnmpPeerFactory.verifyIpMatch("10.1.1.1", "10.1.1.1"));
+        
     }
-
+    
+    public void testGetMaxRepetitions() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.5.5.255"));
+        assertEquals("ipmatch", agentConfig.getReadCommunity());
+        assertEquals(7, agentConfig.getMaxRepetitions());
+    	
+        agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.0.0.1"));
+        assertEquals("specificv1", agentConfig.getReadCommunity());
+        assertEquals(2, agentConfig.getMaxRepetitions());
+    }
+    
     public void testGetTargetFromPatterns() throws UnknownHostException {
-        //pattern in config is "77.5-12,15.1-255.255"
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.5.5.255"));
         assertEquals("ipmatch", agentConfig.getReadCommunity());
         assertFalse(10 == agentConfig.getMaxVarsPerPdu());
@@ -228,6 +238,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         
         agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.15.80.255"));
         assertEquals("ipmatch", agentConfig.getReadCommunity());
+        assertEquals(7, agentConfig.getMaxRepetitions());
         
         //should be default community "public" because of 4
         agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.4.5.255"));
