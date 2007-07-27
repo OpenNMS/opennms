@@ -181,7 +181,7 @@
       <!-- menu -->
       <div id="linkbar">
       <ul>
-        <li><a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all events</a></li>
+        <li><a href="<%=this.makeLink( parms, new ArrayList<org.opennms.web.event.filter.Filter>())%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         <li><a href="<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp">Severity Legend</a></li>
       
@@ -460,7 +460,7 @@
     }
 
     
-    public String getFiltersAsString(ArrayList filters ) {
+    public String getFiltersAsString(List<org.opennms.web.event.filter.Filter> filters ) {
         StringBuffer buffer = new StringBuffer();
     
         if( filters != null ) {
@@ -474,7 +474,7 @@
         return( buffer.toString() );
     }
 
-    public String makeLink( EventFactory.SortStyle sortStyle, EventFactory.AcknowledgeType ackType, ArrayList filters, int limit ) {
+    public String makeLink( EventFactory.SortStyle sortStyle, EventFactory.AcknowledgeType ackType, List<org.opennms.web.event.filter.Filter> filters, int limit ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
       buffer.append( EventUtil.getSortStyleString(sortStyle) );
@@ -501,13 +501,13 @@
     }
 
 
-    public String makeLink( EventQueryParms parms, ArrayList filters ) {
+    public String makeLink( EventQueryParms parms, List<org.opennms.web.event.filter.Filter> filters ) {
       return( this.makeLink( parms.sortStyle, parms.ackType, filters, parms.limit) );
     }
 
 
     public String makeLink( EventQueryParms parms, org.opennms.web.event.filter.Filter filter, boolean add ) {
-      ArrayList newList = new ArrayList( parms.filters );
+      List<org.opennms.web.event.filter.Filter> newList = new ArrayList<org.opennms.web.event.filter.Filter>( parms.filters );
       if( add ) {
         newList.add( filter );
       }
