@@ -89,6 +89,14 @@
           </documentation>
         </annotation>
       </attribute>
+      
+      <attribute name="max-repetitions" type="int" use="optional" default="2" >
+        <annotation>
+          <documentation>
+            Number of repetitions to send per get-bulk request.
+          </documentation>
+        </annotation>
+      </attribute>
 
       <attribute name="max-request-size" type="this:pdu-size-limit" use="optional" default="65535">
         <annotation>
@@ -258,6 +266,14 @@
         <annotation>
           <documentation>
             Number of variables to send per SNMP request.
+          </documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="max-repetitions" type="int" use="optional" default="2" >
+        <annotation>
+          <documentation>
+            Number of repetitions per get-bulk requests.
           </documentation>
         </annotation>
       </attribute>
