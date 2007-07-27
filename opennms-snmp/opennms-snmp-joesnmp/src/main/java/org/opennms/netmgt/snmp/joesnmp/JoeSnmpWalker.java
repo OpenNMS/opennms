@@ -164,9 +164,11 @@ public class JoeSnmpWalker extends SnmpWalker {
     private JoeSnmpResponseHandler m_handler;
     private SnmpPeer m_peer;
     private SnmpSession m_session;
+	private JoeSnmpAgentConfig m_agentConfig;
 
     public JoeSnmpWalker(JoeSnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepititions(), tracker);
+        super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), tracker);
+        m_agentConfig = agentConfig;
         m_peer = getPeer(agentConfig);
         m_handler = new JoeSnmpResponseHandler();
     }
@@ -183,7 +185,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     }
 
     public void start() {
-        log().info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion()));
+        log().info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion())+" with config: "+m_agentConfig);
         super.start();
     }
 
