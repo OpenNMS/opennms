@@ -62,6 +62,7 @@
         <event-file>@install.etc.dir@/events/NORTEL.Contivity.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Oracle.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/OSPF.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Patrol.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Pixelmetrix.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Primecluster.events.xml</event-file>
