@@ -265,9 +265,10 @@ public class JRobinRrdStrategy implements RrdStrategy {
             String[] commandArray = tokenize(command, " \t", false);
 
             RrdGraphDef graphDef = createGraphDef(workDir, commandArray);
+            graphDef.setSignature("OpenNMS/JRobin");
 
             RrdGraph graph = new RrdGraph(graphDef);
-            
+
             /*
              * We use a custom RrdGraphDetails object here instead of the
              * DefaultRrdGraphDetails because we won't have an InputStream
@@ -288,6 +289,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
 
     protected RrdGraphDef createGraphDef(File workDir, String[] commandArray) throws RrdException {
         RrdGraphDef graphDef = new RrdGraphDef();
+        graphDef.setImageFormat("PNG");
         long start = 0;
         long end = 0;
         int height = 100;
@@ -431,11 +433,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     throw new IllegalArgumentException("--font must be followed by an argument");
                 }
             } else if (arg.startsWith("--imgformat=")) {
-                // Don't do anything
+            	String[] argParm = tokenize(arg, "=", true);
+            	graphDef.setImageFormat(argParm[1]);
             } else if (arg.equals("--imgformat")) {
                 if (i + 1 < commandArray.length) {
-                    // Don't do anything other than skip the option
-                    ++i;
+                	graphDef.setImageFormat(commandArray[++i]);
                 } else {
                     throw new IllegalArgumentException("--imgformat must be followed by an argument");
                 }
@@ -522,8 +524,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
         graphDef.setRigid(rigid);
         graphDef.setHeight(height);
         graphDef.setWidth(width);
-        graphDef.setSmallFont(new Font("Monospaced", Font.PLAIN, 10));
-        graphDef.setLargeFont(new Font("Monospaced", Font.PLAIN, 12));
+        // graphDef.setSmallFont(new Font("Monospaced", Font.PLAIN, 10));
+        // graphDef.setLargeFont(new Font("Monospaced", Font.PLAIN, 12));
 
         log().debug("JRobin Finished tokenizing checking: start time: " + start + "; end time: " + end);
         
