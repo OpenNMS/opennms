@@ -1,0 +1,72 @@
+
+RRD data in OpenNMS can switch locations if hardware changes MAC address
+(some large network gear re-numbers it's MACs when adding hardware ports).
+
+This script lets you re-combine them into the latest RRD.
+
+The first argument is a regular expression (and must have at least one
+match in parentheses), and any argument after that is considered to be
+the directories to search for RRDs.
+
+For example, if you have this structure:
+
+	/path/to/rrds/foo-0015f9bf9201/ifHCInOctets.rrd
+	/path/to/rrds/foo-0015f9bf9201/ifHCOutOctets.rrd
+	/path/to/rrds/foo-0015f9bf9201/locIfInPktsSec.rrd
+	/path/to/rrds/foo-0015f9bf9201/locIfInQueueDrops.rrd
+	/path/to/rrds/foo-0015f9bf9201/locIfOutPktsSec.rrd
+	/path/to/rrds/foo-0015f9bf9201/locIfOutQueueDrops.rrd
+	/path/to/rrds/foo-0017591ea481/ifHCInOctets.rrd
+	/path/to/rrds/foo-0017591ea481/ifHCOutOctets.rrd
+	/path/to/rrds/foo-0017591ea481/locIfInPktsSec.rrd
+	/path/to/rrds/foo-0017591ea481/locIfInQueueDrops.rrd
+	/path/to/rrds/foo-0017591ea481/locIfOutPktsSec.rrd
+	/path/to/rrds/foo-0017591ea481/locIfOutQueueDrops.rrd
+	/path/to/rrds/foo-001818755e01/ifHCInOctets.rrd
+	/path/to/rrds/foo-001818755e01/ifHCOutOctets.rrd
+	/path/to/rrds/foo-001818755e01/locIfInPktsSec.rrd
+	/path/to/rrds/foo-001818755e01/locIfInQueueDrops.rrd
+	/path/to/rrds/foo-001818755e01/locIfOutPktsSec.rrd
+	/path/to/rrds/foo-001818755e01/locIfOutQueueDrops.rrd
+
+...you can see that the foo device has changed MAC addresses twice.
+
+To fix this, you would run the script like so:
+
+	./combine-rrds '(.*)-\d+' /path/to/rrds
+
+...and it will have output like this:
+
+	- dumping /path/to/rrds/foo-001818755e01/ifHCInOctets.rrd
+	- dumping /path/to/rrds/foo-0015f9bf9201/ifHCInOctets.rrd
+	- dumping /path/to/rrds/foo-0017591ea481/ifHCInOctets.rrd (primary)
+	erasing 1184776427(/path/to/rrds/foo-001818755e01/ifHCInOctets.rrd)
+	erasing 1184784018(/path/to/rrds/foo-0015f9bf9201/ifHCInOctets.rrd)
+	- dumping /path/to/rrds/foo-001818755e01/ifHCOutOctets.rrd
+	- dumping /path/to/rrds/foo-0015f9bf9201/ifHCOutOctets.rrd
+	- dumping /path/to/rrds/foo-0017591ea481/ifHCOutOctets.rrd (primary)
+	erasing 1184776427(/path/to/rrds/foo-001818755e01/ifHCOutOctets.rrd)
+	erasing 1184784018(/path/to/rrds/foo-0015f9bf9201/ifHCOutOctets.rrd)
+	- dumping /path/to/rrds/foo-001818755e01/locIfInPktsSec.rrd
+	- dumping /path/to/rrds/foo-0015f9bf9201/locIfInPktsSec.rrd
+	- dumping /path/to/rrds/foo-0017591ea481/locIfInPktsSec.rrd (primary)
+	erasing 1184776427(/path/to/rrds/foo-001818755e01/locIfInPktsSec.rrd)
+	erasing 1184784018(/path/to/rrds/foo-0015f9bf9201/locIfInPktsSec.rrd)
+	- dumping /path/to/rrds/foo-001818755e01/locIfInQueueDrops.rrd
+	- dumping /path/to/rrds/foo-0015f9bf9201/locIfInQueueDrops.rrd
+	- dumping /path/to/rrds/foo-0017591ea481/locIfInQueueDrops.rrd (primary)
+	erasing 1184776427(/path/to/rrds/foo-001818755e01/locIfInQueueDrops.rrd)
+	erasing 1184784018(/path/to/rrds/foo-0015f9bf9201/locIfInQueueDrops.rrd)
+	- dumping /path/to/rrds/foo-001818755e01/locIfOutPktsSec.rrd
+	- dumping /path/to/rrds/foo-0015f9bf9201/locIfOutPktsSec.rrd
+	- dumping /path/to/rrds/foo-0017591ea481/locIfOutPktsSec.rrd (primary)
+	erasing 1184776427(/path/to/rrds/foo-001818755e01/locIfOutPktsSec.rrd)
+	erasing 1184784018(/path/to/rrds/foo-0015f9bf9201/locIfOutPktsSec.rrd)
+	- dumping /path/to/rrds/foo-001818755e01/locIfOutQueueDrops.rrd
+	- dumping /path/to/rrds/foo-0015f9bf9201/locIfOutQueueDrops.rrd
+	- dumping /path/to/rrds/foo-0017591ea481/locIfOutQueueDrops.rrd (primary)
+	erasing 1184776427(/path/to/rrds/foo-001818755e01/locIfOutQueueDrops.rrd)
+	erasing 1184784018(/path/to/rrds/foo-0015f9bf9201/locIfOutQueueDrops.rrd)
+
+The only files that will be left are the ones marked "primary".
+
