@@ -113,18 +113,17 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jspc-maven-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-jspc-plugin</artifactId>
         <executions>
           <execution>
             <id>jspc</id>
             <goals>
-              <goal>compile</goal>
+              <goal>jspc</goal>
             </goals>
+            <configuration>
+              <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
+            </configuration>
           </execution>
         </executions>
       </plugin>
