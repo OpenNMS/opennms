@@ -137,6 +137,11 @@
 			<parameter key="port" value="1248"/>
 			<parameter key="timeout" value="3000"/>
 		</service>
+		<service name="NSClientpp" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="2"/>
+			<parameter key="port" value="12489"/>
+			<parameter key="timeout" value="3000"/>
+		</service>
 
 		<downtime interval="30000" begin="0" end="300000"/>		<!-- 30s, 0, 5m -->
 		<downtime interval="300000" begin="300000" end="43200000"/>	<!-- 5m, 5m, 12h -->
@@ -145,7 +150,7 @@
 
 	</package>
 
-        <monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+   <monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
 	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
@@ -163,4 +168,5 @@
 	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
 	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
 	<monitor service="NSClient" 	class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor"/>
+	<monitor service="NSClientpp"	class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor"/>
 </poller-configuration>
