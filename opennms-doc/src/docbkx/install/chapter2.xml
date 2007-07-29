@@ -9,26 +9,20 @@
     calls to some C code in order to implement things such as ICMP. and so it
     follows that Java would need to be installed.</para>
 
-    <para>As the current code has a small dependency on a Sun-only library
-    ("com.sun.net.ssl.internal.www.protocol" in the HTTPS Monitor), it is
-    recommended that Sun's SDK is used. It should be possible to use IBM's
-    SDK, but you'll get an error in the logs when the poller starts.</para>
-
-    <para>The instructions below are on using Sun's Java distribution, however
-    a number of users have had success with the <ulink
-    url="http://www.blackdown.org/">Blackdown</ulink> builds of Sun's
-    Java.</para>
-
-    <para>XXX Add something about 32-bit vs 64-bit for libjicmp and
-    librrd.</para>
+    <para>It is recommended that the JDK from Sun is used with OpenNMS,
+    version 1.5 or higher. If OpenNMS is to be run on a 64-bit system, be sure
+    to install the 64-bit JDK.</para>
 
     <section>
-      <title>Installing Java on Debian</title>
+      <title>Installing Java on Debian or Ubuntu</title>
 
-      <para>Note: At the moment OpenNMS does not have Debian packages, nor
-      does it correctly run on Java 6 (just yet). You can install the Sun Java
-      5 binary for linux and build OpenNMS on Debian just fine,
-      however.</para>
+      <para>Sun's Java can now be installed using "apt" on etch, lenny or
+      sid.</para>
+
+      <para><programlisting>apt-get install sun-java5-jdk</programlisting></para>
+
+      <para>This should also work on Ubuntu 6.10 (edgy) or 7.04 (fiesty). It
+      is also acceptable to install sun-java6-jdk. </para>
     </section>
 
     <section>
@@ -180,25 +174,38 @@
     url="http://people.ee.ethz.ch/~oetiker/webtools/rrdtool/">RRDtool</ulink>
     is the genesis of probably the first widely used open-source network
     management tool, <ulink
-    url="http://people.ee.ethz.ch/~oetiker/webtools/mrtg/">MRTG</ulink>.</para>
+    url="http://people.ee.ethz.ch/~oetiker/webtools/mrtg/">MRTG</ulink>.
+    OpenNMS was originally built to use RRDtool for data storage, but the
+    current default is to use JRobin (a java port of RRDtool). JRobin is
+    included with OpenNMS.</para>
 
     <para>RRDtool provides a "round robin" database that stores time-series
     data quickly and in a small amount of space. OpenNMS stores its
     performance-related data in RRD files created using RRDtool.</para>
 
+    <para>However, since JRobin is the default and RRDtool requires that some
+    JNI code is compiled against the current operating system's libraries,
+    RRDtool is now completely optional.</para>
+
+    <para>So if you don't care about using RRDtool, you don't have to do
+    anything. If you do want to use RRDtool, be sure to install the jrrd
+    package. Then edit the <filename>rrd-configuration.properties</filename>
+    file in the OpenNMS "<filename>etc</filename>" directory and
+    uncomment:</para>
+
+    <para><programlisting># To switch to the JNI implementation uncomment the following lines:
+#org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy
+#org.opennms.rrd.interfaceJar=/usr/share/java/jrrd.jar
+#opennms.library.jrrd=/usr/lib/libjrrd.jnilib</programlisting></para>
+
     <para>We require no special configuration for using RRDtool. As long as it
     was installed as a package, the OpenNMS package should be able to find it
-    and configure itself to use the proper commands. OpenNMS 1.3 and beyond
-    require RRDtool 1.2.</para>
+    and configure itself to use the proper commands. </para>
 
-    <note>
-      <para>OpenNMS can also use JRobin for storing and graphing of
-      time-series data, however it is always built with RRDtool support. For
-      the time being, you will still need to install RRDtool to build OpenNMS
-      or to install an OpenNMS RPM package, even if you plan on using JRobin
-      (see enhancement bug 1335). You can read more about JRobin in the
-      release notes.</para>
-    </note>
+    <para>Note: If you install RRDtool in a location other than /usr/bin, you
+    should edit the
+    <filename>$OPENNMS_HOME/webapps/opennms/WEB-INF/configuration.properties</filename>
+    file and set the correct path.</para>
   </section>
 
   <section>
@@ -214,7 +221,8 @@
     second, the installation process must be able to create the
     database.</para>
 
-    <para>OpenNMS requires version 7.4 or later of PostgreSQL.</para>
+    <para>OpenNMS requires version 7.4 or later of PostgreSQL, although 8.1 is
+    recommended.</para>
 
     <para>The minimum packages you will need to install should be:</para>
 
