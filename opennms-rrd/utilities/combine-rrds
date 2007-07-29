@@ -1,0 +1,140 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+use Cwd;
+use Data::Dumper;
+use Date::Parse;
+use File::Basename;
+use File::Copy;
+use File::Find;
+
+my $top         = getcwd;
+my $pattern     = shift;
+my @directories = @ARGV;
+
+my $entries;
+
+if (not defined $pattern or not @directories or not -d $directories[0])
+{
+	usage();
+	exit 1;
+}
+
+print "OMGWTF, THIS IS TOTALLY DESTRUCTIVE, YOU'VE BACKED STUFF UP, RIGHT?  HIT ENTER IF SO.  HIT CONTROL-C IF NOT.\n\n";
+readline(STDIN);
+
+find( sub
+{
+	return unless ($File::Find::name =~ /\.rrd$/);
+	my $fullname = $top . '/' . $File::Find::name;
+	
+	my $directory = dirname($fullname);
+	my $name      = basename($fullname);
+	my $shortdir  = $directory;
+
+	if ($shortdir =~ s/^${pattern}$/$1/) {
+		my @stat = stat($fullname);
+		my $time = $stat[9];
+		$entries->{$shortdir}->{$name}->{$time} = $fullname;
+	}
+
+	#print "shortdir = $shortdir, directory = $directory, name = $name, fullname = $fullname\n";
+
+}, @directories );
+
+for my $entry (sort keys %$entries)
+{
+	for my $file (sort keys %{$entries->{$entry}})
+	{
+		my ($oldentries, $cf, $pdp_per_row);
+		my @rrds = sort { $a <=> $b } keys %{$entries->{$entry}->{$file}};
+		my $keep = pop(@rrds);
+		$keep = $entries->{$entry}->{$file}->{$keep};
+		next unless (@rrds);
+		for my $rrd (@rrds)
+		{
+			$rrd = $entries->{$entry}->{$file}->{$rrd};
+			my $found_entry = 0;
+			print "- dumping $rrd\n";
+			if (open(RRD, "rrdtool dump '$rrd' |"))
+			{
+				while (<RRD>)
+				{
+					if (/<cf>\s*(.*?)\s*<\/cf>/)
+					{
+						$cf = $1;
+					}
+					elsif (/<pdp_per_row>\s*(.*?)\s*<\/pdp_per_row>/)
+					{
+						$pdp_per_row = $1;
+					}
+					elsif (/<\!-- .*? \/ (\d+) --> <row><v>\s*(.*?)\s*<\/v><\/row>/)
+					{
+						if ($2 ne "NaN")
+						{
+							if (not $found_entry++)
+							{
+								# print "  - found entry: $_\n";
+							}
+							$oldentries->{$cf}->{$pdp_per_row}->{$1} = $2;
+						}
+					}
+				}
+				close(RRD);
+			}
+		}
+		if (open(RRD, "rrdtool dump '$keep' |"))
+		{
+			print "- dumping $keep (primary)\n";
+			if (open(OUTPUT, ">$file.xml")) {
+				while (my $line = <RRD>)
+				{
+					my $skip = 0;
+					if ($line =~ /<cf>\s*(.*?)\s*<\/cf>/)
+					{
+						$cf = $1;
+					}
+					elsif ($line =~ /<pdp_per_row>\s*(.*?)\s*<\/pdp_per_row>/)
+					{
+						$pdp_per_row = $1;
+					}
+					elsif ($line =~ /<\!-- .*? \/ (\d+) --> <row><v>\s*(.*?)\s*<\/v><\/row>/)
+					{
+						my ($time, $value) = ($1, $2);
+						if ($value eq "NaN")
+						{
+							if (exists $oldentries->{$cf}->{$pdp_per_row}->{$time})
+							{
+								print OUTPUT "<!-- " . scalar(localtime($time)) . " / " . $time . " --> <row><v> " . $oldentries->{$cf}->{$pdp_per_row}->{$time} . " </v></row>\n";
+								$skip = 1;
+							}
+						}
+					}
+					print OUTPUT $line unless ($skip);
+				}
+				close(OUTPUT);
+			}
+			close(RRD);
+
+			system("rrdtool restore -f '$file.xml' '$keep.new'") == 0 or die "unable to write to $keep.new: $!\n";
+			move("$keep.new", "$keep");
+			unlink($file . '.xml');
+			for my $rrd (keys %{$entries->{$entry}->{$file}})
+			{
+				if ($entries->{$entry}->{$file}->{$rrd} ne $keep)
+				{
+					print "erasing $rrd($entries->{$entry}->{$file}->{$rrd})\n";
+					unlink($entries->{$entry}->{$file}->{$rrd});
+				}
+			}
+		}
+	}
+}
+
+#print Dumper($entries), "\n";
+
+sub usage
+{
+	print "usage: $0 <pattern> <directory>\n\n";
+}
