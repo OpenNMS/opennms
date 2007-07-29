@@ -13,6 +13,32 @@
   troubleshooting section of this guide.</para>
 
   <section>
+    <title>Installing jicmp</title>
+
+    <para>Java has never had a really good API for ICMP. Since ICMP is the
+    basis for the "ping" command, it is rather imperative that any Java-based
+    network management platform address the need for ICMP. OpenNMS does this
+    by using some code written in C, and accessing it using the Java Native
+    Interface (JNI). </para>
+
+    <para>With OpenNMS 1.3.6, this code has been moved to its own library
+    outside of OpenNMS. This makes the main OpenNMS application pure Java, and
+    as such it only has to be built once, instead of for each platform.</para>
+
+    <para>However, now jicmp has to be installed. The goal is to provide
+    packages for most distributions. For RPM-based distros, the source code
+    tarball can be <ulink
+    url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=240236">fetched
+    from Sourceforge</ulink>, and the command</para>
+
+    <para><programlisting>rpmbuild -tb [source tarball filename]</programlisting></para>
+
+    <para>executed to create an RPM. Otherwise the source tarball can be
+    extracted and the usual "configure; make; make install" run to compile and
+    install it. It should be installed before continuing.</para>
+  </section>
+
+  <section>
     <title>Performing a Fresh Install</title>
 
     <para>Follow the instructions in this section appropriate for your
@@ -49,7 +75,7 @@
     <section>
       <title>Installing on Mac OS X</title>
 
-      <para>OpenNMS is support on Mac OS X via the <ulink
+      <para>OpenNMS is supported on Mac OS X via the <ulink
       url="http://fink.sourceforge.net/">fink</ulink> project.</para>
     </section>
   </section>
@@ -215,9 +241,15 @@
     </section>
 
     <section>
-      <title>Run the Installer to Setup the PostgreSQL Database</title>
+      <title>Run the Installer to Setup the PostgreSQL Database and
+      jicmp/jrrd</title>
 
-      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -dis</command></programlisting>
+      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -l /usr/local/lib -dis</command></programlisting>
+
+      <para>The "-l" parameter will look for the jicmp and/or jrrd libraries
+      in the location specified. The "-dis" will initialize and check the
+      database. Note at the end of the output from the installer it will
+      indicate if iplike has been installed properly.</para>
     </section>
 
     <section>
