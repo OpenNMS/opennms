@@ -26,8 +26,6 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 
-%define with_tomcat	tomcat5
-
 %define with_tests	0%{nil}
 %define with_docs	1%{nil}
 
@@ -48,7 +46,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		jrrd, jicmp, postgresql-server >= 7.4
+Requires:		jicmp, postgresql-server >= 7.4
 
 %description
 OpenNMS is an enterprise-grade network management package.
@@ -67,7 +65,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	rrdtool >= 1.2, opennms = %{version}-%{release}, %{with_tomcat}
+Requires:	opennms = %{version}-%{release}
 
 %description webapp
 The web UI for OpenNMS.
