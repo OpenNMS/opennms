@@ -5,6 +5,12 @@
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 		 
   <display-name>opennms</display-name>
+  
+  <context-param>
+    <param-name>dontBlameOpenNMS</param-name>
+    <param-value>false</param-value>
+  </context-param>
+  
   <!-- Set this for JRobin graphs and Availablity Reporting -->
   <context-param>
   	<param-name>java.awt.headless</param-name>
@@ -204,6 +210,11 @@
 
   <listener>
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+
+  <listener>
+    <!-- This listener handles our custom startup/shutdown behavior. -->
+    <listener-class>org.opennms.web.DependencyCheckingContextListener</listener-class>
   </listener>
 
   <listener>
