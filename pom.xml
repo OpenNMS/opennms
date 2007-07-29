@@ -1079,7 +1079,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.jrobin</groupId>
         <artifactId>jrobin</artifactId>
-        <version>1.5.4</version>
+        <version>1.5.5</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
