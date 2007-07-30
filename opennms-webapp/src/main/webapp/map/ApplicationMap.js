@@ -1739,5 +1739,35 @@ function handleSwitchRole(data) {
   return;
 }
 
+var begin;
+var actual;
+var reloadseconds=0;
+var secondsSinceBegin=0;
+
+function startRefreshNodesTime() {
+        refreshingMapElems=false;
+        begin=(new Date()).getTime();
+        countdown();
+}
+
+function countdown() {
+    if (isAdminMode) {
+       window.status="Admin Mode - Stop Refresh";
+       var timer=setTimeout("countdown()",1000);
+       begin=begin+1000;
+    } else {
+        actual= (new Date()).getTime();
+        secondsSinceBegin=(actual-begin)/1000;
+        if (refreshNodesIntervalInSec>=secondsSinceBegin) {
+              reloadseconds=Math.round(refreshNodesIntervalInSec-secondsSinceBegin);
+              window.status="Next Nodes Refresh: "+((reloadseconds-(reloadseconds%60))/(60))+ "'."+(reloadseconds%60)+"''";
+              var timer=setTimeout("countdown()",1000);
+        }else {
+              window.status="";
+              RefreshNodes();
+        }
+    }
+}
+
 
 		

@@ -13,6 +13,8 @@ var menuOpenFlag=false;
 var downColor = "blue";
 var upColor =  "black";
 
+var svgNS = "http://www.w3.org/2000/svg";
+var xlinkNS = "http://www.w3.org/1999/xlink";
 
 function removeMenuChilds(){
 	var menu = menuSvgDocument.getElementById("Menu");
@@ -1325,3 +1327,160 @@ function hideMapInfo(){
 	if(mapInfoElem!=null)
 		mapInfoElem.getStyle().setProperty('display', 'none');
 }
+
+
+
+                 mynodesResult = new nodesResult();
+                 mymapsResult = new mapsResult();
+                 myMapApp = new mapApp();
+                 mycategoriesResult = new categoriesResult();
+
+                 myBGImagesResult = new BGImagesResult();
+                 myMapElemDimResult = new MapElemDimResult();
+                 myMEIconsResult = new MEIconsResult();
+
+
+
+
+                // *************** classes for the definition of the "getSelectionListVal" function ******
+                // invoked when an element of the list is selected
+
+
+                function categoriesResult() { }
+
+                categoriesResult.prototype.getSelectionListVal = function(selBoxName,nodeNr,arrayVal) {
+                        clearDownInfo();
+                        selectedCategoryInList=arrayVal;
+                }
+
+                function nodesResult() { }
+
+                nodesResult.prototype.getSelectionListVal = function(selBoxName,nodeNr,arrayVal) {
+                        //alert("nodesresult="+arrayVal+" "+nodeNr);
+                        clearDownInfo();
+                        if(nodeNr!=0){
+                                menuSvgDocument.getElementById("DownInfo").appendChild(nodeSortAss[arrayVal].getInfo()); 
+                        }
+                        selectedMapElemInList=arrayVal;
+
+                }
+
+
+
+                function mapsResult() { }
+
+                mapsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
+                        clearDownInfo();
+                        if(mapNr!=0){
+                                menuSvgDocument.getElementById("DownInfo").appendChild(mapSortAss[arrayVal].getInfo()); 
+                        }
+                        selectedMapInList=arrayVal;
+                }
+
+                function BGImagesResult() { }
+
+                BGImagesResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
+                        clearDownInfo();
+                        if(mapNr!=0){
+                                map.tryBackgroundImage(BGImagesSortAss[arrayVal]);
+                        }
+                        selectedBGImageInList=arrayVal;
+                }
+
+               function MapElemDimResult() { }
+
+                MapElemDimResult.prototype.getSelectionListVal = function(selBoxName,dimNr,arrayVal) {
+                        clearDownInfo();
+                        selectedMapElemDimInList=arrayVal;
+                }
+
+
+
+                function MEIconsResult() { }
+
+                MEIconsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
+                var iconPreviewNode = menuSvgDocument.getElementById("iconPreview");
+                if (iconPreviewNode)
+                        iconPreviewNode.parentNode.removeChild(iconPreviewNode);
+
+                        if(mapNr!=0){
+                        settingMapElemIcon=true;
+                        selectedMEIconInList=arrayVal;
+
+                        var iconPreviewGroup = menuSvgDocument.createElementNS(svgNS,"g");
+                        iconPreviewGroup.setAttributeNS(null,"id", "iconPreview");
+
+                        var iconPreviewRect = menuSvgDocument.createElementNS(svgNS,"rect");
+                        iconPreviewRect.setAttributeNS(null,"x", 57);
+                        iconPreviewRect.setAttributeNS(null,"y", 80);
+                        iconPreviewRect.setAttributeNS(null,"width", 35);
+                        iconPreviewRect.setAttributeNS(null,"height", 35);
+                        iconPreviewRect.setAttributeNS(null,"fill", "white");
+                        iconPreviewRect.setAttributeNS(null,"stroke", "grey");
+                        iconPreviewRect.setAttributeNS(null,"stroke-width", 1);
+
+                        var iconPreview = menuSvgDocument.createElementNS(svgNS,"image");
+                        iconPreview.setAttributeNS(null,"x", 65);
+                        iconPreview.setAttributeNS(null,"y", 85);
+                        iconPreview.setAttributeNS(null,"width", 20);
+                        iconPreview.setAttributeNS(null,"height", 25);
+                        iconPreview.setAttributeNS(application.svgnsXLink, "xlink:href",MEIconsSortAss[arrayVal] );
+                        iconPreviewGroup.appendChild(iconPreviewRect);
+                        iconPreviewGroup.appendChild(iconPreview);
+                        selMEIcons.selectionBoxGroup.appendChild(iconPreviewGroup);
+
+                        var childNode = menuSvgDocument.getElementById("DownInfoText");
+                        if (childNode)
+                                menuSvgDocument.getElementById("DownInfo").removeChild(childNode);
+                                menuSvgDocument.getElementById("DownInfo").appendChild(parseXML("<text id=\"DownInfoText\" x=\"5\" y=\"20\">" +
+                                "<tspan font-size=\"11\" x=\"5\" dy=\"5\">Click on the element to set</tspan>" +
+                                "<tspan font-size=\"11\" x=\"7\" dy=\"15\">the icon to.</tspan>" +
+                        "</text>",menuSvgDocument));
+                        }
+                        else{
+                                clearDownInfo();
+                                settingMapElemIcon=false;
+                        }
+
+
+                }
+
+                function doLoadMapsAndNodes(){
+                        if(appInited){
+                                LoadMaps();
+                                LoadNodes();
+                        }else{
+                            setTimeout('doLoadMapsAndNodes()',1000);
+                        }
+                }
+
+                function decreaseMapElemDim(){
+                        switch (mapElemDimension){
+                                case 30:{
+                                         mapElemDimension=25;
+                                         break;
+                                         }
+                                case 25:{
+                                         mapElemDimension=20;
+                                         break;
+                                         }
+                                case 20:{
+                                         mapElemDimension=15;
+                                         break;
+                                         }
+                                case 15:{
+                                         mapElemDimension=10;
+                                         break;
+                                         }
+                                case 10:{
+                                         mapElemDimension=6;
+                                         break;
+                                         }
+                                case 6:{
+                                         return false;
+                                         }
+                        }
+                        return true;
+}
+
+
