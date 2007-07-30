@@ -36,12 +36,29 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<% 
+   String breadcrumb1 = "<a href='Index.map'>Map</a>";
+   String breadcrumb2 = "View Network Map";
+
+%>
+<c:choose>
+	<c:when test="${!manager.mapStartUpConfig.fullScreen}">
+		<jsp:include page="/includes/header.jsp" flush="false" >
+		  <jsp:param name="title" value="Display Map" />
+		  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+		  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+		</jsp:include>
+	</c:when>
+	<c:otherwise>
 <html>
 <head>
   <title>Map | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
+<body>
+    </c:otherwise>
+</c:choose>
 <script language="VBScript" src="<%=org.opennms.web.Util.calculateUrlBase( request )%>map/svgcheck.vbs"></script>
 <script language='javascript' src="<%=org.opennms.web.Util.calculateUrlBase( request )%>map/svgcheck.js"></script>
 
@@ -326,26 +343,10 @@
 </SCRIPT>
 
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-<% 
-   String breadcrumb1 = "<a href='Index.map'>Map</a>";
-   String breadcrumb2 = "View Network Map";
-
-%>
-<c:choose>
-	<c:when test="${!manager.mapStartUpConfig.fullScreen}">
-		<jsp:include page="/includes/header.jsp" flush="false" >
-		  <jsp:param name="title" value="Display Map" />
-		  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-		  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-		</jsp:include>
-	</c:when>
-</c:choose>
-
 <div  style="background-color:#EFEFEF" align="right" width="100%">
 
 <br>
-<!-- Body -->
+<!-- SVG -->
 <p id="parentParagraph">
 <script language="JavaScript">
 emitSVG('src="map/Map.svg"  style="float: left" align="left"  height="<c:out value="${manager.mapStartUpConfig.screenHeight}"/>" width="<c:out value="${manager.mapStartUpConfig.screenWidth}"/>" type="image/svg+xml" pluginspage="http://download.adobe.com/pub/adobe/magic/svgviewer/win/6.x/6.0x38363/en/SVGView.exe" ');
