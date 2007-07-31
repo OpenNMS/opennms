@@ -3,7 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>service-registration</artifactId>
-  <version>0.1</version>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
   <description>service registration and unregistration</description>
   <dependencies>
     <dependency>
@@ -16,15 +17,34 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
         <configuration>
-          <repositoryId>opennms-repo</repositoryId>
-          <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</url>
           <file>service-registration.jar</file>
+          <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</url>
           <pomFile>pom.xml</pomFile>
         </configuration>
       </plugin>
     </plugins>
   </build>
+  <repositories>
+    <repository>
+      <releases />
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots />
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+  </repositories>
 </project>
 
