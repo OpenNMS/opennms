@@ -60,17 +60,17 @@ public class PathOutageFactory extends Object {
 
     private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
 
-    private static final String GET_NODES_IN_PATH = "SELECT DISTINCT nodeid FROM pathoutage WHERE criticalpathip=? AND criticalpathservicename=? ORDER BY nodeid";
+    private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
     private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices WHERE status ='A' and nodeid=?";
 
     private static final String COUNT_OUTAGES = "SELECT count(*) FROM outages WHERE svcregainedeventid IS NULL and nodeid=?";
 
-    private static final String COUNT_NODES_IN_PATH = "SELECT count(*) FROM pathoutage WHERE criticalpathip=? AND criticalpathservicename=?";
+    private static final String COUNT_NODES_IN_PATH = "SELECT count(DISTINCT pathoutage.nodeid) FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D'";
 
-    private static final String GET_NODELABEL_BY_IP = "SELECT nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ipinterface WHERE ipaddr=?)";
+    private static final String GET_NODELABEL_BY_IP = "SELECT nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ipinterface WHERE ipaddr=? AND ismanaged!='D')";
 
-    private static final String GET_NODEID_BY_IP = "SELECT nodeid FROM ipinterface WHERE ipaddr=? ORDER BY nodeid DESC LIMIT 1";
+    private static final String GET_NODEID_BY_IP = "SELECT nodeid FROM ipinterface WHERE ipaddr=? AND ismanaged!='D' ORDER BY nodeid DESC LIMIT 1";
 
     private static final String GET_NODELABEL_BY_NODEID = "SELECT nodelabel FROM node WHERE nodeid=?";
 
