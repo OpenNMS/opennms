@@ -2,6 +2,7 @@ package org.opennms.serviceregistration;
 
 import java.lang.ClassNotFoundException;
 import org.opennms.serviceregistration.strategies.AppleStrategy;
+import org.opennms.serviceregistration.strategies.JMDNSStrategy;
 import org.opennms.serviceregistration.strategies.NullStrategy;
 
 public class ServiceRegistrationFactory {
@@ -14,6 +15,13 @@ public class ServiceRegistrationFactory {
 		if (s == null) {
 			try {
 				s = new AppleStrategy();
+			} catch (ClassNotFoundException e) {
+				// we try the next thing then
+			}
+		}
+		if (s == null) {
+			try {
+				s = new JMDNSStrategy();
 			} catch (ClassNotFoundException e) {
 				// we try the next thing then
 			}
