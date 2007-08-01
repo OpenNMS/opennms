@@ -106,7 +106,7 @@
         alert (errorMsg);
         document.setCriticalPath.action="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>&task=Enter a valid IP";
     } else {
-        document.setCriticalPath.action="admin/setCriticalPath";
+        document.setCriticalPath.action="admin/setCriticalPath?task=Submit";
     }
     document.setCriticalPath.submit();
   }
@@ -116,7 +116,7 @@
   {
       if (confirm("Are you sure you want to proceed? This action will delete any existing critical path for this node."))
       {
-          document.setCriticalPath.action="admin/setCriticalPath";
+          document.setCriticalPath.action="admin/setCriticalPath?task=Delete";
       } else {
           document.setCriticalPath.action="admin/nodemanagement/index.jsp?node=<%=nodeId%>";
       }
