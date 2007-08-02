@@ -15,14 +15,14 @@ public class ServiceRegistrationFactory {
 		if (s == null) {
 			try {
 				s = new AppleStrategy();
-			} catch (ClassNotFoundException e) {
+			} catch (NoClassDefFoundError e) {
 				// we try the next thing then
 			}
 		}
 		if (s == null) {
 			try {
 				s = new JMDNSStrategy();
-			} catch (ClassNotFoundException e) {
+			} catch (NoClassDefFoundError e) {
 				// we try the next thing then
 			}
 		}
