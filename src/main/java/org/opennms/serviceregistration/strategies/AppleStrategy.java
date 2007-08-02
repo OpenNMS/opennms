@@ -49,7 +49,7 @@ public class AppleStrategy implements ServiceRegistrationStrategy, RegisterListe
 					txt.set(key, value);
 				}
 			}
-			DNSSD.register(0, 0, serviceName, serviceType, null, me, port, txt, this);
+			DNSSD.register(0, 0, serviceName, serviceType, null, null, port, txt, this);
 		} else {
 			System.err.println("WARNING: register() called but the service has already been registered!");
 		}
