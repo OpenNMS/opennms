@@ -145,10 +145,10 @@ void dumpXml(SmiModule* smiModule, FILE* file, EventDefaults* defs) {
 			fprintf(file, "\n\t&lt;tr&gt;&lt;td&gt;&lt;b&gt;\n\n\t%s&lt;/b&gt;&lt;/td&gt;", 
 				tmpNode->name);
 			fprintf(file, "&lt;td&gt;\n\t%%parm[#%d]%%;", i);
-			fprintf(file, "&lt;/td&gt;&lt;td&gt;&lt;p;&gt;");
+			fprintf(file, "&lt;/td&gt;&lt;td&gt;&lt;p&gt;");
 			if (dumpNamed(tmpNode, file))		// Values actually printed ??
 				fprintf(file, "\t");				// yes - align text
-			fprintf(file, "&lt;/p&gt;&lt;/td;&gt;");
+			fprintf(file, "&lt;/p&gt;&lt;/td&gt;");
 			fprintf(file, "&lt;/tr&gt;");
 			sprintf(logmsg + strlen(logmsg), "\n\t\t\t%s=%%parm[#%d]%% ", 
 				tmpNode->name, i);
