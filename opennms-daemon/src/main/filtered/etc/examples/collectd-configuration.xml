@@ -60,6 +60,33 @@
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 	</package>
 	
+	<!-- 
+	Uncomment and use example2 when configuring data collection/storage by domain and ifAlias.
+	See online documentation at http://www.opennms.org for further information on using these
+	package options.
+
+	<package name="example2">
+		<filter>IPADDR != '0.0.0.0'</filter>	 
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+		<include-url>file:@install.etc.dir@/include</include-url>
+		<storeByIfAlias>true</storeByIfAlias>
+		<storeByNodeID>false</storeByNodeID>
+		<ifAliasDomain>myDomain</ifAliasDomain>
+		<ifAliasOverride>true</ifAliasOverride>
+		<ifAliasTerminator>#</ifAliasTerminator>
+
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+			<parameter key="port" value="161"/>
+			<parameter key="retry" value="3"/>
+			<parameter key="timeout" value="3000"/>
+		</service>
+
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+	-->
+
 	<collector service="JBoss4"       class-name="org.opennms.netmgt.collectd.JBossCollector"/>
 	<collector service="JBoss32"      class-name="org.opennms.netmgt.collectd.JBossCollector"/>
 	<collector service="JVM"          class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
