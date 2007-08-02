@@ -1,6 +1,5 @@
 package org.opennms.serviceregistration.strategies;
 
-import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -40,7 +39,6 @@ public class AppleStrategy implements ServiceRegistrationStrategy, RegisterListe
 
 	public void register() throws Exception {
 		if (registered == false) {
-			String me = InetAddress.getLocalHost().getCanonicalHostName();
 			TXTRecord txt = new TXTRecord();
 			if (properties != null) {
 				for (Enumeration<String> e = properties.keys(); e.hasMoreElements();) {

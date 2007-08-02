@@ -1,6 +1,5 @@
 package org.opennms.serviceregistration;
 
-import java.lang.ClassNotFoundException;
 import org.opennms.serviceregistration.strategies.AppleStrategy;
 import org.opennms.serviceregistration.strategies.JMDNSStrategy;
 import org.opennms.serviceregistration.strategies.NullStrategy;
