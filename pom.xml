@@ -5,6 +5,11 @@
   <artifactId>service-registration</artifactId>
   <version>0.1-SNAPSHOT</version>
   <description>service registration and unregistration</description>
+  <scm>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/mdns/trunk</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/mdns/trunk</developerConnection>
+    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/mdns/trunk</url>
+  </scm>
   <build>
     <plugins>
       <plugin>
