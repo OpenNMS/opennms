@@ -59,6 +59,8 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.DefaultHttpParams;
@@ -182,37 +184,13 @@ public class HttpCollector implements ServiceCollector {
         try {
             client = new HttpClient(buildParams(collectionSet));
             method = buildHttpMethod(collectionSet);
+            
+            buildCredentials(collectionSet, client, method);
+            
             log().info("doCollection: collecting for client: "+client+" using method: "+method);
             client.executeMethod(method);
-            List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet);
             
-            if (butes.isEmpty()) {
-                log().warn("doCollection: no attributes defined for collection were found in response text matching regular expression '" + collectionSet.getUriDef().getUrl().getMatches() + "'");
-                throw new HttpCollectorException("No attributes specified were found: ", client);
-            }
-            String collectionName = collectionSet.getParameters().get("http-collection");
-            RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
-            ResourceIdentifier resource = new ResourceIdentifier() {
-
-                public String getOwnerName() {
-                    return collectionSet.getAgent().getHostAddress();
-                }
-
-                public File getResourceDir(RrdRepository repository) {
-                    return new File(repository.getRrdBaseDir(), Integer.toString(collectionSet.getAgent().getNodeId()));
-                }
-                
-            };
-            
-            log().info("doCollection: persisting "+butes.size()+" attributes");
-            
-            for (HttpCollectionAttribute attribute : butes) {
-                PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
-                builder.declareAttribute(attribute);
-                log().debug("doCollection: setting attribute: "+attribute);
-                builder.setAttributeValue(attribute, attribute.getValue());
-                builder.commit();
-            }
+            persistResponse(collectionSet, client, method);
         } catch (URIException e) {
             throw new HttpCollectorException("Error building HttpClient URI", client);
         } catch (HttpException e) {
@@ -225,7 +203,7 @@ public class HttpCollector implements ServiceCollector {
             if (method != null) method.releaseConnection();
         }
     }
-    
+
     class HttpCollectionAttribute implements AttributeDefinition {
         String m_alias;
         String m_type;
@@ -278,7 +256,7 @@ public class HttpCollector implements ServiceCollector {
     }
     
     @SuppressWarnings("unchecked")
-    private List<HttpCollectionAttribute> processResponse(String responseBodyAsString, HttpCollectionSet collectionSet) {
+    private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet) {
         log().debug("processResponse: ");
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
         Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches());
@@ -302,7 +280,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     public class HttpCollectorException extends RuntimeException {
-        private static final long serialVersionUID = 7244720855059205687L;
+        private static final long serialVersionUID = 1L;
         HttpClient m_client;
         HttpCollectorException(String message, HttpClient client){
             super(message);
@@ -320,7 +298,50 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private HttpClientParams buildParams(HttpCollectionSet collectionSet) {
+    private void persistResponse(final HttpCollectionSet collectionSet, final HttpClient client, final HttpMethod method) throws IOException, RrdException {
+        List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet);
+        if (butes.isEmpty()) {
+            log().warn("doCollection: no attributes defined for collection were found in response text matching regular expression '" + collectionSet.getUriDef().getUrl().getMatches() + "'");
+            throw new HttpCollectorException("No attributes specified were found: ", client);
+        }
+        
+        String collectionName = collectionSet.getParameters().get("http-collection");
+        RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
+        ResourceIdentifier resource = new ResourceIdentifier() {
+
+            public String getOwnerName() {
+                return collectionSet.getAgent().getHostAddress();
+            }
+
+            public File getResourceDir(RrdRepository repository) {
+                return new File(repository.getRrdBaseDir(), Integer.toString(collectionSet.getAgent().getNodeId()));
+            }
+            
+        };
+        
+        log().info("doCollection: persisting "+butes.size()+" attributes");
+        
+        for (HttpCollectionAttribute attribute : butes) {
+            PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
+            builder.declareAttribute(attribute);
+            log().debug("doCollection: setting attribute: "+attribute);
+            builder.setAttributeValue(attribute, attribute.getValue());
+            builder.commit();
+        }
+    }
+
+    private void buildCredentials(final HttpCollectionSet collectionSet, final HttpClient client, final HttpMethod method) {
+        if (collectionSet.getUriDef().getUrl().getUserInfo() != null) {
+            String userInfo = collectionSet.getUriDef().getUrl().getUserInfo();
+            String[] streetCred = userInfo.split(":", 2);
+            if (streetCred.length == 2) {
+                client.getState().setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
+                method.setDoAuthentication(true);
+            }
+        }
+    }
+    
+    private HttpClientParams buildParams(final HttpCollectionSet collectionSet) {
         HttpClientParams params = new HttpClientParams(DefaultHttpParams.getDefaultParams());
         params.setVersion(computeVersion(collectionSet.getUriDef()));
         params.setSoTimeout(Integer.parseInt(ParameterMap.getKeyedString(collectionSet.getParameters(), "timeout", DEFAULT_SO_TIMEOUT)));
@@ -330,16 +351,24 @@ public class HttpCollector implements ServiceCollector {
         params.setVirtualHost(collectionSet.getUriDef().getUrl().getVirtualHost());
         Integer retryCount = ParameterMap.getKeyedInteger(collectionSet.getParameters(), "retries", DEFAULT_RETRY_COUNT);
         params.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(retryCount, false));
+        
+        params.setParameter(HttpMethodParams.USER_AGENT, determineUserAgent(collectionSet, params));
+
 
         return params;
     }
 
-    private HttpVersion computeVersion(Uri uri) {
+    private String determineUserAgent(final HttpCollectionSet collectionSet, final HttpClientParams params) {
+        String userAgent = collectionSet.getUriDef().getUrl().getUserAgent();
+        return (String) (userAgent == null ? params.getParameter(HttpMethodParams.USER_AGENT) : userAgent);
+    }
+
+    private HttpVersion computeVersion(final Uri uri) {
         return new HttpVersion(Integer.parseInt(uri.getUrl().getHttpVersion().substring(0, 1)),
                 Integer.parseInt(uri.getUrl().getHttpVersion().substring(2)));
     }
 
-    private HttpMethod buildHttpMethod(HttpCollectionSet collectionSet) throws URIException {
+    private HttpMethod buildHttpMethod(final HttpCollectionSet collectionSet) throws URIException {
         HttpMethod method;
         if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
             method = new GetMethod();
@@ -351,7 +380,7 @@ public class HttpCollector implements ServiceCollector {
         return method;
     }
 
-    private URI buildUri(HttpCollectionSet collectionSet) throws URIException {
+    private URI buildUri(final HttpCollectionSet collectionSet) throws URIException {
         return new URI(collectionSet.getUriDef().getUrl().getScheme(),
                 collectionSet.getUriDef().getUrl().getUserInfo(),
                 determineHost(collectionSet.getAgent().getInetAddress(), collectionSet.getUriDef()),
@@ -363,7 +392,7 @@ public class HttpCollector implements ServiceCollector {
     
     //note: trouble deciding here on getHost() vs. getIpAddress() or 
     //getCanonicalHost() even.
-    private String determineHost(InetAddress address, Uri uriDef) {
+    private String determineHost(final InetAddress address, final Uri uriDef) {
         String host;
         if ("${ipaddr}".equals(uriDef.getUrl().getHost())) {
             host = address.getHostName();
@@ -374,6 +403,8 @@ public class HttpCollector implements ServiceCollector {
         return host;
     }
 
+    
+    @SuppressWarnings("unchecked")
     public void initialize(Map parameters) {
         log().debug("initialize: Initializing HttpCollector.");
         m_scheduledNodes.clear();
@@ -458,6 +489,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public void initialize(CollectionAgent agent, Map parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
         final Integer scheduledNodeKey = new Integer(agent.getNodeId());
@@ -483,7 +515,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private String determineServiceName(Map parameters) {
+    private String determineServiceName(final Map<String, String> parameters) {
         return ParameterMap.getKeyedString(parameters, "service-name", "HTTP");
     }
 

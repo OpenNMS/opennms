@@ -57,6 +57,8 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -213,6 +215,15 @@ public class PageSequenceMonitor extends IPv4Monitor {
                 if (m_parms.length > 0) {
                 	method.setQueryString(m_parms);
                 }
+                
+                if (m_page.getUserInfo() != null) {
+                    String userInfo = m_page.getUserInfo();
+                    String[] streetCred = userInfo.split(":", 2);
+                    if (streetCred.length == 2) {
+                        client.getState().setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
+                        method.setDoAuthentication(true);
+                    }
+                }
 
                 int code = client.executeMethod(method);
                 
@@ -362,11 +373,11 @@ public class PageSequenceMonitor extends IPv4Monitor {
             return parms;
         }
         
-        private Map m_parameterMap;
+        private Map<String, String> m_parameterMap;
         private HttpClientParams m_clientParams;
         private HttpPageSequence m_pageSequence;
 
-        PageSequenceMonitorParameters(Map parameterMap) {
+        PageSequenceMonitorParameters(Map<String, String> parameterMap) {
             m_parameterMap = parameterMap;
             String pageSequence = getStringParm("page-sequence", null);
             if (pageSequence == null) {
@@ -378,7 +389,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
             createClientParams();
         }
         
-        Map getParameterMap() {
+        Map<String, String> getParameterMap() {
             return m_parameterMap;
         }
 
@@ -433,6 +444,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
     }
     
 
+    @SuppressWarnings("unchecked")
     public PollStatus poll(MonitoredService svc, Map parameterMap) {
         
     	HttpClient client = null;
