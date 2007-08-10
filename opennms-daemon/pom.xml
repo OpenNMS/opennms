@@ -78,6 +78,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-jetty</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>
       <scope>runtime</scope>
     </dependency>
