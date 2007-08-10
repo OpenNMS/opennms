@@ -91,6 +91,7 @@
     <module>opennms-config</module>
     <module>opennms-services</module>
     <module>opennms-import</module>
+    <module>opennms-jetty</module>
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
@@ -686,13 +687,8 @@ opennms.home = ${opennms.home}
   </dependencies>
   <dependencyManagement>
     <dependencies>
-      <!--  opennms dependencies -->
+      <!--  opennms dependencies that are outside of the opennms/trunk project -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>drools-correlation-engine</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>jicmp-api</artifactId>
@@ -702,6 +698,19 @@ opennms.home = ${opennms.home}
         <groupId>org.opennms</groupId>
         <artifactId>jrrd-api</artifactId>
         <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>service-registration</artifactId>
+        <version>0.1-SNAPSHOT</version>
+      </dependency>
+
+      <!--  opennms dependencies -->
+      <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>drools-correlation-engine</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -763,6 +772,11 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-install</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-jetty</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1029,17 +1043,22 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
-        <version>6.0.1</version>
+        <version>6.1.5</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-util</artifactId>
-        <version>6.0.1</version>
+        <version>6.1.5</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5-6.0.1</version>
+        <artifactId>servlet-api-2.5</artifactId>
+        <version>6.1.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jsp-2.1</artifactId>
+        <version>6.1.5</version>
       </dependency>
       <dependency>
         <groupId>jfree</groupId>
@@ -1378,6 +1397,13 @@ opennms.home = ${opennms.home}
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases />
+      <snapshots />
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
     </pluginRepository>
     <pluginRepository>
       <releases />
