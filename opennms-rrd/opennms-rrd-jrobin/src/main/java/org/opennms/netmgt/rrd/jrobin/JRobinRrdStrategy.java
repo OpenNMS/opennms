@@ -10,11 +10,12 @@
  *
  * Modifications:
  *
- * 05 Apr 2007: Java 5 generics and loops. - dj@opennms.org
- * 19 Mar 2007: Add createGraphReturnDetails and move assertion of a graph being created to JRobinRrdGraphDetails. - dj@opennms.org
- * 19 Mar 2007: Indent, add support for PRINT in graphs. - dj@opennms.org
- * 02 Mar 2007: Add support for --base and fix some log messages. - dj@opennms.org
- * 08 Jul 2004: Created this file.
+ * 2007 Aug 02: Organize imports. - dj@opennms.org
+ * 2007 Apr 05: Java 5 generics and loops. - dj@opennms.org
+ * 2007 Mar 19: Add createGraphReturnDetails and move assertion of a graph being created to JRobinRrdGraphDetails. - dj@opennms.org
+ * 2007 Mar 19: Indent, add support for PRINT in graphs. - dj@opennms.org
+ * 2007 Mar 02: Add support for --base and fix some log messages. - dj@opennms.org
+ * 2004 Jul 08: Created this file.
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
@@ -40,7 +41,6 @@
 package org.opennms.netmgt.rrd.jrobin;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -146,6 +146,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
     public synchronized void initialize() throws Exception {
         if (!m_initialized) {
             RrdDb.setDefaultFactory("FILE");
+            String home = System.getProperty("opennms.home");
+            System.setProperty("jrobin.fontdir", home + File.separator + "etc");
             m_initialized = true;
         }
     }
@@ -424,11 +426,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
                 }
             
             } else if (arg.startsWith("--font=")) {
-                // Don't do anything
+            	String[] argParm = tokenize(arg, "=", true);
+            	processRrdFontArgument(graphDef, argParm[1]);
             } else if (arg.equals("--font")) {
                 if (i + 1 < commandArray.length) {
-                    // Don't do anything other than skip the option
-                    ++i;
+                	processRrdFontArgument(graphDef, commandArray[++i]);
                 } else {
                     throw new IllegalArgumentException("--font must be followed by an argument");
                 }
@@ -528,9 +530,29 @@ public class JRobinRrdStrategy implements RrdStrategy {
         // graphDef.setLargeFont(new Font("Monospaced", Font.PLAIN, 12));
 
         log().debug("JRobin Finished tokenizing checking: start time: " + start + "; end time: " + end);
-        
+        log().debug("large font = " + graphDef.getLargeFont() + ", small font = " + graphDef.getSmallFont());
         return graphDef;
     }
+
+	private void processRrdFontArgument(RrdGraphDef graphDef, String argParm) {
+		/*
+		String[] argValue = tokenize(argParm, ":", true);
+		if (argValue[0].equals("DEFAULT")) {
+			int newPointSize = Integer.parseInt(argValue[1]);
+			graphDef.setSmallFont(graphDef.getSmallFont().deriveFont(newPointSize));
+		} else if (argValue[0].equals("TITLE")) {
+			int newPointSize = Integer.parseInt(argValue[1]);
+			graphDef.setLargeFont(graphDef.getLargeFont().deriveFont(newPointSize));
+		} else {
+			try {
+				Font font = Font.createFont(Font.TRUETYPE_FONT, new File(argValue[0]));
+			} catch (Exception e) {
+				// oh well, fall back to existing font stuff
+				log().warn("unable to create font from font argument " + argParm, e);
+			}
+		}
+		*/
+	}
     
     private String[] tokenize(String line, String delimiters, boolean processQuotes) {
         return StringUtils.tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes);
