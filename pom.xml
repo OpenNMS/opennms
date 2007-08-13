@@ -702,7 +702,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>service-registration</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -1098,7 +1098,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.jrobin</groupId>
         <artifactId>jrobin</artifactId>
-        <version>1.5.5</version>
+        <version>1.5.7</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
