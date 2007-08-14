@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -16,12 +15,13 @@ import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 public class Pinger {
-	private static final int DEFAULT_TIMEOUT = 1000;
+	private static final int DEFAULT_TIMEOUT = 800;
 	private static final int DEFAULT_RETRIES = 2;
 	private static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
 
 	private short sequenceId = 1;
-	private int timeout;
+	private long timeout;
+	private int retries;
 
     private static IcmpSocket icmpSocket = null;
     private static ReplyReceiver receiver = null;
@@ -36,84 +36,11 @@ public class Pinger {
     private static Map<Long, ArrayList> parallelWaiting = Collections.synchronizedMap(new TreeMap<Long, ArrayList>());
 
     /**
-     * This class is used to encapsulate a ping request. A request consist of
-     * the pingable address and a signaled state.
-     */
-    private static final class PingRequest {
-        /**
-         * The address being pinged
-         */
-        private final InetAddress m_addr;
-
-        /**
-         * The sequence ID of the packet
-         */
-        private final short m_sequence;
-        
-        /**
-         * The ping packet (contains sent/received time stamps)
-         */
-        private ICMPEchoPacket m_packet;
-
-        /**
-         * The state of the ping
-         */
-        private boolean m_signaled;
-
-        /**
-         * Constructs a new ping object
-         */
-        PingRequest(InetAddress addr, short sequenceId) {
-            m_addr = addr;
-            m_sequence = sequenceId;
-        }
-
-        InetAddress getAddress() {
-        	return m_addr;
-        }
-        
-        short getSequenceId() {
-        	return m_sequence;
-        }
-        
-        /**
-         * Returns true if signaled.
-         */
-        synchronized boolean isSignaled() {
-            return m_signaled;
-        }
-
-        /**
-         * Sets the signaled state and awakes the blocked threads.
-         */
-        synchronized void signal() {
-            m_signaled = true;
-            notifyAll();
-        }
-
-        /**
-         * Returns true if the passed address is the target of the ping.
-         */
-        boolean isTarget(InetAddress addr, short sequenceId) {
-            return (m_addr.equals(addr) && m_sequence == sequenceId);
-        }
-        
-        void setPacket(ICMPEchoPacket packet) {
-            m_packet = packet;
-        }
-
-        ICMPEchoPacket getPacket() {
-            return m_packet;
-        }
-
-    }
-
-    /**
-     * Initialize a Pinger object, using the default timeout.
+     * Initialize a Pinger object, using the default timeout and retries.
      * @throws IOException
      */
     public Pinger() throws IOException {
-		this(DEFAULT_TIMEOUT);
+		this(DEFAULT_TIMEOUT, DEFAULT_RETRIES);
 	}
     
     /**
@@ -121,8 +48,19 @@ public class Pinger {
      * @param timeout the timeout, in milliseconds, to wait for returned packets.
      * @throws IOException
      */
-	public Pinger(int timeout) throws IOException {
+    public Pinger(int timeout) throws IOException {
+    	this(timeout, DEFAULT_RETRIES);
+    }
+    
+    /**
+     * Initialize a Pinger object, specifying the timeout and retries.
+     * @param timeout the timeout, in milliseconds, to wait for returned packets.
+     * @param retries the number of times to retry a given ping packet
+     * @throws IOException
+     */
+	public Pinger(int timeout, int retries) throws IOException {
 		this.timeout = timeout;
+		this.retries = retries;
 		synchronized (Pinger.class) {
 			if (worker == null) {
 			    final FifoQueueImpl<Reply> queue = new FifoQueueImpl<Reply>();
@@ -177,19 +115,38 @@ public class Pinger {
 		}
 	}
 
-    /**
-     * Builds a datagram compatable with the ping ReplyReceiver class.
-     */
-    private synchronized static DatagramPacket getDatagram(InetAddress addr, long tid, short sid) {
-        ICMPEchoPacket iPkt = new ICMPEchoPacket(tid);
-        iPkt.setIdentity(FILTER_ID);
-        iPkt.setSequenceId(sid);
-        iPkt.computeChecksum();
+	/**
+	 * Get the number of retries for this pinger.
+	 * @return the number of retries, as an integer
+	 */
+	public int getRetries() {
+		return this.retries;
+	}
+	
+	/**
+	 * Set the number of times to retry for this pinger.
+	 * @param retries the number of retries, as an integer
+	 */
+	public void setRetries(int retries) {
+		this.retries = retries;
+	}
 
-        byte[] data = iPkt.toBytes();
-        return new DatagramPacket(data, data.length, addr, 0);
-    }
+	/**
+	 * Get the timeout for receiving ICMP echo replies for this pinger.
+	 * @return the timeout in milliseconds, as a long integer
+	 */
+	public long getTimeout() {
+		return this.timeout;
+	}
 
+	/**
+	 * Set the timeout for receiving ICMP echo replies for this pinger.
+	 * @param timeout the timeout in milliseconds, as a long integer
+	 */
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
+	
     /**
      * This method is used to ping a remote host to test for ICMP support. If
      * the remote host responds within the specified period, defined by retries
@@ -197,14 +154,14 @@ public class Pinger {
      * 
      * @param host
      *            The address to poll.
-     * @param retries
-     *            The number of times to retry
      * @param timeout
      *            The time to wait between each retry.
+     * @param retries
+     *            The number of times to retry
      * 
      * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
      */
-    private Long ping(InetAddress host, int retries, long timeout) throws IOException {
+    public Long ping(InetAddress host, long timeout, int retries) throws IOException {
         Category log = ThreadCategory.getInstance(this.getClass());
         
         Long tidKey = getTidKey();
@@ -234,12 +191,12 @@ public class Pinger {
 	 * @throws IOException
 	 */
 	public Long ping(InetAddress host) throws IOException {
-		return this.ping(host, DEFAULT_RETRIES, timeout);
+		return this.ping(host, timeout, retries);
 	}
 
-	public StatisticalArrayList parallelPing(InetAddress host, int count) throws IOException {
+	public StatisticalArrayList<Long> parallelPing(InetAddress host, int count) throws IOException {
         Category log = ThreadCategory.getInstance(this.getClass());
-        StatisticalArrayList returnval = new StatisticalArrayList();
+        StatisticalArrayList<Long> returnval = new StatisticalArrayList<Long>();
         
         Long tidKey = getTidKey();
         ArrayList<PingRequest> requests = new ArrayList<PingRequest>();
@@ -325,5 +282,90 @@ public class Pinger {
         return null;
     }
     
+    /**
+     * Builds a datagram compatible with the ping ReplyReceiver class.
+     */
+    private synchronized static DatagramPacket getDatagram(InetAddress addr, long tid, short sid) {
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(tid);
+        iPkt.setIdentity(FILTER_ID);
+        iPkt.setSequenceId(sid);
+        iPkt.computeChecksum();
+
+        byte[] data = iPkt.toBytes();
+        return new DatagramPacket(data, data.length, addr, 0);
+    }
+
+    /**
+     * This class is used to encapsulate a ping request. A request consist of
+     * the pingable address and a signaled state.
+     */
+    private static final class PingRequest {
+        /**
+         * The address being pinged
+         */
+        private final InetAddress m_addr;
+
+        /**
+         * The sequence ID of the packet
+         */
+        private final short m_sequence;
+        
+        /**
+         * The ping packet (contains sent/received time stamps)
+         */
+        private ICMPEchoPacket m_packet;
+
+        /**
+         * The state of the ping
+         */
+        private boolean m_signaled;
+
+        /**
+         * Constructs a new ping object
+         */
+        PingRequest(InetAddress addr, short sequenceId) {
+            m_addr = addr;
+            m_sequence = sequenceId;
+        }
+
+        InetAddress getAddress() {
+        	return m_addr;
+        }
+        
+        short getSequenceId() {
+        	return m_sequence;
+        }
+        
+        /**
+         * Returns true if signaled.
+         */
+        synchronized boolean isSignaled() {
+            return m_signaled;
+        }
+
+        /**
+         * Sets the signaled state and awakes the blocked threads.
+         */
+        synchronized void signal() {
+            m_signaled = true;
+            notifyAll();
+        }
+
+        /**
+         * Returns true if the passed address is the target of the ping.
+         */
+        boolean isTarget(InetAddress addr, short sequenceId) {
+            return (m_addr.equals(addr) && m_sequence == sequenceId);
+        }
+        
+        void setPacket(ICMPEchoPacket packet) {
+            m_packet = packet;
+        }
+
+        ICMPEchoPacket getPacket() {
+            return m_packet;
+        }
+
+    }
 
 }

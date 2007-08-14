@@ -2,7 +2,7 @@ package org.opennms.netmgt.ping;
 
 import java.util.ArrayList;
 
-public class StatisticalArrayList extends ArrayList {
+public class StatisticalArrayList<E> extends ArrayList<E> {
 	private static final long serialVersionUID = 1L;
 
 	public Integer percentNotNull() {
