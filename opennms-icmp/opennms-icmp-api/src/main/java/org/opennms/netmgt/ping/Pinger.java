@@ -1,0 +1,329 @@
+package org.opennms.netmgt.ping;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.apache.log4j.Category;
+import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.protocols.icmp.IcmpSocket;
+
+public class Pinger {
+	private static final int DEFAULT_TIMEOUT = 1000;
+	private static final int DEFAULT_RETRIES = 2;
+	private static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
+
+	private short sequenceId = 1;
+	private int timeout;
+
+    private static IcmpSocket icmpSocket = null;
+    private static ReplyReceiver receiver = null;
+    private static Thread worker = null;
+    
+    /**
+     * The map of long thread identifiers to Packets that must be signaled.
+     * The mapped objects are instances of the
+     * {@link org.opennms.netmgt.ping.Reply Reply} class.
+     */
+    private static Map<Long, PingRequest> waiting = Collections.synchronizedMap(new TreeMap<Long, PingRequest>());
+    private static Map<Long, ArrayList> parallelWaiting = Collections.synchronizedMap(new TreeMap<Long, ArrayList>());
+
+    /**
+     * This class is used to encapsulate a ping request. A request consist of
+     * the pingable address and a signaled state.
+     */
+    private static final class PingRequest {
+        /**
+         * The address being pinged
+         */
+        private final InetAddress m_addr;
+
+        /**
+         * The sequence ID of the packet
+         */
+        private final short m_sequence;
+        
+        /**
+         * The ping packet (contains sent/received time stamps)
+         */
+        private ICMPEchoPacket m_packet;
+
+        /**
+         * The state of the ping
+         */
+        private boolean m_signaled;
+
+        /**
+         * Constructs a new ping object
+         */
+        PingRequest(InetAddress addr, short sequenceId) {
+            m_addr = addr;
+            m_sequence = sequenceId;
+        }
+
+        InetAddress getAddress() {
+        	return m_addr;
+        }
+        
+        short getSequenceId() {
+        	return m_sequence;
+        }
+        
+        /**
+         * Returns true if signaled.
+         */
+        synchronized boolean isSignaled() {
+            return m_signaled;
+        }
+
+        /**
+         * Sets the signaled state and awakes the blocked threads.
+         */
+        synchronized void signal() {
+            m_signaled = true;
+            notifyAll();
+        }
+
+        /**
+         * Returns true if the passed address is the target of the ping.
+         */
+        boolean isTarget(InetAddress addr, short sequenceId) {
+            return (m_addr.equals(addr) && m_sequence == sequenceId);
+        }
+        
+        void setPacket(ICMPEchoPacket packet) {
+            m_packet = packet;
+        }
+
+        ICMPEchoPacket getPacket() {
+            return m_packet;
+        }
+
+    }
+
+    /**
+     * Initialize a Pinger object, using the default timeout.
+     * @throws IOException
+     */
+    public Pinger() throws IOException {
+		this(DEFAULT_TIMEOUT);
+	}
+    
+    /**
+     * Initialize a Pinger object, specifying the timeout.
+     * @param timeout the timeout, in milliseconds, to wait for returned packets.
+     * @throws IOException
+     */
+	public Pinger(int timeout) throws IOException {
+		this.timeout = timeout;
+		synchronized (Pinger.class) {
+			if (worker == null) {
+			    final FifoQueueImpl<Reply> queue = new FifoQueueImpl<Reply>();
+				icmpSocket = new IcmpSocket();
+                receiver = new ReplyReceiver(icmpSocket, queue, FILTER_ID);
+                receiver.start();
+				
+                worker = new Thread(new Runnable() {
+                    public void run() {
+                        for (;;) {
+                            Reply pong = null;
+                            try {
+                                pong = queue.remove();
+                            } catch (InterruptedException ex) {
+                                break;
+                            } catch (Exception ex) {
+                                ThreadCategory.getInstance(this.getClass()).error("Error processing response queue", ex);
+                            }
+
+                            ICMPEchoPacket pongPacket = pong.getPacket();
+                            Long key = new Long(pongPacket.getTID());
+                            short sid = pongPacket.getSequenceId();
+                            PingRequest ping = null;
+                            if (waiting.containsKey(key)) {
+                            	PingRequest p = waiting.get(key);
+                            	if (p != null && p.isTarget(pong.getAddress(), sid)) {
+                            		ping = p;
+                            	}
+                            } else if (parallelWaiting.containsKey(key)) {
+                            	ArrayList list = parallelWaiting.get(key);
+                            	for (int i = 0; i < list.size(); i++) {
+                            		PingRequest p = (PingRequest)list.get(i);
+                            		if (p != null && p.isTarget(pong.getAddress(), sid)) {
+                            			ping = p;
+                            		}
+                            	}
+                            } else {
+                            	// hmm, should we do anything in this case?
+                            }
+
+                            if (ping != null) {
+                            	ping.setPacket(pong.getPacket());
+                            	ping.signal();
+                            }
+                        }
+                    }
+                });
+                worker.setDaemon(true);
+                worker.start();
+			}
+			
+		}
+	}
+
+    /**
+     * Builds a datagram compatable with the ping ReplyReceiver class.
+     */
+    private synchronized static DatagramPacket getDatagram(InetAddress addr, long tid, short sid) {
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(tid);
+        iPkt.setIdentity(FILTER_ID);
+        iPkt.setSequenceId(sid);
+        iPkt.computeChecksum();
+
+        byte[] data = iPkt.toBytes();
+        return new DatagramPacket(data, data.length, addr, 0);
+    }
+
+    /**
+     * This method is used to ping a remote host to test for ICMP support. If
+     * the remote host responds within the specified period, defined by retries
+     * and timeouts, then the response time is returned.
+     * 
+     * @param host
+     *            The address to poll.
+     * @param retries
+     *            The number of times to retry
+     * @param timeout
+     *            The time to wait between each retry.
+     * 
+     * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
+     */
+    private Long ping(InetAddress host, int retries, long timeout) throws IOException {
+        Category log = ThreadCategory.getInstance(this.getClass());
+        
+        Long tidKey = getTidKey();
+
+        short sid = sequenceId++;
+    	DatagramPacket pkt = getDatagram(host, tidKey, sid);
+        PingRequest reply = new PingRequest(host, sid);
+        
+        waiting.put(tidKey, reply);
+        for (int attempts = 0; attempts <= retries && !reply.isSignaled(); ++attempts) {
+            synchronized (reply) {
+                sendPacket(pkt);
+                waitForReply(reply);
+            }
+        }
+        waiting.remove(tidKey);
+        
+        Long rtt = getRTT(reply);
+        log.debug("Ping round trip time for " + host + ": " + rtt + "us");
+        return rtt;
+    }
+
+	/**
+	 * Ping a remote host, using the default number of retries and timeouts.
+	 * @param host the host to ping
+	 * @return the round-trip time of the packet
+	 * @throws IOException
+	 */
+	public Long ping(InetAddress host) throws IOException {
+		return this.ping(host, DEFAULT_RETRIES, timeout);
+	}
+
+	public StatisticalArrayList parallelPing(InetAddress host, int count) throws IOException {
+        Category log = ThreadCategory.getInstance(this.getClass());
+        StatisticalArrayList returnval = new StatisticalArrayList();
+        
+        Long tidKey = getTidKey();
+        ArrayList<PingRequest> requests = new ArrayList<PingRequest>();
+        parallelWaiting.put(tidKey, requests);
+        for (int i = 0; i < count; i++) {
+        	short sid = sequenceId++;
+        	PingRequest reply = new PingRequest(host, sid);
+        	log.debug("sending packet with ID '" + tidKey + "' and sequence '" + reply.getSequenceId());
+        	requests.add(reply);
+        	DatagramPacket pkt = getDatagram(host, tidKey, reply.getSequenceId());
+        	synchronized(reply) {
+        		sendPacket(pkt);
+        	}
+        }
+        
+        try {
+            Thread.sleep(timeout);
+            synchronized(requests) {
+            	requests.wait(1);
+            }
+        } catch (InterruptedException ex) {
+            // interrupted so return, reset interrupt.
+            Thread.currentThread().interrupt();
+        }
+
+        for (PingRequest reply : requests) {
+        	if (reply.isSignaled()) {
+        		Long rtt = getRTT(reply);
+        		if (rtt <= timeout * 1000) {
+        			returnval.add(rtt);
+        		} else {
+        			log.debug("a response came back, but it was too old: sid = " + reply.getSequenceId() + ", rtt = " + rtt);
+        			returnval.add(null);
+        		}
+    		} else {
+    			log.debug("no response came back: sid = " + reply.getSequenceId());
+    			returnval.add(null);
+        	}
+        }
+        
+        return returnval;
+	}
+
+    private void sendPacket(DatagramPacket pkt) throws IOException {
+        try {
+            icmpSocket.send(pkt);
+        } catch (IOException ioE) {
+            Category log = ThreadCategory.getInstance(this.getClass());
+            log.info("isPingable: Failed to send to address " + pkt.getAddress(), ioE);
+        } catch (Throwable t) {
+            Category log = ThreadCategory.getInstance(this.getClass());
+            log.info("isPingable: Undeclared throwable exception caught sending to " + pkt.getAddress(), t);
+        }
+    }
+
+    private void waitForReply(PingRequest reply) {
+        try {
+            reply.wait(timeout);
+        } catch (InterruptedException ex) {
+            // interrupted so return, reset interrupt.
+            Thread.currentThread().interrupt();
+        }
+    }
+    
+    private Long getTidKey() {
+    	Long tidKey = null;
+    	long tid = (long) Thread.currentThread().hashCode();
+    	synchronized (waiting) {
+    		while (waiting.containsKey(tidKey = new Long(tid))) {
+    			++tid;
+    		}
+    	}
+    	return tidKey;
+    }
+
+    private Long getRTT(PingRequest reply) {
+        if (reply.isSignaled()) {
+        	ICMPEchoPacket p = reply.getPacket();
+        	if (p != null) {
+                return p.getPingRTT();
+        	}
+        }
+        return null;
+    }
+    
+
+}
