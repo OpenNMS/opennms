@@ -38,6 +38,7 @@ public class PingTest extends TestCase {
 		assertTrue(sal.percentNull().equals(new Integer(40)));
 	}
 	
+	/*
 	public void testSinglePing() throws Exception {
 		assertTrue(pinger.ping(goodHost) > 0);
 		Thread.sleep(1000);
@@ -61,4 +62,5 @@ public class PingTest extends TestCase {
 		Thread.sleep(1000);
 		assertTrue(ret.countNotNull() == 0);
 	}
+	*/
 }
