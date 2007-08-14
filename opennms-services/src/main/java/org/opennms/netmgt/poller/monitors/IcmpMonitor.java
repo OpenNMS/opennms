@@ -44,26 +44,19 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.ping.Reply;
-import org.opennms.netmgt.ping.ReplyReceiver;
+import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.protocols.icmp.ICMPEchoPacket;
-import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * <P>
@@ -82,173 +75,9 @@ import org.opennms.protocols.icmp.IcmpSocket;
 @Distributable(DistributionContext.DAEMON)
 final public class IcmpMonitor extends IPv4Monitor {
     /**
-     * Default retries.
-     */
-    private static final int DEFAULT_RETRY = 2;
-
-    /**
-     * Default timeout. Specifies how long (in milliseconds) to block waiting
-     * for data from the monitored interface.
-     */
-    private static final int DEFAULT_TIMEOUT = 800;
-
-    /**
-     * The filter identifier for the ping reply receiver
-     */
-    private static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
-
-    /**
-     * The sequence number for pings
-     */
-    private static short m_seqid = (short) 0xbabe;
-
-    /**
-     * The singular reply receiver
-     */
-    private static ReplyReceiver m_receiver = null; // delayed creation
-
-    /**
-     * The ICMP socket used to send/receive replies
-     */
-    private static IcmpSocket m_icmpSock = null; // delayed creation
-
-    /**
-     * The set used to lookup thread identifiers The map of long thread
-     * identifiers to Packets that must be signaled. The mapped objects are
-     * instances of the {@link org.opennms.netmgt.ping.Reply Reply}class.
-     */
-    private static Map m_waiting = Collections.synchronizedMap(new TreeMap());
-
-    /**
-     * The thread used to receive and process replies.
-     */
-    private static Thread m_worker = null;
-
-    /**
-     * This class is used to encapsulate a ping request. A request consist of
-     * the pingable address and a signaled state.
-     * 
-     */
-    private static final class Ping {
-        /**
-         * The address being pinged
-         */
-        private final InetAddress m_addr;
-
-        /**
-         * The state of the ping
-         */
-        private boolean m_signaled;
-
-        /**
-         * The ping packet (contains sent/received time stamps)
-         */
-        private ICMPEchoPacket m_packet;
-
-        /**
-         * Constructs a new ping object
-         */
-        Ping(InetAddress addr) {
-            m_addr = addr;
-        }
-
-        /**
-         * Returns true if signaled.
-         */
-        synchronized boolean isSignaled() {
-            return m_signaled;
-        }
-
-        /**
-         * Sets the signaled state and awakes the blocked threads.
-         */
-        synchronized void signal() {
-            m_signaled = true;
-            notifyAll();
-        }
-
-        /**
-         * Returns true if the passed address is the target of the ping.
-         */
-        boolean isTarget(InetAddress addr) {
-            return m_addr.equals(addr);
-        }
-
-        void setPacket(ICMPEchoPacket packet) {
-            m_packet = packet;
-        }
-
-        ICMPEchoPacket getPacket() {
-            return m_packet;
-        }
-    }
-
-    /**
-     * Construts a new monitor.
+     * Constructs a new monitor.
      */
     public IcmpMonitor() throws IOException {
-        synchronized (IcmpMonitor.class) {
-            if (m_worker == null) {
-                // Create a receiver queue
-                //
-                final FifoQueueImpl q = new FifoQueueImpl();
-
-                // Open a socket
-                //
-                m_icmpSock = new IcmpSocket();
-
-                // Start the receiver
-                //
-                m_receiver = new ReplyReceiver(m_icmpSock, q, FILTER_ID);
-                m_receiver.start();
-
-                // Start the processor
-                //
-                m_worker = new Thread(new Runnable() {
-                    public void run() {
-                        for (;;) {
-                            Reply pong = null;
-                            try {
-                                pong = (Reply) q.remove();
-                            } catch (InterruptedException ex) {
-                                break;
-                            } catch (Exception ex) {
-                                ThreadCategory.getInstance(this.getClass()).error("Error processing response queue", ex);
-                            }
-
-                            Long key = new Long(pong.getPacket().getTID());
-                           Ping ping = null;
-                           synchronized( m_waiting )
-                           {
-                              ping = (Ping) m_waiting.get(key);
-                           }
-                            if (ping != null && ping.isTarget(pong.getAddress())) {
-                                // Save reference to packet so that the
-                                // poll() method of the IcmpMonitor will
-                                // have access to sent/received time stamps
-                                // to calculate round trip time
-                                ping.setPacket(pong.getPacket());
-                                ping.signal();
-                            }
-                        }
-                    }
-                }, "IcmpMonitor-Receiver");
-                m_worker.setDaemon(true);
-                m_worker.start();
-            }
-        }
-    }
-
-    /**
-     * Builds a datagram compatable with the ping ReplyReceiver class.
-     */
-    private synchronized static DatagramPacket getDatagram(InetAddress addr, long tid) {
-        ICMPEchoPacket iPkt = new ICMPEchoPacket(tid);
-        iPkt.setIdentity(FILTER_ID);
-        iPkt.setSequenceId(m_seqid++);
-
-        byte[] data = iPkt.toBytes();
-        return new DatagramPacket(data, data.length, addr, 0);
     }
 
     /**
@@ -280,71 +109,28 @@ final public class IcmpMonitor extends IPv4Monitor {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
         Category log = ThreadCategory.getInstance(this.getClass());
-
-        // get parameters
-        //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-
-        // Find an appropritate thread id
-        //
-        Long tidKey = null;
-        long tid = (long) Thread.currentThread().hashCode();
-       InetAddress ipv4Addr = (InetAddress) iface.getAddress();
-       Ping reply = new Ping(ipv4Addr);
-
-       synchronized (m_waiting)
-       {
-            while (m_waiting.containsKey(tidKey = new Long(tid)))
-                ++tid;
-          m_waiting.put(tidKey, reply);
-        }
-        DatagramPacket pkt = getDatagram(ipv4Addr, tid);
-
         PollStatus serviceStatus = PollStatus.unavailable();
-        for (int attempts = 0; attempts <= retry && !reply.isSignaled(); ++attempts) {
-            // Send the datagram and wait
-            //
-            synchronized (reply) {
-                try {
-                    m_icmpSock.send(pkt);
-                } catch (IOException ioE) {
-                    log.info("Failed to send to address " + ipv4Addr, ioE);
-                    break;
-                } catch (Throwable t) {
-                    log.info("Undeclared throwable exception caught sending to " + ipv4Addr, t);
-                    break;
-                }
-
-                try {
-                    reply.wait(timeout);
-                } catch (InterruptedException ex) {
-                    // interrupted so return, reset interrupt.
-                    //
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
+        Long rtt = null;
+		InetAddress host = (InetAddress) iface.getAddress();
+		
+		try {
+			Pinger pinger = new Pinger();
+			
+			// get parameters
+			//
+			int retries = ParameterMap.getKeyedInteger(parameters, "retry", pinger.getRetries());
+			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", pinger.getTimeout());
+			
+			rtt = pinger.ping(host, timeout, retries);
+		} catch (IOException e) {
+			log.debug("failed to ping " + host, e);
+		}
+        
+        if (rtt != null) {
+        	serviceStatus = PollStatus.available();
+        	serviceStatus.setResponseTime(rtt);
         }
-
-        synchronized (m_waiting)
-        {
-           m_waiting.remove(tidKey);
-        }
-
-
-        if (reply.isSignaled()) {
-            serviceStatus = PollStatus.available();
-
-            // Determine round-trip-time for the ping packet
-            ICMPEchoPacket replyPkt = reply.getPacket();
-            if (replyPkt != null) {
-                long rtt = replyPkt.getPingRTT();
-                serviceStatus.setResponseTime(rtt);
-                log.debug("Ping round trip time for " + ipv4Addr + ": " + rtt + "us");
-            }
-        }
-
+        
         return serviceStatus;
     }
 
