@@ -169,10 +169,10 @@ public class SyslogDefs {
     static {
         facHash = new Hashtable(20);
 
-        facHash.put("KERN", new Integer(SyslogDefs.LOG_KERN));
-        facHash.put("KERNEL", new Integer(SyslogDefs.LOG_KERN));
-        facHash.put("USER", new Integer(SyslogDefs.LOG_USER));
-        facHash.put("MAIL", new Integer(SyslogDefs.LOG_MAIL));
+        facHash.put("KERN", SyslogDefs.LOG_KERN);
+        facHash.put("KERNEL", SyslogDefs.LOG_KERN);
+        facHash.put("USER", SyslogDefs.LOG_USER);
+        facHash.put("MAIL", SyslogDefs.LOG_MAIL);
         facHash.put("DAEMON", new Integer(SyslogDefs.LOG_DAEMON));
         facHash.put("AUTH", new Integer(SyslogDefs.LOG_AUTH));
         facHash.put("SYSLOG", new Integer(SyslogDefs.LOG_SYSLOG));
@@ -242,33 +242,33 @@ public class SyslogDefs {
 
     static public String getPriorityName(int level) {
         switch (level) {
-        case SyslogDefs.LOG_EMERG:
-            return "Emergency";
-        case SyslogDefs.LOG_ALERT:
-            return "Alert";
-        case SyslogDefs.LOG_CRIT:
-            return "Critical";
-        case SyslogDefs.LOG_ERR:
-            return "Error";
-        case SyslogDefs.LOG_WARNING:
-            return "Warning";
-        case SyslogDefs.LOG_NOTICE:
-            return "Notice";
-        case SyslogDefs.LOG_INFO:
-            return "Info";
-        case SyslogDefs.LOG_DEBUG:
-            return "Debug";
+            case SyslogDefs.LOG_EMERG:
+                return "Emergency";
+            case SyslogDefs.LOG_ALERT:
+                return "Alert";
+            case SyslogDefs.LOG_CRIT:
+                return "Critical";
+            case SyslogDefs.LOG_ERR:
+                return "Error";
+            case SyslogDefs.LOG_WARNING:
+                return "Warning";
+            case SyslogDefs.LOG_NOTICE:
+                return "Notice";
+            case SyslogDefs.LOG_INFO:
+                return "Info";
+            case SyslogDefs.LOG_DEBUG:
+                return "Debug";
 
-            // This is a really lazy way of mapping syslog
-            // to OpenNMS, but it should conform to thinking...
-            /*
-             * case SyslogDefs.LOG_EMERG: return "1"; case
-             * SyslogDefs.LOG_ALERT: return "1"; case SyslogDefs.LOG_CRIT:
-             * return "2"; case SyslogDefs.LOG_ERR: return "2"; case
-             * SyslogDefs.LOG_WARNING: return "3"; case SyslogDefs.LOG_NOTICE:
-             * return "4"; case SyslogDefs.LOG_INFO: return "5"; case
-             * SyslogDefs.LOG_DEBUG: return "5";
-             */
+                // This is a really lazy way of mapping syslog
+                // to OpenNMS, but it should conform to thinking...
+                /*
+                * case SyslogDefs.LOG_EMERG: return "1"; case
+                * SyslogDefs.LOG_ALERT: return "1"; case SyslogDefs.LOG_CRIT:
+                * return "2"; case SyslogDefs.LOG_ERR: return "2"; case
+                * SyslogDefs.LOG_WARNING: return "3"; case SyslogDefs.LOG_NOTICE:
+                * return "4"; case SyslogDefs.LOG_INFO: return "5"; case
+                * SyslogDefs.LOG_DEBUG: return "5";
+                */
         }
 
         return "unknown level='" + level + "'";
@@ -276,43 +276,43 @@ public class SyslogDefs {
 
     static public String getFacilityName(int facility) {
         switch (facility) {
-        case SyslogDefs.LOG_KERN:
-            return "kernel";
-        case SyslogDefs.LOG_USER:
-            return "user";
-        case SyslogDefs.LOG_MAIL:
-            return "mail";
-        case SyslogDefs.LOG_DAEMON:
-            return "daemon";
-        case SyslogDefs.LOG_AUTH:
-            return "auth";
-        case SyslogDefs.LOG_SYSLOG:
-            return "syslog";
-        case SyslogDefs.LOG_LPR:
-            return "lpr";
-        case SyslogDefs.LOG_NEWS:
-            return "news";
-        case SyslogDefs.LOG_UUCP:
-            return "uucp";
-        case SyslogDefs.LOG_CRON:
-            return "cron";
+            case SyslogDefs.LOG_KERN:
+                return "kernel";
+            case SyslogDefs.LOG_USER:
+                return "user";
+            case SyslogDefs.LOG_MAIL:
+                return "mail";
+            case SyslogDefs.LOG_DAEMON:
+                return "daemon";
+            case SyslogDefs.LOG_AUTH:
+                return "auth";
+            case SyslogDefs.LOG_SYSLOG:
+                return "syslog";
+            case SyslogDefs.LOG_LPR:
+                return "lpr";
+            case SyslogDefs.LOG_NEWS:
+                return "news";
+            case SyslogDefs.LOG_UUCP:
+                return "uucp";
+            case SyslogDefs.LOG_CRON:
+                return "cron";
 
-        case SyslogDefs.LOG_LOCAL0:
-            return "local0";
-        case SyslogDefs.LOG_LOCAL1:
-            return "local1";
-        case SyslogDefs.LOG_LOCAL2:
-            return "local2";
-        case SyslogDefs.LOG_LOCAL3:
-            return "local3";
-        case SyslogDefs.LOG_LOCAL4:
-            return "local4";
-        case SyslogDefs.LOG_LOCAL5:
-            return "local5";
-        case SyslogDefs.LOG_LOCAL6:
-            return "local6";
-        case SyslogDefs.LOG_LOCAL7:
-            return "local7";
+            case SyslogDefs.LOG_LOCAL0:
+                return "local0";
+            case SyslogDefs.LOG_LOCAL1:
+                return "local1";
+            case SyslogDefs.LOG_LOCAL2:
+                return "local2";
+            case SyslogDefs.LOG_LOCAL3:
+                return "local3";
+            case SyslogDefs.LOG_LOCAL4:
+                return "local4";
+            case SyslogDefs.LOG_LOCAL5:
+                return "local5";
+            case SyslogDefs.LOG_LOCAL6:
+                return "local6";
+            case SyslogDefs.LOG_LOCAL7:
+                return "local7";
         }
 
         return "unknown facility='" + facility + "'";
@@ -337,7 +337,7 @@ public class SyslogDefs {
             throw new ParseException("unknown facility '" + facility + "'", 0);
         }
 
-        return result.intValue();
+        return result;
     }
 
 }
