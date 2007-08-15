@@ -42,6 +42,8 @@ package org.opennms.netmgt.syslogd;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.UeiList;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -77,28 +79,42 @@ class SyslogReceiver implements Runnable {
      * The log prefix
      */
     private String m_logPrefix;
-    
+
     private String m_matchPattern;
-    
+
     private int m_hostGroup;
-    
+
     private int m_messageGroup;
+
+    private UeiList m_UeiList;
+
+    private HideMessage m_HideMessages;
 
     /**
      * construct a new receiver
+     *
+     * @param sock
+     * @param matchPattern
+     * @param hostGroup
+     * @param messageGroup
      */
-    SyslogReceiver(DatagramSocket sock, String matchPattern, int hostGroup, int messageGroup) {
+    SyslogReceiver(DatagramSocket sock, String matchPattern, int hostGroup, int messageGroup,
+                   UeiList ueiList, HideMessage hideMessages) {
         m_stop = false;
         m_dgSock = sock;
         m_matchPattern = matchPattern;
         m_hostGroup = hostGroup;
         m_messageGroup = messageGroup;
+        m_UeiList = ueiList;
+        m_HideMessages = hideMessages;
         m_logPrefix = LOG4J_CATEGORY;
 
     }
 
-    /**
+    /*
      * stop the current receiver
+     * @throws InterruptedException
+     * 
      */
     void stop() throws InterruptedException {
         m_stop = true;
@@ -114,9 +130,11 @@ class SyslogReceiver implements Runnable {
 
     /**
      * Return true if this receiver is alive
+     *
+     * @return boolean
      */
     boolean isAlive() {
-        return (m_context == null ? false : m_context.isAlive());
+        return (m_context != null && m_context.isAlive());
     }
 
     /**
@@ -152,8 +170,8 @@ class SyslogReceiver implements Runnable {
             m_dgSock.setSoTimeout(500);
         } catch (SocketException e) {
             log.warn(
-                     "An I/O error occured while trying to set the socket timeout",
-                     e);
+                    "An I/O error occured while trying to set the socket timeout",
+                    e);
         }
 
         // Increase the receive buffer for the
@@ -180,7 +198,7 @@ class SyslogReceiver implements Runnable {
                 if (!ioInterrupted)
                     log.debug("Wating on a datagram to arrive");
                 m_dgSock.receive(pkt);
-                Thread worker = new Thread(new SyslogConnection(pkt,m_matchPattern,m_hostGroup,m_messageGroup));
+                Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages));
                 worker.start();
                 ioInterrupted = false; // reset the flag
             } catch (InterruptedIOException e) {
@@ -188,8 +206,8 @@ class SyslogReceiver implements Runnable {
                 continue;
             } catch (IOException e) {
                 log.error(
-                          "An I/O exception occured on the datagram receipt port, exiting",
-                          e);
+                        "An I/O exception occured on the datagram receipt port, exiting",
+                        e);
                 break;
             }
 

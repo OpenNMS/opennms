@@ -46,9 +46,16 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
+import org.opennms.netmgt.config.syslogd.UeiList;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -56,7 +63,7 @@ import java.io.*;
  * this class should make sure the <em>init()</em> is called before calling
  * any other method to ensure the config is loaded before accessing other
  * convenience methods.
- * 
+ *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
@@ -79,22 +86,21 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
 
     /**
      * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
+     *
+     * @throws java.io.IOException Thrown if the specified config file cannot be read
+     * @throws org.exolab.castor.xml.MarshalException
+     *                             Thrown if the file does not conform to the schema.
+     * @throws org.exolab.castor.xml.ValidationException
+     *                             Thrown if the contents do not match the required schema.
      */
     private SyslogdConfigFactory(String configFile) throws IOException,
             MarshalException, ValidationException {
         InputStream cfgIn = new FileInputStream(configFile);
 
         m_config = (SyslogdConfiguration) Unmarshaller.unmarshal(
-                                                                 SyslogdConfiguration.class,
-                                                                 new InputStreamReader(
-                                                                                       cfgIn));
+                SyslogdConfiguration.class,
+                new InputStreamReader(
+                        cfgIn));
         cfgIn.close();
 
     }
@@ -102,20 +108,19 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     public SyslogdConfigFactory(Reader rdr) throws MarshalException,
             ValidationException {
         m_config = (SyslogdConfiguration) Unmarshaller.unmarshal(
-                                                                 SyslogdConfiguration.class,
-                                                                 rdr);
+                SyslogdConfiguration.class,
+                rdr);
     }
 
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
+     *
+     * @throws java.io.IOException Thrown if the specified config file cannot be read
+     * @throws org.exolab.castor.xml.MarshalException
+     *                             Thrown if the file does not conform to the schema.
+     * @throws org.exolab.castor.xml.ValidationException
+     *                             Thrown if the contents do not match the required schema.
      */
     public static synchronized void init() throws IOException,
             MarshalException, ValidationException {
@@ -133,14 +138,13 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
 
     /**
      * Reload the config from the default config file
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be
-     *                read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
+     *
+     * @throws java.io.IOException Thrown if the specified config file cannot be
+     *                             read/loaded
+     * @throws org.exolab.castor.xml.MarshalException
+     *                             Thrown if the file does not conform to the schema.
+     * @throws org.exolab.castor.xml.ValidationException
+     *                             Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException,
             MarshalException, ValidationException {
@@ -152,15 +156,15 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
      * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
+     *          Thrown if the factory has not yet been initialized.
      */
     public static synchronized SyslogdConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException(
-                                            "The factory has not been initialized");
+                    "The factory has not been initialized");
 
         return m_singleton;
     }
@@ -172,35 +176,43 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
 
     /**
      * Return the port on which SNMP traps should be received.
-     * 
+     *
      * @return the port on which SNMP traps should be received
      */
     public synchronized int getSyslogPort() {
-        return m_config.getSyslogPort();
+        return m_config.getConfiguration().getSyslogPort();
     }
 
     /**
      * Return whether or not a newSuspect event should be sent when a trap is
      * received from an unknown IP address.
-     * 
+     *
      * @return whether to generate newSuspect events on traps.
      */
     public synchronized boolean getNewSuspectOnMessage() {
-        return m_config.getNewSuspectOnMessage();
+        return m_config.getConfiguration().getNewSuspectOnMessage();
     }
 
     public synchronized String getForwardingRegexp() {
-        return m_config.getForwardingRegexp();
+        return m_config.getConfiguration().getForwardingRegexp();
     }
 
     public synchronized int getMatchingGroupHost() {
-        return m_config.getMatchingGroupHost();
+        return m_config.getConfiguration().getMatchingGroupHost();
 
     }
 
     public synchronized int getMatchingGroupMessage() {
-        return m_config.getMatchingGroupMessage();
+        return m_config.getConfiguration().getMatchingGroupMessage();
 
+    }
+
+    public synchronized UeiList getUeiList() {
+        return m_config.getUeiList();
+    }
+
+    public synchronized HideMessage getHideMessages() {
+        return m_config.getHideMessage();
     }
 
 }

@@ -53,7 +53,7 @@ import java.util.Map;
 /**
  * This class represents a singular instance that is used to map trap IP
  * addresses to known nodes.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
@@ -73,9 +73,23 @@ final class SyslogdIPMgr {
     /**
      * Default construct for the instance. This constructor always throws an
      * exception to the caller.
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
-     *             Always thrown.
+     *                               Always thrown.
+     *                               <p/>
+     *                               Clears and synchronizes the internal known IP address cache with the
+     *                               current information contained in the database. To synchronize the cache
+     *                               the method opens a new connection to the database, loads the address,
+     *                               and then closes it's connection.
+     * @throws java.sql.SQLException Thrown if the connection cannot be created or a database
+     *                               error occurs.
+     *                               <p/>
+     *                               Clears and synchronizes the internal known IP address cache with the
+     *                               current information contained in the database. To synchronize the cache
+     *                               the method opens a new connection to the database, loads the address,
+     *                               and then closes it's connection.
+     * @throws java.sql.SQLException Thrown if the connection cannot be created or a database
+     *                               error occurs.
      */
 
     // WTF, This is a straight Cut'n paste from TRAPD
@@ -88,11 +102,12 @@ final class SyslogdIPMgr {
      * current information contained in the database. To synchronize the cache
      * the method opens a new connection to the database, loads the address,
      * and then closes it's connection.
-     * 
+     *
      * @throws java.sql.SQLException
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
+    @SuppressWarnings({"EmptyCatchBlock"})
     static synchronized void dataSourceSync() throws SQLException {
         java.sql.Connection c = null;
         try {
@@ -111,7 +126,7 @@ final class SyslogdIPMgr {
                 while (rs.next()) {
                     String ipstr = rs.getString(1);
                     long ipnodeid = rs.getLong(2);
-                    m_knownips.put(ipstr, new Long(ipnodeid));
+                    m_knownips.put(ipstr, ipnodeid);
                 }
                 rs.close();
             }
@@ -128,9 +143,8 @@ final class SyslogdIPMgr {
 
     /**
      * Returns the nodeid for the IP Address
-     * 
-     * @param addr
-     *            The IP Address to query.
+     *
+     * @param addr The IP Address to query.
      * @return The node ID of the IP Address if known.
      */
     static synchronized long getNodeId(String addr) {
@@ -141,25 +155,22 @@ final class SyslogdIPMgr {
 
     /**
      * Sets the IP Address and Node ID in the Map.
-     * 
-     * @param addr
-     *            The IP Address to add.
-     * @param nodeid
-     *            The Node ID to add.
+     *
+     * @param addr   The IP Address to add.
+     * @param nodeid The Node ID to add.
      * @return The nodeid if it existed in the map.
      */
     static synchronized long setNodeId(String addr, long nodeid) {
         if (addr == null || nodeid == -1)
             return -1;
 
-        return longValue((Long) m_knownips.put(addr, new Long(nodeid)));
+        return longValue((Long) m_knownips.put(addr, nodeid));
     }
 
     /**
      * Removes an address from the node ID map.
-     * 
-     * @param addr
-     *            The address to remove from the node ID map.
+     *
+     * @param addr The address to remove from the node ID map.
      * @return The nodeid that was in the map.
      */
     static long removeNodeId(String addr) {
@@ -169,7 +180,7 @@ final class SyslogdIPMgr {
     }
 
     private static long longValue(Long result) {
-        return (result == null ? -1 : result.longValue());
+        return (result == null ? -1 : result);
     }
 
 } // end SyslodIPMgr

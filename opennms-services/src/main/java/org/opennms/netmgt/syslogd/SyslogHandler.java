@@ -43,6 +43,8 @@ package org.opennms.netmgt.syslogd;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 
@@ -54,7 +56,7 @@ import java.net.DatagramSocket;
  * the an agent sends an event via UDP/IP the receiver will process the event
  * and then add the UUIDs to the internal list. If the event is successfully
  * processed then an event-receipt is returned to the caller.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
@@ -92,6 +94,12 @@ public final class SyslogHandler {
 
     private int m_MatchingGroupMessage;
 
+    // A collection of Strings->UEI's
+    private UeiList m_UeiList;
+
+    // A collection of Strings we do not want to attach to the event.
+    private HideMessage m_HideMessages;
+
     /**
      * The UDP socket port binding.
      */
@@ -123,6 +131,10 @@ public final class SyslogHandler {
 
         m_MatchingGroupMessage = m_syslogdConfig.getMatchingGroupMessage();
 
+        m_UeiList = m_syslogdConfig.getUeiList();
+
+        m_HideMessages = m_syslogdConfig.getHideMessages();
+
         m_status = START_PENDING;
 
         m_dgSock = null;
@@ -145,12 +157,17 @@ public final class SyslogHandler {
             m_dgSock = new DatagramSocket(m_dgPort);
 
             m_receiver = new SyslogReceiver(m_dgSock, m_ForwardingRegexp,
-                                            m_MatchingGroupHost,
-                                            m_MatchingGroupMessage);
+                    m_MatchingGroupHost,
+                    m_MatchingGroupMessage,
+                    m_UeiList,
+                    m_HideMessages);
             m_processor = new SyslogProcessor(m_NewSuspectOnMessage,
-                                              m_ForwardingRegexp,
-                                              m_MatchingGroupHost,
-                                              m_MatchingGroupMessage);
+                    m_ForwardingRegexp,
+                    m_MatchingGroupHost,
+                    m_MatchingGroupMessage,
+                    m_UeiList,
+                    m_HideMessages
+            );
 
             if (m_logPrefix != null) {
                 m_receiver.setLogPrefix(m_logPrefix);
@@ -197,8 +214,8 @@ public final class SyslogHandler {
         } catch (InterruptedException e) {
             Category log = ThreadCategory.getInstance(this.getClass());
             log.warn(
-                     "The thread was interrupted while attempting to join sub-threads",
-                     e);
+                    "The thread was interrupted while attempting to join sub-threads",
+                    e);
         }
 
         m_dgSock.close();
@@ -225,17 +242,17 @@ public final class SyslogHandler {
                 || m_status == STOP_PENDING)
             throw new IllegalStateException("The process is already running");
 
-        m_dgPort = port.intValue();
+        m_dgPort = port;
     }
 
     public Integer getPort() {
-        return new Integer(m_dgPort);
+        return m_dgPort;
     }
 
     /**
      * Adds a new event handler to receiver. When new events are received the
      * decoded event is passed to the handler.
-     * 
+     *
      * @param handler
      *            A reference to an event handler
      */
@@ -250,14 +267,13 @@ public final class SyslogHandler {
      * is received. The handler is removed based upon the method
      * <code>equals()</code> inherieted from the <code>Object</code>
      * class.
-     *
-     *            A reference to the event handler.
+     * <p/>
+     * A reference to the event handler.
      */
     /*
      * public void removeEventHandler(Syslogd handler) { synchronized
      * (m_handlers) { m_handlers.remove(handler); }
      */
-
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
@@ -267,7 +283,7 @@ public final class SyslogHandler {
     /**
      * The string names that correspond to the states of the fiber.
      */
-    public static final String STATUS_NAMES[] = { "START_PENDING", // 0
+    public static final String STATUS_NAMES[] = {"START_PENDING", // 0
             "STARTING", // 1
             "RUNNING", // 2
             "STOP_PENDING", // 3

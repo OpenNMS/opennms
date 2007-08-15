@@ -6,50 +6,120 @@
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
-  <annotation>
-    <documentation>XML Schema for the syslogd-configuration.xml configuration
-    file. Version: $Id: syslogd-configuration.xsd 3400 joed $</documentation>
-  </annotation>
-
-  <element name="syslogd-configuration">
     <annotation>
-      <documentation>Top-level element for the syslogd-configuration.xml
-      configuration file.</documentation>
+        <documentation>XML Schema for the syslogd-configuration.xml configuration
+            file. Version: $Id: syslogd-configuration.xsd 3400 joed $
+        </documentation>
     </annotation>
 
-    <complexType>
-      <attribute name="syslog-port" type="positiveInteger" use="required">
-        <annotation>
-          <documentation>The port on which Syslogd listens for SYSLOG Messages. The
-          standard port is 514.</documentation>
-        </annotation>
-      </attribute>
+    <element name="syslogd-configuration">
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="1" ref="this:configuration"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:ueiList"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:hideMessage"/>
+            </sequence>
 
-      <attribute name="new-suspect-on-message" type="boolean" use="required">
+        </complexType>
+
+
+    </element>
+
+    <element name="configuration">
         <annotation>
-          <documentation>Whether messages from devices unknown to OpenNMS should
-          generate newSuspect events.</documentation>
+            <documentation>Top-level element for the syslogd-configuration.xml
+                configuration file.
+            </documentation>
         </annotation>
-      </attribute>
-      
-      <attribute name="forwarding-regexp" type="string" use="required">
+        <complexType>
+            <attribute name="syslog-port" type="positiveInteger" use="required">
+                <annotation>
+                    <documentation>The port on which Syslogd listens for SYSLOG Messages. The
+                        standard port is 514.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="new-suspect-on-message" type="boolean" use="required">
+                <annotation>
+                    <documentation>Whether messages from devices unknown to OpenNMS should
+                        generate newSuspect events.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="forwarding-regexp" type="string" use="required">
+                <annotation>
+                    <documentation>The regular expression used to separate message and host.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="matching-group-host" type="positiveInteger" use="required">
+                <annotation>
+                    <documentation>The matching group for the host</documentation>
+                </annotation>
+            </attribute>
+            <attribute name="matching-group-message" type="positiveInteger" use="required">
+                <annotation>
+                    <documentation>The matching group for the message</documentation>
+                </annotation>
+            </attribute>
+
+        </complexType>
+
+    </element>
+
+    <element name="ueiList">
+        <complexType>
+            <sequence>
+                <element maxOccurs="unbounded" minOccurs="0" ref="this:ueiMatch"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="ueiMatch">
         <annotation>
-          <documentation>The regular expression used to determine if a message is forwarded</documentation>
+            <documentation>List of Strings to UEI matches</documentation>
         </annotation>
-      </attribute>
-      
-      <attribute name="matching-group-host" type="positiveInteger" use="required">
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="1" name="match"
+                         type="string">
+                    <annotation>
+                        <documentation>String</documentation>
+                    </annotation>
+                </element>
+
+                <element maxOccurs="1" minOccurs="1" name="uei"
+                         type="string">
+                    <annotation>
+                        <documentation>UEI</documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="hideMessage">
+        <complexType>
+            <sequence>
+                <element maxOccurs="unbounded" minOccurs="0" ref="this:hideMatch"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="hideMatch">
         <annotation>
-          <documentation>The matching group for the host</documentation>
+            <documentation>List of Strings to UEI matches</documentation>
         </annotation>
-      </attribute>
-      
-      <attribute name="matching-group-message" type="positiveInteger" use="required">
-        <annotation>
-          <documentation>The matching group for the message</documentation>
-        </annotation>
-      </attribute>
-      
-    </complexType>
-  </element>
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="1" name="match"
+                         type="string">
+                    <annotation>
+                        <documentation>String</documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+
 </schema>
