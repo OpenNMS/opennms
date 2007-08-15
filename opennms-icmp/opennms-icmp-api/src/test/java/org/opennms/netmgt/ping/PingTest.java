@@ -14,10 +14,12 @@ public class PingTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		super.setUp();
+		/*
 		System.setProperty("opennms.library.jicmp", "/sw/lib/libjicmp.jnilib");
 		pinger = new Pinger();
 		goodHost = InetAddress.getByName("truename.dyndns.org");
 		badHost  = InetAddress.getByName("1.1.1.1");
+		*/
 	}
 	
 	public void testStatisticalArrayList() throws Exception {
