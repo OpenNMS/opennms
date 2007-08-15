@@ -49,7 +49,7 @@ import java.sql.SQLException;
 /**
  * The received messages are converted into XML and sent to eventd
  * </p>
- * <p>
+ * <p/>
  * <strong>Note: </strong>Syslogd is a PausableFiber so as to receive control
  * events. However, a 'pause' on Syslogd has no impact on the receiving and
  * processing of traps
@@ -66,6 +66,9 @@ public class Syslogd extends AbstractServiceDaemon {
      */
     private static final Syslogd m_singleton = new Syslogd();
 
+    /*
+   * @return Syslogd
+    */
     public synchronized static Syslogd getSingleton() {
         return m_singleton;
     }
@@ -73,9 +76,6 @@ public class Syslogd extends AbstractServiceDaemon {
     private SyslogHandler m_udpEventReceiver;
 
     private EventDao m_eventDao;
-
-    @SuppressWarnings("unused")
-    private BroadcastEventProcessor m_eventReader;
 
     public Syslogd() {
         super("OpenNMS.Syslogd");
@@ -121,7 +121,7 @@ public class Syslogd extends AbstractServiceDaemon {
         // trapd and see New suspects.
 
         try {
-            m_eventReader = new BroadcastEventProcessor();
+            BroadcastEventProcessor m_eventReader = new BroadcastEventProcessor();
         } catch (Exception ex) {
             log().error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
@@ -149,11 +149,16 @@ public class Syslogd extends AbstractServiceDaemon {
     /**
      * Returns the singular instance of the syslogd daemon. There can be only
      * one instance of this service per virtual machine.
+     *
+     * @return Singleton
      */
     public static Syslogd getInstance() {
         return m_singleton;
     }
 
+    /*
+    * @return EventDao
+     */
     public EventDao getEventDao() {
         return m_eventDao;
     }

@@ -44,6 +44,8 @@ import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -58,13 +60,11 @@ import java.util.List;
  * received via UDP from remote agents. This is a separate event context to
  * allow the event receiver to do minimum work to avoid dropping packets from
  * the agents.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
 final class SyslogProcessor implements Runnable {
-
-    private static SyslogdConfig m_syslogdConfig;
 
     private BroadcastEventProcessor m_eventReader;
 
@@ -93,13 +93,17 @@ final class SyslogProcessor implements Runnable {
      */
     private volatile boolean m_stop;
 
-    public boolean m_NewSuspectOnMessage;
-    
-    public String m_ForwardingRegexp;
-    
-    public int m_MatchingGroupHost;
-    
-    public int m_MatchingGroupMessage;
+    private boolean m_NewSuspectOnMessage;
+
+    private String m_ForwardingRegexp;
+
+    private int m_MatchingGroupHost;
+
+    private int m_MatchingGroupMessage;
+
+    private UeiList m_UeiList;
+
+    private HideMessage m_HideMessages;
 
     /**
      * The UDP socket for receipt and transmission of packets from agents.
@@ -116,18 +120,20 @@ final class SyslogProcessor implements Runnable {
     private String m_localAddr;
 
     public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
-        // TODO Auto-generated method stub
-        m_syslogdConfig = syslogdConfig;
+        SyslogdConfig m_syslogdConfig = syslogdConfig;
 
     }
 
-    SyslogProcessor(boolean newSuspectOnMessage, String forwardingRegexp, int matchingGroupHost, int matchingGroupMessage) {
+    SyslogProcessor(boolean newSuspectOnMessage, String forwardingRegexp, int matchingGroupHost,
+                    int matchingGroupMessage, UeiList ueiList, HideMessage hideMessages) {
         m_context = null;
         m_stop = false;
         m_NewSuspectOnMessage = newSuspectOnMessage;
         m_ForwardingRegexp = forwardingRegexp;
         m_MatchingGroupHost = matchingGroupHost;
         m_MatchingGroupMessage = matchingGroupMessage;
+        m_UeiList = ueiList;
+        m_HideMessages = hideMessages;
 
         m_logPrefix = Syslogd.LOG4J_CATEGORY;
 
@@ -146,7 +152,7 @@ final class SyslogProcessor implements Runnable {
      * Returns true if the thread is still alive
      */
     boolean isAlive() {
-        return (m_context == null ? false : m_context.isAlive());
+        return (m_context != null && m_context.isAlive());
     }
 
     /**
@@ -171,6 +177,7 @@ final class SyslogProcessor implements Runnable {
     /**
      * The event processing execution context.
      */
+    @SuppressWarnings({"UnusedLabel"})
     public void run() {
         // The runnable context
         //
@@ -192,11 +199,12 @@ final class SyslogProcessor implements Runnable {
         // This loop is labeled so that it can be
         // exited quickly when the thread is interrupted
         //
-        RunLoop: while (!m_stop) {
+        RunLoop:
+        while (!m_stop) {
 
             ConvertToEvent o = null;
 
-            o = (ConvertToEvent) SyslogHandler.queueManager.getFromQueue();
+            o = SyslogHandler.queueManager.getFromQueue();
 
             if (o != null) {
                 try {
@@ -210,7 +218,7 @@ final class SyslogProcessor implements Runnable {
                     log.debug("Event {");
                     log.debug("  uuid  = "
                             + (uuid != null && uuid.length() > 0 ? uuid
-                                : "<not-set>"));
+                            : "<not-set>"));
                     log.debug("  uei   = " + o.getEvent().getUei());
                     log.debug("  src   = " + o.getEvent().getSource());
                     log.debug("  iface = " + o.getEvent().getInterface());
@@ -220,16 +228,16 @@ final class SyslogProcessor implements Runnable {
                     log.debug("  Dst   = "
                             + o.getEvent().getLogmsg().getDest());
                     Parm[] parms = (o.getEvent().getParms() == null ? null
-                        : o.getEvent().getParms().getParm());
+                            : o.getEvent().getParms().getParm());
                     if (parms != null) {
                         log.debug("  parms {");
-                        for (int x = 0; x < parms.length; x++) {
-                            if ((parms[x].getParmName() != null)
-                                    && (parms[x].getValue().getContent() != null)) {
+                        for (Parm parm : parms) {
+                            if ((parm.getParmName() != null)
+                                    && (parm.getValue().getContent() != null)) {
                                 log.debug("    ("
-                                        + parms[x].getParmName().trim()
+                                        + parm.getParmName().trim()
                                         + ", "
-                                        + parms[x].getValue().getContent().trim()
+                                        + parm.getValue().getContent().trim()
                                         + ")");
                             }
                         }
@@ -238,7 +246,7 @@ final class SyslogProcessor implements Runnable {
                     log.debug("}");
 
                     EventIpcManagerFactory.getIpcManager().sendNow(
-                                                                   o.getEvent());
+                            o.getEvent());
                     // !event.hasNodeid() && m_newSuspect
                     if (m_NewSuspectOnMessage && !o.getEvent().hasNodeid()) {
                         log.debug("Syslogd: Found a new suspect "
@@ -248,8 +256,8 @@ final class SyslogProcessor implements Runnable {
 
                 } catch (Throwable t) {
                     log.error(
-                              "Unexpected error processing SyslogMessage - Could not send",
-                              t);
+                            "Unexpected error processing SyslogMessage - Could not send",
+                            t);
 
                 }
             }

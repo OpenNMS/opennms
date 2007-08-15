@@ -8,15 +8,12 @@
             matching-group-message="8"
             />
 
-    <!-- Use the following to convert UEI ad-hoc -->
     <ueiList>
         <ueiMatch>
             <match>CRISCO</match>
             <uei>CISCO</uei>
         </ueiMatch>
     </ueiList>
-
-    <!-- Use the following to remove a syslog message from the event-trail -->
 
     <hideMessage>
         <hideMatch>

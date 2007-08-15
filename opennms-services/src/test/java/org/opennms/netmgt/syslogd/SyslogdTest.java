@@ -39,63 +39,137 @@
 
 package org.opennms.netmgt.syslogd;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.mock.MockUtil;
 
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.UnknownHostException;
 
 public class SyslogdTest extends OpenNMSTestCase {
 
-    private static Syslogd m_syslogd = new Syslogd();
+    private static Syslogd m_syslogd;
 
-    private Reader rdr;
+    private SyslogdConfigFactory m_factory;
 
     protected void setUp() throws Exception {
-
-        rdr = ConfigurationTestUtils.getReaderForResource(this,
-                                                          "/org/opennms/netmgt/config/syslogd-configuration.xml");
         super.setUp();
-        assertNotNull(DataSourceFactory.getInstance());
-        SyslogdConfigFactory.setInstance(new SyslogdConfigFactory(rdr));
-        m_syslogd = new Syslogd();
-        m_syslogd.init();
-        // m_syslogd.start();
-    }
+        System.setProperty("opennms.home", "opennms-services/src/test/resources/");
 
-    public void tearDown() throws Exception {
-        m_syslogd.stop();
-       // m_syslogd = null;
+        //System.setProperty("opennms.home", "/opt/opennms");
 
+        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
+        MockLogAppender.setupLogging();
+
+        MockNetwork network = new MockNetwork();
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+        DataSourceFactory.setInstance(db);
+        Reader rdr = new InputStreamReader(getClass().getResourceAsStream( "/etc/syslogd-configuration.xml"));
+
+        m_factory = new SyslogdConfigFactory(rdr);
         rdr.close();
 
+        m_syslogd = new Syslogd();
+        m_syslogd.init();
+
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+
+        MockUtil.println("------------ End Test " + getName() + " --------------------------");
         super.tearDown();
     }
 
-    public void testMyGrouping() {
+    @Override
+    public void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
+    }
 
-        assertEquals(
-                     1,
-                     SyslogdConfigFactory.getInstance().getMatchingGroupHost());
+    public void testSyslogdStart() {
+        assertEquals("START_PENDING", m_syslogd.getStatusText());
+        m_syslogd.start();
+    }
+
+    public void testMessaging() {
+        // More of an integrations test
+        // relies on you reading some of the logging....
+
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 0, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_ERR, "Hello.");
+        } catch (UnknownHostException e) {
+            //Failures are for weenies
+        }
 
     }
 
-    public void testMyMessageGroup() {
+    public void testMyPatternsSyslogNG() {
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 host.domain.com A SyslogNG style message");
+        } catch (UnknownHostException e) {
+            //Failures are for weenies
+        }
 
-        assertEquals(
-                     2,
-                     SyslogdConfigFactory.getInstance().getMatchingGroupMessage());
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+        //assertEquals("number of logged events", 0, events.length);
+        //assertEquals("first logged event severity (should be ERROR)", Level.ERROR, events[0].getLevel());
 
+        MockLogAppender.resetEvents();
+        MockLogAppender.resetLogLevel();
     }
 
-    public void testPattern() {
-        assertEquals(
-                     "^Forwarded from (\\\\d+\\\\.\\\\d+\\\\.\\\\d+\\\\.\\\\d+): (.*)",
-                     SyslogdConfigFactory.getInstance().getForwardingRegexp());
+    public void testIPPatternsSyslogNG() {
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
+        } catch (UnknownHostException e) {
+            //Failures are for weenies
+        }
     }
 
-    public void testDoNothing() {
+    public void testResolvePatternsSyslogNG() {
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A SyslogNG style message");
+        } catch (UnknownHostException e) {
+            //Failures are for weenies
+        }
+    }
 
+    public void testUEIRewrite() {
+        //uei.opennms.org/internal/discovery/newCriscoRouter
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A CISCO message");
+        } catch (UnknownHostException e) {
+            //Failures are for weenies
+        }
+    }
+
+    public void testTESTTestThatRemovesATESTString() {
+        //uei.opennms.org/internal/discovery/newCriscoRouter
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A TEST message");
+        } catch (UnknownHostException e) {
+            //Failures are for weenies
+        }
     }
 }

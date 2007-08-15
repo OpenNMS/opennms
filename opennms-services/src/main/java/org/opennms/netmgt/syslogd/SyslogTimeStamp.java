@@ -36,21 +36,30 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.text.*;
-import java.util.*;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
 
 /**
  * The TimestampFormat class implements the code necessary to format and parse
  * syslog timestamps, which come in the flavor of 'Sep 14 15:43:06'.
- * 
- * @version $Revision: 1.1.1.1 $
+ *
  * @author Timothy Gerard Endres, <a href="mailto:time@ice.com">time@ice.com</a>.
+ * @version $Revision: 1.1.1.1 $
  */
 
 public class SyslogTimeStamp extends Format {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -88,7 +97,7 @@ public class SyslogTimeStamp extends Format {
     }
 
     public StringBuffer format(Object date, StringBuffer appendTo,
-            FieldPosition fieldPos) throws IllegalArgumentException {
+                               FieldPosition fieldPos) throws IllegalArgumentException {
         // UNDONE - handle fieldPos!
         String tmpFormat = this.format((Date) date);
         appendTo.append(tmpFormat);
@@ -108,11 +117,12 @@ public class SyslogTimeStamp extends Format {
             stamp = null;
         }
 
-        return (Object) stamp;
+        return stamp;
     }
 
     // UNDONE - all the positions in ParseExceptions are zero.
 
+    @SuppressWarnings({"UnnecessaryLocalVariable"})
     public Date parseTimestamp(String source) throws ParseException {
         String monName = null;
         String dateStr = null;
@@ -134,23 +144,23 @@ public class SyslogTimeStamp extends Format {
             monName = toker.nextToken();
         } catch (NoSuchElementException ex) {
             throw new ParseException("could not parse month name (field 1)",
-                                     0);
+                    0);
         }
 
         try {
             dateStr = toker.nextToken();
         } catch (NoSuchElementException ex) {
             throw new ParseException(
-                                     "could not parse day of month (field 2)",
-                                     0);
+                    "could not parse day of month (field 2)",
+                    0);
         }
 
         try {
             hmsStr = toker.nextToken();
         } catch (NoSuchElementException ex) {
             throw new ParseException(
-                                     "could not parse time hh:mm:ss (field 3)",
-                                     0);
+                    "could not parse time hh:mm:ss (field 3)",
+                    0);
         }
 
         toker = new StringTokenizer(hmsStr, ":");
@@ -166,21 +176,21 @@ public class SyslogTimeStamp extends Format {
             hourStr = toker.nextToken();
         } catch (NoSuchElementException ex) {
             throw new ParseException("could not parse time hour (field 3.1)",
-                                     0);
+                    0);
         }
         try {
             minStr = toker.nextToken();
         } catch (NoSuchElementException ex) {
             throw new ParseException(
-                                     "could not parse time minute (field 3.2)",
-                                     0);
+                    "could not parse time minute (field 3.2)",
+                    0);
         }
         try {
             secStr = toker.nextToken();
         } catch (NoSuchElementException ex) {
             throw new ParseException(
-                                     "could not parse time second (field 3.3)",
-                                     0);
+                    "could not parse time second (field 3.3)",
+                    0);
         }
 
         int month = 0;
@@ -193,15 +203,15 @@ public class SyslogTimeStamp extends Format {
             month = this.monthNameToInt(monName);
         } catch (ParseException ex) {
             throw new ParseException(
-                                     "could not convert month name (field 1)",
-                                     0);
+                    "could not convert month name (field 1)",
+                    0);
         }
 
         try {
             date = Integer.parseInt(dateStr);
         } catch (NumberFormatException ex) {
             throw new ParseException("could not convert month day (field 2)",
-                                     0);
+                    0);
         }
         if (date < 1 || date > 31) {
             throw new ParseException("month day '" + date
@@ -222,9 +232,9 @@ public class SyslogTimeStamp extends Format {
             minute = Integer.parseInt(minStr);
         } catch (NumberFormatException ex) {
             throw new ParseException(
-                                     ("could not convert minute (field 3.2) '"
-                                             + minStr + "' - " + ex.getMessage()),
-                                     0);
+                    ("could not convert minute (field 3.2) '"
+                            + minStr + "' - " + ex.getMessage()),
+                    0);
         }
         if (minute < 0 || minute > 59) {
             throw new ParseException("minute '" + minute
@@ -235,9 +245,9 @@ public class SyslogTimeStamp extends Format {
             second = Integer.parseInt(secStr);
         } catch (NumberFormatException ex) {
             throw new ParseException(
-                                     ("could not convert second (field 3.3) '"
-                                             + secStr + "' - " + ex.getMessage()),
-                                     0);
+                    ("could not convert second (field 3.3) '"
+                            + secStr + "' - " + ex.getMessage()),
+                    0);
         }
         if (second < 0 || second > 59) {
             throw new ParseException("second '" + second

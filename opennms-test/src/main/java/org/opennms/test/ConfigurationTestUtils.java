@@ -179,6 +179,12 @@ public class ConfigurationTestUtils extends Assert {
         }
     }
 
+    public static File getFileForConfigFile(String configFile) {
+        File file = new File(getDaemonEtcDirectory(), configFile);
+        assertTrue("configuration file '" + configFile + "' does not exist at " + file.getAbsolutePath(), file.exists());
+        return file;
+    }
+
     public static void setRrdBinary(String path) {
         System.setProperty("rrd.binary", path);
     }

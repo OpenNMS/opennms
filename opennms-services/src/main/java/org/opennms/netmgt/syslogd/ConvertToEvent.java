@@ -45,7 +45,16 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.config.syslogd.HideMatch;
+import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -54,6 +63,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,11 +77,9 @@ import java.util.regex.Pattern;
 // Improvements most likely are to be made.
 final class ConvertToEvent {
 
-    static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
     private static String m_localAddr;
-
-    private static String m_logPrefix;
 
     /**
      * The received XML event, decoded using the US-ASCII encoding.
@@ -116,42 +124,43 @@ final class ConvertToEvent {
      * Constructs a new event encapsulation instance based upon the
      * information passed to the method. The passed datagram data is decoded
      * into a string using the <tt>US-ASCII</tt> character encoding.
-     * 
-     * @param packet
-     *            The datagram received from the remote agent.
+     *
+     * @param packet The datagram received from the remote agent.
      * @throws java.io.UnsupportedEncodingException
-     *             Thrown if the data buffer cannot be decoded using the
-     *             US-ASCII encoding.
+     *          Thrown if the data buffer cannot be decoded using the
+     *          US-ASCII encoding.
      */
     static ConvertToEvent make(DatagramPacket packet, String matchPattern,
-            int hostGroup, int messageGroup)
+                               int hostGroup, int messageGroup,
+                               UeiList ueiList, HideMessage hideMessage)
+
             throws UnsupportedEncodingException {
         return make(packet.getAddress(), packet.getPort(), packet.getData(),
-                    packet.getLength(), matchPattern, hostGroup, messageGroup);
+                packet.getLength(), matchPattern, hostGroup, messageGroup,
+                ueiList, hideMessage);
     }
 
     /**
      * Constructs a new event encapsulation instance based upon the
      * information passed to the method. The passed byte array is decoded into
      * a string using the <tt>US-ASCII</tt> character encoding.
-     * 
-     * @param addr
-     *            The remote agent's address.
-     * @param port
-     *            The remote agent's port
-     * @param data
-     *            The XML data in US-ASCII encoding.
-     * @param len
-     *            The length of the XML data in the buffer.
+     *
+     * @param addr The remote agent's address.
+     * @param port The remote agent's port
+     * @param data The XML data in US-ASCII encoding.
+     * @param len  The length of the XML data in the buffer.
      * @throws java.io.UnsupportedEncodingException
-     *             Thrown if the data buffer cannot be decoded using the
-     *             US-ASCII encoding.
+     *          Thrown if the data buffer cannot be decoded using the
+     *          US-ASCII encoding.
      */
     static ConvertToEvent make(InetAddress addr, int port, byte[] data,
-            int len, String matchPattern, int hostGroup, int messageGroup)
+                               int len, String matchPattern, int hostGroup, int messageGroup,
+                               UeiList ueiList, HideMessage hideMessage)
             throws UnsupportedEncodingException {
 
         ConvertToEvent e = new ConvertToEvent();
+
+        // Get host address /
 
         e.m_sender = addr;
         e.m_port = port;
@@ -159,7 +168,7 @@ final class ConvertToEvent {
         e.m_ackEvents = new ArrayList(16);
         e.m_log = null;
 
-        m_logPrefix = org.opennms.netmgt.syslogd.Syslogd.LOG4J_CATEGORY;
+        String m_logPrefix = Syslogd.LOG4J_CATEGORY;
         ThreadCategory.setPrefix(m_logPrefix);
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
@@ -174,7 +183,7 @@ final class ConvertToEvent {
         // Set nodeId
 
         long nodeId = SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/",
-                                                                        ""));
+                ""));
         // log.debug("Nodeid via SyslogdIPMgr " +
         // SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/","")));
 
@@ -222,8 +231,11 @@ final class ConvertToEvent {
 
         String priorityTxt = SyslogDefs.getPriorityName(priority);
         // event.setSeverity(priorityTxt);
+        // We leave the priority alone, this might need to be set.
 
         String facilityTxt = SyslogDefs.getFacilityName(facility);
+
+        //Check for UEI matching or allow a simple standard one.
 
         event.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/"
                 + priorityTxt);
@@ -267,25 +279,100 @@ final class ConvertToEvent {
 
         log.debug("Message : " + message);
         log.debug("Pattern : " + matchPattern);
+        log.debug("Host group: " + hostGroup);
+        log.debug("Message group: " + messageGroup);
 
-        Pattern bsdForward = Pattern.compile(matchPattern);
+        // We will also here find out if, the host needs to
+        // be replaced, the message matched to a UEI, and
+        // last if we need to actually hide the message.
+        // this being potentially helpful in avoiding showing
+        // operator a password or other data that should be
+        // confindential.
 
-        Matcher m = bsdForward.matcher(message);
+        Pattern pattern = Pattern.compile(matchPattern);
+        Matcher m = pattern.matcher(message);
 
-        if ((m = bsdForward.matcher(message)).matches()) {
+        /*
+        * We matched on a regexp for host/message pair.
+        * This can be a forwarded message as in BSD Style
+        * or syslog-ng.
+        * We assume that the host is given to us
+        * as an IP/Hostname and that the resolver
+        * on the ONMS host actually can resolve the
+        * node to match against nodeId.
+         */
 
-            nodeId = SyslogdIPMgr.getNodeId(m.group(hostGroup).replaceAll(
-                                                                          "/",
-                                                                          ""));
+        if (m.matches()) {
 
-            if (nodeId != -1)
-                event.setNodeid(nodeId);
-            // Clean up for further processing....
-            event.setInterface(m.group(hostGroup).replaceAll("/", ""));
+            log.debug("Regexp matched message: " + message);
+            log.debug("Host: " + m.group(hostGroup));
+            log.debug("Message: " + m.group(messageGroup));
 
-            message = m.group(messageGroup);
-            log.debug("Forwarded message: " + message);
+            // We will try and extract an IP address from
+            // a hostname.....
 
+            String myHost = "";
+
+            try {
+                InetAddress address = InetAddress.getByName(m.group(hostGroup));
+                byte[] ipAddr = address.getAddress();
+
+                // Convert to dot representation
+                for (int i = 0; i < ipAddr.length; i++) {
+                    if (i > 0) {
+                        myHost += ".";
+                    }
+                    myHost += ipAddr[i] & 0xFF;
+                }
+            } catch (UnknownHostException e1) {
+                log.info("Could not parse the host: " + e1);
+
+            }
+
+            if (!"".equals(myHost)) {
+                nodeId = SyslogdIPMgr.getNodeId(myHost.replaceAll(
+                        "/",
+                        ""));
+
+                if (nodeId != -1)
+                    event.setNodeid(nodeId);
+                // Clean up for further processing....
+                event.setInterface(myHost.replaceAll("/", ""));
+
+                message = m.group(messageGroup);
+                log.debug("Regexp used to find node: " + event.getNodeid());
+            }
+        }
+
+        // Time to verify UEI matching.
+
+        Iterator match = ueiList.getUeiMatchCollection().iterator();
+        UeiMatch uei;
+        while (match.hasNext()) {
+
+            uei = (UeiMatch) match.next();
+            if (message.contains(uei.getUei())) {
+                //We can pass a new UEI on this
+                log.debug("Changed the UEI of a Syslogd event to :" + uei.getMatch());
+                event.setUei(uei.getMatch());
+
+            }
+        }
+
+        // Time to verify if we need to hide the message
+
+        match = hideMessage.getHideMatchCollection().iterator();
+
+        HideMatch hide;
+        while (match.hasNext()) {
+
+            hide = (HideMatch) match.next();
+            if (message.contains(hide.getMatch())) {
+                //We can pass a new UEI on this
+                log.debug("Hiding syslog message from Event - May contain sensitive data");
+                message = "The message logged has been removed due to configuration of Syslogd";
+
+            }
         }
 
         lbIdx = message.indexOf('[');
@@ -380,13 +467,13 @@ final class ConvertToEvent {
     /**
      * Decodes the XML package from the remote agent. If an error occurs or
      * the datagram had malformed XML then an exception is generated.
-     * 
+     *
      * @return The toplevel <code>Log</code> element of the XML document.
      * @throws org.exolab.castor.xml.ValidationException
-     *             Throws if the documents data does not match the defined XML
-     *             Schema Definition.
+     *          Throws if the documents data does not match the defined XML
+     *          Schema Definition.
      * @throws org.exolab.castor.xml.MarshalException
-     *             Thrown if the XML is malformed and cannot be converted.
+     *          Thrown if the XML is malformed and cannot be converted.
      */
     Log unmarshal() throws ValidationException, MarshalException {
         if (m_log == null) {
@@ -399,9 +486,8 @@ final class ConvertToEvent {
     /**
      * Adds the event to the list of events acknowledged in this event XML
      * document.
-     * 
-     * @param e
-     *            The event to acknowledge.
+     *
+     * @param e The event to acknowledge.
      */
     void ackEvent(Event e) {
         if (!m_ackEvents.contains(e))
@@ -444,9 +530,8 @@ final class ConvertToEvent {
      * Returns true if the instance matches the object based upon the remote
      * agent's address &amp; port. If the passed instance is from the same
      * agent then it is considered equal.
-     * 
-     * @param o
-     *            instance of the class to compare.
+     *
+     * @param o instance of the class to compare.
      * @return Returns true if the objects are logically equal, false
      *         otherwise.
      */
@@ -462,7 +547,7 @@ final class ConvertToEvent {
      * Returns the hash code of the instance. The hash code is computed by
      * taking the bitwise XOR of the port and the agent's internet address
      * hash code.
-     * 
+     *
      * @return The 32-bit has code for the instance.
      */
     public int hashCode() {

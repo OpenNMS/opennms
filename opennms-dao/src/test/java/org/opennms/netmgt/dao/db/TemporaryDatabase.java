@@ -1,5 +1,11 @@
 package org.opennms.netmgt.dao.db;
 
+import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.jdbc.core.RowCountCallbackHandler;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.util.StringUtils;
+
+import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -10,23 +16,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
-import javax.sql.DataSource;
-
-import org.opennms.netmgt.dao.db.InstallerDb;
-import org.opennms.netmgt.dao.db.SimpleDataSource;
-import org.opennms.test.ConfigurationTestUtils;
-import org.springframework.jdbc.core.RowCountCallbackHandler;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.util.StringUtils;
-
 public class TemporaryDatabase implements DataSource {
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
-    
+
     private static final String DRIVER_PROPERTY = "mock.db.driver";
     private static final String URL_PROPERTY = "mock.db.url";
     private static final String ADMIN_USER_PROPERTY = "mock.db.adminUser";
     private static final String ADMIN_PASSWORD_PROPERTY = "mock.db.adminPassword";
-    
+
     private static final String DEFAULT_DRIVER = "org.postgresql.Driver";
     private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/";
     private static final String DEFAULT_ADMIN_USER = "postgres";
@@ -40,12 +37,12 @@ public class TemporaryDatabase implements DataSource {
     private String m_url;
     private String m_adminUser;
     private String m_adminPassword;
-    
+
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
-    
+
     private InstallerDb m_installerDb;
-    
+
     private ByteArrayOutputStream m_outputStream;
 
     private boolean m_setupIpLike = true;
@@ -55,40 +52,40 @@ public class TemporaryDatabase implements DataSource {
     private boolean m_destroyed = false;
 
     private SimpleJdbcTemplate m_jdbcTemplate;
-    
+
     public TemporaryDatabase() throws Exception {
-        this(TEST_DB_NAME_PREFIX+System.currentTimeMillis());
+        this(TEST_DB_NAME_PREFIX + System.currentTimeMillis());
     }
-    
+
     public TemporaryDatabase(String testDatabase) throws Exception {
         this(testDatabase, System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
-             System.getProperty(URL_PROPERTY, DEFAULT_URL),
-             System.getProperty(ADMIN_USER_PROPERTY, DEFAULT_ADMIN_USER),
-             System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD));
+                System.getProperty(URL_PROPERTY, DEFAULT_URL),
+                System.getProperty(ADMIN_USER_PROPERTY, DEFAULT_ADMIN_USER),
+                System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD));
     }
-    
+
     public TemporaryDatabase(String testDatabase, String driver, String url,
-            String adminUser, String adminPassword) throws Exception {
+                             String adminUser, String adminPassword) throws Exception {
         m_testDatabase = testDatabase;
         m_driver = driver;
         m_url = url;
         m_adminUser = adminUser;
         m_adminPassword = adminPassword;
-        
+
     }
-    
+
     public void setPopulateSchema(boolean populateSchema) {
-        m_populateSchema  = populateSchema;
+        m_populateSchema = populateSchema;
     }
-    
+
     protected void create() throws Exception {
         setupDatabase();
-        
+
         if (m_populateSchema) {
             initializeDatabase();
         }
     }
-    
+
     private void initializeDatabase() throws Exception {
         m_installerDb = new InstallerDb();
 
@@ -96,32 +93,29 @@ public class TemporaryDatabase implements DataSource {
         resetOutputStream();
         m_installerDb.setDatabaseName(getTestDatabase());
         m_installerDb.setDataSource(getDataSource());
-        
-        m_installerDb.setCreateSqlLocation(
-            "../opennms-daemon/src/main/filtered/etc/create.sql");
 
-        m_installerDb.setStoredProcedureDirectory(
-            "../opennms-daemon/src/main/filtered/etc");
+        m_installerDb.setCreateSqlLocation(ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath());
+
+        m_installerDb.setStoredProcedureDirectory(ConfigurationTestUtils.getFileForConfigFile("create.sql").getParentFile().getAbsolutePath());
 
         // installerDb.setDebug(true);
 
         m_installerDb.readTables();
-        
+
         m_installerDb.createSequences();
         m_installerDb.updatePlPgsql();
         m_installerDb.addStoredProcedures();
-        
 
         /*
-         * Here's an example of an iplike function that always returns true.
-         * CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN
-         * RETURN true; END; ' LANGUAGE 'plpgsql';
-         * 
-         * Found this in BaseIntegrationTestCase.
-         */
+        * Here's an example of an iplike function that always returns true.
+        * CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN
+        * RETURN true; END; ' LANGUAGE 'plpgsql';
+        *
+        * Found this in BaseIntegrationTestCase.
+        */
 
         if (isSetupIpLike()) {
-            if (!m_installerDb.isIpLikeUsable()) { 
+            if (!m_installerDb.isIpLikeUsable()) {
                 m_installerDb.setupPlPgsqlIplike();
             }
         }
@@ -142,53 +136,52 @@ public class TemporaryDatabase implements DataSource {
 
     protected File findIpLikeLibrary() {
         File topDir = ConfigurationTestUtils.getTopProjectDirectory();
-        
+
         File ipLikeDir = new File(topDir, "opennms-iplike");
         assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
-        
+
         File[] ipLikePlatformDirs = ipLikeDir.listFiles(new FileFilter() {
             public boolean accept(File file) {
                 if (file.getName().matches("opennms-iplike-.*") && file.isDirectory()) {
                     return true;
                 } else {
                     return false;
-                }   
-            }   
-            });
-            assertTrue("expecting at least one opennms iplike platform directory in " + ipLikeDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikePlatformDirs.length > 0);
-
-            File ipLikeFile = null;
-            for (File ipLikePlatformDir : ipLikePlatformDirs) {
-                assertTrue("iplike platform directory does not exist but was listed in directory listing: " + ipLikePlatformDir.getAbsolutePath(), ipLikePlatformDir.exists());
-                
-                File ipLikeTargetDir = new File(ipLikePlatformDir, "target");
-                if (!ipLikeTargetDir.exists() || !ipLikeTargetDir.isDirectory()) {
-                    // Skip this one
-                    continue;
                 }
-              
-                File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
-                    public boolean accept(File file) {
-                        if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-                assertFalse("expecting zero or one iplike file in " + ipLikeTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikeFiles, ", "), ipLikeFiles.length > 1);
-                
-                if (ipLikeFiles.length == 1) {
-                    ipLikeFile = ipLikeFiles[0];
-                }
-                
             }
-            
-            assertNotNull("Could not find iplike shared object in a target directory in any of these directories: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikeFile);
-            
-            return ipLikeFile;
+        });
+        assertTrue("expecting at least one opennms iplike platform directory in " + ipLikeDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikePlatformDirs.length > 0);
+
+        File ipLikeFile = null;
+        for (File ipLikePlatformDir : ipLikePlatformDirs) {
+            assertTrue("iplike platform directory does not exist but was listed in directory listing: " + ipLikePlatformDir.getAbsolutePath(), ipLikePlatformDir.exists());
+
+            File ipLikeTargetDir = new File(ipLikePlatformDir, "target");
+            if (!ipLikeTargetDir.exists() || !ipLikeTargetDir.isDirectory()) {
+                // Skip this one
+                continue;
+            }
+
+            File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            assertFalse("expecting zero or one iplike file in " + ipLikeTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(ipLikeFiles, ", "), ipLikeFiles.length > 1);
+
+            if (ipLikeFiles.length == 1) {
+                ipLikeFile = ipLikeFiles[0];
+            }
+
         }
 
+        assertNotNull("Could not find iplike shared object in a target directory in any of these directories: " + StringUtils.arrayToDelimitedString(ipLikePlatformDirs, ", "), ipLikeFile);
+
+        return ipLikeFile;
+    }
 
     private void assertNotNull(String string, Object o) {
         if (o == null) {
@@ -208,29 +201,27 @@ public class TemporaryDatabase implements DataSource {
         }
     }
 
-
     private void resetOutputStream() {
         m_outputStream = new ByteArrayOutputStream();
         m_installerDb.setOutputStream(new PrintStream(m_outputStream));
     }
 
     public void setupDatabase() throws Exception {
-        
-        
+
         setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(),
-                                           m_adminUser, m_adminPassword));
+                m_adminUser, m_adminPassword));
         setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1",
-                                           m_adminUser, m_adminPassword));
+                m_adminUser, m_adminPassword));
 
         createTestDatabase();
 
         // Test connecting to test database.
         Connection connection = getConnection();
         connection.close();
-        
+
         setJdbcTemplate(new SimpleJdbcTemplate(this));
     }
-    
+
     private void createTestDatabase() throws Exception {
         Connection adminConnection = getAdminDataSource().getConnection();
         Statement st = null;
@@ -244,24 +235,22 @@ public class TemporaryDatabase implements DataSource {
             }
             adminConnection.close();
         }
-        
+
         Runtime.getRuntime().addShutdownHook(new Thread() {
 
             @Override
             public void run() {
                 try {
                     destroyTestDatabase();
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            
+
         });
 
     }
-    
 
-    
     public void drop() throws Exception {
         destroyTestDatabase();
     }
@@ -273,12 +262,12 @@ public class TemporaryDatabase implements DataSource {
             // database already destroyed
             return;
         }
-        
+
         /*
-         * Sleep before destroying the test database because PostgreSQL doesn't
-         * seem to notice immediately clients have disconnected. Yeah, it's a
-         * hack.
-         */
+        * Sleep before destroying the test database because PostgreSQL doesn't
+        * seem to notice immediately clients have disconnected. Yeah, it's a
+        * hack.
+        */
         Thread.sleep(100);
 
         Connection adminConnection = getAdminDataSource().getConnection();
@@ -286,7 +275,7 @@ public class TemporaryDatabase implements DataSource {
         try {
             for (int dropAttempt = 0; dropAttempt < MAX_DATABASE_DROP_ATTEMPTS; dropAttempt++) {
                 Statement st = null;
-            
+
                 try {
                     st = adminConnection.createStatement();
                     st.execute("DROP DATABASE " + getTestDatabase());
@@ -319,8 +308,8 @@ public class TemporaryDatabase implements DataSource {
                 adminConnection.close();
             } catch (SQLException e) {
                 System.err.println("Error closing administrative database "
-                                   + "connection after attempting to drop "
-                                   + "test database");
+                        + "connection after attempting to drop "
+                        + "test database");
                 e.printStackTrace();
             }
 
@@ -330,7 +319,7 @@ public class TemporaryDatabase implements DataSource {
              */
             Thread.sleep(100);
         }
-        
+
         m_destroyed = true;
     }
 
@@ -347,7 +336,7 @@ public class TemporaryDatabase implements DataSource {
 //        }
 //        buf.append("]");
 //        MockUtil.println("Executing "+stmt+" with values "+buf);
-        
+
         getJdbcTemplate().update(stmt, values);
     }
 
@@ -358,7 +347,7 @@ public class TemporaryDatabase implements DataSource {
     }
 
     public String getNextSequenceValStatement(String seqName) {
-        return "select nextval('"+seqName+"')";
+        return "select nextval('" + seqName + "')";
     }
 
     protected Integer getNextId(String nxtIdStmt) {
@@ -412,7 +401,6 @@ public class TemporaryDatabase implements DataSource {
     public String getTestDatabase() {
         return m_testDatabase;
     }
-
 
     /**
      * Returns an object that implements the given interface to allow access to

@@ -32,11 +32,22 @@
 
 package org.opennms.netmgt.config;
 
+import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.UeiList;
+
 public interface SyslogdConfig {
     public abstract int getSyslogPort();
+
     public abstract boolean getNewSuspectOnMessage();
+
     public abstract String getForwardingRegexp();
+
     public abstract int getMatchingGroupHost();
+
     public abstract int getMatchingGroupMessage();
+
+    public abstract UeiList getUeiList();
+
+    public abstract HideMessage getHideMessages();
 }
 

@@ -34,6 +34,8 @@ package org.opennms.netmgt.syslogd;
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.UeiList;
 
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -45,20 +47,28 @@ public class SyslogConnection implements Runnable {
     private FifoQueue _queue;
 
     private String m_logPrefix;
-    
+
     private String _matchPattern;
-    
+
     private int _hostGroup;
-    
+
     private int _messageGroup;
+
+    private UeiList _ueiList;
+
+    private HideMessage _hideMessages;
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
-    public SyslogConnection(DatagramPacket packet, String matchPattern, int hostGroup, int messageGroup) {
+    public SyslogConnection(DatagramPacket packet, String matchPattern, int hostGroup, int messageGroup,
+                            UeiList ueiList, HideMessage hideMessages) {
         _packet = packet;
         _matchPattern = matchPattern;
         _hostGroup = hostGroup;
         _messageGroup = messageGroup;
+        _ueiList = ueiList;
+        _hideMessages = hideMessages;
+
         m_logPrefix = LOG4J_CATEGORY;
     }
 
@@ -71,9 +81,10 @@ public class SyslogConnection implements Runnable {
             ConvertToEvent re = null;
             try {
                 re = ConvertToEvent.make(_packet.getAddress(),
-                                         _packet.getPort(),
-                                         _packet.getData(),
-                                         _packet.getLength(),_matchPattern, _hostGroup,_messageGroup);
+                        _packet.getPort(),
+                        _packet.getData(),
+                        _packet.getLength(), _matchPattern, _hostGroup, _messageGroup,
+                        _ueiList, _hideMessages);
             } catch (UnsupportedEncodingException e1) {
                 log.debug("Failure to convert package");
             }
@@ -85,8 +96,8 @@ public class SyslogConnection implements Runnable {
             try {
                 Thread.sleep((int) (Math.random() * 100));
             } catch (InterruptedException e) {
+                log.debug("Syslogd: Interruption " + e);
             }
-            ;
 
         }
         // We just add to the queue so we do not notify
