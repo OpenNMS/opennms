@@ -210,6 +210,11 @@ public class Pinger {
         	synchronized(reply) {
         		sendPacket(pkt);
         	}
+       		try {
+       			Thread.sleep(100);
+       		} catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+       		}
         }
         
         try {
