@@ -61,7 +61,8 @@ public class PollStatus implements Serializable {
     private String m_reason;
     
     private long m_responseTime = -1L;
-
+    private long m_nanoResponseTime = -1L;
+    
     /**
      * <P>
      * The constant that defines a service that is up but is most likely
@@ -255,6 +256,16 @@ public class PollStatus implements Serializable {
         m_reason = reason;
     }
 
+    @Column(name="nanoResponseTime", nullable=true)
+    public long getNanoResponseTime() {
+    	return m_nanoResponseTime;
+    }
+    
+    public void setNanoResponseTime(long nanoResponseTime) {
+    	m_nanoResponseTime = nanoResponseTime;
+    	this.setResponseTime(nanoResponseTime / 1000000);
+    }
+    
     @Column(name="responseTime", nullable=true)
     public long getResponseTime() {
         return m_responseTime;

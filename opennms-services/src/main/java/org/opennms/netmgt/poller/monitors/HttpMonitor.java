@@ -135,7 +135,7 @@ public class HttpMonitor extends IPv4Monitor {
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;
         int currentPort = -1;
-        long responseTime = -1;
+        long nanoResponseTime = -1;
         for (int portIndex = 0; portIndex < getPorts(parameters).length && serviceStatus != PollStatus.SERVICE_AVAILABLE; portIndex++) {
             currentPort = getPorts(parameters)[portIndex];
 
@@ -157,7 +157,7 @@ public class HttpMonitor extends IPv4Monitor {
                     //
                     // Issue HTTP 'GET' command and check the return code in the response
                     //
-                    long sentTime = System.currentTimeMillis();
+                    long nanoSentTime = System.nanoTime();
                     socket.getOutputStream().write(cmd.getBytes());
 
                     //
@@ -166,14 +166,14 @@ public class HttpMonitor extends IPv4Monitor {
                     //
                     BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String line = lineRdr.readLine();
-                    responseTime = System.currentTimeMillis() - sentTime;
+                    nanoResponseTime = System.nanoTime() - nanoSentTime;
                     if (line == null) {
                         continue;
                     }
 
                     if (log().isDebugEnabled()) {
                         log().debug("poll: response= " + line);
-                        log().debug("poll: responseTime= " + responseTime + "ms");
+                        log().debug("poll: responseTime= " + (nanoResponseTime / 1000000) + "ms");
                     }
 
                     if (line.startsWith("HTTP/")) {
@@ -315,7 +315,9 @@ public class HttpMonitor extends IPv4Monitor {
         //
         // return the status of the service
         //
-        return PollStatus.get(serviceStatus, reason, responseTime);
+        PollStatus ps = PollStatus.get(serviceStatus, reason);
+        ps.setNanoResponseTime(nanoResponseTime);
+        return ps;
     }
     
     
