@@ -174,7 +174,12 @@ public class Pinger {
         for (int attempts = 0; attempts <= retries && !reply.isSignaled(); ++attempts) {
             synchronized (reply) {
                 sendPacket(pkt);
-                waitForReply(reply);
+                try {
+                    reply.wait(timeout);
+                } catch (InterruptedException ex) {
+                    // interrupted so return, reset interrupt.
+                    Thread.currentThread().interrupt();
+                }
             }
         }
         waiting.remove(tidKey);
@@ -226,7 +231,7 @@ public class Pinger {
             // interrupted so return, reset interrupt.
             Thread.currentThread().interrupt();
         }
-
+        
         for (PingRequest reply : requests) {
         	if (reply.isSignaled()) {
         		Long rtt = getRTT(reply);
@@ -242,6 +247,8 @@ public class Pinger {
         	}
         }
         
+        parallelWaiting.remove(tidKey);
+
         return returnval;
 	}
 
@@ -257,15 +264,6 @@ public class Pinger {
         }
     }
 
-    private void waitForReply(PingRequest reply) {
-        try {
-            reply.wait(timeout);
-        } catch (InterruptedException ex) {
-            // interrupted so return, reset interrupt.
-            Thread.currentThread().interrupt();
-        }
-    }
-    
     private Long getTidKey() {
     	Long tidKey = null;
     	long tid = (long) Thread.currentThread().hashCode();
