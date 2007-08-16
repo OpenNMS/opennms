@@ -18,8 +18,10 @@
 %{!?logdir:%define logdir /var/log/opennms}
 # Where the OpenNMS webapp lives
 %{!?webappsdir:%define webappsdir %instprefix/webapps}
+# Where the OpenNMS Jetty webapp lives
+%{!?jettydir:%define jettydir %instprefix/jetty-webapps}
 # The directory for the OpenNMS webapp
-%{!?servletdir:%define servletdir %webappsdir/opennms}
+%{!?servletdir:%define servletdir opennms}
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
 
@@ -162,13 +164,26 @@ ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
 ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
 
 pushd $RPM_BUILD_ROOT
+
+# config files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
-    sort > %{_tmppath}/files.etc
+    sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
-    sort >> %{_tmppath}/files.etc
+    sort >> %{_tmppath}/files.main
 
+# jetty
+find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,," | \
+    grep -v '/WEB-INF/web\.xml$' | \
+    grep -v '/WEB-INF/configuration\.properties$' | \
+    sort > %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{jettydir} -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.main
+
+# webapps
 find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,," | \
     grep -v '/WEB-INF/web\.xml$' | \
@@ -177,6 +192,7 @@ find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
 find $RPM_BUILD_ROOT%{webappsdir} -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
     sort >> %{_tmppath}/files.webapp
+
 popd
 
 %clean
@@ -186,7 +202,7 @@ rm -rf $RPM_BUILD_ROOT
 # file setup
 ##############################################################################
 
-%files -f %{_tmppath}/files.etc
+%files -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{bindir}/*
@@ -197,6 +213,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{instprefix}/lib
 			%{instprefix}/logs
 			%{instprefix}/share
+			%{instprefix}/jetty-webapps
+%config  %{jettydir}/%{servletdir}/WEB-INF/web.xml
+%config  %{jettydir}/%{servletdir}/WEB-INF/configuration.properties
 			%{sharedir}
 			%{logdir}
 
@@ -208,8 +227,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
-%config %{servletdir}/WEB-INF/web.xml
-%config %{servletdir}/WEB-INF/configuration.properties
+%config %{webappsdir}/%{servletdir}/WEB-INF/web.xml
+%config %{webappsdir}/%{servletdir}/WEB-INF/configuration.properties
 
 
 %post
@@ -252,6 +271,9 @@ echo " *** make a few other changes before you start OpenNMS.  See the"
 echo " *** install guide and release notes for details."
 
 %changelog
+* Thu Aug 16 2007 Benjamin Reed <ranger@opennms.org>
+- Added handling of Jetty stuff.
+
 * Wed Jul 25 2007 Benjamin Reed <ranger@opennms.org>
 - Updated to be noarch, now that all native code has been moved to
   separate packages
