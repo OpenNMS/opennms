@@ -178,7 +178,7 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,," | \
     grep -v '/WEB-INF/web\.xml$' | \
     grep -v '/WEB-INF/configuration\.properties$' | \
-    sort > %{_tmppath}/files.main
+    sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
     sort >> %{_tmppath}/files.main
