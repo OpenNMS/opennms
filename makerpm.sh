@@ -23,7 +23,7 @@ else
 	RELEASE=$RELEASE_MAJOR
 fi
 
-VERSION=1.3.6
+VERSION=1.3.7
 
 if [ -z $JAVA_HOME ]
 then
