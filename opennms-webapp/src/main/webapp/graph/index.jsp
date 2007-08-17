@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2007 Aug 15: combined node and domain reports into resource reports
+// 2006 Mar 08: added standard and custom domain reports
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -60,8 +62,7 @@
 %>
 
 <%
-    pageContext.setAttribute("nodeResources", m_resourceService.findNodeResources());
-    pageContext.setAttribute("domainResources", m_resourceService.findDomainResources());
+    pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -74,13 +75,13 @@
 </jsp:include>
 
 <script language="Javascript" type="text/javascript" >
-  function validateNode()
+  function validateResource()
   {
       var isChecked = false
-      for( i = 0; i < document.choose_node.parentResource.length; i++ )
+      for( i = 0; i < document.choose_resource.parentResourceId.length; i++ )
       {
          //make sure something is checked before proceeding
-         if (document.choose_node.parentResource[i].selected)
+         if (document.choose_resource.parentResourceId[i].selected)
          {
             isChecked=true;
          }
@@ -88,18 +89,18 @@
 
       if (!isChecked)
       {
-          alert("Please check the node that you would like to report on.");
+          alert("Please check the resource that you would like to report on.");
       }
       return isChecked;
   }
 
-  function validateNodeAdhoc()
+  function validateResourceAdhoc()
   {
       var isChecked = false
-      for( i = 0; i < document.choose_node_adhoc.parentResource.length; i++ )
+      for( i = 0; i < document.choose_resource_adhoc.parentResourceId.length; i++ )
       {
          //make sure something is checked before proceeding
-         if (document.choose_node_adhoc.parentResource[i].selected)
+         if (document.choose_resource_adhoc.parentResourceId[i].selected)
          {
             isChecked=true;
          }
@@ -107,192 +108,93 @@
 
       if (!isChecked)
       {
-          alert("Please check the node that you would like to report on.");
+          alert("Please check the resource that you would like to report on.");
       }
       return isChecked;
   }
 
-  function validateDomain()
+  function submitResourceForm()
   {
-      var isChecked = false
-      for( i = 0; i < document.choose_domain.parentResource.length; i++ )
+      if (validateResource())
       {
-         //make sure something is checked before proceeding
-         if (document.choose_domain.parentResource[i].selected)
-         {
-            isChecked=true;
-         }
-      }
-
-      if (!isChecked)
-      {
-          alert("Please check the domain that you would like to report on.");
-      }
-      return isChecked;
-  }
-
-  function validateDomainAdhoc()
-  {
-      var isChecked = false
-      for( i = 0; i < document.choose_domain_adhoc.parentResource.length; i++ )
-      {
-         //make sure something is checked before proceeding
-         if (document.choose_domain_adhoc.parentResource[i].selected)
-         {
-            isChecked=true;
-         }
-      }
-
-      if (!isChecked)
-      {
-          alert("Please check the domain that you would like to report on.");
-      }
-      return isChecked;
-  }
-
-  function submitNodeForm()
-  {
-      if (validateNode())
-      {
-          document.choose_node.submit();
+          document.choose_resource.submit();
       }
   }
 
-  function submitNodeFormAdhoc()
+  function submitResourceFormAdhoc()
   {
-      if (validateNodeAdhoc())
+      if (validateResourceAdhoc())
       {
-          document.choose_node_adhoc.submit();
+          document.choose_resource_adhoc.submit();
       }
   }
 
-  function submitDomainForm()
-  {
-      if (validateDomain())
-      {
-          document.choose_domain.submit();
-      }
-  }
-
-  function submitDomainFormAdhoc()
-  {
-      if (validateDomainAdhoc())
-      {
-          document.choose_domain_adhoc.submit();
-      }
-  }
 </script>
 
-<div style="width: 30%; float: left;">
-  <h3>Standard Node<br>Performance Reports</h3>
+<div class="TwoColLeft">
+  <div class="boxWrapper">
+    <h3>Standard Resource<br>Performance Reports</h3>
 
-  <p>
-    Choose a node for a standard performance report.
-  </p>
+    <p>
+      Choose a resource for a standard performance report.
+    </p>
 
-  <form method="get" name="choose_node" action="graph/chooseresource.htm">
-    <input type="hidden" name="reports" value="all" />
-    <input type="hidden" name="parentResourceType" value="node" />
+    <form method="get" name="choose_resource" action="graph/chooseresource.htm">
+      <input type="hidden" name="reports" value="all" />
 
-    <select name="parentResource" size="10">
-      <c:forEach var="resource" items="${nodeResources}">
-        <option value="${resource.name}">${resource.label}</option>
-      </c:forEach>
-    </select>
+      <select style="width: 100%;" name="parentResourceId" size="10">
+        <c:forEach var="resource" items="${topLevelResources}">
+          <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+        </c:forEach>
+      </select>
 
-    <br/>
-    <br/>
+      <br/>
+      <br/>
 
-    <input type="button" value="Start" onclick="submitNodeForm()"/>
-  </form>
+      <input type="button" value="Start" onclick="submitResourceForm()"/>
+    </form>
+  </div>
+  <div class="boxWrapper">
 
-  <h3>Custom Node<br>Performance Reports</h3>
+    <h3>Custom Resource<br>Performance Reports</h3>
 
-  <p>
-    Choose a node for a custom performance report.
-  </p>
+    <p>
+      Choose a resource for a custom performance report.
+    </p>
 
-  <form method="get" name="choose_node_adhoc" action="graph/chooseresource.htm">
-    <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
-    <input type="hidden" name="parentResourceType" value="node"/>
-    <select name="parentResource" size="10">
-      <c:forEach var="resource" items="${nodeResources}">
-        <option value="${resource.name}">${resource.label}</option>
-      </c:forEach>
-    </select>
+    <form method="get" name="choose_resource_adhoc" action="graph/chooseresource.htm">
+      <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
+      <select style="width: 100%;" name="parentResourceId" size="10">
+        <c:forEach var="resource" items="${topLevelResources}">
+          <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+        </c:forEach>
+      </select>
 
-    <br/>
-    <br/>
+      <br/>
+      <br/>
 
-    <input type="button" value="Start" onclick="submitNodeFormAdhoc()"/>
-  </form>
+      <input type="button" value="Start" onclick="submitResourceFormAdhoc()"/>
+    </form>
+  </div>
 </div>
 
-<div style="width: 30%; float: left;">
-  <c:choose>
-    <c:when test="${empty domainResources}">
-      <!--  No domain resources -->
-    </c:when>
-    
-    <c:otherwise>
-      <h3>Standard Domain<br>Performance Reports</h3>
+<div class="TwoColRight">
+  <div class="boxWrapper">
+    <h3 align=center>Network Performance Data</h3>
 
-      <p>Choose a domain for a standard performance report.</p>
+    <p>
+      The <strong>Standard Performance Reports</strong> provide a stock way to
+      easily visualize the critical SNMP data collected from managed nodes
+      and interfaces throughout your network.
+    </p>
 
-      <form method="get" name="choose_domain" action="graph/chooseresource.htm">
-        <input type="hidden" name="reports" value="all" />
-        <input type="hidden" name="parentResourceType" value="domain" />
-
-        <select name="parentResource" size="10">
-          <c:forEach var="resource" items="${domainResources}">
-            <option value="${resource.name}">${resource.label}</option>
-          </c:forEach>
-        </select>
-
-        <br/>
-        <br/>
-
-        <input type="button" value="Start" onclick="submitDomainForm()"/>
-      </form>
-
-      <h3>Custom Domain<br>Performance Reports</h3>
-
-      <p>Choose a domain for a custom performance report.</p>
-
-      <form method="get" name="choose_domain_adhoc" action="graph/chooseresource.htm">
-        <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
-        <input type="hidden" name="parentResourceType" value="domain"/>
-
-        <select name="parentResource" size="10">
-          <c:forEach var="resource" items="${domainResources}">
-            <option value="${resource.name}">${resource.label}</option>
-          </c:forEach>
-        </select>
-
-        <br/>
-        <br/>
-
-        <input type="button" value="Start" onclick="submitDomainFormAdhoc()"/>
-      </form>
-    </c:otherwise>
-  </c:choose>
-</div>
-
-<div style="width: 40%; float: right;">
-  <h3 align=center>Network Performance Data</h3>
-
-  <p>
-    The <strong>Standard Performance Reports</strong> provide a stock way to
-    easily visualize the critical SNMP data collected from managed nodes
-    throughout your network.
-  <p>
-
-  <p>
-    <strong>Custom Performance Reports</strong> can be used to produce a
-    single graph that contains the data of your choice from a single
-    interface or node.  You can select the timeframe, line colors, line
-     styles, and title of the graph and you can bookmark the results.
-  </p>
+    <p>
+      <strong>Custom Performance Reports</strong> can be used to produce a
+      single graph that contains the data of your choice from a single
+      interface or node.  You can select the timeframe, line colors, line
+       styles, and title of the graph and you can bookmark the results.
+    </p>
+  </div>
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
