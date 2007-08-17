@@ -9,7 +9,7 @@
 			<doNotOverride>script</doNotOverride>
 		</security>
 	</global>
-		<event-file>@install.etc.dir@/events/ia.events.xml</event-file>
+	<event-file>@install.etc.dir@/events/ia.events.xml</event-file>
         <event-file>@install.etc.dir@/events/3Com.events.xml</event-file>
         <event-file>@install.etc.dir@/events/ADIC-v2.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Adtran.events.xml</event-file>
@@ -1225,7 +1225,7 @@
       <severity>Warning</severity>
     </event>
     <event>
-      <uei>uei.opennms.org/alarms/alarmEscalated</uei>
+      <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
       <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
       <descr>
         &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.jsp?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
