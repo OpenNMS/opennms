@@ -1,9 +1,12 @@
 package org.opennms.netmgt.ping;
 
+import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.opennms.core.utils.CollectionMath;
 import org.opennms.netmgt.ping.Pinger;
-import org.opennms.netmgt.ping.StatisticalArrayList;
 
 import junit.framework.TestCase;
 
@@ -14,34 +17,8 @@ public class PingTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		super.setUp();
-		/*
-		System.setProperty("opennms.library.jicmp", "/sw/lib/libjicmp.jnilib");
-		pinger = new Pinger();
-		goodHost = InetAddress.getByName("192.168.211.1");
-		badHost  = InetAddress.getByName("1.1.1.1");
-		*/
 	}
 	
-	public void testStatisticalArrayList() throws Exception {
-		StatisticalArrayList sal = new StatisticalArrayList();
-		
-		assertNull(sal.percentNotNull());
-		assertNull(sal.percentNull());
-		
-		sal.add(null);
-		sal.add(1);
-		sal.add(100);
-		sal.add(15);
-		sal.add(null);
-		
-		assertEquals(sal.countNotNull(), 3);
-		assertEquals(sal.countNull(), 2);
-		assertEquals(sal.median(), new Long(15));
-		assertTrue(sal.percentNotNull().equals(new Integer(60)));
-		assertTrue(sal.percentNull().equals(new Integer(40)));
-	}
-	
-	/*
 	public void testSinglePing() throws Exception {
 		assertTrue(pinger.ping(goodHost) > 0);
 		Thread.sleep(1000);
@@ -53,20 +30,20 @@ public class PingTest extends TestCase {
 	}
 
 	public void testParallelPing() throws Exception {
-		StatisticalArrayList<Long> ret = pinger.parallelPing(goodHost, 10);
-		for (int i = 0; i < ret.size(); i++) {
-			System.out.println(i + ": " + ret.get(i));
+		Collection<Long> ret = pinger.parallelPing(goodHost, 10);
+		int count = 0;
+		for (Long entry : ret) {
+			System.out.println(++count + ": " + entry);
 		}
-		System.out.println("pings = " + ret.size() + ", passed = " + ret.countNotNull() + " (" + ret.percentNotNull() + "%), failed = " + ret.countNull() + " (" + ret.percentNull() + "%), average = " + (ret.averageAsFloat() / 1000) + "ms");
+		System.out.println("pings = " + ret.size() + ", passed = " + CollectionMath.countNotNull(ret) + " (" + CollectionMath.percentNotNull(ret) + "%), failed = " + CollectionMath.countNull(ret) + " (" + CollectionMath.percentNull(ret) + "%), average = " + (CollectionMath.average(ret).floatValue() / 1000F) + "ms");
 		Thread.sleep(1000);
-		assertTrue(ret.countNotNull() > 0);
+		assertTrue(CollectionMath.countNotNull(ret) > 0);
 	}
 	
 	public void testParallelPingFailure() throws Exception {
-		StatisticalArrayList ret = pinger.parallelPing(badHost, 10);
-		System.out.println("pings = " + ret.size() + ", passed = " + ret.countNotNull() + " (" + ret.percentNotNull() + "%), failed = " + ret.countNull() + " (" + ret.percentNull() + "%), average = " + (ret.averageAsFloat() / 1000) + "ms");
+		Collection<Long> ret = pinger.parallelPing(badHost, 10);
+		System.out.println("pings = " + ret.size() + ", passed = " + CollectionMath.countNotNull(ret) + " (" + CollectionMath.percentNotNull(ret) + "%), failed = " + CollectionMath.countNull(ret) + " (" + CollectionMath.percentNull(ret) + "%), average = " + (CollectionMath.average(ret).floatValue() / 1000F) + "ms");
 		Thread.sleep(1000);
-		assertTrue(ret.countNotNull() == 0);
+		assertTrue(CollectionMath.countNotNull(ret) == 0);
 	}
-	*/
 }
