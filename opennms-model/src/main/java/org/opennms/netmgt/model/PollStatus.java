@@ -36,6 +36,8 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -49,7 +51,7 @@ import javax.persistence.Transient;
  */
 @Embeddable
 public class PollStatus implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private Date m_timestamp = new Date();
 
@@ -62,6 +64,7 @@ public class PollStatus implements Serializable {
     
     private long m_responseTime = -1L;
     private long m_nanoResponseTime = -1L;
+    private Collection<Long> m_responseTimes = new ArrayList<Long>();
     
     /**
      * <P>
@@ -273,6 +276,15 @@ public class PollStatus implements Serializable {
 
     public void setResponseTime(long responseTime) {
         m_responseTime = responseTime;
+    }
+
+    @Transient
+    public Collection<Long> getResponseTimes() {
+    	return m_responseTimes;
+    }
+    
+    public void setResponseTimes(Collection<Long> responseTimes) {
+    	m_responseTimes = responseTimes;
     }
 
     @Column(name="statusCode", nullable=false)
