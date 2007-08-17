@@ -388,7 +388,7 @@ public class JniRrdStrategy implements RrdStrategy {
     }
     
     /**
-     * Executes the given graph comnmand as process with workDir as the current
+     * Executes the given graph command as process with workDir as the current
      * directory. The output stream of the command (a PNG image) is copied to a
      * the InputStream returned from the method.
      */
