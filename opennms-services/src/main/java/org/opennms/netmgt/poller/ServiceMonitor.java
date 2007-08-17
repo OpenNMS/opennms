@@ -75,14 +75,14 @@ public interface ServiceMonitor {
      * <P>
      * This method is called after the framework creates an instance of the
      * plug-in. The framework passes the object a proxy object that can be used
-     * to retreive configuration information specific to the plug-in.
+     * to retrieve configuration information specific to the plug-in.
      * Additionally, any parameters for the plug-in from the package definition
      * are passed using the parameters element.
      * </P>
      * 
      * <P>
      * If there is a critical error, like missing service libraries, the the
-     * montior may throw a ServiceMonitorException. If the plug-in throws an
+     * Monitor may throw a ServiceMonitorException. If the plug-in throws an
      * exception then the plug-in will be disabled in the framework.
      * </P>
 	 * @param parameters
@@ -173,16 +173,16 @@ public interface ServiceMonitor {
      * <P>
      * By default when the status transition from up to down or vice versa the
      * framework will generate an event. Additionally, if the polling interval
-     * changes due to an extended unavailbility, the framework will generate an
-     * additional down event. The plug-in can surpress the generation of the
-     * default events by setting the surpress event bit in the returned integer.
+     * changes due to an extended unavailability, the framework will generate an
+     * additional down event. The plug-in can suppress the generation of the
+     * default events by setting the suppress event bit in the returned integer.
      * </P>
      * @param svc TODO
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
-     * @return The availibility of the interface and if a transition event
-     *         should be surpressed.
+     * @return The availability of the interface and if a transition event
+     *         should be suppressed.
      * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
