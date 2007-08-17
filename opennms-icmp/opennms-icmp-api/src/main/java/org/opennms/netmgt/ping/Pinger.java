@@ -185,7 +185,11 @@ public class Pinger {
         waiting.remove(tidKey);
         
         Long rtt = getRTT(reply);
-        log.debug("Ping round trip time for " + host + ": " + rtt + "us");
+        if (rtt == null && log.isDebugEnabled()) {
+        	log.debug("no response time for " + host + "received");
+        } else if (log.isDebugEnabled()){
+        	log.debug("Ping round trip time for " + host + ": " + rtt + "us");
+        }
         return rtt;
     }
 
