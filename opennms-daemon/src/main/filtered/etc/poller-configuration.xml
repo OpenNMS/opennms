@@ -18,11 +18,17 @@
       			<rra>RRA:MAX:0.5:288:366</rra>
       			<rra>RRA:MIN:0.5:288:366</rra>
     		</rrd>
-                <service name="ICMP" interval="300000" user-defined="false" status="on">
+		<service name="ICMP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="icmp"/>
+		</service>
+		<service name="MultiICMP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="0"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
+			<parameter key="rrd-base-name" value="multiicmp"/>
 		</service>
 		<service name="DNS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
@@ -151,6 +157,7 @@
 	</package>
 
    <monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+   <monitor service="MultiICMP" 	class-name="org.opennms.netmgt.poller.monitors.MultiIcmpMonitor"/>
 	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
