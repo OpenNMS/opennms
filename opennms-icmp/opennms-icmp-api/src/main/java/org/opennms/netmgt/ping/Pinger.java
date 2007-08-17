@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -203,9 +204,9 @@ public class Pinger {
 		return this.ping(host, timeout, retries);
 	}
 
-	public StatisticalArrayList<Long> parallelPing(InetAddress host, int count) throws IOException {
+	public Collection<Long> parallelPing(InetAddress host, int count) throws IOException {
         Category log = ThreadCategory.getInstance(this.getClass());
-        StatisticalArrayList<Long> returnval = new StatisticalArrayList<Long>();
+        Collection<Long> returnval = new ArrayList<Long>();
         
         Long tidKey = getTidKey();
         ArrayList<PingRequest> requests = new ArrayList<PingRequest>();
