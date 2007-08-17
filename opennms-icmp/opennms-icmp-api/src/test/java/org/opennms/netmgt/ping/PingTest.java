@@ -14,10 +14,12 @@ public class PingTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		super.setUp();
+		/*
 		System.setProperty("opennms.library.jicmp", "/sw/lib/libjicmp.jnilib");
 		pinger = new Pinger();
 		goodHost = InetAddress.getByName("192.168.211.1");
 		badHost  = InetAddress.getByName("1.1.1.1");
+		*/
 	}
 	
 	public void testStatisticalArrayList() throws Exception {
@@ -34,6 +36,7 @@ public class PingTest extends TestCase {
 		
 		assertEquals(sal.countNotNull(), 3);
 		assertEquals(sal.countNull(), 2);
+		assertEquals(sal.median(), new Long(15));
 		assertTrue(sal.percentNotNull().equals(new Integer(60)));
 		assertTrue(sal.percentNull().equals(new Integer(40)));
 	}
