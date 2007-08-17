@@ -1,21 +1,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2003 Jun 11: Added a "catch" for RRD update errors. Bug #748.
-// 2003 Jan 31: Added the ability to imbed RRA information in poller packages.
-// 2003 Jan 31: Cleaned up some unused imports.
-// 2003 Jan 29: Added response times to certain monitors.
-// 2002 Nov 13: Added ICMP response time measurements.
-// 2002 Nov 12: Added response time graphs to webUI.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -49,10 +40,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.ping.Pinger;
-import org.opennms.netmgt.ping.StatisticalArrayList;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -68,8 +59,9 @@ import org.opennms.netmgt.utils.ParameterMap;
  * plug-ins by the service poller framework.
  * </P>
  * 
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * 
  */
 
@@ -91,7 +83,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
      * 
      * <P>
      * The ICMP service monitor relies on Discovery for the actual generation of
-     * IMCP 'ping' requests. A JSDT session with two channels (send/recv) is
+     * IMCP 'ping' requests. A JSDT session with two channels (send/receive) is
      * utilized for passing poll requests and receiving poll replies from
      * discovery. All exchanges are SOAP/XML compliant.
      * </P>
@@ -100,8 +92,8 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
      *            this poll.
      * @param iface
      *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
+     * @return The availability of the interface and if a transition event
+     *         should be suppressed.
      * 
      */
     public PollStatus poll(MonitoredService svc, Map parameters) {
@@ -115,15 +107,15 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
         Category log = ThreadCategory.getInstance(this.getClass());
         PollStatus serviceStatus = PollStatus.unavailable();
 		InetAddress host = (InetAddress) iface.getAddress();
-		StatisticalArrayList<Long> rtt = null;
+		Collection<Long> rtt = null;
 		
 		try {
 			Pinger pinger = new Pinger();
 			
 			// get parameters
 			//
-			int retries = ParameterMap.getKeyedInteger(parameters, "retry", pinger.getRetries());
-			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", pinger.getTimeout());
+			pinger.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", pinger.getRetries()));
+			pinger.setTimeout(ParameterMap.getKeyedLong(parameters, "timeout", pinger.getTimeout()));
 			int count = ParameterMap.getKeyedInteger(parameters, "pings", DEFAULT_MULTI_PING_COUNT);
 			
 			rtt = pinger.parallelPing(host, count);
@@ -133,7 +125,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
         
         if (rtt != null) {
         	serviceStatus = PollStatus.available();
-        	serviceStatus.setResponseTime(rtt.averageAsInt());
+        	serviceStatus.setResponseTime(CollectionMath.average(rtt));
         	serviceStatus.setResponseTimes(rtt);
         }
         

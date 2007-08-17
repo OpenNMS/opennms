@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -42,11 +42,11 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
+import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.ping.StatisticalArrayList;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -80,12 +80,14 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
 	public PollStatus poll(MonitoredService svc, Map parameters) {
 		PollStatus status = m_serviceMonitor.poll(svc, parameters);
-		if (status.getResponseTimes() != null && status.getResponseTimes().size() > 0) {
+		String storageType = ParameterMap.getKeyedString(parameters, "response-type", "single");
+
+		if (storageType.equals("single") && status.getResponseTime() >= 0) {
+			storeResponseTime(svc, status.getResponseTime(), parameters);
+		} else if (storageType.equals("multi") && status.getResponseTimes() != null && status.getResponseTimes().size() > 0) {
 			storeResponseTime(svc, status.getResponseTimes(), parameters);
 		}
-		if (status.getResponseTime() >= 0) {
-			storeResponseTime(svc, status.getResponseTime(), parameters);
-		}
+		
         if ("true".equals(ParameterMap.getKeyedString(parameters, "invert-status", "false"))) {
             if (status.isAvailable()) {
                 return PollStatus.unavailable("This is an inverted service and the underlying service has started responding");
@@ -104,23 +106,20 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 			log().info("storeResponseTime(multi): RRD repository not specified in parameters, latency data will not be stored.");
 		}
 		
-		Long timestamp = System.currentTimeMillis();
-
-		StatisticalArrayList<Long> sal = new StatisticalArrayList<Long>(responseTimes);
-
 		List<String> dsNames = new ArrayList<String>();
 		List<String> values  = new ArrayList<String>();
 		
 		dsNames.add("loss");
-		values.add((new Integer(sal.countNull())).toString());
+		values.add(new Long(CollectionMath.countNull(responseTimes)).toString());
 		
 		dsNames.add("median");
-		values.add(sal.median().toString());
+		values.add(CollectionMath.median(responseTimes).toString());
 		
-		Long responseTime = 0L;
+		ArrayList<Long> al = new ArrayList<Long>(responseTimes);
+		Long responseTime = -1L;
 		
-		for (int i = 0; i < sal.size(); i++) {
-			responseTime = sal.get(i);
+		for (int i = 0; i < al.size(); i++) {
+			responseTime = al.get(i);
 			dsNames.add("ping" + (i + 1));
 			if (responseTime == null) {
 				values.add("");
