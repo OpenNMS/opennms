@@ -29,6 +29,7 @@
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="multiicmp"/>
+			<parameter key="response-type" value="multi"/>
 		</service>
 		<service name="DNS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
