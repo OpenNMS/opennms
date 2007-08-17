@@ -14,12 +14,10 @@ public class PingTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		super.setUp();
-		/*
 		System.setProperty("opennms.library.jicmp", "/sw/lib/libjicmp.jnilib");
 		pinger = new Pinger();
-		goodHost = InetAddress.getByName("truename.dyndns.org");
+		goodHost = InetAddress.getByName("192.168.211.1");
 		badHost  = InetAddress.getByName("1.1.1.1");
-		*/
 	}
 	
 	public void testStatisticalArrayList() throws Exception {
@@ -52,7 +50,10 @@ public class PingTest extends TestCase {
 	}
 
 	public void testParallelPing() throws Exception {
-		StatisticalArrayList ret = pinger.parallelPing(goodHost, 10);
+		StatisticalArrayList<Long> ret = pinger.parallelPing(goodHost, 10);
+		for (int i = 0; i < ret.size(); i++) {
+			System.out.println(i + ": " + ret.get(i));
+		}
 		System.out.println("pings = " + ret.size() + ", passed = " + ret.countNotNull() + " (" + ret.percentNotNull() + "%), failed = " + ret.countNull() + " (" + ret.percentNull() + "%), average = " + (ret.averageAsFloat() / 1000) + "ms");
 		Thread.sleep(1000);
 		assertTrue(ret.countNotNull() > 0);
