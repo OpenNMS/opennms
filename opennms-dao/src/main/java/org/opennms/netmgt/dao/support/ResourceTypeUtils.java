@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -71,7 +72,7 @@ public class ResourceTypeUtils {
         Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>(files.length);
         for (File file : files) {
             String fileName = file.getName();
-            if (isStoreByGroup()) {
+            if (isStoreByGroup() && !isResponseTime(relativePath)) {
                 String groupName = fileName.substring(0, fileName.length() - suffixLength);
                 Properties props = getDsProperties(directory);
                 for (Object o : props.keySet()) {
@@ -96,6 +97,7 @@ public class ResourceTypeUtils {
         return attributes;
     }
 
+    
     public static Properties getDsProperties(File directory) {
         Properties props = new Properties();
         File propertiesFile = new File(directory, DS_PROPERTIES_FILE);
@@ -108,7 +110,7 @@ public class ResourceTypeUtils {
                 log().error("ds.properties error: " + e, e);
             }
         } else {
-            log().error("ds.properties does not exist");			
+        	log().error("ds.properties does not exist on directory " + directory);
         }
         return props;
     }
@@ -123,6 +125,10 @@ public class ResourceTypeUtils {
 
     public static boolean isStoreByGroup() {
         return Boolean.getBoolean("org.opennms.rrd.storeByGroup");
+    }
+
+    public static boolean isResponseTime(String relativePath) {
+        return Pattern.matches("^" + DefaultResourceDao.RESPONSE_DIRECTORY + ".+$", relativePath);
     }
 
     public static Properties getProperties(File rrdDirectory, String relativePath) {
