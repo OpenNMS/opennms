@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 17: add findTopLevelResources(). - ayresw
 // 2007 May 12: Add getRrdDirectory(), update afterPropertiesSet(). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -84,6 +85,10 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     public List<OnmsResource> findNodeResources() {
         return m_resourceDao.findNodeResources();
+    }
+
+    public List<OnmsResource> findTopLevelResources() {
+        return m_resourceDao.findTopLevelResources();
     }
 
     public List<OnmsResource> findNodeChildResources(int nodeId) {
