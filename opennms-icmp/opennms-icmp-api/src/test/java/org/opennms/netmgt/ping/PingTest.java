@@ -1,8 +1,6 @@
 package org.opennms.netmgt.ping;
 
-import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.opennms.core.utils.CollectionMath;
@@ -17,8 +15,11 @@ public class PingTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		super.setUp();
+		pinger = new Pinger();
+		goodHost = InetAddress.getByName("www.google.com");
+		badHost  = InetAddress.getByName("1.1.1.1");
 	}
-	
+
 	public void testSinglePing() throws Exception {
 		assertTrue(pinger.ping(goodHost) > 0);
 		Thread.sleep(1000);
