@@ -13,6 +13,7 @@ public class PingTest extends TestCase {
 	InetAddress goodHost = null;
 	InetAddress badHost  = null;
 	
+	/*
 	public void setUp() throws Exception {
 		super.setUp();
 		pinger = new Pinger();
@@ -47,4 +48,5 @@ public class PingTest extends TestCase {
 		Thread.sleep(1000);
 		assertTrue(CollectionMath.countNotNull(ret) == 0);
 	}
+	*/
 }
