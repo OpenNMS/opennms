@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 18: Add findTopLevelResources(). - ayresw
 // 2007 May 12: Add getRrdDirectory(). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -45,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface ResourceService {
     public File getRrdDirectory();
+    public List<OnmsResource> findTopLevelResources();
     public List<OnmsResource> findNodeResources();
     public List<OnmsResource> findDomainResources();
     public List<OnmsResource> findNodeChildResources(int nodeId);
