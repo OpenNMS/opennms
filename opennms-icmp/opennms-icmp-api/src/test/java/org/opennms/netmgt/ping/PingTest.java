@@ -1,9 +1,6 @@
 package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
-import java.util.Collection;
-
-import org.opennms.core.utils.CollectionMath;
 import org.opennms.netmgt.ping.Pinger;
 
 import junit.framework.TestCase;
@@ -12,7 +9,10 @@ public class PingTest extends TestCase {
 	Pinger pinger        = null;
 	InetAddress goodHost = null;
 	InetAddress badHost  = null;
-	
+
+	public void testDummy() throws Exception {
+	}
+
 	/*
 	public void setUp() throws Exception {
 		super.setUp();
