@@ -6,11 +6,14 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
@@ -204,9 +207,9 @@ public class Pinger {
 		return this.ping(host, timeout, retries);
 	}
 
-	public Collection<Long> parallelPing(InetAddress host, int count) throws IOException {
+	public Map<String, Number> parallelPing(InetAddress host, int count) throws IOException {
         Category log = ThreadCategory.getInstance(this.getClass());
-        Collection<Long> returnval = new ArrayList<Long>();
+        LinkedHashMap<String, Number> returnval = new LinkedHashMap<String, Number>();
         
         Long tidKey = getTidKey();
         ArrayList<PingRequest> requests = new ArrayList<PingRequest>();
@@ -214,7 +217,7 @@ public class Pinger {
         for (int i = 0; i < count; i++) {
         	short sid = sequenceId++;
         	PingRequest reply = new PingRequest(host, sid);
-        	log.debug("sending packet with ID '" + tidKey + "' and sequence '" + reply.getSequenceId());
+        	// log.debug("sending packet with ID '" + tidKey + "' and sequence '" + reply.getSequenceId());
         	requests.add(reply);
         	DatagramPacket pkt = getDatagram(host, tidKey, reply.getSequenceId());
         	synchronized(reply) {
@@ -236,21 +239,27 @@ public class Pinger {
             // interrupted so return, reset interrupt.
             Thread.currentThread().interrupt();
         }
-        
-        for (PingRequest reply : requests) {
+
+        for (int i = 0; i < requests.size(); i++) {
+        	PingRequest reply = requests.get(i);
         	if (reply.isSignaled()) {
         		Long rtt = getRTT(reply);
         		if (rtt <= timeout * 1000) {
-        			returnval.add(rtt);
+        			returnval.put("ping" + (i+1), rtt);
         		} else {
         			log.debug("a response came back, but it was too old: sid = " + reply.getSequenceId() + ", rtt = " + rtt);
-        			returnval.add(null);
+        			returnval.put("ping" + (i+1), null);
         		}
     		} else {
     			log.debug("no response came back: sid = " + reply.getSequenceId());
-    			returnval.add(null);
+    			returnval.put("ping" + (i+1), null);
         	}
         }
+
+        ArrayList<Number> al = new ArrayList<Number>(returnval.values());
+        returnval.put("loss", new Long(CollectionMath.countNull(al)));
+        returnval.put("median", new Long(CollectionMath.median(al).longValue()));
+        returnval.put("response-time", new Long(CollectionMath.average(al).longValue()));
         
         parallelWaiting.remove(tidKey);
 
