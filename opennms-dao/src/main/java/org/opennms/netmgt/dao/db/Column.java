@@ -262,7 +262,7 @@ public class Column {
     public static String normalizeColumnType(String column, boolean hasSize) throws Exception {
         if (column.equals("integer") || column.equals("int4")) {
             return "integer";
-        } else if (column.equals("float") || column.equals("float8") || column.equals("double precision")) {
+        } else if (column.equals("float") || column.equals("float8") || column.equals("double precision") || column.equals("double")) {
             return "double precision";
         } else if (column.equals("float4") || column.equals("real")) {
             return "real";

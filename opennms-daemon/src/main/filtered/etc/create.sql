@@ -1312,7 +1312,6 @@ create unique index location_monitor_details_id_property on location_monitor_det
 --#  statusTime        : time of reported status from remote location monitor 
 --#  reason            : description of status change
 --#  responseTime      : data for latency reporting
---#  nanoResponseTime  : data for latency reporting (nanoseconds)
 --#
 --#############################################################################
 CREATE TABLE location_specific_status_changes (
@@ -1322,8 +1321,7 @@ CREATE TABLE location_specific_status_changes (
     statusCode INTEGER NOT NULL,
     statusTime TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     statusReason VARCHAR(255),
-    responseTime INTEGER,
-    nanoResponseTime INTEGER,
+    responseTime DOUBLE PRECISION,
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
     CONSTRAINT location_monitor_fkey2 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE,

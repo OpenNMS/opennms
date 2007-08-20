@@ -33,16 +33,17 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -56,9 +57,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 	
-	public static final String DEFAULT_MULTI_BASENAME = "multi-response-time";
-    public static final String DEFAULT_DSNAME = "response-time";
-
+    public static final String DEFAULT_BASENAME = "response-time";
 	
 	ServiceMonitor m_serviceMonitor;
 	PollerConfig m_pollerConfig;
@@ -80,12 +79,9 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
 	public PollStatus poll(MonitoredService svc, Map parameters) {
 		PollStatus status = m_serviceMonitor.poll(svc, parameters);
-		String storageType = ParameterMap.getKeyedString(parameters, "response-type", "single");
 
-		if (storageType.equals("single") && status.getResponseTime() >= 0) {
-			storeResponseTime(svc, status.getResponseTime(), parameters);
-		} else if (storageType.equals("multi") && status.getResponseTimes() != null && status.getResponseTimes().size() > 0) {
-			storeResponseTime(svc, status.getResponseTimes(), parameters);
+		if (!status.getProperties().isEmpty()) {
+			storeResponseTime(svc, new LinkedHashMap<String, Number>(status.getProperties()), parameters);
 		}
 		
         if ("true".equals(ParameterMap.getKeyedString(parameters, "invert-status", "false"))) {
@@ -98,59 +94,16 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 		return status;
 	}
 	
-	private void storeResponseTime(MonitoredService svc, Collection<Long> responseTimes, Map parameters) {
-		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-		String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", DEFAULT_MULTI_BASENAME);
-		
+	private void storeResponseTime(MonitoredService svc, LinkedHashMap<String, Number> entries, Map parameters) {
+		String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+		String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
+		String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
+
 		if (rrdPath == null) {
 			log().info("storeResponseTime(multi): RRD repository not specified in parameters, latency data will not be stored.");
 		}
-		
-		List<String> dsNames = new ArrayList<String>();
-		List<String> values  = new ArrayList<String>();
-		
-		dsNames.add("loss");
-		values.add(new Long(CollectionMath.countNull(responseTimes)).toString());
-		
-		dsNames.add("median");
-		values.add(CollectionMath.median(responseTimes).toString());
-		
-		ArrayList<Long> al = new ArrayList<Long>(responseTimes);
-		Long responseTime = -1L;
-		
-		for (int i = 0; i < al.size(); i++) {
-			responseTime = al.get(i);
-			dsNames.add("ping" + (i + 1));
-			if (responseTime == null) {
-				values.add("");
-			} else {
-				values.add(responseTime.toString());
-			}
-		}
-		updateRRD(rrdPath, svc.getAddress(), rrdBaseName, dsNames, values);
-	}
-	
-	private void storeResponseTime(MonitoredService svc, long responseTime, Map parameters) {
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_DSNAME);
-        String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
 
-        if (rrdPath == null) {
-            log().info("storeResponseTime(single): RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        
-        // RRD BEGIN
-        // Store response time in RRD
-        if (responseTime >= 0 && rrdPath != null) {
-            try {
-                updateRRD(rrdPath, svc.getAddress(), rrdBaseName, dsName, responseTime);
-            } catch (RuntimeException rex) {
-                log().debug("There was a problem writing the RRD:" + rex);
-            }
-        }
-        // RRD END
-
-
+		updateRRD(rrdPath, svc.getAddress(), rrdBaseName, entries);
 	}
 	
     /**
@@ -168,7 +121,9 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      */
 	
 	public void updateRRD(String repository, InetAddress addr, String rrdBaseName, String dsName, long value) {
-		updateRRD(repository, addr, rrdBaseName, Collections.singletonList(dsName), Collections.singletonList(Long.toString(value)));
+		LinkedHashMap<String, Number> lhm = new LinkedHashMap<String, Number>();
+		lhm.put(dsName, value);
+		updateRRD(repository, addr, rrdBaseName, lhm);
 	}
 	
     /**
@@ -180,20 +135,16 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      *            path to the RRD file repository
      * @param addr
      *            interface address
-     * @param dsNames
-     *            the dsName
-     * @param values
-     *            value to update the RRD file with
+     * @param entries
+     *            the entries for the rrd, containing a Map of dsNames to values
      */
 	
-    public void updateRRD(String repository, InetAddress addr, String rrdBaseName, List<String> dsNames, List<String> values) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
+    public void updateRRD(String repository, InetAddress addr, String rrdBaseName, LinkedHashMap<String, Number> entries) {
         try {
             // Create RRD if it doesn't already exist
         	List<RrdDataSource> dsList = new ArrayList<RrdDataSource>();
-        	for (int i = 0; i < dsNames.size(); i++) {
-        		dsList.add(new RrdDataSource(dsNames.get(i), "GAUGE", m_pollerConfig.getStep(m_pkg)*2, "U", "U"));
+        	for (String dsName : entries.keySet()) {
+        		dsList.add(new RrdDataSource(dsName, "GAUGE", m_pollerConfig.getStep(m_pkg)*2, "U", "U"));
         	}
             createRRD(repository, addr, rrdBaseName, dsList);
 
@@ -201,9 +152,20 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             String path = repository + File.separator + addr.getHostAddress();
 
             StringBuffer value = new StringBuffer();
-            Iterator<String> i = values.iterator();
+            Iterator<String> i = entries.keySet().iterator();
             while (i.hasNext()) {
-            	value.append(i.next());
+            	Number num = entries.get(i.next());
+            	if (num == null || Double.isNaN(num.doubleValue())) {
+            		value.append("U");
+            	} else {
+                	NumberFormat nf = NumberFormat.getInstance();
+                	nf.setGroupingUsed(false);
+                	nf.setMinimumFractionDigits(0);
+                	nf.setMaximumFractionDigits(Integer.MAX_VALUE);
+                	nf.setMinimumIntegerDigits(0);
+                	nf.setMaximumFractionDigits(Integer.MAX_VALUE);
+                	value.append(nf.format(num.doubleValue()));
+            	}
             	if (i.hasNext()) {
             		value.append(":");
             	}
@@ -211,9 +173,9 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             RrdUtils.updateRRD(addr.getHostAddress(), path, rrdBaseName, value.toString());
 
         } catch (RrdException e) {
-            if (log.isEnabledFor(Level.ERROR)) {
+            if (log().isEnabledFor(Level.ERROR)) {
                 String msg = e.getMessage();
-                log.error(msg);
+                log().error(msg);
                 throw new RuntimeException(msg, e);
             }
         }

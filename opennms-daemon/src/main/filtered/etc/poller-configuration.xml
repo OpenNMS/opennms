@@ -22,14 +22,13 @@
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="icmp"/>
+			<parameter key="rrd-base-name" value="icmp"/>
 		</service>
 		<service name="MultiICMP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="0"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="multiicmp"/>
-			<parameter key="response-type" value="multi"/>
 		</service>
 		<service name="DNS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
@@ -37,14 +36,14 @@
 			<parameter key="port" value="53"/>
 			<parameter key="lookup" value="localhost"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="dns"/>
+			<parameter key="rrd-base-name" value="dns"/>
 		</service>
 		<service name="SMTP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="25"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="smtp"/>
+			<parameter key="rrd-base-name" value="smtp"/>
 		</service>
 		<service name="FTP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -65,7 +64,7 @@
                         <parameter key="port" value="80"/>
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="http"/>
+			<parameter key="rrd-base-name" value="http"/>
                 </service>
                 <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -73,7 +72,7 @@
                         <parameter key="port" value="8080"/>
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="http-8080"/>
+			<parameter key="rrd-base-name" value="http-8080"/>
                 </service>
                 <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -81,7 +80,7 @@
                         <parameter key="port" value="8000"/>
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="http-8000"/>
+			<parameter key="rrd-base-name" value="http-8000"/>
                 </service>
                 <service name="HTTPS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -119,13 +118,13 @@
 			<parameter key="port" value="22"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="ssh"/>
+			<parameter key="rrd-base-name" value="ssh"/>
 		</service>
 		<service name="DHCP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="dhcp"/>
+			<parameter key="rrd-base-name" value="dhcp"/>
 		</service>
 		<service name="IMAP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -137,7 +136,7 @@
 			<parameter key="port" value="110"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="ds-name" value="pop3"/>
+			<parameter key="rrd-base-name" value="pop3"/>
 		</service>
 		<service name="NSClient" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
