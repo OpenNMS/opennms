@@ -307,7 +307,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * Returns a list of resources for a node.
      * 
      * XXX It does not currently fully check that an IP address that is found to have
-     * distriuted response time data is in the database on the proper node so it can have false positives.
+     * distributed response time data is in the database on the proper node so it can have false positives.
      */
     public List<OnmsResource> findNodeResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();

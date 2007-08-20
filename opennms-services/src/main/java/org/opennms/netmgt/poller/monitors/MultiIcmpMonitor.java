@@ -36,11 +36,9 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.ping.Pinger;
@@ -107,7 +105,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
         Category log = ThreadCategory.getInstance(this.getClass());
         PollStatus serviceStatus = PollStatus.unavailable();
 		InetAddress host = (InetAddress) iface.getAddress();
-		Collection<Long> rtt = null;
+		Map<String, Number> rtt = null;
 		
 		try {
 			Pinger pinger = new Pinger();
@@ -125,8 +123,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
         
         if (rtt != null) {
         	serviceStatus = PollStatus.available();
-        	serviceStatus.setResponseTime(CollectionMath.average(rtt));
-        	serviceStatus.setResponseTimes(rtt);
+        	serviceStatus.setProperties(rtt);
         }
         
         return serviceStatus;

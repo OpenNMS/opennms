@@ -57,6 +57,7 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -114,7 +115,7 @@ public class HttpMonitor extends IPv4Monitor {
      * SERVICE_AVAILABLE and return.
      * @param parameters
      *            The package parameters (timeout, retry, and others) to be used for this poll.
-     * @return The availibility of the interface and if a transition event should be supressed.
+     * @return The availability of the interface and if a transition event should be suppressed.
      *  
      */
     public PollStatus poll(MonitoredService svc, Map parameters) {
@@ -316,7 +317,7 @@ public class HttpMonitor extends IPv4Monitor {
         // return the status of the service
         //
         PollStatus ps = PollStatus.get(serviceStatus, reason);
-        ps.setNanoResponseTime(nanoResponseTime);
+        ps.setProperty("response-time", nanoResponseTime / 1000.0);
         return ps;
     }
     

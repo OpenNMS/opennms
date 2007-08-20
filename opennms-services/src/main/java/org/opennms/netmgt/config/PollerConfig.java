@@ -289,7 +289,7 @@ public interface PollerConfig {
 
     public abstract PollerConfiguration getConfiguration();
 
-    public abstract void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, long responseTime, Package pkg);
+    public abstract void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg);
 
     public abstract Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
 

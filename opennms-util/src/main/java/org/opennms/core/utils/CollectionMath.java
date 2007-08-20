@@ -2,19 +2,20 @@ package org.opennms.core.utils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class CollectionMath {
 
 	/**
-	 * Get the number of null entries in a collection
-	 * @param collection the collection
+	 * Get the number of null entries in a {@link List}
+	 * @param list the {@link List}
 	 * @return the number of null entries
 	 */
-	public static long countNull(Collection collection) {
+	@SuppressWarnings("unchecked")
+	public static long countNull(List list) {
 		long count = 0;
-		for (Object entry : collection) {
+		for (Object entry : list) {
 			if (entry == null) {
 				count++;
 			}
@@ -23,75 +24,76 @@ public class CollectionMath {
 	}
 
 	/**
-	 * Get the number of non-null entries in a collection
-	 * @param collection the collection
+	 * Get the number of non-null entries in a {@link List}
+	 * @param list the list
 	 * @return the number of non-null entries
 	 */
-	public static long countNotNull(Collection collection) {
-		return (collection.size() - countNull(collection));
+	@SuppressWarnings("unchecked")
+	public static long countNotNull(List list) {
+		return (list.size() - countNull(list));
 	}
 
 	/**
-	 * Get the percentage of null entries in a collection of {@link Long} values
-	 * @param collection the collection of {@link Long} values
-	 * @return the percentage of null values as a {@link Long} value
+	 * Get the percentage of null entries in a {@link List} of {@link Number} values
+	 * @param list the {@link List} of {@link Number} values
+	 * @return the percentage of null values as a {@link Number} value
 	 */
-	public static Long percentNull(Collection<Long> collection) {
-		return percentNull(convertLongToBigDecimal(collection)).longValue();
+	public static Number percentNull(List<Number> list) {
+		return percentNull(convertNumberToBigDecimal(list));
 	}
 
 	/**
-	 * Get the percentage of null entries in a collection of {@link BigDecimal} values
-	 * @param collection the collection of {@link BigDecimal} values
+	 * Get the percentage of null entries in a {@link List} of {@link BigDecimal} values
+	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the percentage of null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal percentNull(Collection<BigDecimal> collection) {
-		if (collection.size() > 0) {
-			return new BigDecimal(countNull(collection)).divide(new BigDecimal(collection.size())).multiply(new BigDecimal(100));
+	public static BigDecimal percentNull(List<BigDecimal> list) {
+		if (list.size() > 0) {
+			return new BigDecimal(countNull(list)).divide(new BigDecimal(list.size())).multiply(new BigDecimal(100));
 		} else {
 			return null;
 		}
 	}
 	
 	/**
-	 * Get the percentage of not-null entries in a collection of {@link Long} values
-	 * @param collection the collection of {@link Long} values
-	 * @return the percentage of not-null values as a {@link Long} value
+	 * Get the percentage of not-null entries in a {@link List} of {@link Number} values
+	 * @param list the {@link List} of {@link Number} values
+	 * @return the percentage of not-null values as a {@link Number} value
 	 */
-	public static Long percentNotNull(Collection<Long> collection) {
-		return percentNotNull(convertLongToBigDecimal(collection)).longValue();
+	public static Number percentNotNull(List<Number> list) {
+		return percentNotNull(convertNumberToBigDecimal(list));
 	}
 	
 	/**
-	 * Get the percentage of not-null entries in a collection of {@link BigDecimal} values
-	 * @param collection the collection of {@link BigDecimal} values
+	 * Get the percentage of not-null entries in a {@link List} of {@link BigDecimal} values
+	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the percentage of not-null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal percentNotNull(Collection<BigDecimal> collection) {
-		if (collection.size() > 0) {
-			return new BigDecimal(countNotNull(collection)).divide(new BigDecimal(collection.size())).multiply(new BigDecimal(100));
+	public static BigDecimal percentNotNull(List<BigDecimal> list) {
+		if (list.size() > 0) {
+			return new BigDecimal(countNotNull(list)).divide(new BigDecimal(list.size())).multiply(new BigDecimal(100));
 		} else {
 			return null;
 		}
 	}
 
 	/**
-	 * Get the average of the contents of a collection of {@link Long} values, excluding null entries
-	 * @param collection the collection of {@link Long} values
-	 * @return the average of the not-null values as a {@link Long} value
+	 * Get the average of the contents of a {@link List} of {@link Number} values, excluding null entries
+	 * @param list the {@link List} of {@link Number} values
+	 * @return the average of the not-null values as a {@link Number} value
 	 */
-	public static Long average(Collection<Long> collection) {
-		return average(convertLongToBigDecimal(collection)).longValue();
+	public static Number average(List<Number> list) {
+		return average(convertNumberToBigDecimal(list));
 	}
 	
 	/**
-	 * Get the average of the contents of a collection of {@link BigDecimal} values, excluding null entries
-	 * @param collection the collection of {@link BigDecimal} values
+	 * Get the average of the contents of a {@link List} of {@link BigDecimal} values, excluding null entries
+	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the average of the not-null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal average(Collection<BigDecimal> collection) {
+	public static BigDecimal average(List<BigDecimal> list) {
 		BigDecimal total = new BigDecimal(0);
-		Collection<BigDecimal> notNullEntries = getNotNullEntries(collection);
+		List<BigDecimal> notNullEntries = getNotNullEntries(list);
 		if (notNullEntries.size() == 0) {
 			return null;
 		}
@@ -104,21 +106,21 @@ public class CollectionMath {
 	}
 	
 	/**
-	 * Get the median of the contents of a collection of {@link Long} values, excluding null entries
-	 * @param collection the collection of {@link Long} values
-	 * @return the median of the not-null values as a {@link Long} value
+	 * Get the median of the contents of a {@link List} of {@link Number} values, excluding null entries
+	 * @param list the {@link List} of {@link Number} values
+	 * @return the median of the not-null values as a {@link Number} value
 	 */
-	public static Long median(Collection<Long> collection) {
-		return median(convertLongToBigDecimal(collection)).longValue();
+	public static Number median(List<Number> list) {
+		return median(convertNumberToBigDecimal(list));
 	}
 	
 	/**
-	 * Get the median of the contents of a collection of {@link BigDecimal} values, excluding null entries
-	 * @param collection the collection of {@link BigDecimal} values
+	 * Get the median of the contents of a {@link List} of {@link BigDecimal} values, excluding null entries
+	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the median of the not-null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal median(Collection<BigDecimal> collection) {
-		ArrayList<BigDecimal> notNullEntries = getNotNullEntries(collection);
+	public static BigDecimal median(List<BigDecimal> list) {
+		List<BigDecimal> notNullEntries = getNotNullEntries(list);
 		Collections.sort(notNullEntries);
 		
 		if (notNullEntries.size() % 2 == 0) {
@@ -133,26 +135,26 @@ public class CollectionMath {
 	}
 	
 	/**
-	 * Utility method, converts a {@link Long} {@link Collection} into a {@link BigDecimal} {@link Collection}
-	 * @param collection a {@link Collection} of {@link Long} values
-	 * @return a {@link Collection} of {@link BigDecimal} values
+	 * Utility method, converts a {@link Number} {@link List} into a {@link BigDecimal} {@link List}
+	 * @param list a {@link List} of {@link Number} values
+	 * @return a {@link List} of {@link BigDecimal} values
 	 */
-	private static Collection<BigDecimal> convertLongToBigDecimal(Collection<Long> c) {
-		Collection<BigDecimal> bd = new ArrayList<BigDecimal>();
-		for (Long entry : c) {
-			bd.add(new BigDecimal(entry));
+	private static List<BigDecimal> convertNumberToBigDecimal(List<Number> c) {
+		List<BigDecimal> bd = new ArrayList<BigDecimal>();
+		for (Number entry : c) {
+			bd.add(new BigDecimal(entry.doubleValue()));
 		}
 		return bd;
 	}
 	
 	/**
-	 * Utility method, gets not-null-entries from a collection
-	 * @param collection the collection to search
+	 * Utility method, gets not-null-entries from a {@link List}
+	 * @param list the {@link List} to search
 	 * @return an {@link ArrayList} of not-null values (if any)
 	 */
-	private static ArrayList<BigDecimal> getNotNullEntries(Collection<BigDecimal> collection) {
-		ArrayList<BigDecimal> s = new ArrayList<BigDecimal>();
-		for (BigDecimal entry : collection) {
+	private static List<BigDecimal> getNotNullEntries(List<BigDecimal> list) {
+		List<BigDecimal> s = new ArrayList<BigDecimal>();
+		for (BigDecimal entry : list) {
 			if (entry != null) {
 				s.add(entry);
 			}

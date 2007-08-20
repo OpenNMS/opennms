@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
@@ -231,20 +231,32 @@ public class Pinger {
         }
         
         try {
-            Thread.sleep(timeout);
             synchronized(requests) {
-            	requests.wait(1);
+            	requests.wait(timeout);
             }
         } catch (InterruptedException ex) {
             // interrupted so return, reset interrupt.
             Thread.currentThread().interrupt();
         }
 
+        parallelWaiting.remove(tidKey);
+
+        Collections.sort(requests, new Comparator<PingRequest>() {
+			public int compare(PingRequest arg0, PingRequest arg1) {
+				if (!arg0.isSignaled()) {
+					return -1;
+				}
+				if (!arg1.isSignaled()) {
+					return 1;
+				}
+				return (int)(arg0.getPacket().getPingRTT() - arg1.getPacket().getPingRTT());
+			}
+        });
         for (int i = 0; i < requests.size(); i++) {
         	PingRequest reply = requests.get(i);
         	if (reply.isSignaled()) {
         		Long rtt = getRTT(reply);
-        		if (rtt <= timeout * 1000) {
+        		if (rtt <= (timeout * 1000)) {
         			returnval.put("ping" + (i+1), rtt);
         		} else {
         			log.debug("a response came back, but it was too old: sid = " + reply.getSequenceId() + ", rtt = " + rtt);
@@ -261,8 +273,6 @@ public class Pinger {
         returnval.put("median", new Long(CollectionMath.median(al).longValue()));
         returnval.put("response-time", new Long(CollectionMath.average(al).longValue()));
         
-        parallelWaiting.remove(tidKey);
-
         return returnval;
 	}
 
