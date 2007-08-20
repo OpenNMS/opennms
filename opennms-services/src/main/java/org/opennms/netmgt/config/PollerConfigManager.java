@@ -860,7 +860,7 @@ abstract public class PollerConfigManager implements PollerConfig {
 	    }
 	}
 
-    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, long responseTime, Package pkg) {
+    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
         
         String svcName = monSvc.getServiceName();
         

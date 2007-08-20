@@ -36,9 +36,9 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -51,7 +51,7 @@ import javax.persistence.Transient;
  */
 @Embeddable
 public class PollStatus implements Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     private Date m_timestamp = new Date();
 
@@ -61,10 +61,8 @@ public class PollStatus implements Serializable {
     private int m_statusCode;
     
     private String m_reason;
-    
-    private long m_responseTime = -1L;
-    private long m_nanoResponseTime = -1L;
-    private Collection<Long> m_responseTimes = new ArrayList<Long>();
+
+    private Map<String, Number> m_properties = new LinkedHashMap<String, Number>();
     
     /**
      * <P>
@@ -122,11 +120,11 @@ public class PollStatus implements Serializable {
         return decode(statusName, reason, -1L);
     }
 
-    public static PollStatus decode(String statusName, long responseTime) {
+    public static PollStatus decode(String statusName, double responseTime) {
         return decode(statusName, null, responseTime);
     }
 
-    public static PollStatus decode(String statusName, String reason, long responseTime) {
+    public static PollStatus decode(String statusName, String reason, double responseTime) {
         return new PollStatus(decodeStatusName(statusName), reason, responseTime);
     }
 
@@ -134,7 +132,7 @@ public class PollStatus implements Serializable {
         return get(status, reason, -1L);
     }
 
-    public static PollStatus get(int status, String reason, long responseTime) {
+    public static PollStatus get(int status, String reason, double responseTime) {
         return new PollStatus(status, reason, responseTime);
     }
 
@@ -142,17 +140,17 @@ public class PollStatus implements Serializable {
         this(SERVICE_UNKNOWN, null, -1L);
     }
 
-    private PollStatus(int statusCode, String reason, long responseTime) {
+    private PollStatus(int statusCode, String reason, double responseTime) {
         m_statusCode = statusCode;
         m_reason = reason;
-        m_responseTime = responseTime;
+        setResponseTime(responseTime);
     }
 
     public static PollStatus up() {
         return up(-1L);
     }
 
-    public static PollStatus up(long responseTime) {
+    public static PollStatus up(double responseTime) {
         return available(responseTime);
     }
 
@@ -160,7 +158,7 @@ public class PollStatus implements Serializable {
         return available(-1L);
     }
 
-    public static PollStatus available(long responseTime) {
+    public static PollStatus available(double responseTime) {
         return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
     }
 
@@ -259,32 +257,41 @@ public class PollStatus implements Serializable {
         m_reason = reason;
     }
 
-    @Column(name="nanoResponseTime", nullable=true)
-    public long getNanoResponseTime() {
-    	return m_nanoResponseTime;
-    }
-    
-    public void setNanoResponseTime(long nanoResponseTime) {
-    	m_nanoResponseTime = nanoResponseTime;
-    	this.setResponseTime(nanoResponseTime / 1000000);
-    }
-    
     @Column(name="responseTime", nullable=true)
-    public long getResponseTime() {
-        return m_responseTime;
+    public double getResponseTime() {
+    	return getProperty("response-time").doubleValue();
     }
 
-    public void setResponseTime(long responseTime) {
-        m_responseTime = responseTime;
+    /* stores the individual item for compatibility with database schema, as well as the new property map */
+    public void setResponseTime(double responseTime) {
+        m_properties.put("response-time", responseTime);
     }
 
     @Transient
-    public Collection<Long> getResponseTimes() {
-    	return m_responseTimes;
+    public Map<String, Number> getProperties() {
+    	if (m_properties == null) {
+    		m_properties = new LinkedHashMap<String, Number>();
+    	}
+    	return m_properties;
     }
     
-    public void setResponseTimes(Collection<Long> responseTimes) {
-    	m_responseTimes = responseTimes;
+    public void setProperties(Map<String, Number> p) {
+    	m_properties = p;
+    }
+    
+    @Transient
+    public Number getProperty(String key) {
+    	if (m_properties != null) {
+    		return m_properties.get(key);
+    	} else {
+    		return null;
+    	}
+    }
+
+    public void setProperty(String key, Number value) {
+    	Map<String, Number> m = getProperties();
+    	m.put(key, value);
+    	setProperties(m);
     }
 
     @Column(name="statusCode", nullable=false)

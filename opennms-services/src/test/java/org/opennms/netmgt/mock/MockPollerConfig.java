@@ -441,7 +441,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return null;
     }
 
-    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, long responseTime, Package pkg) {
+    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
         throw new UnsupportedOperationException("not yet implelmented");
         
     }
