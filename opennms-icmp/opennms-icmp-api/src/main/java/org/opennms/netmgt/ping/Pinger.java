@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
