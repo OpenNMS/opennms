@@ -61,7 +61,7 @@ public class SyslogdTest extends OpenNMSTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        System.setProperty("opennms.home", "opennms-services/src/test/resources/");
+        System.setProperty("opennms.home", "src/test/resources/");
 
         //System.setProperty("opennms.home", "/opt/opennms");
 
