@@ -146,6 +146,10 @@ public final class Base64 extends Object {
      * 
      */
     public static byte[] decodeBase64(char[] data) {
+        //. If the data is zero length just return a zero length byte array
+        if (data.length == 0) {
+            return new byte[0];
+        }
         //
         // check the length, it must be an integral number of 4 characters.
         //
