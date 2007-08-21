@@ -10,32 +10,56 @@ import org.opennms.netmgt.ping.Pinger;
 import junit.framework.TestCase;
 
 public class PingTest extends TestCase {
-	Pinger pinger        = null;
-	InetAddress goodHost = null;
-	InetAddress badHost  = null;
+    private Pinger m_pinger = null;
+	private InetAddress m_goodHost = null;
+	private InetAddress m_badHost = null;
+    
+    /**
+     * Don't run this test unless the <classNameWithPackage>.runTest property
+     * is set to "true".
+     */
+    @Override
+    protected void runTest() throws Throwable {
+        if (!isRunTest()) {
+            System.err.println("Skipping test '" + getName() + "' because system property '" + getRunTestProperty() + "' is not set to 'true'");
+            return;
+        }
+        
+        super.runTest();
+    }
 
-	public void testDummy() throws Exception {
+    private boolean isRunTest() {
+        return Boolean.getBoolean(getRunTestProperty());
+    }
+
+    private String getRunTestProperty() {
+        return getClass().getName() + ".runTest";
+    }
+
+    @Override
+	protected void setUp() throws Exception {
+        if (!isRunTest()) {
+            return;
+        }
+
+        super.setUp();
+		m_pinger = new Pinger();
+		m_goodHost = InetAddress.getByName("www.google.com");
+		m_badHost  = InetAddress.getByName("1.1.1.1");
 	}
 
-	public void nosetUp() throws Exception {
-		super.setUp();
-		pinger = new Pinger();
-		goodHost = InetAddress.getByName("www.google.com");
-		badHost  = InetAddress.getByName("1.1.1.1");
-	}
-
-	public void notestSinglePing() throws Exception {
-		assertTrue(pinger.ping(goodHost) > 0);
+	public void testSinglePing() throws Exception {
+		assertTrue(m_pinger.ping(m_goodHost) > 0);
 		Thread.sleep(1000);
 	}
 	
-	public void notestSinglePingFailure() throws Exception {
-		assertNull(pinger.ping(badHost));
+	public void testSinglePingFailure() throws Exception {
+		assertNull(m_pinger.ping(m_badHost));
 		Thread.sleep(1000);
 	}
 
-	public void notestParallelPing() throws Exception {
-		Map<String,Number> ret = pinger.parallelPing(goodHost, 10);
+	public void testParallelPing() throws Exception {
+		Map<String,Number> ret = m_pinger.parallelPing(m_goodHost, 10);
 		ArrayList<Number> items = new ArrayList<Number>();
 		for (String key : ret.keySet()) {
 			items.add(ret.get(key));
@@ -49,8 +73,8 @@ public class PingTest extends TestCase {
 		assertTrue(CollectionMath.countNotNull(items) > 0);
 	}
 	
-	public void notestParallelPingFailure() throws Exception {
-		Map<String,Number> ret = pinger.parallelPing(badHost, 10);
+	public void testParallelPingFailure() throws Exception {
+		Map<String,Number> ret = m_pinger.parallelPing(m_badHost, 10);
 		ret.remove("loss");
 		ret.remove("median");
 		ret.remove("response-time");
