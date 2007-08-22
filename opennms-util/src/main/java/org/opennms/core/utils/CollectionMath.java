@@ -142,7 +142,9 @@ public class CollectionMath {
 	private static List<BigDecimal> convertNumberToBigDecimal(List<Number> c) {
 		List<BigDecimal> bd = new ArrayList<BigDecimal>();
 		for (Number entry : c) {
-			bd.add(new BigDecimal(entry.doubleValue()));
+		    if (entry != null) {
+		        bd.add(new BigDecimal(entry.doubleValue()));
+		    }
 		}
 		return bd;
 	}
