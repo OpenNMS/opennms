@@ -312,7 +312,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
 
     /**
      * The run() method does the actual work of reading messages from the daemon
-     * and placing those messages in the appropoiate queue for use by other
+     * and placing those messages in the appropriate queue for use by other
      * threads.
      * 
      */

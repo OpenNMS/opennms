@@ -101,7 +101,7 @@ public final class IcmpPlugin extends AbstractPlugin {
 	    	if (retval != null) {
 	    		return true;
 	    	}
-		} catch (IOException e) {
+		} catch (Exception e) {
 	        Category log = ThreadCategory.getInstance(this.getClass());
 			log.warn("Pinger failed to ping " + address, e);
 		}
@@ -130,20 +130,20 @@ public final class IcmpPlugin extends AbstractPlugin {
     	try {
     		pinger = new Pinger();
     		if (qualifiers != null) {
-    			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", pinger.getRetries());
-    			timeout = ParameterMap.getKeyedLong(qualifiers, "timeout", pinger.getTimeout());
+    			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", Pinger.DEFAULT_RETRIES);
+    			timeout = ParameterMap.getKeyedLong(qualifiers, "timeout", Pinger.DEFAULT_TIMEOUT);
     		} else {
-    			retries = pinger.getRetries();
-    			timeout = pinger.getTimeout();
+    			retries = Pinger.DEFAULT_RETRIES;
+    			timeout = Pinger.DEFAULT_TIMEOUT;
     		}
     		Long retval = pinger.ping(address, timeout, retries);
     		if (retval != null) {
     			return true;
     		}
-    	} catch (IOException e) {
+    	} catch (Exception e) {
 	        Category log = ThreadCategory.getInstance(this.getClass());
 			log.warn("Pinger failed to ping " + address, e);
-    	}
+        }
     	
     	return false;
     }
