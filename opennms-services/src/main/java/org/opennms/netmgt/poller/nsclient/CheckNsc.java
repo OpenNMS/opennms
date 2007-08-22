@@ -31,11 +31,22 @@
 //
 package org.opennms.netmgt.poller.nsclient;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
-import org.opennms.netmgt.poller.nsclient.NsclientException;
 import org.opennms.netmgt.poller.nsclient.NsclientManager;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
+
+import sun.text.CompactShortArray.Iterator;
+
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is an example commandline tool to perform checks against NSClient
@@ -46,64 +57,64 @@ import java.util.ArrayList;
  */
 public class CheckNsc {
 
-    /**
-     * @param args
-     *            args[0] must contain the remote host name args[1] must
-     *            contain the check name (e.g. CLIENTVERSION) args[2] (crit)
-     *            and args[2] (warn) must contain a numeric value args[4] must
-     *            contain an empty string or a parameter related to the check
-     */
-    public static void main(String[] args) {
-        ArrayList arguments = new ArrayList();
-        for (int i = 0; i < args.length; i++) {
-            arguments.add(args[i]);
-        }
+    public static void main(String[] args) throws ParseException {
+    	
+    	Options options = new Options();
+    	options.addOption("port", true, "the port to connect to");
+    	options.addOption("password", true, "the password to use when connecting");
+    	options.addOption("warning", true, "treat the response as a warning if the level is above this value");
+    	options.addOption("critical", true, "treat the response as a critical error if the level is above this value");
 
-        if (arguments.size() < 2) {
-        	usage();
-        	System.exit(1);
+    	CommandLineParser parser = new PosixParser();
+    	CommandLine cmd = parser.parse(options, args);
+
+    	List<String> arguments = cmd.getArgList();
+    	if (arguments.size() < 2) {
+    		usage(options, cmd);
+    		System.exit(1);
+    	}
+    	
+        NsclientManager client = null;
+        NsclientPacket response = null;
+        NsclientCheckParams params = null;
+        
+    	String host       = arguments.remove(0);
+    	String command    = arguments.remove(0);
+        int warningLevel  = 0;
+        int criticalLevel = 0;
+        int port          = 1248;
+        
+        if (cmd.hasOption("warning")) {
+        	warningLevel = Integer.parseInt(cmd.getOptionValue("warning"));
         }
-        
-        String  host         = (String)arguments.remove(0);
-        String  command      = (String)arguments.remove(0);
-        int warningLevel     = 0;
-        int criticalLevel    = 0;
-        String  clientParams = "";
-        
-        if (!arguments.isEmpty()) {
-        	warningLevel  = Integer.parseInt((String)arguments.remove(0));
+        if (cmd.hasOption("critical")) {
+        	criticalLevel = Integer.parseInt(cmd.getOptionValue("critical"));
         }
-        
-        if (!arguments.isEmpty()) {
-        	criticalLevel = Integer.parseInt((String)arguments.remove(0));
+        if (cmd.hasOption("port")) {
+        	port = Integer.parseInt(cmd.getOptionValue("port"));
         }
 
         /* whatever's left gets merged into "arg1&arg2&arg3" */
+        StringBuffer clientParams = new StringBuffer();
         if (!arguments.isEmpty()) {
-        	for (int i=0; i < arguments.size(); i++) {
-        		clientParams += arguments.get(i);
-        		if (i < (arguments.size() - 1)) {
-        			clientParams += "&";
+        	for (java.util.Iterator<String> i = arguments.iterator(); i.hasNext(); ) {
+        		clientParams.append(i.next());
+        		if (i.hasNext()) {
+        			clientParams.append("&");
         		}
         	}
         }
         
-        int port = 1248;
-        
-        if (host.indexOf(":") >= 0) {
-        	port = Integer.parseInt(host.split(":")[1]);
-        	host = host.split(":")[0];
-        }
-
-        NsclientManager client = null;
-        NsclientPacket response = null;
-        NsclientCheckParams params = null;
         
         try {
         	client = new NsclientManager(host, port);
         }
         catch (Exception e) {
-        	usage("An error occurred creating a new NsclientManager.", e);
+        	usage(options, cmd, "An error occurred creating a new NsclientManager.", e);
+        }
+        
+        if (cmd.hasOption("password")) {
+        	client.setPassword(cmd.getOptionValue("password"));
         }
 
         try {
@@ -111,14 +122,14 @@ public class CheckNsc {
         	client.init();
         }
         catch (Exception e) {
-        	usage("An error occurred initializing the NsclientManager.", e);
+        	usage(options, cmd, "An error occurred initializing the NsclientManager.", e);
         }
 
         try {
-        	params = new NsclientCheckParams( warningLevel, criticalLevel, clientParams);
+        	params = new NsclientCheckParams( warningLevel, criticalLevel, clientParams.toString() );
         }
         catch (Exception e) {
-        	usage("An error occurred creating the parameter object.", e);
+        	usage(options, cmd, "An error occurred creating the parameter object.", e);
         }
 
         try {
@@ -127,11 +138,11 @@ public class CheckNsc {
                                               params);
         }
         catch(Exception e) {
-        	usage("An error occurred processing the command.", e);
+        	usage(options, cmd, "An error occurred processing the command.", e);
         }
         
         if (response == null) {
-        	usage("No response was returned.", null);
+        	usage(options, cmd, "No response was returned.", null);
         } else {
             System.out.println("NsclientPlugin: "
                     + command
@@ -141,30 +152,24 @@ public class CheckNsc {
         }
     }
 
-	private static void usage() {
-		usage(null, null);
-	}
-
-    private static void usage(String message, Exception e) {
-    	StringBuffer sb = new StringBuffer();
-    	sb.append("usage: CheckNsc <host>[:port] <command> [[warning level] [critical level] [arg1..argn]]\n");
-    	sb.append("\n");
-    	sb.append("  host:           the hostname to connect to (and optionally, the port)\n");
-    	sb.append("  command:        the command to run against NSClient\n");
-    	sb.append("  warning level:  warn if the level is above X\n");
-    	sb.append("  critical level: error if the level is above X\n");
-    	sb.append("\n");
-    	sb.append("  All subsequent arguments are considered arguments to the command.\n\n");
+	private static void usage(Options options, CommandLine cmd, String error, Exception e) {
+		HelpFormatter formatter = new HelpFormatter();
+    	PrintWriter pw = new PrintWriter(System.out);
+    	if (error != null) {
+    		pw.println("An error occurred: " + error + "\n");
+    	}
+    	formatter.printHelp("usage: CheckNsc [options] host command [arguments]", options);
     	
     	if (e != null) {
-    		sb.append("In addition, an exception occurred:\n");
-    		sb.append(message).append("\n");
-    		sb.append(e.getStackTrace()).append("\n\n");
-    	} else if (message != null) {
-    		sb.append("Error: " + message + "\n\n");
+    		pw.println(e.getMessage());
+    		e.printStackTrace(pw);
     	}
     	
-    	System.out.print(sb);
-    }
+    	pw.close();
+	}
+	
+	private static void usage(Options options, CommandLine cmd) {
+		usage(options, cmd, null, null);
+	}
     
 }
