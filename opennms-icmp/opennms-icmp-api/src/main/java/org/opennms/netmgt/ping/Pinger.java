@@ -93,9 +93,9 @@ public class Pinger {
                             		ping = p;
                             	}
                             } else if (parallelWaiting.containsKey(key)) {
-                            	ArrayList list = parallelWaiting.get(key);
+                            	ArrayList<PingRequest> list = parallelWaiting.get(key);
                             	for (int i = 0; i < list.size(); i++) {
-                            		PingRequest p = (PingRequest)list.get(i);
+                            		PingRequest p = list.get(i);
                             		if (p != null && p.isTarget(pong.getAddress(), sid)) {
                             			ping = p;
                             		}
@@ -108,6 +108,14 @@ public class Pinger {
                             	ping.setPacket(pong.getPacket());
                             	ping.signal();
                             }
+                            /*
+                            if (parallelWaiting.containsKey(key)) {
+                            	ArrayList<PingRequest> list = parallelWaiting.get(key);
+                            	if (isSignaled(list)) {
+                            		list.notifyAll();
+                            	}
+                            }
+                            */
                         }
                     }
                 });
@@ -223,7 +231,7 @@ public class Pinger {
         		sendPacket(pkt);
         	}
        		try {
-       			Thread.sleep(100);
+       			Thread.sleep(50);
        		} catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
        		}
@@ -231,7 +239,9 @@ public class Pinger {
         
         try {
             synchronized(requests) {
-            	requests.wait(timeout);
+            	Thread.sleep(timeout);
+            	requests.wait(1);
+            	/* requests.wait(timeout); */
             }
         } catch (InterruptedException ex) {
             // interrupted so return, reset interrupt.
@@ -321,6 +331,17 @@ public class Pinger {
         return new DatagramPacket(data, data.length, addr, 0);
     }
 
+    /*
+    private synchronized static boolean isSignaled(ArrayList<PingRequest> replies) {
+    	for (PingRequest pr : replies) {
+    		if (!pr.isSignaled()) {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    */
+    
     /**
      * This class is used to encapsulate a ping request. A request consist of
      * the pingable address and a signaled state.
