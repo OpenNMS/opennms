@@ -115,7 +115,8 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      *            path to the RRD file repository
      * @param addr
      *            interface address
-     * @param dsName2 
+     * @param dsName
+     *            the datasource name to update 
      * @param value
      *            value to update the RRD file with
      */
