@@ -23,6 +23,7 @@
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="icmp"/>
+			<parameter key="ds-name" value="icmp"/>
 		</service>
 		<service name="MultiICMP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="0"/>
@@ -37,6 +38,7 @@
 			<parameter key="lookup" value="localhost"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="dns"/>
+			<parameter key="ds-name" value="dns"/>
 		</service>
 		<service name="SMTP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -44,6 +46,7 @@
 			<parameter key="port" value="25"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="smtp"/>
+			<parameter key="ds-name" value="smtp"/>
 		</service>
 		<service name="FTP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -65,6 +68,7 @@
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="http"/>
+			<parameter key="ds-name" value="http"/>
                 </service>
                 <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -73,6 +77,7 @@
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="http-8080"/>
+			<parameter key="ds-name" value="http-8080"/>
                 </service>
                 <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -81,6 +86,7 @@
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="http-8000"/>
+			<parameter key="ds-name" value="http-8000"/>
                 </service>
                 <service name="HTTPS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -119,12 +125,14 @@
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="ssh"/>
+			<parameter key="ds-name" value="ssh"/>
 		</service>
 		<service name="DHCP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="dhcp"/>
+			<parameter key="ds-name" value="dhcp"/>
 		</service>
 		<service name="IMAP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -137,6 +145,7 @@
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="pop3"/>
+			<parameter key="ds-name" value="pop3"/>
 		</service>
 		<service name="NSClient" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
