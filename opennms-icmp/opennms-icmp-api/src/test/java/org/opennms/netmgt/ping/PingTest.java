@@ -2,6 +2,7 @@ package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.CollectionMath;
@@ -59,26 +60,16 @@ public class PingTest extends TestCase {
     }
 
     public void testParallelPing() throws Exception {
-        Map<String,Number> ret = m_pinger.parallelPing(m_goodHost, 10);
-        ArrayList<Number> items = new ArrayList<Number>();
-        for (String key : ret.keySet()) {
-            items.add(ret.get(key));
-            System.out.println(key + ": " + ret.get(key));
-        }
-        ret.remove("loss");
-        ret.remove("median");
-        ret.remove("response-time");
+        List<Number> items = m_pinger.parallelPing(m_goodHost, 10, Pinger.DEFAULT_TIMEOUT, 50);
+        System.out.println("response times = " + items);
         System.out.println("pings = " + items.size() + ", passed = " + CollectionMath.countNotNull(items) + " (" + CollectionMath.percentNotNull(items) + "%), failed = " + CollectionMath.countNull(items) + " (" + CollectionMath.percentNull(items) + "%), average = " + (CollectionMath.average(items).floatValue() / 1000F) + "ms");
         Thread.sleep(1000);
         assertTrue(CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
-        Map<String,Number> ret = m_pinger.parallelPing(m_badHost, 10);
-        ret.remove("loss");
-        ret.remove("median");
-        ret.remove("response-time");
-        ArrayList<Number>items = new ArrayList<Number>();
+        List<Number> items = m_pinger.parallelPing(m_goodHost, 10, Pinger.DEFAULT_TIMEOUT, 50);
+        System.out.println("response times = " + items);
         System.out.println("pings = " + items.size() + ", passed = " + CollectionMath.countNotNull(items) + " (" + CollectionMath.percentNotNull(items) + "%), failed = " + CollectionMath.countNull(items) + " (" + CollectionMath.percentNull(items) + "%), average = " + (CollectionMath.average(items).floatValue() / 1000F) + "ms");
         Thread.sleep(1000);
         assertTrue(CollectionMath.countNotNull(items) == 0);
