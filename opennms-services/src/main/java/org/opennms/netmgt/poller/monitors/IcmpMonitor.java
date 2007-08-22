@@ -118,11 +118,11 @@ final public class IcmpMonitor extends IPv4Monitor {
 			
 			// get parameters
 			//
-			int retries = ParameterMap.getKeyedInteger(parameters, "retry", pinger.getRetries());
-			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", pinger.getTimeout());
+			int retries = ParameterMap.getKeyedInteger(parameters, "retry", Pinger.DEFAULT_RETRIES);
+			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
 			
 			rtt = pinger.ping(host, timeout, retries);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.debug("failed to ping " + host, e);
 		}
         

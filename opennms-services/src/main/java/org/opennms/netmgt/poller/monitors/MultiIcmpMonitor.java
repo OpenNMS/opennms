@@ -36,9 +36,15 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.ping.Pinger;
@@ -67,6 +73,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 @Distributable(DistributionContext.DAEMON)
 final public class MultiIcmpMonitor extends IPv4Monitor {
 	private static final int DEFAULT_MULTI_PING_COUNT = 20;
+    private static final long DEFAULT_PING_INTERVAL = 50;
 	
     /**
      * Constructs a new monitor.
@@ -105,26 +112,48 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
         Category log = ThreadCategory.getInstance(this.getClass());
         PollStatus serviceStatus = PollStatus.unavailable();
 		InetAddress host = (InetAddress) iface.getAddress();
-		Map<String, Number> rtt = null;
+		List<Number> responseTimes = null;
 		
 		try {
 			Pinger pinger = new Pinger();
 			
 			// get parameters
 			//
-			pinger.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", pinger.getRetries()));
-			pinger.setTimeout(ParameterMap.getKeyedLong(parameters, "timeout", pinger.getTimeout()));
+			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
 			int count = ParameterMap.getKeyedInteger(parameters, "pings", DEFAULT_MULTI_PING_COUNT);
+			long pingInterval = ParameterMap.getKeyedLong(parameters, "interval", DEFAULT_PING_INTERVAL);
 			
-			rtt = pinger.parallelPing(host, count);
-		} catch (IOException e) {
+			responseTimes = new ArrayList<Number>(pinger.parallelPing(host, count, timeout, pingInterval));
+
+			serviceStatus = PollStatus.available();
+			Collections.sort(responseTimes, new Comparator<Number>() {
+
+                public int compare(Number arg0, Number arg1) {
+                    if (arg0 == null) {
+                        return -1;
+                    } else if (arg1 == null) {
+                        return 1;
+                    } else if (arg0.doubleValue() == arg1.doubleValue()) {
+                        return 0;
+                    } else {
+                        return arg1.doubleValue() > arg0.doubleValue()? 1 : -1;
+                    }
+                }
+			    
+			});
+			
+			Map<String, Number> returnval = new LinkedHashMap<String,Number>();
+			for (int i = 0; i < responseTimes.size(); i++) {
+			    returnval.put("ping" + (i+1), responseTimes.get(i));
+			}
+			returnval.put("loss", CollectionMath.countNull(responseTimes));
+			returnval.put("median", CollectionMath.median(responseTimes));
+			returnval.put("response-time", CollectionMath.average(responseTimes));
+			
+			serviceStatus.setProperties(returnval);
+		} catch (Exception e) {
 			log.debug("failed to ping " + host, e);
 		}
-        
-        if (rtt != null) {
-        	serviceStatus = PollStatus.available();
-        	serviceStatus.setProperties(rtt);
-        }
         
         return serviceStatus;
     }
