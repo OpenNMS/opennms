@@ -60,14 +60,14 @@ public class PingTest extends TestCase {
     }
 
     public void testParallelPing() throws Exception {
-        List<Number> items = m_pinger.parallelPing(m_goodHost, 10, Pinger.DEFAULT_TIMEOUT, 50);
+        List<Number> items = m_pinger.parallelPing(m_goodHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
         System.out.println("response times = " + items);
         System.out.println("pings = " + items.size() + ", passed = " + CollectionMath.countNotNull(items) + " (" + CollectionMath.percentNotNull(items) + "%), failed = " + CollectionMath.countNull(items) + " (" + CollectionMath.percentNull(items) + "%), average = " + (CollectionMath.average(items).floatValue() / 1000F) + "ms");
         assertTrue(CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
-        List<Number> items = m_pinger.parallelPing(m_badHost, 10, Pinger.DEFAULT_TIMEOUT, 50);
+        List<Number> items = m_pinger.parallelPing(m_badHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
         System.out.println("response times = " + items);
         System.out.println("pings = " + items.size() + ", passed = " + CollectionMath.countNotNull(items) + " (" + CollectionMath.percentNotNull(items) + "%), failed = " + CollectionMath.countNull(items) + " (" + CollectionMath.percentNull(items) + "%), average = " + (CollectionMath.average(items).floatValue() / 1000F) + "ms");
         assertTrue(CollectionMath.countNotNull(items) == 0);
