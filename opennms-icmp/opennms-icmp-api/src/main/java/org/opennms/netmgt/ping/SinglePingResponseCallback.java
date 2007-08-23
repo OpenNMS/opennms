@@ -1,5 +1,6 @@
 package org.opennms.netmgt.ping;
 
+import org.apache.log4j.Category;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
@@ -10,18 +11,22 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     Long responseTime = null;
     
 	public void handleResponse(ICMPEchoPacket packet) {
-	    ThreadCategory.getInstance(this.getClass()).info("got response for " + packet.getTID() + "/" + packet.getSequenceId());
+	    info("got response for " + packet.getTID() + "/" + packet.getSequenceId());
 	    responseTime = packet.getPingRTT();
 	    bs.signalAll();
 	}
 
+    private Category log() {
+        return ThreadCategory.getInstance(this.getClass());
+    }
+
 	public void handleTimeout(ICMPEchoPacket packet) {
-	    ThreadCategory.getInstance(this.getClass()).info("timed out pinging " + packet.getTID() + "/" + packet.getSequenceId());
+	    info("timed out pinging " + packet.getTID() + "/" + packet.getSequenceId());
 	    bs.signalAll();
 	}
 
     public void handleError(PingRequest pr, Throwable t) {
-        ThreadCategory.getInstance(this.getClass()).info("an error occurred pinging " + pr.getAddress(), t);
+        info("an error occurred pinging " + pr.getAddress(), t);
         error = t;
         bs.signalAll();
     }
@@ -31,12 +36,19 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
     
     public void waitFor() throws InterruptedException {
-        ThreadCategory.getInstance(this.getClass()).info("waiting to finish");
+        info("waiting to finish");
         bs.waitFor();
     }
 
     public Long getResponseTime() {
         return responseTime;
+    }
+    
+    public void info(String msg) {
+        log().info(msg);
+    }
+    public void info(String msg, Throwable t) {
+        log().info(msg, t);
     }
 
 }
