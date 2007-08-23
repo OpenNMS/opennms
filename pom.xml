@@ -272,6 +272,18 @@ opennms.home = ${opennms.home}
               <name>mock.snmpHost</name>
               <value>${mock.snmpHost}</value>
             </property>
+            <property>
+              <name>opennms.library.jicmp</name>
+              <value>${opennms.library.jicmp}</value>
+            </property>
+            <property>
+              <name>opennms.library.jrrd</name>
+              <value>${opennms.library.jrrd}</value>
+            </property>
+            <property>
+              <name>runPingTests</name>
+              <value>${runPingTests}</value>
+            </property>
           </systemProperties>
 	  <forkMode>pertest</forkMode>
           <argLine>-Xmx1024m</argLine>
