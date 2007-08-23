@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
@@ -55,7 +56,7 @@ public class Pinger {
                 }
             }
         });
-        ThreadCategory.getInstance(this.getClass()).info(System.currentTimeMillis() + ": " + pr.size() + " packets in the queue, lowest is " + pr.get(0));
+        log().info(System.currentTimeMillis() + ": " + pr.size() + " pending requests, lowest is " + pr.get(0));
         long waitTime = pr.get(0).getExpiration() - System.currentTimeMillis();
         if (waitTime < 0) {
             return 0;
@@ -82,7 +83,7 @@ public class Pinger {
                     public void run() {
                         for (;;) {
                         	long waitTime = minimumWaitTime();
-                        	ThreadCategory.getInstance(this.getClass()).info("minimum wait time: " + waitTime);
+                        	log().info("minimum wait time: " + waitTime);
                         	if (waitTime > 0) {
                         	    try {
                                     Reply pong = queue.remove(waitTime);
@@ -92,13 +93,13 @@ public class Pinger {
                         	    } catch (InterruptedException ie) {
                         	        break;
                         	    } catch (FifoQueueException fqe) {
-                        	        ThreadCategory.getInstance(this.getClass()).error("Error processing response queue", fqe);
+                        	        log().error("Error processing response queue", fqe);
                         	    }
                         	} else if (waitTime == -1L) {
                         	    try {
                                     Thread.sleep(DEFAULT_WAIT_TIME);
                                 } catch (InterruptedException e) {
-                                    ThreadCategory.getInstance(this.getClass()).info("interrupted while waiting for new packets to handle", e);
+                                    log().info("interrupted while waiting for new packets to handle", e);
                                 }
                         	} else {
                         	    processTimeouts();
@@ -117,7 +118,7 @@ public class Pinger {
         synchronized(waiting) {
             for (Iterator<Entry<Long, PingRequest>> it = waiting.entrySet().iterator(); it.hasNext(); ) {
                 PingRequest request = it.next().getValue();
-                ThreadCategory.getInstance(this.getClass()).debug("checking request " + request);
+                log().debug("checking request " + request);
                 if (request.isExpired()) {
                     it.remove();
                     PingRequest retry = request.processTimeout();
@@ -210,5 +211,9 @@ public class Pinger {
 	    cb.waitFor();
 	    return cb.getResponseTimes();
 	}
+
+    private Category log() {
+        return ThreadCategory.getInstance(this.getClass());
+    }
 
 }
