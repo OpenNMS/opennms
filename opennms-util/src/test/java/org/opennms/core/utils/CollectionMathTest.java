@@ -24,15 +24,22 @@ public class CollectionMathTest extends TestCase {
 		assertNull(CollectionMath.percentNull(c));
 	}
 	
-	public void testPercents() {
+	public void testPercentNotNull() {
 		List<BigDecimal> c = getTestCollection();
 		assertEquals(new BigDecimal(60).doubleValue(), CollectionMath.percentNotNull(c).doubleValue());
+	}
+	public void testPercentNull() {
+        List<BigDecimal> c = getTestCollection();
 		assertEquals(new BigDecimal(40).doubleValue(), CollectionMath.percentNull(c).doubleValue());
 	}
 
-	public void testCounts() {
+	public void testCountNotNull() {
 		List<BigDecimal> c = getTestCollection();
 		assertEquals(3, CollectionMath.countNotNull(c));
+	}
+	
+	public void testCountNull() {
+        List<BigDecimal> c = getTestCollection();
 		assertEquals(2, CollectionMath.countNull(c));
 	}
 	
