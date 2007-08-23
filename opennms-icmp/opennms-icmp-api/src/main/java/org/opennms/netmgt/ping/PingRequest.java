@@ -3,6 +3,7 @@ package org.opennms.netmgt.ping;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -119,7 +120,15 @@ final class PingRequest {
     public void sendRequest(IcmpSocket icmpSocket) {
         try {
             m_expiration = System.currentTimeMillis() + m_timeout;
-            icmpSocket.send(getDatagram());
+            ICMPEchoPacket iPkt = new ICMPEchoPacket(getTid());
+            iPkt.setIdentity(FILTER_ID);
+            iPkt.setSequenceId(getSequenceId());
+            iPkt.computeChecksum();
+            m_request = iPkt;
+
+            byte[] data = iPkt.toBytes();
+            DatagramPacket packet = new DatagramPacket(data, data.length, getAddress(), 0);
+            icmpSocket.send(packet);
         } catch (Throwable t) {
             m_callback.handleError(this, t);
         }
@@ -132,8 +141,8 @@ final class PingRequest {
     
     public PingRequest processTimeout() {
         PingRequest returnval = null;
-        if (isExpired()) {
-            if (getRetries() > 0) {
+        if (this.isExpired()) {
+            if (this.getRetries() > 0) {
                 returnval = new PingRequest(getAddress(), getTimeout(), getRetries() - 1, getSequenceId(), m_callback);
             } else {
                 m_callback.handleTimeout(getRequest());
@@ -146,17 +155,17 @@ final class PingRequest {
         return (System.currentTimeMillis() > getExpiration());
     }
 
-    /**
-     * Builds a datagram compatible with the ping ReplyReceiver class.
-     */
-    private DatagramPacket getDatagram() {
-        ICMPEchoPacket iPkt = new ICMPEchoPacket(getTid());
-        iPkt.setIdentity(FILTER_ID);
-        iPkt.setSequenceId(getSequenceId());
-        iPkt.computeChecksum();
-
-        byte[] data = iPkt.toBytes();
-        return new DatagramPacket(data, data.length, getAddress(), 0);
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getAddress()).append(" [");
+        sb.append("TID=").append(this.getTid()).append(",");
+        sb.append("Sequence ID=").append(this.getSequenceId()).append(",");
+        // sb.append("Callback=").append(m_callback.getClass().getName()).append(",");
+        sb.append("Retries=").append(getRetries()).append(",");
+        sb.append("Timeout=").append(getTimeout()).append(",");
+        sb.append("Expiration=").append(getExpiration());
+        sb.append("]");
+        return sb.toString();
     }
 
 }

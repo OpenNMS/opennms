@@ -10,11 +10,13 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     Long responseTime = null;
     
 	public void handleResponse(ICMPEchoPacket packet) {
+	    ThreadCategory.getInstance(this.getClass()).info("got response for " + packet.getTID() + "/" + packet.getSequenceId());
 	    responseTime = packet.getPingRTT();
 	    bs.signalAll();
 	}
 
 	public void handleTimeout(ICMPEchoPacket packet) {
+	    ThreadCategory.getInstance(this.getClass()).info("timed out pinging " + packet.getTID() + "/" + packet.getSequenceId());
 	    bs.signalAll();
 	}
 
@@ -24,15 +26,12 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         bs.signalAll();
     }
 
-    public boolean isSuccessful() {
-        return error == null;
-    }
-    
     public void waitFor(long timeout) throws InterruptedException {
         bs.waitFor(timeout);
     }
     
     public void waitFor() throws InterruptedException {
+        ThreadCategory.getInstance(this.getClass()).info("waiting to finish");
         bs.waitFor();
     }
 
