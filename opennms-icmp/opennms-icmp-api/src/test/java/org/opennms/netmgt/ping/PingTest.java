@@ -1,14 +1,11 @@
 package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.opennms.core.utils.CollectionMath;
-import org.opennms.netmgt.ping.Pinger;
 
 import junit.framework.TestCase;
+
+import org.opennms.core.utils.CollectionMath;
 
 public class PingTest extends TestCase {
     private Pinger m_pinger = null;
@@ -64,15 +61,46 @@ public class PingTest extends TestCase {
 
     public void testParallelPing() throws Exception {
         List<Number> items = m_pinger.parallelPing(m_goodHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
-        System.out.println("response times = " + items);
-        System.out.println("pings = " + items.size() + ", passed = " + CollectionMath.countNotNull(items) + " (" + CollectionMath.percentNotNull(items) + "%), failed = " + CollectionMath.countNull(items) + " (" + CollectionMath.percentNull(items) + "%), average = " + (CollectionMath.average(items).floatValue() / 1000F) + "ms");
+        Thread.sleep(1000);
+        printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
         List<Number> items = m_pinger.parallelPing(m_badHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
-        System.out.println("response times = " + items);
-        System.out.println("pings = " + items.size() + ", passed = " + CollectionMath.countNotNull(items) + " (" + CollectionMath.percentNotNull(items) + "%), failed = " + CollectionMath.countNull(items) + " (" + CollectionMath.percentNull(items) + "%), average = " + (CollectionMath.average(items).floatValue() / 1000F) + "ms");
+        Thread.sleep(1000);
+        printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) == 0);
+    }
+    
+    private void printResponse(List<Number> items) {
+        Long passed = CollectionMath.countNotNull(items);
+        Long failed = CollectionMath.countNull(items);
+        Number passedPercent = CollectionMath.percentNotNull(items);
+        Number failedPercent = CollectionMath.percentNull(items);
+        Number average = CollectionMath.average(items);
+        Number median = CollectionMath.median(items);
+        
+        if (passedPercent == null) passedPercent = new Long(0);
+        if (failedPercent == null) failedPercent = new Long(100);
+        if (median        == null) median        = new Double(0);
+
+        if (average == null) {
+            average = new Double(0);
+        } else {
+            average = new Double(average.doubleValue() / 1000.0);
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("response times = ").append(items);
+        sb.append("\n");
+        
+        sb.append("pings = ").append(items.size());
+        sb.append(", passed = ").append(passed).append(" (").append(passedPercent).append("%)");
+        sb.append(", failed = ").append(failed).append(" (").append(failedPercent).append("%)");
+        sb.append(", median = ").append(median);
+        sb.append(", average = ").append(average).append("ms");
+        sb.append("\n");
+        System.out.print(sb);
     }
 }
