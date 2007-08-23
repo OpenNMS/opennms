@@ -1,10 +1,8 @@
 package org.opennms.netmgt.ping;
 
 import java.io.IOException;
+import java.lang.annotation.IncompleteAnnotationException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,45 +24,8 @@ public class Pinger {
     private static IcmpSocket icmpSocket = null;
     private static ReplyReceiver receiver = null;
     private static Thread worker = null;
+    private static RequestTracker requestTracker = null;
 
-    /**
-     * The map of long thread identifiers to Packets that must be signaled.
-     * The mapped objects are instances of the
-     * {@link org.opennms.netmgt.ping.Reply Reply} class.
-     */
-    private static Map<Long, PingRequest> waiting = Collections.synchronizedMap(new TreeMap<Long, PingRequest>());
-
-    public long minimumWaitTime() {
-    	ArrayList<PingRequest> pr = null;
-    	synchronized(waiting) {
-    	    if (waiting.size() == 0) {
-    	        return -1L;
-    	    }
-    	    
-            pr = new ArrayList<PingRequest>(waiting.values());
-    	}
-        Collections.sort(pr, new Comparator<PingRequest>() {
-            public int compare(PingRequest arg0, PingRequest arg1) {
-                if (arg0 == null) {
-                    return -1;
-                } else if (arg1 == null) {
-                    return 1;
-                } else if (arg0.getExpiration() == arg0.getExpiration()) {
-                    return 0;
-                } else {
-                    return (arg1.getExpiration() > arg0.getExpiration()? 1 : -1);
-                }
-            }
-        });
-        log().info(System.currentTimeMillis() + ": " + pr.size() + " pending requests, lowest is " + pr.get(0));
-        long waitTime = pr.get(0).getExpiration() - System.currentTimeMillis();
-        if (waitTime < 0) {
-            return 0;
-        } else {
-            return waitTime;
-        }
-    }
-    
     /**
      * Initialize a Pinger object, specifying the timeout and retries.
      * @param defaultTimeout the timeout, in milliseconds, to wait for returned packets.
@@ -72,39 +33,33 @@ public class Pinger {
      * @throws IOException
      */
 	public Pinger() throws IOException {
-		synchronized (Pinger.class) {
+		startReplyProcessor();
+	}
+	
+    private void startReplyProcessor() throws IOException {
+        synchronized (Pinger.class) {
 			if (worker == null) {
 			    final FifoQueueImpl<Reply> queue = new FifoQueueImpl<Reply>();
 				icmpSocket = new IcmpSocket();
                 receiver = new ReplyReceiver(icmpSocket, queue, PingRequest.FILTER_ID);
+                requestTracker = new RequestTracker(queue);
                 receiver.start();
 				
                 worker = new Thread(new Runnable() {
                     public void run() {
                         for (;;) {
-                        	long waitTime = minimumWaitTime();
-                        	log().info("minimum wait time: " + waitTime);
-                        	if (waitTime > 0) {
-                        	    try {
-                                    Reply pong = queue.remove(waitTime);
-                                    if (pong != null) {
-                                        processReply(pong);
-                                    }
-                        	    } catch (InterruptedException ie) {
-                        	        break;
-                        	    } catch (FifoQueueException fqe) {
-                        	        log().error("Error processing response queue", fqe);
-                        	    }
-                        	} else if (waitTime == -1L) {
-                        	    try {
-                                    Thread.sleep(DEFAULT_WAIT_TIME);
-                                } catch (InterruptedException e) {
-                                    log().info("interrupted while waiting for new packets to handle", e);
+                            try {
+                                Reply pong = requestTracker.getNextReply();
+                                if (pong != null) {
+                                    processReply(pong);
                                 }
-                        	} else {
-                        	    processTimeouts();
-                        	}
+                                processTimeouts();
+                            } catch (InterruptedException e) {
+                                break;
+                            }
                         }
+                            
+                            
                     }
                 });
                 worker.setDaemon(true);
@@ -112,18 +67,18 @@ public class Pinger {
 			}
 			
 		}
-	}
+    }
 	
     protected void processTimeouts() {
-        synchronized(waiting) {
-            for (Iterator<Entry<Long, PingRequest>> it = waiting.entrySet().iterator(); it.hasNext(); ) {
+        synchronized(requestTracker.getTrackerLock()) {
+            for (Iterator<Entry<Long, PingRequest>> it = requestTracker.getPendingRequestMap().entrySet().iterator(); it.hasNext(); ) {
                 PingRequest request = it.next().getValue();
                 log().debug("checking request " + request);
                 if (request.isExpired()) {
                     it.remove();
                     PingRequest retry = request.processTimeout();
                     if (retry != null) {
-                        waiting.put(retry.getTid(), retry);
+                        requestTracker.registerRequest(retry);
                         retry.sendRequest(icmpSocket);
                     }
                 }
@@ -136,12 +91,12 @@ public class Pinger {
         Long key = new Long(pongPacket.getTID());
         short sid = pongPacket.getSequenceId();
         PingRequest ping = null;
-        synchronized(waiting) {
-            if (waiting.containsKey(key)) {
-                PingRequest p = waiting.get(key);
+        synchronized(requestTracker.getTrackerLock()) {
+            if (requestTracker.getPendingRequestMap().containsKey(key)) {
+                PingRequest p = requestTracker.getPendingRequestMap().get(key);
                 if (p != null && p.isTarget(pong.getAddress(), sid)) {
                     ping = p;
-                    waiting.remove(key);
+                    requestTracker.getPendingRequestMap().remove(key);
                 }
             }
         }
@@ -152,16 +107,16 @@ public class Pinger {
     }
 
     public void ping(PingRequest request, PingResponseCallback cb) {
-        synchronized(waiting) {
-            waiting.put(request.getTid(), request);
+        synchronized(requestTracker.getTrackerLock()) {
+            requestTracker.registerRequest(request);
             request.sendRequest(icmpSocket);
         }
     }
-    
+
     public void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) {
     	PingRequest request = new PingRequest(host, timeout, retries, sequenceId, cb);
-    	synchronized(waiting) {
-    	    waiting.put(request.getTid(), request);
+    	synchronized(requestTracker.getTrackerLock()) {
+    	    requestTracker.registerRequest(request);
     	    request.sendRequest(icmpSocket);
     	}
 	}
