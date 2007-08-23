@@ -49,7 +49,7 @@ public class CollectionMath {
 	 */
 	public static BigDecimal percentNull(List<BigDecimal> list) {
 		if (list.size() > 0) {
-			return new BigDecimal(countNull(list)).divide(new BigDecimal(list.size())).multiply(new BigDecimal(100));
+			return new BigDecimal(countNull(list)).divide(new BigDecimal(list.size()), BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
 		} else {
 			return null;
 		}
@@ -71,7 +71,7 @@ public class CollectionMath {
 	 */
 	public static BigDecimal percentNotNull(List<BigDecimal> list) {
 		if (list.size() > 0) {
-			return new BigDecimal(countNotNull(list)).divide(new BigDecimal(list.size())).multiply(new BigDecimal(100));
+			return new BigDecimal(countNotNull(list)).divide(new BigDecimal(list.size()), BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
 		} else {
 			return null;
 		}
@@ -102,7 +102,7 @@ public class CollectionMath {
 			total = total.add(entry);
 		}
 		
-		return total.divide(new BigDecimal(notNullEntries.size()));
+		return total.divide(new BigDecimal(notNullEntries.size()), BigDecimal.ROUND_HALF_UP);
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class CollectionMath {
 			BigDecimal value1, value2;
 			value1 = notNullEntries.get(notNullEntries.size() / 2);
 			value2 = notNullEntries.get((notNullEntries.size() / 2) - 1);
-			return value1.add(value2).divide(new BigDecimal(2));
+			return value1.add(value2).divide(new BigDecimal(2), BigDecimal.ROUND_HALF_UP);
 		} else {
 			return notNullEntries.get(notNullEntries.size() / 2);
 		}
