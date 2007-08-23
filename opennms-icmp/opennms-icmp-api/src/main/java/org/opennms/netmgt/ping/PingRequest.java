@@ -61,18 +61,24 @@ final class PingRequest {
      */
     private long m_timeout;
     
-    PingRequest(InetAddress addr, long timeout, int retries, short sequenceId, PingResponseCallback cb) {
+    PingRequest(InetAddress addr, long timeout, int retries, long tid, short sequenceId, PingResponseCallback cb) {
         m_addr       = addr;
         m_retries    = retries;
         m_timeout    = timeout;
         m_callback   = cb;
-        m_tid        = s_nextTid++;
+        m_tid        = tid;
         m_sequenceId = sequenceId;
+    }
+    
+    PingRequest(InetAddress addr, long timeout, int retries, short sequenceId, PingResponseCallback cb) {
+        this(addr, timeout, retries, s_nextTid++, sequenceId, cb);
     }
     
     PingRequest(InetAddress addr, long timeout, int retries, PingResponseCallback cb) {
         this(addr, timeout, retries, DEFAULT_SEQUENCE_ID, cb);
     }
+    
+
 
     InetAddress getAddress() {
     	return m_addr;
@@ -143,7 +149,7 @@ final class PingRequest {
         PingRequest returnval = null;
         if (this.isExpired()) {
             if (this.getRetries() > 0) {
-                returnval = new PingRequest(getAddress(), getTimeout(), getRetries() - 1, getSequenceId(), m_callback);
+                returnval = new PingRequest(getAddress(), getTimeout(), getRetries() - 1, getTid(), getSequenceId(), m_callback);
             } else {
                 m_callback.handleTimeout(getRequest());
             }
