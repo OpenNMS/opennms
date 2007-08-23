@@ -134,6 +134,7 @@ final class PingRequest {
 
             byte[] data = iPkt.toBytes();
             DatagramPacket packet = new DatagramPacket(data, data.length, getAddress(), 0);
+            ThreadCategory.getInstance(this.getClass()).info(System.currentTimeMillis()+": Sending Ping Request: "+this);
             icmpSocket.send(packet);
         } catch (Throwable t) {
             m_callback.handleError(this, t);

@@ -47,7 +47,7 @@ package org.opennms.core.queue;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  * 
  */
-public class FifoQueueException extends Exception {
+public class FifoQueueException extends RuntimeException {
     /**
      * 
      */
