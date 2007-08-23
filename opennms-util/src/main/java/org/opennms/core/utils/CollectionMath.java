@@ -124,11 +124,15 @@ public class CollectionMath {
 		List<BigDecimal> notNullEntries = getNotNullEntries(list);
 		Collections.sort(notNullEntries);
 		
+		if (notNullEntries.size() == 0) {
+		    return null;
+		}
+		
 		if (notNullEntries.size() % 2 == 0) {
 			// even number of entries, take the mean of the 2 center ones
 			BigDecimal value1, value2;
-			value1 = notNullEntries.get(notNullEntries.size() / 2);
-			value2 = notNullEntries.get((notNullEntries.size() / 2) - 1);
+		    value1 = notNullEntries.get(notNullEntries.size() / 2);
+		    value2 = notNullEntries.get((notNullEntries.size() / 2) - 1);
 			return value1.add(value2).divide(new BigDecimal(2), MathContext.DECIMAL128);
 		} else {
 			return notNullEntries.get(notNullEntries.size() / 2);
