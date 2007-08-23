@@ -2,10 +2,14 @@ package org.opennms.netmgt.ping;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
@@ -16,6 +20,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
 public class Pinger {
     public static final int DEFAULT_TIMEOUT = 800;
     public static final int DEFAULT_RETRIES = 2;
+    public static final int DEFAULT_WAIT_TIME = 2000;
 	
     private static IcmpSocket icmpSocket = null;
     private static ReplyReceiver receiver = null;
@@ -28,16 +33,35 @@ public class Pinger {
      */
     private static Map<Long, PingRequest> waiting = Collections.synchronizedMap(new TreeMap<Long, PingRequest>());
 
-    public static long minimumWaitTime() {
-    	long now = System.currentTimeMillis();
-    	long waitTime = Long.MAX_VALUE;
+    public long minimumWaitTime() {
+    	ArrayList<PingRequest> pr = null;
     	synchronized(waiting) {
-            for (Long tidKey : waiting.keySet()) {
-                long myWait = waiting.get(tidKey).getExpiration() - now;
-                waitTime = Math.min(waitTime, myWait);
-            }
+    	    if (waiting.size() == 0) {
+    	        return -1L;
+    	    }
+    	    
+            pr = new ArrayList<PingRequest>(waiting.values());
     	}
-    	return waitTime;
+        Collections.sort(pr, new Comparator<PingRequest>() {
+            public int compare(PingRequest arg0, PingRequest arg1) {
+                if (arg0 == null) {
+                    return -1;
+                } else if (arg1 == null) {
+                    return 1;
+                } else if (arg0.getExpiration() == arg0.getExpiration()) {
+                    return 0;
+                } else {
+                    return (arg1.getExpiration() > arg0.getExpiration()? 1 : -1);
+                }
+            }
+        });
+        ThreadCategory.getInstance(this.getClass()).info(System.currentTimeMillis() + ": " + pr.size() + " packets in the queue, lowest is " + pr.get(0));
+        long waitTime = pr.get(0).getExpiration() - System.currentTimeMillis();
+        if (waitTime < 0) {
+            return 0;
+        } else {
+            return waitTime;
+        }
     }
     
     /**
@@ -58,15 +82,24 @@ public class Pinger {
                     public void run() {
                         for (;;) {
                         	long waitTime = minimumWaitTime();
+                        	ThreadCategory.getInstance(this.getClass()).info("minimum wait time: " + waitTime);
                         	if (waitTime > 0) {
                         	    try {
                                     Reply pong = queue.remove(waitTime);
-                                    processReply(pong);
+                                    if (pong != null) {
+                                        processReply(pong);
+                                    }
                         	    } catch (InterruptedException ie) {
                         	        break;
                         	    } catch (FifoQueueException fqe) {
                         	        ThreadCategory.getInstance(this.getClass()).error("Error processing response queue", fqe);
                         	    }
+                        	} else if (waitTime == -1L) {
+                        	    try {
+                                    Thread.sleep(DEFAULT_WAIT_TIME);
+                                } catch (InterruptedException e) {
+                                    ThreadCategory.getInstance(this.getClass()).info("interrupted while waiting for new packets to handle", e);
+                                }
                         	} else {
                         	    processTimeouts();
                         	}
@@ -79,13 +112,22 @@ public class Pinger {
 			
 		}
 	}
-
-	protected void processTimeouts() {
-	    synchronized(waiting) {
-	        for (PingRequest request : waiting.values()) {
-	            request.processTimeout();
-	        }
-	    }
+	
+    protected void processTimeouts() {
+        synchronized(waiting) {
+            for (Iterator<Entry<Long, PingRequest>> it = waiting.entrySet().iterator(); it.hasNext(); ) {
+                PingRequest request = it.next().getValue();
+                ThreadCategory.getInstance(this.getClass()).debug("checking request " + request);
+                if (request.isExpired()) {
+                    it.remove();
+                    PingRequest retry = request.processTimeout();
+                    if (retry != null) {
+                        waiting.put(retry.getTid(), retry);
+                        retry.sendRequest(icmpSocket);
+                    }
+                }
+            }
+        }
     }
 
     protected void processReply(Reply pong) {
