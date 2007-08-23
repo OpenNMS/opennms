@@ -16,7 +16,7 @@ public class PingTest extends TestCase {
     private InetAddress m_badHost = null;
 
     /**
-     * Don't run this test unless the <classNameWithPackage>.runTest property
+     * Don't run this test unless the runPingTests property
      * is set to "true".
      */
     @Override
@@ -25,18 +25,21 @@ public class PingTest extends TestCase {
             System.err.println("Skipping test '" + getName() + "' because system property '" + getRunTestProperty() + "' is not set to 'true'");
             return;
         }
-
-        super.runTest();
+            
+        try {
+            System.err.println("------------------- begin "+getName()+" ---------------------");
+            super.runTest();
+        } finally {
+            System.err.println("------------------- end "+getName()+" -----------------------");
+        }
     }
 
     private boolean isRunTest() {
-        // System.setProperty("opennms.library.jicmp", "/sw/lib/libjicmp.jnilib");
-        // return true;
         return Boolean.getBoolean(getRunTestProperty());
     }
 
     private String getRunTestProperty() {
-        return getClass().getName() + ".runTest";
+        return "runPingTests";
     }
 
     @Override
