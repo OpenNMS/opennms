@@ -349,7 +349,7 @@ public class KSC_PerformanceReportFactory {
         } else if (interval.equals("1_day")) {
             begin_time.add(Calendar.DATE, -1);
         } else if (interval.equals("2_day")) {
-            begin_time.add(Calendar.DATE, -1);
+            begin_time.add(Calendar.DATE, -2);
         } else if (interval.equals("7_day")) {
             begin_time.add(Calendar.DATE, -7);
         } else if (interval.equals("1_month")) {
