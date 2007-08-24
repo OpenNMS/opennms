@@ -115,7 +115,6 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
 		List<Number> responseTimes = null;
 		
 		try {
-			Pinger pinger = new Pinger();
 			
 			// get parameters
 			//
@@ -123,7 +122,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
 			int count = ParameterMap.getKeyedInteger(parameters, "pings", DEFAULT_MULTI_PING_COUNT);
 			long pingInterval = ParameterMap.getKeyedLong(parameters, "interval", DEFAULT_PING_INTERVAL);
 			
-			responseTimes = new ArrayList<Number>(pinger.parallelPing(host, count, timeout, pingInterval));
+			responseTimes = new ArrayList<Number>(Pinger.parallelPing(host, count, timeout, pingInterval));
 
 			serviceStatus = PollStatus.available();
 			Collections.sort(responseTimes, new Comparator<Number>() {

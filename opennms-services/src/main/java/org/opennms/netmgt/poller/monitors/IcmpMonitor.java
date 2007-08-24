@@ -111,20 +111,19 @@ final public class IcmpMonitor extends IPv4Monitor {
         Category log = ThreadCategory.getInstance(this.getClass());
         PollStatus serviceStatus = PollStatus.unavailable();
         Long rtt = null;
-		InetAddress host = (InetAddress) iface.getAddress();
-		
-		try {
-			Pinger pinger = new Pinger();
-			
-			// get parameters
-			//
-			int retries = ParameterMap.getKeyedInteger(parameters, "retry", Pinger.DEFAULT_RETRIES);
-			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
-			
-			rtt = pinger.ping(host, timeout, retries);
-		} catch (Exception e) {
-			log.debug("failed to ping " + host, e);
-		}
+        InetAddress host = (InetAddress) iface.getAddress();
+
+        try {
+            
+            // get parameters
+            //
+            int retries = ParameterMap.getKeyedInteger(parameters, "retry", Pinger.DEFAULT_RETRIES);
+            long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
+            
+            rtt = Pinger.ping(host, timeout, retries);
+        } catch (Exception e) {
+            log.debug("failed to ping " + host, e);
+        }
         
         if (rtt != null) {
         	serviceStatus = PollStatus.available();

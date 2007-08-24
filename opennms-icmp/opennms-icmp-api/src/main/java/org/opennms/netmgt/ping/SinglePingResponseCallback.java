@@ -11,7 +11,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     Long responseTime = null;
     
 	public void handleResponse(ICMPEchoPacket packet) {
-	    info("got response for " + packet.getTID() + "/" + packet.getSequenceId());
+	    info("got response for " + packet.getTID() + "/" + packet.getSequenceId() + " with a responseTime "+packet.getPingRTT());
 	    responseTime = packet.getPingRTT();
 	    bs.signalAll();
 	}

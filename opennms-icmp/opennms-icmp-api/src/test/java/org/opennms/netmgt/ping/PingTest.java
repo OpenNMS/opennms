@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 import org.opennms.core.utils.CollectionMath;
 
 public class PingTest extends TestCase {
-    private Pinger m_pinger = null;
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
 
@@ -46,28 +45,27 @@ public class PingTest extends TestCase {
         }
 
         super.setUp();
-        m_pinger = new Pinger();
         m_goodHost = InetAddress.getByName("www.google.com");
         m_badHost  = InetAddress.getByName("1.1.1.1");
     }
 
     public void testSinglePing() throws Exception {
-        assertTrue(m_pinger.ping(m_goodHost) > 0);
+        assertTrue(Pinger.ping(m_goodHost) > 0);
     }
 
     public void testSinglePingFailure() throws Exception {
-        assertNull(m_pinger.ping(m_badHost));
+        assertNull(Pinger.ping(m_badHost));
     }
 
     public void testParallelPing() throws Exception {
-        List<Number> items = m_pinger.parallelPing(m_goodHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
+        List<Number> items = Pinger.parallelPing(m_goodHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
-        List<Number> items = m_pinger.parallelPing(m_badHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
+        List<Number> items = Pinger.parallelPing(m_badHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) == 0);

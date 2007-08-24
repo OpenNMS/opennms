@@ -94,10 +94,8 @@ public final class IcmpPlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address) {
-    	Pinger pinger;
 		try {
-			pinger = new Pinger();
-	    	Long retval = pinger.ping(address);
+	    	Long retval = Pinger.ping(address);
 	    	if (retval != null) {
 	    		return true;
 	    	}
@@ -123,12 +121,10 @@ public final class IcmpPlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
-    	Pinger pinger;
     	int retries;
     	long timeout;
 
     	try {
-    		pinger = new Pinger();
     		if (qualifiers != null) {
     			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", Pinger.DEFAULT_RETRIES);
     			timeout = ParameterMap.getKeyedLong(qualifiers, "timeout", Pinger.DEFAULT_TIMEOUT);
@@ -136,7 +132,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     			retries = Pinger.DEFAULT_RETRIES;
     			timeout = Pinger.DEFAULT_TIMEOUT;
     		}
-    		Long retval = pinger.ping(address, timeout, retries);
+    		Long retval = Pinger.ping(address, timeout, retries);
     		if (retval != null) {
     			return true;
     		}
