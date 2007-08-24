@@ -20,6 +20,7 @@ public class RequestTracker {
      */
     private static Map<Long, PingRequest> waiting = Collections.synchronizedMap(new TreeMap<Long, PingRequest>());
     private FifoQueueImpl<Reply> m_queue;
+    public static final int DEFAULT_WAIT_TIME = 50;
 
     public RequestTracker(FifoQueueImpl<Reply> queue) {
         m_queue = queue;
@@ -37,7 +38,7 @@ public class RequestTracker {
         ArrayList<PingRequest> pr = null;
         synchronized(getTrackerLock()) {
     	    if (getPendingRequestMap().size() == 0) {
-    	        return -1L;
+    	        return DEFAULT_WAIT_TIME;
     	    }
     	    
             pr = new ArrayList<PingRequest>(getPendingRequestMap().values());
@@ -73,8 +74,6 @@ public class RequestTracker {
         log().info("minimum wait time: " + waitTime);
         if (waitTime > 0) {
             return m_queue.remove(waitTime);
-        } else if (waitTime == -1L) {
-            Thread.sleep(Pinger.DEFAULT_WAIT_TIME);
         }
         return null;
     }

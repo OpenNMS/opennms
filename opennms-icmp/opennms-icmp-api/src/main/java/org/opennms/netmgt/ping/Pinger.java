@@ -19,7 +19,6 @@ import org.opennms.protocols.icmp.IcmpSocket;
 public class Pinger {
     public static final int DEFAULT_TIMEOUT = 800;
     public static final int DEFAULT_RETRIES = 2;
-    public static final int DEFAULT_WAIT_TIME = 2000;
 	
     private static IcmpSocket icmpSocket = null;
     private static ReplyReceiver receiver = null;
