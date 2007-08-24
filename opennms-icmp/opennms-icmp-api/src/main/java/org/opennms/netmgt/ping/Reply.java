@@ -83,7 +83,7 @@ public final class Reply {
      *            The received packet.
      * 
      */
-    private Reply(InetAddress addr, ICMPEchoPacket pkt) {
+    public Reply(InetAddress addr, ICMPEchoPacket pkt) {
         m_packet = pkt;
         m_address = addr;
     }
