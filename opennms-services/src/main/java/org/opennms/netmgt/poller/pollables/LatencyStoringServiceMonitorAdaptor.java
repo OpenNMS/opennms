@@ -103,6 +103,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 			log().info("storeResponseTime(multi): RRD repository not specified in parameters, latency data will not be stored.");
 		}
 
+		if (!entries.containsKey(dsName) && entries.containsKey(DEFAULT_BASENAME)) {
+		    entries.put(dsName, entries.get(DEFAULT_BASENAME));
+		    entries.remove(DEFAULT_BASENAME);
+		}
+
 		updateRRD(rrdPath, svc.getAddress(), rrdBaseName, entries);
 	}
 	
