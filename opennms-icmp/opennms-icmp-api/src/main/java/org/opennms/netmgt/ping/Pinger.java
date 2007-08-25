@@ -183,14 +183,7 @@ public class Pinger {
             try {
                 DatagramPacket packet = s_icmpSocket.receive();
 
-                // Check the packet length
-                if (packet.getLength() != ICMPEchoPacket.getNetworkSize()) {
-                    // skip it its not an echo reply
-                    continue;
-                }
-                
-                ICMPEchoPacket pkt = new ICMPEchoPacket(packet.getData());
-                Reply reply = new Reply(packet.getAddress(), pkt);
+                Reply reply = Reply.create(packet);
                 
                 if (reply.isEchoReply() && reply.getIdentity() == PingRequest.FILTER_ID) {
                     debugf("Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
@@ -198,6 +191,10 @@ public class Pinger {
                 }
             } catch (IOException e) {
                 log().error("I/O Error occurred reading from ICMP Socket", e);
+            } catch (IllegalArgumentException e) {
+                // this is not an EchoReply so ignore it
+            } catch (IndexOutOfBoundsException e) {
+                // this packet is not a valid EchoReply ignore it
             }
             
         }
