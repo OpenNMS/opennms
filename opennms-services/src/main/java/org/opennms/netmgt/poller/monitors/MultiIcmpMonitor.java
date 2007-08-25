@@ -135,7 +135,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
                     } else if (arg0.doubleValue() == arg1.doubleValue()) {
                         return 0;
                     } else {
-                        return arg1.doubleValue() > arg0.doubleValue()? 1 : -1;
+                        return arg0.doubleValue() < arg1.doubleValue()? -1 : 1;
                     }
                 }
 			    
