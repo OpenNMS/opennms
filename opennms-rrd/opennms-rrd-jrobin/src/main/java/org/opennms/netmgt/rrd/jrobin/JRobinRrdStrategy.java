@@ -248,6 +248,16 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return new Color(colorVal);
     }
 
+    // For compatibility with RRDtool defs, the colour value for
+    // LINE and AREA is optional. If it's missing, the line is rendered
+    // invisibly.
+    private Color getColorOrInvisible(String[] array, int index) {
+        if (array.length > index) {
+            return getColor(array[index]);
+        }
+        return new Color(1.0f, 1.0f, 1.0f, 0.0f);
+    }
+
     public InputStream createGraph(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         return createGraphReturnDetails(command, workDir).getInputStream();
     }
@@ -463,19 +473,19 @@ public class JRobinRrdStrategy implements RrdStrategy {
                 String definition = arg.substring("LINE1:".length());
                 String[] line1 = tokenize(definition, ":", true);
                 String[] color = tokenize(line1[0], "#", true);
-                graphDef.line(color[0], getColor(color[1]), (line1.length > 1 ? line1[1] : ""));
+                graphDef.line(color[0], getColorOrInvisible(color, 1), (line1.length > 1 ? line1[1] : ""));
             
             } else if (arg.startsWith("LINE2:")) {
                 String definition = arg.substring("LINE2:".length());
                 String[] line2 = tokenize(definition, ":", true);
                 String[] color = tokenize(line2[0], "#", true);
-                graphDef.line(color[0], getColor(color[1]), (line2.length > 1 ? line2[1] : ""), 2);
+                graphDef.line(color[0], getColorOrInvisible(color, 1), (line2.length > 1 ? line2[1] : ""), 2);
 
             } else if (arg.startsWith("LINE3:")) {
                 String definition = arg.substring("LINE3:".length());
                 String[] line3 = tokenize(definition, ":", true);
                 String[] color = tokenize(line3[0], "#", true);
-                graphDef.line(color[0], getColor(color[1]), (line3.length > 1 ? line3[1] : ""), 3);
+                graphDef.line(color[0], getColorOrInvisible(color, 1), (line3.length > 1 ? line3[1] : ""), 3);
 
             } else if (arg.startsWith("GPRINT:")) {
                 String definition = arg.substring("GPRINT:".length());
@@ -507,7 +517,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
                 String definition = arg.substring("AREA:".length());
                 String area[] = tokenize(definition, ":", true);
                 String[] color = tokenize(area[0], "#", true);
-                graphDef.area(color[0], getColor(color[1]), (area.length > 1 ? area[1] : ""));
+                graphDef.area(color[0], getColorOrInvisible(color, 1), (area.length > 1 ? area[1] : ""));
 
             } else if (arg.startsWith("STACK:")) {
                 String definition = arg.substring("STACK:".length());
