@@ -1585,8 +1585,11 @@ public final class DiscoveryLink implements ReadyRunnable {
 					Iterator<Vlan> vlan_ite = node.getVlans().iterator();
 					while (vlan_ite.hasNext()) {
 						Vlan vlan = vlan_ite.next();
-						if (vlan.getVlanStatus() != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL && vlan.getVlanType() != VlanCollectorEntry.VLAN_TYPE_ETHERNET) continue;
-						agentConfig.setReadCommunity(community+"@"+vlan);
+						if (vlan.getVlanStatus() != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL || vlan.getVlanType() != VlanCollectorEntry.VLAN_TYPE_ETHERNET) {
+							if (log().isDebugEnabled()) log().debug("parseBridgeNodes: skipping vlan: " + vlan.getVlanName());
+							continue;
+						}
+						agentConfig.setReadCommunity(community+"@"+vlan.getVlanIndex());
 						bridgenodeschanged.add(collectMacAddress(agentConfig, node, mac, vlan.getVlanIndex()));
 						agentConfig.setReadCommunity(community);
 					}
@@ -1676,7 +1679,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(node.getSnmpPrimaryIpAddr()));
 			} catch (UnknownHostException e) {
 				log().error(
-						"foundLinkUsingMacAddress: Failed to load snmp parameter from snmp configuration file " +
+						"findLinkUsingMacAddress: Failed to load snmp parameter from snmp configuration file " +
 				e);
 				return;
 			}
@@ -1688,8 +1691,11 @@ public final class DiscoveryLink implements ReadyRunnable {
 				Iterator<Vlan> vlan_ite = node.getVlans().iterator();
 				while (vlan_ite.hasNext()) {
 					Vlan vlan = vlan_ite.next();
-					if (vlan.getVlanStatus() != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL && vlan.getVlanType() != VlanCollectorEntry.VLAN_TYPE_ETHERNET) continue;
-					agentConfig.setReadCommunity(community+"@"+vlan);
+					if (vlan.getVlanStatus() != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL || vlan.getVlanType() != VlanCollectorEntry.VLAN_TYPE_ETHERNET) {
+						if (log().isDebugEnabled()) log().debug("findLinkUsingMacAddress: skipping vlan: " + vlan.getVlanName());
+						continue;
+					}
+					agentConfig.setReadCommunity(community+"@"+vlan.getVlanIndex());
 					if(log().isDebugEnabled())
 						log().debug("findLinkUsingMacAddress: searching iterating on found vlan: " + node.getSnmpPrimaryIpAddr() + "@" + vlan.getVlanName());
 					int bridgeport = getMacAddressBridgePort(agentConfig, node, mac);
