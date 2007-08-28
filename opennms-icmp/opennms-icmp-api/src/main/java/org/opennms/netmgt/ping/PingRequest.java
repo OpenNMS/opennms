@@ -1,6 +1,5 @@
 package org.opennms.netmgt.ping;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.concurrent.Delayed;
