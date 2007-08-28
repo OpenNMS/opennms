@@ -36,11 +36,14 @@ import java.io.IOException;
 import java.net.BindException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
+import org.snmp4j.agent.DefaultMOScope;
 import org.snmp4j.agent.DuplicateRegistrationException;
+import org.snmp4j.agent.MOScope;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.io.ImportModes;
 import org.snmp4j.agent.mo.MOScalar;
@@ -95,7 +98,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private Resource m_moFile;
     private boolean m_running;
     private boolean m_stopped;
-    private ArrayList<ManagedObject> m_moList;
+    private List<ManagedObject> m_moList;
+    private MockSnmpMOLoader m_moLoader;
 
     /*
      * Creates the mock agent with files to read and store the boot counter,
@@ -430,25 +434,27 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         // here we should unregister those objects previously registered...
     }
 
-    protected ArrayList<ManagedObject> createMockMOs() {
-        MockSnmpMOLoader moLoader = new PropsMockSnmpMOLoaderImpl(m_moFile);
-        return moLoader.loadMOs();
+    protected List<ManagedObject> createMockMOs() {
+//        m_moLoader = new PropsMockSnmpMOLoaderImpl(m_moFile);
+        m_moLoader = new PropertiesBackedManagedObject(m_moFile);
+        return m_moLoader.loadMOs();
     }
     
-    public MOScalar findScalarForOid(OID oid) {
+    private ManagedObject findMOForOid(OID oid) {
         for(ManagedObject mo : m_moList) {
-            MOScalar scalar = (MOScalar)mo;
-            if (oid.equals(scalar.getID())) {
-                return scalar;
+            if (mo.getScope().covers(oid)) {
+                return mo;
             }
-        } 
+        }
         return null;
     }
     
     public void updateValue(OID oid, Variable value) {
-        MOScalar scalar = findScalarForOid(oid);
-        assertNotNull("Unable to find oid in mib for mockAgent: "+oid, scalar);
-        scalar.setValue(value);
+        ManagedObject mo = findMOForOid(oid);
+        assertNotNull("Unable to find oid in mib for mockAgent: "+oid, mo);
+        if (mo instanceof Updatable) {
+            ((Updatable)mo).updateValue(oid, value);
+        }
     }
     
     private void assertNotNull(String string, Object o) {
