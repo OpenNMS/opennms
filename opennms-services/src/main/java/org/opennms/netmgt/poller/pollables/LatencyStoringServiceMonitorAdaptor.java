@@ -33,7 +33,6 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
