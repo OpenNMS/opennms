@@ -517,7 +517,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
                 String definition = arg.substring("AREA:".length());
                 String area[] = tokenize(definition, ":", true);
                 String[] color = tokenize(area[0], "#", true);
-                graphDef.area(color[0], getColorOrInvisible(color, 1), (area.length > 1 ? area[1] : ""));
+                if (area.length > 1) {
+                    graphDef.area(color[0], getColorOrInvisible(color, 1), area[1]);
+                } else {
+                    graphDef.area(color[0], getColorOrInvisible(color, 1));
+                }
 
             } else if (arg.startsWith("STACK:")) {
                 String definition = arg.substring("STACK:".length());
@@ -565,7 +569,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
 	}
     
     private String[] tokenize(String line, String delimiters, boolean processQuotes) {
-        return StringUtils.tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes);
+        String passthroughTokens = "lcrjgsJ"; /* see org.jrobin.graph.RrdGraphConstants.MARKERS */
+        return StringUtils.tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes, passthroughTokens);
     }
 
     /**
