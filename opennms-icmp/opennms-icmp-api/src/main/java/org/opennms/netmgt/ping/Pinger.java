@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ping.PingRequest.RequestId;
-import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
