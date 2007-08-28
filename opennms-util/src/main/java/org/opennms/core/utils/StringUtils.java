@@ -120,6 +120,23 @@ public class StringUtils {
     }
 
     public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted) {
+        return tokenizeWithQuotingAndEscapes(line, delims, processQuoted, "");
+    }
+    
+    /**
+     * Tokenize a {@link String} into an array of {@link String}s.
+     * @param line
+     *          the string to tokenize
+     * @param delims
+     *          a string containing zero or more characters to treat as a delimiter
+     * @param processQuoted
+     *          whether or not to process escaped values inside quotes
+     * @param tokens
+     *          custom escaped tokens to pass through, escaped.  For example, if tokens contains "lsg", then \l, \s, and \g
+     *          will be passed through unescaped.
+     * @return
+     */
+    public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted, String tokens) {
         Category log = ThreadCategory.getInstance(StringUtils.class);
         List<String> tokenList = new LinkedList<String>();
     
@@ -142,7 +159,12 @@ public class StringUtils {
                 } else if (ch == 't') {
                     currToken.append('\t');
                 } else {
-                    currToken.append(ch);
+                    if (tokens.indexOf(ch) >= 0) {
+                        currToken.append('\\').append(ch);
+                    } else {
+                        // silently pass through the character *without* the \ in front of it
+                        currToken.append(ch);
+                    }
                 }
                 escaping = false;
                 if (debugTokens)
