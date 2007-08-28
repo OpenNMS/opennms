@@ -31,7 +31,7 @@
 //
 package org.opennms.mock.snmp;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.snmp4j.agent.ManagedObject;
 
@@ -39,5 +39,5 @@ import org.snmp4j.agent.ManagedObject;
  * @author Jeff Gehlbach <jeffg jeffg org>
  */
 public interface MockSnmpMOLoader {
-	public ArrayList<ManagedObject> loadMOs();
+	public List<ManagedObject> loadMOs();
 }

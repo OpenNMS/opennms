@@ -31,11 +31,15 @@
 //
 package org.opennms.mock.snmp;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
+import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOScalar;
@@ -60,16 +64,11 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 		
 	}
 	
-	public ArrayList<ManagedObject> loadMOs() {
-		Properties moProps = new Properties();
+	public List<ManagedObject> loadMOs() {
 		ArrayList<ManagedObject> moList = new ArrayList<ManagedObject>();
 		
-		try {
-			moProps.load( m_moFile.getInputStream() );
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
+        Properties moProps = loadProperties(m_moFile);
+        if (moProps == null) return null;
 		
 		Enumeration moKeys = moProps.keys();
 		while ( moKeys.hasMoreElements() ) {
@@ -79,12 +78,49 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 		}
 		return moList;
 	}
+
+    public static  Properties loadProperties(Resource propertiesFile) {
+        Properties moProps = new Properties();
+		InputStream inStream = null;
+		try {
+            inStream = propertiesFile.getInputStream();
+			moProps.load( inStream );
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		} finally {
+		    try { if (inStream != null) inStream.close(); } catch (IOException e) {}
+		}
+        return moProps;
+    }
+    
+    private static class UpdatableScalar extends MOScalar implements Updatable {
+
+        public UpdatableScalar(OID id, MOAccess access, Variable value) {
+            super(id, access, value);
+        }
+
+        public void updateValue(OID oid, Variable value) {
+            if (!getScope().covers(oid)) {
+                throw new IllegalArgumentException("attempt to set value of oid not defined in this scalar: oid = "+oid+", scalar = "+this);
+            }
+            setValue(value);
+        }
+        
+    }
 	
 	protected static ManagedObject getMOFromPropString(String oidStr, String valStr) {
 	    OID moOID = new OID(oidStr);
 
 	    MOScalar newMO;
-	    Variable newVar;
+	    Variable newVar = getVariableFromValueString(oidStr, valStr);
+	    newMO = new UpdatableScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, newVar);
+	    newMO.setVolatile(true);
+	    return newMO;
+	}
+
+    public static Variable getVariableFromValueString(String oidStr, String valStr) {
+        Variable newVar;
 
 	    if ("\"\"".equals(valStr)) {
 	        newVar = new Null();
@@ -102,7 +138,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	            } else if (moTypeStr.equals("INTEGER")) {
 	                newVar = new Integer32(Integer.parseInt(moValStr));
 	            } else if (moTypeStr.equals("Gauge32")) {
-	                newVar = new Gauge32(Integer.parseInt(moValStr));
+	                newVar = new Gauge32(Long.parseLong(moValStr));
 	            } else if (moTypeStr.equals("Counter32")) {
 	                newVar = new Counter32(Long.parseLong(moValStr)); // a 32 bit counter can be > 2 ^ 31, which is > INTEGER_MAX
 	            } else if (moTypeStr.equals("Counter64")) {
@@ -125,8 +161,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	            throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);
 	        }
 	    }
-	    newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, newVar);
-	    newMO.setVolatile(true);
-	    return newMO;
-	}
+        return newVar;
+    }
+    
 }
