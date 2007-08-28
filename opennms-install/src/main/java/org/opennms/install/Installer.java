@@ -813,17 +813,34 @@ public class Installer {
     	
     	if (path != null) {
     		String[] paths = path.split(File.pathSeparator);
+    		m_out.println("- searching for " + libname + ":");
     		for (int i = 0; i < paths.length; i++) {
-    			try {
-    				String fullpath = paths[i] + File.separator + fullname;
-        			System.load(fullpath);
-        			return fullpath;
-       			} catch (UnsatisfiedLinkError ule) {
-       				// fall through and try the next one
-       			}
+    		    File entry = new File(paths[i]);
+    		    
+                if (entry.isFile()) {
+                    // if they specified a file, try the parent directory instead
+                    paths[i] = entry.getParent();
+                }
+
+   			    String fullpath = paths[i] + File.separator + fullname;
+   			    if (loadLibrary(fullpath)) {
+   			        return fullpath;
+   			    }
     		}
     	}
     	return null;
+    }
+    
+    public boolean loadLibrary(String path) {
+        try {
+            m_out.print("  - trying to load " + path + ": ");
+            System.load(path);
+            m_out.println("OK");
+            return true;
+        } catch (UnsatisfiedLinkError ule) {
+            m_out.println("NO");
+        }
+        return false;
     }
     
     public void writeLibraryConfig(String jicmp_path, String jrrd_path) throws IOException {
