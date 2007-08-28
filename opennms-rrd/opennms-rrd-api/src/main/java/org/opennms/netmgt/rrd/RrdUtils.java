@@ -84,7 +84,7 @@ public class RrdUtils {
 
     public static RrdStrategy getStrategy() {
         if (m_rrdStrategy == null) {
-            throw new IllegalStateException("RrdUtils not initiailzed");
+            throw new IllegalStateException("RrdUtils not initialized");
         }
         return m_rrdStrategy;
     }
