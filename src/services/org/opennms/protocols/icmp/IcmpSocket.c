@@ -447,7 +447,7 @@ static jobject newInetAddress(JNIEnv *env, unsigned long addr)
 	jstring		addrString = NULL;
 
 #define BYTE_OF(_x, _i) ((_x >> (_i * 8)) & 0xff)
-	sprintf(buf,
+	snprintf(buf, sizeof(buf),
 		"%d.%d.%d.%d",
 		BYTE_OF(addr, 3),
 		BYTE_OF(addr, 2),
@@ -552,7 +552,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_initSocket (JNIEnv *env, jobject inst
 		jclass  ioException = (*env)->FindClass(env, "java/net/SocketException");
 		if(ioException != NULL)
 		{
-			sprintf(errBuf, "System error creating ICMP socket (%d, %s)", savedErrno, strerror(savedErrno));
+			snprintf(errBuf, sizeof(errBuf), "System error creating ICMP socket (%d, %s)", savedErrno, strerror(savedErrno));
 			(*env)->ThrowNew(env, ioException, (char *)errBuf);
 		}
 	}
@@ -644,7 +644,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 		int savedErrno = errno;
 		jclass ioEx = (*env)->FindClass(env, "java/io/IOException");
 
-		sprintf(errBuf, "Error reading data from the socket descriptor (%d, %s)", savedErrno, strerror(savedErrno));
+		snprintf(errBuf, sizeof(errBuf), "Error reading data from the socket descriptor (%d, %s)", savedErrno, strerror(savedErrno));
 		(*env)->ThrowNew(env, ioEx, (char *)errBuf);
 		goto end_recv;
 	}
@@ -912,7 +912,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 		int serror = errno;
 		jclass memEx = (*env)->FindClass(env, "java/lang/OutOfMemoryError");
 		
-		sprintf(buf, "Insufficent Memory (%d, %s)", serror, strerror(serror));
+		snprintf(buf, sizeof(buf), "Insufficent Memory (%d, %s)", serror, strerror(serror));
 		(*env)->ThrowNew(env, memEx, (const char *)buf);
 		goto end_send;
 	}
@@ -995,7 +995,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 		int serror = errno;
 		jclass ioEx = (*env)->FindClass(env, "java/io/IOException");
 		
-		sprintf(buf, "sendto error (%d, %s)", serror, strerror(serror));
+		snprintf(buf, sizeof(buf), "sendto error (%d, %s)", serror, strerror(serror));
 		(*env)->ThrowNew(env, ioEx, (const char *)buf);
 	}
 	
