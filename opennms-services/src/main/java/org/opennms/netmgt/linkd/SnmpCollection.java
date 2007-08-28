@@ -200,7 +200,8 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * @throws java.lang.UnsupportedOperationException
 	 *             Always thrown.
 	 */
-	private SnmpCollection() {
+	
+	SnmpCollection() {
 		throw new UnsupportedOperationException(
 				"default constructor not supported");
 	}
