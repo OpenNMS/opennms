@@ -104,8 +104,12 @@ public class MockSnmpAgentTest extends TestCase {
 		setUp();
 		// don't need the second tearDown(), since it will be done by JUnit
 	}
+	
+	public void testGetNext() throws Exception {
+	    assertResultFromGetNext("1.3.5.1.1.3", "1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+	}
 
-	public void testGet() throws IOException, InterruptedException {
+	public void testGet() throws Exception {
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
         
         agt.updateValue("1.3.5.1.1.3.0", new Integer32(77));
@@ -114,12 +118,21 @@ public class MockSnmpAgentTest extends TestCase {
         
 	}
 
-    private void assertResultFromGet(String oidStr, int expectedSyntax,
+    private void assertResultFromGet(String oidStr, int expectedSyntax, Integer32 expected) throws Exception {
+        assertResult(PDU.GET, oidStr, oidStr, expectedSyntax, expected);
+    }
+
+    private void assertResultFromGetNext(String oidStr, String expectedOid, int expectedSyntax,
+            Integer32 expected) throws UnknownHostException, IOException {
+        assertResult(PDU.GETNEXT, oidStr, expectedOid, expectedSyntax, expected);
+    }
+
+    private void assertResult(int pduType, String oidStr, String expectedOid, int expectedSyntax,
             Integer32 expected) throws UnknownHostException, IOException {
         PDU pdu = new PDU();
 		OID oid = new OID(oidStr);
         pdu.add(new VariableBinding(oid));
-		pdu.setType(PDU.GET);
+        pdu.setType(pduType);
 		
 		CommunityTarget target = new CommunityTarget();
 		target.setCommunity(new OctetString("public"));
@@ -139,7 +152,7 @@ public class MockSnmpAgentTest extends TestCase {
 			VariableBinding vb = response.get(0);
 			assertNotNull(vb);
 			assertNotNull(vb.getVariable());
-			assertEquals(oid, vb.getOid());
+			assertEquals(new OID(expectedOid), vb.getOid());
 			assertEquals(expectedSyntax, vb.getSyntax());
 			Variable val = vb.getVariable();
 			assertNotNull(val);
