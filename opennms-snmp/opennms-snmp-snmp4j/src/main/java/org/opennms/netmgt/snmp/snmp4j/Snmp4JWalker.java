@@ -153,8 +153,8 @@ public class Snmp4JWalker extends SnmpWalker {
         }
 
         public void onResponse(ResponseEvent responseEvent) {
-        	// need to cancel this here otherwise SNMP4J Keeps it around forever... go figure
-        	m_session.cancel(responseEvent.getRequest(), this);
+            // need to cancel this here otherwise SNMP4J Keeps it around forever... go figure
+            m_session.cancel(responseEvent.getRequest(), this);
             if (responseEvent.getError() instanceof InterruptedException) {
                 if (log().isDebugEnabled()) {
                     log().debug("Interruption event.  We have probably tried to close the session due to an error: " + responseEvent.getError(), responseEvent.getError());
