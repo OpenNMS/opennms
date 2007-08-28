@@ -310,6 +310,7 @@ public class DbEventWriter implements QueryManager {
 
 		int i = stmt.executeUpdate();
 		stmt.close();
+		dbConn.close();
 		if (log().isDebugEnabled())
 			log().debug(
 					"storelink: datalinkinterface - updated to NOT ACTIVE status "
@@ -1159,6 +1160,8 @@ public class DbEventWriter implements QueryManager {
 			}
 		}
 		update(dbConn, now, node.getNodeId());
+		dbConn.close();
+
 		return node;
 
 	}
@@ -1308,6 +1311,7 @@ public class DbEventWriter implements QueryManager {
 							+ SQL_UPDATE_DATALINKINTERFACE_STATUS + ". " + i
 							+ " rows UPDATED for nodeid=" + nodeid + ".");
 		stmt.close();
+		dbConn.close();
 
 	}
 
@@ -1672,6 +1676,7 @@ public class DbEventWriter implements QueryManager {
 		}
 		rs.close();
 		stmt.close();
+		dbConn.close();
 
 		return node;
 
@@ -1709,6 +1714,7 @@ public class DbEventWriter implements QueryManager {
 
 		rs.close();
 		ps.close();
+		dbConn.close();
 
 		if (log().isDebugEnabled())
 			log().debug("getNodesInfo: found " + linknodes.size()
@@ -1771,6 +1777,7 @@ public class DbEventWriter implements QueryManager {
 			log().info("updateDeletedNodes: execute '" + SQL_UPDATE_DATALINKINTERFACE_D
 					+ "' updated rows: " + i);
 		}
+		dbConn.close();
 
 	}
 
@@ -1802,6 +1809,7 @@ public class DbEventWriter implements QueryManager {
 		}
 		rs.close();
 		stmt.close();
+		dbConn.close();
 		
 		return 	ipaddr;
 	
