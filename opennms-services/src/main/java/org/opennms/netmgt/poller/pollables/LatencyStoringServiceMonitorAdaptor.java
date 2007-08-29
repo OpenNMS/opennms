@@ -78,7 +78,12 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 	}
 
 	public void initialize(MonitoredService svc) {
-		m_serviceMonitor.initialize(svc);
+        try {
+            RrdUtils.initialize();
+            m_serviceMonitor.initialize(svc);
+        } catch (RrdException e){
+            throw new IllegalStateException("Unable to initialize RrdUtils", e);
+        }
 	}
 
 	public PollStatus poll(MonitoredService svc, Map parameters) {
