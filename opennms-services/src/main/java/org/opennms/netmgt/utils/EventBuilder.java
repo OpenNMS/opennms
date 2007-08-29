@@ -97,6 +97,11 @@ public class EventBuilder {
         return this;
     }
 
+    public EventBuilder setHost(String hostname) {
+        m_event.setHost(hostname);
+        return this;
+    }
+    
     public EventBuilder setInterface(String ipAddress) {
         m_event.setInterface(ipAddress);
         return this;
@@ -124,6 +129,10 @@ public class EventBuilder {
         m_event.getParms().addParm(parm);
         
         return this;
+    }
+
+    public EventBuilder addParam(String parmName, long val) {
+        return addParam(parmName, Long.toString(val));
     }
 
     public EventBuilder addParam(String parmName, int val) {
