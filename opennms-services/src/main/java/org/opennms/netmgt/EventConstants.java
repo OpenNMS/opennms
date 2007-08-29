@@ -176,6 +176,11 @@ public class EventConstants {
     public final static String DISC_RESUME_EVENT_UEI = "uei.opennms.org/internal/capsd/discResume";
 
     /**
+     * The discovery configuration changed event UEI
+     */
+    public final static String DISCOVERYCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/discoveryConfigChange";
+    
+    /**
      * The update server event UEI
      */
     public final static String UPDATE_SERVER_EVENT_UEI = "uei.opennms.org/internal/capsd/updateServer";
