@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/bin/bash -
 #
 # chkconfig: 345 99 01
 # description: Starts and stops the OpenNMS network management \
@@ -203,7 +203,6 @@ doStart(){
 	3)
 	    true  # don't do anything, it isn't running, which is good 
 	          # because we are going to start it. :-)
-	    break
 	    ;;
 
 	*)
