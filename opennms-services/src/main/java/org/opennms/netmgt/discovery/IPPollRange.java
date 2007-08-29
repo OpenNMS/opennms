@@ -44,7 +44,7 @@ import java.util.Iterator;
 
 /**
  * <p>
- * This class is designed to encapsualte the information about an address range
+ * This class is designed to encapsulate the information about an address range
  * plus the retry &amp; timeout information. The class is designed so that it
  * can return either an {@link java.util.Enumeration enumeration}or an
  * {@link java.util.Iterator iterator}to traverse the range of addresses.
@@ -55,7 +55,7 @@ import java.util.Iterator;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class IPPollRange {
+final class IPPollRange implements Iterable {
     /**
      * The range to cycle over.
      */
@@ -285,7 +285,7 @@ final class IPPollRange {
      * pollable address information.
      * </P>
      */
-    Iterator iterator() {
+    public Iterator iterator() {
         return new IPPollRangeGenerator(m_range.elements());
     }
 }

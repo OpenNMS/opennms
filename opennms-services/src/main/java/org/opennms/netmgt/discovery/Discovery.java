@@ -39,35 +39,44 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.beans.PropertyVetoException;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.ping.PingResponseCallback;
+import org.opennms.netmgt.ping.Pinger;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * This class is the main interface to the OpenNMS discovery service. The class
@@ -79,7 +88,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  * 
  */
-public final class Discovery extends AbstractServiceDaemon {
+public final class Discovery extends AbstractServiceDaemon implements EventListener {
 
     /**
      * The string indicating the start of the comments in a line containing the
@@ -99,35 +108,268 @@ public final class Discovery extends AbstractServiceDaemon {
     private static final Discovery m_singleton = new Discovery();
 
     /**
-     * The IP Generator queue
+     * a set of devices to skip discovery on
      */
-    private IPGenerator m_generator;
+    private Set<String> m_alreadyDiscovered;
+    private Collection<ExcludeRange> m_excluded;
 
-    /**
-     * The fiber that generates and sends suspect events
-     */
-    private SuspectEventGenerator m_eventWriter;
-
-    /**
-     * The class instance used to recieve new events from for the system.
-     */
-    private BroadcastEventProcessor m_eventReader;
-
-    /**
-     * The ICMP Poller Manager class. This manager iterates over the address
-     * range, using the IPGenerator, checking for available systems.
-     */
-    private PingManager m_manager;
+    private DiscoveryConfigFactory m_discoveryFactory;
+    private DiscoveryConfiguration m_discoveryConfiguration;
+    private Timer m_timer;
+    private long initialSleepTime;
+    private long discoveryInterval;
 
     /**
      * Constructs a new discovery instance.
      */
     private Discovery() {
-    	super("OpenNMS.Discovery");
-        m_generator = null;
-        m_eventWriter = null;
-        m_eventReader = null;
-        m_manager = null;
+        super("OpenNMS.Discovery");
+    }
+
+    protected void onInit() {
+
+        try {
+            DataSourceFactory.init();
+        } catch (Exception e) {
+            log().fatal("Unable to initialize the database factory", e);
+            throw new UndeclaredThrowableException(e);
+        }
+
+        reloadConfiguration();
+        initialSleepTime = m_discoveryConfiguration.getInitialSleepTime();
+        discoveryInterval = m_discoveryConfiguration.getRestartSleepTime();
+
+        EventIpcManagerFactory.init();
+
+        List<String> ueiList = new ArrayList<String>();
+        ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
+        ueiList.add(EventConstants.DISC_PAUSE_EVENT_UEI);
+        ueiList.add(EventConstants.DISC_RESUME_EVENT_UEI);
+        ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+        ueiList.add(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI);
+
+        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
+    }
+
+    private void reloadConfiguration() {
+        try {
+            DiscoveryConfigFactory.reload();
+            m_discoveryFactory = DiscoveryConfigFactory.getInstance();
+            DiscoveryConfiguration config = m_discoveryFactory.getConfiguration();
+            m_discoveryConfiguration = config;
+
+            m_excluded = Collections.synchronizedCollection(config.getExcludeRangeCollection());
+            m_alreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
+
+        } catch (Exception e) {
+            log().fatal("Unable to initialize the discovery configuration factory", e);
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+
+    protected void doPings() {
+        reloadConfiguration();
+
+        DiscoveryPingResponseCallback cb = new DiscoveryPingResponseCallback();
+
+        int pps = m_discoveryConfiguration.getPacketsPerSecond();
+
+        List<IPPollAddress> specifics = getSpecifics();
+        specifics.addAll(getUrlSpecifics());
+        List<IPPollRange> ranges = getRanges();
+
+        for (IPPollAddress address : specifics) {
+            pingAddress(address.getAddress(), address.getTimeout(), address.getRetries(), cb);
+        }
+
+        for (IPPollRange range : ranges) {
+            for (InetAddress address : range.getAddressRange()) {
+                // only check isExcluded for ranges since specifics would
+                // override
+                if (!isExcluded(address)) {
+                    pingAddress(address, range.getTimeout(), range.getRetries(), cb);
+                    try {
+                        Thread.sleep(1000 / pps);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isExcluded(InetAddress address) {
+        if (m_excluded != null) {
+            long laddr = IPSorter.convertToLong(address.getAddress());
+
+            for (ExcludeRange range : m_excluded) {
+                try {
+                    long begin = IPSorter.convertToLong(InetAddress.getByName(range.getBegin()).getAddress());
+                    long end = IPSorter.convertToLong(InetAddress.getByName(range.getEnd()).getAddress());
+                    if (begin <= laddr && laddr <= end) {
+                        return true;
+                    }
+                } catch (UnknownHostException ex) {
+                    log().debug("isExcluded: failed to convert exclusion address to InetAddress", ex);
+                }
+
+            }
+        }
+        return false;
+    }
+
+    private boolean isAlreadyDiscovered(InetAddress address) {
+        if (m_alreadyDiscovered.contains(address.getHostAddress())) {
+            return true;
+        }
+        return false;
+    }
+
+    protected void pingAddress(InetAddress address, long timeout, int retries, PingResponseCallback cb) {
+        if (address != null) {
+            if (!isAlreadyDiscovered(address)) {
+                try {
+                    Pinger.ping(address, timeout, retries, (short) 1, cb);
+                } catch (IOException e) {
+                    log().debug("error pinging " + address.getAddress(), e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the singular instance of the discovery process
+     */
+    public static Discovery getInstance() {
+        return m_singleton;
+    }
+
+    private void startTimer() {
+        if (m_timer != null) {
+            m_timer.cancel();
+        }
+        m_timer = new Timer("Discovery.Pinger", true);
+
+        TimerTask task = new TimerTask() {
+
+            @Override
+            public void run() {
+                doPings();
+            }
+
+        };
+        m_timer.scheduleAtFixedRate(task, initialSleepTime, discoveryInterval);
+
+    }
+
+    private void stopTimer() {
+        if (m_timer != null) {
+            m_timer.cancel();
+            m_timer = null;
+        }
+    }
+
+    protected void onStart() {
+        startTimer();
+    }
+
+    protected void onStop() {
+        stopTimer();
+    }
+
+    protected void onPause() {
+        stopTimer();
+    }
+
+    protected void onResume() {
+        startTimer();
+    }
+
+    private List<IPPollAddress> getUrlSpecifics() {
+        List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
+
+        Enumeration<IncludeUrl> urlEntries = m_discoveryConfiguration.enumerateIncludeUrl();
+        while (urlEntries.hasMoreElements()) {
+            IncludeUrl url = urlEntries.nextElement();
+
+            long timeout = 800L;
+            if (url.hasTimeout()) {
+                timeout = url.getTimeout();
+            } else if (m_discoveryConfiguration.hasTimeout()) {
+                timeout = m_discoveryConfiguration.getTimeout();
+            }
+
+            int retries = 3;
+            if (url.hasRetries()) {
+                retries = url.getRetries();
+            } else if (m_discoveryConfiguration.hasRetries()) {
+                retries = m_discoveryConfiguration.getRetries();
+            }
+
+            addToSpecificsFromURL(specifics, url.getContent(), timeout, retries);
+        }
+
+        return specifics;
+    }
+
+    private List<IPPollRange> getRanges() {
+        List<IPPollRange> includes = new LinkedList<IPPollRange>();
+        Enumeration<IncludeRange> includeRangeEntries = m_discoveryConfiguration.enumerateIncludeRange();
+        while (includeRangeEntries.hasMoreElements()) {
+            IncludeRange ir = includeRangeEntries.nextElement();
+
+            long timeout = 800L;
+            if (ir.hasTimeout()) {
+                timeout = ir.getTimeout();
+            } else if (m_discoveryConfiguration.hasTimeout()) {
+                timeout = m_discoveryConfiguration.getTimeout();
+            }
+
+            int retries = 3;
+            if (ir.hasRetries()) {
+                retries = ir.getRetries();
+            } else if (m_discoveryConfiguration.hasRetries()) {
+                retries = m_discoveryConfiguration.getRetries();
+            }
+
+            try {
+                includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
+            } catch (UnknownHostException uhE) {
+                log().warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
+            }
+        }
+
+        return includes;
+    }
+
+    private List<IPPollAddress> getSpecifics() {
+        List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
+
+        Enumeration<Specific> specificEntries = m_discoveryConfiguration.enumerateSpecific();
+        while (specificEntries.hasMoreElements()) {
+            Specific s = specificEntries.nextElement();
+
+            long timeout = 800L;
+            if (s.hasTimeout()) {
+                timeout = s.getTimeout();
+            } else if (m_discoveryConfiguration.hasTimeout()) {
+                timeout = m_discoveryConfiguration.getTimeout();
+            }
+
+            int retries = 3;
+            if (s.hasRetries()) {
+                retries = s.getRetries();
+            } else if (m_discoveryConfiguration.hasRetries()) {
+                retries = m_discoveryConfiguration.getRetries();
+            }
+
+            try {
+                specifics.add(new IPPollAddress(s.getContent(), timeout, retries));
+            } catch (UnknownHostException uhE) {
+                log().warn("Failed to convert address " + s.getContent(), uhE);
+            }
+        }
+        return specifics;
     }
 
     /**
@@ -153,13 +395,13 @@ public final class Discovery extends AbstractServiceDaemon {
      * @param retries
      *            the retries for all entries in this URL
      */
-    private boolean addToSpecificsFromURL(List specifics, String url, long timeout, int retries) {
+    private boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
         Category log = ThreadCategory.getInstance();
 
         boolean bRet = true;
 
         try {
-            // open the file indicated by the url
+            // open the file indicated by the URL
             URL fileURL = new URL(url);
 
             InputStream is = fileURL.openStream();
@@ -217,276 +459,41 @@ public final class Discovery extends AbstractServiceDaemon {
         return bRet;
     }
 
-    protected void onInit() {
-    	
-        if (m_manager != null) {
-        	log().error("The discovery service is already running and init() was called");
-        	throw new IllegalStateException("The discovery service is already running");
-        }
+    public void onEvent(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
 
-        // Initialize the Database configuration factory and verify
-        // that we can get a database connection.
-        //
-        java.sql.Connection ctest = null;
-        try {
-            DataSourceFactory.init();
-            ctest = DataSourceFactory.getInstance().getConnection();
-        } catch (IOException ie) {
-            log().fatal("IOException getting database connection", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log().fatal("Marshall Exception getting database connection", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log().fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (SQLException sqlE) {
-            log().fatal("SQL Exception getting database connection", sqlE);
-            throw new UndeclaredThrowableException(sqlE);
-        } catch (ClassNotFoundException cnfE) {
-            log().fatal("Class Not Found Exception getting database connection", cnfE);
-            throw new UndeclaredThrowableException(cnfE);
-        } catch (PropertyVetoException e) {
-            log().fatal("initialize: Failed getting connection to the database.", e);
-            throw new UndeclaredThrowableException(e);
-        } finally {
+        String eventUei = event.getUei();
+        if (eventUei == null)
+            return;
+
+        if (log.isDebugEnabled())
+            log.debug("Received event: " + eventUei);
+
+        if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
+            // add to known nodes
+            m_alreadyDiscovered.add(event.getInterface());
+
+            if (log.isDebugEnabled())
+                log.debug("Added " + event.getInterface() + " as discovered");
+        } else if (eventUei.equals(EventConstants.DISC_PAUSE_EVENT_UEI)) {
             try {
-                if (ctest != null) {
-                    ctest.close();
-		}
-            } catch (Exception e) {
+                Discovery.getInstance().pause();
+            } catch (IllegalStateException ex) {
             }
-        }
-
-        // Initialize discovery configuration factory
-        DiscoveryConfigFactory dFactory = null;
-        try {
-            DiscoveryConfigFactory.reload();
-            dFactory = DiscoveryConfigFactory.getInstance();
-        } catch (MarshalException ex) {
-            log().error("Failed to load discovery configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load discovery configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load discovery configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        // Get the discovery configuration from the factory.
-        //
-        DiscoveryConfiguration cfg = dFactory.getConfiguration();
-
-        //
-        // build the lists
-        //
-        List specifics = new LinkedList();
-        List includes = new LinkedList();
-
-        Enumeration e = cfg.enumerateSpecific();
-        while (e.hasMoreElements()) {
-            Specific s = (Specific) e.nextElement();
-
-            long timeout = 800L;
-            if (s.hasTimeout()) {
-                timeout = s.getTimeout();
-	    } else if (cfg.hasTimeout()) {
-                timeout = cfg.getTimeout();
-	    }
-
-            int retries = 3;
-            if (s.hasRetries()) {
-                retries = s.getRetries();
-	    } else if (cfg.hasRetries()) {
-                retries = cfg.getRetries();
-	    }
-
+        } else if (eventUei.equals(EventConstants.DISC_RESUME_EVENT_UEI)) {
             try {
-                specifics.add(new IPPollAddress(s.getContent(), timeout, retries));
-            } catch (UnknownHostException uhE) {
-                log().warn("Failed to convert address " + s.getContent(), uhE);
+                Discovery.getInstance().resume();
+            } catch (IllegalStateException ex) {
             }
-        }
+        } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
+            // remove from known nodes
+            m_alreadyDiscovered.remove(event.getInterface());
 
-        e = cfg.enumerateIncludeRange();
-        while (e.hasMoreElements()) {
-            IncludeRange ir = (IncludeRange) e.nextElement();
+            if (log.isDebugEnabled())
+                log.debug("Removed " + event.getInterface() + " from known node list");
+        } else if (eventUei.equals(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)) {
 
-            long timeout = 800L;
-            if (ir.hasTimeout()) {
-                timeout = ir.getTimeout();
-	    } else if (cfg.hasTimeout()) {
-                timeout = cfg.getTimeout();
-	    }
-
-            int retries = 3;
-            if (ir.hasRetries()) {
-                retries = ir.getRetries();
-	    } else if (cfg.hasRetries()) {
-                retries = cfg.getRetries();
-	    }
-
-            try {
-                includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
-            } catch (UnknownHostException uhE) {
-                log().warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
-            }
-        }
-
-        // add addresses from the URL specified to specifics
-        //
-        e = cfg.enumerateIncludeUrl();
-        while (e.hasMoreElements()) {
-            IncludeUrl url = (IncludeUrl) e.nextElement();
-
-            long timeout = 800L;
-            if (url.hasTimeout()) {
-                timeout = url.getTimeout();
-	    } else if (cfg.hasTimeout()) {
-                timeout = cfg.getTimeout();
-	    }
-
-            int retries = 3;
-            if (url.hasRetries()) {
-                retries = url.getRetries();
-	    } else if (cfg.hasRetries()) {
-                retries = cfg.getRetries();
-	    }
-
-            addToSpecificsFromURL(specifics, url.getContent(), timeout,
-				  retries);
-        }
-
-        // Setup the exclusion range.
-        //
-        DiscoveredIPMgr.setExclusionList(cfg.getExcludeRange());
-
-        // Setup the specifics list.
-        //
-        DiscoveredIPMgr.setSpecificsList(specifics);
-
-        // Build a generator
-        m_generator = new IPGenerator(specifics, includes,
-				      cfg.getInitialSleepTime(),
-				      cfg.getRestartSleepTime());
-
-        // initialize the EventIpcManagerFactory
-        EventIpcManagerFactory.init();
-
-        // A queue for responses
-        //
-        FifoQueue responsive = new FifoQueueImpl();
-
-        try {
-            m_eventWriter =
-		new SuspectEventGenerator(responsive,
-					  cfg.getRestartSleepTime());
-        } catch (Exception ex) {
-            log().error("Failed to create event writer", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        try {
-            m_eventReader = new BroadcastEventProcessor();
-        } catch (Exception ex) {
-            try {
-                m_eventWriter.stop();
-            } catch (Exception exx) {
-            }
-
-	    log().error("Failed to create event reader", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        try {
-            m_manager = new PingManager(m_generator, responsive,
-					(short) 0xbeef, cfg.getThreads(),
-					cfg.getPacketsPerSecond());
-        } catch (Throwable ex) {
-	    ex.printStackTrace();
-	    log().error("Failed to create ping manager in init()", ex);
-            throw new UndeclaredThrowableException(ex);
         }
     }
 
-    protected void onStart() {
-		if (m_manager == null) {
-    	    log().error("The discovery service has not been initialized and start() was called");
-                throw new IllegalStateException("The discovery service has not been successfully initialized");
-    	}
-
-
-    	try {
-            m_eventWriter.start();
-        } catch (Exception ex) {
-            log().error("Failed to start event writer", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        try {
-            m_manager.start();
-        } catch (Exception ex) {
-            try {
-                m_eventWriter.stop();
-            } catch (Exception exx) {
-            }
-
-            log().error("Failed to start ping manager", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-	}
-
-    protected void onStop() {
-		try {
-            if (m_eventReader != null) {
-                m_eventReader.close();
-            }
-        } catch (Exception e) {
-        }
-
-        try {
-            if (m_eventWriter != null) {
-                m_eventWriter.stop();
-            }
-        } catch (Exception e) {
-        }
-
-        m_eventWriter = null;
-        m_eventReader = null;
-        m_generator = null;
-
-        try {
-            if (m_manager != null) {
-                m_manager.stop();
-	    }
-        } catch (Exception e) {
-        }
-        m_manager = null;
-	}
-
-    protected void onPause() {
-    	if (m_manager == null) {
-    		log().error("The discovery service has not been initialized and pause() was called");
-    		throw new IllegalStateException("The discovery service has not been successfully initialized");
-    	}
-
-    	m_manager.pause();
-    }
-
-    protected void onResume() {
-    	if (m_manager == null) {
-    		log().error("The discovery service has not been initialized and resume() was called");
-    		throw new IllegalStateException("The discovery service has not been successfully initialized");
-    	}
-
-    	m_manager.resume();
-    }
-
-    /**
-     * Returns the singulare instance of the discovery process
-     */
-    public static Discovery getInstance() {
-        return m_singleton;
-    }
 }

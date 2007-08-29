@@ -56,7 +56,7 @@ import org.opennms.core.utils.IPSorter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public final class IPAddressRange {
+public final class IPAddressRange implements Iterable<InetAddress> {
     /**
      * The starting address for the object.
      */
@@ -76,7 +76,7 @@ public final class IPAddressRange {
      * </P>
      * 
      */
-    static class IPAddressRangeGenerator implements Enumeration, Iterator {
+    static class IPAddressRangeGenerator implements Enumeration<InetAddress>, Iterator<InetAddress> {
         /**
          * The next address in the range.
          */
@@ -150,7 +150,7 @@ public final class IPAddressRange {
          * @exception java.util.NoSuchElementException
          *                Thrown if the collection is exhausted.
          */
-        public Object nextElement() {
+        public InetAddress nextElement() {
             if (m_next > m_end)
                 throw new NoSuchElementException("End of Range");
 
@@ -175,7 +175,7 @@ public final class IPAddressRange {
          * @exception java.util.NoSuchElementException
          *                Thrown if the collection is exhausted.
          */
-        public Object next() {
+        public InetAddress next() {
             return nextElement();
         }
 
@@ -355,7 +355,7 @@ public final class IPAddressRange {
      * 
      * @see java.net.InetAddress
      */
-    Iterator iterator() {
+    public Iterator<InetAddress> iterator() {
         return new IPAddressRangeGenerator(m_begin, m_end);
     }
 
@@ -373,7 +373,7 @@ public final class IPAddressRange {
      * 
      * @see java.net.InetAddress
      */
-    Enumeration elements() {
+    Enumeration<InetAddress> elements() {
         return new IPAddressRangeGenerator(m_begin, m_end);
     }
 
