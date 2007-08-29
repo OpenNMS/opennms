@@ -1,5 +1,6 @@
 package org.opennms.netmgt.ping;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,17 +16,17 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
         m_responseTimes = new Number[count];
     }
 
-    public void handleError(PingRequest request, Throwable t) {
-        m_responseTimes[request.getSequenceId()] = null;
+    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
+        m_responseTimes[packet.getSequenceId()] = null;
         bs.signalAll();
     }
 
-    public void handleResponse(ICMPEchoPacket packet) {
+    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
         m_responseTimes[packet.getSequenceId()] = packet.getPingRTT();
         bs.signalAll();
     }
 
-    public void handleTimeout(ICMPEchoPacket packet) {
+    public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
         m_responseTimes[packet.getSequenceId()] = null;
         bs.signalAll();
     }

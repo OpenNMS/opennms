@@ -1,5 +1,7 @@
 package org.opennms.netmgt.ping;
 
+import java.net.InetAddress;
+
 import org.apache.log4j.Category;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
@@ -10,7 +12,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     Throwable error = null;
     Long responseTime = null;
     
-	public void handleResponse(ICMPEchoPacket packet) {
+	public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
 	    info("got response for " + packet.getTID() + "/" + packet.getSequenceId() + " with a responseTime "+packet.getPingRTT());
 	    responseTime = packet.getPingRTT();
 	    bs.signalAll();
@@ -20,13 +22,13 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         return ThreadCategory.getInstance(this.getClass());
     }
 
-	public void handleTimeout(ICMPEchoPacket packet) {
+	public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
 	    info("timed out pinging " + packet.getTID() + "/" + packet.getSequenceId());
 	    bs.signalAll();
 	}
 
-    public void handleError(PingRequest pr, Throwable t) {
-        info("an error occurred pinging " + pr.getAddress(), t);
+    public void handleError(InetAddress address, ICMPEchoPacket pr, Throwable t) {
+        info("an error occurred pinging " + address, t);
         error = t;
         bs.signalAll();
     }

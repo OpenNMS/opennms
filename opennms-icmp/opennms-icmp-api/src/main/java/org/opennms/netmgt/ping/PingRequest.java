@@ -14,7 +14,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * This class is used to encapsulate a ping request. A request consist of
  * the pingable address and a signaled state.
  */
-final class PingRequest implements Delayed {
+final public class PingRequest implements Delayed {
     public static class RequestId {
         InetAddress m_addr;
         long m_tid;
@@ -184,7 +184,7 @@ final class PingRequest implements Delayed {
             log().info(System.currentTimeMillis()+": Sending Ping Request: "+this);
             icmpSocket.send(createDatagram());
         } catch (Throwable t) {
-            m_callback.handleError(this, t);
+            m_callback.handleError(getAddress(), getRequest(), t);
         }
     }
 
@@ -210,7 +210,7 @@ final class PingRequest implements Delayed {
     public void processResponse(ICMPEchoPacket packet) {
         m_response = packet;
         log().info(System.currentTimeMillis()+": Ping Response Received "+this);
-        m_callback.handleResponse(packet);
+        m_callback.handleResponse(getAddress(), packet);
     }
     
     public PingRequest processTimeout() {
@@ -221,7 +221,7 @@ final class PingRequest implements Delayed {
                 log().info(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
             } else {
                 log().info(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                m_callback.handleTimeout(getRequest());
+                m_callback.handleTimeout(getAddress(), getRequest());
             }
         }
         return returnval;
@@ -260,7 +260,7 @@ final class PingRequest implements Delayed {
     }
 
     public void processError(Throwable t) {
-        m_callback.handleError(this, t);
+        m_callback.handleError(getAddress(), getRequest(), t);
     }
 
 }
