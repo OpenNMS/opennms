@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ping.PingRequest.RequestId;
 import org.opennms.protocols.icmp.IcmpSocket;
@@ -271,7 +272,7 @@ public class Pinger {
 	}
 
     private static Category log() {
-        return ThreadCategory.getInstance(Pinger.class);
+        return Logger.getLogger("Pinger");
     }
     
     private static void debugf(String format, Object... args) {

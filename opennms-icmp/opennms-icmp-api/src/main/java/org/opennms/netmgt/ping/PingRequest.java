@@ -117,11 +117,21 @@ final public class PingRequest implements Delayed {
      */
     private long m_expiration = -1L;
     
-    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    /**
+     * The thread logger associated with this request.
+     */
+    private Category m_log = ThreadCategory.getInstance(this.getClass());
+
+    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, Category logger, PingResponseCallback cb) {
         m_id = new RequestId(addr, tid, sequenceId);
         m_retries    = retries;
         m_timeout    = timeout;
+        m_log        = logger;
         m_callback   = cb;
+    }
+    
+    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
+        this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(PingRequest.class), cb);
     }
     
     PingRequest(InetAddress addr, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
@@ -181,7 +191,7 @@ final public class PingRequest implements Delayed {
         try {
             createRequestPacket();
 
-            log().info(System.currentTimeMillis()+": Sending Ping Request: "+this);
+            log().debug(System.currentTimeMillis()+": Sending Ping Request: "+this);
             icmpSocket.send(createDatagram());
         } catch (Throwable t) {
             m_callback.handleError(getAddress(), getRequest(), t);
@@ -189,7 +199,7 @@ final public class PingRequest implements Delayed {
     }
 
     private Category log() {
-        return ThreadCategory.getInstance(this.getClass());
+        return m_log;
     }
 
     private DatagramPacket createDatagram() {
@@ -209,7 +219,7 @@ final public class PingRequest implements Delayed {
     
     public void processResponse(ICMPEchoPacket packet) {
         m_response = packet;
-        log().info(System.currentTimeMillis()+": Ping Response Received "+this);
+        log().debug(System.currentTimeMillis()+": Ping Response Received "+this);
         m_callback.handleResponse(getAddress(), packet);
     }
     
@@ -217,10 +227,10 @@ final public class PingRequest implements Delayed {
         PingRequest returnval = null;
         if (this.isExpired()) {
             if (this.getRetries() > 0) {
-                returnval = new PingRequest(getAddress(), getTid(), getSequenceId(), getTimeout(), getRetries() - 1, m_callback);
-                log().info(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
+                returnval = new PingRequest(getAddress(), getTid(), getSequenceId(), getTimeout(), getRetries() - 1, log(), m_callback);
+                log().debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
             } else {
-                log().info(System.currentTimeMillis()+": Ping Request Timed out "+this);
+                log().debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
                 m_callback.handleTimeout(getAddress(), getRequest());
             }
         }
