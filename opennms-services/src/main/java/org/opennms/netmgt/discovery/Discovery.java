@@ -492,7 +492,9 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
             if (log.isDebugEnabled())
                 log.debug("Removed " + event.getInterface() + " from known node list");
         } else if (eventUei.equals(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)) {
-
+            reloadConfiguration();
+            this.stop();
+            this.start();
         }
     }
 
