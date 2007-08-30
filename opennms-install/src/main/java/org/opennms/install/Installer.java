@@ -152,12 +152,8 @@ public class Installer {
          * make sure we can load the ICMP library before we go any farther
          */
         
-        String icmp_path = findLibrary("jicmp", m_library_search_path);
-        if (icmp_path == null) {
-        	throw new Exception("Unable to load the jicmp\nlibrary.  Make sure you have it installed, and use the -l option to set the path to locate it, if necessary.");
-        }
-
-        String jrrd_path = findLibrary("jrrd", m_library_search_path);
+        String icmp_path = findLibrary("jicmp", m_library_search_path, true);
+        String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
         
         writeLibraryConfig(icmp_path, jrrd_path);
         
@@ -799,7 +795,7 @@ public class Installer {
         return null;
     }
 
-    public String findLibrary(String libname, String path) {
+    public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
     	String fullname = System.mapLibraryName(libname);
 
     	String defaultPath = System.getProperty("java.library.path");
@@ -828,7 +824,22 @@ public class Installer {
    			    }
     		}
     	}
-    	return null;
+    	
+        m_out.println("Failed to load the " + libname + " library.");
+
+        if (isRequired) {
+            m_out.println("It is required at runtime.  By default, we search the java library path:");
+            for (String pathEntry : System.getProperty("java.library.path").split(File.pathSeparator)) {
+                m_out.println("  " + pathEntry);
+            }
+            m_out.println("\nFor more information, see http://www.opennms.org/index.php/" + libname + "\n");
+            throw new Exception("A fatal error occurred, exiting installer.");
+        } else {
+            m_out.println("This error is not fatal, since " + libname + " is only required for optional features.");
+            m_out.println("For more information, see http://www.opennms.org/index.php/" + libname + "\n");
+        }
+
+        return null;
     }
     
     public boolean loadLibrary(String path) {
