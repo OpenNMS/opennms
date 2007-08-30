@@ -109,7 +109,8 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 		String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
 
 		if (rrdPath == null) {
-			log().info("storeResponseTime(multi): RRD repository not specified in parameters, latency data will not be stored.");
+			log().debug("storeResponseTime: RRD repository not specified in parameters, latency data will not be stored.");
+			return;
 		}
 
 		if (!entries.containsKey(dsName) && entries.containsKey(DEFAULT_BASENAME)) {
