@@ -47,12 +47,13 @@ import java.util.TreeMap;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
-public class IfResourceType extends DbResourceType {
+public class IfResourceType extends ResourceType {
 
     private TreeMap<Integer, IfInfo> m_ifMap;
 
     public IfResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         super(agent, snmpCollection);
+        System.err.println("Creating ifResourceType for agent"+agent);
         m_ifMap = new TreeMap<Integer, IfInfo>();
         addKnownIfResources();
     }
@@ -81,18 +82,6 @@ public class IfResourceType extends DbResourceType {
         return getIfMap().values();
     }
 
-    List<AttributeType> getCombinedInterfaceAttributes() {
-        Set<AttributeType> attributes = new LinkedHashSet<AttributeType>();
-        for (CollectionResource ifInfo : getIfInfos()) {
-            attributes.addAll(ifInfo.getAttributeTypes());
-        }
-        return new ArrayList<AttributeType>(attributes);
-    }
-
-    public int getType() {
-        return DataCollectionConfig.ALL_IF_ATTRIBUTES;
-    }
-
     public CollectionResource findResource(SnmpInstId inst) {
         return getIfInfo(inst.toInt());
     }
@@ -107,5 +96,11 @@ public class IfResourceType extends DbResourceType {
     public Collection<IfInfo> getResources() {
         return m_ifMap.values();
     }
+
+    @Override
+    protected Collection<AttributeType> loadAttributeTypes() {
+        return getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this);
+    }
+    
     
 }

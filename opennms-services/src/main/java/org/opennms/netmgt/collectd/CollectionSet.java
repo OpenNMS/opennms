@@ -175,7 +175,7 @@ public class CollectionSet implements Collectable {
         SnmpIfCollector ifCollector = null;
         // construct the ifCollector
         if (hasInterfaceDataToCollect()) {
-            ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedInterfaceAttributes(), this);
+            ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedIndexedAttributes(), this);
         }
         return ifCollector;
     }
@@ -200,17 +200,14 @@ public class CollectionSet implements Collectable {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	Collection getAttributeList() {
-        return getNodeInfo().getAttributeTypes();
+	Collection<AttributeType> getAttributeList() {
+	    return m_snmpCollection.getNodeResourceType(m_agent).getAttributeTypes();
     }
 
-    /**
-     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getCombinedInterfaceAttributes()} instead
-     */
-    List<AttributeType> getCombinedInterfaceAttributes() {
+    List<AttributeType> getCombinedIndexedAttributes() {
     	List<AttributeType> attributes = new LinkedList<AttributeType>();
 
-    	attributes.addAll(getIfResourceType().getCombinedInterfaceAttributes());
+    	attributes.addAll(getIfResourceType().getAttributeTypes());
     	attributes.addAll(getIfAliasResourceType().getAttributeTypes());
     	attributes.addAll(getGenericIndexAttributeTypes());
 
@@ -227,25 +224,8 @@ public class CollectionSet implements Collectable {
     }
 
     private Collection<ResourceType> getGenericIndexResourceTypes() {
-    	Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
-    		DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().values();
-    	List<ResourceType> resourceTypes = new LinkedList<ResourceType>();
-    	for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
-    		resourceTypes.add(new GenericIndexResourceType(m_agent, m_snmpCollection, configuredResourceType));
-    	}
-    	return resourceTypes;
+        return m_snmpCollection.getGenericIndexResourceTypes(m_agent);
 	}
-
-	/**
-     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getIfInfos()} instead
-     */
-    public Collection getIfInfos() {
-        return getIfResourceType().getIfInfos();
-    }
-
-    public IfInfo getIfInfo(int ifIndex) {
-        return getIfResourceType().getIfInfo(ifIndex);
-    }
 
     public CollectionTracker getCollectionTracker() {
         return new AggregateTracker(AttributeType.getCollectionTrackers(getAttributeTypes()));

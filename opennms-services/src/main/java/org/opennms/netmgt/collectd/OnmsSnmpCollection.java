@@ -36,6 +36,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -65,6 +66,9 @@ public class OnmsSnmpCollection {
     private Map<String, ResourceType> m_genericIndexResourceTypes;
     private int m_maxVarsPerPdu;
     private DataCollectionConfig m_dataCollectionConfig;
+    private List<AttributeType> m_nodeAttributeTypes;
+    private List<AttributeType> m_indexedAttributeTypes;
+    private List<AttributeType> m_aliasAttributeTypes;
 
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params) {
         this(agent, params, null);
@@ -118,7 +122,7 @@ public class OnmsSnmpCollection {
         return maxVarsPerPdu;
     }
 
-    public DataCollectionConfig getDataCollectionConfig() {
+    private DataCollectionConfig getDataCollectionConfig() {
         if (m_dataCollectionConfig == null) {
             initializeDataCollectionConfig();
         }
@@ -152,9 +156,32 @@ public class OnmsSnmpCollection {
     public CollectionSet createCollectionSet(CollectionAgent agent) {
         return new CollectionSet(agent, this);
     }
+    
+    private List<AttributeType> getIndexedAttributeTypes(CollectionAgent agent) {
+        if (m_indexedAttributeTypes == null) {
+            m_indexedAttributeTypes = loadAttributeTypes(agent, DataCollectionConfig.ALL_IF_ATTRIBUTES);
+        }
+        return m_indexedAttributeTypes;
+    }
+    
+    public List<AttributeType> getIndexedAttributeTypesForResourceType(CollectionAgent agent, ResourceType resourceType) {
+        LinkedList<AttributeType> resAttrTypes = new LinkedList<AttributeType>();
+        for(AttributeType attrType : getIndexedAttributeTypes(agent)) {
+            if (attrType.getResourceType().equals(resourceType)) {
+                resAttrTypes.add(attrType);
+            }
+        }
+        return resAttrTypes;
+    }
 
+    public List<AttributeType> getNodeAttributeTypes(CollectionAgent agent) {
+        if (m_nodeAttributeTypes == null) {
+            m_nodeAttributeTypes = loadAttributeTypes(agent, DataCollectionConfig.NODE_ATTRIBUTES);
+        }
+        return m_nodeAttributeTypes;
+    }
 
-    public Collection<AttributeType> getAttributeTypes(CollectionAgent agent, int ifType) {
+    public List<AttributeType> loadAttributeTypes(CollectionAgent agent, int ifType) {
         String sysObjectId = agent.getSysObjectId();
         String hostAddress = agent.getHostAddress();
         List<MibObject> oidList = getDataCollectionConfig().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
@@ -164,7 +191,7 @@ public class OnmsSnmpCollection {
         List<AttributeType> typeList = new LinkedList<AttributeType>();
         for (MibObject mibObject : oidList) {
             String instanceName = mibObject.getInstance();
-            AttributeGroupType groupType = getGroup(groupTypes, mibObject);
+            AttributeGroupType groupType = findGroup(groupTypes, mibObject);
             AttributeType attrType = AttributeType.create(getResourceType(agent, instanceName), getName(), mibObject, groupType);
             groupType.addAttributeType(attrType);
             typeList.add(attrType);
@@ -173,7 +200,7 @@ public class OnmsSnmpCollection {
         return typeList;
     }
 
-    private AttributeGroupType getGroup(Map<String, AttributeGroupType> groupTypes, MibObject mibObject) {
+    private AttributeGroupType findGroup(Map<String, AttributeGroupType> groupTypes, MibObject mibObject) {
         AttributeGroupType groupType = groupTypes.get(mibObject.getGroupName());
         if (groupType == null) {
             groupType = new AttributeGroupType(mibObject.getGroupName(), mibObject.getGroupIfType());
@@ -212,8 +239,12 @@ public class OnmsSnmpCollection {
         return m_ifAliasResourceType;
 
     }
+    
+    public Collection<ResourceType> getGenericIndexResourceTypes(CollectionAgent agent) {
+        return Collections.unmodifiableCollection(getGenericIndexResourceTypeMap(agent).values());
+    }
 
-    private Map<String, ResourceType> getGenericIndexResourceTypes(CollectionAgent agent) {
+    private Map<String, ResourceType> getGenericIndexResourceTypeMap(CollectionAgent agent) {
         if (m_genericIndexResourceTypes == null) {
             Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
                 getDataCollectionConfig().getConfiguredResourceTypes().values();
@@ -225,9 +256,9 @@ public class OnmsSnmpCollection {
         }
         return m_genericIndexResourceTypes;
     }
-
+    
     private ResourceType getGenericIndexResourceType(CollectionAgent agent, String name) {
-        return getGenericIndexResourceTypes(agent).get(name);
+        return getGenericIndexResourceTypeMap(agent).get(name);
     }
 
     private Collection<ResourceType> getResourceTypes(CollectionAgent agent) {
@@ -235,7 +266,7 @@ public class OnmsSnmpCollection {
         set.add(getNodeResourceType(agent));
         set.add(getIfResourceType(agent));
         set.add(getIfAliasResourceType(agent));
-        set.addAll(getGenericIndexResourceTypes(agent).values());
+        set.addAll(getGenericIndexResourceTypeMap(agent).values());
         return set;
     }
 
@@ -265,6 +296,30 @@ public class OnmsSnmpCollection {
         }
 
         return CollectionType.NO_COLLECT;
+    }
+
+    public List<AttributeType> loadAliasAttributeTypes(CollectionAgent agent) {
+        IfAliasResourceType resType = getIfAliasResourceType(agent);
+        MibObject ifAliasMibObject = new MibObject();
+        ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
+        ifAliasMibObject.setAlias("ifAlias");
+        ifAliasMibObject.setType("string");
+        ifAliasMibObject.setInstance("ifIndex");
+        
+        ifAliasMibObject.setGroupName("aliasedResource");
+        ifAliasMibObject.setGroupIfType("all");
+    
+        AttributeGroupType groupType = new AttributeGroupType(ifAliasMibObject.getGroupName(), ifAliasMibObject.getGroupIfType());
+    
+        AttributeType type = AttributeType.create(resType, resType.getCollectionName(), ifAliasMibObject, groupType);
+        return Collections.singletonList(type);
+    }
+
+    public List<AttributeType> getAliasAttributeTypes(CollectionAgent agent) {
+        if (m_aliasAttributeTypes == null) {
+            m_aliasAttributeTypes = loadAliasAttributeTypes(agent);
+        }
+        return m_aliasAttributeTypes;
     }
 
 

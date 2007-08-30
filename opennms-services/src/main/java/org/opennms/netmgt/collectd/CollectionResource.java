@@ -59,11 +59,11 @@ public abstract class CollectionResource implements ResourceIdentifier {
     public ResourceType getResourceType() {
         return m_resourceType;
     }
-
-    public abstract CollectionAgent getCollectionAgent();
-
-    public abstract Collection<AttributeType> getAttributeTypes();
     
+    public final CollectionAgent getCollectionAgent() {
+        return m_resourceType.getAgent();
+    }
+
     public abstract boolean shouldPersist(ServiceParameters params);
 
     public String getOwnerName() {

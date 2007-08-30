@@ -74,6 +74,8 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 public class SnmpCollectorTest extends TestCase {
     private SnmpCollector m_snmpCollector;
@@ -87,9 +89,9 @@ public class SnmpCollectorTest extends TestCase {
     private PlatformTransactionManager m_transMgr;
     
     final String SNMP_CONFIG = "<?xml version=\"1.0\"?>\n"
-        + "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n"
+        + "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800000\"\n"
         + "               read-community=\"public\"\n"
-        + "               version=\"v1\">\n" + "</snmp-config>\n";
+        + "               version=\"v2c\">\n" + "</snmp-config>\n";
 
 
 
@@ -124,7 +126,21 @@ public class SnmpCollectorTest extends TestCase {
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
         rdr.close();
 
-        m_transMgr = new DataSourceTransactionManager(m_db);
+        m_transMgr = new DataSourceTransactionManager(m_db) {
+
+            @Override
+            protected void doCommit(DefaultTransactionStatus status) {
+                super.doCommit(status);
+                System.err.println("call to commit a transaction");
+            }
+
+            @Override
+            protected void doBegin(Object transaction, TransactionDefinition definition) {
+                super.doBegin(transaction, definition);
+                System.err.println("Call to begin a transaction");
+            }
+            
+        };
         
         m_fileAnticipator = new FileAnticipator();
     }
@@ -148,6 +164,7 @@ public class SnmpCollectorTest extends TestCase {
     }
 
     public void testCollect() throws Exception {
+//        initializeAgent("/org/opennms/netmgt/snmp/bigrouter-walk.properties");
         initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
 
         initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-config.xml");
@@ -169,8 +186,8 @@ public class SnmpCollectorTest extends TestCase {
         
         File ifDir = anticipatePath(nodeDir, "fw0");
         anticipateRrdFiles(ifDir, "ifInDiscards", "ifInErrors", "ifInNUcastpkts",
-        		"ifInOctets", "ifInUcastpkts", "ifOutErrors", "ifOutNUcastPkts",
-        		"ifOutOctets", "ifOutUcastPkts");
+                "ifInOctets", "ifInUcastpkts", "ifOutErrors", "ifOutNUcastPkts",
+                "ifOutOctets", "ifOutUcastPkts");
         
         // don't for get to initialize the agent
         spec.initialize(agent);
@@ -424,8 +441,16 @@ public class SnmpCollectorTest extends TestCase {
         node.setId(new Integer(1));
         node.setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
         OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("127.0.0.1", 1, node);
-        snmpIface.setIfName("localhost");
+        snmpIface.setIfName("lo0");
         snmpIface.setPhysAddr("00:11:22:33:44");
+        OnmsSnmpInterface snmpIfaceA = new OnmsSnmpInterface("127.0.0.1", 2, node);
+        snmpIfaceA.setIfName("gif0");
+        snmpIfaceA.setPhysAddr("00:11:22:33:45");
+        snmpIfaceA.setIfType(55);
+        OnmsSnmpInterface snmpIfaceB = new OnmsSnmpInterface("127.0.0.1", 3, node);
+        snmpIfaceB.setIfName("stf0");
+        snmpIfaceB.setPhysAddr("00:11:22:33:46");
+        snmpIfaceB.setIfType(57);
         OnmsSnmpInterface snmpIface2 = new OnmsSnmpInterface("127.0.0.1", 6, node);
         snmpIface2.setIfName("fw0");
         snmpIface2.setPhysAddr("44:33:22:11:00");
@@ -446,6 +471,7 @@ public class SnmpCollectorTest extends TestCase {
         CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifDao, m_transMgr);
         return agent;
     }
+    
 
     private Reader getDataCollectionConfigReader(String classPathLocation) throws IOException {
         return ConfigurationTestUtils.getReaderForResourceWithReplacements(this, classPathLocation, new String[] { "%rrdRepository%", getSnmpRrdDirectory().getAbsolutePath() });
