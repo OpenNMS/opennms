@@ -56,7 +56,7 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
  */
 public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
     
-	int m_port = 8080;
+	int m_port = 8980;
     private Server m_server;
     private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
     
@@ -64,15 +64,12 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         super("JettyServer");
     }
     
-    public void setPort(int port) {
-        m_port = port;
-    }
-
     @Override
     protected void onInit() {
+        Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
         m_server = new Server();
         Connector connector = new SelectChannelConnector();
-        connector.setPort(m_port);
+        connector.setPort(port);
         m_server.addConnector(connector);
 
         File homeDir = new File(System.getProperty("opennms.home"));    
@@ -93,7 +90,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
                 	String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
                 	Hashtable<String, String> properties = new Hashtable<String, String>();
                 	properties.put("path", "/" + entry.getName());
-                	srs.initialize("HTTP", entry.getName() + "-" + host, m_port, properties);
+                	srs.initialize("HTTP", entry.getName() + "-" + host, port, properties);
                 	services.put(entry.getName(), srs);
         		} catch (Exception e) {
         			log().warn("unable to get a DNS-SD object for context '" + entry.getName() + "'", e);
