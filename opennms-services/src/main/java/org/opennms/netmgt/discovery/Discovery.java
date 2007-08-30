@@ -218,7 +218,7 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
             }
         }
         
-        log().debug("finished discovery scanning");
+        log().debug("finished discovery sweep");
         m_xstatus = PING_IDLE;
     }
 
