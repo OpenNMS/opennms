@@ -42,10 +42,9 @@ import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
 import org.opennms.netmgt.poller.nsclient.NsclientManager;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
 
-import sun.text.CompactShortArray.Iterator;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -97,7 +96,7 @@ public class CheckNsc {
         /* whatever's left gets merged into "arg1&arg2&arg3" */
         StringBuffer clientParams = new StringBuffer();
         if (!arguments.isEmpty()) {
-        	for (java.util.Iterator<String> i = arguments.iterator(); i.hasNext(); ) {
+        	for (Iterator<String> i = arguments.iterator(); i.hasNext(); ) {
         		clientParams.append(i.next());
         		if (i.hasNext()) {
         			clientParams.append("&");
