@@ -45,6 +45,7 @@ public abstract class ResourceType {
     
     private CollectionAgent m_agent;
     private OnmsSnmpCollection m_snmpCollection;
+    private Collection<AttributeType> m_attributeTypes;
 
     public ResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         m_agent = agent;
@@ -63,7 +64,14 @@ public abstract class ResourceType {
         return m_snmpCollection;
     }
 
-    abstract public Collection<AttributeType> getAttributeTypes();
+    final public Collection<AttributeType> getAttributeTypes() {
+        if (m_attributeTypes == null) {
+            m_attributeTypes = loadAttributeTypes();
+        }
+        return m_attributeTypes;
+    }
+    
+    protected abstract Collection<AttributeType> loadAttributeTypes();
 
     protected boolean hasDataToCollect() {
         return !getAttributeTypes().isEmpty();

@@ -99,6 +99,10 @@ public abstract class AttributeType implements AttributeDefinition {
         throw new IllegalArgumentException("No support exists for AttributeType '" + mibObj.getType() + "' for MIB object: "+ mibObj);
     }
     
+    public ResourceType getResourceType() {
+        return m_resourceType;
+    }
+    
     public AttributeGroupType getGroupType() {
         return m_groupType;        
     }

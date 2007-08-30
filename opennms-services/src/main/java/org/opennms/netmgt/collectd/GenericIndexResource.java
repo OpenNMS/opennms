@@ -48,16 +48,6 @@ public class GenericIndexResource extends CollectionResource {
 		m_inst = inst;
 	}
 
-	@Override
-	public Collection<AttributeType> getAttributeTypes() {
-		return getResourceType().getAttributeTypes();
-	}
-
-	@Override
-	public CollectionAgent getCollectionAgent() {
-		return getResourceType().getAgent();
-	}
-	
 	// XXX should be based on the storageStrategy
 	@Override
     public File getResourceDir(RrdRepository repository) {

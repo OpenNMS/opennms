@@ -37,17 +37,15 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 public class IfAliasResourceType extends ResourceType {
 
     private IfResourceType m_ifResourceType;
-    private Map m_aliasedIfs = new HashMap();
+    private Map<Integer, AliasedResource> m_aliasedIfs = new HashMap<Integer, AliasedResource>();
     private ServiceParameters m_params;
 
     public IfAliasResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, ServiceParameters params, IfResourceType ifResourceType) {
@@ -81,23 +79,11 @@ public class IfAliasResourceType extends ResourceType {
         return resource;
     }
 
-    public Collection<AttributeType> getAttributeTypes() {
-        MibObject ifAliasMibObject = new MibObject();
-        ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
-        ifAliasMibObject.setAlias("ifAlias");
-        ifAliasMibObject.setType("string");
-        ifAliasMibObject.setInstance("ifIndex");
-        
-        ifAliasMibObject.setGroupName("aliasedResource");
-        ifAliasMibObject.setGroupIfType("all");
-
-        AttributeGroupType groupType = new AttributeGroupType(ifAliasMibObject.getGroupName(), ifAliasMibObject.getGroupIfType());
-
-        AttributeType type = AttributeType.create(this, getCollectionName(), ifAliasMibObject, groupType);
-        return Collections.singleton(type);
+    public Collection<AttributeType> loadAttributeTypes() {
+        return getCollection().getAliasAttributeTypes(getAgent());
    }
 
-    public Collection getResources() {
+    public Collection<AliasedResource> getResources() {
         return m_aliasedIfs.values();
     }
     
