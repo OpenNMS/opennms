@@ -29,7 +29,7 @@
 			<parameter key="retry" value="0"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="pings" value="20"/> <!-- how many concurrent pings to send; if you modify this, you will have to modify response-graph.properties as well! -->
-			<parameter key="interval" value="50"/> <!-- how long to wait (in milliseconds) between packets -->
+			<parameter key="wait-interval" value="50"/> <!-- how long to wait (in milliseconds) between packets -->
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="rrd-base-name" value="multiicmp"/>
 		</service>
