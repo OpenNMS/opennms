@@ -154,7 +154,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
         initializeAgent();
         
-        SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), getCollectionSet().getCombinedInterfaceAttributes(), getCollectionSet());
+        SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), getCollectionSet().getCombinedIndexedAttributes(), getCollectionSet());
         
         createWalker(collector);
         return collector;

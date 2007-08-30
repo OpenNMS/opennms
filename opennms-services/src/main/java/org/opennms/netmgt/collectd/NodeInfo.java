@@ -47,13 +47,13 @@ import org.opennms.netmgt.model.RrdRepository;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class NodeInfo extends DbCollectionResource {
+final class NodeInfo extends CollectionResource {
 
 	private SNMPCollectorEntry m_entry;
     private int m_nodeId;
 
     public NodeInfo(NodeResourceType def, CollectionAgent agent) {
-        super(def, agent);
+        super(def);
         m_nodeId = agent.getNodeId();
     }
     

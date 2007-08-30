@@ -104,8 +104,8 @@ public class GenericIndexResourceType extends ResourceType {
     }
 
     @Override
-    public Collection<AttributeType> getAttributeTypes() {
-        return getCollection().getAttributeTypes(getAgent(), DataCollectionConfigFactory.ALL_IF_ATTRIBUTES);
+    public Collection<AttributeType> loadAttributeTypes() {
+        return getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this);
     }
 
     @Override

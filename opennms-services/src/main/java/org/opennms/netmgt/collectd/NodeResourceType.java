@@ -38,7 +38,7 @@ import java.util.Collections;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
-public class NodeResourceType extends DbResourceType {
+public class NodeResourceType extends ResourceType {
     
     private NodeInfo m_nodeInfo;
 
@@ -49,10 +49,6 @@ public class NodeResourceType extends DbResourceType {
 
     public NodeInfo getNodeInfo() {
         return m_nodeInfo;
-    }
-
-    public int getType() {
-        return DataCollectionConfig.NODE_ATTRIBUTES;
     }
 
     public CollectionResource findResource(SnmpInstId inst) {
@@ -66,8 +62,13 @@ public class NodeResourceType extends DbResourceType {
         return null;
     }
 
-    public Collection getResources() {
+    public Collection<NodeInfo> getResources() {
         return Collections.singleton(m_nodeInfo);
+    }
+
+    @Override
+    protected Collection<AttributeType> loadAttributeTypes() {
+        return getCollection().getNodeAttributeTypes(getAgent());
     }
 
 }

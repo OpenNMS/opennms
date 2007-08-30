@@ -58,10 +58,6 @@ public class AliasedResource extends CollectionResource {
         return m_ifInfo;
     }
 
-    public Collection getAttributeTypes() {
-        return m_ifInfo.getAttributeTypes();
-    }
-
     String getAliasDir() {
         return getIfInfo().getAliasDir(m_ifAlias, m_ifAliasComment);
     }
@@ -75,10 +71,6 @@ public class AliasedResource extends CollectionResource {
         File domainDir = new File(rrdBaseDir, getDomain());
         File aliasDir = new File(domainDir, getAliasDir());
         return aliasDir;
-    }
-
-    public CollectionAgent getCollectionAgent() {
-        return getIfInfo().getCollectionAgent();
     }
 
     public String toString() {

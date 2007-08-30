@@ -2,11 +2,47 @@
 <datacollection-config rrdRepository="%rrdRepository%">
   <snmp-collection name="default" maxVarsPerPdu="10" snmpStorageFlag="select">
     <rrd step="300">
-      <rra>RRA:AVERAGE:0.5:1:8928</rra>
-      <rra>RRA:AVERAGE:0.5:12:8784</rra>
-      <rra>RRA:MIN:0.5:12:8784</rra>
-      <rra>RRA:MAX:0.5:12:8784</rra>
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
+
+    <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"
+                  resourceLabel="${hrStorageDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)"
+                  resourceLabel="${naDfFileSys} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)"
+                  resourceLabel="${diskIODevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="pgmonIndex" label="Process Group Monitor (SystemEDGE)"
+                  resourceLabel="${pgmonDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <groups>
       <!-- data from standard (mib-2) sources -->
       <group name="mib2-interfaces" ifType="all">
@@ -23,13 +59,14 @@
         <mibObj oid=".1.3.6.1.2.1.31.1.1.1.6" instance="ifIndex" alias="ifHCInOctets" type="counter" />
         <mibObj oid=".1.3.6.1.2.1.31.1.1.1.10" instance="ifIndex" alias="ifHCOutOctets" type="counter" />
       </group>
-      <group name="mib2-host-resources-storage" ifType="ignore">
-        <!-- Note that hrStorage is really a table -->
-        <!-- and I'm ignoring the hrStorageIndex altogether -->
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="hrStorageAllocUnits" type="counter" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="hrStorageSize" type="counter" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="hrStorageUsed" type="counter" />
-      </group>
+
+      <group name="mib2-host-resources-storage" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageIndex" alias="hrStorageDescr" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageIndex" alias="hrStorageAllocUnits" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageIndex" alias="hrStorageSize" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageIndex" alias="hrStorageUsed" type="gauge" />
+       </group>
+
       <group name="mib2-host-resources-system" ifType="ignore">
         <mibObj oid=".1.3.6.1.2.1.25.1.1" instance="0" alias="hrSystemUptime" type="timeticks" />
         <mibObj oid=".1.3.6.1.2.1.25.1.5" instance="0" alias="hrSystemNumUsers" type="gauge" />
@@ -107,6 +144,20 @@
         <mibObj oid=".1.3.6.1.4.1.318.1.1.1.3.2.1" instance="0" alias="apcinvac" type="gauge32" />
       </group>
 
+      <!-- Ascend mibs -->
+      <group name="ascend-call" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.529.11.4" instance="0" alias="callCurrentAlogOut" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.529.11.5" instance="0" alias="callCurrentAlogIn" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.529.11.6" instance="0" alias="callCurrentDigOut" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.529.11.7" instance="0" alias="callCurrentDigIn" type="INTEGER" />
+      </group>
+
+      <!-- Asterisk (Digium) MIBs -->
+      <group name="asterisk-scalars" ifType="ignore">
+	<mibObj oid=".1.3.6.1.4.1.22736.1.5.1" instance="0" alias="astNumChannels" type="gauge" />
+	<mibObj oid=".1.3.6.1.4.1.22736.1.5.5" instance="0" alias="astNumChanBridge" type="gauge" />
+      </group>
+
       <!-- Checkpoint MIBs -->
       <group name="checkpoint" ifType="ignore">
         <mibObj oid=".1.3.6.1.2.1.25.1.5" instance="0" alias="stateInfoStored" type="integer" />
@@ -128,6 +179,16 @@
       </group>
 
       <!-- Cisco MIBs -->
+
+      <group name = "adsl-line" ifType = "94">
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.5" instance="ifIndex" alias="AturCurAtn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.5" instance="ifIndex" alias="AtucCurAtn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.7" instance="ifIndex" alias="AturCurOPwr" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.7" instance="ifIndex" alias="AtucCurOPwr" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.4" instance="ifIndex" alias="AturCurSnr" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.4" instance="ifIndex" alias="AtucCurSnr" type="Gauge32" />
+      </group>
+
       <group name="altiga" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.2" instance="0" alias="altigaCpuUtil" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.3" instance="0" alias="altigaActSess" type="gauge" />
@@ -247,6 +308,7 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.1550" instance="8" alias="cfwBuff1550BBmin" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="6" alias="cfwConnectCurr" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="7" alias="cfwConnectMax" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer"/>
       </group>
       <group name="cisco-router" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.2.1.58" instance="0" alias="avgBusy5" type="integer" />
@@ -260,20 +322,131 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7" instance="ifIndex" alias="locIfInPktsSec" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9" instance="ifIndex" alias="locIfOutPktsSec" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="counter" />
       </group>
+      <group  name = "cisco-aironet-stats" ifType = "ignore">
+        <mibObj oid=".1.3.6.1.4.1.522.3.12.1.8" instance="0" alias="aironetClientAssoc" type="integer"/>
+      </group>
+      <group name="cisco-rttmon-latest-jitter-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.2.2.1.18" instance="rttMonCtrlAdminIndex" alias="echoNumPackets" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.1" instance="rttMonCtrlAdminIndex" alias="jitterNumRTT" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.2" instance="rttMonCtrlAdminIndex" alias="jitterRTTSum" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.3" instance="rttMonCtrlAdminIndex" alias="jitterRTTSum2" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.4" instance="rttMonCtrlAdminIndex" alias="jitterRTTMin" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.5" instance="rttMonCtrlAdminIndex" alias="jitterRTTMax" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.6" instance="rttMonCtrlAdminIndex" alias="jitterMinPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.7" instance="rttMonCtrlAdminIndex" alias="jitterMaxPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.8" instance="rttMonCtrlAdminIndex" alias="jitterNumPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.9" instance="rttMonCtrlAdminIndex" alias="jitterSumPosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.10" instance="rttMonCtrlAdminIndex" alias="jitterSum2PosSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.11" instance="rttMonCtrlAdminIndex" alias="jitterMinNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.12" instance="rttMonCtrlAdminIndex" alias="jitterMaxNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.13" instance="rttMonCtrlAdminIndex" alias="jitterNumNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.14" instance="rttMonCtrlAdminIndex" alias="jitterSumNegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.15" instance="rttMonCtrlAdminIndex" alias="jitterSum2NegSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.16" instance="rttMonCtrlAdminIndex" alias="jitterMinPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.17" instance="rttMonCtrlAdminIndex" alias="jitterMaxPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.18" instance="rttMonCtrlAdminIndex" alias="jitterNumPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.19" instance="rttMonCtrlAdminIndex" alias="jitterSumPosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.20" instance="rttMonCtrlAdminIndex" alias="jitterSum2PosDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.21" instance="rttMonCtrlAdminIndex" alias="jitterMinNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.22" instance="rttMonCtrlAdminIndex" alias="jitterMaxNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.23" instance="rttMonCtrlAdminIndex" alias="jitterNumNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.24" instance="rttMonCtrlAdminIndex" alias="jitterSumNegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.25" instance="rttMonCtrlAdminIndex" alias="jitterSum2NegDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.26" instance="rttMonCtrlAdminIndex" alias="jitterPktLossSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.27" instance="rttMonCtrlAdminIndex" alias="jitterPktLossDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.28" instance="rttMonCtrlAdminIndex" alias="jitterPktOOSeq" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.29" instance="rttMonCtrlAdminIndex" alias="jitterPktMIA" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.30" instance="rttMonCtrlAdminIndex" alias="jitterPktLateArr" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.33" instance="rttMonCtrlAdminIndex" alias="jitterOWSumSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.34" instance="rttMonCtrlAdminIndex" alias="jitterOWSum2SD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.35" instance="rttMonCtrlAdminIndex" alias="jitterOWMinSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.36" instance="rttMonCtrlAdminIndex" alias="jitterOWMaxSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.37" instance="rttMonCtrlAdminIndex" alias="jitterOWSumDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.38" instance="rttMonCtrlAdminIndex" alias="jitterOWSum2DS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.39" instance="rttMonCtrlAdminIndex" alias="jitterOWMinDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.40" instance="rttMonCtrlAdminIndex" alias="jitterOWMaxDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.41" instance="rttMonCtrlAdminIndex" alias="jitterNumOW" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.42" instance="rttMonCtrlAdminIndex" alias="jitterMOS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.43" instance="rttMonCtrlAdminIndex" alias="jitterICPIF" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.44" instance="rttMonCtrlAdminIndex" alias="jitterIAJOut" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.45" instance="rttMonCtrlAdminIndex" alias="jitterIAJIn" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.46" instance="rttMonCtrlAdminIndex" alias="jitterAvgJitter" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.47" instance="rttMonCtrlAdminIndex" alias="jitterAvgSDJ" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.48" instance="rttMonCtrlAdminIndex" alias="jitterAvgDSJ" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.49" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.50" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgDS" type="gauge" />
+      </group>
+      <group name="cisco-rttmon-latest-rtp-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.1" instance="rttMonCtrlAdminIndex" alias="rtpOperRTT" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.2" instance="rttMonCtrlAdminIndex" alias="rtpIAJitterDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.3" instance="rttMonCtrlAdminIndex" alias="rtpPktLossDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.4" instance="rttMonCtrlAdminIndex" alias="rtpPktLateDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.5" instance="rttMonCtrlAdminIndex" alias="rtpPktEarlyDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.6" instance="rttMonCtrlAdminIndex" alias="rtpPktOOSeqDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.7" instance="rttMonCtrlAdminIndex" alias="rtpFrameLossDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.8" instance="rttMonCtrlAdminIndex" alias="rtpRFactorDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.9" instance="rttMonCtrlAdminIndex" alias="rtpMOSCQDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.10" instance="rttMonCtrlAdminIndex" alias="rtpMOSLQDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.13" instance="rttMonCtrlAdminIndex" alias="rtpIAJitterSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.14" instance="rttMonCtrlAdminIndex" alias="rtpPktLossSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.15" instance="rttMonCtrlAdminIndex" alias="rtpPktsMIA" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.16" instance="rttMonCtrlAdminIndex" alias="rtpRFactorSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.17" instance="rttMonCtrlAdminIndex" alias="rtpMOSCQSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.18" instance="rttMonCtrlAdminIndex" alias="rtpMinOWSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.19" instance="rttMonCtrlAdminIndex" alias="rtpMaxOWSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.20" instance="rttMonCtrlAdminIndex" alias="rtpAvgOWSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.21" instance="rttMonCtrlAdminIndex" alias="rtpMinOWDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.22" instance="rttMonCtrlAdminIndex" alias="rtpMaxOWDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.23" instance="rttMonCtrlAdminIndex" alias="rtpAvgOWDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.24" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.25" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsDS" type="gauge" />
+      </group>
+
       <!-- Netapp MIBS -->
       <group name="netapp-cpu" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.789.1.2.1.3" instance="0" alias="cpuBusyTimePct" type="INTEGER" />
         <mibObj oid=".1.3.6.1.4.1.789.1.2.1.5" instance="0" alias="cpuIdleTimePct" type="INTEGER" />
       </group>
+
       <group name="netapp-filesys" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.789.1.5.1" instance="0" alias="fsMaxfilesAvail" type="INTEGER" />
         <mibObj oid=".1.3.6.1.4.1.789.1.5.2" instance="0" alias="fsMaxfilesUsed" type="INTEGER" />
         <mibObj oid=".1.3.6.1.4.1.789.1.5.3" instance="0" alias="fsMaxfilesPossible" type="INTEGER" />
         <mibObj oid=".1.3.6.1.4.1.789.1.5.7.3" instance="0" alias="fsMaxUsedBytesPct" type="INTEGER" />
         <mibObj oid=".1.3.6.1.4.1.789.1.5.7.4" instance="0" alias="fsMaxUsedInodesPct" type="INTEGER" />
+      </group>
+
+      <group name="netapp-dfEntry" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.2" instance="naDfIndex" alias="naDfFileSys" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.6" instance="naDfIndex" alias="naDfPctKB" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.7" instance="naDfIndex" alias="naDfInodeUsed" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.8" instance="naDfIndex" alias="naDfInodeFree" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.9" instance="naDfIndex" alias="naDfInodePct" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.11" instance="naDfIndex" alias="naDfMaxFileAvail" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.12" instance="naDfIndex" alias="naDfMaxFileUsed" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.17" instance="naDfIndex" alias="naDfLowUsedKB" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.19" instance="naDfIndex" alias="naDfLowFreeKB" type="integer" />
+      </group>
+
+      <group name="netapp-filer" ifType="ignore"> 
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.6" instance="0" alias="naMiscLowNfsOps" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.8" instance="0" alias="naMiscLowCifsOps" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.7.3.1.1.5" instance="0" alias="naCifsReads" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.7.3.1.1.6" instance="0" alias="naCifsWrites" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.7" instance="0" alias="naV2cReads" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.8" instance="0" alias="naV2cWrcaches" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.9" instance="0" alias="naV2cWrites" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.7" instance="0" alias="naV3cReads" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.8" instance="0" alias="naV3cWrites" type="Counter" />
+      </group>
+
+      <!-- Colubris MIBs -->
+      <group name="colubris-access-mib" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.2" instance="0" alias="colPubAccUsrCnt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.3" instance="0" alias="colPubAccUsrThresh" type="Integer" />
       </group>
 
       <!-- Concord Communications MIBs -->
@@ -295,6 +468,19 @@
         <mibObj oid=".1.3.6.1.4.1.546.13.3" instance="0" alias="nhCpuRawUser" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.546.13.4" instance="0" alias="nhCpuRawSystem" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.546.13.4" instance="0" alias="nhCpuRawKernel" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.7" instance="0" alias="nhCpuTotalIdlePct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.8" instance="0" alias="nhCpuTotalUserPct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.9" instance="0" alias="nhCpuTotalSysPct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.10" instance="0" alias="nhCpuTotalWaitPct" type="gauge" />
+      </group>
+      <group name="netHealth-pgmon" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.2" instance="pgmonIndex" alias="pgmonDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.6" instance="pgmonIndex" alias="pgmonNumProcs" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.14" instance="pgmonIndex" alias="pgmonRSS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.15" instance="pgmonIndex" alias="pgmonSize" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.16" instance="pgmonIndex" alias="pgmonThreadCount" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.17" instance="pgmonIndex" alias="pgmonMEM" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.24" instance="pgmonIndex" alias="pgmonMajorPgFlts" type="counter" />
       </group>
 
       <!-- Extreme Systems MIBs -->
@@ -415,31 +601,11 @@
 
       <!-- Net-SNMP MIBs -->
       <group name="net-snmp-disk" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="1" alias="ns-disk-1-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-1-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-1-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-1-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-1-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="2" alias="ns-disk-2-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="2" alias="ns-disk-2-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="2" alias="ns-disk-2-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="2" alias="ns-disk-2-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="2" alias="ns-disk-2-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="3" alias="ns-disk-3-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="3" alias="ns-disk-3-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="3" alias="ns-disk-3-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="3" alias="ns-disk-3-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="3" alias="ns-disk-3-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="4" alias="ns-disk-4-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="4" alias="ns-disk-4-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="4" alias="ns-disk-4-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="4" alias="ns-disk-4-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="4" alias="ns-disk-4-pct" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="5" alias="ns-disk-5-name" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="5" alias="ns-disk-5-tot" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="5" alias="ns-disk-5-avail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="5" alias="ns-disk-5-used" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="5" alias="ns-disk-5-pct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="dskIndex" alias="ns-dskPath" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="dskIndex" alias="ns-dskTotal" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="dskIndex" alias="ns-dskAvail" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="dskIndex" alias="ns-dskUsed" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="dskIndex" alias="ns-dskPercent" type="gauge" />
       </group>
 
       <group name="ucd-loadavg" ifType="ignore">
@@ -469,9 +635,18 @@
         <mibObj oid=".1.3.6.1.4.1.2021.11.51" instance="0" alias="CpuRawNice" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.52" instance="0" alias="CpuRawSystem" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.53" instance="0" alias="CpuRawIdle" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.54" instance="0" alias="CpuRawWait" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.55" instance="0" alias="CpuRawKernel" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.56" instance="0" alias="CpuRawInterrupt" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.57" instance="0" alias="IORawSent" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.58" instance="0" alias="IORawReceived" type="counter" />
+      </group>
+      <group name="ucd-diskio" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.2" instance="diskIOIndex" alias="diskIODevice" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.3" instance="diskIOIndex" alias="diskIONRead" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.4" instance="diskIOIndex" alias="diskIONWritten" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.5" instance="diskIOIndex" alias="diskIOReads" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.6" instance="diskIOIndex" alias="diskIOWrites" type="counter" />
       </group>
 
       <!-- Netbotz MIBs -->
@@ -965,12 +1140,6 @@
         <mibObj oid=".1.3.6.1.4.1.43.2.13.8.4" instance="0" alias="a3sysCpuUtil" type="integer" />
       </group>
 
-      <!-- Colubris MIBs -->
-      <group name="colubris-access-mib" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.2" instance="0" alias="colPubAccUsrCnt" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.3" instance="0" alias="colPubAccUsrThresh" type="Integer" />
-      </group>
-
     </groups>
 
     <systems>
@@ -990,6 +1159,27 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Ascend">
+        <sysoidMask>.1.3.6.1.4.1.529.</sysoidMask>
+        <collect>
+          <includeGroup>ascend-call</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Asterisk">
+        <sysoid>.1.3.6.1.4.1.22736.1</sysoid>
+	<collect>
+	  <includeGroup>mib2-host-resources-system</includeGroup>
+	  <includeGroup>mib2-host-resources-memory</includeGroup>
+	  <includeGroup>net-snmp-disk</includeGroup>
+	  <includeGroup>ucd-loadavg</includeGroup>
+	  <includeGroup>ucd-memory</includeGroup>
+	  <includeGroup>ucd-sysstat</includeGroup>
+	  <includeGroup>ucd-diskio</includeGroup>
+	  <includeGroup>asterisk-scalars</includeGroup>
+	</collect>
+      </systemDef>
+
       <systemDef name="CheckPoint">
         <sysoid>.1.3.6.1.4.1.2620.1</sysoid>
         <collect>
@@ -1002,6 +1192,13 @@
         <collect>
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>altiga-hardware</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco Aironet">
+        <sysoid>.1.3.6.1.4.1.9.1.380</sysoid>
+        <collect>
+          <includeGroup>cisco-aironet-stats</includeGroup>
         </collect>
       </systemDef>
 
@@ -1031,18 +1228,28 @@
         <collect>
           <includeGroup>cisco-memory</includeGroup>
           <includeGroup>cisco-router</includeGroup>
+          <includeGroup>adsl-line</includeGroup>
+          <includeGroup>cisco-rttmon-latest-jitter-stats</includeGroup>
+          <includeGroup>cisco-rttmon-latest-rtp-stats</includeGroup>
+        </collect>
+      </systemDef>
+      
+      <systemDef name="Colubris-CN3000">
+        <sysoidMask>.1.3.6.1.4.1.8744.</sysoidMask>
+        <collect>
+          <includeGroup>colubris-access-mib</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Concord Net Health">
         <sysoidMask>.1.3.6.1.4.1.546</sysoidMask>
         <collect>
-          <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>netHealth-loadavg</includeGroup>
           <includeGroup>netHealth-memory</includeGroup>
           <includeGroup>netHealth-sysstat</includeGroup>
+          <includeGroup>netHealth-pgmon</includeGroup>
         </collect>
       </systemDef>
 
@@ -1081,10 +1288,26 @@
         </collect>
       </systemDef>
 
+       <systemDef name="IBM-AIX">
+         <sysoidMask>.1.3.6.1.4.1.2.3.1.2.1.1.3</sysoidMask>
+         <collect>
+           <includeGroup>mib2-host-resources-storage</includeGroup>
+           <includeGroup>mib2-host-resources-system</includeGroup>
+           <includeGroup>mib2-host-resources-memory</includeGroup>
+         </collect>
+       </systemDef>
+
       <systemDef name="Juniper Routers">
         <sysoidMask>.1.3.6.1.4.1.2636.1.</sysoidMask>
         <collect>
           <includeGroup>juniper-router</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Lexmark / Dell Printers">
+        <sysoidMask>.1.3.6.1.4.1.641.</sysoidMask>
+        <collect>
+          <includeGroup>printer-usage</includeGroup>
         </collect>
       </systemDef>
 
@@ -1118,26 +1341,26 @@
       <systemDef name="Net-SNMP (UCD)">
         <sysoidMask>.1.3.6.1.4.1.2021.250.</sysoidMask>
         <collect>
-          <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-diskio</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Net-SNMP">
         <sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask>
         <collect>
-          <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-diskio</includeGroup>
         </collect>
       </systemDef>
 
@@ -1156,6 +1379,22 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Network Appliance Filer">
+        <sysoid>.1.3.6.1.4.1.789.2.1</sysoid>
+        <collect>
+          <includeGroup>netapp-dfEntry</includeGroup>
+          <includeGroup>netapp-filer</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Network Appliance Clustered Filer">
+        <sysoid>.1.3.6.1.4.1.789.2.3</sysoid>
+        <collect>
+          <includeGroup>netapp-dfEntry</includeGroup>
+          <includeGroup>netapp-filer</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="NORTEL Routers">
         <sysoidMask>.1.3.6.1.4.1.18.</sysoidMask>
         <collect>
@@ -1167,6 +1406,13 @@
         <sysoidMask>.1.3.6.1.4.1.23.</sysoidMask>
         <collect>
           <includeGroup>netware-host</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Powerware UPS">
+        <sysoidMask>.1.3.6.1.4.1.534.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-ups-rfc1628</includeGroup>
         </collect>
       </systemDef>
 
@@ -1183,20 +1429,6 @@
         <collect>
           <includeGroup>3com-router-sys</includeGroup>
           <includeGroup>3com-router-perf</includeGroup>
-        </collect>
-      </systemDef>
-
-      <systemDef name="Powerware UPS">
-        <sysoidMask>.1.3.6.1.4.1.534.</sysoidMask>
-        <collect>
-          <includeGroup>mib2-ups-rfc1628</includeGroup>
-        </collect>
-      </systemDef>
-      
-      <systemDef name="Colubris-CN3000">
-        <sysoidMask>.1.3.6.1.4.1.8744.</sysoidMask>
-        <collect>
-          <includeGroup>colubris-access-mib</includeGroup>
         </collect>
       </systemDef>
 

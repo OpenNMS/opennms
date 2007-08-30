@@ -55,7 +55,7 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class IfInfo extends DbCollectionResource {
+final class IfInfo extends CollectionResource {
 
     private CollectionType m_collType;
     private SNMPCollectorEntry m_entry;
@@ -66,7 +66,7 @@ final class IfInfo extends DbCollectionResource {
     private String m_ifAlias;
 
     public IfInfo(ResourceType def, CollectionAgent agent, SnmpIfData snmpIfData) {
-        super(def, agent);
+        super(def);
         m_nodeId = snmpIfData.getNodeId();
         m_collType = snmpIfData.getCollectionType();
         m_ifIndex = snmpIfData.getIfIndex();
