@@ -11,7 +11,7 @@
  * Modifications:
  *
  * 2007 Jun 23: More Java 5 generics, eliminate extra log(...) methods, and
- *              eliminate depricated method inside log(). - dj@opennms.org
+ *              eliminate @deprecated method inside log(). - dj@opennms.org
  * 2007 Apr 05: Use Java 5 generics. - dj@opennms.org
  * 2007 Mar 19: Added createGraphReturnDetails. - dj@opennms.org
  * 2004 Jul 08: Created this file.
@@ -55,7 +55,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 /**
- * Provides queueing implementation of RrdStrategy.
+ * Provides queuing implementation of RrdStrategy.
  * 
  * In order to provide a more scalable collector. We created a queuing
  * RrdStrategy that enabled the system to amortize the high cost of opening an
@@ -79,14 +79,14 @@ import org.apache.log4j.Logger;
  * file is processed by the write threads.
  * 
  * As another performance improving strategy. The queue distinguishes between
- * files with signficant vs insignifact updates. Files with only insignificant
+ * files with significant vs insignificant updates. Files with only insignificant
  * updates are put at the lowest priority and are only written when the highest
  * priority updates have been written
  * 
  * This implementation delegates all the actual writing to another RrdStrategy
  * implementation.
  * 
- * System properites effecting the operation:
+ * System properties effecting the operation:
  * 
  * org.opennms.rrd.queuing.writethreads: (default 2) The number of rrd write
  * threads that process the queue
@@ -516,10 +516,10 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
     /**
      * Get the operations for the next file that should be worked on.
      * 
-     * @return a linkedList of oeprations to be processed all for the same file.
+     * @return a linkedList of operations to be processed all for the same file.
      */
-    public LinkedList getNext() {
-        LinkedList ops = null;
+    public LinkedList<Operation> getNext() {
+        LinkedList<Operation> ops = null;
         synchronized (this) {
 
             // turn in our previous assignment
@@ -543,8 +543,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
             // keep stats
             if (ops != null) {
-                for (Iterator it = ops.iterator(); it.hasNext();) {
-                    Operation op = (Operation) it.next();
+                for(Operation op : ops) {
                     totalOperationsPending -= op.getCount();
                     dequeuedOperations += op.getCount();
                     if (op.isSignificant()) {
@@ -636,8 +635,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * insignificant
      */
     private boolean hasOnlyInsignificant(LinkedList<Operation> pendingOps) {
-        for (Iterator<Operation> it = pendingOps.iterator(); it.hasNext();) {
-            Operation op = it.next();
+        for(Operation op : pendingOps) {
             if (op.isSignificant()) {
                 return false;
             }
@@ -648,18 +646,17 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
     /**
      * register the file that the currentThread is be working on. This enables
      * us to ensure that another thread doesn't try to work on operations for
-     * that file.
+     * that file.  Note: this is not synchronized as it is called from getNext which
+     * is thread safe
      */
-    private LinkedList takeAssignment(String newAssignment) {
-        LinkedList ops;
+    private LinkedList<Operation> takeAssignment(String newAssignment) {
 
         // make the file as reserved by the current thread
         fileAssignments.put(Thread.currentThread(), newAssignment);
         reservedFiles.add(newAssignment);
 
         // get the assignments work list and return it
-        ops = (LinkedList) pendingFileOperations.remove(newAssignment);
-        return ops;
+        return pendingFileOperations.remove(newAssignment);
     }
 
     /**
@@ -685,7 +682,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     /**
      * Record that fact that the current thread has finished process operations
-     * for its current assignement
+     * for its current assignment
      */
     private synchronized void completeAssignment() {
         // remove any existing reservation of the current thread
@@ -850,21 +847,19 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         String fileName = null;
 
         try {
-            LinkedList ops = getNext();
+            LinkedList<Operation> ops = getNext();
             if (ops == null)
                 return;
             // update stats correctly we update them even if an exception occurs
             // while we are processing
-            for (Iterator it = ops.iterator(); it.hasNext();) {
-                Operation op = (Operation) it.next();
+            for(Operation op : ops) {
                 if (op.isSignificant()) {
                     significantOpsCompleted++;
                 }
 
             }
             // now we actually process the events
-            for (Iterator it = ops.iterator(); it.hasNext();) {
-                Operation op = (Operation) it.next();
+            for(Operation op : ops) {
                 fileName = op.getFileName();
                 rrd = op.process(rrd);
             }
