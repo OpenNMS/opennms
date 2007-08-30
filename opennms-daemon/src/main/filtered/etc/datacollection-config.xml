@@ -325,6 +325,12 @@
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="counter" />
       </group>
+      <group name="cisco-router-interface" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7" instance="ifIndex" alias="locIfInPktsSec" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9" instance="ifIndex" alias="locIfOutPktsSec" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="counter" />
+      </group>
       <group  name = "cisco-aironet-stats" ifType = "ignore">
         <mibObj oid=".1.3.6.1.4.1.522.3.12.1.8" instance="0" alias="aironetClientAssoc" type="integer"/>
       </group>
@@ -1228,6 +1234,7 @@
         <collect>
           <includeGroup>cisco-memory</includeGroup>
           <includeGroup>cisco-router</includeGroup>
+          <includeGroup>cisco-router-interface</includeGroup>
           <includeGroup>adsl-line</includeGroup>
           <includeGroup>cisco-rttmon-latest-jitter-stats</includeGroup>
           <includeGroup>cisco-rttmon-latest-rtp-stats</includeGroup>
