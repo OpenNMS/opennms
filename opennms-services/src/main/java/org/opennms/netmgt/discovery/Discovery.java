@@ -108,9 +108,19 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
     private static final Discovery m_singleton = new Discovery();
 
     /**
+     * The callback that sends newSuspect events upon successful ping response.
+     */
+    private static final DiscoveryPingResponseCallback cb = new DiscoveryPingResponseCallback();
+
+
+    private static final int PING_IDLE = 0;
+    private static final int PING_RUNNING = 1;
+    private static final int PING_FINISHING = 2;
+    
+    /**
      * a set of devices to skip discovery on
      */
-    private Set<String> m_alreadyDiscovered;
+    private Set<String> m_alreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
     private Collection<ExcludeRange> m_excluded;
 
     private DiscoveryConfigFactory m_discoveryFactory;
@@ -118,6 +128,7 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
     private Timer m_timer;
     private long initialSleepTime;
     private long discoveryInterval;
+    private int m_xstatus = PING_IDLE;
 
     /**
      * Constructs a new discovery instance.
@@ -135,7 +146,7 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
             throw new UndeclaredThrowableException(e);
         }
 
-        reloadConfiguration();
+        initializeConfiguration();
         initialSleepTime = m_discoveryConfiguration.getInitialSleepTime();
         discoveryInterval = m_discoveryConfiguration.getRestartSleepTime();
 
@@ -151,7 +162,7 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
         EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
     }
 
-    private void reloadConfiguration() {
+    private void initializeConfiguration() {
         try {
             DiscoveryConfigFactory.reload();
             m_discoveryFactory = DiscoveryConfigFactory.getInstance();
@@ -159,7 +170,6 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
             m_discoveryConfiguration = config;
 
             m_excluded = Collections.synchronizedCollection(config.getExcludeRangeCollection());
-            m_alreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
 
         } catch (Exception e) {
             log().fatal("Unable to initialize the discovery configuration factory", e);
@@ -168,9 +178,8 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
     }
 
     protected void doPings() {
-        reloadConfiguration();
-
-        DiscoveryPingResponseCallback cb = new DiscoveryPingResponseCallback();
+        log().debug("starting ping sweep");
+        initializeConfiguration();
 
         int pps = m_discoveryConfiguration.getPacketsPerSecond();
 
@@ -178,14 +187,26 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
         specifics.addAll(getUrlSpecifics());
         List<IPPollRange> ranges = getRanges();
 
+        m_xstatus = PING_RUNNING;
+
+        log().debug("checking " + specifics.size() + " specific IP addresses");
         for (IPPollAddress address : specifics) {
+            if (m_xstatus == PING_FINISHING || m_timer == null) {
+                m_xstatus = PING_IDLE;
+                return;
+            }
             pingAddress(address.getAddress(), address.getTimeout(), address.getRetries(), cb);
         }
 
+        log().debug("checking " + ranges.size() + " ranges");
         for (IPPollRange range : ranges) {
             for (InetAddress address : range.getAddressRange()) {
-                // only check isExcluded for ranges since specifics would
-                // override
+                if (m_xstatus == PING_FINISHING || m_timer == null) {
+                    m_xstatus = PING_IDLE;
+                    return;
+                }
+                
+                // only check isExcluded for ranges since specifics would override
                 if (!isExcluded(address)) {
                     pingAddress(address, range.getTimeout(), range.getRetries(), cb);
                     try {
@@ -196,6 +217,9 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
                 }
             }
         }
+        
+        log().debug("finished discovery scanning");
+        m_xstatus = PING_IDLE;
     }
 
     private boolean isExcluded(InetAddress address) {
@@ -246,8 +270,12 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
 
     private void startTimer() {
         if (m_timer != null) {
+            log().debug("startTimer() called, but a previous timer exists; making sure it's cleaned up");
+            m_xstatus = PING_FINISHING;
             m_timer.cancel();
         }
+        
+        log().debug("scheduling new discovery timer");
         m_timer = new Timer("Discovery.Pinger", true);
 
         TimerTask task = new TimerTask() {
@@ -264,8 +292,12 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
 
     private void stopTimer() {
         if (m_timer != null) {
+            log().debug("stopping existing timer");
+            m_xstatus = PING_FINISHING;
             m_timer.cancel();
             m_timer = null;
+        } else {
+            log().debug("stopTimer() called, but there is no existing timer");
         }
     }
 
@@ -492,7 +524,7 @@ public final class Discovery extends AbstractServiceDaemon implements EventListe
             if (log.isDebugEnabled())
                 log.debug("Removed " + event.getInterface() + " from known node list");
         } else if (eventUei.equals(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)) {
-            reloadConfiguration();
+            initializeConfiguration();
             this.stop();
             this.start();
         }
