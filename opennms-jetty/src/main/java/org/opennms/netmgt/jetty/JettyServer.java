@@ -90,7 +90,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         		
         		try {
         			ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
-                	String host = InetAddress.getLocalHost().getHostName().replace(".local.", "").replace(".", "-");
+                	String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
                 	Hashtable<String, String> properties = new Hashtable<String, String>();
                 	properties.put("path", "/" + entry.getName());
                 	srs.initialize("HTTP", entry.getName() + "-" + host, m_port, properties);
