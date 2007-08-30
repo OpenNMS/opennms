@@ -119,7 +119,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
 			// get parameters
 			//
 			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
-			int count = ParameterMap.getKeyedInteger(parameters, "pings", DEFAULT_MULTI_PING_COUNT);
+			int count = ParameterMap.getKeyedInteger(parameters, "ping-count", DEFAULT_MULTI_PING_COUNT);
 			long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
 			
 			responseTimes = new ArrayList<Number>(Pinger.parallelPing(host, count, timeout, pingInterval));
