@@ -31,9 +31,6 @@
 %define with_tests	0%{nil}
 %define with_docs	1%{nil}
 
-# Don't put Java or any of the packages that Java might depend on in the
-# requires line.  See bug #1144.
-
 Name:			opennms
 Summary:		Enterprise-grade network management platform
 Release:		%releasenumber
@@ -43,7 +40,7 @@ Group:			Applications/System
 BuildArch:		noarch
 
 Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
-URL:			https://sourceforge.net/project/showfiles.php?group_id=4141
+URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
@@ -65,12 +62,14 @@ for OpenNMS.
 %endif
 
 %package webapp
-Summary:	Web interface servlet for the OpenNMS network management platform
+Summary:	Standalone web interface for OpenNMS
 Group:		Applications/System
 Requires:	opennms = %{version}-%{release}
 
 %description webapp
-The web UI for OpenNMS.
+A standalone version of the web UI for OpenNMS.  OpenNMS now comes with an embedded
+web server by default; this package is only necessary if you intend to install the
+web on a separate server, or in a standalone servlet instance.
 
 %prep
 
