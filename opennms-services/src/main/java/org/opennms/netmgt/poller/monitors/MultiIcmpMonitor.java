@@ -72,9 +72,9 @@ import org.opennms.netmgt.utils.ParameterMap;
 // this is marked not distributable because it relies on a shared library
 @Distributable(DistributionContext.DAEMON)
 final public class MultiIcmpMonitor extends IPv4Monitor {
-	private static final int DEFAULT_MULTI_PING_COUNT = 20;
+    private static final int DEFAULT_MULTI_PING_COUNT = 20;
     private static final long DEFAULT_PING_INTERVAL = 50;
-	
+
     /**
      * Constructs a new monitor.
      */
@@ -92,6 +92,7 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
      * utilized for passing poll requests and receiving poll replies from
      * discovery. All exchanges are SOAP/XML compliant.
      * </P>
+     * 
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
@@ -111,21 +112,25 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
 
         Category log = ThreadCategory.getInstance(this.getClass());
         PollStatus serviceStatus = PollStatus.unavailable();
-		InetAddress host = (InetAddress) iface.getAddress();
-		List<Number> responseTimes = null;
-		
-		try {
-			
-			// get parameters
-			//
-			long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
-			int count = ParameterMap.getKeyedInteger(parameters, "ping-count", DEFAULT_MULTI_PING_COUNT);
-			long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
-			
-			responseTimes = new ArrayList<Number>(Pinger.parallelPing(host, count, timeout, pingInterval));
+        InetAddress host = (InetAddress) iface.getAddress();
+        List<Number> responseTimes = null;
 
-			serviceStatus = PollStatus.available();
-			Collections.sort(responseTimes, new Comparator<Number>() {
+        try {
+
+            // get parameters
+            //
+            long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
+            int count = ParameterMap.getKeyedInteger(parameters, "ping-count", DEFAULT_MULTI_PING_COUNT);
+            long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
+
+            responseTimes = new ArrayList<Number>(Pinger.parallelPing(host, count, timeout, pingInterval));
+
+            if (CollectionMath.countNotNull(responseTimes) == 0) {
+                return PollStatus.unavailable("no packets returned within the timeout");
+            }
+
+            serviceStatus = PollStatus.available();
+            Collections.sort(responseTimes, new Comparator<Number>() {
 
                 public int compare(Number arg0, Number arg1) {
                     if (arg0 == null) {
@@ -135,25 +140,25 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
                     } else if (arg0.doubleValue() == arg1.doubleValue()) {
                         return 0;
                     } else {
-                        return arg0.doubleValue() < arg1.doubleValue()? -1 : 1;
+                        return arg0.doubleValue() < arg1.doubleValue() ? -1 : 1;
                     }
                 }
-			    
-			});
-			
-			Map<String, Number> returnval = new LinkedHashMap<String,Number>();
-			for (int i = 0; i < responseTimes.size(); i++) {
-			    returnval.put("ping" + (i+1), responseTimes.get(i));
-			}
-			returnval.put("loss", CollectionMath.countNull(responseTimes));
-			returnval.put("median", CollectionMath.median(responseTimes));
-			returnval.put("response-time", CollectionMath.average(responseTimes));
-			
-			serviceStatus.setProperties(returnval);
-		} catch (Exception e) {
-			log.debug("failed to ping " + host, e);
-		}
-        
+
+            });
+
+            Map<String, Number> returnval = new LinkedHashMap<String, Number>();
+            for (int i = 0; i < responseTimes.size(); i++) {
+                returnval.put("ping" + (i + 1), responseTimes.get(i));
+            }
+            returnval.put("loss", CollectionMath.countNull(responseTimes));
+            returnval.put("median", CollectionMath.median(responseTimes));
+            returnval.put("response-time", CollectionMath.average(responseTimes));
+
+            serviceStatus.setProperties(returnval);
+        } catch (Exception e) {
+            log.debug("failed to ping " + host, e);
+        }
+
         return serviceStatus;
     }
 
