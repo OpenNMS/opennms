@@ -921,7 +921,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
         String stats = "\nQS:\t" + "totalOperationsPending=" + totalOperationsPending + ", significantOpsPending=" + (significantOpsEnqueued - significantOpsCompleted) + ", filesWithSignificantWork=" + filesWithSignificantWork.size() + ", filesWithInsignificantWork=" + filesWithInsignificantWork.size()
 
-        + "\nQS:\t" + ", createsCompleted=" + createsCompleted + ", udpatesCompleted=" + updatesCompleted + ", errors=" + errors + ", promotionRate=" + ((double) (promotionCount * 1000.0 / totalElapsedMillis)) + ", promotionCount=" + promotionCount
+        + "\nQS:\t" + ", createsCompleted=" + createsCompleted + ", updatesCompleted=" + updatesCompleted + ", errors=" + errors + ", promotionRate=" + ((double) (promotionCount * 1000.0 / totalElapsedMillis)) + ", promotionCount=" + promotionCount
 
         + "\nQS:\t" + ", currentEnqueueRates=(" + currentSigEnqueueRate + "/" + currentInsigEnqueueRate + "/" + currentEnqueueRate + ")" + ", currentDequeueRate=(" + currentSigDequeueRate + "/" + currentInsigDequeueRate + "/" + currentDequeueRate + ")" + ", currentItemDequeRate=" + currentItemDequeueRate + ", currentOpsPerUpdate=" + (currentDequeuedOps / Math.max(currentDequeuedItems, 1.0)) + ", currentPrcntSignificant=" + (currentSigOpsEnqueued * 100.0 / Math.max(currentEnqueuedOps, 1.0)) + "%" + ", elapsedTime=" + ((currentElapsedMillis + 500) / 1000)
 
