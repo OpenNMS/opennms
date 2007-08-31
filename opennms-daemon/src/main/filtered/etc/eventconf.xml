@@ -1592,7 +1592,7 @@
     <uei>uei.opennms.org/internal/promoteQueueData</uei>
     <event-label>A request has been made promote data from the RRD Queue</event-label>
     <logmsg dest='logndisplay'>
-      A request has been generated to data from the queue for the file(s): %parm[filesToPromote]%.
+      A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
     </logmsg>
     <severity>Normal</severity>
   </event>
