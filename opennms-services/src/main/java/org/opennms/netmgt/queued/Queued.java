@@ -40,8 +40,26 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
     public void onEvent(Event e) {
         String fileList = EventUtils.getParm(e, "filesToPromote");
         Set<String> files = StringUtils.commaDelimitedListToSet(fileList);
+
+        logFilePromotion(files);
         
         m_rrdStrategy.promoteEnqueuedFiles(files);
+    }
+    
+    private void logFilePromotion(Set<String> files) {
+        if (!log().isDebugEnabled()) {
+            return;
+        }
+        
+        for(String file : files) {
+            debugf("Promoting file: %s", file);
+        }
+    }
+
+    private void debugf(String format, Object... args) {
+        if (log().isDebugEnabled()) {
+            log().debug(String.format(format, args));
+        }
     }
 
 }
