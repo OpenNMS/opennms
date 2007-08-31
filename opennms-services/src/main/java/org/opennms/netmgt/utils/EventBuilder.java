@@ -32,6 +32,7 @@
 package org.opennms.netmgt.utils;
 
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.db.Constants;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.util.StringUtils;
 
 public class EventBuilder {
     
@@ -137,6 +139,12 @@ public class EventBuilder {
 
     public EventBuilder addParam(String parmName, int val) {
         return addParam(parmName, Integer.toString(val));
+    }
+    
+    public EventBuilder addParam(String parmName, List<String> vals) {
+        String val = StringUtils.collectionToCommaDelimitedString(vals);
+        return addParam(parmName, val);
+        
     }
 
     public EventBuilder setNode(OnmsNode node) {

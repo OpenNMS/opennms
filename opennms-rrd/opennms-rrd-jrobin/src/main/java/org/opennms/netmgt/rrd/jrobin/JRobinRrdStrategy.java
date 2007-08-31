@@ -44,6 +44,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -298,6 +299,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
             throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph: " + e.getMessage(), e);
         }
     }
+    
+    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
+        // no need to do anything since this strategy doesn't queue
+    }
+
 
     protected RrdGraphDef createGraphDef(File workDir, String[] commandArray) throws RrdException {
         RrdGraphDef graphDef = new RrdGraphDef();
