@@ -42,6 +42,7 @@ package org.opennms.netmgt.rrd;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -343,6 +344,10 @@ public class RrdUtils {
             return getStrategy().getDefaultFileExtension();
         }
         return m_rrdExtension;
+    }
+
+    public static void promoteEnqueuedFiles(Collection<String> files) {
+        getStrategy().promoteEnqueuedFiles(files);
     }
 
 }

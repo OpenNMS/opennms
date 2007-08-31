@@ -42,6 +42,7 @@ package org.opennms.netmgt.rrd;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -200,7 +201,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
     long lastOpsPending = 0;
 
     /**
-     * This is the base class for an enqueueable operation
+     * This is the base class for an enqueue able operation
      */
     static abstract class Operation {
         String fileName;
@@ -628,6 +629,10 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             promotionCount++;
         }
 
+    }
+    
+    public synchronized void promoteEnqueuedFiles(Collection<String> rrdFiles) {
+        filesWithSignificantWork.addAll(0, rrdFiles);
     }
 
     /**

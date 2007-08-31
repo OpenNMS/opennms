@@ -40,11 +40,12 @@ package org.opennms.netmgt.rrd;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Defines an abstract strategy for manipulating round robin database file. This
- * is used by the RrdUtils to implement the appropriate behaviour
+ * is used by the RrdUtils to implement the appropriate behavior
  */
 public interface RrdStrategy {
 
@@ -81,7 +82,7 @@ public interface RrdStrategy {
      * @param step -
      *            the step for the database
      * @param dataSources -
-     *            the datasources to use for round robin database
+     *            the data sources to use for round robin database
      * @param rraList -
      *            a List of the round robin archives to create in the database
      * @return an object representing the definition of an round robin database
@@ -258,8 +259,16 @@ public interface RrdStrategy {
      * Provides the round robin database an opportunity to contribute statistics
      * information to the logs file.
      * 
-     * @return a non-null string representing any staticstics to be included in
+     * @return a non-null string representing any statistics to be included in
      *         the logs
      */
     public String getStats();
+
+    /**
+     * In the event that this is a queuing implementation of the RrdStrategy. This method
+     * causes all queued but not yet written data to be to the rrd files as soon as possible.
+     * 
+     * @param files collection of files whose data should be written
+     */
+    public void promoteEnqueuedFiles(Collection<String> rrdFiles);
 }

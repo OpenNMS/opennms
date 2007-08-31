@@ -81,12 +81,20 @@ maintained
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
-		<name>OpenNMS:Name=Trapd</name>
-		<class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
-		<invoke at="start" pass="0" method="init"/>
-		<invoke at="start" pass="1" method="start"/>
-		<invoke at="status" pass="0" method="status"/>
-		<invoke at="stop" pass="0" method="stop"/>
+        <name>OpenNMS:Name=Trapd</name>
+        <class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
+        <invoke at="start" pass="0" method="init"/>
+        <invoke at="start" pass="1" method="start"/>
+        <invoke at="status" pass="0" method="status"/>
+        <invoke at="stop" pass="0" method="stop"/>
+	</service>
+	<service>
+        <name>OpenNMS:Name=Queued</name>
+        <class-name>org.opennms.netmgt.queued.jmx.Queued</class-name>
+        <invoke at="start" pass="0" method="init"/>
+        <invoke at="start" pass="1" method="start"/>
+        <invoke at="status" pass="0" method="status"/>
+        <invoke at="stop" pass="0" method="stop"/>
 	</service>
 <!--
 	<service>

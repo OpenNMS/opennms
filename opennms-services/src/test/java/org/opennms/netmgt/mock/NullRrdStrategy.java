@@ -38,8 +38,10 @@ package org.opennms.netmgt.mock;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -53,8 +55,8 @@ public class NullRrdStrategy implements RrdStrategy {
 	}
 
 	public Object createDefinition(String creator, String directory,
-			String rrdName, int step, List dataSources, List rraList)
-			throws Exception {
+            String rrdName, int step, List<RrdDataSource> dataSources,
+            List<String> rraList) throws Exception {
 		return null;
 	}
 
@@ -116,5 +118,10 @@ public class NullRrdStrategy implements RrdStrategy {
             throws NumberFormatException, RrdException {
         return null;
     }
+
+    
+    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
+    }
+    
 
 }
