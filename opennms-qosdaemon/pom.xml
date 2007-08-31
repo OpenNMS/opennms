@@ -397,13 +397,6 @@
 	<repositories>
 		<repository>
 			<releases />
-			<id>ibiblio-repo</id>
-			<name>ibiblio repository</name>
-			<url>http://www.ibiblio.org/maven2</url>
-		</repository>
-
-		<repository>
-			<releases />
 			<id>sourceforge</id>
 			<name>Sourceforge OSSbeans Release Repository</name>
 			<url>http://openoss.sourceforge.net/m2repo</url>
