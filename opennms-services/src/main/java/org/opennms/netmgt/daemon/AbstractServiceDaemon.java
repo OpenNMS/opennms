@@ -34,9 +34,8 @@ package org.opennms.netmgt.daemon;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.ServiceDaemon;
-import org.springframework.beans.factory.InitializingBean;
 
-public abstract class AbstractServiceDaemon implements ServiceDaemon, InitializingBean {
+public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServiceDaemon {
     public void afterPropertiesSet() throws Exception {
         init();
     }

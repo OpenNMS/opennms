@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -456,5 +457,9 @@ public class JniRrdStrategy implements RrdStrategy {
     
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         throw new UnsupportedOperationException("method not yet implemented");
+    }
+
+    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
+        // no need to do anything since this strategy doesn't queue
     }
 }
