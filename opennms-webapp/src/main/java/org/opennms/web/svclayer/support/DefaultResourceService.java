@@ -42,10 +42,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -53,6 +60,7 @@ import org.springframework.util.Assert;
 public class DefaultResourceService implements ResourceService, InitializingBean {
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
+    private EventProxy m_eventProxy;
 
     public ResourceDao getResourceDao() {
         return m_resourceDao;
@@ -70,9 +78,14 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         m_graphDao = graphDao;
     }
     
+    public void setEventProxy(EventProxy eventProxy) {
+        m_eventProxy = eventProxy;
+    }
+    
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceDao != null, "resourceDao property is not set");
         Assert.state(m_graphDao != null, "graphDao property is not set");
+        Assert.state(m_eventProxy != null, "eventProxy property is not set");
     }
     
     public File getRrdDirectory() {
@@ -138,6 +151,26 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         return m_graphDao.getPrefabGraphsForResource(resource);
     }
     
+    public void promoteGraphAttributesForResource(OnmsResource resource) {
+        String baseDir = getRrdDirectory().getAbsolutePath();
+        List<String> rrdFiles = new LinkedList<String>();
+        for(RrdGraphAttribute attribute : resource.getRrdGraphAttributes().values()) {
+            rrdFiles.add(baseDir + File.separator + attribute.getRrdRelativePath());
+        }
+        EventBuilder bldr = new EventBuilder(EventConstants.PROMOTE_QUEUE_DATA_UEI, "OpenNMS.Webapp");
+        bldr.addParam(EventConstants.PARM_FILES_TO_PROMOTE, rrdFiles);
+        
+        try {
+            m_eventProxy.send(bldr.getEvent());
+        } catch (EventProxyException e) {
+            log().warn("Unable to send file promotion event to opennms.", e);
+        }
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
     public PrefabGraph[] findPrefabGraphsForChildResources(OnmsResource resource, String... resourceTypeMatches) {
         Map<String, PrefabGraph> childGraphs = new LinkedHashMap<String, PrefabGraph>();
         for (OnmsResource r : findChildResources(resource, resourceTypeMatches)) {
