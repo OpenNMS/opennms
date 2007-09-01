@@ -135,6 +135,7 @@
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
+    <property name="eventProxy" ref="eventProxy" />
   </bean>
   
   <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
