@@ -47,7 +47,11 @@
         java.util.LinkedHashMap,
         java.util.Map,
         org.opennms.web.MissingParameterException,
-        org.opennms.web.Util,org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
+        org.opennms.web.Util,
+        org.opennms.netmgt.model.OnmsResource,
+        org.opennms.web.svclayer.ResourceService,
+        org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -74,6 +78,7 @@
     String[] requiredParameters = new String[] {
         "resourceId"
     };
+
     
     for (String requiredParameter : requiredParameters) {
         if (request.getParameter(requiredParameter) == null) {
@@ -86,9 +91,13 @@
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
         String resourceId = request.getParameter("resourceId");
-        pageContext.setAttribute("resource", m_resourceService.getResourceById(resourceId));
+        OnmsResource resource = m_resourceService.getResourceById(resourceId);
+        m_resourceService.promoteGraphAttributesForResource(resource);
+        pageContext.setAttribute("resource", resource);
         pageContext.setAttribute("colors", s_colors);
     }
+    
+    
 
 %>
 
