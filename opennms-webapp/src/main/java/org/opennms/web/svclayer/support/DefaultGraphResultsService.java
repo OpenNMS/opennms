@@ -217,4 +217,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }
+    
+    public void setEventProxy(EventProxy eventProxy) {
+        m_eventProxy = eventProxy;
+    }
 }
