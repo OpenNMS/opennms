@@ -372,7 +372,22 @@ public class EventFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            StringBuffer select = new StringBuffer("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING(NODEID) LEFT OUTER JOIN SERVICE USING(SERVICEID) WHERE");
+        	/*
+            StringBuffer select = new StringBuffer("" +
+            		"  SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME " +
+            		"    FROM EVENTS " +
+            		"LEFT OUTER JOIN NODE USING(NODEID) " +
+            		"LEFT OUTER JOIN SERVICE USING(SERVICEID) WHERE");
+            */
+            StringBuffer select = new StringBuffer("" +
+            		"          SELECT events.eventid, node.nodelabel, service.servicename " + 
+            		"            FROM node " + 
+            		"RIGHT OUTER JOIN events " +
+            		"              ON (events.nodeid = node.nodeid) " + 
+            		" LEFT OUTER JOIN service " +
+            		"              ON (service.serviceid = events.serviceid) " + 
+            		"           WHERE ");
+            
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
