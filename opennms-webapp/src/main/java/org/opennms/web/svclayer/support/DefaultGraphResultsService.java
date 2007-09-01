@@ -35,17 +35,27 @@
 //
 package org.opennms.web.svclayer.support;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
@@ -63,6 +73,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     private NodeDao m_nodeDao;
     
     private RrdDao m_rrdDao;
+    
+    private EventProxy m_eventProxy;
 
     private RelativeTimePeriod[] m_periods;
 
@@ -117,11 +129,19 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
         List<Graph> graphs = new ArrayList<Graph>(reports.length);
 
+        List<String> filesToPromote = new LinkedList<String>();
         for (String report : reports) {
             PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
-            graphs.add(new Graph(prefabGraph, resource, graphResults.getStart(), graphResults.getEnd()));
+            Graph graph = new Graph(prefabGraph, resource, graphResults.getStart(), graphResults.getEnd());
+            getAttributeFiles(graph, filesToPromote);
+            graphs.add(graph);
         }
 
+        
+        
+        sendEvent(filesToPromote);
+        
+        
         /*
          * Sort the graphs by their order in the properties file.
          * PrefabGraph implements the Comparable interface.
@@ -131,6 +151,32 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         rs.setGraphs(graphs);
         
         return rs;
+    }
+
+    private void sendEvent(List<String> filesToPromote) {
+
+        EventBuilder bldr = new EventBuilder(EventConstants.PROMOTE_QUEUE_DATA_UEI, "OpenNMS.Webapp");
+        bldr.addParam(EventConstants.PARM_FILES_TO_PROMOTE, filesToPromote);
+
+        try {
+            m_eventProxy.send(bldr.getEvent());
+        } catch (EventProxyException e) {
+            log().warn("Unable to send promotion event to opennms daemon", e);
+        }
+        
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    private void getAttributeFiles(Graph graph, List<String> filesToPromote) {
+        
+        Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
+        for(RrdGraphAttribute rrdAttr : attrs) {
+            filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+rrdAttr.getRrdRelativePath());
+        }
+        
     }
 
     public void afterPropertiesSet() {

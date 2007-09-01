@@ -454,6 +454,13 @@ public class EventConstants {
      */
     public final static String RTC_UNSUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/unsubscribe";
 
+    
+    /**
+     * An event used by queued to indicate that data for certain rrds should be immediately flushed to the disk
+     */
+    public static final String PROMOTE_QUEUE_DATA_UEI = "uei.opennms.org/internal/promoteQueueData";
+
+
     /**
      * A service poll returned an unknown status (due to a problem getting poll
      * information)
@@ -793,6 +800,11 @@ public class EventConstants {
 
     public final static String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
     
+    /**
+     * Parm use for promoteEnqueuedData event
+     */
+    public static final String PARM_FILES_TO_PROMOTE = "filesToPromote";
+    
     //
     // End event parms
     //
@@ -845,5 +857,6 @@ public class EventConstants {
     public static final String formatToUIString(Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
     }
+
 
 }
