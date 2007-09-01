@@ -31,10 +31,15 @@
 //
 package org.opennms.web.graph;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.RrdGraphAttribute;
 
 public class Graph implements Comparable<Graph> {
     private PrefabGraph m_graph = null;
@@ -88,6 +93,18 @@ public class Graph implements Comparable<Graph> {
     
     public String getReport() {
         return m_graph.getName();
+    }
+    
+    public Collection<RrdGraphAttribute> getRequiredRrGraphdAttributes() {
+        Map<String, RrdGraphAttribute> available = m_resource.getRrdGraphAttributes();
+        Set<RrdGraphAttribute> reqAttrs = new LinkedHashSet<RrdGraphAttribute>();
+        for(String attrName : m_graph.getColumns()) {
+            RrdGraphAttribute attr = available.get(attrName);
+            if (attr != null) {
+                reqAttrs.add(attr);
+            }
+        }
+        return reqAttrs;
     }
 
 }
