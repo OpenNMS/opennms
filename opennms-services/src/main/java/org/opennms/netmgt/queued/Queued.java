@@ -2,6 +2,7 @@ package org.opennms.netmgt.queued;
 
 import java.util.Set;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -34,7 +35,8 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
         Assert.state(m_eventMgr != null, "setEventIpcManager must be set");
         Assert.state(m_rrdStrategy != null, "rrdStrategy must be set");
         
-        m_eventMgr.addEventListener(this, "uei.opennms.org/internal/promoteQueueData");
+        
+        m_eventMgr.addEventListener(this, EventConstants.PROMOTE_QUEUE_DATA_UEI);
     }
 
     public void onEvent(Event e) {
