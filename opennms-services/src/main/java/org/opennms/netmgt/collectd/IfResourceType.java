@@ -36,15 +36,11 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 public class IfResourceType extends ResourceType {
@@ -53,7 +49,6 @@ public class IfResourceType extends ResourceType {
 
     public IfResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         super(agent, snmpCollection);
-        System.err.println("Creating ifResourceType for agent"+agent);
         m_ifMap = new TreeMap<Integer, IfInfo>();
         addKnownIfResources();
     }
