@@ -146,6 +146,7 @@
     <property name="graphDao" ref="graphDao"/>
     <property name="nodeDao" ref="nodeDao"/>
     <property name="rrdDao" ref="rrdDao"/>
+    <property name="eventProxy" ref="eventProxy" />
   </bean>
   
   <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
