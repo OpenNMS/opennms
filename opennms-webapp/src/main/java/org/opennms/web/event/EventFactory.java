@@ -380,7 +380,7 @@ public class EventFactory extends Object {
             		"LEFT OUTER JOIN SERVICE USING(SERVICEID) WHERE");
             */
             StringBuffer select = new StringBuffer("" +
-            		"          SELECT events.eventid, node.nodelabel, service.servicename " + 
+            		"          SELECT events.*, node.nodelabel, service.servicename " + 
             		"            FROM node " + 
             		"RIGHT OUTER JOIN events " +
             		"              ON (events.nodeid = node.nodeid) " + 
