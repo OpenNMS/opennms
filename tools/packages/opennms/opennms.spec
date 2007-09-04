@@ -2,7 +2,7 @@
 #  $Id$
 #
 # The version used to be passed from build.xml. It's hardcoded here
-%{!?version:%define version 1.3.6}
+%{!?version:%define version 1.3.7}
 # The release number is set to 0 unless overridden
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix is equal to $OPENMS_HOME
@@ -32,7 +32,7 @@
 %define with_docs	1%{nil}
 
 Name:			opennms
-Summary:		Enterprise-grade network management platform
+Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
 Version:		%version
 License:		LGPL/GPL
@@ -45,11 +45,46 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		jicmp, postgresql-server >= 7.4
+Requires:		opennms-webapp    = %{version}-%{releasever}
+Requires:		opennms-core      = %{version}-%{releasever}
+Requires:		postgresql-server >= 7.4
+
+BuildRequires:		jdk               >= 1.5
 
 %description
-OpenNMS is an enterprise-grade network management package.
-This is the 1.3 unstable tree.
+OpenNMS is an enterprise-grade network management platform.
+
+This package used to contain what is now in the "opennms-core" package.
+It now exists to give a reasonable default installation of OpenNMS.
+
+When you install this package, you will also need to install one of the
+opennms-webapp packages.  OpenNMS now provides 2 ways to install the
+web UI:
+
+* standalone
+
+  A standalone version of the web UI for OpenNMS, suitable for embedding inside
+  tomcat or another servlet container, or on a server separate from the OpenNMS
+  core server.
+
+* jetty
+
+  A version of the web UI for OpenNMS which uses a built-in, embedded version
+  of Jetty, which runs in the same JVM as OpenNMS.
+
+%package core
+Summary:	The core OpenNMS backend.
+Group:		Applications/System
+Requires:	jicmp
+Requires:	jdk >= 1.5
+
+%description core
+The core OpenNMS backend.  This package contains the main OpenNMS
+daemon responsible for discovery, polling, data collection, and
+notifications (ie, anything that is not part of the web UI).
+
+If you want to be able to view your data, you will need to install
+one of the opennms-webapp packages.
 
 %if %{with_docs}
 %package docs
@@ -61,15 +96,25 @@ This package contains the API and user documentation
 for OpenNMS.
 %endif
 
-%package webapp
+%package webapp-jetty
+Summary:	Embedded web interface for OpenNMS
+Group:		Applications/System
+Requires:	opennms-core = %{version}-%{release}
+Provides:	opennms-webapp = %{version}-%{release}
+
+%description webapp-jetty
+The web UI for OpenNMS.  This is the Jetty version, which runs
+embedded in the main OpenNMS core process.
+
+%package webapp-standalone
 Summary:	Standalone web interface for OpenNMS
 Group:		Applications/System
-Requires:	opennms = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+Provides:	opennms-webapp = %{version}-%{release}
 
-%description webapp
-A standalone version of the web UI for OpenNMS.  OpenNMS now comes with an embedded
-web server by default; this package is only necessary if you intend to install the
-web on a separate server, or in a standalone servlet instance.
+%description webapp-standalone
+The web UI for OpenNMS.  This is the standalone version, suitable for
+use with Tomcat or another servlet container.
 
 %prep
 
@@ -177,10 +222,10 @@ find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,," | \
     grep -v '/WEB-INF/web\.xml$' | \
     grep -v '/WEB-INF/configuration\.properties$' | \
-    sort >> %{_tmppath}/files.main
+    sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
-    sort >> %{_tmppath}/files.main
+    sort >> %{_tmppath}/files.jetty
 
 # webapps
 find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
@@ -201,7 +246,7 @@ rm -rf $RPM_BUILD_ROOT
 # file setup
 ##############################################################################
 
-%files -f %{_tmppath}/files.main
+%files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{bindir}/*
@@ -212,9 +257,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{instprefix}/lib
 			%{instprefix}/logs
 			%{instprefix}/share
-			%{instprefix}/jetty-webapps
-%config  %{jettydir}/%{servletdir}/WEB-INF/web.xml
-%config  %{jettydir}/%{servletdir}/WEB-INF/configuration.properties
 			%{sharedir}
 			%{logdir}
 
@@ -224,7 +266,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/%{name}-%{version}
 %endif
 
-%files webapp -f %{_tmppath}/files.webapp
+%files webapp-jetty -f %{_tmppath}/files.jetty
+%defattr(644 root root 755)
+%{instprefix}/jetty-webapps
+%config  %{jettydir}/%{servletdir}/WEB-INF/web.xml
+%config  %{jettydir}/%{servletdir}/WEB-INF/configuration.properties
+
+%files webapp-standalone -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
 %config %{webappsdir}/%{servletdir}/WEB-INF/web.xml
 %config %{webappsdir}/%{servletdir}/WEB-INF/configuration.properties
@@ -270,6 +318,10 @@ echo " *** make a few other changes before you start OpenNMS.  See the"
 echo " *** install guide and release notes for details."
 
 %changelog
+* Tue Sep 04 2007 Benjamin Reed <ranger@opennms.org>
+- Split out -core and the webapps for easier balance of custom-installs
+  across systems and easy install through package management.
+
 * Thu Aug 16 2007 Benjamin Reed <ranger@opennms.org>
 - Added handling of Jetty stuff.
 
