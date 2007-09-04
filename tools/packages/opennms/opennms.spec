@@ -77,6 +77,7 @@ Summary:	The core OpenNMS backend.
 Group:		Applications/System
 Requires:	jicmp
 Requires:	jdk >= 1.5
+Obsoletes:	opennms <= %{version}-%{release}
 
 %description core
 The core OpenNMS backend.  This package contains the main OpenNMS
