@@ -57,6 +57,7 @@ import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -147,6 +148,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
     public synchronized void initialize() throws Exception {
         if (!m_initialized) {
             RrdDb.setDefaultFactory("FILE");
+            String factory = RrdConfig.getProperty("org.jrobin.core.RrdBackendFactory", "FILE");
+			RrdDb.setDefaultFactory(factory );
             String home = System.getProperty("opennms.home");
             System.setProperty("jrobin.fontdir", home + File.separator + "etc");
             m_initialized = true;
