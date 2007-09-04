@@ -47,7 +47,7 @@ public class ServiceFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" SERVICEID=" + this.serviceId);
+        return (" EVENTS.SERVICEID=" + this.serviceId);
     }
 
     public String getDescription() {
