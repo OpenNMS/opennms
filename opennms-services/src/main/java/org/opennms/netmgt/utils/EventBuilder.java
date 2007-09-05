@@ -31,8 +31,8 @@
 //
 package org.opennms.netmgt.utils;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.db.Constants;
@@ -141,7 +141,7 @@ public class EventBuilder {
         return addParam(parmName, Integer.toString(val));
     }
     
-    public EventBuilder addParam(String parmName, List<String> vals) {
+    public EventBuilder addParam(String parmName, Collection<String> vals) {
         String val = StringUtils.collectionToCommaDelimitedString(vals);
         return addParam(parmName, val);
         
