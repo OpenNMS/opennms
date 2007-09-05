@@ -46,6 +46,9 @@ echo "=== Build Clean ==="
 
 if [ -n "$RSYNC" ]; then
 
+	echo "=== Create Source Directory ==="
+	mkdir -p /tmp/opennms-$VERSION-$RELEASE/source
+
 	echo "=== Copying Source to Source Directory ==="
 	$RSYNC -aqr --exclude=.svn --delete ./ /tmp/opennms-$VERSION-$RELEASE/source/
 
