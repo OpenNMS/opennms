@@ -39,6 +39,7 @@ fi
 export PATH="$JAVA_HOME/bin:$PATH"
 TAR=`which gtar 2>/dev/null || which tar 2>/dev/null`
 RSYNC=`which rsync 2>/dev/null`
+GPG=`which gpg 2>/dev/null`
 WORKDIR="$TOPDIR/target/rpm"
 
 if [ -z "$TAR" ]; then
@@ -76,9 +77,10 @@ echo "=== Building RPMs ==="
 
 rpmbuild -bb --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
 
-if [ `gpg --list-keys opennms@opennms.org | grep -c '^sub'` -gt 0 ]; then
-	rpm --define "_signature gpg" --define "_gpg_name opennms@opennms.org" --resign "$WORKDIR"/RPMS/noarch/*.rpm
+if [ -n "$GPG" ]; then
+	if [ `$GPG --list-keys opennms@opennms.org 2>/dev/null | grep -c '^sub'` -gt 0 ]; then
+		rpm --define "_signature gpg" --define "_gpg_name opennms@opennms.org" --resign "$WORKDIR"/RPMS/noarch/*.rpm
+	fi
 fi
-
 
 echo "==== OpenNMS RPM Build Finished ===="
