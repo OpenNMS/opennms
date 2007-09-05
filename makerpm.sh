@@ -84,3 +84,5 @@ if [ -n "$GPG" ]; then
 fi
 
 echo "==== OpenNMS RPM Build Finished ===="
+echo ""
+echo "Your completed RPMs are in the $WORKDIR/RPMS/noarch directory."
