@@ -121,13 +121,14 @@ final public class PingRequest implements Delayed {
      * The thread logger associated with this request.
      */
     private Category m_log = ThreadCategory.getInstance(this.getClass());
+    
 
     PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, Category logger, PingResponseCallback cb) {
         m_id = new RequestId(addr, tid, sequenceId);
         m_retries    = retries;
         m_timeout    = timeout;
         m_log        = logger;
-        m_callback   = cb;
+        m_callback   = new LogPrefixPreservingCallbackAdapter(cb);
     }
     
     PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
@@ -271,6 +272,48 @@ final public class PingRequest implements Delayed {
 
     public void processError(Throwable t) {
         m_callback.handleError(getAddress(), getRequest(), t);
+    }
+    
+    static class LogPrefixPreservingCallbackAdapter implements PingResponseCallback {
+        private PingResponseCallback m_cb;
+        private String m_prefix = ThreadCategory.getPrefix();
+        
+        public LogPrefixPreservingCallbackAdapter(PingResponseCallback cb) {
+            m_cb = cb;
+        }
+
+        public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
+            String oldPrefix = ThreadCategory.getPrefix();
+            try {
+                ThreadCategory.setPrefix(m_prefix);
+                m_cb.handleError(address, packet, t);
+            } finally {
+                ThreadCategory.setPrefix(oldPrefix);
+            }
+        }
+
+        public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
+            String oldPrefix = ThreadCategory.getPrefix();
+            try {
+                ThreadCategory.setPrefix(m_prefix);
+                m_cb.handleResponse(address, packet);
+            } finally {
+                ThreadCategory.setPrefix(oldPrefix);
+            }
+        }
+
+        public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
+            String oldPrefix = ThreadCategory.getPrefix();
+            try {
+                ThreadCategory.setPrefix(m_prefix);
+                m_cb.handleTimeout(address, packet);
+            } finally {
+                ThreadCategory.setPrefix(oldPrefix);
+            }
+        }
+        
+        
+        
     }
 
 }
