@@ -1,14 +1,10 @@
 #!/bin/bash -e
 
-###
-# First stab at a script to build RPMs
-#
-# May need to run as root as it must write to
-# /usr/src/redhat
-#
-###
+MYDIR=`dirname $0`
+TOPDIR=`cd $MYDIR; pwd`
 
-# TODO: Pass these as parameters
+cd "$TOPDIR"
+
 RELEASE_MAJOR=0
 
 if [ $RELEASE_MAJOR -eq 0 ]; then
@@ -23,7 +19,7 @@ else
 	RELEASE=$RELEASE_MAJOR
 fi
 
-VERSION=1.3.7
+VERSION=`grep '<version>' pom.xml | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-SNAPSHOT$,,' | head -n 1`
 
 if [ -z $JAVA_HOME ]; then
 	echo "*** JAVA_HOME must be set ***"
@@ -33,6 +29,17 @@ fi
 export PATH="$JAVA_HOME/bin:$PATH"
 TAR=`which gtar 2>/dev/null || which tar 2>/dev/null`
 RSYNC=`which rsync 2>/dev/null`
+WORKDIR="$TOPDIR/target/rpm"
+
+if [ -z "$TAR" ]; then
+	echo "*** could not find tar ***"
+	exit 1
+fi
+
+if [ -z "$RSYNC" ]; then
+	echo "*** could not find rsync ***"
+	exit 1
+fi
 
 echo "==== Building OpenNMS RPMs ===="
 echo
@@ -40,48 +47,23 @@ echo "Version: " $VERSION
 echo "Release: " $RELEASE
 echo
 
-echo "=== Build Clean ==="
+echo "=== Clean Up ==="
 
 ./build.sh clean
 
-if [ -n "$RSYNC" ]; then
+echo "=== Creating Working Directories ==="
+install -d -m 755 "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source"
+install -d -m 755 "$WORKDIR"/{BUILD,RPMS/{i386,i686,noarch},SOURCES,SPECS,SRPMS}
 
-	echo "=== Create Source Directory ==="
-	mkdir -p /tmp/opennms-$VERSION-$RELEASE/source
-
-	echo "=== Copying Source to Source Directory ==="
-	$RSYNC -aqr --exclude=.svn --delete ./ /tmp/opennms-$VERSION-$RELEASE/source/
-
-else
-
-	if [ -d /tmp/opennms-$VERSION-$RELEASE/source ]; then
-		echo "=== Removing existing source directory ==="
-		rm -rf /tmp/opennms-$VERSION-$RELEASE/source
-	fi
-
-	echo "=== Create Source Directory ==="
-	mkdir -p /tmp/opennms-$VERSION-$RELEASE/source
-
-	echo "=== Copying Source to Source Directory ==="
-	cp -r * /tmp/opennms-$VERSION-$RELEASE/source/
-
-fi
+echo "=== Copying Source to Source Directory ==="
+$RSYNC -aqr --exclude=.svn --exclude="$WORKDIR" --delete "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/"
 
 echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
 
-$TAR zcvf /usr/src/redhat/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz -C /tmp opennms-$VERSION-$RELEASE
+$TAR zcvf "$WORKDIR/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "opennms-$VERSION-$RELEASE"
 
 echo "=== Building RPMs ==="
 
-rpmbuild -bb --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
-
-echo "=== RPM Build Complete ==="
+rpmbuild -bb --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
 
 echo "==== OpenNMS RPM Build Finished ===="
-echo
-echo "There should be three OpenNMS RPM files in /usr/src/redhat/RPMS/<arch>"
-echo
-
-
-
-
