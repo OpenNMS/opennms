@@ -37,7 +37,7 @@ public class JettyServer extends AbstractSpringContextJmxServiceDaemon implement
 
     @Override
     protected String getLoggingPrefix() {
-        return "JettyServer";
+        return "OpenNMS.JettyServer";
     }
 
     @Override

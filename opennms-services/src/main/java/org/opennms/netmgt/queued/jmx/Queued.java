@@ -7,7 +7,7 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon implements
 
     @Override
     protected String getLoggingPrefix() {
-        return "Queued";
+        return "OpenNMS.Queued";
     }
 
     @Override

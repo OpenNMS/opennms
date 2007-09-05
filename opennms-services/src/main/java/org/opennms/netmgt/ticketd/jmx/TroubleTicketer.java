@@ -37,7 +37,7 @@ public class TroubleTicketer extends AbstractSpringContextJmxServiceDaemon imple
 
     @Override
     protected String getLoggingPrefix() {
-        return "TroubleTicketer";
+        return "OpenNMS.TroubleTicketer";
     }
 
     @Override
