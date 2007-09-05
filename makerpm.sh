@@ -22,6 +22,16 @@ fi
 VERSION=`grep '<version>' pom.xml | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-SNAPSHOT$,,' | head -n 1`
 
 if [ -z $JAVA_HOME ]; then
+	# hehe
+	for dir in /usr/java/jdk1.{5,6,7,8,9}*; do
+		if [ -x "$dir/bin/java" ]; then
+			export JAVA_HOME="$dir"
+			break
+		fi
+	done
+fi
+
+if [ -z $JAVA_HOME ]; then
 	echo "*** JAVA_HOME must be set ***"
 	exit
 fi
@@ -65,5 +75,10 @@ $TAR zcvf "$WORKDIR/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDI
 echo "=== Building RPMs ==="
 
 rpmbuild -bb --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
+
+if [ `gpg --list-keys opennms@opennms.org | grep -c '^sub'` -gt 0 ]; then
+	rpm --define "_signature gpg" --define "_gpg_name opennms@opennms.org" --resign "$WORKDIR"/RPMS/noarch/*.rpm
+fi
+
 
 echo "==== OpenNMS RPM Build Finished ===="
