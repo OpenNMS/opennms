@@ -42,6 +42,12 @@
   </context-param>
 
   <!-- RTC Subscription parameters -->  
+  <!--
+     *** RTC Subscription parameters have been moved ***
+     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
+     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/opennms.properties
+  -->
+  <!--
   <context-param>
     <description>The username the RTC uses when authenticating itself in an HTTP POST.</description>
     <param-name>opennms.rtc-client.http-post.username</param-name>
@@ -62,13 +68,6 @@
     <param-name>opennms.rtc.event.proxy.port</param-name>
     <param-value>5817</param-value>
   </context-param>
-
-  <!--
-     *** this configuration has been moved ***
-     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
-     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/jetty.properties
-  -->
-  <!--
   <context-param>
     <description>
       The base of a URL that RTC clients use when creating a RTC subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
@@ -79,6 +78,13 @@
   -->
 
 <!-- Map System Subscription parameters -->  
+  <!--
+     *** Map System Subscription parameters have been moved ***
+     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
+     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/opennms.properties
+  -->
+
+  <!--
   <context-param>
     <description>The username the Map System uses when authenticating itself in an HTTP POST.</description>
     <param-name>opennms.map-client.http-post.username</param-name>
@@ -89,13 +95,6 @@
     <param-name>opennms.map-client.http-post.password</param-name>
     <param-value>map</param-value>
   </context-param>
-
-  <!--
-     *** this configuration has been moved ***
-     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
-     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/jetty.properties
-  -->
-  <!--
   <context-param>
     <description>
       The base of a URL that Map System clients use when creating a Map subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
