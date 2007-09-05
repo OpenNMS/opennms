@@ -281,6 +281,8 @@ final class DataSender implements Fiber {
         }
 
         // send data
+        Reader inr = null;
+        InputStream inp = null;
         try {
             // Run at a higher than normal priority since we do have to send
             // the update on time
@@ -288,12 +290,12 @@ final class DataSender implements Fiber {
 
             EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
 
-            Reader inr = new PipedMarshaller(euidata).getReader();
+            inr = new PipedMarshaller(euidata).getReader();
 
             if (log.isDebugEnabled())
                 log.debug("DataSender: posting data to: " + url);
 
-            InputStream inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+            inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
 
             byte[] tmp = new byte[1024];
             int bytesRead;
@@ -303,9 +305,6 @@ final class DataSender implements Fiber {
                         log.debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
                 }
             }
-
-            inp.close();
-            inr.close();
 
             // return current thread to its previous priority
             oldPriority = setCurrentThreadPriority(oldPriority);
@@ -324,6 +323,9 @@ final class DataSender implements Fiber {
         } catch (Throwable t) {
             log.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", t);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
+        } finally {
+            IOUtils.closeQuietly(inp);
+            IOUtils.closeQuietly(inr);
         }
     }
 
