@@ -74,18 +74,6 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         File homeDir = new File(p.getProperty("opennms.home"));
         File webappsDir = new File(homeDir, "jetty-webapps");
 
-        try {
-            File jettyProperties = new File(homeDir.getCanonicalPath() + File.separator + "etc" + File.separator + "jetty.properties");
-            InputStream is = new FileInputStream(jettyProperties);
-            p.load(is);
-            System.setProperties(p);
-            is.close();
-        } catch (Exception e) {
-            // Should this be fatal?
-            // throw new RuntimeException("unable to read jetty.properties", e);
-            e.printStackTrace();
-        }
-
         m_server = new Server();
         System.setProperty("servlet.skipConfigurationProperties", "true");
         Connector connector = new SelectChannelConnector();
