@@ -102,6 +102,7 @@ Summary:	Embedded web interface for OpenNMS
 Group:		Applications/System
 Requires:	opennms-core = %{version}-%{release}
 Provides:	opennms-webapp = %{version}-%{release}
+Obsoletes:	opennms-webapp <= %{version}-%{release}
 
 %description webapp-jetty
 The web UI for OpenNMS.  This is the Jetty version, which runs
@@ -112,6 +113,7 @@ Summary:	Standalone web interface for OpenNMS
 Group:		Applications/System
 Requires:	opennms-core = %{version}-%{release}
 Provides:	opennms-webapp = %{version}-%{release}
+Obsoletes:	opennms-webapp <= %{version}-%{release}
 
 %description webapp-standalone
 The web UI for OpenNMS.  This is the standalone version, suitable for
