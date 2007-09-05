@@ -177,7 +177,7 @@ public class RTCPostSubscriber extends Object {
         m_password = Vault.getProperty("opennms.rtc-client.http-post.password");
         String baseUrl = Vault.getProperty("opennms.rtc-client.http-post.base-url");
         if (baseUrl == null) {
-            throw new IllegalArgumentException("Property 'opennms.rtc-client.http-post.base-url' is null");
+            baseUrl = "http://localhost:8080/opennms/rtc/post";
         }
 
         if (baseUrl.endsWith("/")) {

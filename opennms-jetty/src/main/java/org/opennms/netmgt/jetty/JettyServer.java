@@ -34,8 +34,6 @@
 package org.opennms.netmgt.jetty;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -59,12 +57,12 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
  */
 public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
     
-	int m_port = 8980;
+	int m_port = 8080;
     private Server m_server;
     private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
     
     protected JettyServer() {
-        super("JettyServer");
+        super("OpenNMS.JettyServer");
     }
     
     @Override
@@ -75,7 +73,6 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         File webappsDir = new File(homeDir, "jetty-webapps");
 
         m_server = new Server();
-        System.setProperty("servlet.skipConfigurationProperties", "true");
         Connector connector = new SelectChannelConnector();
         Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
         connector.setPort(port);
