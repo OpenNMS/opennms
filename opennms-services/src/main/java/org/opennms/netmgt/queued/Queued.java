@@ -18,7 +18,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
     private RrdStrategy m_rrdStrategy;
 
     public Queued() {
-        super("Queued");
+        super("OpenNMS.Queued");
     }
     
     public void setEventIpcManager(EventIpcManager eventMgr) {

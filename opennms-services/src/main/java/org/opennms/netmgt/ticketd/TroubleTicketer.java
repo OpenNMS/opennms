@@ -110,7 +110,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
      * @return <code>java.lang.String</code> representing the name of this service daemon
      */
 	public String getName() {
-		return "TroubleTicketer";
+		return "OpenNMS.TroubleTicketer";
 	}
 
 	/**
