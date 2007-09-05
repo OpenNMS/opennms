@@ -62,6 +62,13 @@
     <param-name>opennms.rtc.event.proxy.port</param-name>
     <param-value>5817</param-value>
   </context-param>
+
+  <!--
+     *** this configuration has been moved ***
+     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
+     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/jetty.properties
+  -->
+  <!--
   <context-param>
     <description>
       The base of a URL that RTC clients use when creating a RTC subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
@@ -69,6 +76,7 @@
     <param-name>opennms.rtc-client.http-post.base-url</param-name>
     <param-value>http://localhost:8080/opennms/rtc/post</param-value>
   </context-param>
+  -->
 
 <!-- Map System Subscription parameters -->  
   <context-param>
@@ -81,6 +89,13 @@
     <param-name>opennms.map-client.http-post.password</param-name>
     <param-value>map</param-value>
   </context-param>
+
+  <!--
+     *** this configuration has been moved ***
+     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
+     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/jetty.properties
+  -->
+  <!--
   <context-param>
     <description>
       The base of a URL that Map System clients use when creating a Map subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
@@ -88,6 +103,7 @@
     <param-name>opennms.map-client.http-post.url</param-name>
     <param-value>http://localhost:8080/opennms/map/post</param-value>
   </context-param>
+  -->
   
   <filter>
     <filter-name>Acegi Filter Chain Proxy</filter-name>

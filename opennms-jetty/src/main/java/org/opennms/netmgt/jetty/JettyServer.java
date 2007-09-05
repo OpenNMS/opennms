@@ -34,8 +34,11 @@
 package org.opennms.netmgt.jetty;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
@@ -66,14 +69,29 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     
     @Override
     protected void onInit() {
-        Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
+        Properties p = System.getProperties();
+        
+        File homeDir = new File(p.getProperty("opennms.home"));
+        File webappsDir = new File(homeDir, "jetty-webapps");
+
+        try {
+            File jettyProperties = new File(homeDir.getCanonicalPath() + File.separator + "etc" + File.separator + "jetty.properties");
+            InputStream is = new FileInputStream(jettyProperties);
+            p.load(is);
+            System.setProperties(p);
+            is.close();
+        } catch (Exception e) {
+            // Should this be fatal?
+            // throw new RuntimeException("unable to read jetty.properties", e);
+            e.printStackTrace();
+        }
+
         m_server = new Server();
+        System.setProperty("servlet.skipConfigurationProperties", "true");
         Connector connector = new SelectChannelConnector();
+        Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
         connector.setPort(port);
         m_server.addConnector(connector);
-
-        File homeDir = new File(System.getProperty("opennms.home"));    
-        File webappsDir = new File(homeDir, "jetty-webapps");
 
         HandlerCollection handlers = new HandlerCollection();
         
