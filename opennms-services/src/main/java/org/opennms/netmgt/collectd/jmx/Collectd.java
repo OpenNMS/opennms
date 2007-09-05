@@ -36,8 +36,11 @@
  */
 package org.opennms.netmgt.collectd.jmx;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.collectd.CollectorConfigDaoImpl;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -57,6 +60,13 @@ public class Collectd implements CollectdMBean {
     }
 
     public void init() {
+        
+        try {
+            PollOutagesConfigFactory.init();
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(e, "Unable to initialze PollOutagesConfigFactory"+e.getMessage());
+        }
+        
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         MonitoredServiceDao monitoredServiceDao = BeanUtils.getBean(bf, "monitoredServiceDao", MonitoredServiceDao.class);
         IpInterfaceDao ipInterfaceDao = BeanUtils.getBean(bf, "ipInterfaceDao", IpInterfaceDao.class);
