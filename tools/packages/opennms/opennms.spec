@@ -249,6 +249,9 @@ rm -rf $RPM_BUILD_ROOT
 # file setup
 ##############################################################################
 
+%files
+%defattr(664 root root 775)
+
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
