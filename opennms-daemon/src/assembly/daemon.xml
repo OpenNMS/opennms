@@ -50,6 +50,10 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>target/classes/jetty-webapp/opennms/WEB-INF</directory>
+      <outputDirectory>jetty-webapps/opennms/WEB-INF</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/dependency/WEB-INF/lib</directory>
       <outputDirectory>lib</outputDirectory>
       <excludes>
