@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.Fiber;
@@ -422,16 +423,19 @@ final class DataSender implements Fiber {
                 while (urlIter.hasNext()) {
                     HttpPostInfo postInfo = (HttpPostInfo) urlIter.next();
 
+                    Reader inr = null;
+                    InputStream inp = null;
                     try {
-                        Reader inr = new PipedMarshaller(euidata).getReader();
+                        inr = new PipedMarshaller(euidata).getReader();
 
                         if (log.isDebugEnabled())
                             log.debug("DataSender: posting data to: " + postInfo.getURLString());
 
-                        InputStream inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+                        inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
 
                         if (log.isDebugEnabled())
                             log.debug("DataSender: posted data for category: " + catlabel);
+                        
 
                         byte[] tmp = new byte[1024];
                         int bytesRead;
@@ -441,9 +445,6 @@ final class DataSender implements Fiber {
                                     log.debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
                             }
                         }
-
-                        inp.close();
-                        inr.close();
 
                         postInfo.clearErrors();
 
@@ -460,6 +461,9 @@ final class DataSender implements Fiber {
                     } catch (Throwable t) {
                         log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + t.getClass().getName() + ": " + t.getMessage(), t);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
+                    } finally {
+                        IOUtils.closeQuietly(inp);
+                        IOUtils.closeQuietly(inr);
                     }
 
                     // check to see if URL had too many errors
