@@ -103,7 +103,7 @@ import org.apache.log4j.Logger;
  * org.opennms.rrd.queuing.modulus: (default 10000) the number of updates the
  * get enqueued between statistics output
  * 
- * org.opennms.rrd.queuing.category: (default "UNCATEGORIZED") the log category
+ * org.opennms.rrd.queuing.category: (default "OpenNMS.Queued") the log category
  * to place the statistics output in
  * 
  * 
@@ -138,7 +138,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     private static final long MODULUS = RrdConfig.getProperty("org.opennms.rrd.queuing.modulus", 10000L);
 
-    private static final String LOG4J_CATEGORY = RrdConfig.getProperty("org.opennms.rrd.queuing.category", "UNCATEGORIZED");
+    private static final String LOG4J_CATEGORY = RrdConfig.getProperty("org.opennms.rrd.queuing.category", "OpenNMS.Queued");
 
     private static final long MAX_INSIG_UPDATE_SECONDS = RrdConfig.getProperty("org.opennms.rrd.queuing.maxInsigUpdateSeconds", 0L);
 
