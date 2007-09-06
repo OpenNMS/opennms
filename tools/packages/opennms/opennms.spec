@@ -45,8 +45,8 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		opennms-webapp    = %{version}-%{releasever}
-Requires:		opennms-core      = %{version}-%{releasever}
+Requires:		opennms-webapp    = %{version}-%{release}
+Requires:		opennms-core      = %{version}-%{release}
 Requires:		postgresql-server >= 7.4
 
 BuildRequires:		jdk               >= 1.5
@@ -121,7 +121,7 @@ use with Tomcat or another servlet container.
 
 %prep
 
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{releasenumber}.tar.gz -C $RPM_BUILD_DIR
+tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
 %define setupdir %{packagedir}/source
 
 %setup -D -T -n %setupdir
@@ -167,7 +167,7 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p $RPM_BUILD_ROOT/opt/opennms
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{releasenumber}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT/opt/opennms
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT/opt/opennms
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -196,7 +196,7 @@ END
 %if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{releasenumber}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 ln -sf %{_docdir}/%{name}-%{version} $RPM_BUILD_ROOT%{instprefix}/docs
 cp CHANGELOG README* $RPM_BUILD_ROOT%{instprefix}/etc/
