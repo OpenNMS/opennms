@@ -34,11 +34,12 @@ package org.opennms.web.controller.ksc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -50,8 +51,8 @@ import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.config.kscReports.ReportsList;
-import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.graph.KscResultSet;
@@ -67,6 +68,9 @@ public class CustomViewController extends AbstractController implements Initiali
     private KscReportService m_kscReportService;
     private ResourceService m_resourceService;
     private int m_defaultGraphsPerLine = 0;
+    private Executor m_executor;
+    
+    private Set<String> m_resourcesPendingPromotion = Collections.synchronizedSet(new HashSet<String>());
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -158,14 +162,12 @@ public class CustomViewController extends AbstractController implements Initiali
         }
         
         
-        Map<String, OnmsResource> resourcesBeingGraphed = new HashMap<String, OnmsResource>();
-        
         ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
         for (int i = 0; i < report.getGraphCount(); i++) {
             Graph current_graph = report.getGraph(i);
             
             OnmsResource resource = getKscReportService().getResourceFromGraph(current_graph);
-            resourcesBeingGraphed.put(resource.getId(), resource);
+            promoteResourceAttributesIfNecessary(resource);
 
             String display_graphtype = null;
             if ("none".equals(override_graphtype)) {
@@ -191,11 +193,6 @@ public class CustomViewController extends AbstractController implements Initiali
             resultSets.add(resultSet);
         }
         
-        for(String resourceId : resourcesBeingGraphed.keySet()) {
-            OnmsResource resource = resourcesBeingGraphed.get(resourceId);
-            getResourceService().promoteGraphAttributesForResource(resource);
-        }
-
         ModelAndView modelAndView = new ModelAndView("KSC/customView");
 
         modelAndView.addObject("reportType", report_type);
@@ -243,6 +240,21 @@ public class CustomViewController extends AbstractController implements Initiali
         modelAndView.addObject("graphsPerLine", getDefaultGraphsPerLine());
         
         return modelAndView;
+    }
+
+    private void promoteResourceAttributesIfNecessary(final OnmsResource resource) {
+        boolean needToSchedule = m_resourcesPendingPromotion.add(resource.getId());
+        if (needToSchedule) {
+            m_executor.execute(new Runnable() {
+
+                public void run() {
+                        getResourceService().promoteGraphAttributesForResource(resource);
+                        m_resourcesPendingPromotion.remove(resource.getId());
+                }
+                
+            });
+        }
+        
     }
 
     private Category log() {
@@ -297,6 +309,9 @@ public class CustomViewController extends AbstractController implements Initiali
         if (m_defaultGraphsPerLine == 0) {
             throw new IllegalStateException("property defaultGraphsPerLine must be set");
         }
+        
+        m_executor = Executors.newSingleThreadExecutor();
+
     }
 
 }
