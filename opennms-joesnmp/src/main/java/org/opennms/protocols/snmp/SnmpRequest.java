@@ -151,7 +151,7 @@ class SnmpRequest implements Runnable {
         if (m_expired)
             return;
 
-        if (m_timesSent < m_session.getPeer().getRetries()) {
+        if (m_timesSent <= m_session.getPeer().getRetries()) {
             m_timesSent++;
             try {
                 //
