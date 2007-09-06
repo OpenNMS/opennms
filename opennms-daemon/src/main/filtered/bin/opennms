@@ -124,9 +124,10 @@ checkRpmFiles(){
     CHECKDIRS="$OPENNMS_HOME/etc"
 
     for dir in /var/tomcat*/webapps /usr/lib/tomcat*/webapps $OPENNMS_HOME/jetty-webapps/*; do
-    if [ -d "$dir/WEB-INF" ]; then
-        CHECKDIRS="$CHECKDIRS $dir/WEB-INF"
-    fi
+        if [ -d "$dir/WEB-INF" ]; then
+            CHECKDIRS="$CHECKDIRS $dir/WEB-INF"
+        fi
+    done
 
     for EXTENSION in rpmnew rpmsave dpkg-dist; do
         if [ `find $CHECKDIRS -name \*.$EXTENSION | wc -l` -gt 0 ]; then
