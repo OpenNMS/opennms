@@ -34,8 +34,10 @@ package org.opennms.web.controller.ksc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -120,7 +122,6 @@ public class CustomViewController extends AbstractController implements Initiali
             for (int i = 0; i < report.getGraphCount(); i++) {
                 Graph graph = report.getGraph(i);
                 OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
-                getResourceService().promoteGraphAttributesForResource(resource);
                 prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
             }
             
@@ -156,12 +157,15 @@ public class CustomViewController extends AbstractController implements Initiali
             */
         }
         
+        
+        Map<String, OnmsResource> resourcesBeingGraphed = new HashMap<String, OnmsResource>();
+        
         ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
         for (int i = 0; i < report.getGraphCount(); i++) {
             Graph current_graph = report.getGraph(i);
             
             OnmsResource resource = getKscReportService().getResourceFromGraph(current_graph);
-            getResourceService().promoteGraphAttributesForResource(resource);
+            resourcesBeingGraphed.put(resource.getId(), resource);
 
             String display_graphtype = null;
             if ("none".equals(override_graphtype)) {
@@ -185,6 +189,11 @@ public class CustomViewController extends AbstractController implements Initiali
             
             KscResultSet resultSet = new KscResultSet(current_graph.getTitle(), begin_time.getTime(), end_time.getTime(), resource, display_graph);
             resultSets.add(resultSet);
+        }
+        
+        for(String resourceId : resourcesBeingGraphed.keySet()) {
+            OnmsResource resource = resourcesBeingGraphed.get(resourceId);
+            getResourceService().promoteGraphAttributesForResource(resource);
         }
 
         ModelAndView modelAndView = new ModelAndView("KSC/customView");
