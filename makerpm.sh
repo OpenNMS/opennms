@@ -5,7 +5,12 @@ TOPDIR=`cd $MYDIR; pwd`
 
 cd "$TOPDIR"
 
-RELEASE_MAJOR=0
+if [ -n "$1" ]; then
+	RELEASE_MAJOR = "$1"
+	shift
+else
+	RELEASE_MAJOR=0
+fi
 
 if [ $RELEASE_MAJOR -eq 0 ]; then
 	# Set the SVN checkout version if SVN is on the box, otherwise use the date as default
