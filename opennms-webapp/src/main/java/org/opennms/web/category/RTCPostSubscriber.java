@@ -59,10 +59,8 @@ public class RTCPostSubscriber extends Object {
     protected EventProxy m_proxy;
 
     protected String m_url;
-
-    protected String m_username;
-
-    protected String m_password;
+    protected String m_username = "rtc";
+    protected String m_password = "rtc";
 
     protected static Category log = ThreadCategory.getInstance("RTC");
 
@@ -173,8 +171,16 @@ public class RTCPostSubscriber extends Object {
             throw new IllegalArgumentException("categoryName can not be null");
         }
 
-        m_username = Vault.getProperty("opennms.rtc-client.http-post.username");
-        m_password = Vault.getProperty("opennms.rtc-client.http-post.password");
+        String username = Vault.getProperty("opennms.rtc-client.http-post.username");
+        if (username != null) {
+            m_username = username;
+        }
+        
+        String password = Vault.getProperty("opennms.rtc-client.http-post.password");
+        if (password != null) {
+            m_password = password;
+        }
+        
         String baseUrl = Vault.getProperty("opennms.rtc-client.http-post.base-url");
         if (baseUrl == null) {
             baseUrl = "http://localhost:8080/opennms/rtc/post";
