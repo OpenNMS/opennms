@@ -618,7 +618,7 @@ public class InstallerDb {
 
     public boolean functionExists(String function, String columns,
             String returnType) throws Exception {
-        Map types = getTypesFromDB();
+        Map<String, Integer> types = getTypesFromDB();
 
         int[] columnTypes = new int[0];
         columns = columns.trim();
@@ -629,7 +629,7 @@ public class InstallerDb {
             for (int j = 0; j < splitColumns.length; j++) {
                 c = new Column();
                 c.parseColumnType(splitColumns[j]);
-                columnTypes[j] = ((Integer) types.get(c.getType())).intValue();
+                columnTypes[j] = (types.get(c.getType())).intValue();
             }
         }
 
@@ -662,7 +662,7 @@ public class InstallerDb {
         return rs.next();
     }
     
-    public Map getTypesFromDB() throws SQLException {
+    public Map<String, Integer> getTypesFromDB() throws SQLException {
         if (m_dbtypes != null) {
             return m_dbtypes;
         }
@@ -2890,5 +2890,18 @@ public class InstallerDb {
         
 
 
+    }
+
+    public void vacuumDatabase(boolean full) throws SQLException {
+        Statement st = getConnection().createStatement();
+        m_out.print("- optimizing database (VACUUM ANALYZE)... ");
+        st.execute("VACUUM ANALYZE");
+        m_out.println("OK");
+        
+        if (full) {
+            m_out.print("- recovering database disk space (VACUUM FULL)... ");
+            st.execute("VACUUM FULL");
+            m_out.println("OK");
+        }
     }
 }

@@ -88,6 +88,10 @@ public class Installer {
 
     boolean m_update_unicode = false;
 
+    boolean m_do_full_vacuum = false;
+    
+    boolean m_do_vacuum = false;
+    
     boolean m_install_webapp = false;
 
     boolean m_fix_constraint = false;
@@ -236,6 +240,10 @@ public class Installer {
             m_installerDb.checkUnicode();
         }
 
+        if (m_do_vacuum) {
+            m_installerDb.vacuumDatabase(m_do_full_vacuum);
+        }
+        
         if (m_install_webapp) {
             installWebApp();
         }
@@ -405,6 +413,14 @@ public class Installer {
                         m_update_unicode = true;
                         break;
 
+                    case 'v':
+                        if (argv.length > (i+1) && argv[i+1].equalsIgnoreCase("full")) {
+                            i++;
+                            m_do_full_vacuum = true;
+                        }
+                        m_do_vacuum = true;
+                        break;
+                        
                     case 'w':
                         i++;
                         m_webappdir = getNextArg(argv, i, 'w');
@@ -714,6 +730,7 @@ public class Installer {
         m_out.println("   -i    insert data into the database");
         m_out.println("   -s    update iplike postgres function");
         m_out.println("   -U    upgrade database to unicode, if needed");
+        m_out.println("   -v    vacuum the database");
         m_out.println("   -y    install web application (see -w)");
         m_out.println("");
         m_out.println("   -u    username of the PostgreSQL "
