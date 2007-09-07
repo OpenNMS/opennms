@@ -94,7 +94,6 @@
    String moreUrl = request.getParameter( "moreUrl" );   
     
     Event[] events = new Event[0];
-    int eventCount = 0;
 
     //sort by event id    
     EventFactory.SortStyle sortStyle = EventFactory.SortStyle.ID;
@@ -109,16 +108,13 @@
         if( serviceIdString != null ) {
             int serviceId = Integer.parseInt(serviceIdString);
             events = EventFactory.getEventsForService(nodeId, ipAddr, serviceId, sortStyle, ackType, throttle, offset);
-            eventCount = EventFactory.getEventCountForService(nodeId, ipAddr, serviceId, ackType);
         }
         else {
             events = EventFactory.getEventsForInterface(nodeId, ipAddr, sortStyle, ackType, throttle, offset);
-            eventCount = EventFactory.getEventCountForInterface(nodeId, ipAddr, ackType);            
         }
     }
     else {
         events = EventFactory.getEventsForNode(nodeId, sortStyle, ackType, throttle, offset);            
-        eventCount = EventFactory.getEventCountForNode(nodeId, ackType);    
     }
 %>
 
@@ -204,15 +200,9 @@
          <% } %>
        </td>
 
-<% if( eventCount > events.length ) { %>
   <% if( moreUrl != null ) { %>     
-       <td class="standard" colspan="2"><a href="<%=moreUrl%>"><%=eventCount-events.length%> more</a></td>
-  <% } else { %>
-       <td class="standard" colspan="2"><%=eventCount-events.length%> more</td>
+       <td class="standard" colspan="2"><a href="<%=moreUrl%>">More...</a></td>
   <% } %>
-<% } else { %>
-       <td class="standard" colspan="2"><%=events.length%> events total
-<% } %>
      </tr>
       
 </table>
