@@ -79,26 +79,28 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         m_server.addConnector(connector);
 
         HandlerCollection handlers = new HandlerCollection();
-        
-        for (File entry: webappsDir.listFiles()) {
-        	if (entry.isDirectory()) {
-        		log().warn("name = " + entry.getName());
-        		WebAppContext wac = new WebAppContext();
-        		wac.setWar(entry.getAbsolutePath());
-        		wac.setContextPath("/" + entry.getName());
-        		handlers.addHandler(wac);
-        		
-        		try {
-        			ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
-                	String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
-                	Hashtable<String, String> properties = new Hashtable<String, String>();
-                	properties.put("path", "/" + entry.getName());
-                	srs.initialize("HTTP", entry.getName() + "-" + host, port, properties);
-                	services.put(entry.getName(), srs);
-        		} catch (Exception e) {
-        			log().warn("unable to get a DNS-SD object for context '" + entry.getName() + "'", e);
-        		}
-        	}
+
+        if (webappsDir.exists()) {
+            for (File entry: webappsDir.listFiles()) {
+                if (entry.isDirectory()) {
+                    log().warn("name = " + entry.getName());
+                    WebAppContext wac = new WebAppContext();
+                    wac.setWar(entry.getAbsolutePath());
+                    wac.setContextPath("/" + entry.getName());
+                    handlers.addHandler(wac);
+                    
+                    try {
+                        ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
+                        String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
+                        Hashtable<String, String> properties = new Hashtable<String, String>();
+                        properties.put("path", "/" + entry.getName());
+                        srs.initialize("HTTP", entry.getName() + "-" + host, port, properties);
+                        services.put(entry.getName(), srs);
+                    } catch (Exception e) {
+                        log().warn("unable to get a DNS-SD object for context '" + entry.getName() + "'", e);
+                    }
+                }
+            }
         }
 
         m_server.setHandler(handlers);
