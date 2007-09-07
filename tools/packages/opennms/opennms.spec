@@ -47,7 +47,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		opennms-webui     >= %{version}-0
+Requires:		opennms-webui     >= %{version}-%{release}
 Requires:		opennms-core      = %{version}-%{release}
 Requires:		postgresql-server >= 7.4
 
