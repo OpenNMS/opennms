@@ -27,6 +27,8 @@
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
+# don't do a bunch of weird redhat post-stuff  :)
+%define __os_install_post %{nil}
 
 %define with_tests	0%{nil}
 %define with_docs	1%{nil}
@@ -45,8 +47,8 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		opennms-webui     >= %{epoch}:%{version}-0
-Requires:		opennms-core      = %{epoch}:%{version}-%{release}
+Requires:		opennms-webui     >= %{version}-0
+Requires:		opennms-core      = %{version}-%{release}
 Requires:		postgresql-server >= 7.4
 
 BuildRequires:		jdk               >= 1.5
@@ -77,7 +79,7 @@ Summary:	The core OpenNMS backend.
 Group:		Applications/System
 Requires:	jicmp
 Requires:	jdk >= 1.5
-Obsoletes:	opennms <= %{epoch}:%{version}-%{release}
+Obsoletes:	opennms <= %{version}-%{release}
 
 %description core
 The core OpenNMS backend.  This package contains the main OpenNMS
@@ -100,9 +102,9 @@ for OpenNMS.
 %package webapp-jetty
 Summary:	Embedded web interface for OpenNMS
 Group:		Applications/System
-Requires:	opennms-core = %{epoch}:%{version}-%{release}
-Provides:	opennms-webui = %{epoch}:%{version}-%{release}
-Obsoletes:	opennms-webapp < %{epoch}:%{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+Provides:	opennms-webui = %{version}-%{release}
+Obsoletes:	opennms-webapp < %{version}-%{release}
 
 %description webapp-jetty
 The web UI for OpenNMS.  This is the Jetty version, which runs
@@ -111,9 +113,9 @@ embedded in the main OpenNMS core process.
 %package webapp-standalone
 Summary:	Standalone web interface for OpenNMS
 Group:		Applications/System
-Requires:	opennms-core = %{epoch}:%{version}-%{release}
-Provides:	opennms-webui = %{epoch}:%{version}-%{release}
-Obsoletes:	opennms-webapp < %{epoch}:%{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+Provides:	opennms-webui = %{version}-%{release}
+Obsoletes:	opennms-webapp < %{version}-%{release}
 
 %description webapp-standalone
 The web UI for OpenNMS.  This is the standalone version, suitable for
