@@ -13,6 +13,7 @@
  *
  * Modifications:
  *
+ * 2007 Sep 07: Set the HTTP request timeout and allow unit testing. - dj@opennms.org
  * 2003 Jan 31: Cleaned up some unused imports.
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
@@ -44,6 +45,7 @@ import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Authenticator;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
@@ -100,8 +102,19 @@ public class Controller {
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
     
+    /**
+     * Default read timeout for HTTP requests in milliseconds.
+     */
+    private static final int DEFAULT_HTTP_REQUEST_READ_TIMEOUT = 30000;
+    
     private boolean m_verbose = false;
     private String m_invokeUrl = DEFAULT_INVOKER_URL;
+    private Authenticator m_authenticator;
+    private int m_httpRequestReadTimeout = DEFAULT_HTTP_REQUEST_READ_TIMEOUT;
+    
+    public Controller() {
+        
+    }
 
     public static void main(String[] argv) {
         configureLog4j();
@@ -115,14 +128,18 @@ public class Controller {
                 System.out.println("Usage: java org.opennms.netmgt.vmmgr.Controller "
                                    + "[<options>] <command>");
                 System.out.println("Accepted options:");
-                System.out.println("        -v              Verbose mode.");
+                System.out.println("        -t <timeout>    HTTP connection timeout in seconds.  Defaults to 30.");
                 System.out.println("        -u <URL>        Alternate invoker URL.");
+                System.out.println("        -v              Verbose mode.");
                 System.out.println("");
                 System.out.println("Accepted commands: start, stop, status");
                 System.out.println("");
                 System.out.println("The default invoker URL is: "
                         + DEFAULT_INVOKER_URL);
                 System.exit(0);
+            } else if (argv[i].equals("-t")) {
+                c.setHttpRequestReadTimeout(Integer.parseInt(argv[i + 1]) * 1000);
+                i++;
             } else if (argv[i].equals("-v")) {
                 c.setVerbose(true);
             } else if (argv[i].equals("-u")) {
@@ -142,19 +159,21 @@ public class Controller {
                                + " option for help");
             System.exit(1);
         }
+        
+        c.setAuthenticator(c.createAuthenticatorUsingConfigCredentials());
 
         String command = argv[argv.length - 1];
 
         if ("start".equals(command)) {
             c.start();
         } else if ("stop".equals(command)) {
-            c.stop();
+            System.exit(c.stop());
         } else if ("status".equals(command)) {
-            c.status();
+            System.exit(c.status());
         } else if ("check".equals(command)) {
-            c.check();
+            System.exit(c.check());
         } else if ("exit".equals(command)) {
-            c.exit();
+            System.exit(c.exit());
         } else {
             System.err.println("Invalid command \"" + command + "\".");
             System.err.println("Use \"-h\" option for help.");
@@ -177,11 +196,11 @@ public class Controller {
         starter.startDaemon();
     }
 
-    public void stop() {
-        invokeOperation("stop");
+    public int stop() {
+        return invokeOperation("stop");
     }
     
-    public void status() {
+    public int status() {
         Authenticator.setDefault(getAuthenticator());
 
         StatusGetter statusGetter = new StatusGetter();
@@ -203,27 +222,23 @@ public class Controller {
             String message =  "Error invoking status command: " + t;
             System.err.println(message);
             log().error(message, t);
-            System.exit(1);
+            return 1;
         }
 
-        int exitValue;
         switch (statusGetter.getStatus()) {
         case NOT_RUNNING:
         case CONNECTION_REFUSED:
-            exitValue = 3;  // According to LSB: 3 - service not running
-            break;
+            return 3;  // According to LSB: 3 - service not running
 
         case PARTIALLY_RUNNING:
             /*
              * According to LSB: reserved for application So, I say
              * 160 - partially running
              */
-            exitValue = 160;
-            break;
+            return 160;
 
         case RUNNING:
-            exitValue = 0; // everything should be good and running
-            break;
+            return 0; // everything should be good and running
 
         default:
             String message = "Unknown status returned from "
@@ -231,36 +246,36 @@ public class Controller {
                 + statusGetter.getStatus();
             System.err.println(message);
             log().error(message);
-            exitValue = 1;
-            break;
+            return 1;
         }
-
-        System.exit(exitValue);
     }
 
-    public void check() {
+    public int check() {
         try {
             DatabaseChecker checker = new DatabaseChecker();
             checker.check();
         } catch (Throwable t) {
             log().error("error invoking check command", t);
             System.err.println(t);
-            System.exit(1);
+            return 1;
         }
-        System.exit(0);
+        return 0;
     }
 
-    public void exit() {
-        invokeOperation("doSystemExit");
+    public int exit() {
+        return invokeOperation("doSystemExit");
     }
     
-    private void invokeOperation(String operation) {
+    int invokeOperation(String operation) {
         Authenticator.setDefault(getAuthenticator());
 
         String urlString = getInvokeUrl() + "&operation=" + operation;
         try {
             URL invoke = new URL(urlString);
-            InputStream in = invoke.openStream();
+            HttpURLConnection connection = (HttpURLConnection) invoke.openConnection();
+            connection.setReadTimeout(getHttpRequestReadTimeout());
+            InputStream in = connection.getInputStream();
+
             int ch;
             while ((ch = in.read()) != -1) {
                 System.out.write((char) ch);
@@ -268,7 +283,6 @@ public class Controller {
             in.close();
             System.out.println("");
             System.out.flush();
-            System.exit(0);
         } catch (ConnectException e) {
             log().error(e.getMessage() + " when attempting to fetch URL \""
                       + urlString + "\"");
@@ -277,20 +291,22 @@ public class Controller {
                                    + " when attempting to fetch URL \""
                                    + urlString + "\"");
             }
-            System.exit(1);
+            return 1;
         } catch (Throwable t) {
             log().error("error invoking " + operation + " operation", t);
             System.out.println("error invoking " + operation + " operation");
             t.printStackTrace();
-            System.exit(1);
+            return 1;
         }
+
+        return 0;
     }
 
     /*
      * Create an Authenticator so that we can provide authentication, if
      * needed, when go to connect to the URL
      */
-    private Authenticator getAuthenticator() {
+    Authenticator createAuthenticatorUsingConfigCredentials() {
         Service service = getConfiguredService(JMX_HTTP_ADAPTER_NAME);
         if (service == null) {
             // Didn't find the service we were looking for
@@ -383,10 +399,6 @@ public class Controller {
         return null;
     }
 
-    private static Category log() {
-        return ThreadCategory.getInstance(Category.class);
-    }
-
     public boolean isVerbose() {
         return m_verbose;
     }
@@ -403,4 +415,23 @@ public class Controller {
         m_invokeUrl = invokerUrl;
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    public Authenticator getAuthenticator() {
+        return m_authenticator;
+    }
+
+    public void setAuthenticator(Authenticator authenticator) {
+        m_authenticator = authenticator;
+    }
+
+    public int getHttpRequestReadTimeout() {
+        return m_httpRequestReadTimeout;
+    }
+
+    public void setHttpRequestReadTimeout(int httpRequestReadTimeout) {
+        m_httpRequestReadTimeout = httpRequestReadTimeout;
+    }
 }
