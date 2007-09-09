@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Sep 09: Catch DataAccessException in getResourceById and throw as a ObjectRetrievalFailureException with the resource ID. - dj@opennms.org
 // 2007 May 12: Clean up imports. - dj@opennms.org
 // 2007 Apr 05: Add public constant for the strings.properties file name. - dj@opennms.org
 //
@@ -66,6 +67,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 
@@ -262,11 +264,16 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             String resourceTypeName = DefaultResourceDao.decode(m.group(1));
             String resourceName = DefaultResourceDao.decode(m.group(2));
 
-            if (resource == null) {
-                resource = getTopLevelResource(resourceTypeName, resourceName);
-            } else {
-                resource = getChildResource(resource, resourceTypeName, resourceName);
+            try {
+                if (resource == null) {
+                    resource = getTopLevelResource(resourceTypeName, resourceName);
+                } else {
+                    resource = getChildResource(resource, resourceTypeName, resourceName);
+                }
+            } catch (DataAccessException e) {
+                throw new ObjectRetrievalFailureException(OnmsResource.class, id, "Could not get resource for resource ID '" + id + "'", e);
             }
+            
             m.appendReplacement(sb, "");
         }
         
