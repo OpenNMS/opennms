@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2007 Sep 09: Test getResourceById when the node doesn't exist. - dj@opennms.org
  * 2007 Apr 24: Fix tests and deduplicate node and ipInterface creation. - dj@opennms.org
  * 
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -304,6 +305,24 @@ public class DefaultResourceDaoTest extends TestCase {
         m_easyMockUtils.verifyAll();
         
         assertNotNull("Resource should not be null", resource);
+    }
+
+    public void testGetResourceNoNode() throws Exception {
+        String resourceId = OnmsResource.createResourceId("node", "1", "nodeSnmp", "");
+        
+        expect(m_nodeDao.get(1)).andReturn(null);
+
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new ObjectRetrievalFailureException("Could not get resource for resource ID '" + resourceId + "'; nested exception is " + ObjectRetrievalFailureException.class.getName() + ": Top-level resource of resource type node could not be found: 1", null));
+
+        m_easyMockUtils.replayAll();
+        try {
+            m_resourceDao.getResourceById(resourceId);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        m_easyMockUtils.verifyAll();
+        ta.verifyAnticipated();
     }
     
     public void testFindNodeResourcesWithResponseTime() throws Exception {
