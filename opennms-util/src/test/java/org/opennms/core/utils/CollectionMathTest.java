@@ -45,13 +45,13 @@ public class CollectionMathTest extends TestCase {
 	
 	public void testAverage() {
 		List<BigDecimal> c = getTestCollection();
-		assertEquals(new BigDecimal(39), CollectionMath.average(c));
+		assertEquals(new BigDecimal(39).doubleValue(), CollectionMath.average(c).doubleValue());
 	}
 	
 	public void testMedian() {
 		List<BigDecimal> c = getTestCollection();
-		assertEquals(new BigDecimal(16), CollectionMath.median(c));
+		assertEquals(new BigDecimal(16).doubleValue(), CollectionMath.median(c).doubleValue());
 		c.add(new BigDecimal(22));
-		assertEquals(new BigDecimal(19), CollectionMath.median(c));
+		assertEquals(new BigDecimal(19).doubleValue(), CollectionMath.median(c).doubleValue());
 	}
 }

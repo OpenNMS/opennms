@@ -1,7 +1,6 @@
 package org.opennms.core.utils;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
