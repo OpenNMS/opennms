@@ -50,8 +50,7 @@ public class GroupPersister extends BasePersister {
             File path = new File(group.getResource().getResourceDir(getRepository()).getAbsolutePath());
             Properties dsProperties = ResourceTypeUtils.getDsProperties(path); 
             boolean save = false;
-            for (Object o : group.getAttributes()) {
-                Attribute a = (Attribute)o;
+            for (Attribute a : group.getAttributes()) {
                 if (NumericAttributeType.supportsType(a.getType()) && !dsProperties.containsKey(a.getName())) {
                     dsProperties.setProperty(a.getName(), group.getName());
                     save = true;
