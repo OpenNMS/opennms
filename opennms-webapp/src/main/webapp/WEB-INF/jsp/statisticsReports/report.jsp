@@ -12,6 +12,7 @@
  *
  * Modifications:
  *
+ * 2007 Sep 09: Added support for cases where the resource couldn't be find. - dj@opennms.org
  * 2007 Apr 10: Created this file. - dj@opennms.org
  * 
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -108,17 +109,23 @@
               </c:choose>
               <c:set var="count" value="${count + 1}"/>
             </c:forEach>
+            &nbsp;
           </ec:column>
 
           <ec:column property="resource" sortable="false">
-            ${row.resource.resourceType.label}:
             <c:choose>
+              <c:when test="${!empty row.resourceThrowable}">
+                <span title="Exception: ${row.resourceThrowable}">Could not find resource: ${row.resourceThrowableId}</span>
+              </c:when>
+              
               <c:when test="${!empty row.resource.link}">
+                ${row.resource.resourceType.label}:
                 <c:url var="resourceLink" value="${row.resource.link}"/>
                 <a href="${resourceLink}">${row.resource.label}</a>
               </c:when>
                 
               <c:otherwise>
+                ${row.resource.resourceType.label}:
                 ${row.resource.label}
               </c:otherwise>
             </c:choose>
@@ -127,13 +134,21 @@
           <ec:column property="value"/>
           
           <ec:column property="resource.id" title="Graphs" sortable="false">
-            <c:url var="graphUrl" value="graph/results.htm">
-              <c:param name="resourceId" value="${row.resource.id}"/>
-              <c:param name="start" value="${model.report.startDate.time}"/>
-              <c:param name="end" value="${model.report.endDate.time}"/>
-              <c:param name="reports" value="all"/>
-            </c:url>
-            <a href="${graphUrl}">Resource graphs</a>
+            <c:choose>
+              <c:when test="${!empty row.resource}">
+                <c:url var="graphUrl" value="graph/results.htm">
+                  <c:param name="resourceId" value="${row.resource.id}"/>
+                  <c:param name="start" value="${model.report.startDate.time}"/>
+                  <c:param name="end" value="${model.report.endDate.time}"/>
+                  <c:param name="reports" value="all"/>
+                </c:url>
+                <a href="${graphUrl}">Resource graphs</a>
+              </c:when>
+              
+              <c:otherwise>
+                -
+              </c:otherwise>
+            </c:choose>
           </ec:column>
         </ec:row>
       </ec:table>
