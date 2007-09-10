@@ -50,20 +50,32 @@ public class DependencyCheckingContextListener implements ServletContextListener
     }
 
     public void contextInitialized(ServletContextEvent event) {
-        checkJvmName(event.getServletContext());
+        Boolean skipJvm = new Boolean(System.getProperty("opennms.skipjvmcheck"));
+        if (!skipJvm) {
+            checkJvmName(event.getServletContext());
+        }
     }
 
     private void checkJvmName(ServletContext context) {
         final String systemProperty = "java.vm.name";
-        final String systemPropertyMatch = "HotSpot(TM)";
-
+        final String[] acceptableProperties = { "HotSpot(TM)", "BEA JRockit" };
+        
         String vmName = System.getProperty(systemProperty);
         if (vmName == null) {
             logAndOrDie(context, "System property '" + systemProperty + "' is not set so we can't figure out if this version of Java is supported");
-        } else if (!vmName.contains(systemPropertyMatch)) {
-            logAndOrDie(context, "System property '" + systemProperty + "' does not contain '" + systemPropertyMatch + "' (it is '" + vmName + "'), so it does not appear to be a Sun JVM.  OpenNMS is only supported on Sun JVMs.");
+        }
+
+        boolean ok = false;
+        for (String systemPropertyMatch : acceptableProperties) {
+            if (vmName.contains(systemPropertyMatch)) {
+                ok = true;
+            }
+        }
+        
+        if (ok) {
+            log().info("System property '" + systemProperty + "' appears to contain a suitable JVM signature ('" + vmName + "') -- congratulations!  ;)");
         } else {
-            log().info("System property '" + systemProperty + "' does contain '" + systemPropertyMatch + "', so it looks like you are running a Sun JVM.  Congratulations!");
+            logAndOrDie(context, "System property '" + systemProperty + "' does not contain a suitable JVM signature ('" + vmName + "').  OpenNMS recommends the official Sun JVM.");
         }
     }
 
