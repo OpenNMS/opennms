@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Sep 09: Add support to store a Throwable instead of an OnmsResource. - dj@opennms.org
  * 2007 Apr 10: Created this file. - dj@opennms.org
  * 
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -42,6 +43,7 @@ import java.util.TreeSet;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 
@@ -54,6 +56,7 @@ public class StatisticsReportModel {
     public static class Datum implements Comparable<Datum> {
         private Double m_value;
         private OnmsResource m_resource;
+        private Throwable m_resourceThrowable;
     
         public int compareTo(Datum o) {
             return m_value.compareTo(o.getValue());
@@ -88,8 +91,10 @@ public class StatisticsReportModel {
         }
         
         public List<OnmsResource> getResourceParentsReversed() {
-            Assert.state(m_resource != null, "the resource must be set before calling this method");
-
+            if (m_resource == null) {
+                return new ArrayList<OnmsResource>(0);
+            }
+            
             List<OnmsResource> resources = new ArrayList<OnmsResource>();
             
             OnmsResource parent = m_resource.getParent();
@@ -100,6 +105,18 @@ public class StatisticsReportModel {
             
             return resources;
         }
+        
+        public String getResourceThrowableId() {
+            Throwable t = getResourceThrowable();
+            
+            if (t == null) {
+                return null;
+            } else if (t instanceof ObjectRetrievalFailureException) {
+                return ((ObjectRetrievalFailureException) t).getIdentifier().toString();
+            } else {
+                return "No identifier";
+            }
+        }
     
         public Double getValue() {
             return m_value;
@@ -108,19 +125,27 @@ public class StatisticsReportModel {
         public void setValue(Double value) {
             m_value = value;
         }
+
+        public void setResourceThrowable(Throwable resourceThrowable) {
+            m_resourceThrowable = resourceThrowable;
+        }
         
+        public Throwable getResourceThrowable() {
+            return m_resourceThrowable;
+        }
     }
+    
     private BindException m_errors;
     private StatisticsReport m_report;
-    private SortedSet<StatisticsReportModel.Datum> m_data = new TreeSet<StatisticsReportModel.Datum>();
+    private SortedSet<Datum> m_data = new TreeSet<Datum>();
     
-    public SortedSet<StatisticsReportModel.Datum> getData() {
+    public SortedSet<Datum> getData() {
         return m_data;
     }
     public void setData(SortedSet<StatisticsReportModel.Datum> data) {
         m_data = data;
     }
-    public void addData(StatisticsReportModel.Datum datum) {
+    public void addData(Datum datum) {
         m_data.add(datum);
     }
     public BindException getErrors() {
