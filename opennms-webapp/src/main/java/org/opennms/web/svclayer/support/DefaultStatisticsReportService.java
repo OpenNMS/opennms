@@ -43,7 +43,9 @@ import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
 import org.opennms.web.command.StatisticsReportCommand;
 import org.opennms.web.svclayer.StatisticsReportService;
+import org.opennms.web.svclayer.support.StatisticsReportModel.Datum;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 
@@ -68,6 +70,8 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
             return model;
         }
         
+        Assert.notNull(command.getId(), "id property on command object cannot be null");
+        
         StatisticsReport report = m_statisticsReportDao.load(command.getId());
         model.setReport(report);
         
@@ -75,9 +79,13 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
         m_statisticsReportDao.initialize(report.getData());
         
         for (StatisticsReportData datum : report.getData()) {
-            StatisticsReportModel.Datum d = new StatisticsReportModel.Datum();
+            Datum d = new Datum();
             d.setValue(datum.getValue());
-            d.setResource(m_resourceDao.getResourceById(datum.getResourceId()));
+            try {
+                d.setResource(m_resourceDao.getResourceById(datum.getResourceId()));
+            } catch (ObjectRetrievalFailureException e) {
+                d.setResourceThrowable(e);
+            }
             model.addData(d);
         }
         
