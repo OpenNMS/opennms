@@ -32,7 +32,8 @@
 
 package org.opennms.netmgt.collectd;
 import java.io.File;
-import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 
@@ -46,27 +47,19 @@ public class GroupPersister extends BasePersister {
     public void visitGroup(AttributeGroup group) {
         pushShouldPersist(group);
         if (shouldPersist()) {
-            createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
-            File path = new File(group.getResource().getResourceDir(getRepository()).getAbsolutePath());
-            Properties dsProperties = ResourceTypeUtils.getDsProperties(path); 
-            boolean save = false;
+            
+            Map<String, String> dsNamesToRrdNames = new LinkedHashMap<String , String>();
             for (Attribute a : group.getAttributes()) {
-                if (NumericAttributeType.supportsType(a.getType()) && !dsProperties.containsKey(a.getName())) {
-                    dsProperties.setProperty(a.getName(), group.getName());
-                    save = true;
+                if (NumericAttributeType.supportsType(a.getType())) {
+                    dsNamesToRrdNames.put(a.getName(), group.getName());
                 }
             }
-            try {
-                if (save) {
-                    File dsFile = new File(path.getAbsolutePath(), ResourceTypeUtils.DS_PROPERTIES_FILE);
-                    saveUpdatedProperties(dsFile, dsProperties);
-                }
-            } catch (Exception e) {
-                log().error("Unable to save DataSource Properties file" + e, e);
-            }
+            
+            createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
+            File path = group.getResource().getResourceDir(getRepository());
+            ResourceTypeUtils.updateDsProperties(path, dsNamesToRrdNames);
         }
     }
-
 
     public void completeGroup(AttributeGroup group) {
         if (shouldPersist()) commitBuilder();

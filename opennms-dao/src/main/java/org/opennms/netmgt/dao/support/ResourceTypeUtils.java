@@ -36,15 +36,17 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.PropertiesCache;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -57,24 +59,46 @@ public class ResourceTypeUtils {
 	
 	public static String DS_PROPERTIES_FILE = "ds.properties";
 	
+	private static PropertiesCache s_cache = new PropertiesCache();
+	
     /**
      * This class has only static methods.
      */
     private ResourceTypeUtils() {
     }
-
+    
     public static Set<OnmsAttribute> getAttributesAtRelativePath(File rrdDirectory, String relativePath) {
+        
+        Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>();
+
+        loadRrdAttributes(rrdDirectory, relativePath, attributes);
+        loadStringAttributes(rrdDirectory, relativePath, attributes);
+        
+        return attributes;
+        
+    }
+
+    private static void loadStringAttributes(File rrdDirectory,
+            String relativePath, Set<OnmsAttribute> attributes) {
+        Properties properties = getStringProperties(rrdDirectory, relativePath);
+        if (properties != null) {
+            for (Entry<Object,Object> entry : properties.entrySet()) {
+                attributes.add(new StringPropertyAttribute(entry.getKey().toString(), entry.getValue().toString()));
+            }
+        }
+    }
+
+    private static void loadRrdAttributes(File rrdDirectory,
+            String relativePath, Set<OnmsAttribute> attributes) {
         int suffixLength = RrdFileConstants.getRrdSuffix().length();
+        File resourceDir = new File(rrdDirectory, relativePath);
+        File[] files = resourceDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
         
-        File directory = new File(rrdDirectory, relativePath);
-        File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-        
-        Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>(files.length);
         for (File file : files) {
             String fileName = file.getName();
             if (isStoreByGroup() && !isResponseTime(relativePath)) {
                 String groupName = fileName.substring(0, fileName.length() - suffixLength);
-                Properties props = getDsProperties(directory);
+                Properties props = getDsProperties(resourceDir);
                 for (Object o : props.keySet()) {
                     String dsName = (String)o;
                     if (props.getProperty(dsName).equals(groupName)) {
@@ -86,41 +110,29 @@ public class ResourceTypeUtils {
                 attributes.add(new RrdGraphAttribute(dsName, relativePath, file.getName()));
             }
         }
-        
-        Properties properties = getProperties(rrdDirectory, relativePath);
-        if (properties != null) {
-            for (Entry<Object,Object> entry : properties.entrySet()) {
-                attributes.add(new StringPropertyAttribute(entry.getKey().toString(), entry.getValue().toString()));
-            }
-        }
-        
-        return attributes;
     }
-
     
     public static Properties getDsProperties(File directory) {
-        Properties props = new Properties();
         File propertiesFile = new File(directory, DS_PROPERTIES_FILE);
-        if (propertiesFile.exists()) {
-            try {
-                FileInputStream fileInputStream = new FileInputStream(propertiesFile);
-                props.load(fileInputStream);
-                fileInputStream.close();
-            } catch (Exception e) {
-                log().error("ds.properties error: " + e, e);
-            }
-        } else {
-        	log().error("ds.properties does not exist on directory " + directory);
+        try {
+            return s_cache.getProperties(propertiesFile);
+        } catch(IOException e) {
+            log().error("ds.properties error: " + e, e);
+            return new Properties();
         }
-        return props;
     }
-	
+    
     public static File getRrdFileForDs(File directory, String ds) {
+        String rrdBaseName = ds;
         if (isStoreByGroup()) {
-            Properties props = getDsProperties(directory);
-            ds = props.getProperty(ds);
+            try {
+                rrdBaseName = s_cache.getProperty(new File(directory, DS_PROPERTIES_FILE), ds);
+            } catch (IOException e) {
+                log().error("ds.properties error: " + e, e);
+                rrdBaseName = ds;
+            }
         }
-        return new File(directory, ds + RrdUtils.getExtension());
+        return new File(directory, rrdBaseName + RrdUtils.getExtension());
     }
 
     public static boolean isStoreByGroup() {
@@ -131,55 +143,59 @@ public class ResourceTypeUtils {
         return Pattern.matches("^" + DefaultResourceDao.RESPONSE_DIRECTORY + ".+$", relativePath);
     }
 
-    public static Properties getProperties(File rrdDirectory, String relativePath) {
+    public static Properties getStringProperties(File rrdDirectory, String relativePath) {
         Assert.notNull(rrdDirectory, "rrdDirectory argument must not be null");
         Assert.notNull(relativePath, "relativePath argument must not be null");
         
-        return getProperties(new File(rrdDirectory, relativePath + File.separator + DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME));
+        File resourceDir = new File(rrdDirectory, relativePath);
+        
+        return getStringProperties(resourceDir);
+    }
+
+    private static Properties getStringProperties(File resourceDir) {
+        Assert.notNull(resourceDir, "resourceDir argumnet must not be null");
+        return getProperties(new File(resourceDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME));
     }
 
     public static Properties getProperties(File file) {
-        if (!file.exists()) {
-            return null;
-        }
-        
-        FileInputStream fileInputStream = null;
         try {
-            fileInputStream = new FileInputStream(file);
+            return s_cache.findProperties(file);
         } catch (IOException e) {
-            String message = "loadProperties: Error opening properties file "
-                + file.getAbsolutePath() + ": " + e;
+            String message = "loadProperties: Error opening properties file " + file.getAbsolutePath() + ": " + e;
             log().warn(message, e);
             throw new DataAccessResourceFailureException(message, e);
         }
-    
-        Properties properties = new Properties();
-        
-        try {
-            properties.load(fileInputStream);
-        } catch (IOException e) {
-            String message = "loadProperties: Error loading properties file "
-                + file.getAbsolutePath() + ": " + e;
-            log().warn(message, e);
-            throw new DataAccessResourceFailureException(message, e);
-        } finally {
-            try {
-                if (fileInputStream != null) {
-                    fileInputStream.close();
-                }
-            } catch (IOException e) {
-                String message = 
-                    "loadProperties: Error closing properties file "
-                    + file.getAbsolutePath() + ": " + e;
-                log().warn(message, e);
-                throw new DataAccessResourceFailureException(message, e);
-            }
-        }
-                
-        return properties;
     }
     
-    private static Category log() {
+    public static Category log() {
         return ThreadCategory.getInstance();
+    }
+
+    public static void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
+        s_cache.saveProperties(propertiesFile, props);
+    }
+
+    public static void updateDsProperties(File resourceDir, Map<String, String> dsNamesToRrdNames) {
+        try {
+            s_cache.updateProperties(new File(resourceDir, DS_PROPERTIES_FILE), dsNamesToRrdNames);
+        } catch (IOException e) {
+            log().error("Unable to save DataSource Properties file" + e, e);
+        }
+    }
+
+    public static void updateStringProperty(File resourceDir, String attrVal, String attrName) throws FileNotFoundException, IOException {
+        File propertiesFile = new File(resourceDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME);
+        s_cache.setProperty(propertiesFile, attrName, attrVal);
+    }
+
+    public static String getStringProperty(File directory, String key) {
+        File file = new File(directory, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME);
+        try {
+            return s_cache.getProperty(file, key);
+        } catch (IOException e) {
+            String message = "loadProperties: Error opening properties file " + file.getAbsolutePath() + ": " + e;
+            log().warn(message, e);
+            throw new DataAccessResourceFailureException(message, e);
+        }
     }
 }
