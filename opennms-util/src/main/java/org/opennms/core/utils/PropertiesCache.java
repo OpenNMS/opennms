@@ -120,8 +120,8 @@ public class PropertiesCache {
             try {
                 boolean save = false;
                 for(Entry<String, String> e : props.entrySet()) {
-                    if (!e.getValue().equals(m_properties.get(e.getKey()))) {
-                        m_properties.put(e.getKey(), e.getValue());
+                    if (!e.getValue().equals(get().get(e.getKey()))) {
+                        get().put(e.getKey(), e.getValue());
                         save = true;
                     }
                 }
@@ -136,8 +136,10 @@ public class PropertiesCache {
         public void setProperty(String key, String value) throws IOException {
             w.lock();
             try {
-                if (!value.equals(m_properties.get(key))) {
-                    m_properties.put(key, value);
+                // first we do get to make sure the properties are loaded
+                get();
+                if (!value.equals(get().get(key))) {
+                    get().put(key, value);
                     write();
                 }
             } finally {
