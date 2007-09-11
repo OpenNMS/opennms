@@ -2236,6 +2236,68 @@ public final class RescanProcessor implements Runnable {
                 log.debug("reparentInterface: reparenting address/ifIndex/nodeID: " + ipaddr + "/" + ifIndex + "/" + newNodeId);
             }
 
+
+            /*
+             * SNMP interface
+             *
+             * NOTE: Only reparent SNMP interfaces if we have valid ifIndex
+             */
+            if (ifIndex < 1) {
+                log.debug("reparentInterface: don't have a valid ifIndex, skipping snmpInterface table reparenting.");
+            } else {
+                /*
+                 * NOTE: Now that the snmpInterface table is uniquely keyed
+                 * by nodeId and ifIndex we must only reparent the
+                 * old entry if there isn't already an entry with
+                 * the same nodeid/ifindex pairing. If it can't
+                 * be reparented it will be deleted.
+                 */
+
+                /*
+                 * Look for matching nodeid/ifindex for the entry to be
+                 * reparented
+                 */
+                boolean alreadyExists = false;
+                snmpIfLookupStmt.setInt(1, newNodeId);
+                snmpIfLookupStmt.setString(2, ipaddr);
+                snmpIfLookupStmt.setInt(3, ifIndex);
+                ResultSet rs = snmpIfLookupStmt.executeQuery();
+                if (rs.next()) {
+                    /*
+                     * Looks like we got a match so just delete
+                     * the entry from the old node
+                     */
+                    if (log.isDebugEnabled()) {
+                        log.debug("reparentInterface: interface with ifindex " + ifIndex + " already exists under new node " + newNodeId + " in snmpinterface table, deleting from under old node " + oldNodeId);
+                    }
+                    alreadyExists = true;
+
+                    snmpIfDeleteStmt.setInt(1, oldNodeId);
+                    snmpIfDeleteStmt.setString(2, ipaddr);
+                    snmpIfDeleteStmt.setInt(3, ifIndex);
+
+                    snmpIfDeleteStmt.executeUpdate();
+                }
+
+                if (alreadyExists == false) {
+                    /*
+                     * Update the 'snmpinterface' table entry so that this
+                     * interface's nodeID is set to the value of reparentNodeID
+                     */
+                    if (log.isDebugEnabled()) {
+                        log.debug("reparentInterface: interface with ifindex " + ifIndex + " does not yet exist under new node " + newNodeId + " in snmpinterface table, reparenting.");
+                    }
+                    
+                    snmpInterfaceStmt.setInt(1, newNodeId);
+                    snmpInterfaceStmt.setInt(2, oldNodeId);
+                    snmpInterfaceStmt.setString(3, ipaddr);
+                    snmpInterfaceStmt.setInt(4, ifIndex);
+
+                    // execute and log
+                    snmpInterfaceStmt.executeUpdate();
+                }
+            }
+
             // Look for matching nodeid/ifindex for the entry to be reparented
             boolean ifAlreadyExists = false;
             ifLookupStmt.setInt(1, newNodeId);
@@ -2273,68 +2335,7 @@ public final class RescanProcessor implements Runnable {
                 // execute and log
                 ipInterfaceStmt.executeUpdate();
             }
-
-            /*
-             * SNMP interface
-             *
-             * NOTE: Only reparent SNMP interfaces if we have valid ifIndex
-             */
-            if (ifIndex < 1) {
-                log.debug("reparentInterface: don't have a valid ifIndex, skipping snmpInterface table reparenting.");
-            } else {
-                /*
-                 * NOTE: Now that the snmpInterface table is uniquely keyed
-                 * by nodeId and ifIndex we must only reparent the
-                 * old entry if there isn't already an entry with
-                 * the same nodeid/ifindex pairing. If it can't
-                 * be reparented it will be deleted.
-                 */
-
-                /*
-                 * Look for matching nodeid/ifindex for the entry to be
-                 * reparented
-                 */
-                boolean alreadyExists = false;
-                snmpIfLookupStmt.setInt(1, newNodeId);
-                snmpIfLookupStmt.setString(2, ipaddr);
-                snmpIfLookupStmt.setInt(3, ifIndex);
-                rs = snmpIfLookupStmt.executeQuery();
-                if (rs.next()) {
-                    /*
-                     * Looks like we got a match so just delete
-                     * the entry from the old node
-                     */
-                    if (log.isDebugEnabled()) {
-                        log.debug("reparentInterface: interface with ifindex " + ifIndex + " already exists under new node " + newNodeId + " in snmpinterface table, deleting from under old node " + oldNodeId);
-                    }
-                    alreadyExists = true;
-
-                    snmpIfDeleteStmt.setInt(1, oldNodeId);
-                    snmpIfDeleteStmt.setString(2, ipaddr);
-                    snmpIfDeleteStmt.setInt(3, ifIndex);
-
-                    snmpIfDeleteStmt.executeUpdate();
-                }
-
-                if (alreadyExists == false) {
-                    /*
-                     * Update the 'snmpinterface' table entry so that this
-                     * interface's nodeID is set to the value of reparentNodeID
-                     */
-                    if (log.isDebugEnabled()) {
-                        log.debug("reparentInterface: interface with ifindex " + ifIndex + " does not yet exist under new node " + newNodeId + " in snmpinterface table, reparenting.");
-                    }
-                    
-                    snmpInterfaceStmt.setInt(1, newNodeId);
-                    snmpInterfaceStmt.setInt(2, oldNodeId);
-                    snmpInterfaceStmt.setString(3, ipaddr);
-                    snmpInterfaceStmt.setInt(4, ifIndex);
-
-                    // execute and log
-                    snmpInterfaceStmt.executeUpdate();
-                }
-            }
-
+            
             // Look for matching nodeid/ifindex for the entry to be reparented
             boolean ifsAlreadyExists = false;
             ifServicesLookupStmt.setInt(1, newNodeId);
