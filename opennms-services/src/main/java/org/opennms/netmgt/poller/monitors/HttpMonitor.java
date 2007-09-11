@@ -57,7 +57,6 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -323,32 +322,29 @@ public class HttpMonitor extends IPv4Monitor {
     
     
 
-    protected Socket wrapSocket(Socket socket) throws IOException {
+    protected Socket wrapSocket(final Socket socket) throws IOException {
         return socket;
     }
 
-    protected Socket createSocket(NetworkInterface iface, Map parameters, int currentPort) throws IOException, SocketException {
+    protected Socket createSocket(final NetworkInterface iface, final Map<String, String> parameters, final int currentPort) throws IOException, SocketException {
         Socket socket;
-        //
-        // create a connected socket
-        //
         socket = new Socket();
         socket.setSoTimeout(getTimeout(parameters));
         return socket;
     }
 
-    private boolean isVerbose(Map parameters) {
+    private boolean isVerbose(final Map<String, String> parameters) {
         final String verbose = ParameterMap.getKeyedString(parameters, "verbose", null);
         return (verbose != null && verbose.equalsIgnoreCase("true")) ? true : false;
     }
 
-    private String buildCommand(NetworkInterface iface, Map parameters) {
+    private String buildCommand(final NetworkInterface iface, final Map<String, String> parameters) {
         
         /*
          * Sorting this map just in case the poller gets changed and the Map
          * is no longer a TreeMap.
          */
-        Map sortedParameters = new TreeMap(parameters);
+        Map<String, String> sortedParameters = new TreeMap<String, String>(parameters);
         // Following a successful poll 'currentPort' will contain the port on
         // the remote host that was successfully queried
         //
@@ -367,7 +363,7 @@ public class HttpMonitor extends IPv4Monitor {
             cmd += "Authorization: Basic "+getBasicAuthentication(parameters) +"\r\n";
         }
 
-        for (Iterator it = sortedParameters.keySet().iterator(); it.hasNext();) {
+        for (Iterator<String> it = sortedParameters.keySet().iterator(); it.hasNext();) {
             String parmKey = (String) it.next();
             if (parmKey.matches("header[0-9]+$")) {
                 cmd += getHeader(parameters, parmKey)+"\r\n";
@@ -379,7 +375,7 @@ public class HttpMonitor extends IPv4Monitor {
         return cmd;
     }
 
-    private String getUserAgent(Map parameters) {
+    private String getUserAgent(final Map<String, String> parameters) {
         String agent = ParameterMap.getKeyedString(parameters, "user-agent", null);
         if (agent == null || "".equals(agent)) {
             return "OpenNMS HttpMonitor";
@@ -387,7 +383,7 @@ public class HttpMonitor extends IPv4Monitor {
         return agent;
     }
 
-    protected String getBasicAuthentication(Map parameters) {
+    protected String getBasicAuthentication(final Map<String, String> parameters) {
         String credentials = ParameterMap.getKeyedString(parameters, "basic-authentication", null);
         if (credentials != null && !"".equals(credentials)) {
             return new String(Base64.encodeBase64(credentials.getBytes()));
@@ -403,11 +399,11 @@ public class HttpMonitor extends IPv4Monitor {
         }
     }
 
-    private InetAddress getIpv4Addr(NetworkInterface iface) {
+    private InetAddress getIpv4Addr(final NetworkInterface iface) {
         return (InetAddress) iface.getAddress();
     }
 
-    private String getHeader(Map parameters, String key) {
+    private String getHeader(final Map<String, String> parameters, String key) {
         return ParameterMap.getKeyedString(parameters, key, null);
     }
     
@@ -416,7 +412,7 @@ public class HttpMonitor extends IPv4Monitor {
     }
 
 */
-    private String getVirtualHost(Map parameters) {
+    private String getVirtualHost(final Map<String, String> parameters) {
         String virtualHost = ParameterMap.getKeyedString(parameters, "host-name", null);
         if (virtualHost == null || "".equals(virtualHost)) {
             //try deprecated parameter
@@ -428,7 +424,7 @@ public class HttpMonitor extends IPv4Monitor {
         return virtualHost;
     }
 
-    private String getResponseText(Map parameters) {
+    private String getResponseText(final Map<String, String> parameters) {
         String responseText = ParameterMap.getKeyedString(parameters, "response-text", null);
         if (responseText == null) {
             //try depricated parameter
@@ -437,23 +433,23 @@ public class HttpMonitor extends IPv4Monitor {
         return responseText;
     }
 
-    private String getResponse(Map parameters) {
+    private String getResponse(final Map<String, String> parameters) {
         return ParameterMap.getKeyedString(parameters, "response", getDefaultResponseRange(getUrl(parameters)));
     }
 
-    private String getUrl(Map parameters) {
+    private String getUrl(final Map<String, String> parameters) {
         return ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
     }
 
-    protected int[] getPorts(Map parameters) {
+    protected int[] getPorts(final Map<String, String> parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
-    private int getTimeout(Map parameters) {
+    private int getTimeout(final Map<String, String> parameters) {
         return ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
     }
 
-    private int getRetries(Map parameters) {
+    private int getRetries(final Map<String, String> parameters) {
         return ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
     }
 
