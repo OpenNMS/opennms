@@ -71,14 +71,15 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 // this is marked not distributable because it relies on a shared library
 @Distributable(DistributionContext.DAEMON)
-final public class MultiIcmpMonitor extends IPv4Monitor {
+final public class StrafePingMonitor extends IPv4Monitor {
     private static final int DEFAULT_MULTI_PING_COUNT = 20;
     private static final long DEFAULT_PING_INTERVAL = 50;
+    private static final int DEFAULT_FAILURE_PING_COUNT = 20;
 
     /**
      * Constructs a new monitor.
      */
-    public MultiIcmpMonitor() throws IOException {
+    public StrafePingMonitor() throws IOException {
     }
 
     /**
@@ -122,11 +123,12 @@ final public class MultiIcmpMonitor extends IPv4Monitor {
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
             int count = ParameterMap.getKeyedInteger(parameters, "ping-count", DEFAULT_MULTI_PING_COUNT);
             long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
-
+            int failurePingCount = ParameterMap.getKeyedInteger(parameters, "failure-ping-count", DEFAULT_FAILURE_PING_COUNT);
+            
             responseTimes = new ArrayList<Number>(Pinger.parallelPing(host, count, timeout, pingInterval));
 
-            if (CollectionMath.countNotNull(responseTimes) == 0) {
-                return PollStatus.unavailable("no packets returned within the timeout");
+            if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
+                return PollStatus.unavailable("the failure ping count (" + failurePingCount + ") was reached");
             }
 
             serviceStatus = PollStatus.available();
