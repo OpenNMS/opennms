@@ -24,21 +24,21 @@
                     <c:when test="${interface.ipAddress == '0.0.0.0'}">
                       <c:choose>
                         <c:when test="${interface.snmpInterface.ifName != null}">
-                          <a href="${interfaceLink}">${interface.snmpInterface.ifName}</a>
+                          <a href="${interfaceLink}">${interface.snmpInterface.ifName}</a> : ${interface.snmpInterface.ifAlias}
                         </c:when>
                         
                         <c:when test="${interface.snmpInterface.ifDescr != null}">
-                          <a href="${interfaceLink}">${interface.snmpInterface.ifDescr}</a>
+                          <a href="${interfaceLink}">${interface.snmpInterface.ifDescr}</a> : ${interface.snmpInterface.ifAlias}
                         </c:when>
                         
                         <c:otherwise>
-                          <a href="${interfaceLink}">ifIndex ${interface.snmpInterface.ifIndex}</a>
+                          <a href="${interfaceLink}">ifIndex ${interface.snmpInterface.ifIndex}</a> : ${interface.snmpInterface.ifAlias}
                         </c:otherwise>
                       </c:choose>
                     </c:when>
                     
                     <c:otherwise>
-                      <a href="${interfaceLink}">${interface.ipAddress}</a>
+                      <a href="${interfaceLink}">${interface.ipAddress}</a> : ${interface.snmpInterface.ifAlias}
                     </c:otherwise>
                   </c:choose>
                 </c:when>
