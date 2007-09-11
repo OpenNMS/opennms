@@ -42,9 +42,6 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -53,7 +50,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -73,6 +69,7 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
 /**
@@ -85,7 +82,6 @@ import org.springframework.util.Assert;
  * 
  */
 public final class SnmpThresholder implements ServiceThresholder {
-    private static final String STRINGS_PROPERTIES = "strings.properties";
 
     private String m_serviceName;
     
@@ -601,28 +597,18 @@ public final class SnmpThresholder implements ServiceThresholder {
      * Get the value to use for the ds-label from this threshold
      */
     private String getDataSourceLabel(File directory, SnmpThresholdNetworkInterface snmpIface, ThresholdEntity threshold) {
-        String dsLabelValue = "Unknown";
-
-        File propertiesFile = new File(directory, STRINGS_PROPERTIES);
+        String dsLabelValue = null;
+        
         try {
-            Properties stringProps = new Properties();
-            stringProps.load(new FileInputStream(propertiesFile));
-            dsLabelValue = stringProps.getProperty(threshold.getDatasourceLabel());
-        } catch (FileNotFoundException e) {
+            dsLabelValue = ResourceTypeUtils.getStringProperty(directory, threshold.getDatasourceLabel());
+        } catch (DataAccessException e) {
             if (log().isDebugEnabled()) {
-                log().debug ("getDataSourceLabel: No strings.properties file found for node id: " + snmpIface.getNodeId() + " looking here: " + propertiesFile);
-            }
-        } catch (NullPointerException e) {
-            if (log().isDebugEnabled()) {
-                log().debug ("getDataSourceLabel: No data source label for node id: " + snmpIface.getNodeId() + ": " + e, e);
-            }
-        } catch (IOException e) {
-            if (log().isDebugEnabled()) {
-                log().debug ("getDataSourceLabel: I/O exception when looking for strings.properties file for node id: " + snmpIface.getNodeId() + " looking here: " + propertiesFile + ": " + e, e);
+                log().debug ("getDataSourceLabel: I/O exception when looking for strings.properties file for node id: " + snmpIface.getNodeId() + " looking here: " + directory + ": " + e, e);
             }
         }
+        
+        return (dsLabelValue == null ? "Unknown" : dsLabelValue);
 
-        return dsLabelValue;
     }
 
 

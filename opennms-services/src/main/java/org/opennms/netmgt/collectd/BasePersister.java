@@ -37,19 +37,16 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -116,28 +113,6 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         m_repository = repository;
     }
 
-    private Properties getCurrentProperties(File propertiesFile) throws FileNotFoundException, IOException {
-        Properties props = new Properties();
-    
-        FileInputStream fileInputStream = null;
-        //Preload existing data
-        if (propertiesFile.exists()) {
-            try {
-                fileInputStream = new FileInputStream(propertiesFile);
-                props.load(fileInputStream);
-            } finally {
-                try {
-                    if (fileInputStream != null) {
-                        fileInputStream.close();
-                    }
-                } catch (IOException e) {
-                    log().error("performUpdate: Error closing file: " + e, e);
-                }
-            }
-        }
-        return props;
-    }
-
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -148,25 +123,23 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     public void persistStringAttribute(Attribute attribute) {
-        try {
             log().debug("Persisting "+attribute);
             CollectionResource resource = attribute.getResource();
             SnmpValue value = attribute.getValue();
     
             File resourceDir = resource.getResourceDir(getRepository());
     
-            String val = (value == null ? null : value.toString());
-            if (val == null) {
+            String attrVal = (value == null ? null : value.toString());
+            if (attrVal == null) {
                 log().info("No data collected for attribute "+attribute+".  Skipping.");
                 return;
             }
-            File propertiesFile = new File(resourceDir,"strings.properties");
-            Properties props = getCurrentProperties(propertiesFile);
-            props.setProperty(attribute.getName(), val);
-            saveUpdatedProperties(propertiesFile, props);
-        } catch(IOException e) {
-            log().error("Unable to save string attribute " + attribute + ": " + e, e);
-        }
+            String attrName = attribute.getName();
+            try {
+                ResourceTypeUtils.updateStringProperty(resourceDir, attrVal, attrName);
+            } catch(IOException e) {
+                log().error("Unable to save string attribute " + attribute + ": " + e, e);
+            }
     }
 
     private boolean pop() {
@@ -197,30 +170,6 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 
     protected void pushShouldPersist(CollectionResource resource) {
         push(resource.shouldPersist(m_params));
-    }
-
-    protected void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
-        if (!propertiesFile.getParentFile().isDirectory()) {
-            log().info("Parent directory for properties file '" + propertiesFile.getParentFile().getAbsolutePath() + "' does not exist (or is not a directory).  Creating it.");
-            if (!propertiesFile.getParentFile().mkdirs()) {
-                log().error("Could not create parent directories for properties file: " + propertiesFile.getAbsolutePath());
-                throw new IOException("Could not create parent directories for properties file: " + propertiesFile.getAbsolutePath());
-            }
-        }
-        FileOutputStream fileOutputStream = null;
-        try {
-            fileOutputStream = new FileOutputStream(propertiesFile);
-            props.store(fileOutputStream, null);
-        } finally {
-            try {
-                if (fileOutputStream != null) {
-                    fileOutputStream.flush();
-                    fileOutputStream.close();
-                }
-            } catch (IOException e) {
-                log().error("performUpdate: Error closing file: " + e, e);
-            }
-        }
     }
 
     protected boolean shouldPersist() { return top(); }
