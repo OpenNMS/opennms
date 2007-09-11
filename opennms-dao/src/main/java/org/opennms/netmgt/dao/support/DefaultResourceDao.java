@@ -83,7 +83,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * File name to look for in a resource directory for string attributes.
      */
-    static final String STRINGS_PROPERTIES_FILE_NAME = "strings.properties";
+    public static final String STRINGS_PROPERTIES_FILE_NAME = "strings.properties";
 
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 

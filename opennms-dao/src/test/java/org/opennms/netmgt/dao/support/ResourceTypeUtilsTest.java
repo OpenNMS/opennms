@@ -77,7 +77,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         ta.anticipate(new IllegalArgumentException("rrdDirectory argument must not be null"));
         try {
             //ResourceTypeUtils.loadProperties(null);
-            ResourceTypeUtils.getProperties(null, "something");
+            ResourceTypeUtils.getStringProperties(null, "something");
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -89,7 +89,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         ta.anticipate(new IllegalArgumentException("relativePath argument must not be null"));
         try {
             //ResourceTypeUtils.loadProperties(null);
-            ResourceTypeUtils.getProperties(new File(""), null);
+            ResourceTypeUtils.getStringProperties(new File(""), null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -100,7 +100,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "", false);
 
-        Properties p = ResourceTypeUtils.getProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
+        Properties p = ResourceTypeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
         
         assertNotNull("properties should not be null", p);
         assertEquals("properties size", 0, p.size());
@@ -110,7 +110,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "foo=bar", false);
 
-        Properties p = ResourceTypeUtils.getProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
+        Properties p = ResourceTypeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
         
         assertNotNull("properties should not be null", p);
         assertEquals("properties size", 1, p.size());
@@ -122,7 +122,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "", true);
 
-        Properties p = ResourceTypeUtils.getProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
+        Properties p = ResourceTypeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
         assertNull("no properties file was created, so the properties object should be null", p);
     }
 
