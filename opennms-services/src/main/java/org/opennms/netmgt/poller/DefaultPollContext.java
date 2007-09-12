@@ -179,7 +179,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             
             for (Iterator it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = (PendingPollEvent) it.next();
-                if (pollEvent.isPending()) break;
+                if (pollEvent.isPending()) continue;
                 
                 pollEvent.processPending();
                 it.remove();
