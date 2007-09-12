@@ -167,6 +167,10 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         }
     }
     
+    public void promoteGraphAttributesForResource(String resourceId) {
+        promoteGraphAttributesForResource(getResourceById(resourceId));
+    }
+    
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
