@@ -89,7 +89,7 @@
     </c:if>
     <div id="customTimeForm" name="customTimeForm" ${showCustom}>
     
-    <form action="${requestScope.relativeRequestPath}" method="get">
+    <form id="range_form" action="${requestScope.relativeRequestPath}" method="get">
         <c:forEach var="resultSet" items="${results.graphResultSets}">
           <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
         </c:forEach>
@@ -178,7 +178,6 @@
     <strong>To</strong> ${results.end} <br/>
   </p>
 
-
   <c:forEach var="resultSet" items="${results.graphResultSets}">
     <h3>
       ${resultSet.resource.parent.resourceType.label}:
@@ -204,20 +203,9 @@
         </c:choose>
       </c:if>
     </h3>
-    
-    
+
   <c:choose>
     <c:when test="${param.zoom == 'true'}">
-	  <div id='zoomBox' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; background:red; filter:alpha(opacity=50); -moz-opacity:0.5; -khtml-opacity:.5; opacity:0.5'></div>
-	  <div id='zoomSensitiveZone' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; cursor:crosshair; background:blue; filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity:0; opacity:0' oncontextmenu='return false'></div>
-
-	  <style media="print">
-	    /*Turn off the zoomBox*/
-	    div#zoomBox, div#zoomSensitiveZone {display: none}
-	    /*This keeps IE from cutting things off*/
-	    #why {position: static; width: auto}
-	  </style>
-	  
 	  <c:url var="graphUrl" value="graph/graph.png">
         <c:param name="resourceId" value="${resultSet.resource.id}"/>
         <c:param name="report" value="${resultSet.graphs[0].name}"/>
@@ -227,7 +215,14 @@
         <c:param name="graph_height" value="${resultSet.graphs[0].graphHeight}"/>
       </c:url>
 
-      <img id="zoomGraphImage" src="${graphUrl}"/>
+      <script type="text/javascript">
+        var graphStart = ${results.start.time};
+        var graphEnd   = ${results.end.time};
+      </script>
+      
+      <div align="center">
+        <img id="zoom" src="${graphUrl}" />
+      </div>
     </c:when>
 
     <c:when test="${!empty resultSet.graphs}"> 
@@ -317,7 +312,28 @@
   }
   </script>
   
-  <script type="text/javascript" src="js/zoom.js"></script>
+	<script src="graph/cropper/lib/prototype.js" type="text/javascript"></script>      
+	<script src="graph/cropper/lib/scriptaculous.js" type="text/javascript"></script>
+	<script src="graph/cropper/cropper.js" type="text/javascript"></script>
+	<script src="graph/cropper/zoom.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+	Event.observe(
+		window,
+		'load',
+		function() {
+			myCropper = new Cropper.Img(
+				'zoom',
+				{
+					minHeight: $('zoom').getDimensions().height,
+					maxHeight: $('zoom').getDimensions().height,
+					onEndCrop: changeRRDImage
+				}
+			)
+		}
+	);
+	</script>
+	
 </c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
