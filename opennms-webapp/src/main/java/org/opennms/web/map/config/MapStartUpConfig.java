@@ -8,7 +8,8 @@ public class MapStartUpConfig {
     int screenHeight=600;
     int refreshTime=0;
     boolean fullScreen=false;
-
+    
+    boolean isAdminRole=false;
     int mapToOpenId=MapsConstants.MAP_NOT_OPENED;
 
     String user = null;
@@ -38,9 +39,10 @@ public class MapStartUpConfig {
 	}
 	
 	
-	public MapStartUpConfig(String user, int screenWidth, int screenHeight, int refreshTime, boolean fullScreen, int mapToOpenId) {
+	public MapStartUpConfig(String user, boolean isAdminRole,int screenWidth, int screenHeight, int refreshTime, boolean fullScreen, int mapToOpenId) {
 		super();
 		this.user = user;
+		this.isAdminRole = isAdminRole;
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 		this.refreshTime = refreshTime;
@@ -93,6 +95,16 @@ public class MapStartUpConfig {
 	}
 	public void setScreenWidth(int screenWidth) {
 		this.screenWidth = screenWidth;
+	}
+
+
+	public boolean isAdminRole() {
+		return isAdminRole;
+	}
+
+
+	public void setAdminRole(boolean isAdminRole) {
+		this.isAdminRole = isAdminRole;
 	}
 
     
