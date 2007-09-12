@@ -1086,25 +1086,8 @@ public class ManagerDefaultImpl implements Manager {
     	return result;
     }
     
-    private boolean isAdmin(){
-		UserDaoImpl userImpl = new UserDaoImpl();
-		try {
-			userImpl.setMagicUsersConfigurationFile(ConfigFileConstants.getFile(ConfigFileConstants.MAGIC_USERS_CONF_FILE_NAME).getAbsolutePath());
-			userImpl.setUsersConfigurationFile(ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).getAbsolutePath());
-		} catch (IOException e) {
-			log.error("Cannot load user config files ", e);
-			return false;
-		}
-		org.opennms.web.acegisecurity.User u = userImpl.getByUsername(mapStartUpConfig.getUser());
-		GrantedAuthority[] auths = u.getAuthorities();
-		for(int i=0; i<auths.length;i++)
-			if(auths[i].getAuthority().equals(Authentication.ADMIN_ROLE))
-				return true;
-		return false;
-	}
-    
 	public boolean isUserAdmin() {
-		return isAdmin();
+		return getMapStartUpConfig().isAdminRole();
 	}
 	
 	private String getSeverityLabel(int severity) throws MapsException {
