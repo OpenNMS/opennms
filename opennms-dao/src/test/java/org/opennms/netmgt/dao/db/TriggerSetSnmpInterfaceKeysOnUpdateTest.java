@@ -149,5 +149,21 @@ public class TriggerSetSnmpInterfaceKeysOnUpdateTest extends
                 ta.verifyAnticipated();
         }
     }
+    
+    
+    public void testSetIpInterfaceToNewNodeWithNodeSnmpInterfaces() throws Exception {
+        executeSQL("INSERT INTO ipInterface (id, nodeId, ipAddr) VALUES ( 1, 1, '1.1.1.1')");
+        
+        // Add new node with no snmp interfaces
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 2, now() )");
+        
+        // reparent ipInterface to new node
+        assertNull("snmpInterfaceId after update", jdbcTemplate.queryForObject("SELECT snmpInterfaceId FROM ipInterface", Object.class));
+        
+        assertEquals("ipInterface update count", 1, jdbcTemplate.update("UPDATE ipInterface SET nodeId = 2 WHERE nodeID = 1 AND ipAddr = '1.1.1.1'"));
+        assertNull("snmpInterfaceId after update", jdbcTemplate.queryForObject("SELECT snmpInterfaceId FROM ipInterface", Object.class));
+        
+
+    }
 
 }
