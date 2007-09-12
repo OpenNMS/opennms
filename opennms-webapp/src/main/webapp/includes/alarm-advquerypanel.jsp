@@ -122,15 +122,15 @@
 
           <tr>
             <td valign="top">
-              <input type="checkbox" name="useaftertime" value="1"/>Alarms After:
+              <input type="checkbox" name="useafterfirsteventtime" value="1"/>Alarm First Event After:
             </td>
             <td valign="top">
-              <input type="checkbox" name="usebeforetime" value="1"/>Alarms Before:
+              <input type="checkbox" name="usebeforefirsteventtime" value="1"/>Alarm First Event Before:
             </td>
           </tr>
           <tr>
             <td>
-              <select name="afterhour" size="1">
+              <select name="afterfirsteventtimehour" size="1">
                 <% for( int i = 1; i < 13; i++ ) { %>
                   <option value="<%=i%>" <%=(nowHour==i) ? "selected" : ""%>>
                     <%=i%>
@@ -138,9 +138,9 @@
                 <% } %>
               </select>
 
-              <input type="text" name="afterminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
+              <input type="text" name="afterfirsteventtimeminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
 
-              <select name="afterampm" size="1">
+              <select name="afterfirsteventtimeampm" size="1">
                 <option value="am" <%=(nowAmPm == Calendar.AM && nowHour != 12) ? "selected" : ""%>>AM</option>
                 <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour == 12) ? "selected" : ""%>>Noon</option>
                 <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour != 12) ? "selected" : ""%>>PM</option>
@@ -148,7 +148,7 @@
               </select>
             </td>
             <td>
-              <select name="beforehour" size="1">
+              <select name="beforefirsteventtimehour" size="1">
                 <% for( int i = 1; i < 13; i++ ) { %>
                   <option value="<%=i%>" <%=(nowHour==i) ? "selected=\"selected\"" : ""%>>
                     <%=i%>
@@ -156,9 +156,9 @@
                 <% } %>
               </select>
 
-              <input type="text" name="beforeminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
+              <input type="text" name="beforefirsteventtimeminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
 
-              <select name="beforeampm" size="1">
+              <select name="beforefirsteventtimeampm" size="1">
                 <option value="am" <%=(nowAmPm == Calendar.AM && nowHour != 12) ? "selected" : ""%>>AM</option>
                 <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour == 12) ? "selected" : ""%>>Noon</option>
                 <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour != 12) ? "selected" : ""%>>PM</option>
@@ -168,7 +168,7 @@
           </tr>
           <tr>
             <td>
-              <select name="aftermonth" size="1">
+              <select name="afterfirsteventtimemonth" size="1">
                 <% for( int i = 0; i < 12; i++ ) { %>
                   <option value="<%=i%>" <%=(now.get(Calendar.MONTH)==i) ? "selected" : ""%>>
                     <%=months[i]%>
@@ -176,11 +176,11 @@
                 <% } %>
               </select>
 
-              <input type="text" name="afterdate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
-              <input type="text" name="afteryear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
+              <input type="text" name="afterfirsteventtimedate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
+              <input type="text" name="afterfirsteventtimeyear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
             </td>
             <td>
-              <select name="beforemonth" size="1">
+              <select name="beforefirsteventtimemonth" size="1">
                 <% for( int i = 0; i < 12; i++ ) { %>
                   <option value="<%=i%>" <%=(now.get(Calendar.MONTH)==i) ? "selected" : ""%>>
                     <%=months[i]%>
@@ -188,8 +188,81 @@
                 <% } %>
               </select>
 
-              <input type="text" name="beforedate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
-              <input type="text" name="beforeyear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
+              <input type="text" name="beforefirsteventtimedate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
+              <input type="text" name="beforefirsteventtimeyear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
+            </td>
+          </tr>
+
+          <tr>
+            <td valign="top">
+              <input type="checkbox" name="useafterlasteventtime" value="1"/>Alarm Last Event After:
+            </td>
+            <td valign="top">
+              <input type="checkbox" name="usebeforelasteventtime" value="1"/>Alarm Last Event Before:
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select name="afterlasteventtimehour" size="1">
+                <% for( int i = 1; i < 13; i++ ) { %>
+                  <option value="<%=i%>" <%=(nowHour==i) ? "selected" : ""%>>
+                    <%=i%>
+                  </option>
+                <% } %>
+              </select>
+
+              <input type="text" name="afterlasteventtimeminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
+
+              <select name="afterlasteventtimeampm" size="1">
+                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour != 12) ? "selected" : ""%>>AM</option>
+                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour == 12) ? "selected" : ""%>>Noon</option>
+                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour != 12) ? "selected" : ""%>>PM</option>
+                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour == 12) ? "selected" : ""%>>Midnight</option>
+              </select>
+            </td>
+            <td>
+              <select name="beforelasteventtimehour" size="1">
+                <% for( int i = 1; i < 13; i++ ) { %>
+                  <option value="<%=i%>" <%=(nowHour==i) ? "selected=\"selected\"" : ""%>>
+                    <%=i%>
+                  </option>
+                <% } %>
+              </select>
+
+              <input type="text" name="beforelasteventtimeminute" size="4" maxlength="2" value="<%=MINUTE_FORMAT.format(nowMinute)%>" />
+
+              <select name="beforelasteventtimeampm" size="1">
+                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour != 12) ? "selected" : ""%>>AM</option>
+                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour == 12) ? "selected" : ""%>>Noon</option>
+                <option value="pm" <%=(nowAmPm == Calendar.PM && nowHour != 12) ? "selected" : ""%>>PM</option>
+                <option value="am" <%=(nowAmPm == Calendar.AM && nowHour == 12) ? "selected" : ""%>>Midnight</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select name="afterlasteventtimemonth" size="1">
+                <% for( int i = 0; i < 12; i++ ) { %>
+                  <option value="<%=i%>" <%=(now.get(Calendar.MONTH)==i) ? "selected" : ""%>>
+                    <%=months[i]%>
+                  </option>
+                <% } %>
+              </select>
+
+              <input type="text" name="afterlasteventtimedate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
+              <input type="text" name="afterlasteventtimeyear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
+            </td>
+            <td>
+              <select name="beforelasteventtimemonth" size="1">
+                <% for( int i = 0; i < 12; i++ ) { %>
+                  <option value="<%=i%>" <%=(now.get(Calendar.MONTH)==i) ? "selected" : ""%>>
+                    <%=months[i]%>
+                  </option>
+                <% } %>
+              </select>
+
+              <input type="text" name="beforelasteventtimedate" size="4" maxlength="2" value="<%=now.get(Calendar.DATE)%>" />
+              <input type="text" name="beforelasteventtimeyear" size="6" maxlength="4" value="<%=now.get(Calendar.YEAR)%>" />
             </td>
           </tr>
 
