@@ -14,8 +14,14 @@ BEGIN
   -- This usually happens when a record is being updated by old JDBC code (non-Hibernate DAOs) and has changed
   -- one or more of the composite key values, the snmpInterfaceId needs to be updated
   --
-  IF (NEW.snmpInterfaceId = OLD.snmpInterfaceId OR (NEW.snmpInterfaceId IS NULL AND OLD.snmpInterfaceId IS NULL) AND (NEW.nodeId != OLD.nodeId OR NEW.ifIndex != OLD.ifIndex OR (NEW.ifIndex IS NULL AND OLD.ifIndex IS NOT NULL) OR (NEW.ifIndex IS NOT NULL AND OLD.ifIndex IS NULL)))
+  IF ((NEW.snmpInterfaceId = OLD.snmpInterfaceId OR (NEW.snmpInterfaceId IS NULL AND OLD.snmpInterfaceId IS NULL)) AND 
+      (NEW.nodeId != OLD.nodeId OR NEW.ifIndex != OLD.ifIndex OR (NEW.ifIndex IS NULL AND OLD.ifIndex IS NOT NULL) OR (NEW.ifIndex IS NOT NULL AND OLD.ifIndex IS NULL)))
   THEN
+    IF NEW.ifIndex IS NULL AND NEW.snmpInterfaceId IS NOT NULL
+    THEN
+       SELECT NULL INTO NEW.snmpInterfaceId;
+    ELSIF NEW.ifIndex IS NOT NULL
+    THEN
      SELECT snmpif.id INTO NEW.snmpInterfaceId
        FROM snmpinterface snmpif
        WHERE (snmpif.nodeid = NEW.nodeid AND snmpif.snmpIfIndex = NEW.ifIndex);
@@ -23,6 +29,7 @@ BEGIN
      IF NOT FOUND THEN
        RAISE EXCEPTION ''IpInterface Trigger Notice, Condition 3: No SnmpInterface found for... nodeid: % ifindex: %'', NEW.nodeid, NEW.ifIndex;
      END IF;
+    END IF;
      
   --
   -- (Used for Trigger update with new style foreign key)
