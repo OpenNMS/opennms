@@ -40,13 +40,11 @@
 
 --%>
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="org.opennms.web.*,
-		java.util.*
-	"
-%>
+<%@page language="java"	contentType="text/html"	session="true"%>
+<%@page import="org.opennms.web.*"%>
+<%@page import="java.util.*"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@page import="org.springframework.web.context.WebApplicationContext"%>
 
 <%!
     public final static String[] REQUIRED_PARAMS =
@@ -68,6 +66,13 @@
 
 <%
 	String resourceId = request.getParameter( "resourceId" );
+
+    WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+    
+    ResourceService resourceService = (ResourceService)webAppContext.getBean("resourceService", ResourceService.class);
+    
+    resourceService.promoteGraphAttributesForResource(resourceId);
+    
 
     String title = request.getParameter( "title" );
     String style = request.getParameter( "style" );
@@ -156,6 +161,7 @@
     String queryString = Util.makeQueryString( request, additions, ignores );
 %>
 
+<%@page import="org.opennms.web.svclayer.ResourceService"%>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Custom Resource Graphs" />
   <jsp:param name="headTitle" value="Custom" />

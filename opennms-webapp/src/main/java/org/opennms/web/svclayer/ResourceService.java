@@ -56,5 +56,6 @@ public interface ResourceService {
     public PrefabGraph[] findPrefabGraphsForResource(OnmsResource resource);
     public PrefabGraph getPrefabGraph(String name);
     public PrefabGraph[] findPrefabGraphsForChildResources(OnmsResource resource, String... resourceTypeMatches);
-    void promoteGraphAttributesForResource(OnmsResource resource);
+    public void promoteGraphAttributesForResource(OnmsResource resource);
+    public void promoteGraphAttributesForResource(String resourceId);
 }
