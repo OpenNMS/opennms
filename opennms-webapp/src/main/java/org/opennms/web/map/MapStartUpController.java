@@ -109,7 +109,7 @@ public class MapStartUpController extends SimpleFormController {
 		log = ThreadCategory.getInstance(this.getClass());
 
 		String user = request.getRemoteUser();
-		
+		boolean isAdmin = request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE);
 		boolean fullscreen = Boolean.parseBoolean(request.getParameter("fullscreen"));
 		
 		int refresh = Integer.parseInt(request.getParameter("refresh"));
@@ -122,12 +122,12 @@ public class MapStartUpController extends SimpleFormController {
 		if (mapToOpen != null) mapToOpenId = Integer.parseInt(mapToOpen); 
 
 		if (log.isDebugEnabled()) 
-			log.debug("StartUpValues: user/dimension/mapToOpen/refresh/fullscreen:" + user +"/" + dimension +"/" + mapToOpen +"/" + refresh +"/" + fullscreen );
+			log.debug("StartUpValues: user/hasRoleAdmin/dimension/mapToOpen/refresh/fullscreen:" + user +"/"+ isAdmin + "/"+ dimension +"/" + mapToOpen +"/" + refresh +"/" + fullscreen );
 		String[] dim = dimension.split("x");
 		int mapwidth=Integer.parseInt(dim[0]);
 		int mapheight=Integer.parseInt(dim[1]);
 	
-		MapStartUpConfig config = new MapStartUpConfig(user, mapwidth,mapheight,refresh,fullscreen,mapToOpenId); 
+		MapStartUpConfig config = new MapStartUpConfig(user,isAdmin,mapwidth,mapheight,refresh,fullscreen,mapToOpenId); 
 		return config;	
 	}
 
