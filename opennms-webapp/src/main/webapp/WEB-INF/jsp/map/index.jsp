@@ -50,17 +50,14 @@
 	function viewMap()
 		{
 		var vmf = document.getElementById("viewMapForm");
-	        //alert(vmf);
-	    var fullscreen=vmf.fullscreen.value;
- 		var refresh=vmf.refresh.value;	
  		var dimension=vmf.dim.value;
 		
-		var scrollBarOffset=0;
-		var marginOffset=50;  		    	  
-		var width,height;
 		if(dimension=="auto")
 		{
 
+			var scrollBarOffset=0;
+			var marginOffset=50;  		    	  
+			var width,height;
 			if (navigator.appName=="Netscape") {
 				  scrollBarOffset=16;
 			}
@@ -91,7 +88,7 @@
 			}
 			dimension=width+"x"+height;
 		}
-		vmf.action="Map.map?dimension="+dimension;				
+		vmf.dimension.value=dimension;
     	vmf.submit();
 	}
 </script>
@@ -100,7 +97,8 @@
   <div class="TwoColLeft">
       <h3>Mapping</h3>    
     <div class="boxWrapper">
-          <form method="POST" id="viewMapForm">
+          <form method="POST" id="viewMapForm" action="Map.map">
+            <input name="dimension" type="hidden"/>
             <p align="right">View "fullscreen":
             <select name="fullscreen">
                   <option value="true">Yes</option>
