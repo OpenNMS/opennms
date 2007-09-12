@@ -265,6 +265,30 @@ opennms.home = ${opennms.home}
               <value>${mock.rundbtests}</value>
             </property>
             <property>
+              <name>mock.leaveDatabase</name>
+              <value>${mock.leaveDatabase}</value>
+            </property>
+            <property>
+              <name>mock.leaveDatabaseOnFailure</name>
+              <value>${mock.leaveDatabaseOnFailure}</value>
+            </property>
+            <property>
+              <name>mock.db.driver</name>
+              <value>${mock.db.driver}</value>
+            </property>
+            <property>
+              <name>mock.db.url</name>
+              <value>${mock.db.url}</value>
+            </property>
+            <property>
+              <name>mock.db.adminUser</name>
+              <value>${mock.db.adminUser}</value>
+            </property>
+            <property>
+              <name>mock.db.adminPassword</name>
+              <value>${mock.db.adminPassword}</value>
+            </property>
+            <property>
               <name>mock.runSnmpTests</name>
               <value>${mock.runSnmpTests}</value>
             </property>
@@ -448,6 +472,12 @@ opennms.home = ${opennms.home}
     <mock.logLevel>WARN</mock.logLevel>
     <mock.debug>false</mock.debug>
     <mock.rundbtests>true</mock.rundbtests>
+    <mock.leaveDatabase>false</mock.leaveDatabase>
+    <mock.leaveDatabaseOnFailure>false</mock.leaveDatabaseOnFailure>
+    <mock.db.driver>org.postgresql.Driver</mock.db.driver>
+    <mock.db.url>jdbc:postgresql://localhost:5432/</mock.db.url>
+    <mock.db.adminUser>postgres</mock.db.adminUser>
+    <mock.db.adminPassword></mock.db.adminPassword>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <install.version>${project.version}</install.version>
