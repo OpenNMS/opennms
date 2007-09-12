@@ -41,15 +41,6 @@ function log(message) {
 // example with minimum dimensions
 var myCropper;
 
-var StartEpoch = 0;
-var EndEpoch = 0;
-
-var JRobinLeft = 74;
-var JRobinRight = 15;
-
-var RRDLeft  = 74;
-var RRDRight = 15;
-
 function changeRRDImage(coords,dimensions) {
 
     var SelectLeft = Math.min(coords.x1,coords.x2);
@@ -58,10 +49,10 @@ function changeRRDImage(coords,dimensions) {
     if (SelectLeft == SelectRight)
          return; // abort if nothing is selected.
 
-    var left  = RRDLeft;        // difference between left border of RRD image and content
-    var right = RRDRight;        // difference between right border of RRD image and content
-    var RRDImgWidth  = $('zoom').getDimensions().width;       // Width of the Smokeping RRD Graphik
-    var RRDImgUsable = RRDImgWidth - left - right;  
+    var left  = zoomGraphLeftOffset;
+    var right = zoomGraphRightOffset; // the right offset is relative to the right-side
+    var RRDImgWidth  = $('zoom').getDimensions().width;
+    var RRDImgUsable = RRDImgWidth - left + right;  
     var form = $('range_form');
 
     var myURLObj = new urlObj(document.URL); 
@@ -71,12 +62,12 @@ function changeRRDImage(coords,dimensions) {
 	if (SelectLeft < left) {
 		SelectLeft = left;
 	}
-	if (SelectRight > (RRDImgWidth - right)) {
-		SelectRight = (RRDImgWidth - right);
+	if (SelectRight > (RRDImgWidth + right)) {
+		SelectRight = (RRDImgWidth + right);
 	}
     
-	StartEpoch = graphStart;
-	EndEpoch = graphEnd;
+	StartEpoch = zoomGraphStart;
+	EndEpoch = zoomGraphEnd;
 
     var DivEpoch = EndEpoch - StartEpoch; 
 

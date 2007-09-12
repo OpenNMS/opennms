@@ -107,7 +107,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         }
         
         graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
-        graphResults.setGraphRightOffset(m_rrdDao.setGraphRightOffset());
+        graphResults.setGraphLeftOffset(m_rrdDao.getGraphLeftOffset());
+        graphResults.setGraphRightOffset(m_rrdDao.getGraphRightOffset());
         
         return graphResults;
     }

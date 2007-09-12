@@ -442,9 +442,13 @@ public class JniRrdStrategy implements RrdStrategy {
         return ThreadCategory.getInstance(getClass());
     }
 
-    // These offsets work perfectly for dj@ with rrdtool 1.0.49 and Firefox
+    // These offsets work perfectly for ranger@ with rrdtool 1.2.23 and Firefox
+    public int getGraphLeftOffset() {
+        return 65;
+    }
+    
     public int getGraphRightOffset() {
-        return -15;
+        return -30;
     }
 
     public int getGraphTopOffsetWithText() {

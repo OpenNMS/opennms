@@ -238,6 +238,15 @@ public interface RrdStrategy {
     
     
     /**
+     * Returns the number of pixels that the leftt-hand side of the graph is
+     * offset from the left side of the created image.  The offset should
+     * always be positive.
+     *  
+     * @return offset in pixels.  Should always be positive.
+     */
+    public int getGraphLeftOffset();
+    
+    /**
      * Returns the number of pixels that the right-hand side of the graph is
      * offset from the right side of the created image.  The offset should
      * always be negative.
