@@ -77,6 +77,7 @@ public class GraphResults {
         new LinkedList<GraphResultSet>();
     
     private int m_graphTopOffsetWithText;
+    private int m_graphLeftOffset;
     private int m_graphRightOffset;
     
     // FIXME: this is very US-centric; can we have it use the system locale?
@@ -228,6 +229,15 @@ public class GraphResults {
         }
     }
 
+    public int getGraphLeftOffset() {
+        return m_graphLeftOffset;
+    }
+
+    public void setGraphLeftOffset(int graphLeftOffset) {
+        m_graphLeftOffset = graphLeftOffset;
+        
+    }
+    
     public int getGraphRightOffset() {
         return m_graphRightOffset;
     }
@@ -243,4 +253,5 @@ public class GraphResults {
     public void setGraphTopOffsetWithText(int graphTopOffsetWithText) {
         m_graphTopOffsetWithText = graphTopOffsetWithText;
     }
+
 }

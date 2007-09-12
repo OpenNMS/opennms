@@ -171,9 +171,16 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     }
 
     /**
-     * @see org.opennms.netmgt.dao.RrdDao#setGraphRightOffset()
+     * @see org.opennms.netmgt.dao.RrdDao#getGraphLeftOffset()
      */
-    public int setGraphRightOffset() {
+    public int getGraphLeftOffset() {
+        return m_rrdStrategy.getGraphLeftOffset();
+    }
+
+    /**
+     * @see org.opennms.netmgt.dao.RrdDao#getGraphRightOffset()
+     */
+    public int getGraphRightOffset() {
         return m_rrdStrategy.getGraphRightOffset();
     }
 
