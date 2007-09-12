@@ -61,24 +61,6 @@
   <c:param name="breadcrumb" value="Results" />
 </c:import>
 
-<c:set var="topOffset">-22</c:set>
-<c:set var="rightOffset">0</c:set>
-
-<c:if test="${fn:contains(header['user-agent'], 'MSIE')}">
-  <c:set var="topOffset">-25</c:set>
-  <c:set var="rightOffset">0</c:set>
-</c:if>
-
-<c:if test="${fn:contains(header['user-agent'], 'Safari')}">
-  <c:set var="topOffset">-12</c:set>
-  <c:set var="rightOffset">0</c:set>
-</c:if>
-
-<script type="text/javascript">
-  var cZoomBoxTopOffsetWText = ${results.graphTopOffsetWithText} + ${topOffset};
-  var cZoomBoxRightOffset = ${results.graphRightOffset} + ${rightOffset};
-</script>
-
 <div id="graph-results">
 
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
@@ -216,8 +198,10 @@
       </c:url>
 
       <script type="text/javascript">
-        var graphStart = ${results.start.time};
-        var graphEnd   = ${results.end.time};
+        var zoomGraphLeftOffset  = ${results.graphLeftOffset};
+        var zoomGraphRightOffset = ${results.graphRightOffset};
+        var zoomGraphStart       = ${results.start.time};
+        var zoomGraphEnd         = ${results.end.time};
       </script>
       
       <div align="center">

@@ -101,6 +101,10 @@ public class NullRrdStrategy implements RrdStrategy {
 			throws Exception {
 	}
 
+    public int getGraphLeftOffset() {
+        return 0;
+    }
+
     public int getGraphRightOffset() {
         return 0;
     }
