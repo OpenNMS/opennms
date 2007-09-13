@@ -600,7 +600,8 @@ public final class SnmpThresholder implements ServiceThresholder {
         String dsLabelValue = null;
         
         try {
-            dsLabelValue = ResourceTypeUtils.getStringProperty(directory, threshold.getDatasourceLabel());
+            String key = threshold.getDatasourceLabel();
+            dsLabelValue = (key == null ? null : ResourceTypeUtils.getStringProperty(directory, key));
         } catch (DataAccessException e) {
             if (log().isDebugEnabled()) {
                 log().debug ("getDataSourceLabel: I/O exception when looking for strings.properties file for node id: " + snmpIface.getNodeId() + " looking here: " + directory + ": " + e, e);
