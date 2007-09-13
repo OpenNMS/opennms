@@ -31,7 +31,6 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         Properties props = PropsMockSnmpMOLoaderImpl.loadProperties(moFile);
         
         m_vars = new TreeMap<OID, Object>();
-        System.err.println(new Date()+": Begin adding properties to tree Map");
 
         for(Entry<Object, Object> e : props.entrySet()) {
             String key = (String)e.getKey();
@@ -39,7 +38,6 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
             m_vars.put(new OID(key), value);
         }
         
-        System.err.println(new Date()+": End adding properties to tree Map");
         
         m_scope = new DefaultMOScope(
                     m_vars.firstKey(),
