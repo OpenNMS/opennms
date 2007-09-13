@@ -45,35 +45,6 @@
 
 			</sequence>
 
-			<attribute name="initial_sleep_time" type="long"
-				use="required">
-				<annotation>
-					<documentation>
-						The initial sleep time in msec before starting
-						Snmp Collection.
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="snmp_poll_interval" type="long"
-				use="required">
-				<annotation>
-					<documentation>
-						Snmp Poll Time interval in msec.
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="discovery_link_interval" type="long"
-				use="required">
-				<annotation>
-					<documentation>
-						Time interval in msec from last snmp collection
-						and link discovery.
-					</documentation>
-				</annotation>
-			</attribute>
-
 			<attribute name="threads" type="int" use="required">
 				<annotation>
 					<documentation>
@@ -83,13 +54,54 @@
 				</annotation>
 			</attribute>
 
+			<attribute name="initial_sleep_time" type="long"
+				use="required">
+				<annotation>
+					<documentation>
+						The initial sleep time in mill seconds before starting
+						Snmp Collection.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="snmp_poll_interval" type="long"
+				use="required">
+				<annotation>
+					<documentation>
+						Snmp Poll Time interval in mill seconds.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery_link_interval" type="long"
+				use="required">
+				<annotation>
+					<documentation>
+						Time interval in mill seconds from last snmp collection
+						and link discovery.
+					</documentation>
+				</annotation>
+			</attribute>
+
 			<attribute name="auto-discovery" type="boolean"
 				use="required">
 				<annotation>
 					<documentation>
-						Whether ip addresses from devices unknown to
-						OpenNMS should generate newSuspect events.
+						Whether Linkd should generate newSuspect events
+						for ip addresses from devices unknown to OpenNMS.
 						This flags overwrite auto-discovery package flags.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="enable-discovery-download" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether DiscoveryLink should try to get 
+						specific snmp bridge info.
+						Should be enabled only in very complex network
+						where snmpCollection often fails.   
 					</documentation>
 				</annotation>
 			</attribute>
@@ -98,45 +110,13 @@
 				use="required">
 				<annotation>
 					<documentation>
-						Whether Linkd has to find Vlans on devices to
+						Whether SnmpCollection has to find Vlans on devices to
 						performs snmp data (Bridge) collection .
 					</documentation>
 				</annotation>
 			</attribute>
 
-			<attribute name="discovery-using-routes" type="boolean"
-				use="required">
-				<annotation>
-					<documentation>
-						Whether Linkd has to find links on devices using
-						ip routes.
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="discovery-using-bridge" type="boolean"
-				use="required">
-				<annotation>
-					<documentation>
-						Whether Linkd has to find links on devices using
-						bridge info.
-					</documentation>
-				</annotation>
-			</attribute>
-
-
-			<attribute name="download-routes-info" type="boolean"
-				use="required">
-				<annotation>
-					<documentation>
-						Whether Linkd has to download ip routes on
-						devices and save to database also if
-						discovery-using-routes is false.
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="discovery-using-cdp" type="boolean"
+			<attribute name="use-cdp-discovery" type="boolean"
 				use="required">
 				<annotation>
 					<documentation>
@@ -146,26 +126,51 @@
 				</annotation>
 			</attribute>
 
-			<attribute name="download-stp-node" type="boolean"
+			<attribute name="use-ip-route-discovery" type="boolean"
 				use="required">
 				<annotation>
 					<documentation>
-						Whether Linkd has to download Bridge Spanning
-						Tree informations on devices and save to
-						database table stpnode also if
-						discovery-using-bridge is false.
+						Whether DiscoveryLink has to find links on devices using
+						ip route tables.
 					</documentation>
 				</annotation>
 			</attribute>
 
-			<attribute name="download-stp-table" type="boolean"
+			<attribute name="use-bridge-discovery" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether DiscoveryLink has to find links on devices using
+						bridge info.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="save-route-table" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has save to database ip route tables
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="save-stp-node-table" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has save to database table stpnode.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="save-stp-interface-table" type="boolean"
 				use="required">
 				<annotation>
 					<documentation>
 						Whether Linkd has to download Spanning Tree
 						table on devices and save to database table
-						stpinterface also if discovery-using-bridge is
-						false.
+						stpinterface.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -181,7 +186,7 @@
 					maxOccurs="unbounded">
 					<annotation>
 						<documentation>
-							Identifies right class to get Vlans from
+							Identifies the classes to get Vlans from
 							specific vendor devices sysoids.
 						</documentation>
 					</annotation>
@@ -257,9 +262,6 @@
 		</complexType>
 	</element>
 
-	<!--- a range of addresses to be polled - if the starting address is greater than
-		the ending address, they are simply swapped
-	-->
 	<element name="include-range">
 		<complexType>
 	<attribute name="begin" type="string" use="required">
@@ -297,8 +299,8 @@
 	<element name="package">
 		<annotation>
 			<documentation>
-				Package encapsulating addresses, services to be polled
-				for these addresses, etc..
+				Package encapsulating addresses to performs the Discovery
+				of Links among them.
 			</documentation>
 		</annotation>
 
@@ -368,10 +370,11 @@
 					</documentation>
 				</annotation>
 			</attribute>
+
 			<attribute name="snmp_poll_interval" type="long">
 				<annotation>
 					<documentation>
-						Snmp Poll Time interval in msec.
+						Snmp Poll Time interval in mill seconds.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -379,7 +382,7 @@
 			<attribute name="discovery_link_interval" type="long">
 				<annotation>
 					<documentation>
-						Time interval in msec from last snmp collection
+						Time interval in mill seconds from last snmp collection
 						and link discovery.
 					</documentation>
 				</annotation>
@@ -388,9 +391,20 @@
 			<attribute name="auto-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether ip addresses from devices unknown to
-						OpenNMS should generate newSuspect events.
-						This flad did not override general flag!
+						Whether Linkd should generate newSuspect events
+						for ip addresses from devices unknown to OpenNMS.
+						This flags overwrite auto-discovery package flags.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="enable-discovery-download" type="boolean">
+				<annotation>
+					<documentation>
+						Whether DiscoveryLink should try to get 
+						specific snmp bridge info.
+						Should be enabled only in very complex network
+						where snmpCollection often fails.   
 					</documentation>
 				</annotation>
 			</attribute>
@@ -398,41 +412,13 @@
 			<attribute name="enable-vlan-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether Linkd has to find Vlans on devices to
+						Whether SnmpCollection has to find Vlans on devices to
 						performs snmp data (Bridge) collection .
 					</documentation>
 				</annotation>
 			</attribute>
 
-			<attribute name="discovery-using-routes" type="boolean">
-				<annotation>
-					<documentation>
-						Whether Linkd has to find links on devices using
-						ip routes.
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="discovery-using-bridge" type="boolean">
-				<annotation>
-					<documentation>
-						Whether Linkd has to find links on devices using
-						bridge info.
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="download-routes-info" type="boolean">
-				<annotation>
-					<documentation>
-						Whether Linkd has to download ip routes on
-						devices and save to database also if
-						discovery-using-routes is false.
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="discovery-using-cdp" type="boolean">
+			<attribute name="use-cdp-discovery" type="boolean">
 				<annotation>
 					<documentation>
 						Whether Linkd has to find links on devices using
@@ -441,34 +427,57 @@
 				</annotation>
 			</attribute>
 
-			<attribute name="download-stp-node" type="boolean">
+			<attribute name="use-ip-route-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether Linkd has to download Bridge Spanning
-						Tree informations on devices and save to
-						database table stpnode also if
-						discovery-using-bridge is false.
+						Whether DiscoveryLink has to find links on devices using
+						ip route tables.
 					</documentation>
 				</annotation>
 			</attribute>
 
-			<attribute name="download-stp-table" type="boolean">
+			<attribute name="use-bridge-discovery" type="boolean">
+				<annotation>
+					<documentation>
+						Whether DiscoveryLink has to find links on devices using
+						bridge info.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="save-route-table" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has save to database ip route tables
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="save-stp-node-table" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has save to database table stpnode.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="save-stp-interface-table" type="boolean">
 				<annotation>
 					<documentation>
 						Whether Linkd has to download Spanning Tree
 						table on devices and save to database table
-						stpinterface also if discovery-using-bridge is
-						false.
+						stpinterface.
 					</documentation>
 				</annotation>
 			</attribute>
+			
 		</complexType>
 	</element>
 
 	<element name="filter">
 		<annotation>
 			<documentation>
-				A rule which adresses belonging to this package must
+				A rule which addresses belonging to this package must
 				pass. This package is applied only to addresses that
 				pass this filter
 			</documentation>

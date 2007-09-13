@@ -640,35 +640,37 @@ public class DbEventWriter implements QueryManager {
 				int routeproto = ent.getIpRouteProto();
 
 				// always save info to DB
-				DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry
-						.get(dbConn, node.getNodeId(), routedest
-								.getHostAddress());
-				if (iprouteInterfaceEntry == null) {
-					// Create a new entry
-					iprouteInterfaceEntry = DbIpRouteInterfaceEntry.create(node
-							.getNodeId(), routedest.getHostAddress());
+				if (snmpcoll.getSaveIpRouteTable()) {
+					DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry
+							.get(dbConn, node.getNodeId(), routedest
+									.getHostAddress());
+					if (iprouteInterfaceEntry == null) {
+						// Create a new entry
+						iprouteInterfaceEntry = DbIpRouteInterfaceEntry.create(node
+								.getNodeId(), routedest.getHostAddress());
+					}
+					// update object
+					iprouteInterfaceEntry.updateRouteMask(routemask
+							.getHostAddress());
+					iprouteInterfaceEntry.updateRouteNextHop(nexthop
+							.getHostAddress());
+					iprouteInterfaceEntry.updateIfIndex(ifindex);
+	
+					// okay to autobox these since were checking for null
+					iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
+					iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
+					iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
+					iprouteInterfaceEntry.updateRouteMetric4(routemetric4);
+					iprouteInterfaceEntry.updateRouteMetric5(routemetric5);
+					iprouteInterfaceEntry.updateRouteType(routetype);
+					iprouteInterfaceEntry.updateRouteProto(routeproto);
+					iprouteInterfaceEntry
+							.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
+					iprouteInterfaceEntry.set_lastpolltime(now);
+	
+					// store object in database
+					iprouteInterfaceEntry.store(dbConn);
 				}
-				// update object
-				iprouteInterfaceEntry.updateRouteMask(routemask
-						.getHostAddress());
-				iprouteInterfaceEntry.updateRouteNextHop(nexthop
-						.getHostAddress());
-				iprouteInterfaceEntry.updateIfIndex(ifindex);
-
-				// okay to autobox these since were checking for null
-				iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
-				iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
-				iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
-				iprouteInterfaceEntry.updateRouteMetric4(routemetric4);
-				iprouteInterfaceEntry.updateRouteMetric5(routemetric5);
-				iprouteInterfaceEntry.updateRouteType(routetype);
-				iprouteInterfaceEntry.updateRouteProto(routeproto);
-				iprouteInterfaceEntry
-						.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
-				iprouteInterfaceEntry.set_lastpolltime(now);
-
-				// store object in database
-				iprouteInterfaceEntry.store(dbConn);
 			}
 			node.setRouteInterfaces(routeInterfaces);
 		}
@@ -768,6 +770,8 @@ public class DbEventWriter implements QueryManager {
 				Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl
 						.getDot1dBase();
 
+				DbStpNodeEntry dbStpNodeEntry = null;
+				
 				String baseBridgeAddress = dod1db.getBridgeAddress();
 				if (baseBridgeAddress == null
 						|| baseBridgeAddress == "000000000000") {
@@ -780,20 +784,21 @@ public class DbEventWriter implements QueryManager {
 
 					int bridgetype = dod1db.getBridgeType();
 
-					DbStpNodeEntry dbStpNodeEntry = DbStpNodeEntry.get(dbConn,
-							node.getNodeId(), vlanid);
-					if (dbStpNodeEntry == null) {
-						// Create a new entry
-						dbStpNodeEntry = DbStpNodeEntry.create(
+					if (snmpcoll.getSaveStpNodeTable()) {
+						dbStpNodeEntry = DbStpNodeEntry.get(dbConn,
 								node.getNodeId(), vlanid);
+						if (dbStpNodeEntry == null) {
+							// Create a new entry
+							dbStpNodeEntry = DbStpNodeEntry.create(
+									node.getNodeId(), vlanid);
+						}
+						// update object
+	
+						dbStpNodeEntry.updateBaseBridgeAddress(baseBridgeAddress);
+						dbStpNodeEntry.updateBaseNumPorts(basenumports);
+						dbStpNodeEntry.updateBaseType(bridgetype);
+						dbStpNodeEntry.updateBaseVlanName(vlanname);
 					}
-					// update object
-
-					dbStpNodeEntry.updateBaseBridgeAddress(baseBridgeAddress);
-					dbStpNodeEntry.updateBaseNumPorts(basenumports);
-					dbStpNodeEntry.updateBaseType(bridgetype);
-					dbStpNodeEntry.updateBaseVlanName(vlanname);
-
 					if (snmpVlanColl.hasDot1dStp()) {
 						if (log().isDebugEnabled())
 							log()
@@ -822,18 +827,22 @@ public class DbEventWriter implements QueryManager {
 							node.setVlanStpRoot(vlanindex, stpDesignatedRoot);
 						}
 
-						dbStpNodeEntry
-								.updateStpProtocolSpecification(protospec);
-						dbStpNodeEntry.updateStpPriority(stppriority);
-						dbStpNodeEntry
-								.updateStpDesignatedRoot(stpDesignatedRoot);
-						dbStpNodeEntry.updateStpRootCost(stprootcost);
-						dbStpNodeEntry.updateStpRootPort(stprootport);
+						if (snmpcoll.getSaveStpNodeTable()) {
+							dbStpNodeEntry
+									.updateStpProtocolSpecification(protospec);
+							dbStpNodeEntry.updateStpPriority(stppriority);
+							dbStpNodeEntry
+									.updateStpDesignatedRoot(stpDesignatedRoot);
+							dbStpNodeEntry.updateStpRootCost(stprootcost);
+							dbStpNodeEntry.updateStpRootPort(stprootport);
+						}
 					}
 					// store object in database
-					dbStpNodeEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
-					dbStpNodeEntry.set_lastpolltime(now);
-					dbStpNodeEntry.store(dbConn);
+					if (snmpcoll.getSaveStpNodeTable()) {
+						dbStpNodeEntry.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+						dbStpNodeEntry.set_lastpolltime(now);
+						dbStpNodeEntry.store(dbConn);
+					}
 
 					if (snmpVlanColl.hasDot1dBasePortTable()) {
 						Iterator sub_ite = snmpVlanColl.getDot1dBasePortTable()
@@ -859,20 +868,23 @@ public class DbEventWriter implements QueryManager {
 
 							node.setIfIndexBridgePort(ifindex, baseport);
 
-							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
-									.get(dbConn, node.getNodeId(), baseport,
-											vlanid);
-							if (dbStpIntEntry == null) {
-								// Create a new entry
-								dbStpIntEntry = DbStpInterfaceEntry.create(node
-										.getNodeId(), baseport, vlanid);
-							}
+							if (snmpcoll.getSaveStpInterfaceTable()) {
 
-							dbStpIntEntry.updateIfIndex(ifindex);
-							dbStpIntEntry
-									.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
-							dbStpIntEntry.set_lastpolltime(now);
-							dbStpIntEntry.store(dbConn);
+								DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
+										.get(dbConn, node.getNodeId(), baseport,
+												vlanid);
+								if (dbStpIntEntry == null) {
+									// Create a new entry
+									dbStpIntEntry = DbStpInterfaceEntry.create(node
+											.getNodeId(), baseport, vlanid);
+								}
+	
+								dbStpIntEntry.updateIfIndex(ifindex);
+								dbStpIntEntry
+										.updateStatus(DbStpNodeEntry.STATUS_ACTIVE);
+								dbStpIntEntry.set_lastpolltime(now);
+								dbStpIntEntry.store(dbConn);
+							}
 						}
 					}
 
@@ -886,6 +898,9 @@ public class DbEventWriter implements QueryManager {
 						while (sub_ite.hasNext()) {
 							Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
 									.next();
+							
+							DbStpInterfaceEntry dbStpIntEntry =null;
+							
 							int stpport = dot1dstpptentry.getDot1dStpPort();
 
 							if (stpport == -1) {
@@ -895,57 +910,62 @@ public class DbEventWriter implements QueryManager {
 								continue;
 							}
 
-							DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
+							if (snmpcoll.getSaveStpInterfaceTable()) {
+
+								dbStpIntEntry = DbStpInterfaceEntry
 									.get(dbConn, node.getNodeId(), stpport,
 											vlanid);
-							if (dbStpIntEntry == null) {
-								// Cannot create the object becouse must exists
-								// the dot1dbase
-								// object!!!!!
+								if (dbStpIntEntry == null) {
+									// Cannot create the object becouse must exists
+									// the dot1dbase
+									// object!!!!!
+									log()
+											.warn(
+													"store: StpInterface not found in database when storing STP info"
+															+ " for bridge node with nodeid "
+															+ node.getNodeId()
+															+ " bridgeport number "
+															+ stpport
+															+ " and vlan index "
+															+ vlanindex
+															+ " skipping.");
+								}
+							}
+
+
+							String stpPortDesignatedBridge = dot1dstpptentry
+									.getDot1dStpPortDesignatedBridge();
+							String stpPortDesignatedPort = dot1dstpptentry
+									.getDot1dStpPortDesignatedPort();
+
+							if (stpPortDesignatedBridge == null
+									|| stpPortDesignatedBridge
+											.equals("0000000000000000")) {
 								log()
 										.warn(
-												"store: StpInterface not found in database when storing STP info"
-														+ " for bridge node with nodeid "
-														+ node.getNodeId()
-														+ " bridgeport number "
-														+ stpport
-														+ " and vlan index "
-														+ vlanindex
-														+ " skipping.");
+												"store: "
+														+ stpPortDesignatedBridge
+														+ " designated bridge is invalid not adding to discoveryLink");
+								stpPortDesignatedBridge = "0000000000000000";
+							} else if (stpPortDesignatedPort == null
+									|| stpPortDesignatedPort.equals("0000")) {
+								log()
+										.warn(
+												"store: "
+														+ stpPortDesignatedPort
+														+ " designated port is invalid not adding to discoveryLink");
+								stpPortDesignatedPort = "0000";
 							} else {
+								BridgeStpInterface stpIface = new BridgeStpInterface(
+										stpport, vlanindex);
+								stpIface
+										.setStpPortDesignatedBridge(stpPortDesignatedBridge);
+								stpIface
+										.setStpPortDesignatedPort(stpPortDesignatedPort);
+								node.addStpInterface(stpIface);
+							}
 
-								String stpPortDesignatedBridge = dot1dstpptentry
-										.getDot1dStpPortDesignatedBridge();
-								String stpPortDesignatedPort = dot1dstpptentry
-										.getDot1dStpPortDesignatedPort();
-
-								if (stpPortDesignatedBridge == null
-										|| stpPortDesignatedBridge
-												.equals("0000000000000000")) {
-									log()
-											.warn(
-													"store: "
-															+ stpPortDesignatedBridge
-															+ " designated bridge is invalid not adding to discoveryLink");
-									stpPortDesignatedBridge = "0000000000000000";
-								} else if (stpPortDesignatedPort == null
-										|| stpPortDesignatedPort.equals("0000")) {
-									log()
-											.warn(
-													"store: "
-															+ stpPortDesignatedPort
-															+ " designated port is invalid not adding to discoveryLink");
-									stpPortDesignatedPort = "0000";
-								} else {
-									BridgeStpInterface stpIface = new BridgeStpInterface(
-											stpport, vlanindex);
-									stpIface
-											.setStpPortDesignatedBridge(stpPortDesignatedBridge);
-									stpIface
-											.setStpPortDesignatedPort(stpPortDesignatedPort);
-									node.addStpInterface(stpIface);
-								}
-
+							if (snmpcoll.getSaveStpInterfaceTable()) {
 								dbStpIntEntry
 										.updateStpPortState(dot1dstpptentry
 												.getDot1dStpPortState());
