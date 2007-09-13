@@ -42,9 +42,11 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -460,7 +462,48 @@ public class JniRrdStrategy implements RrdStrategy {
     }
     
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
-        throw new UnsupportedOperationException("method not yet implemented");
+        // Creating Temp PNG File
+        File pngFile = File.createTempFile("opennms.rrdtool.", ".png");
+        command = command.replaceFirst("graph - ", "graph " + pngFile.getAbsolutePath() + " ");
+
+        int width;
+        int height;
+        String[] printLines;
+        InputStream pngStream;
+
+        try {
+            // Executing RRD Command
+            InputStream is = createGraph(command, workDir);
+
+            // Processing Command Output
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String s[] = reader.readLine().split("x");
+            width = Integer.parseInt(s[0]);
+            height = Integer.parseInt(s[1]);
+            String line = null;
+            List<String> printLinesList = new ArrayList<String>();
+            while ((line = reader.readLine()) != null)
+                printLinesList.add(line);
+            printLines = new String[printLinesList.size()];
+            printLinesList.toArray(printLines);
+
+            // Creating PNG InputStream
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(pngFile));
+            ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
+            StreamUtils.streamToStream(in, tempOut);
+            in.close();
+            tempOut.close();
+            byte[] byteArray = tempOut.toByteArray();
+            pngStream = new ByteArrayInputStream(byteArray);
+        } catch (Exception e) {
+            throw new RrdException("Can't execute command " + command, e);
+        } finally {
+            pngFile.delete();
+        }
+
+        // Creating Graph Details
+        RrdGraphDetails details = new JniGraphDetails(width, height, printLines, pngStream);
+        return details;
     }
 
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
