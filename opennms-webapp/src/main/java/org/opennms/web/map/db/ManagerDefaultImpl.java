@@ -275,26 +275,26 @@ public class ManagerDefaultImpl implements Manager {
     	throw new MapNotFoundException();
     }
 
-    /**
+    /*
      * Start the session: only operations made in the block between start and
      * end session will be saved correctly.
      * 
      * @throws MapsException
      * @see endSession
-     */
+     
     public void startSession() throws MapsException {
             dbManager.startSession();
-    }
+    }*/
 
-    /**
+    /*
      * Close the block open by startSession() method.
      * 
      * @throws MapsException
      * @see startSession()
-     */
+     
     synchronized public void endSession() throws MapsException {
     		dbManager.endSession();
-    }
+    }*/
 
     /**
      * Create a new empty VMap and return it.
@@ -1110,7 +1110,7 @@ public class ManagerDefaultImpl implements Manager {
 		// get status, severity and availability: for each node, look for alternative data
 		// sources; if no source is found or if the data is not retrieved, use opennms. 
 		if (ve.isNode()) {
-			ve.setLabel(dbManager.getNodeLabel(ve.getId()));
+			//ve.setLabel(dbManager.getNodeLabel(ve.getId()));
 			//FIRST: get data from OpenNMS
 			if(deletedNodeids.contains(new Integer(ve.getId()))){
 				elementAvail = mapsPropertiesFactory.getUndefinedAvail().getMin();

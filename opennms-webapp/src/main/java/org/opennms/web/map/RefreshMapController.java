@@ -91,7 +91,7 @@ public class RefreshMapController implements Controller {
 		
 		
 		
-		if ((manager.isUserAdmin())) {
+		if ((manager.isAdminMode())) {
 			log.warn("Admin mode. It should be Refresh Mode.");
 		}					
 
