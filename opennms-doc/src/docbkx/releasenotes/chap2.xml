@@ -18,7 +18,7 @@
       <para><emphasis>Jetty used instead of Tomcat</emphasis>: OpenNMS now
       runs with its own servlet container using jetty. The default OpenNMS
       port has been moved from 8080 to 8980. Tomcat is not required but can
-      still be used if desired. </para>
+      still be used if desired.</para>
 
       <para><emphasis>StrafePing</emphasis>: Based on Tobi Oeticker's <ulink
       url="http://oss.oetiker.ch/smokeping/">SmokePing</ulink>, this new
@@ -30,6 +30,10 @@
       had issues with offsets. The zoom code from SmokePing was brought in to
       replace it. Now all the offsets work well except for Internet Explorer.
       This should be corrected for IE in the next release.</para>
+
+      <para><emphasis>Jira Plugin</emphasis>: Thanks to Johan, there is now a
+      Jira trouble ticket plugin to go with the one for <ulink
+      url="http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin">CentricCRM</ulink>.</para>
     </section>
 
     <section>
