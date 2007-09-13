@@ -10,6 +10,66 @@
   development that will happen this week.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.3.7</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para><emphasis>Jetty used instead of Tomcat</emphasis>: OpenNMS now
+      runs with its own servlet container using jetty. The default OpenNMS
+      port has been moved from 8080 to 8980. Tomcat is not required but can
+      still be used if desired. </para>
+
+      <para><emphasis>StrafePing</emphasis>: Based on Tobi Oeticker's <ulink
+      url="http://oss.oetiker.ch/smokeping/">SmokePing</ulink>, this new
+      monitor will report on ping latency in a nifty new graph. It will send
+      out 20 pings every five minutes by default. The monitor can be
+      configured to alert on any number of missed pings as well.</para>
+
+      <para><emphasis>New Zoom</emphasis>: The zoom code borrowed from Cacti
+      had issues with offsets. The zoom code from SmokePing was brought in to
+      replace it. Now all the offsets work well except for Internet Explorer.
+      This should be corrected for IE in the next release.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para><emphasis>Performance</emphasis>: Data collection performance has
+      been greatly improved. On one site OpenNMS was able to collect on 15
+      variables from 126,000 interfaces on 4467 devices in less than a minute
+      with 150 collection threads. Storing this information was a different
+      matter, since it really depends on the performance of the disk
+      subsystem. OpenNMS will queue the data to be written, so while no data
+      is lost it may take some time before a particular file to be updated. In
+      the past this resulted in OpenNMS being "behind" - i.e. the last update
+      shown on a graph could be several polling cycles old. Since, in the
+      above example, only a few of those 126K interfaces would be viewed at
+      any one time, new promotion code was added to the webUI that will update
+      a file with pending data before it is displayed, thus removing that
+      shortcoming. Also, with the removal of Tomcat as a requirement, the
+      whole application runs in one VM. This, along with some code changes,
+      will show a marked speed improvement in the webUI.</para>
+
+      <para>The complete list of bug fixes in this release can be found in
+      <ulink
+      url="http://bugzilla.opennms.org/showdependencytree.cgi?id=1918">bugzilla</ulink>.</para>
+    </section>
+
+    <section>
+      <title>New Install Methods</title>
+
+      <para>With the removal of the JNI code in release 1.3.6, this has
+      enabled the creation of yum and apt repositories for a number of
+      operating systems (including a nightly snapshot for the brave). There is
+      a <ulink
+      url="http://www.opennms.org/index.php/QuickStart">Quickstart</ulink>
+      page on the wiki describing these new methods for managaing OpenNMS
+      packages and upgrades.</para>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.3.6</title>
 
     <section>
