@@ -168,9 +168,6 @@ public class Linkd extends AbstractServiceDaemon {
 		// Schedule the snmp data collection on nodes
 		// and construct package2snmpcollection that contains nodes with snmpcollections
 		
-		if (log().isDebugEnabled())
-			log().debug("init: scheduling Ready Runnuble for active packages: " + activepackages.size());
-
 		Iterator<LinkableNode> ite = nodes.iterator();
 
 		while (ite.hasNext()) {
@@ -178,6 +175,9 @@ public class Linkd extends AbstractServiceDaemon {
 			//schedule discovery link on package where is not active 
 			scheduleCollectionForNode(ite.next());
 		}
+
+		if (log().isDebugEnabled())
+			log().debug("init: Scheduled Ready Runnable for active packages: " + activepackages.toString());
 
 		// initialize the ipaddrsentevents
 		newSuspenctEventsIpAddr = new ArrayList<String>();
@@ -481,32 +481,40 @@ public class Linkd extends AbstractServiceDaemon {
 	
 	/**
 	 * Send a newSuspect event for the interface
+	 * construct event with 'linkd' as source
 	 * 
-	 * @param trapInterface
+	 * @param ipInterface
 	 *            The interface for which the newSuspect event is to be
 	 *            generated
+	 * @param ipowner
+	 * 			  The host that hold this ipInterface information           
+	 * @pkgName
+	 * 		      The package Name of the ready runnable involved
 	 */
 	void sendNewSuspectEvent(String ipInterface,String ipowner, String pkgName) {
-		// construct event with 'linkd' as source
+		if (newSuspenctEventsIpAddr.contains(ipInterface)) {
+			return;
+		}
 
 		org.opennms.netmgt.config.linkd.Package pkg = m_linkdConfig.getPackage(pkgName);
 
-		if (m_linkdConfig.autoDiscovery() || (pkg.hasAutoDiscovery() && pkg.getAutoDiscovery() && m_linkdConfig.interfaceInPackage(ipInterface, pkg))) {
-			// first of all verify that ipaddress has been not sent
-			if (!newSuspenctEventsIpAddr.contains(ipInterface)) {
+		boolean autodiscovery = false;
+		if (pkg.hasAutoDiscovery() && m_linkdConfig.interfaceInPackage(ipInterface, pkg)) autodiscovery = pkg.getAutoDiscovery(); 
+		else autodiscovery = m_linkdConfig.autoDiscovery();
+		
+		if ( autodiscovery ) {
 				
-				Event event = new Event();
-				event.setSource("linkd");
-				event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-				event.setHost(ipowner);
-				event.setInterface(ipInterface);
-				event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+			Event event = new Event();
+			event.setSource("linkd");
+			event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+			event.setHost(ipowner);
+			event.setInterface(ipInterface);
+			event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 
-				// send the event to eventd
-				m_eventMgr.sendNow(event);
-				
-				newSuspenctEventsIpAddr.add(ipInterface);
-			}
+			// send the event to eventd
+			m_eventMgr.sendNow(event);
+			
+			newSuspenctEventsIpAddr.add(ipInterface);
 			
 		}
 	}
@@ -548,6 +556,7 @@ public class Linkd extends AbstractServiceDaemon {
 	}
 
 	private LinkableNode getNode(String ipaddr) {
+		
 		synchronized (nodes) {
 			Iterator<LinkableNode> ite = nodes.iterator();
 			while (ite.hasNext()) {
@@ -566,7 +575,7 @@ public class Linkd extends AbstractServiceDaemon {
 			Iterator<LinkableNode> ite = nodes.iterator();
 			while (ite.hasNext()) {
 				 LinkableNode curNode = ite.next();
-				if (node.getNodeId() == nodeid) node=curNode;
+				if (curNode.getNodeId() == nodeid) node=curNode;
 				else nodeses.add(curNode);
 			}
 			nodes = nodeses;

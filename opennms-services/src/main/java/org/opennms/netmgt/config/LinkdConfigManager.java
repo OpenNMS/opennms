@@ -171,23 +171,23 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return ipList;
     }
 
-	public boolean useRoutesDiscovery() {
+	public boolean useIpRouteDiscovery() {
 
 		boolean discoveryUsingRoutes = true;
 
-		if (m_config.hasDiscoveryUsingRoutes()) {
-			discoveryUsingRoutes = m_config.getDiscoveryUsingRoutes();
+		if (m_config.hasUseIpRouteDiscovery()) {
+			discoveryUsingRoutes = m_config.getUseIpRouteDiscovery();
 		}
 
 		return discoveryUsingRoutes;
 	}
 
-	public boolean downloadRoutes() {
+	public boolean saveRouteTable() {
 
 		boolean downloadRoutes = true;
 		
-		if (m_config.hasDownloadRoutesInfo()) {
-			downloadRoutes = m_config.getDownloadRoutesInfo();
+		if (m_config.hasSaveRouteTable()) {
+			downloadRoutes = m_config.getSaveRouteTable();
 		}
 		
 		return downloadRoutes;
@@ -197,8 +197,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
 		boolean discoveryUsingCdp = true;
 
-		if (m_config.hasDiscoveryUsingCdp()) {
-			discoveryUsingCdp = m_config.getDiscoveryUsingCdp();
+		if (m_config.hasUseCdpDiscovery()) {
+			discoveryUsingCdp = m_config.getUseCdpDiscovery();
 		}
 
 		return discoveryUsingCdp;
@@ -208,30 +208,37 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
 		boolean discoveryUsingBridge = true;
 
-		if (m_config.hasDiscoveryUsingBridge()) {
-			discoveryUsingBridge = m_config.getDiscoveryUsingBridge();
+		if (m_config.hasUseBridgeDiscovery()) {
+			discoveryUsingBridge = m_config.getUseBridgeDiscovery();
 		}
 
 		return discoveryUsingBridge;
 	}
 
-	public boolean downloadStpNode() {
+	public boolean saveStpNodeTable() {
 
 		boolean download = true;
 		
-		if (m_config.hasDownloadStpNode()) {
-			download = m_config.getDownloadStpNode();
+		if (m_config.hasSaveStpNodeTable()) {
+			download = m_config.getSaveStpNodeTable();
 		}
 		
 		return download;
 	}
-
-	public boolean downloadStpTable() {
+	
+	public boolean enableDiscoveryDownload() {
+		boolean enable=false;
+		if (m_config.hasEnableDiscoveryDownload()) 
+			enable = m_config.getEnableDiscoveryDownload();
+		return enable;
+	}	
+	
+	public boolean saveStpInterfaceTable() {
 
 		boolean download = true;
 		
-		if (m_config.hasDownloadStpTable()) {
-			download = m_config.getDownloadStpTable();
+		if (m_config.hasSaveStpInterfaceTable()) {
+			download = m_config.getSaveStpInterfaceTable();
 		}
 		
 		return download;
@@ -637,7 +644,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
     
     private SnmpCollection populateSnmpCollection(SnmpCollection coll, Package pkg,String sysoid) {
-   		coll.setPackageName(pkg.getName());
+   		
+    	coll.setPackageName(pkg.getName());
 		
    		coll.setInitialSleepTime(getInitialSleepTime());
     		
@@ -650,46 +658,50 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 				log().debug(
 							"populateSnmpCollection: found class to get Vlans: "
 									+ coll.getVlanClass());
-			} else if (!pkg.hasEnableVlanDiscovery() && enableVlanDiscovery() && hasClassName(sysoid)) {
+		} else if (!pkg.hasEnableVlanDiscovery() && enableVlanDiscovery() && hasClassName(sysoid)) {
    				coll.setVlanClass(getClassName(sysoid));
 				if (log().isDebugEnabled())
 					log().debug(
 							"populateSnmpCollection: found class to get Vlans: "
 									+ coll.getVlanClass());
-			} else {
+		} else {
 				if (log().isDebugEnabled())
 					log()
 							.debug(
 									"populateSnmpCollection: no class found to get Vlans or VlanDiscoveryDisabled for Package: " + pkg.getName());
-			}
-			if (pkg.hasDiscoveryUsingCdp()) coll.collectCdpTable(pkg.getDiscoveryUsingCdp());
-			else coll.collectCdpTable(useCdpDiscovery());
+		}
 			
-			boolean condition1 = false;
-			boolean condition2 = false;
+		if (pkg.hasUseCdpDiscovery()) coll.collectCdpTable(pkg.getUseCdpDiscovery());
+		else coll.collectCdpTable(useCdpDiscovery());
+		
+		boolean condition1 = false;
+		boolean condition2 = false;
 
-			if (pkg.hasDownloadRoutesInfo()) condition1 = pkg.getDownloadRoutesInfo();
-			else condition1 = downloadRoutes();
-			
-			if (pkg.getDiscoveryUsingRoutes()) condition2 = pkg.getDiscoveryUsingRoutes();
-			else condition2 = useRoutesDiscovery();
+		if (pkg.hasUseIpRouteDiscovery()) condition1 = pkg.getUseIpRouteDiscovery();
+		else condition1 = useIpRouteDiscovery();
+		
+		if (pkg.hasSaveRouteTable()) condition2 = pkg.getSaveRouteTable();
+		else condition2 = saveRouteTable();
 
-			coll.collectIpRouteTable(condition1 || condition2);
+		coll.SaveIpRouteTable(condition2);
+		coll.collectIpRouteTable(condition1 || condition2);
 
-			if (pkg.hasDiscoveryUsingBridge()) condition1 = pkg.getDiscoveryUsingBridge();
-			else condition1 = useBridgeDiscovery();
+		if (pkg.hasUseBridgeDiscovery()) condition1 = pkg.getUseBridgeDiscovery();
+		else condition1 = useBridgeDiscovery();
 
-			coll.collectBridgeForwardingTable(condition1);
+		coll.collectBridgeForwardingTable(condition1);
 
-			if (pkg.hasDownloadStpNode()) condition2 = pkg.getDownloadStpNode();
-			else condition2 = downloadStpNode();
+		if (pkg.hasSaveStpNodeTable()) condition2 = pkg.getSaveStpNodeTable();
+		else condition2 = saveStpNodeTable();
 
-			coll.collectStpNode(condition1 || condition2);
-			
-			if (pkg.hasDownloadStpTable()) condition2 = pkg.getDownloadStpTable();
-			else condition2 = downloadStpTable();
-			
-			coll.collectStpTable(condition1 || condition2);
+		coll.saveStpNodeTable(condition2);
+		coll.collectStpNode(condition1 || condition2);
+		
+		if (pkg.hasSaveStpInterfaceTable()) condition2 = pkg.getSaveStpInterfaceTable();
+		else condition2 = saveStpInterfaceTable();
+		
+		coll.saveStpInterfaceTable(condition2);
+		coll.collectStpTable(condition1 || condition2);
 
 		return coll;
     }
@@ -765,13 +777,14 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		
 		discoveryLink.setInitialSleepTime(getInitialSleepTime());
 		
-		if (pkg.hasDiscoveryUsingBridge()) discoveryLink.setDiscoveryUsingBridge(pkg.getDiscoveryUsingBridge());
+		if (pkg.hasUseBridgeDiscovery()) discoveryLink.setDiscoveryUsingBridge(pkg.getUseBridgeDiscovery());
 		else discoveryLink.setDiscoveryUsingBridge(useBridgeDiscovery());
-		if (pkg.hasDiscoveryUsingCdp()) discoveryLink.setDiscoveryUsingCdp(pkg.getDiscoveryUsingCdp());
+		if (pkg.hasUseCdpDiscovery()) discoveryLink.setDiscoveryUsingCdp(pkg.getUseCdpDiscovery());
 		else discoveryLink.setDiscoveryUsingCdp(useCdpDiscovery());
-		if (pkg.hasDiscoveryUsingRoutes()) discoveryLink.setDiscoveryUsingCdp(pkg.getDiscoveryUsingRoutes());
-		else discoveryLink.setDiscoveryUsingRoutes(useRoutesDiscovery());
-
+		if (pkg.hasUseIpRouteDiscovery()) discoveryLink.setDiscoveryUsingCdp(pkg.getUseIpRouteDiscovery());
+		else discoveryLink.setDiscoveryUsingRoutes(useIpRouteDiscovery());
+		if (pkg.hasEnableDiscoveryDownload()) discoveryLink.setEnableDownloadDiscovery(pkg.getEnableDiscoveryDownload());
+		else discoveryLink.setEnableDownloadDiscovery(enableDiscoveryDownload());
 		return discoveryLink;
     }
 }

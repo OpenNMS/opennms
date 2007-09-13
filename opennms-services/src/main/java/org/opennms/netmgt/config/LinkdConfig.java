@@ -114,17 +114,19 @@ public interface LinkdConfig {
     
     public int getThreads();
     
-    public boolean useRoutesDiscovery();
+    public boolean enableDiscoveryDownload();
     
-    public boolean downloadRoutes();
+    public boolean useIpRouteDiscovery();
+    
+    public boolean saveRouteTable();
     
 	public boolean useCdpDiscovery();
 
 	public boolean useBridgeDiscovery();
 	
-	public boolean downloadStpNode();
+	public boolean saveStpNodeTable();
 	
-	public boolean downloadStpTable();
+	public boolean saveStpInterfaceTable();
 	
 	public long getInitialSleepTime();
 	

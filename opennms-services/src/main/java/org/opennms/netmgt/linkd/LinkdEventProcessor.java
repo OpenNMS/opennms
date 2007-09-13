@@ -66,14 +66,6 @@ import org.opennms.netmgt.capsd.InsufficientInformationException;
 final class LinkdEventProcessor implements EventListener {
 
     /**
-     * 
-     * @return Returns the xmlrpc.
-     */
-    public static boolean isXmlRpcEnabled() {
-        return CapsdConfigFactory.getInstance().getXmlrpc().equals("true");
-    }
-
-    /**
      * local openNMS server name
      */
     private String m_localServer = null;
@@ -213,65 +205,6 @@ final class LinkdEventProcessor implements EventListener {
         getLinkd().wakeUpNodeCollection((int)event.getNodeid());
     }
 
-    /**
-     * Notify Event Error to XML RPC Service if enabled
-     * 
-     * @param event
-     * @param msg
-     * @param ex
-     */
-    private void notifyEventError(Event event, String msg, Exception ex) {
-        if (!isXmlRpcEnabled())
-            return;
-
-        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
-            int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), msg + ex.getMessage(), status, "OpenNMS.Capsd");
-        }
-    }
-
-    /**
-     * Notify Event Received to XML RPC Service if enabled
-     * 
-     * @param event
-     */
-    private void notifyEventReceived(Event event) {
-        if (!isXmlRpcEnabled())
-            return;
-
-        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-
-        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
-            StringBuffer message = new StringBuffer("Received event: ");
-            message.append(event.getUei());
-            message.append(" : ");
-            message.append(event);
-            int status = EventConstants.XMLRPC_NOTIFY_RECEIVED;
-            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), message.toString(), status, "OpenNMS.Capsd");
-        }
-    }
-
-    /**
-     * Notify Event Success to XML RPC Service if enabled
-     * 
-     * @param event
-     */
-    private void notifyEventSuccess(Event event) {
-        if (!isXmlRpcEnabled())
-            return;
-
-        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-
-        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
-            StringBuffer message = new StringBuffer("Completed processing event: ");
-            message.append(event.getUei());
-            message.append(" : ");
-            message.append(event);
-            int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), message.toString(), status, "OpenNMS.Capsd");
-        }
-    }
 
     /**
      * This method is invoked by the EventIpcManager when a new event is
@@ -289,45 +222,39 @@ final class LinkdEventProcessor implements EventListener {
         try {
         	int eventid = event.getDbid();
             String eventUei = event.getUei();
-            String eventService = event.getService();
             if (eventUei == null) {
                 return;
             }
 
             if (log.isInfoEnabled()) {
-                log.info("onEvent: Received event " + eventid + " UEI "+ eventUei 
-                		+ "; service " + eventService);
+                log.info("onEvent: Received event " + eventid + " UEI "+ eventUei);
             }
 
-            notifyEventReceived(event);
-
-            if (eventUei.equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI) && eventService.equals("SNMP")) {
-                if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleNodeGainedService for event " + eventid);
-                }
-                handleNodeGainedService(event);
-            } else if (event.getUei().equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)&& eventService.equals("SNMP")) {
-                if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleNodeLostService for event " + eventid);
-                }
-                handleNodeLostService(event);
-            } else if (event.getUei().equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)&& eventService.equals("SNMP")) {
-            	if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleRegainedService for event " + eventid);
-                }
-            	handleRegainedService(event);
-            } else if (eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
+            if (eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
             	if (log.isInfoEnabled()) {
                     log.info("onEvent: calling handleNodeDeleted for event " + eventid);
                 }
                 handleNodeDeleted(event);
+            } else if (event.getUei().equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)&& event.getService().equals("SNMP")) {
+                if (log.isInfoEnabled()) {
+                    log.info("onEvent: calling handleNodeLostService for event " + eventid);
+                }
+                handleNodeLostService(event);
+            } else if (event.getUei().equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)&& event.getService().equals("SNMP")) {
+            	if (log.isInfoEnabled()) {
+                    log.info("onEvent: calling handleRegainedService for event " + eventid);
+                }
+            	handleRegainedService(event);
+            } else if (eventUei.equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI) && event.getService().equals("SNMP")) {
+                if (log.isInfoEnabled()) {
+                    log.info("onEvent: calling handleNodeGainedService for event " + eventid);
+                }
+                handleNodeGainedService(event);
             } 
-            notifyEventSuccess(event);
         } catch (InsufficientInformationException ex) {
             log.info("onEvent: insufficient information in event, discarding it: " + ex.getMessage());
-            notifyEventError(event, "Invalid parameters: ", ex);
         } catch (Throwable t) {
-            log.error("onEvent: operation failed for event: " + event.getUei() + ", exception: " + t.getMessage());
+            log.error("onEvent: operation failed for event: " + event.getUei() + ", exception: " + t.getMessage(),t);
         }
     } // end onEvent()
     

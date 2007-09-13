@@ -104,7 +104,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 	// by main processes. This is used by addlinks method.
 	private Map<String,List<AtInterface>> macToAtinterface = new HashMap<String,List<AtInterface>>();
 	
-
+	private boolean enableDownloadDiscovery = false;
+	
 	private boolean discoveryUsingRoutes = true;
 	
 	private boolean discoveryUsingCdp = true;
@@ -173,9 +174,10 @@ public final class DiscoveryLink implements ReadyRunnable {
 			Collection<LinkableNode> all_snmplinknodes = Linkd.getInstance()
 					.getLinkableNodesOnPackage(getPackageName());
 
-			if (log().isDebugEnabled())
+			if (log().isDebugEnabled()) {
 				log().debug("run: LinkableNodes/package found: " + all_snmplinknodes.size() +"/" + getPackageName());
-			
+				log().debug("run: discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes: " + discoveryUsingBridge+"/" + discoveryUsingCdp +"/" + discoveryUsingRoutes);
+			}
 			Iterator<LinkableNode> ite = all_snmplinknodes.iterator();
 
 			while (ite.hasNext()) {
@@ -192,20 +194,30 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 				activenode.put(new Integer(curNodeId),curNode);
 
-				if (curNode.isBridgeNode && discoveryUsingBridge)
+				if (curNode.isBridgeNode && discoveryUsingBridge) {
 					bridgeNodes.put(new Integer(curNodeId), curNode);
-				if (curNode.hasCdpInterfaces() && discoveryUsingCdp)
+					
+				}
+				if (curNode.hasCdpInterfaces() && discoveryUsingCdp) {
 					cdpNodes.add(curNode);
-				if (curNode.hasRouteInterfaces() && discoveryUsingRoutes)
+				}
+				if (curNode.hasRouteInterfaces() && discoveryUsingRoutes) {
 					routerNodes.add(curNode);
+				}
+
 				if (curNode.hasAtInterfaces()) {
 					atNodes.add(curNode);
 				}
 			}
 
 			//now perform operation to complete
-			parseBridgeNodes();
-			parseAtNodes();
+			if (enableDownloadDiscovery) {
+				parseBridgeNodes();
+				parseAtNodes();
+			} else {
+				if (log().isInfoEnabled())
+					log().info("run: skipping download further snmp data");
+			}
 			
 			if (log().isDebugEnabled())
 				log()
@@ -1749,6 +1761,14 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 		}
 		return -1;
+	}
+
+	public boolean isEnableDownloadDiscovery() {
+		return enableDownloadDiscovery;
+	}
+
+	public void setEnableDownloadDiscovery(boolean enableDownloaddiscovery) {
+		this.enableDownloadDiscovery = enableDownloaddiscovery;
 	}
 
 }
