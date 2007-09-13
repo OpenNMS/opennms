@@ -127,9 +127,25 @@ public final class SnmpCollection implements ReadyRunnable {
 	private boolean m_collectStpNode = false;
 
 	/**
+	 * A boolean used to decide if save StpNode Table
+	 */
+	private boolean m_saveStpNodeTable = false;
+
+	/**
+	 * A boolean used to decide if save IpRouteTable
+	 */
+	private boolean m_saveIpRouteTable = false;
+
+	/**
+	 * A boolean used to decide if you save StpInterfaceTable
+	 */
+	private boolean m_saveStpInterfaceTable = false;
+
+	/**
 	 * A boolean used to decide if you can collect Stp Table
 	 */
 	private boolean m_collectStpTable = false;
+
 
 	/**
 	 * A boolean used to decide if you can collect Bridge Forwarding Table
@@ -744,7 +760,10 @@ public final class SnmpCollection implements ReadyRunnable {
 		+ " collectStpNode=" + getCollectStpNode()
 		+ " collectStpTable=" + getCollectStpTable()
 		+ " collectCdpTable=" + getCollectCdpTable()
-		+ " collectIpRouteTable=" + getCollectIpRouteTable();
+		+ " collectIpRouteTable=" + getCollectIpRouteTable()
+		+ " saveIpRouteTable=" + getSaveIpRouteTable()
+		+ " saveStpInterfaceTable=" + getSaveStpInterfaceTable()
+		+ " saveStpNodeTable=" + getSaveStpNodeTable();
 		
 	}
 
@@ -794,6 +813,30 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+
+	public boolean getSaveStpNodeTable() {
+		return m_saveStpNodeTable;
+	}
+
+	public void saveStpNodeTable(boolean stpNodeTable) {
+		m_saveStpNodeTable = stpNodeTable;
+	}
+
+	public boolean getSaveIpRouteTable() {
+		return m_saveIpRouteTable;
+	}
+
+	public void SaveIpRouteTable(boolean ipRouteTable) {
+		m_saveIpRouteTable = ipRouteTable;
+	}
+
+	public boolean getSaveStpInterfaceTable() {
+		return m_saveStpInterfaceTable;
+	}
+
+	public void saveStpInterfaceTable(boolean stpInterfaceTable) {
+		m_saveStpInterfaceTable = stpInterfaceTable;
 	}
 
 }
