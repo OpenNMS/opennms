@@ -302,7 +302,7 @@ final class ConvertToEvent {
         * node to match against nodeId.
          */
 
-        if (m.matches()) {
+        if ((m = pattern.matcher(message)).matches()) {
 
             log.debug("Regexp matched message: " + message);
             log.debug("Host: " + m.group(hostGroup));
@@ -335,10 +335,9 @@ final class ConvertToEvent {
                         ""));
 
                 if (nodeId != -1)
-                    event.setNodeid(nodeId);
-                // Clean up for further processing....
-                event.setInterface(myHost.replaceAll("/", ""));
-
+                  event.setNodeid(nodeId);
+                  // Clean up for further processing....
+                  event.setInterface(myHost.replaceAll("/", ""));
                 message = m.group(messageGroup);
                 log.debug("Regexp used to find node: " + event.getNodeid());
             }
@@ -351,10 +350,11 @@ final class ConvertToEvent {
         while (match.hasNext()) {
 
             uei = (UeiMatch) match.next();
-            if (message.contains(uei.getUei())) {
+            log.debug("Matching text of a Syslogd event to :" + uei.getMatch());
+            if (message.contains(uei.getMatch())) {
                 //We can pass a new UEI on this
-                log.debug("Changed the UEI of a Syslogd event to :" + uei.getMatch());
-                event.setUei(uei.getMatch());
+                log.debug("Changed the UEI of a Syslogd event to :" + uei.getUei());
+                event.setUei(uei.getUei());
 
             }
         }
