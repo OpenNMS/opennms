@@ -258,7 +258,7 @@
 		<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
 	</li -->	
         <li>
-		<a href="asset/detail.jsp?node=<%=nodeId%>">Asset Info</a>
+		<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
 	</li>
 <% if( telnetIp != null ) { %>
           <li>
