@@ -30,22 +30,22 @@ public abstract class Manager {
 		
 	}
 	
-	public abstract void finalize() throws MapsException;
+	//public abstract void finalize() throws MapsException;
 
-	/**
+	/*
 	 * All your operations on Maps must be preceeded from a startSession() call 
 	 * and termined by an endSession() call. 
 	 * @throws MapsException
 	 */
-	public abstract void startSession() throws MapsException;
+	//public abstract void startSession() throws MapsException;
 
-	public abstract void endSession() throws MapsException;
+	//public abstract void endSession() throws MapsException;
 
 	public boolean isInitialized() {
 		return initialized;
 	}
 
-	public abstract boolean isStartedSession() throws MapsException ;
+	//public abstract boolean isStartedSession() throws MapsException ;
 
 	public abstract void saveMaps(Map[] m) throws MapsException;
 	
@@ -138,11 +138,11 @@ public abstract class Manager {
 
 	public abstract java.util.Map<Integer,Double> getAvails(Element[] mapElements)throws MapsException;
 	
-	public abstract String getNodeLabel(int id) throws MapsException;	
+	//public abstract String getNodeLabel(int id) throws MapsException;	
 	
 	public abstract Set<Integer> getNodeidsOnElement(Element elem) throws MapsException;
 	
 	public abstract Set getNodeIdsBySource(String query)throws MapsException;
 	
-    public abstract Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws SQLException, ClassNotFoundException;
+    public abstract Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws MapsException;
 }

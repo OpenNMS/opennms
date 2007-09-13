@@ -160,7 +160,6 @@ public class SaveMapController implements Controller {
 			// last packet
 			if ((packetStr == null && totalPacketsStr == null)
 					|| (packetStr.equals(totalPacketsStr))) {
-				manager.startSession();
 				
 				log.info("SaveMap: removing all links and elements.");
 				map.removeAllLinks();
@@ -182,7 +181,6 @@ public class SaveMapController implements Controller {
 					map.setType(VMap.USER_GENERATED_MAP);
 				manager.save(map);
 				
-				manager.endSession();
 				log.info("Map saved");
 			}
 			bw.write(ResponseAssembler.getSaveMapResponse(MapsConstants.SAVEMAP_ACTION, map, packetStr, totalPacketsStr));

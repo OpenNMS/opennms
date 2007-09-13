@@ -35,7 +35,8 @@ public class Element implements Cloneable {
 
     public static final String NODE_TYPE = "N";
     
-    public static final String defaultIcon = "unspecified";
+    public static final String defaultNodeIcon = "unspecified";
+    public static final String defaultMapIcon = "map";
 
     protected Element() {
         // blank
@@ -69,7 +70,7 @@ public class Element implements Cloneable {
      */
     public void setIcon(String iconName) {
     	if(iconName==null){
-    		iconName=defaultIcon;
+    		iconName=defaultNodeIcon;
     	}
         this.iconName = iconName;
     }

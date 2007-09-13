@@ -82,9 +82,7 @@ public class DeleteMapController implements Controller {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream()));
 		try {
-			manager.startSession();
 			manager.deleteMap(); 
-			manager.endSession();
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.DELETEMAP_ACTION));
 		} catch (Exception e) {
 			log.error("Error deleting map",e);

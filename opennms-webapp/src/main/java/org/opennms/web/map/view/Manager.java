@@ -56,9 +56,9 @@ import org.opennms.web.map.config.MapStartUpConfig;
 public interface Manager {
 
 	//to use when modifying maps
-	public void startSession() throws MapsException;
+	//public void startSession() throws MapsException;
 
-	public void endSession() throws MapsException;
+	//public void endSession() throws MapsException;
 
 	//the mapStartUpConfig mantains dynamic infos from client 
 	public MapStartUpConfig getMapStartUpConfig() throws MapsException;
