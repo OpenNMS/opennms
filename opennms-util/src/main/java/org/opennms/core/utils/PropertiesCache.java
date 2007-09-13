@@ -11,8 +11,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Caches properties files in order to improve performance.  
@@ -25,9 +24,7 @@ public class PropertiesCache {
     private static class PropertiesHolder {
         private Properties m_properties;
         private final File m_file;
-        private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-        private final Lock r = rwLock.readLock();
-        private final Lock w = rwLock.writeLock();
+        private final Lock lock = new ReentrantLock();
         
         PropertiesHolder(File file) {
             m_file = file;
@@ -66,14 +63,14 @@ public class PropertiesCache {
         }
 
         public Properties get() throws IOException {
-            r.lock();
+            lock.lock();
             try {
                 if (m_properties == null) {
                     readWithDefault(new Properties());
                 }
                 return m_properties;
             } finally {
-                r.unlock();
+                lock.unlock();
             }
         }
 
@@ -85,38 +82,26 @@ public class PropertiesCache {
                 return;
             }
             
-            // release the read lock since we need the write lock to update the properties object
-            r.unlock();
-            w.lock();
-            try {
-                // check again to make sure that while we were waiting for the lock
-                // someone else didn't get it and load things up already
+            if (m_properties == null) {
+                m_properties = read();
                 if (m_properties == null) {
-                    m_properties = read();
-                    if (m_properties == null) {
-                        m_properties = deflt;
-                    }
+                    m_properties = deflt;
                 }
-            } finally {
-                // use this ordering so we are sure it is allowed and prevents anyone from getting
-                // another write lock before we finish
-                r.lock();
-                w.unlock();
-            }
+            }   
         }
         
         public void put(Properties properties) throws IOException {
-            w.lock();
+            lock.lock();
             try {
                 m_properties = properties;
                 write();
             } finally {
-                w.unlock();
+                lock.unlock();
             }
         }
 
         public void update(Map<String, String> props) throws IOException {
-            w.lock();
+            lock.lock();
             try {
                 boolean save = false;
                 for(Entry<String, String> e : props.entrySet()) {
@@ -129,12 +114,12 @@ public class PropertiesCache {
                     write();
                 }
             } finally {
-                w.unlock();
+                lock.unlock();
             }
         }
         
         public void setProperty(String key, String value) throws IOException {
-            w.lock();
+            lock.lock();
             try {
                 // first we do get to make sure the properties are loaded
                 get();
@@ -143,28 +128,28 @@ public class PropertiesCache {
                     write();
                 }
             } finally {
-                w.unlock();
+                lock.unlock();
             }
         }
 
         public Properties find() throws IOException {
-            r.lock();
+            lock.lock();
             try {
                 if (m_properties == null) {
                     readWithDefault(null);
                 }
                 return m_properties;
             } finally {
-                r.unlock();
+                lock.unlock();
             }
         }
 
         public String getProperty(String key) throws IOException {
-            r.lock();
+            lock.lock();
             try {
                 return get().getProperty(key);
             } finally {
-                r.unlock();
+                lock.unlock();
             }
             
         }
