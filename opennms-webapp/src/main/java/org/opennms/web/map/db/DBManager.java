@@ -56,7 +56,6 @@ public class DBManager extends Manager {
 	public DBManager() throws MapsException{
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		init();
 		if(log.isDebugEnabled())
 			log.debug("Instantiating DBManager");
 	}
@@ -66,47 +65,42 @@ public class DBManager extends Manager {
 	 * @throws ClassNotFoundException
 	 */
 
-	void createConnection() throws SQLException, ClassNotFoundException {
+	private void createConnection() throws Exception {
 		
 		// create the dbconnection only if not yet created and active
-		if (m_dbConnection != null && !m_dbConnection.isClosed())
+		if (isConnectionCreated())
 			return;
 		
 		log.debug("creating connection");
 		m_dbConnection = Vault.getDbConnection();
 	}
+        
+        private  void releaseConnection() throws MapsException {
+                log.debug("releasing connection");
+                try {
+                        if (m_dbConnection != null && !m_dbConnection.isClosed())
+                                Vault.releaseDbConnection(m_dbConnection);
+                } catch (Exception e) {
+                        log.error("Exception while releasing connection");
+                        throw new MapsException(e);
+                }
+        }
  
-	private void init() throws MapsException {
-
-		if(!initialized){
-			log.debug("Init...");
-
-			try {
-				createConnection();
-			} catch (Exception e) {
-				log.error("Exception while creating db connection");
-				throw new MapsException(e);
-			}
-			
-			initialized=true;
-		}
-	}
 
 	public void finalize() throws MapsException {
 		log.debug("finalizing...");
 		try {
-			if (m_dbConnection != null && !m_dbConnection.isClosed())
-				m_dbConnection.close();
-			m_dbConnection = null;
+			releaseConnection();
 		} catch (Exception e) {
-			log.error("Exception while finalizing");
+			log.error("Exception while finalizing",e);
 			throw new MapsException(e);
 		}
 	}
 	
-	public void startSession() throws MapsException {
+	private void startSession() throws MapsException {
 		if(!isStartedSession()){
 			try {
+			        createConnection();
 				log.debug("setting AutoCommit false db connection...");
 				m_dbConnection.setAutoCommit(false);
 				m_dbConnection
@@ -118,7 +112,7 @@ public class DBManager extends Manager {
 		}
 	}
 
-	synchronized public void endSession() throws MapsException {
+	synchronized private void endSession() throws MapsException {
 		try {
 			log.debug("ending session");
 			if (!isStartedSession()){
@@ -127,15 +121,35 @@ public class DBManager extends Manager {
 			}
 			m_dbConnection.commit();
 			m_dbConnection.setAutoCommit(true);
+                        releaseConnection();
 		} catch (Exception e) {
 			log.error("error while ending session");
 			throw new MapsException(e);
 		}
 	}
 
-	public boolean isStartedSession() throws MapsException{
+        private boolean isConnectionCreated() throws MapsException{
+                try{
+                        return (m_dbConnection != null && !m_dbConnection.isClosed());
+                }catch(SQLException s){
+                        throw new MapsException(s);
+                }
+        }
+        
+        private void rollback()throws MapsException{
+            try {
+                m_dbConnection.rollback();
+            } catch (SQLException ex) {
+                    log.error("Error while rollback");
+                    throw new MapsException(ex);
+            }finally{
+                releaseConnection();
+            }
+        }
+        
+	private boolean isStartedSession() throws MapsException{
 		try{
-			return (m_dbConnection != null && !m_dbConnection.isClosed());
+			return (isConnectionCreated()  && m_dbConnection.getAutoCommit()==false);
 		}catch(SQLException s){
 			throw new MapsException(s);
 		}
@@ -144,24 +158,107 @@ public class DBManager extends Manager {
 	public synchronized void saveMaps(Map[] m) throws MapsException {
 		try {
 			log.debug("saving maps");
-			if (!isStartedSession())
-				throw new IllegalStateException("Call startSession() first.");
+			startSession();
 
 			for (int i = 0, n = m.length; i < n; i++) {
-				saveMap(m[i]);
+                            saveMapInSession(m[i]);
 			}
 		}  catch (Exception e) {
-			log.error("error while saving maps");
-			throw new MapsException(e);
-		}
+                    log.error("Error while saving maps ");
+                    rollback();
+		}finally{
+                    endSession();
+                }
 	}
+        
+        private synchronized void saveMapInSession(Map m) throws MapsException {
+                log.debug("saving map...");
+                final String sqlGetCurrentTimestamp = "SELECT CURRENT_TIMESTAMP";
+                final String sqlGetMapNxtId = "SELECT nextval('mapnxtid')";
+                final String sqlInsertQuery = "INSERT INTO "
+                                + mapTable
+                                + " (mapid, mapname, mapbackground, mapowner, mapcreatetime, mapaccess, userlastmodifies, lastmodifiedtime, mapscale, mapxoffset, mapyoffset, maptype, mapwidth, mapheight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                final String sqlUpdateQuery = "UPDATE "
+                                + mapTable
+                                + " SET mapname = ?, mapbackground = ?, mapowner = ?, mapaccess = ?, userlastmodifies = ?, lastmodifiedtime = ?, mapscale = ?, mapxoffset = ?, mapyoffset = ?, maptype = ? , mapwidth = ?, mapheight = ? WHERE mapid = ?";
+                Timestamp currentTimestamp = null;
+                int nxtid = 0;
+
+                int count = -1;
+
+                try {
+                        Statement stmtCT = m_dbConnection.createStatement();
+                        ResultSet rs = stmtCT.executeQuery(sqlGetCurrentTimestamp);
+                        if (rs.next()) {
+                                currentTimestamp = rs.getTimestamp(1);
+                                PreparedStatement statement;
+                                if (m.isNew()) {
+                                        Statement stmtID = m_dbConnection.createStatement();
+                                        ResultSet rsStmt = stmtID.executeQuery(sqlGetMapNxtId);
+                                        if (rsStmt.next()) {
+                                                nxtid = rsStmt.getInt(1);
+                                        }
+                                        rsStmt.close();
+                                        stmtID.close();
+
+                                        statement = m_dbConnection.prepareStatement(sqlInsertQuery);
+                                        statement.setInt(1, nxtid);
+                                        statement.setString(2, m.getName());
+                                        statement.setString(3, m.getBackground());
+                                        statement.setString(4, m.getOwner());
+                                        statement.setTimestamp(5, currentTimestamp);
+                                        statement.setString(6, m.getAccessMode());
+                                        statement.setString(7, m.getUserLastModifies());
+                                        statement.setTimestamp(8, currentTimestamp);
+                                        statement.setDouble(9, m.getScale());
+                                        statement.setInt(10, m.getOffsetX());
+                                        statement.setInt(11, m.getOffsetY());
+                                        statement.setString(12, m.getType());
+                                        statement.setInt(13, m.getWidth());
+                                        statement.setInt(14, m.getHeight());
+                                } else {
+                                        statement = m_dbConnection.prepareStatement(sqlUpdateQuery);
+                                        statement.setString(1, m.getName());
+                                        statement.setString(2, m.getBackground());
+                                        statement.setString(3, m.getOwner());
+                                        statement.setString(4, m.getAccessMode());
+                                        statement.setString(5, m.getUserLastModifies());
+                                        statement.setTimestamp(6, currentTimestamp);
+                                        statement.setDouble(7, m.getScale());
+                                        statement.setInt(8, m.getOffsetX());
+                                        statement.setInt(9, m.getOffsetY());
+                                        statement.setString(10, m.getType());
+                                        statement.setInt(11, m.getWidth());
+                                        statement.setInt(12, m.getHeight());
+                                        statement.setInt(13, m.getId());
+                                }
+                                count = statement.executeUpdate();
+
+                                statement.close();
+                        }
+                        rs.close();
+                        stmtCT.close();
+                } catch (SQLException ex) {
+                        log.error("Error while saving map");
+                        throw new MapsException(ex);
+                        
+                }
+
+                if (count == 0){
+                        log.warn("Called saveMap() on deleted map");
+                        throw new MapsException("Called saveMap() on deleted map");
+                }
+                if (m.isNew()) {
+                        m.setId(nxtid);
+                        m.setCreateTime(currentTimestamp);
+                        m.setAsNew(false);
+                }
+                m.setLastModifiedTime(currentTimestamp);
+        }
 
 	public synchronized void saveMap(Map m) throws MapsException {
 		log.debug("saving map...");
-		if (!isStartedSession()){
-			log.error("Call startSession() first.");
-			throw new IllegalStateException("Call startSession() first.");
-		}
+		startSession();
 		final String sqlGetCurrentTimestamp = "SELECT CURRENT_TIMESTAMP";
 		final String sqlGetMapNxtId = "SELECT nextval('mapnxtid')";
 		final String sqlInsertQuery = "INSERT INTO "
@@ -229,15 +326,11 @@ public class DBManager extends Manager {
 			stmtCT.close();
 		} catch (SQLException ex) {
 			log.error("Error while saving map");
-			try {
-				m_dbConnection.rollback();
-				m_dbConnection.close();
-				throw new MapsException(ex);
-			} catch (SQLException e) {
-				log.error("Error while rollback");
-				throw new MapsException(e);
-			}
-		}
+			rollback();
+                        throw new MapsException("Error while saving map "+m.getId(),ex);
+		}finally{
+                    endSession();
+                }
 
 		if (count == 0){
 			log.warn("Called saveMap() on deleted map");
@@ -256,23 +349,78 @@ public class DBManager extends Manager {
 	public synchronized void saveElements(Element[] e) throws MapsException {
 		try {
 			log.debug("saving elements");
-			if (!isStartedSession())
-				throw new IllegalStateException("Call startSession() first.");
+			startSession();
 			if (e != null) {
 				for (int i = 0, n = e.length; i < n; i++) {
-					saveElement(e[i]);
+					saveElementInSession(e[i]);
 				}
 			}
 		} catch (Exception ex) {
 			log.error("error while saving elements");
-			throw new MapsException(ex);
-		}
+			rollback();
+                        throw new MapsException(ex);
+		}finally{
+                    endSession();
+                }
 	}
+        
+        private synchronized void saveElementInSession(Element e) throws MapsException {
+                log.debug("saving element");
+
+                final String sqlSelectQuery = "SELECT COUNT(*) FROM " + elementTable
+                                + " WHERE elementid = ? AND MAPID = ? AND elementtype = ?";
+                final String sqlInsertQuery = "INSERT INTO "
+                                + elementTable
+                                + " (mapid, elementid, elementtype, elementlabel, elementicon, elementx, elementy) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                final String sqlUpdateQuery = "UPDATE "
+                                + elementTable
+                                + " SET mapid = ?, elementid = ?, elementtype = ?, elementlabel = ?, elementicon = ?, elementx = ?, elementy = ? WHERE elementid = ? AND mapid = ? AND elementtype = ?";
+                try {
+                        PreparedStatement statement = m_dbConnection
+                                        .prepareStatement(sqlSelectQuery);
+                        statement.setInt(1, e.getId());
+                        statement.setInt(2, e.getMapId());
+                        statement.setString(3, e.getType());
+                        ResultSet rs = statement.executeQuery();
+                        if (rs.next()) {
+                                int count = rs.getInt(1);
+                                statement.close();
+                                if (count == 0) {
+                                        statement = m_dbConnection.prepareStatement(sqlInsertQuery);
+                                        statement.setInt(1, e.getMapId());
+                                        statement.setInt(2, e.getId());
+                                        statement.setString(3, e.getType());
+                                        statement.setString(4, e.getLabel());
+                                        statement.setString(5, e.getIcon());
+                                        statement.setInt(6, e.getX());
+                                        statement.setInt(7, e.getY());
+                                } else {
+                                        statement = m_dbConnection.prepareStatement(sqlUpdateQuery);
+                                        statement.setInt(1, e.getMapId());
+                                        statement.setInt(2, e.getId());
+                                        statement.setString(3, e.getType());
+                                        statement.setString(4, e.getLabel());
+                                        statement.setString(5, e.getIcon());
+                                        statement.setInt(6, e.getX());
+                                        statement.setInt(7, e.getY());
+                                        statement.setInt(8, e.getId());
+                                        statement.setInt(9, e.getMapId());
+                                        statement.setString(10, e.getType());
+                                }
+                                // now count counts number of modified record
+                                count = statement.executeUpdate();
+                                rs.close();
+                                statement.close();
+                        }
+                } catch (SQLException ex) {
+                        log.error("error while saving element");
+                        throw new MapsException(ex);
+                }
+        }
 
 	public synchronized void saveElement(Element e) throws MapsException {
 		log.debug("saving element");
-		if (!isStartedSession())
-			throw new IllegalStateException("Call startSession() first.");
+		startSession();
 
 		final String sqlSelectQuery = "SELECT COUNT(*) FROM " + elementTable
 				+ " WHERE elementid = ? AND MAPID = ? AND elementtype = ?";
@@ -321,25 +469,31 @@ public class DBManager extends Manager {
 			}
 		} catch (SQLException ex) {
 			log.error("error while saving element");
-			try {
-				m_dbConnection.rollback();
-				m_dbConnection.close();
-				throw new MapsException(ex);
-			} catch (SQLException eex) {
-				log.error("error while rollback");
-				throw new MapsException(eex);
-			}
-		}
+			rollback();
+                        throw new MapsException(ex);
+			
+		}finally{
+                    endSession();
+                }
 	}
 
-	public synchronized void deleteElements(Element[] elems)
-			throws MapsException {
+	public synchronized void deleteElements(Element[] elems)throws MapsException
+			 {
 		log.debug("deleting elements...");
-		if (elems != null) {
-			for (int i = 0; i < elems.length; i++) {
-				deleteElement(elems[i]);
-			}
-		}
+                try {
+                    startSession();
+                    if (elems != null) {
+                        for (int i = 0; i < elems.length; i++) {
+                              deleteElementInSession(elems[i].getId(),elems[i].getMapId(),elems[i].getType());
+                        }
+                    }
+                } catch (MapsException e) {
+                    log.error("Error while deleting elements");
+                    rollback();
+                    throw e;
+                }finally{
+                    endSession();
+                }
 	}
 	
 	public synchronized void deleteElement(Element e) throws MapsException {
@@ -349,11 +503,32 @@ public class DBManager extends Manager {
 		}
 	}
 
+        
+        private synchronized void deleteElementInSession(int id, int mapid, String type)
+        throws MapsException {
+            log.debug("deleting element...");
+    
+            final String sqlDelete = "DELETE FROM " + elementTable
+                            + " WHERE elementid = ? AND mapid = ? AND elementtype = ?";
+            
+            try {
+                    PreparedStatement statement = m_dbConnection
+                                    .prepareStatement(sqlDelete);
+                    statement.setInt(1, id);
+                    statement.setInt(2, mapid);
+                    statement.setString(3, type);
+                    statement.execute();
+                    statement.close();
+            } catch (SQLException e) {
+                    log.error("error while deleting element...");
+                    throw new MapsException(e);
+            }
+        }
+        
 	public synchronized void deleteElement(int id, int mapid, String type)
 			throws MapsException {
 		log.debug("deleting element...");
-		if (!isStartedSession())
-			throw new IllegalStateException("Call startSession() first.");
+		startSession();
 		final String sqlDelete = "DELETE FROM " + elementTable
 				+ " WHERE elementid = ? AND mapid = ? AND elementtype = ?";
 
@@ -366,22 +541,19 @@ public class DBManager extends Manager {
 			statement.execute();
 			statement.close();
 		} catch (SQLException e) {
-			log.error("error while deleting element...");
-			try {
-				m_dbConnection.rollback();
-				m_dbConnection.close();
-				throw new MapsException(e);
-			} catch (SQLException ex) {
-				log.error("error while rollback");
-				throw new MapsException(ex);
-			}
+			log.error("error while deleting element...",e);
+			rollback();
+			throw new MapsException(e);
+			
 		}
+                finally{
+                    endSession();
+                }
 	}
 
 	public synchronized void deleteElementsOfMap(int id) throws MapsException {
 		log.debug("deleting elements of map...");
-		if (!isStartedSession())
-			throw new IllegalStateException("Call startSession() first.");
+		startSession();
 		final String sqlDelete = "DELETE FROM " + elementTable
 				+ " WHERE mapid = ?";
 
@@ -392,14 +564,12 @@ public class DBManager extends Manager {
 			statement.execute();
 			statement.close();
 		} catch (SQLException e) {
-			try {
-				m_dbConnection.rollback();
-				m_dbConnection.close();
-				throw new MapsException(e);
-			} catch (SQLException ex) {
-				throw new MapsException(ex);
-			}
-		}
+			log.error("Error while deleting elements of map "+id );
+                        rollback();
+                        throw new MapsException(e);
+		}finally{
+                    endSession();
+                }
 	}
 
 	public synchronized int deleteMap(Map m) throws MapsException {
@@ -409,8 +579,7 @@ public class DBManager extends Manager {
 
 	public synchronized int deleteMap(int id) throws MapsException {
 		log.debug("deleting map...");
-		if (!isStartedSession())
-			throw new IllegalStateException("Call startSession() first.");
+		startSession();
 		final String sqlDeleteMap = "DELETE FROM " + mapTable
 				+ " WHERE mapid = ?";
 		final String sqlDeleteElemMap = "DELETE FROM " + elementTable
@@ -429,23 +598,18 @@ public class DBManager extends Manager {
 			statement.close();
 			return countDelete;
 		} catch (SQLException e) {
-			log.error("error while deleting map");
-			try {
-				m_dbConnection.rollback();
-				m_dbConnection.close();
-				throw new MapsException(e);
-			} catch (SQLException ex) {
-				log.error("error while rollback");
-				throw new MapsException(ex);
-			}
-		}
+			log.error("error while deleting map "+id);
+			rollback();
+                        throw new MapsException(e);
+		}finally{
+		    endSession();
+                }
 	}
 
 	public synchronized void deleteNodeTypeElementsFromAllMaps()
 	throws MapsException {
 		log.debug("deleting all node elements...");
-		if (!isStartedSession())
-			throw new IllegalStateException("Call startSession() first.");
+		startSession();
 		final String sqlDelete = "DELETE FROM " + elementTable
 				+ " WHERE elementtype = ?";
 
@@ -457,23 +621,19 @@ public class DBManager extends Manager {
 			statement.close();
 		} catch (SQLException e) {
 			log.error("error while deleting all node elements");
-			try {
-				m_dbConnection.rollback();
-				m_dbConnection.close();
-				throw new MapsException(e);
-			} catch (SQLException ex) {
-				log.error("error while rollback");
-				throw new MapsException(ex);
-			}
-		}
+			rollback();
+			throw new MapsException(e);
+		
+		}finally{
+                    endSession();
+                }
 	}
 	
 	public synchronized void deleteMapTypeElementsFromAllMaps()
 	throws MapsException {
 		log.debug("deleting all map elements...");
-		if (!isStartedSession())
-			throw new IllegalStateException("Call startSession() first.");
-		final String sqlDelete = "DELETE FROM " + elementTable
+		startSession();
+                final String sqlDelete = "DELETE FROM " + elementTable
 				+ " WHERE elementtype = ?";
 
 		try {
@@ -484,15 +644,11 @@ public class DBManager extends Manager {
 			statement.close();
 		} catch (SQLException e) {
 			log.error("error while deleting all map elements");
-			try {
-				m_dbConnection.rollback();
-				m_dbConnection.close();
-				throw new MapsException(e);
-			} catch (SQLException ex) {
-				log.error("error while rollback");
-				throw new MapsException(ex);
-			}
-		}
+			rollback();
+                        throw new MapsException(e);
+		}finally{
+                    endSession();
+                }
 	}
 
 	public Element getElement(int id, int mapId, String type) throws MapsException {
@@ -510,23 +666,65 @@ public class DBManager extends Manager {
 			Element el = rs2Element(rs);
 			rs.close();
 			statement.close();
-			//m_dbConnection.close();
+			
 			return el;
 		} catch (Exception e) {
 			log.error("Exception while getting element with elementid="+id+" and mapid="+mapId);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 	
 	public Element newElement(int id, int mapId, String type) throws MapsException {
-		
-		String label = null;
-		if (type.equals(Element.NODE_TYPE)) label = getNodeLabel(id);
-		if (type.equals(Element.MAP_TYPE)) label = getMapName(id);
-		String iconname = getIconName(id,type);
-		log.debug("Creating new VElement mapId:"+mapId+" id:"+id+" type:"+type+" label:"+label+" iconname:"+iconname+" x:"+0+" y:"+0);
-		return new Element(mapId,id,type,label,iconname,0,0);
+		Element e = new Element(mapId,id,type,null,null,0,0);
+		e=completeElement(e);
+                log.debug("Creating new VElement mapId:"+mapId+" id:"+id+" type:"+type+" label:"+e.getLabel()+" iconname:"+e.getIcon()+" x:"+0+" y:"+0);
+		return e;
 	}
+        
+        /**
+         * Completes the element in input (with id and type already valorized) with its label (or name if is a map) and iconname   
+         * @param e
+         * @return the element completed of label and icon name
+         */
+        private Element completeElement(Element e)throws MapsException{
+            
+            String sqlQuery = null;
+            try {
+                createConnection();
+                if (e.getType().equals(Element.MAP_TYPE)){
+                    e.setIcon(Element.defaultMapIcon);
+                    sqlQuery = "SELECT mapname FROM " + mapTable+ " WHERE mapId = ?";
+                }else{
+                    sqlQuery = "SELECT nodelabel,displaycategory FROM assets,node WHERE assets.nodeid=node.nodeid AND node.nodeid = ?";        
+                }
+                PreparedStatement statement = m_dbConnection.prepareStatement(sqlQuery);
+                statement.setInt(1, e.getId());
+                ResultSet rs = statement.executeQuery();
+                if(rs.next()){
+                    e.setLabel(rs.getString(1));
+                    if(e.getType().equals(Element.NODE_TYPE)){
+                        String iconName=rs.getString(2);
+                        if (iconName == null || iconName.trim().equals("")) {
+                                iconName = Element.defaultNodeIcon;
+                        }
+                        e.setIcon(iconName);
+                    }
+                }
+                rs.close();
+                statement.close();
+                
+            } catch (Exception e1) {
+                log.error("Error while completing element ("+e.getId()+") with label and icon ",e1);
+                throw new MapsException(e1);
+            }finally{
+                releaseConnection();
+            }
+            
+            
+            return e;
+        }
 
 	public Element[] getAllElements() throws MapsException {
 		try {
@@ -545,7 +743,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting all elements");
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Element[] getElementsOfMap(int mapid) throws MapsException {
@@ -570,7 +770,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting elements of map with mapid="+mapid);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Element[] getNodeElementsOfMap(int mapid) throws MapsException {
@@ -594,7 +796,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting element node of map with mapid "+mapid);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Element[] getMapElementsOfMap(int mapid) throws MapsException {
@@ -619,7 +823,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting map element of map with mapid "+mapid);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Element[] getElementsLike(String elementLabel) throws MapsException {
@@ -642,7 +848,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting elements by label like "+elementLabel);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public java.util.Map<Integer,Set<Integer>> getMapsStructure() throws MapsException {
@@ -673,7 +881,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting maps parent-child structure");
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public int countMaps(int mapId) throws MapsException {
@@ -696,7 +906,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while counting maps");
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Map getMap(int id) throws MapsException {
@@ -716,7 +928,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting map with mapid="+id);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Map[] getMaps(String mapname, String maptype) throws MapsException {
@@ -741,7 +955,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting maps with name="+mapname+" and type="+maptype);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Map[] getAllMaps() throws MapsException {
@@ -764,7 +980,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting all Maps");
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Map[] getMapsLike(String mapLabel) throws MapsException {
@@ -791,7 +1009,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting maps by label like "+mapLabel);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Map[] getMapsByName(String mapLabel) throws MapsException {
@@ -817,7 +1037,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting elements with label "+mapLabel);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public Map[] getContainerMaps(int id, String type) throws MapsException {
@@ -843,7 +1065,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting container maps of element with id/type "+id+"/"+type);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public VMapInfo[] getAllMapMenus() throws MapsException {
@@ -869,7 +1093,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting all map-menu");
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public VMapInfo getMapMenu(int mapId) throws MapsException {
@@ -893,7 +1119,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting map-menu for mapid "+mapId);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public VMapInfo[] getMapsMenuByName(String mapLabel) throws MapsException {
@@ -919,7 +1147,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting all map-menu for map named "+mapLabel);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 	
 	public VMapInfo[] getMapsMenuByOwner(String owner) throws MapsException {
@@ -945,7 +1175,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting all map-menu for owner "+owner);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public boolean isElementInMap(int elementId, int mapId, String type)
@@ -985,7 +1217,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting all element infos", e);
 			throw new MapsException(e); 
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public VElementInfo[] getElementInfoLike(String like) throws MapsException {
@@ -1014,7 +1248,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting element infos like "+like, e);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
 	public List<VElementInfo> getOutagedElements() throws MapsException {
@@ -1038,7 +1274,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting outaged elements");
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 
 	}
 
@@ -1123,43 +1361,15 @@ public class DBManager extends Manager {
 	            }
 	        } catch (Exception e) {
 				throw new MapsException(e);
-			}
+		}finally{
+                        releaseConnection();
+                }
         }
 
         return retMap;
     }
     
-	private String getIconName(int elementId, String type) throws MapsException {
-		log.debug("getting icon name...");
-		try {
-			if (type.equals(Element.MAP_TYPE))
-				return "map";
-			final String sqlQuery = "SELECT displaycategory FROM assets WHERE nodeid = ?";
-			log.debug(sqlQuery+ " nodeid="+elementId);
-			createConnection();
-
-			PreparedStatement statement = m_dbConnection
-					.prepareStatement(sqlQuery);
-			statement.setInt(1, elementId);
-			ResultSet rs = statement.executeQuery();
-			String iconName = "unspecified";
-			if (rs.next()) {
-				iconName = rs.getString(1);
-			}
-			rs.close();
-			statement.close();
-
 	
-			if (iconName == null || iconName.trim().equals("")) {
-				return "unspecified";
-			}
-
-			return iconName;
-		} catch (Exception e) {
-			log.error("Exception while getting icon name");
-			throw new MapsException(e);
-		}
-	}
 
 	 String getMapName(int id) throws MapsException {
 		try {
@@ -1181,30 +1391,12 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting name of map with mapid "+id);
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 
-	public String getNodeLabel(int id) throws MapsException {
-		try {
-			final String sqlQuery = "SELECT NODELABEL FROM NODE WHERE NODEID = ?";
-
-			createConnection();
-			PreparedStatement statement = m_dbConnection
-					.prepareStatement(sqlQuery);
-			statement.setInt(1, id);
-			ResultSet rs = statement.executeQuery();
-			String label = null;
-			if (rs.next()) {
-				label = rs.getString(1);
-			}
-			rs.close();
-			statement.close();
-			return label;
-		} catch (Exception e) {
-			log.error("Exception while getting node label");
-			throw new MapsException(e);
-		}
-	}
+	
 
 	/**
 	 * gets a Vector containing the nodeids of all deleted nodes
@@ -1230,7 +1422,9 @@ public class DBManager extends Manager {
 		} catch (Exception e) {
 			log.error("Exception while getting deleted nodes");
 			throw new MapsException(e);
-		}
+		}finally{
+                    releaseConnection();
+                }
 	}
 	
     /**
@@ -1376,79 +1570,87 @@ public class DBManager extends Manager {
 		return vecElem;
 	}
 
-    public Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws SQLException, ClassNotFoundException {
-	       Set<LinkInfo> nodes = new HashSet<LinkInfo>();
-	        createConnection();
-	        String nodelist="";
-	        Iterator<Integer> ite = allnodes.iterator();
-	        while (ite.hasNext()) {
-	        	nodelist+=ite.next();
-	        	if (ite.hasNext()) nodelist+=",";
-	        }
+    public Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws MapsException {
+	       Set<LinkInfo> nodes=null;
+        try {
+            nodes = new HashSet<LinkInfo>();
+                createConnection();
+                String nodelist="";
+                Iterator<Integer> ite = allnodes.iterator();
+                while (ite.hasNext()) {
+                	nodelist+=ite.next();
+                	if (ite.hasNext()) nodelist+=",";
+                }
 
-	        String sql = "SELECT " +
-		"datalinkinterface.nodeid, ifindex,nodeparentid, parentifindex, snmpiftype,snmpifspeed,snmpifoperstatus " +
-		"FROM datalinkinterface " +
-		"left join snmpinterface on nodeparentid = snmpinterface.nodeid " +
-		"WHERE" +
-		" (datalinkinterface.nodeid IN ("+nodelist+")" +
-		" OR nodeparentid in ("+nodelist+")) " +
-		"AND status != 'D' and datalinkinterface.parentifindex = snmpinterface.snmpifindex";
-	        Statement stmt = m_dbConnection
-            .createStatement();
-	        ResultSet rs = stmt.executeQuery(sql);
-		    while (rs.next()) {
-	            Object element = new Integer(rs.getInt("nodeid"));
-	            int nodeid = -1;
-	            if (element != null) {
-	                nodeid = ((Integer) element);
-	            }
+                String sql = "SELECT " +
+            "datalinkinterface.nodeid, ifindex,nodeparentid, parentifindex, snmpiftype,snmpifspeed,snmpifoperstatus " +
+            "FROM datalinkinterface " +
+            "left join snmpinterface on nodeparentid = snmpinterface.nodeid " +
+            "WHERE" +
+            " (datalinkinterface.nodeid IN ("+nodelist+")" +
+            " OR nodeparentid in ("+nodelist+")) " +
+            "AND status != 'D' and datalinkinterface.parentifindex = snmpinterface.snmpifindex";
+                Statement stmt = m_dbConnection
+                .createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    Object element = new Integer(rs.getInt("nodeid"));
+                    int nodeid = -1;
+                    if (element != null) {
+                        nodeid = ((Integer) element);
+                    }
 
-	            element = new Integer(rs.getInt("ifindex"));
-	            int ifindex = -1;
-	            if (element != null) {
-	            	ifindex = ((Integer) element);
-	            }
+                    element = new Integer(rs.getInt("ifindex"));
+                    int ifindex = -1;
+                    if (element != null) {
+                    	ifindex = ((Integer) element);
+                    }
 
-	            element = new Integer(rs.getInt("nodeparentid"));
-	            int nodeparentid = -1;
-	            if (element != null) {
-	            	nodeparentid = ((Integer) element);
-	            }
+                    element = new Integer(rs.getInt("nodeparentid"));
+                    int nodeparentid = -1;
+                    if (element != null) {
+                    	nodeparentid = ((Integer) element);
+                    }
 
-	            element = new Integer(rs.getInt("parentifindex"));
-	            int parentifindex = -1;
-	            if (element != null) {
-	            	parentifindex = ((Integer) element);
-	            }
+                    element = new Integer(rs.getInt("parentifindex"));
+                    int parentifindex = -1;
+                    if (element != null) {
+                    	parentifindex = ((Integer) element);
+                    }
 
-	            element = new Integer(rs.getInt("snmpiftype"));
-	            int snmpiftype = -1;
-	            if (element != null) {
-	            	snmpiftype = ((Integer) element);
-	            }
+                    element = new Integer(rs.getInt("snmpiftype"));
+                    int snmpiftype = -1;
+                    if (element != null) {
+                    	snmpiftype = ((Integer) element);
+                    }
 
-	            element = new Long(rs.getLong("snmpifspeed"));
-	            long snmpifspeed = -1;
-	            if (element != null) {
-	            	snmpifspeed = ((Long) element);
-	            }
+                    element = new Long(rs.getLong("snmpifspeed"));
+                    long snmpifspeed = -1;
+                    if (element != null) {
+                    	snmpifspeed = ((Long) element);
+                    }
 
-	            element = new Integer(rs.getInt("snmpifoperstatus"));
-	            int snmpifoperstatus = -1;
-	            if (element != null) {
-	            	snmpifoperstatus = ((Integer) element);
-	            }
-	            
-	            LinkInfo link = new LinkInfo(nodeid,ifindex,nodeparentid,parentifindex,snmpiftype,snmpifspeed,snmpifoperstatus);
+                    element = new Integer(rs.getInt("snmpifoperstatus"));
+                    int snmpifoperstatus = -1;
+                    if (element != null) {
+                    	snmpifoperstatus = ((Integer) element);
+                    }
+                    
+                    LinkInfo link = new LinkInfo(nodeid,ifindex,nodeparentid,parentifindex,snmpiftype,snmpifspeed,snmpifoperstatus);
 
-	            nodes.add(link);
-	        }
-	        rs.close();
-	        stmt.close();
-	        
-	        
-	        return nodes;
+                    nodes.add(link);
+                }
+                rs.close();
+                stmt.close();
+
+                
+        } catch (Exception e) {
+           log.error("Exception while getting links on elements "+allnodes,e);
+           throw new MapsException(e);
+        }finally{
+            releaseConnection();
+        } 	        
+        return nodes;
 	         		
 	}
     
@@ -1469,16 +1671,15 @@ public class DBManager extends Manager {
 		if (query == null) {
 			return getAllNodes();
 		}
-		Connection conn=null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		Set<Integer> nodes = new HashSet<Integer>();
 		try {
-			conn = Vault.getDbConnection();
+			createConnection();
 			String sqlQuery = query;
 			log.debug("Applying filters for source "+" '"+sqlQuery+"'");
 			
-			stmt = conn.createStatement();
+			stmt = m_dbConnection.createStatement();
 			rs = stmt.executeQuery(sqlQuery);
 			// add all matching nodes (id) with the source to the Set.
 			while (rs.next()) {
@@ -1486,22 +1687,22 @@ public class DBManager extends Manager {
 			}
 			rs.close();
 			stmt.close();
-			conn.close();
 		} catch(Exception e) {
 			throw new MapsException("Exception while getting nodes by source label "+e);
-		}	
+		}finally{
+		    releaseConnection();
+                }
 		return nodes;
 	}
 	
 	private Set<Integer> getAllNodes() throws MapsException {
-		Connection conn=null;
 		Statement stmt = null;
 		ResultSet rs = null;
 		Set<Integer> nodes = new HashSet<Integer>();
 		try {
-			conn = Vault.getDbConnection();
+			createConnection();
 			String sqlQuery = "select distinct nodeid from ipinterface";
-			stmt = conn.createStatement();
+			stmt = m_dbConnection.createStatement();
 			rs = stmt.executeQuery(sqlQuery);
 			// add all matching nodes (id) with the source to the Set.
 			while (rs.next()) {
@@ -1509,10 +1710,11 @@ public class DBManager extends Manager {
 			}
 			rs.close();
 			stmt.close();
-			conn.close();
 		} catch(Exception e) {
 			throw new MapsException("Exception while getting all nodes "+e);
-		}
+		}finally{
+		    releaseConnection();
+                }
 		return nodes;
 	}
 
