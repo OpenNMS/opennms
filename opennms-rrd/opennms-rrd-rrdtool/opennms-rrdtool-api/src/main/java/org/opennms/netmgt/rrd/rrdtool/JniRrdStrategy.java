@@ -37,12 +37,9 @@
  */
 package org.opennms.netmgt.rrd.rrdtool;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,7 +48,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.StreamUtils;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -59,6 +55,7 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
@@ -396,7 +393,11 @@ public class JniRrdStrategy implements RrdStrategy {
      * the InputStream returned from the method.
      */
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
-        InputStream tempIn;
+        byte[] byteArray = createGraphAsByteArray(command, workDir);
+        return new ByteArrayInputStream(byteArray);
+    }
+
+    private byte[] createGraphAsByteArray(String command, File workDir) throws IOException, RrdException {
         String[] commandArray = StringUtils.createCommandArray(command, '@');
         Process process;
         try {
@@ -406,31 +407,16 @@ public class JniRrdStrategy implements RrdStrategy {
             newE.initCause(e);
             throw newE;
         }
-
-        ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
-        BufferedInputStream in = new BufferedInputStream(process.getInputStream());
-
-        StreamUtils.streamToStream(in, tempOut);
-
-        in.close();
-        tempOut.close();
-
-        BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        String line = err.readLine();
-        StringBuffer buffer = new StringBuffer();
-
-        while (line != null) {
-            buffer.append(line);
-            line = err.readLine();
+        
+        // this closes the stream when its finished
+        byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());
+        
+        // this close the stream when its finished
+        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
+        if (errors.length() > 0) {
+            throw new RrdException(errors);
         }
-
-        if (buffer.length() > 0) {
-            throw new RrdException(buffer.toString());
-        }
-
-        byte[] byteArray = tempOut.toByteArray();
-        tempIn = new ByteArrayInputStream(byteArray);
-        return tempIn;
+        return byteArray;
     }
 
     /**
@@ -474,26 +460,30 @@ public class JniRrdStrategy implements RrdStrategy {
         try {
             // Executing RRD Command
             InputStream is = createGraph(command, workDir);
-
+            
             // Processing Command Output
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String s[] = reader.readLine().split("x");
-            width = Integer.parseInt(s[0]);
-            height = Integer.parseInt(s[1]);
-            String line = null;
-            List<String> printLinesList = new ArrayList<String>();
-            while ((line = reader.readLine()) != null)
-                printLinesList.add(line);
-            printLines = new String[printLinesList.size()];
-            printLinesList.toArray(printLines);
+            
+            try {
+                String s[] = reader.readLine().split("x");
+                width = Integer.parseInt(s[0]);
+                height = Integer.parseInt(s[1]);
+                
+                List<String> printLinesList = new ArrayList<String>();
+                
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    printLinesList.add(line);
+                }
+                
+                printLines = printLinesList.toArray(new String[printLinesList.size()]);
+
+            } finally {
+                reader.close();
+            }
 
             // Creating PNG InputStream
-            BufferedInputStream in = new BufferedInputStream(new FileInputStream(pngFile));
-            ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
-            StreamUtils.streamToStream(in, tempOut);
-            in.close();
-            tempOut.close();
-            byte[] byteArray = tempOut.toByteArray();
+            byte[] byteArray = FileCopyUtils.copyToByteArray(pngFile);
             pngStream = new ByteArrayInputStream(byteArray);
         } catch (Exception e) {
             throw new RrdException("Can't execute command " + command, e);
