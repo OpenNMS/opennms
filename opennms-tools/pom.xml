@@ -24,6 +24,7 @@
       </activation>
       <modules>
         <module>centric-troubleticketer</module>
+        <module>jira-troubleticketer</module>
         <module>mib2events</module>
       </modules>
     </profile>
