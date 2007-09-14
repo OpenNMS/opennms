@@ -47,6 +47,7 @@
         <event-file>@install.etc.dir@/events/IBMRSA2.events.xml</event-file>
         <event-file>@install.etc.dir@/events/IEEE802dot11.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Intel.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IPUnity-SES-MIB.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Liebert.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Liebert.600SM.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
