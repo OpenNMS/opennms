@@ -6,7 +6,7 @@ TOPDIR=`cd $MYDIR; pwd`
 cd "$TOPDIR"
 
 if [ -n "$1" ]; then
-	RELEASE_MAJOR = "$1"
+	RELEASE_MAJOR="$1"
 	shift
 else
 	RELEASE_MAJOR=0
