@@ -376,6 +376,10 @@
     </dependency>
 -->
     <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+    </dependency>
+    <dependency>
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
     </dependency>
