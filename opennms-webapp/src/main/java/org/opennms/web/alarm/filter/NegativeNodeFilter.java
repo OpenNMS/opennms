@@ -47,7 +47,7 @@ public class NegativeNodeFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" (NODEID<>" + this.nodeId + " OR NODEID IS NULL)");
+        return (" (ALARMS.NODEID<>" + this.nodeId + " OR ALARMS.NODEID IS NULL)");
     }
 
     public String getDescription() {
