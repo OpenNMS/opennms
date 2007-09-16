@@ -2,6 +2,8 @@ package org.opennms.web.rss;
 
 import java.io.StringWriter;
 
+import javax.servlet.ServletRequest;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -12,8 +14,9 @@ import com.sun.syndication.io.SyndFeedOutput;
 public class AbstractFeed implements Feed {
     protected int m_maxEntries = 20;
     protected String m_feedType = "rss_2.0";
-    private String m_urlBase = "";
-
+    protected String m_urlBase = "";
+    protected ServletRequest m_servletRequest;
+    
     public AbstractFeed() {
     }
     
@@ -45,6 +48,14 @@ public class AbstractFeed implements Feed {
         m_maxEntries = maxEntries;
     }
     
+    public ServletRequest getRequest() {
+        return m_servletRequest;
+    }
+    
+    public void setRequest(ServletRequest request) {
+        m_servletRequest = request;
+    }
+    
     public SyndFeed getFeed() {
         return new SyndFeedImpl();
     }
@@ -64,6 +75,11 @@ public class AbstractFeed implements Feed {
         }
     }
 
+    protected String sanitizeTitle(String title) {
+        title.replaceAll("<[^>]*>", "");
+        return title;
+    }
+    
     protected Category log() {
         return ThreadCategory.getInstance();
     }

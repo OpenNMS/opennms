@@ -59,6 +59,7 @@
         urlBase = urlBase.substring(0, urlBase.lastIndexOf("/") + 1);
 		feed.setUrlBase(urlBase);
 		feed.setFeedType(feedType);
+		feed.setRequest(request);
         output = feed.render();
         if (output == null) {
             out.println("hi");
