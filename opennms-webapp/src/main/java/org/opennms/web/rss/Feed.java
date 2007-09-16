@@ -1,5 +1,7 @@
 package org.opennms.web.rss;
 
+import javax.servlet.ServletRequest;
+
 public interface Feed {
 
     public String getUrlBase();
@@ -10,6 +12,9 @@ public interface Feed {
     
     public int getMaxEntries();
     public void setMaxEntries(int maxEntries);
+
+    public ServletRequest getRequest();
+    public void setRequest(ServletRequest request);
     
     public String render();
     

@@ -474,6 +474,45 @@ public class OutageModel extends Object {
     /**
      * Return a list of IP addresses, the number of services down on each IP
      * address, and the longest time a service has been down for each IP
+     * address. The list will be sorted by the amount of time it has been down.
+     */
+    public OutageSummary[] getAllOutageSummaries() throws SQLException {
+        OutageSummary[] summaries = new OutageSummary[0];
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, max(outages.ifregainedservice) as timeUp, node.nodelabel " + "from outages, node, ipinterface, ifservices " + "where node.nodeid=outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid=outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + "group by outages.nodeid, node.nodelabel " + "order by timeDown desc;");
+
+            List<OutageSummary> list = new ArrayList<OutageSummary>();
+
+            while (rs.next()) {
+                int nodeId = rs.getInt("nodeID");
+                Timestamp timeDownTS = rs.getTimestamp("timeDown");
+                long timeDown = timeDownTS.getTime();
+                Date downDate = new Date(timeDown);
+                Timestamp timeUpTS = rs.getTimestamp("timeUp");
+                long timeUp = timeUpTS.getTime();
+                Date upDate = new Date(timeUp);
+                String nodeLabel = rs.getString("nodelabel");
+
+                list.add(new OutageSummary(nodeId, nodeLabel, downDate, upDate));
+            }
+
+            rs.close();
+            stmt.close();
+
+            summaries = list.toArray(new OutageSummary[list.size()]);
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return summaries;
+    }
+
+    /**
+     * Return a list of IP addresses, the number of services down on each IP
+     * address, and the longest time a service has been down for each IP
      * address. The list will be sorted in ascending order from the service down
      * longest to the service down shortest. This is a clone of
      * getCurrentOutageSummaries for Harrah's (special consideration).

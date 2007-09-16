@@ -5,8 +5,6 @@ import java.util.ArrayList;
 
 import org.opennms.web.notification.Notification;
 import org.opennms.web.notification.NotificationModel;
-import org.opennms.web.outage.OutageModel;
-import org.opennms.web.outage.OutageSummary;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
@@ -18,15 +16,15 @@ public class NotificationFeed extends AbstractFeed {
     public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 
-        feed.setTitle("Outstanding Notifications");
-        feed.setDescription("Outstanding Notifications");
-        feed.setLink(getUrlBase() + "notification/browse?acktype=unack");
+        feed.setTitle("Notifications");
+        feed.setDescription("Notifications");
+        feed.setLink(getUrlBase() + "notification/browse");
 
         ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
 
         try {
             NotificationModel model = new NotificationModel();
-            Notification[] notifications = model.getOutstandingNotices();
+            Notification[] notifications = model.allNotifications();
 
             SyndEntry entry;
             
@@ -36,14 +34,18 @@ public class NotificationFeed extends AbstractFeed {
                     break;
                 }
                 entry = new SyndEntryImpl();
-                entry.setTitle(notification.getTextMessage());
+                if (notification.getTimeReplied() == null) {
+                    entry.setTitle(sanitizeTitle(notification.getTextMessage()));
+                } else {
+                    entry.setTitle(sanitizeTitle(notification.getTextMessage()) + " (acknowledged)");
+                }
                 entry.setLink(getUrlBase() + "notification/detail.jsp?notice=" + notification.getId());
                 entry.setPublishedDate(notification.getTimeSent());
                 
                 entries.add(entry);
             }
         } catch (SQLException e) {
-            log().warn("unable to get current outages", e);
+            log().warn("unable to get outstanding notifications", e);
         }
         
         feed.setEntries(entries);

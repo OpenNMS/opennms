@@ -24,7 +24,7 @@ public class OutageFeed extends AbstractFeed {
 
         try {
             OutageModel model = new OutageModel();    
-            OutageSummary[] summaries = model.getCurrentOutageSummaries();
+            OutageSummary[] summaries = model.getAllOutageSummaries();
 
             SyndEntry entry;
             
@@ -34,7 +34,11 @@ public class OutageFeed extends AbstractFeed {
                     break;
                 }
                 entry = new SyndEntryImpl();
-                entry.setTitle("outage: " + summary.getNodeLabel());
+                if (summary.getTimeUp() == null) {
+                    entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()));
+                } else {
+                    entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()) + " (resolved)");
+                }
                 entry.setLink(getUrlBase() + "element/node.jsp?node=" + summary.getNodeId());
                 entry.setPublishedDate(summary.getTimeDown());
                 
