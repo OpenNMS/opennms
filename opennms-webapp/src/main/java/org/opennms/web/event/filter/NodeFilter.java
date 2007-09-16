@@ -47,7 +47,7 @@ public class NodeFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" NODE.NODEID=" + this.nodeId);
+        return (" EVENTS.NODEID=" + this.nodeId);
     }
 
     public String getDescription() {
