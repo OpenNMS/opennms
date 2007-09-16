@@ -220,7 +220,7 @@ public class AlarmFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(*) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            StringBuffer select = new StringBuffer("SELECT COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
@@ -262,7 +262,7 @@ public class AlarmFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            StringBuffer select = new StringBuffer("SELECT SEVERITY, COUNT(*) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            StringBuffer select = new StringBuffer("SELECT SEVERITY, COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
