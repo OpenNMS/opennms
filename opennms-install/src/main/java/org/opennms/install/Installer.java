@@ -50,7 +50,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.regex.Matcher;

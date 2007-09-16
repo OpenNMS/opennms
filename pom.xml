@@ -1390,6 +1390,11 @@ opennms.home = ${opennms.home}
         <version>1.5.1</version>
       </dependency>
       <dependency>
+        <groupId>rome</groupId>
+        <artifactId>rome</artifactId>
+        <version>0.9</version>
+      </dependency>
+      <dependency>
         <groupId>struts</groupId>
         <artifactId>struts</artifactId>
         <version>1.2.7</version>
