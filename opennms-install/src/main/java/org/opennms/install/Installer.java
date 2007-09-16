@@ -49,6 +49,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -815,31 +817,36 @@ public class Installer {
     public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
     	String fullname = System.mapLibraryName(libname);
 
-    	String defaultPath = System.getProperty("java.library.path");
-    	if (defaultPath != null) {
-    		if (path != null) {
-    			path += File.pathSeparator + defaultPath;
-    		} else {
-    			path = defaultPath;
-    		}
-    	}
-    	
-    	if (path != null) {
-    		String[] paths = path.split(File.pathSeparator);
-    		m_out.println("- searching for " + libname + ":");
-    		for (int i = 0; i < paths.length; i++) {
-    		    File entry = new File(paths[i]);
-    		    
-                if (entry.isFile()) {
-                    // if they specified a file, try the parent directory instead
-                    paths[i] = entry.getParent();
-                }
+        ArrayList<String> searchPaths = new ArrayList<String>();
 
-   			    String fullpath = paths[i] + File.separator + fullname;
-   			    if (loadLibrary(fullpath)) {
-   			        return fullpath;
-   			    }
-    		}
+        for (String entry : path.split(File.pathSeparator)) {
+            searchPaths.add(entry);
+        }
+        
+        if (System.getProperty("java.library.path") != null) {
+            for (String entry : System.getProperty("java.library.path").split(File.pathSeparator)) {
+                searchPaths.add(entry);
+            }
+        }
+
+    	String[] defaults = { "/usr/lib/jni", "/usr/lib", "/usr/local/lib" };
+    	for (String entry : defaults) {
+    	    searchPaths.add(entry);
+    	}
+
+    	m_out.println("- searching for " + libname + ":");
+    	for (String dirname : searchPaths) {
+    	    File entry = new File(dirname);
+
+    	    if (entry.isFile()) {
+    	        // if they specified a file, try the parent directory instead
+    	        dirname = entry.getParent();
+    	    }
+
+    	    String fullpath = dirname + File.separator + fullname;
+    	    if (loadLibrary(fullpath)) {
+    	        return fullpath;
+    	    }
     	}
     	
         m_out.println("Failed to load the " + libname + " library.");
