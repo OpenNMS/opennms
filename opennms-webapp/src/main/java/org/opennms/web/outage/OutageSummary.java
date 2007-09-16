@@ -41,13 +41,12 @@ import java.util.Date;
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  */
 public class OutageSummary extends Object {
-    protected int nodeId;
+    protected final int nodeId;
+    protected final String nodeLabel;
+    protected final Date timeDown;
+    protected final Date timeUp;
 
-    protected String nodeLabel;
-
-    protected Date timeDown;
-
-    public OutageSummary(int nodeId, String nodeLabel, Date timeDown) {
+    public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp) {
         if (nodeLabel == null || timeDown == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -55,6 +54,10 @@ public class OutageSummary extends Object {
         this.nodeId = nodeId;
         this.nodeLabel = nodeLabel;
         this.timeDown = timeDown;
+        this.timeUp = timeUp;
+    }
+    public OutageSummary(int nodeId, String nodeLabel, Date timeDown) {
+        this(nodeId, nodeLabel, timeDown, null);
     }
 
     public int getNodeId() {
@@ -74,15 +77,22 @@ public class OutageSummary extends Object {
         return (this.timeDown);
     }
 
+    public Date getTimeUp() {
+        return (this.timeUp);
+    }
+    
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("<OutageSummary: ");
         buffer.append(this.nodeId);
         buffer.append(":");
         buffer.append(this.nodeLabel);
-        buffer.append(", down since ");
+        buffer.append(", down at ");
         buffer.append(this.timeDown);
-
+        if (this.timeUp != null) {
+            buffer.append(", back up at ");
+            buffer.append(this.timeUp);
+        }
         return (buffer.toString());
     }
 
