@@ -1,3 +1,32 @@
+1.3.7 to 1.3.8
+----------------------------------------------------------------------
+- RSS feeds for events, alarms, outages, and notifications
+
+1.3.6 to 1.3.7
+----------------------------------------------------------------------
+- huge performance updates in data collection and discovery
+- new monitor: StrafePing (a SmokePing clone)
+- Jetty servlet container integration (on port 8980); tomcat is no
+  longer required
+- ticketing plugin for Jira
+
+1.3.5 to 1.3.6
+----------------------------------------------------------------------
+- Moved all native code out of the main build.  We still have external
+  platform-specific dependencies, but the OpenNMS build is now
+  pure-java!
+- data collection improvements
+- JRobin reporting look-and-feel improvements
+
+1.3.3 to 1.3.5
+----------------------------------------------------------------------
+- Monitor parameter inversion
+- data collection performance updates
+- fix severity matching bug introduced in 1.3.3
+- fix <specific> matching all IPs if no <include-range>'s were
+  configured
+- fixed bug where notifications with a serviceid of null failed
+
 1.3.2 to 1.3.3
 ----------------------------------------------------------------------
 - Add a "-Q" option (quick) to the startup script 
