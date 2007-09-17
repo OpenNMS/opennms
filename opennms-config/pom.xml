@@ -20,6 +20,23 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo.groovy</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>  
+            <configuration>
+              <source>
+                groovy.ui.GroovyMain.main("-pi", "-e", "(line =~ /@param switch/).replaceAll(/@param _switch/)", "${project.basedir}/target/generated-sources/castor/org/opennms/netmgt/config/notificationCommands/Argument.java")
+              </source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
