@@ -57,7 +57,7 @@ public class PopulatedTemporaryDatabaseTestCaseTest extends
     }
     
     public void testUpdateIplike() throws Exception {
-        getInstallerDb().setPgIpLikeLocation(null);
+        getInstallerDb().setPostgresIpLikeLocation(null);
         getInstallerDb().updateIplike();
         getInstallerDb().closeConnection();
     }

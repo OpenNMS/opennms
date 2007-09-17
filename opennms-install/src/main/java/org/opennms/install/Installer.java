@@ -50,13 +50,17 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
@@ -78,47 +82,36 @@ public class Installer {
         "$Id$";
 
     String m_opennms_home = null;
-
     boolean m_update_database = false;
-
     boolean m_do_inserts = false;
-
     boolean m_skip_constraints = false;
-
     boolean m_update_iplike = false;
-
     boolean m_update_unicode = false;
-
     boolean m_do_full_vacuum = false;
-    
     boolean m_do_vacuum = false;
-    
     boolean m_install_webapp = false;
-
     boolean m_fix_constraint = false;
-
     boolean m_force = false;
+    boolean m_ignore_not_null = false;
+    boolean m_do_not_revert = false;
 
     String m_pg_driver = null;
-
     String m_pg_url = null;
-
-    String m_pg_user = "postgres";
-
-    String m_pg_pass = "";
-
+    String m_pg_database_name = "opennms";
+    String m_pg_user = "postgres"; // postgres admin user
+    String m_pg_pass = ""; // postgres admin password
+    String m_user = "opennms"; // postgres runtime database user
+    String m_pass = "opennms"; // postgres runtime database password
+    String m_etc_dir = "";
     String m_tomcat_conf = null;
-
     String m_webappdir = null;
-
     String m_install_servletdir = null;
-
     String m_library_search_path = null;
-    
     String m_fix_constraint_name = null;
-
     boolean m_fix_constraint_remove_rows = false;
 
+    protected Options options = new Options();
+    protected CommandLine m_commandLine;
     private PrintStream m_out;
 
     Properties m_properties = null;
@@ -137,11 +130,20 @@ public class Installer {
         loadProperties();
         parseArguments(argv);
 
+        m_installerDb.setForce(m_force);
+        m_installerDb.setIgnoreNotNull(m_ignore_not_null);
+        m_installerDb.setNoRevert(m_do_not_revert);
+        m_installerDb.setPostgresAdminUser(m_pg_user);
+        m_installerDb.setPostgresAdminPassword(m_pg_pass);
+        m_installerDb.setPostgresOpennmsUser(m_user);
+        m_installerDb.setPostgresOpennmsPassword(m_pass);
+        m_installerDb.setDatabaseName(m_pg_database_name);
+
         if (!m_update_database && !m_do_inserts && !m_update_iplike
                 && !m_update_unicode && m_tomcat_conf == null
                 && !m_install_webapp && !m_fix_constraint) {
-            throw new Exception("Nothing to do.\n" + m_required_options
-                    + "\nUse '-h' for help.");
+            usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
+            System.exit(0);
         }
         
         DataSource adminDataSource =
@@ -298,24 +300,25 @@ public class Installer {
         m_properties.putAll(sys);
 
         m_opennms_home = fetchProperty("install.dir");
-        m_installerDb.setDatabaseName(fetchProperty("install.database.name"));
-        m_installerDb.setPostgresOpennmsUser(fetchProperty("install.database.user"));
-        m_installerDb.setPassword(fetchProperty("install.database.password"));
+        m_pg_database_name = fetchProperty("install.database.name");
+        m_user = fetchProperty("install.database.user");
+        m_pass = fetchProperty("install.database.password");
         m_pg_driver = fetchProperty("install.database.driver");
         m_pg_url = fetchProperty("install.database.url");
-        m_installerDb.setProgresBinaryDirectory(fetchProperty("install.database.bindir"));
-        String etcDirectory = fetchProperty("install.etc.dir");
+        m_etc_dir = fetchProperty("install.etc.dir");
         m_install_servletdir = fetchProperty("install.servlet.dir");
+        
+        m_installerDb.setPostgresBinaryDirectory(fetchProperty("install.database.bindir"));
 
         String soext = fetchProperty("build.soext");
         String pg_iplike_dir = m_properties.getProperty("install.postgresql.dir");
 
         if (pg_iplike_dir != null) {
-        	m_installerDb.setPgIpLikeLocation(pg_iplike_dir + File.separator + "iplike." + soext);
+        	m_installerDb.setPostgresIpLikeLocation(pg_iplike_dir + File.separator + "iplike." + soext);
         }
         
-        m_installerDb.setStoredProcedureDirectory(etcDirectory);
-        m_installerDb.setCreateSqlLocation(etcDirectory + File.separator + "create.sql");
+        m_installerDb.setStoredProcedureDirectory(m_etc_dir);
+        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
     public String fetchProperty(String property) throws Exception {
@@ -330,151 +333,90 @@ public class Installer {
     }
 
     public void parseArguments(String[] argv) throws Exception {
-        LinkedList<String> args = new LinkedList<String>();
+        
+        options.addOption("h", "help",             false, "this help");
+        
+        // database-related options
+        options.addOption("d", "do-database",      false, "perform database actions");
+        
+        options.addOption("u", "username",         true, "username of the database administrator (default: 'opennms')");
+        options.addOption("p", "password",         true, "password of the database administrator (default: 'opennms')");
+        options.addOption("a", "admin-username",   true, "username of the database administrator (default: 'postgres')");
+        options.addOption("A", "admin-password",   true, "password of the database administrator (default: '')");
+        options.addOption("D", "database-url",     true, "JDBC database URL (default: jdbc:postgresql://localhost:5432/");
+        options.addOption("P", "database-name",    true, "name of the PostgreSQL database (default: opennms)");
+        
+        options.addOption("c", "clean-database",   false, "clean existing database before creating");
+        options.addOption("i", "insert-data",      false, "insert default data into the database");
+        options.addOption("s", "stored-procedure", false, "add the IPLIKE stored procedure if it's missing");
+        options.addOption("U", "unicode",          false, "convert the database to Unicode if it is not already");
+        options.addOption("v", "vacuum",           false, "vacuum (optimize) the database");
+        options.addOption("f", "vacuum-full",      false, "vacuum full the database (recovers unused disk space)");
+        options.addOption("N", "ignore-not-null",  false, "ignore NOT NULL constraint when transforming data");
+        
+        options.addOption("x", "database-debug",   false, "turn on debugging for the database data transformation");
+        options.addOption("R", "do-not-revert",    false, "do not revert a table to the original if an error occurs");
+        options.addOption("n", "skip-constraint",  false, "");
+        options.addOption("C", "repair-constraint", true, "fix rows that violate the specified constraint (sets key column to NULL)");
+        options.addOption("X", "drop-constraint",  false, "drop rows that match the constraint specified in -C, instead of fixing them");
+        
+        // tomcat-related options
+        options.addOption("y", "do-webapp",        false, "install web application (see '-w')");
+        options.addOption("T", "tomcat-conf",      true, "location of tomcat.conf");
+        options.addOption("w", "tomcat-context",   true, "location of the tomcat context (eg, conf/Catalina/localhost)");
+        
+        // general installation options
+        options.addOption("l", "library-path",     true, "library search path (directories separated by '" + File.pathSeparator + "')");
+        options.addOption("r", "rpm-install",      false, "RPM install (deprecated)");
+        
+        CommandLineParser parser = new PosixParser();
+        m_commandLine = parser.parse(options, argv);
 
-        for (int i = 0; i < argv.length; i++) {
-            StringBuffer b = new StringBuffer(argv[i]);
-            boolean is_arg = false;
-
-            while (b.length() > 0 && b.charAt(0) == '-') {
-                is_arg = true;
-                b.deleteCharAt(0);
-            }
-
-            if (is_arg) {
-                while (b.length() > 0) {
-                    char c = b.charAt(0);
-                    b.deleteCharAt(0);
-
-                    switch (c) {
-                    case 'h':
-                        printHelp();
-                        break;
-
-                    case 'c':
-                        m_installerDb.setForce(true);
-                        break;
-
-                    case 'C':
-                        i++;
-                        m_fix_constraint = true;
-                        m_fix_constraint_name = getNextArg(argv, i, 'C');
-                        break;
-
-                    case 'd':
-                        m_update_database = true;
-                        break;
-
-                    case 'D':
-                        i++;
-                    	m_pg_url = getNextArg(argv, i, 'D');
-                    	break;
-                    	
-                    case 'i':
-                        m_do_inserts = true;
-                        break;
-                    
-                    case 'l':
-                    	i++;
-                    	m_library_search_path = getNextArg(argv, i, 'l');
-                    	break;
-                    	
-                    case 'n':
-                        m_skip_constraints = true;
-
-                    case 'N':
-                        m_installerDb.setIgnoreNotNull(true);
-                        break;
-
-                    case 'p':
-                        i++;
-                        m_pg_pass = getNextArg(argv, i, 'p');
-                        break;
-
-                    case 'R':
-                        m_installerDb.setNoRevert(true);
-                        break;
-
-                    case 's':
-                        m_update_iplike = true;
-                        break;
-
-                    case 'T':
-                        i++;
-                        m_tomcat_conf = getNextArg(argv, i, 'T');
-                        break;
-
-                    case 'u':
-                        i++;
-                        m_pg_user = getNextArg(argv, i, 'u');
-                        m_installerDb.setPostgresAdminUser(m_pg_user);
-                        break;
-
-                    case 'U':
-                        m_update_unicode = true;
-                        break;
-
-                    case 'v':
-                        if (argv.length > (i+1) && argv[i+1].equalsIgnoreCase("full")) {
-                            i++;
-                            m_do_full_vacuum = true;
-                        }
-                        m_do_vacuum = true;
-                        break;
-                        
-                    case 'w':
-                        i++;
-                        m_webappdir = getNextArg(argv, i, 'w');
-                        break;
-
-                    case 'x':
-                        m_installerDb.setDebug(true);
-                        break;
-
-                    case 'X':
-                        m_fix_constraint_remove_rows = true;
-                        break;
-
-                    case 'y':
-                        m_install_webapp = true;
-                        break;
-
-                    default:
-                        throw new Exception("unknown option '" + c + "'"
-                                + ", use '-h' option for usage");
-                    }
-                }
-            } else {
-                args.add(argv[i]);
-            }
+        if (m_commandLine.hasOption("h")) {
+            usage(options, m_commandLine);
+            System.exit(0);
         }
 
-        if (args.size() != 0) {
-            throw new Exception("too many command-line arguments specified");
-        }
-    }
+        m_pg_user = m_commandLine.getOptionValue("a", m_pg_user);
+        m_pg_pass = m_commandLine.getOptionValue("A", m_pg_pass);
+        m_force = m_commandLine.hasOption("c");
+        m_fix_constraint = m_commandLine.hasOption("C");
+        m_fix_constraint_name = m_commandLine.getOptionValue("C");
+        m_update_database = m_commandLine.hasOption("d");
+        m_pg_url = m_commandLine.getOptionValue("D", m_pg_url);
+        m_do_full_vacuum = m_commandLine.hasOption("f");
+        m_do_inserts = m_commandLine.hasOption("i");
+        m_library_search_path = m_commandLine.getOptionValue("l", m_library_search_path);
+        m_skip_constraints = m_commandLine.hasOption("n");
+        m_ignore_not_null = m_commandLine.hasOption("N");
+        m_pass = m_commandLine.getOptionValue("p", m_pass);
+        m_pg_database_name = m_commandLine.getOptionValue("P", m_pg_database_name);
+        m_do_not_revert = m_commandLine.hasOption("R");
+        m_update_iplike = m_commandLine.hasOption("s");
+        m_tomcat_conf = m_commandLine.getOptionValue("T", m_tomcat_conf);
+        m_user = m_commandLine.getOptionValue("u", m_user);
+        m_update_unicode = m_commandLine.hasOption("U");
+        m_do_vacuum = m_commandLine.hasOption("v");
+        m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
+        m_installerDb.setDebug(m_commandLine.hasOption("x"));
+        m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
+        m_install_webapp = m_commandLine.hasOption("y");
 
-    public String getNextArg(String[] argv, int i, char letter)
-            throws Exception {
-        if (i >= argv.length) {
-            throw new Exception("no argument provided for '" + letter
-                    + "' option");
+        if (m_commandLine.getArgList().size() > 0) {
+            usage(options, m_commandLine, "Unknown command-line arguments: " + m_commandLine.getArgs(), null);
+            System.exit(1);
         }
-        if (argv[i].charAt(0) == '-') {
-            throw new Exception("argument to '" + letter + "' option looks "
-                    + "like another option (begins with a dash): \""
-                    + argv[i] + "\"");
-        }
-        return argv[i];
     }
 
     public void printDiagnostics() {
+        m_out.println("* using '" + m_installerDb.getPostgresAdminUser()
+                + "' as the PostgreSQL administrative user for OpenNMS");
+        m_out.println("* using '" + m_installerDb.getPostgresAdminPassword()
+                + "' as the PostgreSQL administrative password for OpenNMS");
         m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser()
-                      + "' as the PostgreSQL "
-                      + "user for OpenNMS");
-        m_out.println("* using '" + m_installerDb.getPassword()
-                      + "' as the PostgreSQL "
-                      + "password for OpenNMS");
+                      + "' as the PostgreSQL user for OpenNMS");
+        m_out.println("* using '" + m_installerDb.getPostgresOpennmsPassword()
+                      + "' as the PostgreSQL password for OpenNMS");
         m_out.println("* using '" + m_installerDb.getDatabaseName()
                       + "' as the PostgreSQL database name for OpenNMS");
     }
@@ -699,72 +641,32 @@ public class Installer {
         }
 
         if (new File(destination).exists()) {
-            throw new Exception("Could not delete existing " + description
-                    + ": " + destination);
+            usage(options, m_commandLine, "Could not delete existing " + description + ": " + destination, null);
+            System.exit(1);
         }
     }
 
-    public void printHelp() {
-        m_out.println("usage:");
-        m_out.println("      $OPENNMS_HOME/bin/install -h");
-        m_out.println("      $OPENNMS_HOME/bin/install "
-                + "[-r] [-x] [-N] [-R] [-c] [-d] [-i] [-s] [-U]");
-        m_out.println("                                [-y] [-X]");
-        m_out.println("                                "
-                + "[-u <PostgreSQL admin user>]");
-        m_out.println("                                "
-                + "[-p <PostgreSQL admin password>]");
-        m_out.println("                                "
-                + "[-D <PostgreSQL database URL>]");
-        m_out.println("                                "
-                + "[-T <tomcat4.conf>]");
-        m_out.println("                                "
-                + "[-w <tomcat context directory>");
-        m_out.println("                                "
-                + "[-C <constraint>]");
-        m_out.println("");
-        m_out.println(m_required_options);
-        m_out.println("");
-        m_out.println("   -h    this help");
-        m_out.println("");
-        m_out.println("   -d    perform database actions");
-        m_out.println("   -i    insert data into the database");
-        m_out.println("   -s    update iplike postgres function");
-        m_out.println("   -U    upgrade database to unicode, if needed");
-        m_out.println("   -v    vacuum the database");
-        m_out.println("   -y    install web application (see -w)");
-        m_out.println("");
-        m_out.println("   -u    username of the PostgreSQL "
-                + "administrator (default: \"" + m_pg_user + "\")");
-        m_out.println("   -p    password of the PostgreSQL "
-                + "administrator (default: \"" + m_pg_pass + "\")");
-        m_out.println("   -D    JDBC URL of the PostgreSQL "
-                + "database (default: \"" + m_pg_url + "\")");
-        m_out.println("   -c    drop and recreate tables that already "
-                + "exist");
-        m_out.println("");
-        m_out.println("   -T    location of tomcat.conf");
-        m_out.println("   -w    location of tomcat's context directory");
-        m_out.println("         (usually under conf/Catalina/localhost)");
-        m_out.println("");
-        m_out.println("   -l    library search path");
-        m_out.println("");
-        m_out.println("   -r    run as an RPM install (does nothing)");
-        m_out.println("   -x    turn on debugging for database data "
-                + "transformation");
-        m_out.println("   -N    ignore NOT NULL constraint checks when "
-                + "transforming data");
-        m_out.println("         useful after a table is reverted by a "
-                + "previous run of the installer");
-        m_out.println("   -R    do not revert a table to the original if "
-                + "an error occurs when");
-        m_out.println("         transforming data -- only used for debugging");
-        m_out.println("   -C    fix rows that violate the specified "
-                + "constraint -- sets key column in");
-        m_out.println("         affected rows to NULL by default");
-        m_out.println("   -X    drop rows that violate constraint instead of marking key column in");
-        m_out.println("         affected rows to NULL (used with \"-C\")");
+    private void usage(Options options, CommandLine cmd) {
+        usage(options, cmd, null, null);
+    }
+    
+    private void usage(Options options, CommandLine cmd, String error, Exception e) {
+        HelpFormatter formatter = new HelpFormatter();
+        PrintWriter pw = new PrintWriter(m_out);
 
+        if (error != null) {
+            pw.println("An error occurred: " + error + "\n");
+        }
+
+        formatter.printHelp("usage: install [options]", options);
+
+        if (e != null) {
+            pw.println(e.getMessage());
+            e.printStackTrace(pw);
+        }
+        
+        pw.close();
+        
         System.exit(0);
     }
 

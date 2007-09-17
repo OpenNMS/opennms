@@ -2047,7 +2047,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
     public void testUpdateIplikePgSql() throws Exception {
         getInstallerDb().updatePlPgsql();
-        getInstallerDb().setPgIpLikeLocation(null); // Ensure that we don't try to load the C version
+        getInstallerDb().setPostgresIpLikeLocation(null); // Ensure that we don't try to load the C version
         getInstallerDb().updateIplike();
         getInstallerDb().closeConnection();
     }
