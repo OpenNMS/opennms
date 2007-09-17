@@ -31,21 +31,16 @@
 //
 package org.opennms.netmgt.poller.nsclient;
 
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
-import org.opennms.netmgt.poller.nsclient.NsclientManager;
-import org.opennms.netmgt.poller.nsclient.NsclientPacket;
-
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * This is an example commandline tool to perform checks against NSClient
