@@ -91,6 +91,7 @@ public class InstallerDb {
     private boolean m_debug = false;
 
     private String m_createSqlLocation = null;
+    
     private String m_storedProcedureDirectory = null;
     
     private String m_databaseName = null;
@@ -137,6 +138,7 @@ public class InstallerDb {
     private boolean m_no_revert = false;
 
     private String m_pg_user = "postgres";
+    private String m_pg_pass = "";
     
     public InstallerDb() {
         
@@ -2076,7 +2078,7 @@ public class InstallerDb {
 
         m_out.print("  - recreating tables... ");
         String[] cmd4 = { m_pg_bindir + File.separator + "psql", "-U",
-                m_user, "-f", getCreateSqlLocation(),
+                m_pg_user, "-f", getCreateSqlLocation(),
                 m_databaseName };
         if ((exitVal = e.exec(cmd4)) != 0) {
             throw new Exception("Recreating tables returned non-zero exit "
@@ -2088,7 +2090,7 @@ public class InstallerDb {
 
         m_out.print("  - restoring data... ");
         String[] cmd5 = { m_pg_bindir + File.separator + "psql", "-U",
-                m_user, "-f", dumpFile, m_databaseName };
+                m_pg_user, "-f", dumpFile, m_databaseName };
         if ((exitVal = e.exec(cmd5)) != 0) {
             throw new Exception("Restoring data returned non-zero exit "
                     + "value " + exitVal + " while executing " + "command '"
@@ -2265,14 +2267,6 @@ public class InstallerDb {
         m_out = out;
     }
 
-    public void setPostgresOpennmsUser(String user) {
-        m_user = user;
-    }
-
-    public String getPostgresOpennmsUser() {
-        return m_user;
-    }
-
     public TriggerDao getTriggerDao() {
         return m_triggerDao;
     }
@@ -2337,23 +2331,43 @@ public class InstallerDb {
         m_no_revert = noRevert;
     }
 
-    public void setPassword(String password) {
+    public void setPostgresOpennmsUser(String user) {
+        m_user = user;
+    }
+
+    public String getPostgresOpennmsUser() {
+        return m_user;
+    }
+
+    public void setPostgresOpennmsPassword(String password) {
         m_pass = password;
     }
 
-    public String getPassword() {
+    public String getPostgresOpennmsPassword() {
         return m_pass;
     }
 
-    public void setProgresBinaryDirectory(String directory) {
+    public void setPostgresBinaryDirectory(String directory) {
         m_pg_bindir = directory;
     }
 
     public void setPostgresAdminUser(String postgresAdminUser) {
         m_pg_user  = postgresAdminUser;
     }
+    
+    public String getPostgresAdminUser() {
+        return m_pg_user;
+    }
 
-    public void setPgIpLikeLocation(String location) {
+    public void setPostgresAdminPassword(String pass) {
+        m_pg_pass = pass;
+    }
+    
+    public String getPostgresAdminPassword() {
+        return m_pg_pass;
+    }
+    
+    public void setPostgresIpLikeLocation(String location) {
     	if (location != null) {
     		File iplike = new File(location);
     		if (!iplike.exists()) {
