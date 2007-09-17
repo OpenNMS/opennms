@@ -432,24 +432,26 @@ opennms.home = ${opennms.home}
       </plugin>
    </plugins>
   </build>
-  <reporting>
+
+
+ <reporting>
     <plugins>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <use>false</use>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jxr-maven-plugin</artifactId>
-      </plugin>      
       <plugin>
         <artifactId>maven-surefire-report-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <headerLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt</headerLocation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-         <configuration>
+        <version>2.2</version>
+        <configuration>
             <targetJdk>1.5</targetJdk>
             <rulesets>
                <ruleset>/rulesets/basic.xml</ruleset>
@@ -461,8 +463,47 @@ opennms.home = ${opennms.home}
             <minimumTokens>100</minimumTokens>
          </configuration>
       </plugin>
+      <!--
+      <plugin>
+       org.codehaus.mojo:cobertura-maven-plugin > org.codehaus.mojo:taglist-maven-plugin > org.codehaus.mojo:cobertura-maven-plugin
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+      </plugin>
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <links>
+            <link>http://java.sun.com/j2ee/1.4/docs/api</link>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+            <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
+            <link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
+            <link>http://junit.sourceforge.net/javadoc/</link>
+            <link>http://logging.apache.org/log4j/docs/api/</link>
+            <link>http://jakarta.apache.org/regexp/apidocs/</link>
+            <link>http://jakarta.apache.org/velocity/api/</link>
+          </links>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.0</version>
+      </plugin>
     </plugins>
   </reporting>
+
   <properties>
     <!-- maven surefire version added here so it could be overridden -->
     <maven.surefire.plugin.version>2.3</maven.surefire.plugin.version>
@@ -1484,7 +1525,7 @@ opennms.home = ${opennms.home}
     <site>
       <id>opennms-site</id>
       <name>OpenNMS Build Website</name>
-      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites/${project.version}/${project.artifactId}</url>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites/opennms/${project.version}/</url>
     </site>
     <repository>
       <id>opennms-repo</id>
