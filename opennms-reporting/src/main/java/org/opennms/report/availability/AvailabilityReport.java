@@ -305,6 +305,10 @@ public class AvailabilityReport extends Object {
         String startDate = System.getProperty("startDate");
         String startYear = System.getProperty("startYear");
 
+        if (startMonth == null || startDate == null || startYear == null) {
+            throw new NumberFormatException("missing date properties");
+        }
+        
         try {
             generateReport(logourl, categoryName, format, monthFormat,
                            startMonth, startDate, startYear);
