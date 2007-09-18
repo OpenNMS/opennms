@@ -320,12 +320,25 @@ for dir in /etc /etc/rc.d; do
 	fi
 done
 
+for LIBNAME in jicmp jrrd; do
+	if [ `grep "opennms.library.${LIBNAME}" "%{instprefix}/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
+		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
+		if [ -n "$LIBRARY_PATH" ]; then
+			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "%{instprefix}/etc/libraries.properties"
+		fi
+	fi
+done
+
 echo ""
 echo " *** Installation complete.  You must still run the installer and"
 echo " *** make a few other changes before you start OpenNMS.  See the"
 echo " *** install guide and release notes for details."
 
 %changelog
+* Tue Sep 18 2007 Benjamin Reed <ranger@opennms.org>
+- Look for existing libraries and auto-populate libraries.properties,
+  if possible.
+
 * Tue Sep 04 2007 Benjamin Reed <ranger@opennms.org>
 - Split out -core and the webapps for easier balance of custom-installs
   across systems and easy install through package management.
