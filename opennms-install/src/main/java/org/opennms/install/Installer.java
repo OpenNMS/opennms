@@ -720,8 +720,10 @@ public class Installer {
 
         ArrayList<String> searchPaths = new ArrayList<String>();
 
-        for (String entry : path.split(File.pathSeparator)) {
-            searchPaths.add(entry);
+        if (path != null) {
+            for (String entry : path.split(File.pathSeparator)) {
+                searchPaths.add(entry);
+            }
         }
         
         if (System.getProperty("java.library.path") != null) {
