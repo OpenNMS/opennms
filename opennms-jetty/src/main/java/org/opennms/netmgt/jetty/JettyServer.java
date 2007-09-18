@@ -81,30 +81,42 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         HandlerCollection handlers = new HandlerCollection();
 
         if (webappsDir.exists()) {
-            for (File entry: webappsDir.listFiles()) {
-                if (entry.isDirectory()) {
-                    log().warn("name = " + entry.getName());
-                    WebAppContext wac = new WebAppContext();
-                    wac.setWar(entry.getAbsolutePath());
-                    wac.setContextPath("/" + entry.getName());
-                    handlers.addHandler(wac);
-                    
-                    try {
-                        ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
-                        String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
-                        Hashtable<String, String> properties = new Hashtable<String, String>();
-                        properties.put("path", "/" + entry.getName());
-                        srs.initialize("HTTP", entry.getName() + "-" + host, port, properties);
-                        services.put(entry.getName(), srs);
-                    } catch (Exception e) {
-                        log().warn("unable to get a DNS-SD object for context '" + entry.getName() + "'", e);
-                    }
+            for (File file: webappsDir.listFiles()) {
+                if (file.isDirectory()) {
+                    String contextPath = "/" + file.getName();
+                    addContext(handlers, file, contextPath);
+                    registerService(port, contextPath);
                 }
             }
         }
 
         m_server.setHandler(handlers);
         m_server.setStopAtShutdown(true);
+    }
+
+    protected void addContext(HandlerCollection handlers, File name, String contextPath) {
+        log().warn("adding context: " + contextPath + " -> " + name.getAbsolutePath());
+        WebAppContext wac = new WebAppContext();
+        wac.setWar(name.getAbsolutePath());
+        wac.setContextPath(contextPath);
+        handlers.addHandler(wac);
+    }
+
+    protected void registerService(Integer port, String contextPath) {
+        String contextName = contextPath;
+        contextName.replaceFirst("/", "");
+
+        try {
+            ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
+            String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
+            Hashtable<String, String> properties = new Hashtable<String, String>();
+            properties.put("path", contextPath);
+            
+            srs.initialize("HTTP", contextName + "-" + host, port, properties);
+            services.put(contextName, srs);
+        } catch (Exception e) {
+            log().warn("unable to get a DNS-SD object for context '" + contextPath + "'", e);
+        }
     }
 
     @Override
