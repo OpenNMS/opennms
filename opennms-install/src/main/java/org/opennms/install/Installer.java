@@ -42,14 +42,17 @@ package org.opennms.install;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,6 +84,8 @@ public class Installer {
     static final String s_version =
         "$Id$";
 
+    static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
+    
     String m_opennms_home = null;
     boolean m_update_database = false;
     boolean m_do_inserts = false;
@@ -725,6 +730,24 @@ public class Installer {
                 searchPaths.add(entry);
             }
         }
+
+        try {
+            File confFile = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
+            Properties p = new Properties();
+            InputStream is = new FileInputStream(confFile);
+            p.load(is);
+            is.close();
+            for (Enumeration e = p.keys(); e.hasMoreElements(); ) {
+                String key = (String)e.nextElement();
+                if (key.startsWith("opennms.library")) {
+                    String value = p.getProperty(key);
+                    value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
+                    searchPaths.add(value);
+                }
+            }
+        } catch (Exception e) {
+            // ok if we can't read these, we'll try to find them
+        }
         
         if (System.getProperty("java.library.path") != null) {
             for (String entry : System.getProperty("java.library.path").split(File.pathSeparator)) {
@@ -793,7 +816,7 @@ public class Installer {
     	}
     	
         File f = new File(m_opennms_home + File.separator + "etc"
-                + File.separator + "libraries.properties");
+                + File.separator + LIBRARY_PROPERTY_FILE);
         f.createNewFile();
         FileOutputStream os = new FileOutputStream(f);
     	libraryProps.store(os, null);
