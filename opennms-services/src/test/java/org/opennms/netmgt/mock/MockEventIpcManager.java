@@ -38,6 +38,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
@@ -94,9 +97,11 @@ public class MockEventIpcManager implements EventIpcManager {
 
     private int m_pendingEvents;
 
-    private int m_eventDelay = 0;
+    private int m_eventDelay = 20;
 
     private boolean m_synchronous = true;
+    
+    private ScheduledExecutorService m_scheduler = null;
 
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
@@ -176,7 +181,6 @@ public class MockEventIpcManager implements EventIpcManager {
         Runnable r = new Runnable() {
             public void run() {
                 try {
-                    try { Thread.sleep(m_eventDelay); } catch (InterruptedException e) {}
                     m_eventWriter.writeEvent(event);
                     broadcastNow(event);
                     m_anticipator.eventProcessed(event);
@@ -193,9 +197,15 @@ public class MockEventIpcManager implements EventIpcManager {
         if (isSynchronous()) {
             r.run();
         } else {
-            Thread thread = new Thread(r);
-            thread.start();
+            getScheduler().schedule(r, m_eventDelay, TimeUnit.MILLISECONDS);
         }
+    }
+    
+    ScheduledExecutorService getScheduler() {
+        if (m_scheduler == null) {
+            m_scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+        return m_scheduler;
     }
 
     public void sendNow(Log eventLog) {
