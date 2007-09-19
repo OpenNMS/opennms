@@ -179,7 +179,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                 	nf.setMinimumFractionDigits(0);
                 	nf.setMaximumFractionDigits(Integer.MAX_VALUE);
                 	nf.setMinimumIntegerDigits(0);
-                	nf.setMaximumFractionDigits(Integer.MAX_VALUE);
+                	nf.setMaximumIntegerDigits(Integer.MAX_VALUE);
                 	value.append(nf.format(num.doubleValue()));
             	}
             	if (i.hasNext()) {
