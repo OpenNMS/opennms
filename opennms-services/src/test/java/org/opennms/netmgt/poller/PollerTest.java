@@ -41,11 +41,12 @@ package org.opennms.netmgt.poller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.capsd.CapsdDbSyncerFactory;
+import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -65,10 +66,13 @@ import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
+import org.opennms.netmgt.mock.NullRrdStrategy;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
@@ -181,6 +185,9 @@ public class PollerTest extends TestCase {
 
 		MockOutageConfig config = new MockOutageConfig();
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
+		
+		RrdConfig.setProperties(new Properties());
+		RrdUtils.setStrategy(new NullRrdStrategy());
 
 		// m_outageMgr = new OutageManager();
 		// m_outageMgr.setEventMgr(m_eventMgr);
