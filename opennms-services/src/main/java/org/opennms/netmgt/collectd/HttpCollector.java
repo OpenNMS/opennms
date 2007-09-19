@@ -44,6 +44,9 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,6 +97,25 @@ public class HttpCollector implements ServiceCollector {
     //Don't make this static because each service will have its own
     //copy and the key won't require the service name as  part of the key.
     private final HashMap<Integer, String> m_scheduledNodes = new HashMap<Integer, String>();
+    
+    private NumberFormat parser = null;
+    
+    private NumberFormat rrdFormatter =  null;
+    
+    
+    public HttpCollector() {
+        parser = NumberFormat.getNumberInstance();
+        ((DecimalFormat)parser).setParseBigDecimal(true);
+
+        rrdFormatter = NumberFormat.getNumberInstance();
+        rrdFormatter.setMinimumFractionDigits(0);
+        rrdFormatter.setMaximumFractionDigits(Integer.MAX_VALUE);
+        rrdFormatter.setMinimumIntegerDigits(1);
+        rrdFormatter.setMaximumIntegerDigits(Integer.MAX_VALUE);
+        rrdFormatter.setGroupingUsed(false);
+        
+        
+    }
 
     @SuppressWarnings("unchecked")
     public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
@@ -207,9 +229,9 @@ public class HttpCollector implements ServiceCollector {
     class HttpCollectionAttribute implements AttributeDefinition {
         String m_alias;
         String m_type;
-        String m_value;
+        Number m_value;
         
-        HttpCollectionAttribute(String alias, String type, String value) {
+        HttpCollectionAttribute(String alias, String type, Number value) {
             m_alias = alias;
             m_type= type;
             m_value = value;
@@ -223,8 +245,12 @@ public class HttpCollector implements ServiceCollector {
             return m_type;
         }
         
-        public String getValue() {
+        public Number getValue() {
             return m_value;
+        }
+        
+        public String getValueAsString() {
+            return rrdFormatter.format(m_value);
         }
 
         @Override
@@ -249,7 +275,7 @@ public class HttpCollector implements ServiceCollector {
             buffer.append(":");
             buffer.append(getType());
             buffer.append(":");
-            buffer.append(getValue());
+            buffer.append(getValueAsString());
             return buffer.toString();
         }
         
@@ -268,10 +294,14 @@ public class HttpCollector implements ServiceCollector {
             List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
             
             for (Attrib attribDef : attribDefs) {
-                HttpCollectionAttribute bute = new HttpCollectionAttribute(attribDef.getAlias(),
-                        attribDef.getType(), m.group(attribDef.getMatchGroup()));
-                log().debug("processResponse: adding found attribute: "+bute);
-                butes.add(bute);
+                try {
+                    Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
+                    HttpCollectionAttribute bute = new HttpCollectionAttribute(attribDef.getAlias(), attribDef.getType(), num);
+                    log().debug("processResponse: adding found attribute: "+bute);
+                    butes.add(bute);
+                } catch (ParseException e) {
+                    log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched "+m.group(attribDef.getMatchGroup())+" instead.");
+                }
             }
         } else {
             log().debug("processResponse: found matching attributes: "+matches);
@@ -325,7 +355,7 @@ public class HttpCollector implements ServiceCollector {
             PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
             builder.declareAttribute(attribute);
             log().debug("doCollection: setting attribute: "+attribute);
-            builder.setAttributeValue(attribute, attribute.getValue());
+            builder.setAttributeValue(attribute, attribute.getValueAsString());
             builder.commit();
         }
     }
@@ -406,7 +436,9 @@ public class HttpCollector implements ServiceCollector {
     
     @SuppressWarnings("unchecked")
     public void initialize(Map parameters) {
+        
         log().debug("initialize: Initializing HttpCollector.");
+        
         m_scheduledNodes.clear();
         initHttpCollecionConfig();
         initDatabaseConnectionFactory();
