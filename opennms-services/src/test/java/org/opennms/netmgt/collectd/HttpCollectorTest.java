@@ -96,7 +96,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
                 "        <url path=\"/test/resources/httpcolltest.html\"\n" + 
                 "             user-agent=\"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) " +
                 "AppleWebKit/412 (KHTML, like Gecko) Safari/412\" \n" + 
-                "             matches=\"(?s).*Document Count:\\s+([0-9]+).*\" response-range=\"100-399\" virtual-host=\"www.opennms.org\">\n" + 
+                "             matches=\"(?s).*Document Count:\\s+([0-9,]+(\\.[0-9]*)?).*\" response-range=\"100-399\" virtual-host=\"www.opennms.org\">\n" + 
                 "        </url>\n" + 
                 "        <attributes>\n" + 
                 "          <attrib alias=\"documentCount\" match-group=\"1\" type=\"counter32\"/>\n" + 
