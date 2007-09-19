@@ -239,7 +239,7 @@ doStart(){
 	if ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
 	    true	# Java process is still running... don't do anything
         else
-            echo "Started OpenNMS, but it stopped running: check output.log" >&2
+            echo "Started OpenNMS, but it stopped running: for details see $REDIRECT" >&2
             return 1
         fi
 	sleep $STATUS_WAIT
