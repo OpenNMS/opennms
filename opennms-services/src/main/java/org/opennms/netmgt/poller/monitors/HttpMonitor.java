@@ -316,7 +316,7 @@ public class HttpMonitor extends IPv4Monitor {
         // return the status of the service
         //
         PollStatus ps = PollStatus.get(serviceStatus, reason);
-        ps.setProperty("response-time", nanoResponseTime / 1000.0);
+        ps.setProperty("response-time", nanoResponseTime / 1000000.0);
         return ps;
     }
     
