@@ -799,7 +799,7 @@ public class PollerTest extends TestCase {
 
 		m_eventMgr.sendEventToListeners(reparentEvent);
 
-		verifyAnticipated(60000);
+		verifyAnticipated(20000);
 
 	}
 
