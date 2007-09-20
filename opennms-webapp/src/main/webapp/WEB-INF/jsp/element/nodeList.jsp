@@ -72,11 +72,11 @@
 
     <c:otherwise>
       <div class="TwoColLeft">
-        <element:nodelist nodes="${model.nodesLeft}" isIfAliasSearch="${command.ifAlias != null}"/>
+        <element:nodelist nodes="${model.nodesLeft}" isIfAliasSearch="${command.ifAlias != null}" isMaclikeSearch="${command.maclike != null}"/>
       </div>
         
       <div class="TwoColRight">
-        <element:nodelist nodes="${model.nodesRight}" isIfAliasSearch="${command.ifAlias != null}"/>
+        <element:nodelist nodes="${model.nodesRight}" isIfAliasSearch="${command.ifAlias != null}" isMaclikeSearch="${command.maclike != null}"/>
       </div>
 
       <div class="spacer"><!-- --></div>
@@ -127,6 +127,9 @@
     </c:if>
     <c:if test="${command.ifAlias != null}">
       <c:param name="ifAlias" value="${command.ifAlias}"/>
+    </c:if>
+    <c:if test="${command.maclike != null}">
+      <c:param name="maclike" value="${command.maclike}"/>
     </c:if>
     <c:if test="${command.category1 != null}">
       <c:forEach var="category" items="${command.category1}">
