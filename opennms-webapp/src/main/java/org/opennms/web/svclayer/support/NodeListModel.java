@@ -2,6 +2,7 @@ package org.opennms.web.svclayer.support;
 
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -41,10 +42,12 @@ public class NodeListModel {
     public static class NodeModel {
         private OnmsNode m_node;
         private List<OnmsIpInterface> m_interfaces;
+        private List<OnmsArpInterface> m_arpinterfaces;
         
-        public NodeModel(OnmsNode node, List<OnmsIpInterface> interfaces) {
+        public NodeModel(OnmsNode node, List<OnmsIpInterface> interfaces, List<OnmsArpInterface> arpinterfaces) {
             m_node = node;
             m_interfaces = interfaces;
+            m_arpinterfaces = arpinterfaces;
         }
         
         public OnmsNode getNode() {
@@ -53,6 +56,10 @@ public class NodeListModel {
         
         public List<OnmsIpInterface> getInterfaces() {
             return m_interfaces;
+        }
+        
+        public List<OnmsArpInterface> getArpInterfaces() {
+            return m_arpinterfaces;
         }
     }
 

@@ -23,6 +23,7 @@ import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -40,6 +41,7 @@ import org.springframework.util.StringUtils;
 
 public class DefaultNodeListService implements NodeListService, InitializingBean {
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
+    private static final Comparator<OnmsArpInterface> ARP_INTERFACE_COMPARATOR = new ArpInterfaceComparator();
     
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
@@ -268,9 +270,11 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
     private NodeListModel createModelForNodes(NodeListCommand command, Collection<OnmsNode> onmsNodes) {
         int interfaceCount = 0;
+        int arpInterfaceCount = 0;
         List<NodeModel> displayNodes = new LinkedList<NodeModel>();
         for (OnmsNode node : onmsNodes) {
             List<OnmsIpInterface> displayInterfaces = new LinkedList<OnmsIpInterface>();
+            List<OnmsArpInterface> displayArpInterfaces = new LinkedList<OnmsArpInterface>();
             if (command.getListInterfaces()) {
                 if (command.hasIfAlias()) {
                     for (OnmsIpInterface intf : node.getIpInterfaces()) {
@@ -278,6 +282,20 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                             displayInterfaces.add(intf);
                         }
                     }
+                } else if (command.hasMaclike()) {
+                	for (OnmsIpInterface intf : node.getIpInterfaces()) {
+                		if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getPhysAddr() != null && intf.getSnmpInterface().getPhysAddr().toLowerCase().contains(command.getMaclike().toLowerCase())) {
+                			displayInterfaces.add(intf);
+                		}
+                	}
+                	for (OnmsArpInterface aint : node.getArpInterfaces()) {
+                		if (aint.getPhysAddr() != null && aint.getPhysAddr().toLowerCase().contains(command.getMaclike().toLowerCase())) {
+                			OnmsIpInterface intf = node.getIpInterfaceByIpAddress(aint.getIpAddress());
+                			if ((intf == null || intf.getSnmpInterface() == null || intf.getSnmpInterface().getPhysAddr() == null || !intf.getSnmpInterface().getPhysAddr().equalsIgnoreCase(aint.getPhysAddr()))) {
+                				displayArpInterfaces.add(aint);
+                			}
+                		}
+                	}
                 } else {
                     for (OnmsIpInterface intf : node.getIpInterfaces()) {
                         if (!"D".equals(intf.getIsManaged()) && !"0.0.0.0".equals(intf.getIpAddress())) {
@@ -288,10 +306,11 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             }
             
             Collections.sort(displayInterfaces, IP_INTERFACE_COMPARATOR);
-            
+            Collections.sort(displayArpInterfaces, ARP_INTERFACE_COMPARATOR);           
 
-            displayNodes.add(new NodeListModel.NodeModel(node, displayInterfaces));
+            displayNodes.add(new NodeListModel.NodeModel(node, displayInterfaces, displayArpInterfaces));
             interfaceCount += displayInterfaces.size();
+            interfaceCount += displayArpInterfaces.size();
         }
 
         return new NodeListModel(displayNodes, interfaceCount);
@@ -385,6 +404,40 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                 return diff;
             }
 
+            // Fallback to id
+            return o1.getId().compareTo(o2.getId());
+        }
+    }
+
+    public static class ArpInterfaceComparator implements Comparator<OnmsArpInterface> {
+        public int compare(OnmsArpInterface o1, OnmsArpInterface o2) {
+            int diff;
+
+            // Sort by IP first if the IPs are non-0.0.0.0
+            if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
+                if ((diff = o1.getIpAddress().compareTo(o2.getIpAddress())) != 0) {
+                    return diff;
+                }
+            } else {
+                // Sort IPs that are non-0.0.0.0 so they are first
+                if (!"0.0.0.0".equals(o1.getIpAddress())) {
+                    return -1;
+                } else if (!"0.0.0.0".equals(o2.getIpAddress())) {
+                    return 1;
+                }
+            }
+            
+            // Sort by mac address
+            if (o1.getPhysAddr() == null || o2.getPhysAddr() == null) {
+                if (o1.getPhysAddr() != null) {
+                    return -1;
+                } else if (o2.getPhysAddr() != null) {
+                    return 1;
+                }
+            } else if ((diff = o1.getPhysAddr().compareTo(o2.getPhysAddr())) != 0) {
+                return diff;
+            }
+            
             // Fallback to id
             return o1.getId().compareTo(o2.getId());
         }
