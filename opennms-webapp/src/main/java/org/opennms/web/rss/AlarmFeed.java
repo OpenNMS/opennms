@@ -53,16 +53,17 @@ public class AlarmFeed extends AbstractFeed {
 
             SyndEntry entry;
             
-            int count = 0;
             for (Alarm alarm : alarms) {
                 entry = new SyndEntryImpl();
+                entry.setPublishedDate(alarm.getFirstEventTime());
                 if (alarm.getAcknowledgeTime() != null) {
                     entry.setTitle(sanitizeTitle(alarm.getLogMessage()) + " (acknowledged by " + alarm.getAcknowledgeUser() + ")");
+                    entry.setUpdatedDate(alarm.getAcknowledgeTime());
                 } else {
                     entry.setTitle(sanitizeTitle(alarm.getLogMessage()));
+                    entry.setUpdatedDate(alarm.getFirstEventTime());
                 }
                 entry.setLink(getUrlBase() + "alarm/detail.jsp?id=" + alarm.getId());
-                entry.setPublishedDate(alarm.getFirstEventTime());
                 
                 entries.add(entry);
             }
