@@ -34,13 +34,15 @@ public class NotificationFeed extends AbstractFeed {
                     break;
                 }
                 entry = new SyndEntryImpl();
+                entry.setPublishedDate(notification.getTimeSent());
                 if (notification.getTimeReplied() == null) {
                     entry.setTitle(sanitizeTitle(notification.getTextMessage()));
+                    entry.setUpdatedDate(notification.getTimeSent());
                 } else {
                     entry.setTitle(sanitizeTitle(notification.getTextMessage()) + " (acknowledged)");
+                    entry.setUpdatedDate(notification.getTimeReplied());
                 }
                 entry.setLink(getUrlBase() + "notification/detail.jsp?notice=" + notification.getId());
-                entry.setPublishedDate(notification.getTimeSent());
                 
                 entries.add(entry);
             }

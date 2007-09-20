@@ -49,16 +49,16 @@ public class OutageFeed extends AbstractFeed {
                     break;
                 }
                 String link = getUrlBase() + "element/node.jsp?node=" + summary.getNodeId();
-//                link += "&timeDown=" + summary.getTimeDown().getTime();
 
                 entry = new SyndEntryImpl();
+                entry.setPublishedDate(summary.getTimeDown());
+                
                 if (summary.getTimeUp() == null) {
                     entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()));
-                    entry.setPublishedDate(summary.getTimeDown());
+                    entry.setUpdatedDate(summary.getTimeDown());
                 } else {
                     entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()) + " (resolved)");
-                    entry.setPublishedDate(summary.getTimeUp());
-//                    link += "&timeUp=" + summary.getTimeUp().getTime();
+                    entry.setUpdatedDate(summary.getTimeUp());
                 }
                 entry.setLink(link);
                 
