@@ -51,22 +51,20 @@
 	if (feedType == null) {
 	    feedType = "atom_1.0";
 	}
-    try {
-        String className = feedName.toLowerCase();
+	if (feedName != null) {
+	    String className = feedName.toLowerCase();
         className = "org.opennms.web.rss." + Character.toUpperCase(className.charAt(0)) + className.substring(1) + "Feed";
-        feed = (Feed)Class.forName(className).newInstance();
-        String urlBase = request.getRequestURL().toString();
-        urlBase = urlBase.substring(0, urlBase.lastIndexOf("/") + 1);
-		feed.setUrlBase(urlBase);
-		feed.setFeedType(feedType);
-		feed.setRequest(request);
-        output = feed.render();
-        if (output == null) {
-            out.println("hi");
-        } else {
-            out.println(output);
+    	
+        try {
+            feed = (Feed)Class.forName(className).newInstance();
+            String urlBase = request.getRequestURL().toString();
+            urlBase = urlBase.substring(0, urlBase.lastIndexOf("/") + 1);
+    		feed.setUrlBase(urlBase);
+    		feed.setFeedType(feedType);
+    		feed.setRequest(request);
+    		out.println(feed.render());
+        } catch (NoClassDefFoundError e) {
+            throw new Exception("unable to locate class for " + className);
         }
-    } catch (NoClassDefFoundError e) {
-        out.println("NoClassDefFoundError");
-    }
+	}
 %>
