@@ -103,8 +103,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     }
 
     protected void registerService(Integer port, String contextPath) {
-        String contextName = contextPath;
-        contextName.replaceFirst("/", "");
+        String contextName = contextPath.replace("/", "");
 
         try {
             ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
