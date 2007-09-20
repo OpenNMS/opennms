@@ -52,16 +52,17 @@ public class EventFeed extends AbstractFeed {
 
             SyndEntry entry;
             
-            int count = 0;
             for (Event event : events) {
                 entry = new SyndEntryImpl();
+                entry.setPublishedDate(event.getTime());
                 if (event.getAcknowledgeTime() != null) {
                     entry.setTitle(sanitizeTitle(event.getLogMessage()) + " (acknowledged by " + event.getAcknowledgeUser() + ")");
+                    entry.setUpdatedDate(event.getAcknowledgeTime());
                 } else {
                     entry.setTitle(sanitizeTitle(event.getLogMessage()));
+                    entry.setUpdatedDate(event.getTime());
                 }
                 entry.setLink(getUrlBase() + "event/detail.jsp?id=" + event.getId());
-                entry.setPublishedDate(event.getTime());
                 
                 entries.add(entry);
             }
