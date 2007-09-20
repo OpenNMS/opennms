@@ -54,9 +54,6 @@ public class EventFeed extends AbstractFeed {
             
             int count = 0;
             for (Event event : events) {
-                if (count++ == this.getMaxEntries()) {
-                    break;
-                }
                 entry = new SyndEntryImpl();
                 if (event.getAcknowledgeTime() != null) {
                     entry.setTitle(sanitizeTitle(event.getLogMessage()) + " (acknowledged by " + event.getAcknowledgeUser() + ")");

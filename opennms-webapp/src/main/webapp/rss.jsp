@@ -55,7 +55,7 @@
         String className = feedName.toLowerCase();
         className = "org.opennms.web.rss." + Character.toUpperCase(className.charAt(0)) + className.substring(1) + "Feed";
         feed = (Feed)Class.forName(className).newInstance();
-        String urlBase = request.getRequestURI().toString();
+        String urlBase = request.getRequestURL().toString();
         urlBase = urlBase.substring(0, urlBase.lastIndexOf("/") + 1);
 		feed.setUrlBase(urlBase);
 		feed.setFeedType(feedType);
