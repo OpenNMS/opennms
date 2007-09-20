@@ -9,6 +9,7 @@
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
+        /rss.jsp*=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
         /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor
       </value>
     </property>
@@ -204,6 +205,15 @@
 
   <bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
     <property name="authenticationEntryPoint"><ref local="authenticationProcessingFilterEntryPoint"/></property>
+    <property name="accessDeniedHandler">
+      <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/accessDenied.jsp"/>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="basicExceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
+    <property name="authenticationEntryPoint"><ref local="basicProcessingFilterEntryPoint"/></property>
     <property name="accessDeniedHandler">
       <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
         <property name="errorPage" value="/accessDenied.jsp"/>

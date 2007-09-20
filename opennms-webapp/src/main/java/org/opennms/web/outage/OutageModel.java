@@ -475,25 +475,43 @@ public class OutageModel extends Object {
      * Return a list of IP addresses, the number of services down on each IP
      * address, and the longest time a service has been down for each IP
      * address. The list will be sorted by the amount of time it has been down.
+     * 
+     * @param date the starting date for the query
      */
-    public OutageSummary[] getAllOutageSummaries() throws SQLException {
+    public OutageSummary[] getAllOutageSummaries(Date date) throws SQLException {
         OutageSummary[] summaries = new OutageSummary[0];
         Connection conn = Vault.getDbConnection();
 
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, max(outages.ifregainedservice) as timeUp, node.nodelabel " + "from outages, node, ipinterface, ifservices " + "where node.nodeid=outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid=outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + "group by outages.nodeid, node.nodelabel " + "order by timeDown desc;");
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT DISTINCT outages.nodeid, outages.iflostservice as timeDown, outages.ifregainedservice as timeUp, node.nodelabel "
+                        + "FROM outages, node, ipinterface, ifservices "
+                        + "WHERE node.nodeid=outages.nodeid AND ipinterface.nodeid=outages.nodeid AND ifservices.nodeid=outages.nodeid "
+                        + "AND ipinterface.ipaddr=outages.ipaddr AND ifservices.ipaddr=outages.ipaddr "
+                        + "AND ifservices.serviceid=outages.serviceid "
+                        + "AND node.nodeType != 'D' "
+                        + "AND ipinterface.ismanaged != 'D' "
+                        + "AND ifservices.status != 'D' "
+                        + "AND outages.iflostservice >= ? "
+                        + "ORDER BY timeDown DESC;"
+            );
+            stmt.setTimestamp(1, new Timestamp(date.getTime()));
+            ResultSet rs = stmt.executeQuery();
 
             List<OutageSummary> list = new ArrayList<OutageSummary>();
 
             while (rs.next()) {
                 int nodeId = rs.getInt("nodeID");
-                Timestamp timeDownTS = rs.getTimestamp("timeDown");
-                long timeDown = timeDownTS.getTime();
-                Date downDate = new Date(timeDown);
-                Timestamp timeUpTS = rs.getTimestamp("timeUp");
-                long timeUp = timeUpTS.getTime();
-                Date upDate = new Date(timeUp);
+                
+                Timestamp timeDown = rs.getTimestamp("timeDown");
+                Date downDate = new Date(timeDown.getTime());
+                
+                Timestamp timeUp = rs.getTimestamp("timeUp");
+                Date upDate = null;
+                if (timeUp != null) {
+                    upDate = new Date(timeUp.getTime());
+                }
+                
                 String nodeLabel = rs.getString("nodelabel");
 
                 list.add(new OutageSummary(nodeId, nodeLabel, downDate, upDate));

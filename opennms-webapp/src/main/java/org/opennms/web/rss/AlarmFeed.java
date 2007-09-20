@@ -55,9 +55,6 @@ public class AlarmFeed extends AbstractFeed {
             
             int count = 0;
             for (Alarm alarm : alarms) {
-                if (count++ == this.getMaxEntries()) {
-                    break;
-                }
                 entry = new SyndEntryImpl();
                 if (alarm.getAcknowledgeTime() != null) {
                     entry.setTitle(sanitizeTitle(alarm.getLogMessage()) + " (acknowledged by " + alarm.getAcknowledgeUser() + ")");
