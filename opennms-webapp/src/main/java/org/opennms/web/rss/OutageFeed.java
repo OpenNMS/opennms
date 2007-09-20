@@ -2,6 +2,7 @@ package org.opennms.web.rss;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.opennms.web.outage.OutageModel;
 import org.opennms.web.outage.OutageSummary;
@@ -13,6 +14,18 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 public class OutageFeed extends AbstractFeed {
 
+    public OutageFeed() {
+        super();
+        // date-based
+        setMaxEntries(Integer.MAX_VALUE);
+    }
+    
+    public OutageFeed(String feedType) {
+        super(feedType);
+        // date-based
+        setMaxEntries(Integer.MAX_VALUE);
+    }
+    
     public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 
@@ -24,7 +37,9 @@ public class OutageFeed extends AbstractFeed {
 
         try {
             OutageModel model = new OutageModel();    
-            OutageSummary[] summaries = model.getAllOutageSummaries();
+            Date date = new Date();
+            date.setTime(date.getTime() - (1000 * 60 * 60 * 24));
+            OutageSummary[] summaries = model.getAllOutageSummaries(date);
 
             SyndEntry entry;
             
@@ -33,14 +48,19 @@ public class OutageFeed extends AbstractFeed {
                 if (count++ == this.getMaxEntries()) {
                     break;
                 }
+                String link = getUrlBase() + "element/node.jsp?node=" + summary.getNodeId();
+//                link += "&timeDown=" + summary.getTimeDown().getTime();
+
                 entry = new SyndEntryImpl();
                 if (summary.getTimeUp() == null) {
                     entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()));
+                    entry.setPublishedDate(summary.getTimeDown());
                 } else {
                     entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()) + " (resolved)");
+                    entry.setPublishedDate(summary.getTimeUp());
+//                    link += "&timeUp=" + summary.getTimeUp().getTime();
                 }
-                entry.setLink(getUrlBase() + "element/node.jsp?node=" + summary.getNodeId());
-                entry.setPublishedDate(summary.getTimeDown());
+                entry.setLink(link);
                 
                 entries.add(entry);
             }

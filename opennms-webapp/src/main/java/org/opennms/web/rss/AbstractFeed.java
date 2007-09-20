@@ -76,7 +76,7 @@ public class AbstractFeed implements Feed {
     }
 
     protected String sanitizeTitle(String title) {
-        title.replaceAll("<[^>]*>", "");
+        title.replaceAll("<.*?>", "");
         return title;
     }
     
