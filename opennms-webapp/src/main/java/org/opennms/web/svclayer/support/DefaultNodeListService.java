@@ -283,13 +283,14 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                         }
                     }
                 } else if (command.hasMaclike()) {
+                	String macLikeStripped = command.getMaclike().toLowerCase().replaceAll("[:-]", "");
                 	for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                		if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getPhysAddr() != null && intf.getSnmpInterface().getPhysAddr().toLowerCase().contains(command.getMaclike().toLowerCase())) {
+                		if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getPhysAddr() != null && intf.getSnmpInterface().getPhysAddr().toLowerCase().contains(macLikeStripped)) {
                 			displayInterfaces.add(intf);
                 		}
                 	}
                 	for (OnmsArpInterface aint : node.getArpInterfaces()) {
-                		if (aint.getPhysAddr() != null && aint.getPhysAddr().toLowerCase().contains(command.getMaclike().toLowerCase())) {
+                		if (aint.getPhysAddr() != null && aint.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
                 			OnmsIpInterface intf = node.getIpInterfaceByIpAddress(aint.getIpAddress());
                 			if ((intf == null || intf.getSnmpInterface() == null || intf.getSnmpInterface().getPhysAddr() == null || !intf.getSnmpInterface().getPhysAddr().equalsIgnoreCase(aint.getPhysAddr()))) {
                 				displayArpInterfaces.add(aint);
