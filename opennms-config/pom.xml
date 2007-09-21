@@ -30,10 +30,7 @@
               <goal>execute</goal>
             </goals>  
             <configuration>
-              <source>
-                groovy.ui.GroovyMain.main("-pi", "-e", "(line =~ /@param _switch\\s*\$/).replaceAll('')", "${project.basedir}/target/generated-sources/castor/org/opennms/netmgt/config/notificationCommands/Argument.java")
-                groovy.ui.GroovyMain.main("-pi", "-e", "(line =~ /@param switch/).replaceAll(/@param _switch/)", "${project.basedir}/target/generated-sources/castor/org/opennms/netmgt/config/notificationCommands/Argument.java")
-              </source>
+              <source>${pom.basedir}/subst.groovy</source>
             </configuration>
           </execution>
         </executions>
