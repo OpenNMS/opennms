@@ -187,6 +187,12 @@
         like to search for.
       </p>
 
+      <p>Searching by Mac Address allows you to find interfaces with hardware (mac) addresses
+         matching the search string. This is a case-insensitive partial string match. For
+         example, you can find all interfaces with a specified manufacturer's code by entering
+         the first 6 characters of the mac address. Octet separators (dash or colon) are optional.
+      </p>
+
       <p>Searching for assets allows you to search for all assets which have been
         associated with a particular category, as well as to select a specific asset
         field (with all available fields listed in the drop-down list box) and
