@@ -39,7 +39,7 @@
     -->
     
     <input name="reset" type="reset" value="Reset" />
-    <input name="Get in" type="submit" value="Get in" />
+    <input name="Login" type="submit" value="Login" />
 
     <script type="text/javascript">
       if (document.getElementById) {
