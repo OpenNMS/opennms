@@ -4,7 +4,7 @@
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -63,7 +63,7 @@ state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -122,7 +122,7 @@ state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -192,7 +192,7 @@ ospfIfStateChange.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -256,7 +256,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -320,7 +320,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -380,7 +380,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -459,7 +459,7 @@ prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -533,7 +533,7 @@ jacency from forming.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -611,7 +611,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -683,7 +683,7 @@ authentication key or authentication type.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -742,7 +742,7 @@ interface that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -796,7 +796,7 @@ that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -880,7 +880,7 @@ identify the LSDB entry.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -959,7 +959,7 @@ the LSDB entry.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1026,7 +1026,7 @@ MaxAge.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1087,7 +1087,7 @@ aged to MaxAge.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1125,7 +1125,7 @@ base has exceeded ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1164,7 +1164,7 @@ ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1228,7 +1228,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1292,7 +1292,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1356,7 +1356,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -1420,7 +1420,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.2.1.14.16</mevalue>
+			<mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
