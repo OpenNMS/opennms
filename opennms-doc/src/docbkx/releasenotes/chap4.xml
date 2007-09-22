@@ -35,12 +35,10 @@
       <title>Debian</title>
 
       <para>Debian stable (1.2.x) packages (for Sarge and later) are available
-      at the following apt-repository: <programlisting>deb http://debian.opennms.org/ stable main</programlisting></para>
-
-      <para>Debian unstable (1.3.x) packages (for Etch and later) are
-      available at the following apt-repository: <programlisting>deb http://debian.opennms.org/ unstable main</programlisting></para>
-
-      <para>For more instructions see this <ulink
+      at the following apt-repository: <programlisting>deb http://debian.opennms.org/ stable main</programlisting>.
+      Debian unstable (1.3.x) packages (for Etch and later) are
+      available at the following apt-repository: <programlisting>deb http://debian.opennms.org/ unstable main</programlisting>.
+	  For more instructions see this <ulink
       url="http://opennms.netstatz.com/Debian_ONMS_HOWTO.html#toc2">How-To</ulink>
       written by Ian MacDonald.</para>
     </formalpara>

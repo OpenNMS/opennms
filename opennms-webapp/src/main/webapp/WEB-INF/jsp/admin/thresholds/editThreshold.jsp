@@ -100,7 +100,7 @@
     		<td class="standard"><input type="text" name="trigger" size=10" value="${threshold.trigger}"/></td>
     	</tr>
     </table>
-    <table class="normal"
+    <table class="normal">
          <tr>
                 <th class="standardheader">Triggered UEI</th>
                 <th class="standardheader">Re-armed UEI</th>
