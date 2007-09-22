@@ -94,28 +94,30 @@
       
       <h3>Manage Location Monitor</h3>
       <div class="boxWrapper">
-        <p>
-          <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
-            <input type="hidden" name="monitorId" value="${monitor.id}"/>
-          </form>
-          <input type="button" value="Delete" onClick="confirmDelete();"/>
-          
-          <c:choose>
-            <c:when test="${monitor.status != 'PAUSED'}">
-              <form action="admin/distributed/locationMonitorPause.htm" method="post">
+        <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
+          <input type="hidden" name="monitorId" value="${monitor.id}"/>
+        </form>
+        <input type="button" value="Delete" onClick="confirmDelete();"/>
+  
+        <c:choose>
+          <c:when test="${monitor.status != 'PAUSED'}">
+            <form action="admin/distributed/locationMonitorPause.htm" method="post">
+              <p>
                 <input type="hidden" name="monitorId" value="${monitor.id}"/>
                 <input type="submit" value="Pause"/>
-              </form>
-            </c:when>
+              </p>
+            </form>
+          </c:when>
             
-            <c:otherwise>
-              <form action="admin/distributed/locationMonitorResume.htm" method="post">
+          <c:otherwise>
+            <form action="admin/distributed/locationMonitorResume.htm" method="post">
+              <p>
                 <input type="hidden" name="monitorId" value="${monitor.id}"/>
                 <input type="submit" value="Resume"/>
-              </form>
-            </c:otherwise>
-          </c:choose>
-        </p>
+              </p>
+            </form>
+          </c:otherwise>
+        </c:choose>
   
         <p>
           <b>Delete</b> will delete all database data for this location monitor
