@@ -45,6 +45,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -259,6 +260,31 @@ public class CollectdTest extends TestCase {
         m_collectd.stop();
 
         m_easyMockUtils.verifyAll();
+    }
+
+    /**
+     * Test override of read community string and max repetitions in Collectd configuration parameters
+     */
+    public void testOverrides() {
+    	Map<String, String> map = new HashMap<String, String>();
+    	map.put("max-repetitions", "11");
+    	map.put("read-community", "notPublic");
+		ServiceParameters params = new ServiceParameters(map);
+		
+		int reps = params.getMaxRepetitions(6);
+		assertEquals("Overriding max repetitions failed.", 11, reps);
+		params = new ServiceParameters(map);
+		map.remove("max-repetitions");
+		map.put("maxRepetitions", "11");
+		assertEquals("Overriding max repetitions failed.", 11, reps);
+		
+		String s = params.getReadCommunity("public");
+		assertEquals("Overriding read community failed.", "notPublic", s);
+		map.remove("read-community");
+		map.put("readCommunity", "notPublic");
+		params = new ServiceParameters(map);
+		s = params.getReadCommunity("public");
+		assertEquals("Overriding read community failed.", "notPublic", s);
     }
 
     public void testNoMatchingSpecs() {

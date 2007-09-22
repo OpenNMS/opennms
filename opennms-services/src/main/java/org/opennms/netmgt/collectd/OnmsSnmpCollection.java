@@ -99,6 +99,14 @@ public class OnmsSnmpCollection {
     public int getSnmpPort() {
         return m_params.getSnmpPort();
     }
+    
+    public String getReadCommunity(String current) {
+    	return m_params.getReadCommunity(current);
+    }
+
+	public int getMaxRepetitions(int maxRepetitions) {
+		return m_params.getMaxRepetitions(maxRepetitions);
+	}
 
     public Category log() {
         return ThreadCategory.getInstance(getClass());

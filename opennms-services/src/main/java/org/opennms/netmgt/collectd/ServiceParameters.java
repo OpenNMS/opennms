@@ -107,8 +107,29 @@ public class ServiceParameters {
     	return ParameterMap.getKeyedString(m_parameters, "collection", "default");
     }
 
+    /**
+     * This call returns a community string that may have been configured in a collector package
+     * @param current
+     * @return The collection configured read community string or the passed in string if not configured
+     */
+    public String getReadCommunity(String current) {
+    	String readCommunity = ParameterMap.getKeyedString(m_parameters, "read-community", null);
+    	if (readCommunity == null) {
+			readCommunity = ParameterMap.getKeyedString(m_parameters, "readCommunity", current);
+		}
+		return readCommunity;
+    }
+
     public int getSnmpPort() {
         return ParameterMap.getKeyedInteger(getParameters(), "port", -1);
     }
+
+	public int getMaxRepetitions(int current) {
+		int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "max-repetitions", -1);
+		if (maxRepetitions == -1) {
+			maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "maxRepetitons", current);
+		}
+		return maxRepetitions;
+	}
 
 }
