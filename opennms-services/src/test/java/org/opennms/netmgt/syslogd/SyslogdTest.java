@@ -38,10 +38,13 @@
 //
 package org.opennms.netmgt.syslogd;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Level;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
@@ -52,6 +55,7 @@ import org.opennms.test.mock.MockUtil;
 public class SyslogdTest extends OpenNMSTestCase {
 
     private Syslogd m_syslogd;
+    private SyslogdConfigFactory m_factory;
 
     public SyslogdTest() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
