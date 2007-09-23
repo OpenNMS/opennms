@@ -10,7 +10,8 @@
 //
 // Modifications:
 //
-// 2007 Aug 18: Add findTopLevelResources(). - ayresw
+// 2007 Aug 02: Add findTopLevelResources(). - dj@opennms.org
+//              (merged to trunk by ayersw on 2007 Aug 18)
 // 2007 May 12: Add getRrdDirectory(). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
