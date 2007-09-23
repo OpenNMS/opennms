@@ -387,6 +387,11 @@ public final class ConfigFileConstants {
     public static final int LINKD_CONFIG_FILE_NAME;
     
     /**
+     * The OpenNMS DataSourceConfiguration file
+     */
+    public static final int OPENNMS_DATASOURCE_CONFIG_FILE_NAME;
+    
+    /**
      * The map properties config file
      */
     public static final int MAP_PROPERTIES_FILE_NAME;
@@ -530,9 +535,11 @@ public final class ConfigFileConstants {
         
         NSCLIENT_CONFIG_FILE_NAME = 66;
         
+        OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 67;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[67];
+        FILE_ID_TO_NAME = new String[68];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -616,6 +623,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[HTTP_COLLECTION_CONFIG_FILE_NAME] = "http-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_COLLECTION_CONFIG_FILE_NAME] = "nsclient-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
+        FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
     }
 
     /**

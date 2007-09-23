@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
+                      http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+  <jdbc-data-source name="opennms" 
+                    class-name="@install.database.driver@" 
+                    url="@install.database.url@@install.database.name@"
+                    user-name="@install.database.user@"
+                    password="@install.database.password@" />
+</datasource-configuration>
