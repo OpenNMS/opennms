@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 02: Prepare for Castor 1.0.5. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -49,7 +50,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -80,11 +80,6 @@ public final class DataSourceFactory implements DataSource {
     private static Map<String, DataSource> m_dataSources = new HashMap<String, DataSource>();
 
     /**
-     * The database class loaded from the config file
-     */
-    private Database m_database = null;
-
-    /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
      * 
@@ -99,12 +94,12 @@ public final class DataSourceFactory implements DataSource {
      * 
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
-    	if (!isLoaded("opennms")) {
-           	init("opennms");
-    	}
+        if (!isLoaded("opennms")) {
+            init("opennms");
+        }
     }
 
-	public static synchronized void init(String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+    public static synchronized void init(String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
         if (isLoaded(dsName)) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -116,11 +111,11 @@ public final class DataSourceFactory implements DataSource {
         setInstance(dsName,dataSource);
     }
 
-	private static boolean isLoaded(String dsName) {
-		return m_dataSources.containsKey(dsName);			
-	}
+    private static boolean isLoaded(String dsName) {
+        return m_dataSources.containsKey(dsName);			
+    }
 
-	/**
+    /**
      * <p>
      * Return the singleton instance of this factory. This is the instance of
      * the factory that was last created when the <code>
@@ -135,20 +130,20 @@ public final class DataSourceFactory implements DataSource {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized DataSource getInstance() {
-//    		m_dataSources.put("opennms",m_singleton);
-    		return getInstance("opennms");
+//      m_dataSources.put("opennms",m_singleton);
+        return getInstance("opennms");
     }
-    
+
     public static synchronized DataSource getInstance(String name) {
-            DataSource dataSource = m_dataSources.get(name);
-            if (dataSource == null) {
-            		throw new IllegalArgumentException("Unable to locate data source named " + name + ".  Does this need to be init'd?");
-            }
-			return m_dataSources.get(name);
-        
+        DataSource dataSource = m_dataSources.get(name);
+        if (dataSource == null) {
+            throw new IllegalArgumentException("Unable to locate data source named " + name + ".  Does this need to be init'd?");
+        }
+        return m_dataSources.get(name);
+
     }
-	
-	/**
+
+    /**
      * Return a new database connection to the database configured in the
      * <tt>opennms-database.xml</tt>. The database connection is not managed
      * by the factory and must be release by the caller by using the
@@ -170,21 +165,12 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public static void setInstance(DataSource singleton) {
-    		m_singleton=singleton;
-		setInstance("opennms", singleton);
-	}
+        m_singleton=singleton;
+        setInstance("opennms", singleton);
+    }
 
     public static void setInstance(String dsName, DataSource singleton) {
-		m_dataSources.put(dsName,singleton);
-	}
-
-    /**
-     * Return the database that was configured in the config file
-     * 
-     * @return the database that was configured in the config file
-     */
-    public Database getDatabase() {
-        return m_database;
+        m_dataSources.put(dsName,singleton);
     }
 
     /**
@@ -238,9 +224,9 @@ public final class DataSourceFactory implements DataSource {
 
     public void initialize() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
         // TODO Auto-generated method stub
-        
+
     }
-    
+
     public static synchronized void close() throws SQLException {
         for (DataSource dataSource : m_dataSources.values()) {
             if (dataSource instanceof ClosableDataSource) {
