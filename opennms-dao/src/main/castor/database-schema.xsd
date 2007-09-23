@@ -27,9 +27,9 @@
   <element name="table">
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:column"/>
-
         <element maxOccurs="unbounded" minOccurs="0" ref="this:join"/>
+        
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:column"/>
       </sequence>
 
       <attribute default="true" name="visable" use="optional">

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 03: Change Castor methods clearX -> removeAllX. - dj@opennms.org
 // 2007 Jul 24: Add serialVersionUID, Java 5 generics, eliminate use of a Vector as a structure. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -91,7 +92,7 @@ public class UpdateUserServlet extends HttpServlet {
             String textPage = request.getParameter("textService");
             String textPin = request.getParameter("textPin");
 
-            newUser.clearContact();
+            newUser.removeAllContact();
 
             Contact tmpContact = new Contact();
             tmpContact.setInfo(email);

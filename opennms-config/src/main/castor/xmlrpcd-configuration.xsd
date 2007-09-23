@@ -34,11 +34,16 @@
         </element>
       </sequence>
 
-      <attribute name="max-event-queue-size" type="positiveInteger"
-                 use="optional">
+      <attribute name="max-event-queue-size" use="optional">
         <annotation>
           <documentation>Maximum size of the event queue</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
       </attribute>
     </complexType>
   </element>
@@ -58,17 +63,29 @@
         </element>
       </sequence>
 
-      <attribute name="retries" type="positiveInteger" use="required">
+      <attribute name="retries" use="required">
         <annotation>
           <documentation>Retries to set up communication with an XMLRPC
           server</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
       </attribute>
 
-      <attribute name="elapse-time" type="positiveInteger" use="required">
+      <attribute name="elapse-time" use="required">
         <annotation>
           <documentation>Elapsed time between retries</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
       </attribute>
     </complexType>
   </element>

@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model-import xmlns="http://www.example.org/model-import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalLocation="http://www.example.org/model-import model-import.xsd" date-stamp="2005-12-27T09:12:54">
         <node node-label="apknd" parent-node-label="apknd" foreign-id="4243">
-                <category name="AC" />
-                <category name="UK" />
-                <category name="low" />
                 <interface ip-addr="10.136.160.1" status="1" snmp-primary="P" descr="VPN interface">
                         <monitored-service service-name="ICMP"/>
                         <monitored-service service-name="SNMP"/>
@@ -18,5 +15,8 @@
                 <interface ip-addr="10.201.136.167" status="1" snmp-primary="N" descr="sample node">
                         <monitored-service service-name="ICMP"/>
                 </interface>
+                <category name="AC" />
+                <category name="UK" />
+                <category name="low" />
         </node>
 </model-import>

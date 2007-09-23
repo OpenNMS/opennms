@@ -129,14 +129,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>castor</groupId>
-						<artifactId>castor</artifactId>
-						<version>0.9.6</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
 			</plugin>
 
 			<plugin>
@@ -219,7 +211,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>castor</groupId>
+			<groupId>org.codehaus.castor</groupId>
 			<artifactId>castor</artifactId>
 			<scope>compile</scope>
 		</dependency>

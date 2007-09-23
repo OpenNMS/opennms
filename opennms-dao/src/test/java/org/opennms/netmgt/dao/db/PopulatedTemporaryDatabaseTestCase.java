@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 24: Use ConfigurationTestUtils.getFileForConfigFile to find configuration files. - dj@opennms.org
 // 2007 Apr 05: Use ConfigurationFileUtils.getTopProjectDirectory() to get the top-level project directory and merge two regular expressions for matching iplike.{so,dylib} that were nearly identical. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -70,11 +71,8 @@ public class PopulatedTemporaryDatabaseTestCase extends
         m_installerDb.setDatabaseName(getTestDatabase());
         m_installerDb.setDataSource(getDataSource());
         
-        m_installerDb.setCreateSqlLocation(
-            "../opennms-daemon/src/main/filtered/etc/create.sql");
-
-        m_installerDb.setStoredProcedureDirectory(
-            "../opennms-daemon/src/main/filtered/etc");
+        m_installerDb.setCreateSqlLocation(ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath());
+        m_installerDb.setStoredProcedureDirectory(ConfigurationTestUtils.getFileForConfigFile("getPercentAvailabilityInWindow.sql").getParentFile().getAbsolutePath());
 
         //installerDb.setDebug(true);
 

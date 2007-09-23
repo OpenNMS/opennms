@@ -77,11 +77,17 @@
         
       </sequence>
 
-      <attribute name="period" type="positiveInteger" use="required">
+      <attribute name="period" use="required">
         <annotation>
           <documentation>how often to vacuum the database in
           seconds</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
       </attribute>
     </complexType>
   </element>
@@ -99,7 +105,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="interval" type="integer" use="required">
+      <attribute name="interval" type="int" use="required">
         <annotation>
           <documentation>How ofter should this autmation run</documentation>
         </annotation>
@@ -167,7 +173,7 @@
         </simpleType>
       </attribute>
 
-      <attribute name="row-count" type="integer" use="optional"/>
+      <attribute name="row-count" type="int" use="optional"/>
     </complexType>
   </element>
 

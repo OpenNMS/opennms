@@ -58,11 +58,16 @@
   <element name="event">
     <complexType>
       <sequence>
-        <element maxOccurs="1" minOccurs="0" name="dbid"
-                 type="positiveInteger">
+        <element maxOccurs="1" minOccurs="0" name="dbid">
           <annotation>
             <documentation>The event database id</documentation>
           </annotation>
+
+          <simpleType>
+            <restriction base="int">
+              <minInclusive value="1"/>
+            </restriction>
+          </simpleType>      
         </element>
 
         <element maxOccurs="1" minOccurs="0" name="dist-poller" type="string"/>
@@ -654,12 +659,18 @@
     </annotation>
     <complexType>
       <attribute name="reduction-key" type="string" use="required" />
-      <attribute name="alarm-type" type="positiveInteger" use="required" />
+      <attribute name="alarm-type" use="required" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
       <attribute name="clear-uei" type="string" use="optional" />
       <attribute name="clear-key" type="string" use="optional" />
       <attribute name="auto-clean" type="boolean" use="optional" default="false" />
       <attribute name="x733-alarm-type" type="this:x733-alarm-type" use="optional" />
-      <attribute name="x733-probable-cause" type="integer" use="optional" />
+      <attribute name="x733-probable-cause" type="int" use="optional" />
     </complexType>
   </element>
   

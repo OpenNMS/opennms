@@ -260,7 +260,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private Set<String> getCategoryNamesForRowDef(RowDef rowDef) {
         Set<String> categories = new LinkedHashSet<String>();
         
-        ArrayList<Category> cats = rowDef.getCategoryCollection();
+        List<Category> cats = rowDef.getCategoryCollection();
         for (Category cat : cats) {
             categories.add(cat.getName());
         }

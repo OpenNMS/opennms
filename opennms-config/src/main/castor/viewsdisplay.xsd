@@ -22,7 +22,13 @@
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" ref="this:view"/>
       </sequence>
-      <attribute name="disconnect-timeout" type="positiveInteger" use="optional" default="130000" />
+      <attribute name="disconnect-timeout" use="optional" default="130000" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
       <attribute name="default-view" type="string" use="optional" default="WebConsoleView" />
     </complexType>
   </element>

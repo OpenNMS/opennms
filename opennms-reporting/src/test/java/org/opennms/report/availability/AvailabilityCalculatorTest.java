@@ -11,6 +11,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 25: Organize imports and fix tests with 
+//              ConfigurationTestUtils.getReaderForConfigFile. - dj@opennms.org
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -30,31 +35,23 @@
 // http://www.opennms.org/
 // http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.report.availability;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.lang.Math;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
-import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class AvailabilityCalculatorTest extends TestCase {
@@ -79,10 +76,8 @@ public class AvailabilityCalculatorTest extends TestCase {
         m_db = new MockDatabase();
         DataSourceFactory.setInstance(m_db);
 
-        Reader rdr = new FileReader(
-                                    "../opennms-daemon/target/classes/etc/database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(
-                                                                                rdr));
+        Reader rdr = ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
         rdr.close();
 
         m_catFactory = new MockCategoryFactory();

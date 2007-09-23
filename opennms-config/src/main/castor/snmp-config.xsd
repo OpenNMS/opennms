@@ -31,11 +31,18 @@
         </element>
       </sequence>
 
-      <attribute name="port" type="int" use="optional">
+      <attribute name="port" use="optional">
         <annotation>
           <documentation>If set, overrides UDP port 161 as the port where SNMP
           GET/GETNEXT/GETBULK requests are sent.</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
+          </restriction>
+        </simpleType>      
       </attribute>
 
       <attribute name="retry" type="int" use="optional">
@@ -278,7 +285,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="max-request-size" type="integer" use="optional" default="65535" >
+      <attribute name="max-request-size" use="optional" default="65535" >
         <annotation>
           <documentation>Specifies the maximum number of variables that may be
           encoded into an individual SNMP pdu request by Collectd. Provides a
@@ -286,6 +293,13 @@
           indicates no limit on number of PDUs which can be encoded into a
           single PDU.</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0"/>
+            <maxInclusive value="65535"/>
+          </restriction>
+        </simpleType>      
       </attribute>
 
       <attribute name="security-name" type="string" use="optional">
@@ -363,7 +377,7 @@
 
     <simpleType>
       <restriction base="string">
-        <pattern value="^[0-9]{1,3}((,|-)[0-9]{1,3})*\.[0-9]{1,3}((,|-)[0-9]{1,3})*\.[0-9]{1,3}((,|-)[0-9]{1,3})*\.[0-9]{1,3}((,|-)[0-9]{1,3})*$"/>
+        <pattern value="^([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)$"/>
       </restriction>
     </simpleType>
     

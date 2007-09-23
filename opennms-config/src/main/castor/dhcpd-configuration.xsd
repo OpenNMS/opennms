@@ -18,13 +18,19 @@
     </annotation>
 
     <complexType>
-      <attribute name="port" type="positiveInteger" use="required">
+      <attribute name="port" use="required">
         <annotation>
           <documentation>TCP port number used for internal communication
           within OpenNMS between the DHCP poller and other OpenNMS daemons.
           The port is set to 5818 in the default configuration
           file.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
       <!--TODO: use a restriction to limit the setting of macAddress to valid strings.-->

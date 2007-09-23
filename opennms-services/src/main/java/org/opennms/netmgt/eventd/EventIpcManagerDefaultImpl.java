@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Aug 25: Save and restore the log4j logging prefix when we
+//              call onEvent(Event). - dj@opennms.org
 // 2006 May 29: Throw IllegalStateException in init() if m_eventdConfigMgr is null - dj@gregor.com
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 24: Changed all references to HashTable to HashMap
@@ -170,8 +172,14 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
                         if (log.isInfoEnabled()) {
                             log.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
                         }
-                        m_listener.onEvent(event);
-
+                        
+                        // Make sure we restore our log4j logging prefix after onEvent is called
+                        String log4jPrefix = ThreadCategory.getPrefix(); 
+                        try {
+                            m_listener.onEvent(event);
+                        } finally {
+                            ThreadCategory.setPrefix(log4jPrefix);
+                        }
                     }
                 } catch (Throwable t) {
                     log.warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run", t);

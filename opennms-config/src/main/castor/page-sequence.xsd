@@ -46,7 +46,14 @@
       <attribute name="scheme" type="string" use="optional" default="http" />
       <attribute name="user-info" type="string" use="optional" />
       <attribute name="host" type="string" use="optional" default="${ipaddr}" />
-      <attribute name="port" type="positiveInteger" use="optional" default="80" />
+      <attribute name="port" use="optional" default="80">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
+          </restriction>
+        </simpleType>
+      </attribute>
       <attribute name="path" type="string" use="required" />
       <attribute name="query" type="string" use="optional" />
       <attribute name="fragment" type="string" use="optional" />

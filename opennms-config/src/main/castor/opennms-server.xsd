@@ -24,10 +24,22 @@
                  use="optional"/>
       <attribute default="" name="defaultCriticalPathService" type="string"
                  use="optional"/>
-      <attribute default="1500" name="defaultCriticalPathTimeout" type="positiveInteger"
-                 use="optional"/>
-      <attribute default="0" name="defaultCriticalPathRetries" type="nonNegativeInteger"
-                 use="optional"/>
+      <attribute default="1500" name="defaultCriticalPathTimeout"
+                 use="optional">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute default="0" name="defaultCriticalPathRetries"
+                 use="optional">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0"/>
+          </restriction>
+        </simpleType>
+      </attribute>
 
       <attribute default="false" name="verify-server" use="optional">
         <annotation>

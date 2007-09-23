@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location">
@@ -12,18 +12,10 @@
   <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
   </bean>
-  
-  <bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
-  </bean>
-  
-  <bean id="eventManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
-  </bean>
 
-  <bean id="modelImporter" class="org.opennms.netmgt.importer.ImporterService" depends-on="snmpPeerFactory-init">
+  <bean id="daemon" class="org.opennms.netmgt.importer.ImporterService" depends-on="snmpPeerFactory-init">
     <property name="importResource" value="${importer.importURL}"/>
-    <property name="eventManager" ref="eventManager"/>
+    <property name="eventManager" ref="eventIpcManager"/>
     <property name="assetRecordDao" ref="assetRecordDao"/>
     <property name="distPollerDao" ref="distPollerDao" />
     <property name="ipInterfaceDao" ref="ipInterfaceDao" />
@@ -38,7 +30,7 @@
  
  <bean id="modelImportingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
    <property name="targetObject">
-     <ref bean="modelImporter"/>
+     <ref bean="daemon"/>
    </property>
    <property name="targetMethod">
      <value>doImport</value>

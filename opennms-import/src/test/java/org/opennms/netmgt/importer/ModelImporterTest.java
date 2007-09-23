@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 25: Use AbstractTransactionalTemporaryDatabaseSpringContextTests
+//              and new Spring context files. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,38 +50,49 @@ import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.dao.AbstractDaoTestCase;
+import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.test.DaoTestConfigBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.style.ToStringCreator;
 
 /**
  * Unit test for ModelImport application.
  */
-public class ModelImporterTest extends AbstractDaoTestCase {
+public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+    private DatabasePopulator m_populator;
+    private ServiceTypeDao m_serviceTypeDao;
+    private CategoryDao m_categoryDao;
 
     private ModelImporter m_importer;
+    
+    public ModelImporterTest() {
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.setRelativeHomeDirectory("src/test/opennms-home");
+        bean.afterPropertiesSet();
+    }
+    
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+                "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+                "classpath:/modelImporterTest.xml"
+        };
+    }
 
-    public void setUp() throws Exception {
-        setPopulate(false);
-        setRunTestsInTransaction(false);
-        
-        super.setUp();
+    public void onSetUpInTransactionIfEnabled() throws Exception {
+        super.onSetUpInTransactionIfEnabled();
         
         initSnmpPeerFactory();
-
-
-        m_importer = new ModelImporter();
-        m_importer.setTransactionTemplate(m_transTemplate);
-        m_importer.setDistPollerDao(getDistPollerDao());
-        m_importer.setNodeDao(getNodeDao());
-        m_importer.setIpInterfaceDao(getIpInterfaceDao());
-        m_importer.setMonitoredServiceDao(getMonitoredServiceDao());
-        m_importer.setServiceTypeDao(getServiceTypeDao());
-        m_importer.setAssetRecordDao(getAssetRecordDao());
-        m_importer.setCategoryDao(getCategoryDao());
     }
 
     private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
@@ -225,6 +241,9 @@ public class ModelImporterTest extends AbstractDaoTestCase {
     }
     
     public void testPopulate() throws Exception {
+        createAndFlushServiceTypes();
+        createAndFlushCategories();
+        
         ModelImporter mi = m_importer;        
         String specFile = "/tec_dump.xml.smalltest";
         mi.importModelFromResource(new ClassPathResource(specFile));
@@ -252,6 +271,8 @@ public class ModelImporterTest extends AbstractDaoTestCase {
      * @throws ModelImportException
      */
     public void testDelete() throws Exception {
+        createAndFlushServiceTypes();
+        createAndFlushCategories();
         
         //Initialize the database
         ModelImporter mi = m_importer;
@@ -278,6 +299,68 @@ public class ModelImporterTest extends AbstractDaoTestCase {
         assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
         assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
     }
+
+    private void createAndFlushServiceTypes() {
+        getServiceTypeDao().save(new OnmsServiceType("ICMP"));
+        getServiceTypeDao().save(new OnmsServiceType("SNMP"));
+        getServiceTypeDao().save(new OnmsServiceType("HTTP"));
+        getServiceTypeDao().flush();
+
+        setComplete();
+        endTransaction();
+        startNewTransaction();
+    }
     
-    
+    private void createAndFlushCategories() {
+        getCategoryDao().save(new OnmsCategory("AC"));
+        getCategoryDao().save(new OnmsCategory("AP"));
+        getCategoryDao().save(new OnmsCategory("UK"));
+        getCategoryDao().save(new OnmsCategory("BE"));
+        getCategoryDao().save(new OnmsCategory("high"));
+        getCategoryDao().save(new OnmsCategory("low"));
+        getCategoryDao().save(new OnmsCategory("Park Plaza"));
+        getCategoryDao().save(new OnmsCategory("Golden Tulip"));
+        getCategoryDao().save(new OnmsCategory("Hilton"));
+        getCategoryDao().save(new OnmsCategory("Scandic"));
+        getCategoryDao().save(new OnmsCategory("Best Western"));
+        getCategoryDao().flush();
+
+        setComplete();
+        endTransaction();
+        startNewTransaction();
+    }
+
+    public ModelImporter getImporter() {
+        return m_importer;
+    }
+
+
+    public void setImporter(ModelImporter importer) {
+        m_importer = importer;
+    }
+
+    public DatabasePopulator getPopulator() {
+        return m_populator;
+    }
+
+    public void setPopulator(DatabasePopulator populator) {
+        m_populator = populator;
+    }
+
+    public CategoryDao getCategoryDao() {
+        return m_categoryDao;
+    }
+
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
+    }
+
+    public ServiceTypeDao getServiceTypeDao() {
+        return m_serviceTypeDao;
+    }
+
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        m_serviceTypeDao = serviceTypeDao;
+    }
+
 }

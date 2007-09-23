@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 03: New Castor methods names: clearX -> removeAllX. - dj@opennms.org
 // 2003 Aug 21: Changes made to support ScriptD.
 // 2002 Nov 10: Removed "http://" from UEIs as well as references to bluebird.
 // 2002 Oct 22: Added threshold rearm events.
@@ -613,7 +614,7 @@ public final class EventExpander {
             // Copy the auto actions.
             //
             if (EventConfigurationManager.isSecureTag("autoaction"))
-                e.clearAutoaction();
+                e.removeAllAutoaction();
             if (e.getAutoactionCount() == 0 && econf.getAutoactionCount() > 0) {
                 Enumeration eter = econf.enumerateAutoaction();
                 while (eter.hasMoreElements()) {
@@ -625,7 +626,7 @@ public final class EventExpander {
             // Convert the operator actions
             //
             if (EventConfigurationManager.isSecureTag("operaction"))
-                e.clearOperaction();
+                e.removeAllOperaction();
             if (e.getOperactionCount() == 0 && econf.getOperactionCount() > 0) {
                 Enumeration eter = econf.enumerateOperaction();
                 while (eter.hasMoreElements()) {
@@ -644,7 +645,7 @@ public final class EventExpander {
             // Convert the log group information
             //
             if (EventConfigurationManager.isSecureTag("loggroup"))
-                e.clearLoggroup();
+                e.removeAllLoggroup();
             if (e.getLoggroupCount() == 0 && econf.getLoggroupCount() > 0)
                 e.setLoggroup(econf.getLoggroup());
 
@@ -658,7 +659,7 @@ public final class EventExpander {
             // Convert the forward entry
             //
             if (EventConfigurationManager.isSecureTag("forward"))
-                e.clearForward();
+                e.removeAllForward();
             if (e.getForwardCount() == 0 && econf.getForwardCount() > 0) {
                 Enumeration eter = econf.enumerateForward();
                 while (eter.hasMoreElements()) {
@@ -670,7 +671,7 @@ public final class EventExpander {
             // Convert the script entry
             //
             if (EventConfigurationManager.isSecureTag("script"))
-                e.clearScript();
+                e.removeAllScript();
             if (e.getScriptCount() == 0 && econf.getScriptCount() > 0) {
                 Enumeration eter = econf.enumerateScript();
                 while (eter.hasMoreElements()) {

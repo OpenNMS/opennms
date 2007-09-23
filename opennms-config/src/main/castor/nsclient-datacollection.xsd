@@ -93,7 +93,7 @@
 					</documentation>
 				</annotation>
 			</attribute>
-			<attribute name="recheckInterval" type="integer"
+			<attribute name="recheckInterval" type="int"
 				use="required">
 				<annotation>
 					<documentation>

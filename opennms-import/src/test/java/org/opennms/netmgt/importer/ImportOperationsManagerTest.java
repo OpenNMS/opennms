@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Aug 25: Use AbstractTransactionalTemporaryDatabaseSpringContextTests
+//              and new Spring context files. - dj@opennms.org 
 // 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -43,40 +45,71 @@ import java.util.Map;
 
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.AbstractDaoTestCase;
+import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
-
-//public class ImportOperationsManagerTest extends AbstractMockTestCase {
-public class ImportOperationsManagerTest extends AbstractDaoTestCase {
+public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+    private MockSnmpAgent m_agent;
     
-    MockSnmpAgent m_agent;
+    private DatabasePopulator m_populator;
+    
+    private TransactionTemplate m_transTemplate;
+    private DistPollerDao m_distPollerDao;
+    private NodeDao m_nodeDao;
+    private ServiceTypeDao m_serviceTypeDao;
+    private CategoryDao m_categoryDao;
+    private IpInterfaceDao m_ipInterfaceDao;
+    
+    public ImportOperationsManagerTest() {
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.setRelativeHomeDirectory("src/test/opennms-home");
+        bean.afterPropertiesSet();
+    }
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+                "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+        };
+    }
     
     @Override
-    protected void setUp() throws Exception {
-        System.setProperty("opennms.home", "src/test/opennms-home");
-
+    protected void onSetUpInTransactionIfEnabled() throws Exception {
         MockLogAppender.setupLogging();
-        setRunTestsInTransaction(false);
-        
+
+        m_populator.populateDatabase();
+        setComplete();
+        endTransaction();
+        startNewTransaction();
         
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), "127.0.0.1/1691");
 
         SnmpPeerFactory.init();
 
-        super.setUp();
+        super.onSetUpInTransactionIfEnabled();
     }
     
 
@@ -87,9 +120,9 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    protected void onTearDownInTransactionIfEnabled() throws Exception {
         try {
-            super.tearDown();
+            super.onTearDownInTransactionIfEnabled();
         } finally {
             m_agent.shutDownAndWait();
         }
@@ -192,8 +225,10 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
     }
     
     public void testChangeIpAddr() throws Exception {
-        
+        createAndFlushCategories();
+
         testImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
+        
         assertEquals(1, getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
         
         testImportFromSpecFile(new ClassPathResource("/tec_dumpIpAddrChanged.xml"), 1, 1);
@@ -204,7 +239,19 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 
     }
 
+    private void createAndFlushCategories() {
+        getCategoryDao().save(new OnmsCategory("AC"));
+        getCategoryDao().save(new OnmsCategory("UK"));
+        getCategoryDao().save(new OnmsCategory("low"));
+        getCategoryDao().flush();
+
+        setComplete();
+        endTransaction();
+        startNewTransaction();
+    }
+
     public void testImportToOperationsMgr() throws Exception {
+        createAndFlushCategories();
         
         testDoubleImport(new ClassPathResource("/tec_dump.xml"));
         
@@ -272,7 +319,75 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         });
         return assetNumbers;
     }
-    
-    
 
+    protected Map<String, Integer> getAssetNumberMap(String foreignSource) {
+//        Map assetNumberMap = new HashMap();
+//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"1", new Long(1));
+//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"2", new Long(2));
+//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"3", new Long(3));
+//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"4", new Long(4));
+//        return assetNumberMap;
+        
+        return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
+    }
+
+    protected void expectServiceTypeCreate(String string) {
+        // TODO Auto-generated method stub
+    }
+
+    public TransactionTemplate getTransactionTemplate() {
+        return m_transTemplate;
+    }
+
+    public void setTransactionTemplate(TransactionTemplate transTemplate) {
+        m_transTemplate = transTemplate;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public CategoryDao getCategoryDao() {
+        return m_categoryDao;
+    }
+
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
+    }
+
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public ServiceTypeDao getServiceTypeDao() {
+        return m_serviceTypeDao;
+    }
+
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        m_serviceTypeDao = serviceTypeDao;
+    }
+
+    public DatabasePopulator getPopulator() {
+        return m_populator;
+    }
+
+    public void setPopulator(DatabasePopulator populator) {
+        m_populator = populator;
+    }
 }

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 24: Use mockEventIpcManager.xml Spring context and remove commented-out code. - dj@opennms.org
 // 2007 Apr 16: Don't use test.overridden.properties; use beans and override them instead. - dj@opennms.org
 // 2007 Apr 06: Use DaoTestConfigBean to setup system properties. - dj@opennms.org
 //
@@ -41,8 +42,6 @@ import java.util.Properties;
 
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.FileAnticipator;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
@@ -60,12 +59,9 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
         
-        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
-        
         m_fileAnticipator = new FileAnticipator();
         
         System.setProperty("opennms.poller.configuration.resource", m_fileAnticipator.expecting("remote-poller.configuration").toURL().toString());
-//        System.setProperty("test.overridden.properties", "classpath:/org/opennms/netmgt/poller/remote/test.overridden.properties");
     }
     
     @Override
@@ -76,6 +72,7 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
                 "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
                 "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+                "classpath:/META-INF/opennms/mockEventIpcManager.xml",
                 "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
         };
     }

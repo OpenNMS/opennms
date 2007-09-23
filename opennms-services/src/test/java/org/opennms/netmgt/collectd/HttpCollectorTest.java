@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 23: Use new RrdTestUtils.initializeNullStratgegy. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,7 +49,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.mock.NullRrdStrategy;
+import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -123,9 +127,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
         
         InetAddress opennmsDotOrg = InetAddress.getByName("www.opennms.org");
         
-        RrdConfig.setProperties(new Properties());
-        RrdUtils.setStrategy(new NullRrdStrategy());
-        RrdUtils.initialize();
+        RrdTestUtils.initializeNullStrategy();
         HttpCollector collector = new HttpCollector();
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
         OnmsNode node = new OnmsNode(distPoller );

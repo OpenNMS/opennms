@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 24: Move this class to org.opennms.netmgt.dao.support. - dj@opennms.org
 // 2007 Mar 19: Added createGraphReturnDetails. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -33,15 +34,13 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.dao.support;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
 
-import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -55,8 +54,8 @@ public class NullRrdStrategy implements RrdStrategy {
 	}
 
 	public Object createDefinition(String creator, String directory,
-            String rrdName, int step, List<RrdDataSource> dataSources,
-            List<String> rraList) throws Exception {
+			String rrdName, int step, List dataSources, List rraList)
+			throws Exception {
 		return null;
 	}
 
@@ -101,10 +100,6 @@ public class NullRrdStrategy implements RrdStrategy {
 			throws Exception {
 	}
 
-    public int getGraphLeftOffset() {
-        return 0;
-    }
-
     public int getGraphRightOffset() {
         return 0;
     }
@@ -122,10 +117,5 @@ public class NullRrdStrategy implements RrdStrategy {
             throws NumberFormatException, RrdException {
         return null;
     }
-
-    
-    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
-    }
-    
 
 }
