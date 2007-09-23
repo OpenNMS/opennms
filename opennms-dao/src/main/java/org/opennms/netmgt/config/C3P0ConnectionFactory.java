@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 02: Prepare for Castor 1.0.5, Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -41,26 +45,25 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class C3P0ConnectionFactory implements ClosableDataSource {
-    
-/*    private static final int DEFAULT_AQUIRE_INCREMENT = 5;
+
+    /*    private static final int DEFAULT_AQUIRE_INCREMENT = 5;
     private static final int DEFAULT_RETRY_ATTEMPTS = 1;
     private static final int DEFAULT_RETRY_DELAY = 0;  //TODO: need to learn this one
     private static final boolean DEFAULT_AUTOCOMMIT_ON_CLOSE = false;
@@ -86,57 +89,62 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     private static final boolean DEFAULT_SET_TEST_CONNECTION_ON_CHECKIN = false;
     private static final boolean DEFAULT_SET_TEST_CONNECTION_ON_CHECKOUT = false;
     private static final boolean DEFAULT_USES_TRADITIONAL_REFLECTIVE_PROXIES = false;
-*/    
+     */    
     private ComboPooledDataSource m_pool;
 
     protected C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         log().info("C3P2ConnectionFactory: setting up data sources from reader argument.");
-		try {
-			JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
-			initializePool(ds);
-		} finally {
-		}
+        try {
+            JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
+            initializePool(ds);
+        } finally {
+        }
     }
-    
+
     protected C3P0ConnectionFactory(String configFile, String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
-
-        // Set the system identifier for the source of the input stream.
-        // This is necessary so that any location information can
-        // positively identify the source of the error.
-        //
+        /*
+         * Set the system identifier for the source of the input stream.
+         * This is necessary so that any location information can
+         * positively identify the source of the error.
+         */
         FileInputStream fileInputStream = new FileInputStream(configFile);
-		final Reader rdr = new InputStreamReader(fileInputStream);
+        final Reader rdr = new InputStreamReader(fileInputStream);
         log().info("C3P2ConnectionFactory: setting up data sources from:"+configFile);
-		try {
-			JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
-			initializePool(ds);
-		} finally {
-			rdr.close();
-			fileInputStream.close();
-		}
+        try {
+            JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
+            initializePool(ds);
+        } finally {
+            rdr.close();
+            fileInputStream.close();
+        }
     }
 
-	protected static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-		DataSourceConfiguration dsc = (DataSourceConfiguration) Unmarshaller.unmarshal(DataSourceConfiguration.class, rdr);
-		Collection jdbcDataSources = dsc.getJdbcDataSourceCollection();
-		JdbcDataSource ds = null;
-		for (Iterator iterator = jdbcDataSources.iterator(); iterator.hasNext();) {
-			JdbcDataSource jdbcDs = (JdbcDataSource) iterator.next();
-			log().debug("marshalDataSource: comparing collection entry:"+jdbcDs.getName()+" with requested ds:"+dsName);
-			if (jdbcDs.getName().equals(dsName)) {
-				ds = jdbcDs;
-				break;
-			}
-		}
-		if (ds == null) {
-			throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
-		}
-		return ds;
-	}
+    protected JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+        DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
 
-	private static Category log() {
-		return ThreadCategory.getInstance("org.opennms.netmgt.config.C3P0ConnectionFactory.class");
-	}
+        JdbcDataSource ds = null;
+
+        for (JdbcDataSource jdbcDs : getJdbcDataSources(dsc)) {
+            log().debug("marshalDataSource: comparing collection entry:"+jdbcDs.getName()+" with requested ds:"+dsName);
+            if (jdbcDs.getName().equals(dsName)) {
+                ds = jdbcDs;
+                break;
+            }
+        }
+        if (ds == null) {
+            throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
+        }
+        return ds;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<JdbcDataSource> getJdbcDataSources(DataSourceConfiguration dsc) {
+        return dsc.getJdbcDataSourceCollection();
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
     private void initializePool(JdbcDataSource ds) throws PropertyVetoException, SQLException {
         m_pool = new ComboPooledDataSource();
@@ -144,18 +152,21 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         m_pool.setUser(ds.getUserName());
         m_pool.setJdbcUrl(ds.getUrl());
         m_pool.setDriverClass(ds.getClassName());
-        
+
         Properties props = new Properties();
-        Collection c = ds.getParamCollection();
-        for (Iterator it = c.iterator(); it.hasNext();) {
-			Param p = (Param) it.next();
-			props.put(p.getName(), p.getValue());
-		}
+        for (Param p : getParamsForJdbcDataSource(ds)) {
+            props.put(p.getName(), p.getValue());
+        }
         if (!props.isEmpty()) {
             m_pool.setProperties(props);
-		}
+        }
     }
-    
+
+    @SuppressWarnings("unchecked")
+    private List<Param> getParamsForJdbcDataSource(JdbcDataSource ds) {
+        return ds.getParamCollection();
+    }
+
     public Connection getConnection() throws SQLException {
         return m_pool.getConnection();
     }
@@ -169,7 +180,7 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     }
 
     public String getUrl() {
-    	return m_pool.getJdbcUrl();
+        return m_pool.getJdbcUrl();
     }
 
     public void setUrl(String url) {
@@ -207,7 +218,7 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     public int getLoginTimeout() throws SQLException {
         return m_pool.getLoginTimeout();
     }
-    
+
     public void close() throws SQLException {
         m_pool.close();
     }

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 02: Organize imports. - dj@opennms.org
 // 2007 Jun 10: Fix sequence for alarms and add getJdbcTemplate(). - dj@opennms.org
 // 2006 Aug 22: Move anticipator verify code into runTest(). - dj@opennms.org
 //
@@ -61,7 +62,6 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class OpenNMSTestCase extends TestCase {
 

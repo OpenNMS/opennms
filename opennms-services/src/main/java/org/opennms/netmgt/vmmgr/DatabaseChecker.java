@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 02: Prepare for Castor 1.0.5. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -35,7 +36,6 @@
 //
 // Tab Size = 8
 //
-
 package org.opennms.netmgt.vmmgr;
 
 import java.io.FileInputStream;
@@ -43,10 +43,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 
-import org.exolab.castor.jdo.conf.Database;
-import org.exolab.castor.jdo.conf.Param;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -103,18 +101,16 @@ public class DatabaseChecker {
 						      MarshalException,
 						      ValidationException,
 						      ClassNotFoundException {
-        Class<DataSourceConfiguration> dsc = DataSourceConfiguration.class;
-
-        // Set the system identifier for the source of the input stream.
-        // This is necessary so that any location information can
-        // positively identify the source of the error.
-        //
+        /*
+         * Set the system identifier for the source of the input stream.
+         * This is necessary so that any location information can
+         * positively identify the source of the error.
+         */
         InputSource dbIn = new InputSource(new FileInputStream(configFile));
         dbIn.setSystemId(configFile);
 
         // Attempt to load the database reference.
-        //
-        DataSourceConfiguration m_database = (DataSourceConfiguration) Unmarshaller.unmarshal(dsc, dbIn);
+        DataSourceConfiguration m_database = (DataSourceConfiguration) Unmarshaller.unmarshal(DataSourceConfiguration.class, dbIn);
 
         /*
         Param[] parms = m_database.getDatabaseChoice().getDriver().getParam();
@@ -130,14 +126,19 @@ public class DatabaseChecker {
         }
         */
         
-        Collection<JdbcDataSource> jdbcDataSources = m_database.getJdbcDataSourceCollection();
-        for (JdbcDataSource jdbcDataSource : jdbcDataSources) {
-			m_driverUrl = jdbcDataSource.getUrl();
-			m_driverUser = jdbcDataSource.getUserName();
-			m_driverPass = jdbcDataSource.getPassword();
-	        String driverCN = jdbcDataSource.getClassName();
-	        Class.forName(driverCN);
-		}
+        for (JdbcDataSource jdbcDataSource : getJdbcDataSources(m_database)) {
+            m_driverUrl = jdbcDataSource.getUrl();
+            m_driverUser = jdbcDataSource.getUserName();
+            m_driverPass = jdbcDataSource.getPassword();
+            String driverCN = jdbcDataSource.getClassName();
+            Class.forName(driverCN);
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private List<JdbcDataSource> getJdbcDataSources(DataSourceConfiguration m_database) {
+        return m_database.getJdbcDataSourceCollection();
     }
 
 
