@@ -39,6 +39,7 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.rrd.RrdException;
@@ -100,6 +101,10 @@ public class NullRrdStrategy implements RrdStrategy {
 			throws Exception {
 	}
 
+    public int getGraphLeftOffset() {
+        return 0;
+    }
+
     public int getGraphRightOffset() {
         return 0;
     }
@@ -116,6 +121,9 @@ public class NullRrdStrategy implements RrdStrategy {
             String consolidationFunction, int interval)
             throws NumberFormatException, RrdException {
         return null;
+    }
+
+    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
     }
 
 }
