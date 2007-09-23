@@ -39,33 +39,35 @@ package org.opennms.netmgt.config;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * @author david hustace <david@opennms.org>
  */
 
 public abstract class NotificationCommandManager {
+    /**
+     * List of all configuration notification commands.  parseXml must be called to populate this.
+     */
+    private Map<String, Command> m_commands;
 
     /**
      * 
      */
-    private Map<String, Command> m_commands;
-    /**
-     */
     protected InputStream configIn;
 
     /**
-     * @param reader
+     * Populate the internal list of notification commands from an XML file.
+     *  
+     * @param reader contains the XML file to be parsed
      * @throws MarshalException
      * @throws ValidationException
      */
@@ -86,14 +88,14 @@ public abstract class NotificationCommandManager {
     }
 
     /**
-     * 
+     * Gets a notification command for a particular command name.
      */
     public Command getCommand(String name) {
         return m_commands.get(name);
     }
 
     /**
-     * 
+     * Gets all configured notification commands.
      */
     public Map<String, Command> getCommands() {
         return m_commands;
