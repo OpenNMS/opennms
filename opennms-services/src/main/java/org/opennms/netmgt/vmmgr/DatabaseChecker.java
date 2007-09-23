@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.jdo.conf.Param;
@@ -50,6 +51,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.xml.sax.InputSource;
 
 /**
@@ -69,11 +72,6 @@ import org.xml.sax.InputSource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class DatabaseChecker {
-    /**
-     * The database class loaded from the config file
-     */
-    private Database m_database = null;
-
     /**
      * The cached database URL
      */
@@ -105,7 +103,7 @@ public class DatabaseChecker {
 						      MarshalException,
 						      ValidationException,
 						      ClassNotFoundException {
-        Class dsc = Database.class;
+        Class<DataSourceConfiguration> dsc = DataSourceConfiguration.class;
 
         // Set the system identifier for the source of the input stream.
         // This is necessary so that any location information can
@@ -116,24 +114,30 @@ public class DatabaseChecker {
 
         // Attempt to load the database reference.
         //
-        m_database = (Database) Unmarshaller.unmarshal(dsc, dbIn);
+        DataSourceConfiguration m_database = (DataSourceConfiguration) Unmarshaller.unmarshal(dsc, dbIn);
 
+        /*
         Param[] parms = m_database.getDatabaseChoice().getDriver().getParam();
         for (int i = 0; i < parms.length; i++) {
-            if (parms[i].getName().equals("user")) {
-                m_driverUser = parms[i].getValue();
-	    } else if (parms[i].getName().equals("password")) {
-                m_driverPass = parms[i].getValue();
-	    } else {
-		throw new ValidationException("Unsupported JDO parameter: " +
-					      parms[i].getName());
-	    }
+        	if (parms[i].getName().equals("user")) {
+        		m_driverUser = parms[i].getValue();
+        	} else if (parms[i].getName().equals("password")) {
+        		m_driverPass = parms[i].getValue();
+        	} else {
+        		throw new ValidationException("Unsupported JDO parameter: " +
+        				parms[i].getName());
+        	}
         }
-        m_driverUrl = m_database.getDatabaseChoice().getDriver().getUrl();
-        String driverCN =
-	    m_database.getDatabaseChoice().getDriver().getClassName();
-
-        Class.forName(driverCN);
+        */
+        
+        Collection<JdbcDataSource> jdbcDataSources = m_database.getJdbcDataSourceCollection();
+        for (JdbcDataSource jdbcDataSource : jdbcDataSources) {
+			m_driverUrl = jdbcDataSource.getUrl();
+			m_driverUser = jdbcDataSource.getUserName();
+			m_driverPass = jdbcDataSource.getPassword();
+	        String driverCN = jdbcDataSource.getClassName();
+	        Class.forName(driverCN);
+		}
     }
 
 
@@ -149,22 +153,17 @@ public class DatabaseChecker {
      *                Thrown if the contents do not match the required schema.
      * 
      */
-    protected DatabaseChecker() throws IOException,
-				     MarshalException,
-				     ValidationException,
-				     ClassNotFoundException {
-	this(ConfigFileConstants.getFile(ConfigFileConstants.DB_CONFIG_FILE_NAME).getPath());
+    protected DatabaseChecker() throws IOException, MarshalException, ValidationException, ClassNotFoundException {
+    	this(ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME).getPath());
     }
 
     public void check() throws SQLException {
-	Connection c = DriverManager.getConnection(m_driverUrl,
-						   m_driverUser,
-						   m_driverPass);
-	c.close();
+    	Connection c = DriverManager.getConnection(m_driverUrl, m_driverUser, m_driverPass);
+    	c.close();
     }
 
     public static void main(String[] argv) throws Exception {
-	DatabaseChecker checker = new DatabaseChecker();
-	checker.check();
+    	DatabaseChecker checker = new DatabaseChecker();
+    	checker.check();
     }
 }

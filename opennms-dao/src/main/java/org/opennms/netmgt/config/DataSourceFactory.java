@@ -99,11 +99,9 @@ public final class DataSourceFactory implements DataSource {
      * 
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
-    	if (isLoaded("opennms")	) return;
-    	
-    	init("opennms");
-
-    	
+    	if (!isLoaded("opennms")) {
+           	init("opennms");
+    	}
     }
 
 	public static synchronized void init(String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
@@ -113,8 +111,8 @@ public final class DataSourceFactory implements DataSource {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getConfigFileByName(dsName+"-database.xml");
-        DataSource dataSource = new C3P0ConnectionFactory(cfgFile.getPath());                
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+        DataSource dataSource = new C3P0ConnectionFactory(cfgFile.getPath(), dsName);
         setInstance(dsName,dataSource);
     }
 
