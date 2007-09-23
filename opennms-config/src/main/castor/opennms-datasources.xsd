@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://xmlns.opennms.org/xsd/config/opennms-datasources"
+  xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources">
+  <annotation>
+    <documentation>XML Schema for the opennms-database.xml configuration file. Version: $Id:
+      opennms-database.xsd,v 1.4 2006/03/13 10:52:11 mhuot Exp $</documentation>
+  </annotation>
+
+  <element name="data-source-configuration" >
+    <annotation>
+      <documentation>
+        Top Level element for opennms-datasources.xml... a list of data sources
+        to be used within OpenNMS.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:jdbc-data-source" minOccurs="1" maxOccurs="unbounded" >
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="jdbc-data-source" >
+    <annotation>
+      <documentation>Top-level element for the opennms-database.xml configuration
+      file.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:param" minOccurs="0" maxOccurs="unbounded">
+        </element>
+      </sequence>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="url" type="string" use="required" />
+      <attribute name="class-name" type="string" use="required" />
+      <attribute name="user-name" type="string" use="optional" />
+      <attribute name="password" type="string" use="optional" />
+    </complexType>
+  </element>
+  <element name="param">
+    <complexType>
+      <attribute name="name" use="required" type="string"/>
+      <attribute name="value" use="required" type="string"/>
+    </complexType>
+  </element>
+</schema>

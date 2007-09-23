@@ -36,20 +36,25 @@ package org.opennms.netmgt.config;
 import java.beans.PropertyVetoException;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.jdo.conf.Database;
-import org.exolab.castor.jdo.conf.Param;
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.netmgt.config.opennmsDataSources.Param;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -83,77 +88,72 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     private static final boolean DEFAULT_USES_TRADITIONAL_REFLECTIVE_PROXIES = false;
 */    
     private ComboPooledDataSource m_pool;
-    private String m_user;
-    private String m_password;
-    private String m_url;
-    private String m_className;
-    private Database m_database;
 
-    public C3P0ConnectionFactory(String configFile) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
-        Class dsc = Database.class;
+    protected C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+        log().info("C3P2ConnectionFactory: setting up data sources from reader argument.");
+		try {
+			JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
+			initializePool(ds);
+		} finally {
+		}
+    }
+    
+    protected C3P0ConnectionFactory(String configFile, String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
 
         // Set the system identifier for the source of the input stream.
         // This is necessary so that any location information can
         // positively identify the source of the error.
         //
         FileInputStream fileInputStream = new FileInputStream(configFile);
+		final Reader rdr = new InputStreamReader(fileInputStream);
+        log().info("C3P2ConnectionFactory: setting up data sources from:"+configFile);
 		try {
-			InputSource dbIn = new InputSource(fileInputStream);
-			dbIn.setSystemId(configFile);
-
-			m_database = (Database) Unmarshaller.unmarshal(dsc, dbIn);
-			Param[] params = m_database.getDatabaseChoice().getDriver().getParam();
-			for (Iterator it = Arrays.asList(params).iterator(); it.hasNext();) {
-			    Param param = (Param) it.next();
-			    if (param.getName().equals("user")) {
-			        m_user = param.getValue();
-			    } else if (param.getName().equals("password")) {
-			        m_password = param.getValue();
-			    }
-			}
-
-			initializePool();
+			JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
+			initializePool(ds);
 		} finally {
+			rdr.close();
 			fileInputStream.close();
 		}
-        
     }
 
-    private void initializePool() throws PropertyVetoException, SQLException {
+	protected static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+		DataSourceConfiguration dsc = (DataSourceConfiguration) Unmarshaller.unmarshal(DataSourceConfiguration.class, rdr);
+		Collection jdbcDataSources = dsc.getJdbcDataSourceCollection();
+		JdbcDataSource ds = null;
+		for (Iterator iterator = jdbcDataSources.iterator(); iterator.hasNext();) {
+			JdbcDataSource jdbcDs = (JdbcDataSource) iterator.next();
+			log().debug("marshalDataSource: comparing collection entry:"+jdbcDs.getName()+" with requested ds:"+dsName);
+			if (jdbcDs.getName().equals(dsName)) {
+				ds = jdbcDs;
+				break;
+			}
+		}
+		if (ds == null) {
+			throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
+		}
+		return ds;
+	}
+
+	private static Category log() {
+		return ThreadCategory.getInstance("org.opennms.netmgt.config.C3P0ConnectionFactory.class");
+	}
+
+    private void initializePool(JdbcDataSource ds) throws PropertyVetoException, SQLException {
         m_pool = new ComboPooledDataSource();
-        m_pool.setPassword(m_password);
-        m_pool.setUser(m_user);
-        m_url = m_database.getDatabaseChoice().getDriver().getUrl();
-        m_pool.setJdbcUrl(m_url);
-        m_className = m_database.getDatabaseChoice().getDriver().getClassName();
-        m_pool.setDriverClass(m_className);
+        m_pool.setPassword(ds.getPassword());
+        m_pool.setUser(ds.getUserName());
+        m_pool.setJdbcUrl(ds.getUrl());
+        m_pool.setDriverClass(ds.getClassName());
         
-        //defaults
-//        m_pool.setAcquireIncrement(DEFAULT_AQUIRE_INCREMENT);
-//        m_pool.setAcquireRetryAttempts(DEFAULT_RETRY_ATTEMPTS);
-//        m_pool.setAcquireRetryDelay(DEFAULT_RETRY_DELAY);
-//        m_pool.setAutoCommitOnClose(DEFAULT_AUTOCOMMIT_ON_CLOSE);
-//        m_pool.setBreakAfterAcquireFailure(DEFAULT_BREAK_AFTER_ACQUIRE_FAILURE);
-//        m_pool.setCheckoutTimeout(DEFAULT_CHECKOUT_TIMEOUT);
-//        m_pool.setConnectionTesterClassName(DEFAULT_TESTER_CLASS_NAME);
-//        m_pool.setDescription(DEFAULT_POOL_DESCRIPTION);
-//        m_pool.setForceIgnoreUnresolvedTransactions(DEFAULT_FORCE_IGNORE_UNRESOLVED_TRANSACTION);
-//        m_pool.setIdentityToken(DEFAULT_IDENTITY_TOKEN);
-//        m_pool.setIdleConnectionTestPeriod(DEFAULT_IDLE_CONNECTION_TEST_PERIOD);
-//        m_pool.setInitialPoolSize(DEFAULT_INITIAL_POOL_SIZE);
-//        m_pool.setLoginTimeout(DEFAULT_LOGIN_TIMEOUT);
-//        m_pool.setLogWriter(DEFAULT_LOG_WRITER);
-//        m_pool.setMaxIdleTime(DEFAUT_MAX_IDLE_TIME);
-//        m_pool.setMaxPoolSize(DEFAULT_MAX_POOL_SIZE);
-//        m_pool.setMaxStatements(DEFAULT_MAX_STATEMENTS);
-//        m_pool.setMaxStatementsPerConnection(DEFAULT_MAX_STATEMENTS_PER_CONNECTION);
-//        m_pool.setMinPoolSize(DEFAULT_MIN_POOL_SIZE);
-//        m_pool.setNumHelperThreads(DEFAULT_NUM_HELPER_THREADS);
-//        m_pool.setPreferredTestQuery(DEFAULT_PERFERRED_TEST_QUERY);
-//        m_pool.setPropertyCycle(DEFAULT_PROPERTY_CYCLE);
-//        m_pool.setTestConnectionOnCheckin(DEFAULT_SET_TEST_CONNECTION_ON_CHECKIN);
-//        m_pool.setTestConnectionOnCheckout(DEFAULT_SET_TEST_CONNECTION_ON_CHECKOUT);
-//        m_pool.setUsesTraditionalReflectiveProxies(DEFAULT_USES_TRADITIONAL_REFLECTIVE_PROXIES);
+        Properties props = new Properties();
+        Collection c = ds.getParamCollection();
+        for (Iterator it = c.iterator(); it.hasNext();) {
+			Param p = (Param) it.next();
+			props.put(p.getName(), p.getValue());
+		}
+        if (!props.isEmpty()) {
+            m_pool.setProperties(props);
+		}
     }
     
     public Connection getConnection() throws SQLException {
@@ -169,19 +169,19 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     }
 
     public String getUrl() {
-        return m_url;
+    	return m_pool.getJdbcUrl();
     }
 
     public void setUrl(String url) {
-        m_url = url;
+        m_pool.setJdbcUrl(url);
     }
 
     public String getUser() {
-        return m_user;
+        return m_pool.getUser();
     }
 
     public void setUser(String user) {
-        m_user = user;
+        m_pool.setUser(user);
     }
 
     public DataSource getDataSource() {
