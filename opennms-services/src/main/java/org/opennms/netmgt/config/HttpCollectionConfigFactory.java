@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2007 Aug 07: Move HTTP datacollection config package from
+//              org.opennms.netmgt.config.datacollection to
+//              org.opennms.netmgt.config.httpdatacollection. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -51,9 +54,8 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.datacollection.HttpCollection;
-import org.opennms.netmgt.config.datacollection.HttpDatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
+import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**

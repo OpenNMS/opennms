@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Aug 25: Use AbstractTransactionalTemporaryDatabaseSpringContextTests
+//              and new Spring context files. - dj@opennms.org
 // 2007 Jun 24: Organize imports. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -35,53 +37,69 @@
 //
 package org.opennms.netmgt.importer;
 
-import junit.framework.TestCase;
-
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.importer.jmx.ImporterService;
 import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 
-public class ImporterServiceTest extends TestCase {
-    
+public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+    private MockEventIpcManager m_eventIpcMgr;
+
     public ImporterServiceTest() {
-        
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.setRelativeHomeDirectory("src/test/opennms-home");
         bean.afterPropertiesSet();
-
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:META-INF/opennms/mockEventIpcManager.xml",
+                "classpath:META-INF/opennms/eventIpcManager-factoryInit.xml"
+        };
+    }
+
+    @Override
+    protected void onSetUpInTransactionIfEnabled() throws Exception {
+        super.onSetUpInTransactionIfEnabled();
         
         MockLogAppender.setupLogging();
-        
-        
-        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-    
-    
     public void testSchedule() throws Exception {
+        anticipateEvent(createEvent(EventConstants.IMPORT_STARTED_UEI));
+        anticipateEvent(createEvent(EventConstants.IMPORT_SUCCESSFUL_UEI));
+        
         ImporterServiceMBean mbean = new ImporterService();
         mbean.init();
         mbean.start();
         
         Thread.sleep(60000);
         
-        
         mbean.stop();
         
-        System.err.println("EXIT!");
-        
-        
-        
+        verifyAnticipated();
     }
 
+    private void verifyAnticipated() {
+        m_eventIpcMgr.getEventAnticipator().resetUnanticipated();
+        m_eventIpcMgr.getEventAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
+    }
+
+    public Event createEvent(String uei) {
+        return new EventBuilder(uei, "ModelImporter").getEvent();
+    }
+
+    private void anticipateEvent(Event e) {
+        m_eventIpcMgr.getEventAnticipator().anticipateEvent(e);
+    }
+
+    public void setEventIpcManager(MockEventIpcManager eventIpcMgr) {
+        m_eventIpcMgr = eventIpcMgr;
+    }
 }

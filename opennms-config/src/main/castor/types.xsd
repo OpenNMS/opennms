@@ -173,7 +173,7 @@
         </element>
       </sequence>
 
-      <attribute name="step" type="integer" use="required">
+      <attribute name="step" type="int" use="required">
         <annotation>
           <documentation>step size for the RRD</documentation>
         </annotation>

@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 03: Change to use new name for Castor method:
+//              clearPath -> removeAllPath. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -222,7 +227,7 @@ public abstract class DestinationPathManager {
      * 
      */
     public synchronized void saveCurrent() throws MarshalException, ValidationException, IOException {
-        allPaths.clearPath();
+        allPaths.removeAllPath();
         Iterator i = m_destinationPaths.keySet().iterator();
         while (i.hasNext()) {
             allPaths.addPath((Path) m_destinationPaths.get(i.next()));

@@ -113,7 +113,13 @@ TODO: XYDataSets
     				<element ref="this:jdbc-data-set" minOccurs="1" maxOccurs="1" />
 	    			<element ref="this:rgb" minOccurs="0" maxOccurs="1" />
 	    		</sequence>
-	    		<attribute name="number" type="positiveInteger" use="required" />
+	    		<attribute name="number" use="required" >
+                  <simpleType>
+                    <restriction base="int">
+                      <minInclusive value="1"/>
+                    </restriction>
+                  </simpleType>
+                </attribute>
 	    		<attribute name="series-name" type="string" use="required" />
 	    		<attribute name="use-labels" type="boolean" use="optional" default="true" />
     		</complexType>
@@ -166,7 +172,13 @@ TODO: XYDataSets
     			</sequence>
     			<attribute name="value" type="string" use="required" />
     			<attribute name="font" type="string" use="optional" />
-    			<attribute name="pitch" type="positiveInteger" use="optional" />
+    			<attribute name="pitch" use="optional" >
+                  <simpleType>
+                    <restriction base="int">
+                      <minInclusive value="1"/>
+                    </restriction>
+                  </simpleType>
+                </attribute>
     			<attribute name="style" type="string" use="optional" />
     		</complexType>
     </element>
@@ -213,7 +225,8 @@ TODO: XYDataSets
     
     <element name="rgb-color" >
     		<simpleType>
-    			<restriction base="nonNegativeInteger" >
+    			<restriction base="int" >
+                    <minInclusive value="0" />
     				<maxInclusive value="255" />
     			</restriction>
     		</simpleType>
@@ -246,7 +259,9 @@ TODO: XYDataSets
 
     <element name="pixels" >
     		<simpleType>
-    			<restriction base="positiveInteger" />
+    			<restriction base="int" >
+                  <minInclusive value="1"/>
+                </restriction>
     		</simpleType>
     </element>
     

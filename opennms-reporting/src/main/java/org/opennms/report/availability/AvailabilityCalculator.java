@@ -38,6 +38,7 @@ package org.opennms.report.availability;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -151,7 +152,7 @@ public class AvailabilityCalculator {
         created.setMonth(month);
         created.setSec(second);
         created.setYear(year);
-        created.setContent(today.getTime().getTime());
+        created.setContent(new BigDecimal(today.getTime().getTime()));
         m_report.setCreated(created);
 
     }

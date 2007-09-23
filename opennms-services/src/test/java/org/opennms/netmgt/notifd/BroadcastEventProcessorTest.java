@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 25: Initialize DatabaseSchemaConfigFactory. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,12 +35,15 @@
 //
 package org.opennms.netmgt.notifd;
 
+import java.io.Reader;
 import java.util.Collections;
 import java.util.Date;
 
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.ConfigurationTestUtils;
 
 public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
@@ -48,6 +55,10 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         m_processor.initExpandRe();
         
         m_anticipator.setExpectedDifference(3000);
+        
+        Reader rdr = ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml"); 
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
+        rdr.close();
     }
 
     /**

@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 23: Use RrdTestUtils.initialize to initialize the RRD
+//              subsystem. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,11 +36,12 @@
 //
 package org.opennms.netmgt.collectd;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+
+import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -46,16 +52,13 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
-import junit.framework.TestCase;
-
 public class CollectorConfigDaoImplTest extends TestCase {
-    private static final String s_rrdConfig = "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
-
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -87,14 +90,14 @@ public class CollectorConfigDaoImplTest extends TestCase {
 		return new InputStreamReader(is);
 	}
 	
-	public void testInstantiate() throws MarshalException, ValidationException, IOException {
+	public void testInstantiate() throws MarshalException, ValidationException, IOException, RrdException {
 		initialize();
 	}
 	
-	private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException {
+	private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, RrdException {
 		Reader rdr;
 		
-		RrdConfig.loadProperties(new ByteArrayInputStream(s_rrdConfig.getBytes()));
+                RrdTestUtils.initialize();
 
 		rdr = getReaderForFile("/org/opennms/netmgt/config/test-database-schema.xml");
 		DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));

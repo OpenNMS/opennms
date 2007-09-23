@@ -84,7 +84,7 @@
           <documentation>This will be used to set a description field.  Currently a calculation of (ifDescr | ifName | ifAlias)</documentation>
         </annotation>
       </attribute>
-      <attribute name="status" use="optional" type="integer" default="1">
+      <attribute name="status" use="optional" type="int" default="1">
         <annotation>
           <documentation>Set this optional value to 3 to indicate &quot;testing&quot;. Any other value is ignored.</documentation>
         </annotation>

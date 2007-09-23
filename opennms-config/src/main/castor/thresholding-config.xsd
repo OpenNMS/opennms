@@ -119,7 +119,7 @@
       </annotation>
     </attribute>
 
-    <attribute name="trigger" type="positiveInteger" use="required">
+    <attribute name="trigger" use="required">
       <annotation>
         <documentation>
           Trigger value. Identifies the number of consecutive polls that
@@ -127,6 +127,12 @@
           before a threshold event is generated.
         </documentation>
       </annotation>
+
+      <simpleType>
+        <restriction base="int">
+          <minInclusive value="1"/>
+        </restriction>
+      </simpleType>      
     </attribute>
 
     <attribute name="ds-label" type="string" use="optional">

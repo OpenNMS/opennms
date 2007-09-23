@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 03: Change Castor methods clearX -> removeAllX. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -604,10 +608,10 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         newUser.setUserComments(user.getUserComments());
         newUser.setUserId(user.getUserId());
         
-        newUser.clearDutySchedule();
+        newUser.removeAllDutySchedule();
         newUser.setDutySchedule(user.getDutySchedule());
         
-        newUser.clearContact();
+        newUser.removeAllContact();
         List contacts = user.getContactCollection();
         for (Iterator it = contacts.iterator(); it.hasNext();) {
             Contact contact = (Contact) it.next();

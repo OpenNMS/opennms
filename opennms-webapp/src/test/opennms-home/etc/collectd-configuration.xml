@@ -61,8 +61,8 @@
 <!--    <include-url>file:@install.etc.dir@/include2</include-url> -->
     <storeByIfAlias>true</storeByIfAlias>
     <storeByNodeID>normal</storeByNodeID>
-    <storFlagOverride>true</storFlagOverride>
     <ifAliasDomain>my_domain</ifAliasDomain>
+    <storFlagOverride>true</storFlagOverride>
     <ifAliasComment>#</ifAliasComment>
     
     <service name="SNMP" interval="300000" user-defined="false" status="on">

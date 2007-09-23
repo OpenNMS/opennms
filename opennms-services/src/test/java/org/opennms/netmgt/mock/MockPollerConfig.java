@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 03: Change Castor methods clearX -> removeAllX. - dj@opennms.org
 // 2007 May 06: Use Java 5 generics and remove an unused method to
 //              eliminate warnings. - dj@opennms.org
 //
@@ -190,7 +191,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     public void clearDowntime() {
-        m_currentPkg.clearDowntime();
+        m_currentPkg.removeAllDowntime();
     }
 
     public void addPackage(String name) {

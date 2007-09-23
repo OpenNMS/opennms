@@ -78,7 +78,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="maxVarsPerPdu" type="integer" use="optional">
+      <attribute name="maxVarsPerPdu" type="int" use="optional">
         <annotation>
           <documentation>Specifies the maximum number of variables that may be
           encoded into an individual SNMP pdu request by Collectd. Provides a
@@ -124,7 +124,7 @@
         </element>
       </sequence>
 
-      <attribute name="step" type="integer" use="required">
+      <attribute name="step" type="int" use="required">
         <annotation>
           <documentation>step size for the RRD</documentation>
         </annotation>

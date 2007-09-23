@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 03: Change Castor methods clearX -> removeAllX. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -321,7 +325,7 @@ public class DefaultManualProvisioningService implements
 
     public void deleteAllNodes(String groupName) {
         ModelImport group = m_provisioningDao.get(groupName);
-        group.clearNode();
+        group.removeAllNode();
         m_provisioningDao.save(groupName, group);
     }
 

@@ -9,10 +9,10 @@
  OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 
  Modifications:
+
+ 2007 Aug 25: Implement SpringServiceDaemon. - dj@opennms.org
  2007 Jun 24: Use Java 5 generics. - dj@opennms.org
  2006 May 11: Added Event parameter support for setting the URL and foreignSource
-
-
  2004 Dec 27: Changed SQL_RETRIEVE_INTERFACES to omit interfaces that have been
               marked as deleted.
  2004 Feb 12: Rebuild the package to ip list mapping while a new discoveried interface
@@ -50,6 +50,7 @@ import java.util.Map;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
@@ -61,22 +62,22 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class ImporterService extends BaseImporter implements InitializingBean, DisposableBean, EventListener {
+public class ImporterService extends BaseImporter implements SpringServiceDaemon, DisposableBean, EventListener {
 	
 	public static final String NAME = "ModelImporter";
 
 	private Resource m_importResource;
 	private EventIpcManager m_eventManager;
 	private ImporterStats m_stats;
-    
-    public void doImport() {
-        doImport(null);
-    }
 
+            
+	public void doImport() {
+	    doImport(null);
+	}
+        
     /**
      * Begins importing from resource specified in model-importer.properties file or
      * in event parameter: url.  Import Resources are managed with a "key" called 
@@ -84,9 +85,7 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
      * as a parameter of an event.
      * @param event
      */
-    public void doImport(Event event) {
-    	ThreadCategory.setPrefix(NAME);
-        
+    private void doImport(Event event) {
         Resource resource = null;
         try {
         	sendImportStarted();
@@ -186,8 +185,11 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 	}
 
 	public void onEvent(Event e) {
+	    ThreadCategory.setPrefix(NAME);
 
-		if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) return;
+		if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
+                    return;
+                }
 		
 		doImport(e);
 	}
@@ -425,6 +427,7 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
 
 	}
 
-
-
+    public void start() throws Exception {
+        // nothing to do -- we're event-driven
+    }
 }

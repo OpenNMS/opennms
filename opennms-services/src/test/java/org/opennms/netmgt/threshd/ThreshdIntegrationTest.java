@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Aug 24: Use RrdTestUtils.initializeNullStrategy instead of
+//              poking at RrdConfig directly. - dj@opennms.org
 // 2007 Jan 29: Modify to work with TestCase changes; rename to show that it's an integration test. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -41,6 +43,7 @@ import java.util.Properties;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
+import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.rrd.RrdConfig;
@@ -115,10 +118,7 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
         r.close();
         DatabaseSchemaConfigFactory.setInstance(dscf);
         
-        Properties rrdProperties = new Properties();
-        rrdProperties.put("org.opennms.rrd.strategyClass", "org.opennms.netmgt.mock.NullRrdStrategy");
-        rrdProperties.put("org.opennms.rrd.usequeue", "false");
-        RrdConfig.setProperties(rrdProperties);
+        RrdTestUtils.initializeNullStrategy();
         
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
 		

@@ -29,9 +29,9 @@
 
         <element minOccurs="0" ref="this:categories"/>
 
-        <element minOccurs="0" name="catCount" type="integer"/>
+        <element minOccurs="0" name="catCount" type="int"/>
 
-        <element minOccurs="0" name="sectionCount" type="integer"/>
+        <element minOccurs="0" name="sectionCount" type="int"/>
       </sequence>
     </complexType>
   </element>
@@ -63,18 +63,18 @@
   <element name="created">
     <complexType>
       <simpleContent>
-        <extension base="long">
-          <attribute name="year" type="integer" use="required"/>
+        <extension base="integer">
+          <attribute name="year" type="int" use="required"/>
 
           <attribute name="month" type="string" use="required"/>
 
-          <attribute name="day" type="integer" use="required"/>
+          <attribute name="day" type="int" use="required"/>
 
-          <attribute name="hour" type="integer" use="required"/>
+          <attribute name="hour" type="int" use="required"/>
 
-          <attribute name="min" type="integer" use="required"/>
+          <attribute name="min" type="int" use="required"/>
 
-          <attribute name="sec" type="integer" use="required"/>
+          <attribute name="sec" type="int" use="required"/>
 
           <attribute name="period" type="string" use="required"/>
         </extension>
@@ -95,14 +95,13 @@
 
         <element maxOccurs="1" minOccurs="0" name="normal" type="double"/>
 
-        <element maxOccurs="1" minOccurs="0" name="catIndex" type="integer"/>
+        <element maxOccurs="1" minOccurs="0" name="catIndex" type="int"/>
 
-        <element maxOccurs="1" minOccurs="0" name="nodeCount" type="integer"/>
+        <element maxOccurs="1" minOccurs="0" name="nodeCount" type="int"/>
 
-        <element maxOccurs="1" minOccurs="0" name="ipaddrCount" type="integer"/>
+        <element maxOccurs="1" minOccurs="0" name="ipaddrCount" type="int"/>
 
-        <element maxOccurs="1" minOccurs="0" name="serviceCount"
-                 type="integer"/>
+        <element maxOccurs="1" minOccurs="0" name="serviceCount" type="int"/>
       </sequence>
     </complexType>
   </element>
@@ -130,8 +129,7 @@
 
         <element maxOccurs="1" minOccurs="0" ref="this:calendarTable"/>
 
-        <element maxOccurs="1" minOccurs="0" name="sectionIndex"
-                 type="integer"/>
+        <element maxOccurs="1" minOccurs="0" name="sectionIndex" type="int"/>
       </sequence>
     </complexType>
   </element>
@@ -211,7 +209,7 @@
 
   <element name="day">
     <complexType>
-      <attribute name="date" type="integer"/>
+      <attribute name="date" type="int"/>
 
       <attribute name="pctValue" type="double"/>
 

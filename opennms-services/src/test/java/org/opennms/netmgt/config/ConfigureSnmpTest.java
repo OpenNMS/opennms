@@ -1,7 +1,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -13,62 +12,19 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.test.ConfigurationTestUtils;
 
 public class ConfigureSnmpTest extends TestCase {
-	
-    String m_SnmpSpec = "<?xml version=\"1.0\"?>\n" + 
-    "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-    "   read-community=\"public\" write-community=\"private\">\n" + 
-    "   <definition version=\"v2c\">\n" + 
-    "       <specific>192.168.0.5</specific>\n" + 
-    "   </definition>\n" + 
-    "\n" + 
-    "   <definition read-community=\"opennmsrules\">\n" + 
-    "       <range begin=\"192.168.100.1\" end=\"192.168.100.254\"/>\n" + 
-    "       <range begin=\"192.168.101.1\" end=\"192.168.101.254\"/>\n" + 
-    "       <range begin=\"192.168.102.1\" end=\"192.168.102.254\"/>\n" + 
-    "       <range begin=\"192.168.103.1\" end=\"192.168.103.254\"/>\n" + 
-    "       <range begin=\"192.168.104.1\" end=\"192.168.104.254\"/>\n" + 
-    "       <range begin=\"192.168.105.1\" end=\"192.168.105.254\"/>\n" + 
-    "       <range begin=\"192.168.106.1\" end=\"192.168.106.254\"/>\n" + 
-    "       <range begin=\"192.168.107.1\" end=\"192.168.107.254\"/>\n" +
-    "       <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
-    "   </definition>\n" + 
-    "   <definition version=\"v2c\" read-community=\"splice-test\">\n" + 
-    "       <specific>10.1.1.1</specific>\n" + 
-    "       <specific>10.1.1.2</specific>\n" + 
-    "       <specific>10.1.1.3</specific>\n" + 
-    "       <specific>10.1.1.5</specific>\n" + 
-    "       <specific>10.1.1.6</specific>\n" + 
-    "       <specific>10.1.1.10</specific>\n" + 
-    "       <range begin=\"10.1.2.1\" end=\"10.1.2.100\"/>\n" + 
-    "       <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-    "       <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-    "   </definition>\n" + 
-    "   <definition read-community=\"splice2-test\">\n" + 
-    "       <specific>10.1.1.10</specific>\n" + 
-    "       <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
-    "       <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-    "       <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-    "   </definition>\n" + 
-    "   <definition read-community=\"splice3-test\">\n" + 
-    "       <specific>10.1.1.10</specific>\n" + 
-    "       <specific>10.1.1.12</specific>\n" + 
-    "       <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
-    "       <range begin=\"11.1.2.1\" end=\"11.1.2.1\"/>\n" + 
-    "       <range begin=\"12.1.2.1\" end=\"12.1.2.1\"/>\n" + 
-    "   </definition>\n" + 
-    "\n" + 
-    "</snmp-config>\n" + 
-    "";
     final private int m_startingDefCount = 5;
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
     	super.setUp();
-    	Reader rdr = new StringReader(m_SnmpSpec);
+    	
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "snmp-config-configureSnmpTest.xml");
     	SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
     }
 

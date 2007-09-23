@@ -329,8 +329,8 @@ shortDayNames.put("31","31st");
 		}
 	} else if (request.getParameter("matchAny") != null) {
 		//To turn on matchAny, all normal nodes and interfaces are removed
-		theOutage.clearInterface();
-		theOutage.clearNode();
+		theOutage.removeAllInterface();
+		theOutage.removeAllNode();
 		theOutage.addInterface(matchAnyInterface);
 	} else if (request.getParameter("addSpecificTime")!=null) {
 		Time newTime=new Time();

@@ -30,15 +30,32 @@
 
       <attribute name="initial-sleep-time" type="long" use="optional"/>
 
-      <attribute name="max-suspect-thread-pool-size" type="positiveInteger"
-                 use="required"/>
+      <attribute name="max-suspect-thread-pool-size" use="required">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
 
-      <attribute name="max-rescan-thread-pool-size" type="positiveInteger"
-                 use="required"/>
+      <attribute name="max-rescan-thread-pool-size" use="required">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
 
       <attribute name="server-address" type="string" use="required"/>
 
-      <attribute name="server-port" type="positiveInteger" use="required"/>
+      <attribute name="server-port" use="required">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
 
       <attribute name="server-username" type="string" use="required"/>
 
@@ -55,7 +72,13 @@
     </annotation>
 
     <complexType>
-      <attribute name="scan-level" type="positiveInteger" use="required"/>
+      <attribute name="scan-level" use="required">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
 
       <attribute name="status" type="boolean" use="required"/>
     </complexType>
@@ -70,7 +93,13 @@
         <element maxOccurs="unbounded" minOccurs="0" ref="this:range"/>
       </sequence>
 
-      <attribute name="level" type="positiveInteger" use="required"/>
+      <attribute name="level" use="required">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
 
       <attribute name="safe-checks" type="boolean" use="required"/>
 

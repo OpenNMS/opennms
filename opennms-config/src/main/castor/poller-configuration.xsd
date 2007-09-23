@@ -482,7 +482,7 @@
         </element>
       </sequence>
 
-      <attribute name="step" type="integer" use="required">
+      <attribute name="step" type="int" use="required">
         <annotation>
           <documentation>Step size for the RRD, in seconds.</documentation>
         </annotation>

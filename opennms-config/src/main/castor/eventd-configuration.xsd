@@ -18,25 +18,42 @@
     </annotation>
 
     <complexType>
-      <attribute name="TCPPort" type="positiveInteger" use="required">
+      <attribute name="TCPPort" use="required">
         <annotation>
           <documentation>The port on which eventd listens for TCP connections.
           The standard port is 5817.</documentation>
         </annotation>
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
-      <attribute name="UDPPort" type="positiveInteger" use="required">
+      <attribute name="UDPPort" use="required">
         <annotation>
           <documentation>The port on which eventd listens for UDP data. The
           standard port is 5817.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
-      <attribute name="receivers" type="positiveInteger" use="required">
+      <attribute name="receivers" use="required">
         <annotation>
           <documentation>The maximum number of threads used for reading and
           processing of incoming events.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
       <attribute name="getNextEventID" type="string" use="required">
@@ -63,13 +80,18 @@
         </annotation>
       </attribute>
 
-      <attribute name="socketSoTimeoutPeriod" type="positiveInteger"
-                 use="optional">
+      <attribute name="socketSoTimeoutPeriod" use="optional">
         <annotation>
           <documentation>Socket timeout, in milliseconds. This is only set on
           eventd's sockets if socketSoTimeoutRequired is set to
           'yes'.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
     </complexType>
   </element>

@@ -37,7 +37,7 @@
 			     Value of 0 indicates no limit on number of PDUs which
 			     can be encoded into a single PDU.
 			-->
-			<attribute name="maxVarsPerPdu" type="integer" use="required"/>
+			<attribute name="maxVarsPerPdu" type="int" use="required"/>
 		</complexType>
 	</element>
 
@@ -56,7 +56,7 @@
 			</sequence>
 			
 			<!-- step size for the RRD -->
-			<attribute name="step" type="integer" use="required"/>
+			<attribute name="step" type="int" use="required"/>
 		</complexType>
 	</element>
 

@@ -18,14 +18,19 @@
     </annotation>
 
     <complexType>
-      <attribute name="max-outstanding-actions" type="positiveInteger"
-                 use="required">
+      <attribute name="max-outstanding-actions" use="required">
         <annotation>
           <documentation>The maximum number of simultaneous processes launched
           by actiond. If the number of launched processes currently runnning
           reaches this number, actiond waits for a process to complete or get
           terminated before it launches the next process.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
       <attribute name="max-process-time" type="long" use="required">

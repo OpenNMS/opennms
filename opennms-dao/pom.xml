@@ -68,9 +68,10 @@
 
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
-      <groupId>castor</groupId>
+      <groupId>org.codehaus.castor</groupId>
       <artifactId>castor</artifactId>
     </dependency>
+
     <!-- this is here as we exclude the version hibernate depends on -->
     <dependency>
       <groupId>cglib</groupId>

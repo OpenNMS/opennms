@@ -69,6 +69,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
@@ -83,6 +84,7 @@
           </webResources>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
@@ -94,6 +96,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
@@ -102,6 +105,7 @@
           <port>${tomcat.port}</port>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
@@ -112,6 +116,7 @@
           </container>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-jspc-plugin</artifactId>
@@ -234,7 +239,7 @@
       <artifactId>batik-util</artifactId>
     </dependency>
     <dependency>
-      <groupId>castor</groupId>
+      <groupId>org.codehaus.castor</groupId>
       <artifactId>castor</artifactId>
     </dependency>
     <dependency>
@@ -274,6 +279,11 @@
       <groupId>httpunit</groupId>
       <artifactId>httpunit</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta-regexp</groupId>
+      <artifactId>jakarta-regexp</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>javax.samples.jnlp</groupId>

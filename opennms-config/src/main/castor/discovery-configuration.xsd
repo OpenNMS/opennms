@@ -56,19 +56,30 @@
         </element>
       </sequence>
 
-      <attribute name="threads" type="positiveInteger" use="required">
+      <attribute name="threads" use="required">
         <annotation>
           <documentation>the number of threads to be used for
           discovery</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
-      <attribute name="packets-per-second" type="positiveInteger"
-                 use="required">
+      <attribute name="packets-per-second" use="required">
         <annotation>
           <documentation>the total number of ping packets sent per second from
           OpenNMS for discovery</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
       <attribute name="initial-sleep-time" type="long" use="required">

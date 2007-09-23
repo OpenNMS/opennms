@@ -86,7 +86,7 @@
 
   <element name="node">
     <complexType>
-      <attribute name="id" type="integer" use="required"/>
+      <attribute name="id" type="int" use="required"/>
     </complexType>
   </element>
 </schema>
