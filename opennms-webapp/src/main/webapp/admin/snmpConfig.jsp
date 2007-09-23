@@ -164,7 +164,12 @@
                Version:
             </td>
             <td width="50%">
-               <input size=15 name="version"> (Optional)
+               <select name="version">
+               <option>v1</option>
+               <option>v2c</option>
+               <option>v3</option>
+               </select>
+                (Optional)
             </td>
           </tr>
 
