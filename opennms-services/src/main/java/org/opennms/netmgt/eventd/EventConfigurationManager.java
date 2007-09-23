@@ -58,6 +58,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.springframework.util.StringUtils;
 
 /**
  * <p>
@@ -190,12 +191,19 @@ public final class EventConfigurationManager {
                     throw new IOException("Eventconf: Failed to load/locate events file: " + eventfile);
                 }
 
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("Eventconf: Loading event file: " + eventfile);
+                }
 
                 Reader filerdr = new InputStreamReader(fileIn);
                 Events filelevel = null;
                 filelevel = (Events) Unmarshaller.unmarshal(Events.class, filerdr);
+                if (filelevel.getGlobal() != null) {
+                    throw new ValidationException("The event file " + eventfile + " included from the top-level event configuration file cannot have a 'global' element");
+                }
+                if (filelevel.getEventFileCollection().size() > 0) {
+                    throw new ValidationException("The event file " + eventfile + " included from the top-level event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(filelevel.getEventFileCollection()));
+                }
                 Enumeration efile = filelevel.enumerateEvent();
                 while (efile.hasMoreElements()) {
                     Event event = (Event) efile.nextElement();

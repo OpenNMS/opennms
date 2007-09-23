@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
 <!-- Example for new attributes: disconnect-timeout and default-view -->
-<viewinfo>
-	<view disconnect-timeout="900000" default-view="MyConsole">
+<viewinfo disconnect-timeout="900000" default-view="MyConsole">
+	<view>
       <view-name>WebConsoleView</view-name>
       <section>
         <section-name><![CDATA[Categories]]></section-name>

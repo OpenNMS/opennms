@@ -11,29 +11,6 @@
                      save-stp-node-table="true"
                      save-stp-interface-table="true">
     
-    <!--
-    It's possible in packages to overwrite all properties - (thread and initial_sleep_time) 
-    in the linkd-configuration
-    -->
-    
-    <package name="example1">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-    </package>
-    
-    <!-- Use more packages with huge network-->
-	<!--
-    <package name="LAN" use-ip-route-discovery="false">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="10.1.1.1" end="10.1.1.254"/>
-    </package>
-
-    <package name="WAN" use-bridge-discovery="false">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="10.1.1.1" end="10.1.1.254"/>
-    </package>
-
-	-->    
     
     <!--
     
@@ -115,4 +92,28 @@
         </vendor>
 
     </vlans>
+
+    <!--
+    It's possible in packages to overwrite all properties - (thread and initial_sleep_time) 
+    in the linkd-configuration
+    -->
+    
+    <package name="example1">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+    </package>
+    
+    <!-- Use more packages with huge network-->
+    <!--
+    <package name="LAN" use-ip-route-discovery="false">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="10.1.1.1" end="10.1.1.254"/>
+    </package>
+
+    <package name="WAN" use-bridge-discovery="false">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="10.1.1.1" end="10.1.1.254"/>
+    </package>
+
+    -->    
 </linkd-configuration>
