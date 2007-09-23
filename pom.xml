@@ -155,6 +155,7 @@
    <plugins>
      <plugin>
        <inherited>false</inherited>
+       <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-release-plugin</artifactId>
        <configuration>
           <preparationGoals>clean install</preparationGoals>
@@ -164,6 +165,7 @@
      </plugin>
      <plugin>
         <inherited>false</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -191,6 +193,7 @@
      </plugin>
 <!--
      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -229,6 +232,7 @@ opennms.home = ${opennms.home}
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
           <execution>
@@ -239,6 +243,7 @@ opennms.home = ${opennms.home}
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
@@ -249,6 +254,7 @@ opennms.home = ${opennms.home}
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemProperties>
@@ -419,6 +425,7 @@ opennms.home = ${opennms.home}
 -->
       <plugin>
         <inherited>false</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
@@ -437,6 +444,7 @@ opennms.home = ${opennms.home}
  <reporting>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
       </plugin>
       <plugin>
