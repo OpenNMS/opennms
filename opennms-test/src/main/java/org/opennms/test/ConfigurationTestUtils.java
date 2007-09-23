@@ -123,7 +123,7 @@ public class ConfigurationTestUtils extends Assert {
         assertTrue("configuration file '" + configFile + "' does not exist at " + file.getAbsolutePath(), file.exists());
         return file;
     }
-    
+
     public static File getDaemonEtcDirectory() {
         return new File(getDaemonProjectDirectory(), "src/main/filtered/etc");
     }
@@ -181,12 +181,6 @@ public class ConfigurationTestUtils extends Assert {
                 return findTopProjectDirectory(parentDirectory);
             }
         }
-    }
-
-    public static File getFileForConfigFile(String configFile) {
-        File file = new File(getDaemonEtcDirectory(), configFile);
-        assertTrue("configuration file '" + configFile + "' does not exist at " + file.getAbsolutePath(), file.exists());
-        return file;
     }
 
     public static void setRrdBinary(String path) {
