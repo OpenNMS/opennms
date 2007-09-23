@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 03: Change ArrayList -> List from Castor methods. - dj@opennms.org
 // 2006 Sep 10: Catch some null arguments that might cause problems. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.config.siteStatusViews.Category;
@@ -111,7 +113,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     @SuppressWarnings("unchecked")
     private Set<AggregateStatusDefinition> getAggregateStatusDefinitionsForView(View view) {
         Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<AggregateStatusDefinition>();
-        ArrayList<RowDef> rowDefs = view.getRows().getRowDefCollection();
+        List<RowDef> rowDefs = view.getRows().getRowDefCollection();
         
         //Loop over the defined site status rows
         for (RowDef rowDef : rowDefs) {
@@ -132,7 +134,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
         
         //Loop over the defined categories and create model categories (OnmsCategory)
-        ArrayList<Category> cats = rowDef.getCategoryCollection();
+        List<Category> cats = rowDef.getCategoryCollection();
         for (Category cat : cats) {
             OnmsCategory category = m_categoryDao.findByName(cat.getName());
             

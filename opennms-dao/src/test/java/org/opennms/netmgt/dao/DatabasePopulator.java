@@ -18,6 +18,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
  * 
+ * Example usage:
  * <pre>
  * private DatabasePopulator m_populator;
  *
@@ -61,20 +62,14 @@ public class DatabasePopulator {
     private OnmsNode m_node1;
 
     public void populateDatabase() {
-        //OnmsDistPoller distPoller = dao.load("localhost");
+        OnmsDistPoller distPoller = createDistPoller("localhost", "127.0.0.1");
 
-        getServiceTypeDao().save(new OnmsServiceType("ICMP"));
-        getServiceTypeDao().flush();
-        getServiceTypeDao().save(new OnmsServiceType("SNMP"));
-        getServiceTypeDao().flush();
-        getServiceTypeDao().save(new OnmsServiceType("HTTP"));
-        getServiceTypeDao().flush();
-        
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        getDistPollerDao().save(distPoller);
-        getDistPollerDao().flush();
+        createServiceType("ICMP");
+        createServiceType("SNMP");
+        createServiceType("HTTP");
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
+        
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
@@ -188,10 +183,25 @@ public class DatabasePopulator {
         getAlarmDao().flush();
     }
 
+
+    private OnmsDistPoller createDistPoller(String localhost, String localhostIp) {
+        OnmsDistPoller distPoller = new OnmsDistPoller(localhost, localhostIp);
+        getDistPollerDao().save(distPoller);
+        getDistPollerDao().flush();
+        return distPoller;
+    }
+
+
+    private OnmsServiceType createServiceType(String name) {
+        OnmsServiceType serviceType = new OnmsServiceType(name);
+        getServiceTypeDao().save(serviceType);
+        getServiceTypeDao().flush();
+        return serviceType;
+    }
+
     
     private OnmsServiceType getServiceType(String svcName) {
-        OnmsServiceType svcType = getServiceTypeDao().findByName(svcName);
-        return svcType;
+        return getServiceTypeDao().findByName(svcName);
     }
 
 

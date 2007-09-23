@@ -91,7 +91,13 @@
       <attribute name="scheme" type="string" use="optional" default="http" />
       <attribute name="user-info" type="string" use="optional" />
       <attribute name="host" type="string" use="optional" default="${ipaddr}" />
-      <attribute name="port" type="positiveInteger" use="optional" default="80" />
+      <attribute name="port" use="optional" default="80" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
       <attribute name="path" type="string" use="required" />
       <attribute name="query" type="string" use="optional" />
       <attribute name="fragment" type="string" use="optional" />
@@ -123,7 +129,13 @@
   <element name="attrib" >
     <complexType>
       <attribute name="alias" type="string" use="required" />
-      <attribute name="match-group" type="positiveInteger" use="required" />
+      <attribute name="match-group" use="required" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
       <attribute name="type" type="http-dc:allowed-types" use="required" />
     </complexType>
   </element>
@@ -161,10 +173,16 @@
           </simpleType>
         </element>
       </sequence>
-      <attribute name="step" type="integer" use="required">
+      <attribute name="step" use="required">
         <annotation>
           <documentation>step size for the RRD</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
     </complexType>
   </element>

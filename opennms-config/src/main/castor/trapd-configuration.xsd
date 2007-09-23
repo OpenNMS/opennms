@@ -18,11 +18,17 @@
     </annotation>
 
     <complexType>
-      <attribute name="snmp-trap-port" type="positiveInteger" use="required">
+      <attribute name="snmp-trap-port" use="required">
         <annotation>
           <documentation>The port on which trapd listens for SNMP traps. The
           standard port is 162.</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
       </attribute>
 
       <attribute name="new-suspect-on-trap" type="boolean" use="required">

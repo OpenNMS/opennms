@@ -61,20 +61,30 @@
         </annotation>
       </attribute>
 
-      <attribute name="max-suspect-thread-pool-size" type="positiveInteger"
-                 use="required">
+      <attribute name="max-suspect-thread-pool-size" use="required">
         <annotation>
           <documentation>Maximum number of threads available for processing
           'newSuspect' events from discovery.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
-      <attribute name="max-rescan-thread-pool-size" type="positiveInteger"
-                 use="required">
+      <attribute name="max-rescan-thread-pool-size" use="required">
         <annotation>
           <documentation>Maximum number of threads available for rescanning
           managed interfaces.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
       <attribute default="managed" name="management-policy" use="optional">

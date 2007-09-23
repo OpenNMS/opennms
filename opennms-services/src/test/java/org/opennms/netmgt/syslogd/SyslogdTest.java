@@ -10,6 +10,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 24: Fix failing tests and warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
 //
@@ -28,42 +32,35 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-// OpenNMS Licensing <license@opennms.org>
-// http://www.opennms.org/
-// http://www.opennms.com/
+//      OpenNMS Licensing <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
 //
-//
-// $Id: TrapdTest.java 3132 2006-04-16 01:34:14 +0000 (Sun, 16 Apr 2006) mhuot
-// $
-//
-
 package org.opennms.netmgt.syslogd;
 
+import java.net.UnknownHostException;
+
 import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.UnknownHostException;
-
 public class SyslogdTest extends OpenNMSTestCase {
 
-    private static Syslogd m_syslogd;
+    private Syslogd m_syslogd;
 
-    private SyslogdConfigFactory m_factory;
+    public SyslogdTest() {
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.setRelativeHomeDirectory("src/test/resources/org/opennms/netmgt/test-configurations/opennms");
+        daoTestConfig.afterPropertiesSet();
+    }
 
     protected void setUp() throws Exception {
         super.setUp();
-        System.setProperty("opennms.home", "src/test/resources/");
-
-        //System.setProperty("opennms.home", "/opt/opennms");
 
         MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
         MockLogAppender.setupLogging();
@@ -79,12 +76,10 @@ public class SyslogdTest extends OpenNMSTestCase {
 
         m_syslogd = new Syslogd();
         m_syslogd.init();
-
     }
 
     @Override
     protected void tearDown() throws Exception {
-
         MockUtil.println("------------ End Test " + getName() + " --------------------------");
         super.tearDown();
     }
@@ -123,7 +118,7 @@ public class SyslogdTest extends OpenNMSTestCase {
             //Failures are for weenies
         }
 
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+        //LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
         //assertEquals("number of logged events", 0, events.length);
         //assertEquals("first logged event severity (should be ERROR)", Level.ERROR, events[0].getLevel());
 

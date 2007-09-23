@@ -41,7 +41,13 @@
 
       <element maxOccurs="1" minOccurs="1" name="style" type="this:fontStyle"/>
 
-      <element maxOccurs="1" minOccurs="1" name="size" type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="size" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType> 
+      </element>
     </sequence>
   </complexType>
 
@@ -59,7 +65,13 @@
     <sequence>
       <element maxOccurs="1" minOccurs="1" name="color" type="this:color"/>
 
-      <element maxOccurs="1" minOccurs="1" name="width" type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
     </sequence>
   </complexType>
 
@@ -104,14 +116,24 @@
       <element maxOccurs="1" minOccurs="1" name="min_grid_time_unit"
                type="this:gridTimeUnit"/>
 
-      <element maxOccurs="1" minOccurs="1" name="min_grid_unit_steps"
-               type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="min_grid_unit_steps">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
 
       <element maxOccurs="1" minOccurs="1" name="maj_grid_time_unit"
                type="this:gridTimeUnit"/>
 
-      <element maxOccurs="1" minOccurs="1" name="maj_grid_unit_steps"
-               type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="maj_grid_unit_steps">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
 
       <element maxOccurs="1" minOccurs="1" name="date_format" type="string">
         <annotation>
@@ -129,11 +151,21 @@
 
   <complexType name="valueAxis">
     <sequence>
-      <element maxOccurs="1" minOccurs="1" name="grid_step"
-               type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="grid_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
 
-      <element maxOccurs="1" minOccurs="1" name="label_step"
-               type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="label_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
     </sequence>
   </complexType>
 
@@ -179,11 +211,21 @@
 
   <complexType name="exportData">
     <sequence>
-      <element maxOccurs="1" minOccurs="1" name="grid_step"
-               type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="grid_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
 
-      <element maxOccurs="1" minOccurs="1" name="label_step"
-               type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="1" name="label_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
     </sequence>
   </complexType>
 
@@ -203,8 +245,13 @@
 
       <element maxOccurs="1" minOccurs="0" name="legend" type="string"/>
 
-      <element maxOccurs="1" minOccurs="0" name="width"
-               type="nonNegativeInteger"/>
+      <element maxOccurs="1" minOccurs="0" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0"/>
+          </restriction>
+        </simpleType>            
+      </element>
     </sequence>
   </complexType>
 
@@ -216,7 +263,13 @@
 
       <element maxOccurs="1" minOccurs="0" name="format" type="string"/>
 
-      <element maxOccurs="1" minOccurs="0" name="base" type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="0" name="base">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
     </sequence>
   </complexType>
 
@@ -228,7 +281,13 @@
 
       <element maxOccurs="1" minOccurs="0" name="legend" type="string"/>
 
-      <element maxOccurs="1" minOccurs="0" name="width" type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="0" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
     </sequence>
   </complexType>
 
@@ -240,7 +299,13 @@
 
       <element maxOccurs="1" minOccurs="0" name="legend" type="string"/>
 
-      <element maxOccurs="1" minOccurs="0" name="width" type="positiveInteger"/>
+      <element maxOccurs="1" minOccurs="0" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
     </sequence>
   </complexType>
 
@@ -318,13 +383,23 @@
         <element maxOccurs="1" minOccurs="0" name="background"
                  type="this:color"/>
 
-        <element maxOccurs="1" minOccurs="0" name="base_value"
-                 type="positiveInteger"/>
+        <element maxOccurs="1" minOccurs="0" name="base_value">
+          <simpleType>
+            <restriction base="int">
+              <minInclusive value="1"/>
+            </restriction>
+          </simpleType>      
+        </element>
 
         <element maxOccurs="1" minOccurs="0" name="canvas" type="this:color"/>
 
-        <element maxOccurs="1" minOccurs="0" name="left_padding"
-                 type="nonNegativeInteger"/>
+        <element maxOccurs="1" minOccurs="0" name="left_padding">
+          <simpleType>
+            <restriction base="int">
+              <minInclusive value="0"/>
+            </restriction>
+          </simpleType>      
+        </element>
 
         <element maxOccurs="1" minOccurs="0" name="default_font"
                  type="this:font"/>
@@ -386,8 +461,13 @@
         <element maxOccurs="1" minOccurs="0" name="title_font_color"
                  type="this:color"/>
 
-        <element maxOccurs="1" minOccurs="0" name="units_exponent"
-                 type="positiveInteger"/>
+        <element maxOccurs="1" minOccurs="0" name="units_exponent">
+          <simpleType>
+            <restriction base="int">
+              <minInclusive value="1"/>
+            </restriction>
+          </simpleType>      
+        </element>
 
         <element maxOccurs="1" minOccurs="0" name="value_axis"
                  type="this:valueAxis"/>

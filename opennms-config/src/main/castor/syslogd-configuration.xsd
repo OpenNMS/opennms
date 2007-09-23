@@ -32,12 +32,19 @@
             </documentation>
         </annotation>
         <complexType>
-            <attribute name="syslog-port" type="positiveInteger" use="required">
+            <attribute name="syslog-port" use="required">
                 <annotation>
                     <documentation>The port on which Syslogd listens for SYSLOG Messages. The
                         standard port is 514.
                     </documentation>
                 </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                    <maxInclusive value="65535"/>
+                  </restriction>
+                </simpleType>      
             </attribute>
             <attribute name="new-suspect-on-message" type="boolean" use="required">
                 <annotation>
@@ -52,15 +59,27 @@
                     </documentation>
                 </annotation>
             </attribute>
-            <attribute name="matching-group-host" type="positiveInteger" use="required">
+            <attribute name="matching-group-host" use="required">
                 <annotation>
                     <documentation>The matching group for the host</documentation>
                 </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                 </restriction>
+                </simpleType>
             </attribute>
-            <attribute name="matching-group-message" type="positiveInteger" use="required">
+            <attribute name="matching-group-message" use="required">
                 <annotation>
                     <documentation>The matching group for the message</documentation>
                 </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>      
             </attribute>
 
         </complexType>

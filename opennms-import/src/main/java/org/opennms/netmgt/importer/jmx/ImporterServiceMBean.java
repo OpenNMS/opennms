@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 25: Extend BaseOnmsMBean. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,18 +35,8 @@
 //
 package org.opennms.netmgt.importer.jmx;
 
-public interface ImporterServiceMBean {
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    public void init();
-
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String status();
-	
+public interface ImporterServiceMBean extends BaseOnmsMBean {
     public String getStats();
-
 }

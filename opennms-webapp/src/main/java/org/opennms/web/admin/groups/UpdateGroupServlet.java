@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 03: Change Castor methods clearX -> removeAllX. - dj@opennms.org
 // 2007 Jun 24: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -68,7 +69,7 @@ public class UpdateGroupServlet extends HttpServlet {
             Group newGroup = (Group) userSession.getAttribute("group.modifyGroup.jsp");
 
             // get the rest of the group information from the form
-            newGroup.clearUser();
+            newGroup.removeAllUser();
 
             String users[] = request.getParameterValues("selectedUsers");
 

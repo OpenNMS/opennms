@@ -5,24 +5,29 @@ import java.util.List;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.test.DaoTestConfigBean;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-public class DroolsCorrelationEngineBuilderTest extends AbstractDependencyInjectionSpringContextTests {
+public class DroolsCorrelationEngineBuilderTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+    private DroolsCorrelationEngineBuilder m_droolsCorrelationEngineBuilder;
+    private CorrelationEngineRegistrar m_mockCorrelator;
 
     public DroolsCorrelationEngineBuilderTest() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
         daoTestConfig.afterPropertiesSet();
-        
-        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
     }
 
-    private DroolsCorrelationEngineBuilder m_droolsCorrelationEngineBuilder;
-    private CorrelationEngineRegistrar m_mockCorrelator;
-    
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:META-INF/opennms/correlation-engine.xml",
+                "classpath:META-INF/opennms/applicationContext-correlator.xml",
+                "classpath:META-INF/opennms/applicationContext-dao.xml",
+                "classpath:META-INF/opennms/mockEventIpcManager.xml"
+        };
+    }
+
     public void testIt() throws Exception {
         assertNotNull(m_droolsCorrelationEngineBuilder);
         List<CorrelationEngine> engines = m_mockCorrelator.getEngines();
@@ -34,8 +39,6 @@ public class DroolsCorrelationEngineBuilderTest extends AbstractDependencyInject
         assertEquals(2, engine.getInterestingEvents().size());
         assertTrue(engine.getInterestingEvents().contains(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI));
         assertTrue(engine.getInterestingEvents().contains(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI));
-        
-        
     }
     
     public void setDroolsCorrelationEngineBuilder(DroolsCorrelationEngineBuilder bean) {
@@ -45,15 +48,4 @@ public class DroolsCorrelationEngineBuilderTest extends AbstractDependencyInject
     public void setMockCorrelator(CorrelationEngineRegistrar mockCorrelator) {
         m_mockCorrelator = mockCorrelator;
     }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:META-INF/opennms/correlation-engine.xml",
-                "classpath:META-INF/opennms/applicationContext-correlator.xml",
-                "classpath:META-INF/opennms/applicationContext-dao.xml"
-        };
-    }
-
-
 }

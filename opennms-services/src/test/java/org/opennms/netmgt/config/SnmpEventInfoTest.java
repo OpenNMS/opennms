@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Aug 23: Move snmp-config.xml file into an external file. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -44,6 +46,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.test.ConfigurationTestUtils;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -53,72 +56,14 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
  *
  */
 public class SnmpEventInfoTest extends TestCase {
-
-    private final String m_SnmpSpec = "<?xml version=\"1.0\"?>\n" + 
-    "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
-    "   read-community=\"public\" write-community=\"private\">\n" + 
-    "   <definition version=\"v2c\">\n" + 
-    "       <specific>192.168.0.5</specific>\n" + 
-    "   </definition>\n" + 
-    "\n" + 
-    "   <definition read-community=\"opennmsrules\">\n" + 
-    "       <range begin=\"192.168.100.1\" end=\"192.168.100.254\"/>\n" + 
-    "       <range begin=\"192.168.101.1\" end=\"192.168.101.254\"/>\n" + 
-    "       <range begin=\"192.168.102.1\" end=\"192.168.102.254\"/>\n" + 
-    "       <range begin=\"192.168.103.1\" end=\"192.168.103.254\"/>\n" + 
-    "       <range begin=\"192.168.104.1\" end=\"192.168.104.254\"/>\n" + 
-    "       <range begin=\"192.168.105.1\" end=\"192.168.105.254\"/>\n" + 
-    "       <range begin=\"192.168.106.1\" end=\"192.168.106.254\"/>\n" + 
-    "       <range begin=\"192.168.107.1\" end=\"192.168.107.254\"/>\n" +
-    "       <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
-    "   </definition>\n" + 
-    "   <definition read-community=\"opennmsrules2\">\n" + 
-    "       <range begin=\"192.168.100.0\" end=\"192.168.100.255\"/>\n" + 
-    "       <range begin=\"192.168.101.0\" end=\"192.168.101.255\"/>\n" + 
-    "       <range begin=\"192.168.102.0\" end=\"192.168.102.255\"/>\n" + 
-    "       <range begin=\"192.168.103.0\" end=\"192.168.103.255\"/>\n" + 
-    "       <range begin=\"192.168.104.0\" end=\"192.168.104.255\"/>\n" + 
-    "       <range begin=\"192.168.105.0\" end=\"192.168.105.255\"/>\n" + 
-    "       <range begin=\"192.168.106.0\" end=\"192.168.106.255\"/>\n" + 
-    "       <range begin=\"192.168.107.0\" end=\"192.168.107.255\"/>\n" +
-    "       <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
-    "   </definition>\n" + 
-    "   <definition version=\"v2c\" read-community=\"splice-test\">\n" + 
-    "       <specific>10.1.1.1</specific>\n" + 
-    "       <specific>10.1.1.2</specific>\n" + 
-    "       <specific>10.1.1.3</specific>\n" + 
-    "       <specific>10.1.1.5</specific>\n" + 
-    "       <specific>10.1.1.6</specific>\n" + 
-    "       <specific>10.1.1.10</specific>\n" + 
-    "       <range begin=\"10.1.2.1\" end=\"10.1.2.100\"/>\n" + 
-    "       <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-    "       <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-    "   </definition>\n" + 
-    "   <definition read-community=\"splice2-test\">\n" + 
-    "       <specific>10.1.1.10</specific>\n" + 
-    "       <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
-    "       <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-    "       <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-    "   </definition>\n" + 
-    "   <definition read-community=\"splice3-test\">\n" + 
-    "       <specific>10.1.1.10</specific>\n" + 
-    "       <specific>10.1.1.12</specific>\n" + 
-    "       <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
-    "       <range begin=\"11.1.2.1\" end=\"11.1.2.1\"/>\n" + 
-    "       <range begin=\"12.1.2.1\" end=\"12.1.2.1\"/>\n" + 
-    "   </definition>\n" + 
-    "\n" + 
-    "</snmp-config>\n" + 
-    "";
-    
-
-
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Reader rdr = new StringReader(m_SnmpSpec);
+        
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "snmp-config-snmpEventInfoTest.xml");
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
     }
     
@@ -707,8 +652,6 @@ public class SnmpEventInfoTest extends TestCase {
 
         MergeableDefinition def;
         
-        Reader rdr = new StringReader(m_SnmpSpec);
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
         
         SnmpEventInfo info = new SnmpEventInfo();

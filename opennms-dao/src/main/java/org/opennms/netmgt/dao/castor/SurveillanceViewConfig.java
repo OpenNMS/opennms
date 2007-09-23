@@ -3,8 +3,8 @@
  */
 package org.opennms.netmgt.dao.castor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
@@ -20,7 +20,7 @@ public class SurveillanceViewConfig {
     }
     
     private void createViewsMap() {
-        ArrayList<View> viewList = getViewList();
+        List<View> viewList = getViewList();
         m_viewsMap = new HashMap<String, View>(viewList.size());
         for (View view : viewList) {
             m_viewsMap.put(view.getName(), view);
@@ -28,7 +28,7 @@ public class SurveillanceViewConfig {
     }
 
     @SuppressWarnings("unchecked")
-    private ArrayList<View> getViewList() {
+    private List<View> getViewList() {
         return m_config.getViews().getViewCollection();
     }
 

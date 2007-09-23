@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 03: Change a return type from ArrayList to List. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -301,7 +302,7 @@ public class NotificationTask extends Thread {
     }
 
     @SuppressWarnings("unchecked")
-    private ArrayList<Argument> getArgumentsForCommand(Command command) {
+    private List<Argument> getArgumentsForCommand(Command command) {
         return command.getArgumentCollection();
     }
 

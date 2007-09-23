@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 03: Change Castor methods clearX -> removeAllX. - dj@opennms.org
 // 2007 Jul 23: Add serialVersionUID, comment-out unused fields, and use Java 5 generics to eliminate warnings. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -198,9 +199,9 @@ public class DestinationWizardServlet extends HttpServlet {
 
             // remove all the targets from the path or escalation
             if (index == -1) {
-                newPath.clearTarget();
+                newPath.removeAllTarget();
             } else {
-                newPath.getEscalate(index).clearTarget();
+                newPath.getEscalate(index).removeAllTarget();
             }
 
             // reload the new targets into the path or escalation
@@ -331,7 +332,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 String name = targets[i].getName();
                 // don't overwrite the email target command
                 if (targets[i].getName().indexOf("@") == -1) {
-                    targets[i].clearCommand();
+                    targets[i].removeAllCommand();
                     String commands[] = request.getParameterValues(name + "Commands");
                     for (int j = 0; j < commands.length; j++) {
                         targets[i].addCommand(commands[j]);

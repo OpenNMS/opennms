@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 24: Fix forwarding regexp, use Java 5 generics and for loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,27 +33,30 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-
 package org.opennms.netmgt.config;
 
+import java.io.Reader;
+
 import junit.framework.TestCase;
+
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
-
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Iterator;
+import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.DaoTestConfigBean;
 
 public class SyslogdConfigFactoryTest extends TestCase {
-
     private SyslogdConfigFactory m_factory;
+    
+    public SyslogdConfigFactoryTest() {
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.setRelativeHomeDirectory("src/main/test/org/opennms/netmgt/test-configurations/opennms/");
+        daoTestConfig.afterPropertiesSet();
+    }
 
     protected void setUp() throws Exception {
         super.setUp();
-
-        System.setProperty("opennms.home", "/opennms-services/src/main/test/");
 
         MockNetwork network = new MockNetwork();
 
@@ -58,18 +65,16 @@ public class SyslogdConfigFactoryTest extends TestCase {
 
         DataSourceFactory.setInstance(db);
 
-        Reader rdr = new InputStreamReader(getClass().getResourceAsStream("/etc/syslogd-configuration.xml"));
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/test-configurations/opennms/etc/syslogd-configuration.xml");
         m_factory = new SyslogdConfigFactory(rdr);
         rdr.close();
-
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
 
-    public void testSomeShit() {
-
+    public void testSetUp() {
     }
 
     public void testMyHostNameGrouping() {
@@ -93,27 +98,16 @@ public class SyslogdConfigFactoryTest extends TestCase {
     }
 
     public void testUEI() {
-
-        Iterator match = m_factory.getUeiList().getUeiMatchCollection().iterator();
-        UeiMatch uei;
-        while (match.hasNext()) {
-
-            uei = (UeiMatch) match.next();
+        for (UeiMatch uei : m_factory.getUeiList().getUeiMatchCollection()) {
             assertEquals("CRISCO", uei.getMatch());
             assertEquals("CISCO", uei.getUei());
-
         }
     }
 
     public void testHideTheseMessages() {
-        Iterator match = m_factory.getHideMessages().getHideMatchCollection().iterator();
-        HideMatch hide;
-        while (match.hasNext()) {
-            hide = (HideMatch) match.next();
+        for (HideMatch hide : m_factory.getHideMessages().getHideMatchCollection()) {
             assertEquals("TEST", hide.getMatch());
-
         }
-
     }
 
 }

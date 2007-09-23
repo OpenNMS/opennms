@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 24: Eliminate warnings, use Java 5 generics and loops, and use
+//              DaoTestConfigBean instead of calling
+//              System.setProperty("opennms.home", ...). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,13 +42,13 @@ package org.opennms.netmgt.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.test.DaoTestConfigBean;
 
 /**
  * @author brozow
@@ -57,12 +63,18 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     private static final String knownSubSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/topologyChange";
     private static final String knownSubSubfileLabel1="BRIDGE-MIB defined trap event: topologyChange";
     
+    public EventconfFactoryTest() {
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
+        daoTestConfig.afterPropertiesSet();
+    }
+    
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception {
         super.setUp();
-        System.setProperty("opennms.home", "src/test/resources");
+
         EventconfFactory.init();
     }
 
@@ -74,17 +86,15 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     }
 
     public void testGetEventsByLabel() {
-        List events = EventconfFactory.getInstance().getEventsByLabel();
+        List<Event> events = getEventsByLabel();
 
-        ArrayList beforeSort = new ArrayList(events.size());
-        Iterator it = events.iterator();
-        while (it.hasNext()) {
-            Event e = (Event) it.next();
+        ArrayList<String> beforeSort = new ArrayList<String>(events.size());
+        for (Event e : events) {
             String label = e.getEventLabel();
             beforeSort.add(label);
         }
 
-        ArrayList afterSort = new ArrayList(beforeSort);
+        ArrayList<String> afterSort = new ArrayList<String>(beforeSort);
         Collections.sort(afterSort, String.CASE_INSENSITIVE_ORDER);
 
         assertEquals(beforeSort.size(), afterSort.size());
@@ -92,6 +102,11 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
             assertEquals("Lists unequals at index " + i, beforeSort.get(i), afterSort.get(i));
         }
 
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<Event> getEventsByLabel() {
+        return EventconfFactory.getInstance().getEventsByLabel();
     }
     
     public void testGetEventByUEI() {

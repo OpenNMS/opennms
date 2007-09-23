@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 24: Add the ability to reset either of the anticipated
+//              and unanticipated lists individually. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -91,8 +96,16 @@ public class EventAnticipator implements EventListener {
     }
 
     public void reset() {
-        m_anticipatedEvents = new ArrayList();
+        resetAnticipated();
+        resetUnanticipated();
+    }
+
+    public void resetUnanticipated() {
         m_unanticipatedEvents = new ArrayList();
+    }
+
+    public void resetAnticipated() {
+        m_anticipatedEvents = new ArrayList();
     }
 
     /**

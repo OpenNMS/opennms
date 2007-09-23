@@ -18,11 +18,17 @@
     </annotation>
 
     <complexType>
-      <attribute name="writers" type="positiveInteger" use="required">
+      <attribute name="writers" use="required">
         <annotation>
           <documentation>Maximum number of threads reading the events and
           updating the database.</documentation>
         </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
       </attribute>
 
       <attribute name="getNextOutageID" type="string" use="required">

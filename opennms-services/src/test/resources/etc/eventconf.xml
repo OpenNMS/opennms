@@ -9,7 +9,6 @@
 			<doNotOverride>script</doNotOverride>
 		</security>
 	</global>
-        <event-file>./events/Standard.events.xml</event-file>
 
 	<event>
 		<uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
@@ -24,5 +23,7 @@
 		</logmsg>
 		<severity>Warning</severity>
 	</event>
+
+    <event-file>./events/Standard.events.xml</event-file>
  
 </events>

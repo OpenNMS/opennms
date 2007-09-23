@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Aug 23: Extend AbstractTransactionalTemporaryDatabaseSpringContextTests
+//              so we get a temporary database. - dj@opennms.org
 // 2007 Apr 05: Change the property for the logs directory. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -36,13 +38,13 @@
 
 package org.opennms.web.svclayer.support;
 
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalDataSourceSpringContextTests {
+public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     
     private SurveillanceService m_surveillanceService;
     
@@ -50,15 +52,6 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
         WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
         webAppTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
         webAppTestConfig.afterPropertiesSet();
-
-//        File rrdDir = new File("target/test/opennms-home/share/rrd");
-//		if (!rrdDir.exists()) {
-//			rrdDir.mkdirs();
-//		}
-//		System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
-//        // FIXME: We should never modify anything under src... this should be in target
-//        System.setProperty("opennms.webapplogs.dir", "src/test/opennms-home/logs");
-
     }
     
     

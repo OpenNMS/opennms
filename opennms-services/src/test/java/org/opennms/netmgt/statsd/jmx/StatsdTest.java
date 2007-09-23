@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2007 Aug 24: Use mockEventIpcManager.xml and eventIpcManager-factoryInit
+ *              Spring contexts instead of doing the work directly. - dj@opennms.org
  * 2007 Apr 16: Re-enable tests now that the problem has been found with cruisecontrol. - dj@opennms.org
  * 2007 Apr 06: Use DaoTestConfigBean for system properties. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
@@ -38,9 +40,6 @@
 package org.opennms.netmgt.statsd.jmx;
 
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.statsd.jmx.Statsd;
 import org.opennms.test.DaoTestConfigBean;
 
 /**
@@ -52,13 +51,14 @@ public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringCont
 
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
-        
-        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
     }
 
     @Override
     protected String[] getConfigLocations() {
-        return new String[0];
+        return new String[] {
+                "classpath:META-INF/opennms/mockEventIpcManager.xml",
+                "classpath:META-INF/opennms/eventIpcManager-factoryInit.xml"
+        };
     }
     
     public void testInitStartStop() throws Exception {

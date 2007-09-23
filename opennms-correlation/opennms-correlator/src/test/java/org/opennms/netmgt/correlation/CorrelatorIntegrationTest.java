@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Aug 23: Use AbstractTransactionalTemporaryDatabaseSpringContextTests,
+//              mockEventIpcManager.xml Spring context, and move
+//              DaoTestConfigBean setup into a constructor. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,38 +37,34 @@
 //
 package org.opennms.netmgt.correlation;
 
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-public class CorrelatorIntegrationTest extends
-        AbstractTransactionalDataSourceSpringContextTests {
+public class CorrelatorIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
     private MockEventIpcManager m_eventIpcMgr;
 
-    static {
+    public CorrelatorIntegrationTest() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.setRelativeHomeDirectory("src/test/opennms-home");
         bean.afterPropertiesSet();
-
-        MockEventIpcManager eventIpcMgr = new MockEventIpcManager();
-        EventIpcManagerFactory.setIpcManager(eventIpcMgr);
     }
 
     @Override
     protected String[] getConfigLocations() {
-
-        return new String[] { "META-INF/opennms/applicationContext-dao.xml",
+        return new String[] {
+                "META-INF/opennms/applicationContext-dao.xml",
                 "META-INF/opennms/applicationContext-correlator.xml",
-                "classpath*:META-INF/opennms/correlation-engine.xml" };
+                "classpath*:META-INF/opennms/correlation-engine.xml",
+                "classpath:META-INF/opennms/mockEventIpcManager.xml"
+        };
     }
 
-    public void setEventIpcManager(EventIpcManager eventIpcMgr) {
-        m_eventIpcMgr = (MockEventIpcManager)eventIpcMgr;
+    public void setEventIpcManager(MockEventIpcManager eventIpcMgr) {
+        m_eventIpcMgr = eventIpcMgr;
     }
 
     public void testIt() throws Exception {

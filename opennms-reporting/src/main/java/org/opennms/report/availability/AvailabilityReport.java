@@ -51,6 +51,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -131,7 +132,7 @@ public class AvailabilityReport extends Object {
         created.setMonth(month);
         created.setSec(second);
         created.setYear(year);
-        created.setContent(today.getTime().getTime());
+        created.setContent(new BigDecimal(today.getTime().getTime()));
 
         m_report = new Report();
         m_report.setCreated(created);

@@ -36,7 +36,14 @@
 
       <attribute name="show_graphtype_button" type="boolean" use="optional"/>
 
-      <attribute name="graphs_per_line" type="integer" use="optional"/>
+      <attribute name="graphs_per_line" use="optional">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+  
 
     </complexType>
   </element>
