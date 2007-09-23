@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Aug 02: Add getFileForConfigFile. - dj@opennms.org
 // 2007 Jul 03: Check for something passing in a Class as an object (as I tend to do,
 //              which breaks tests under Maven 2, but not under Eclipse) and suggest
 //              that 'this' be used instead. - dj@opennms.org
@@ -114,10 +115,13 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     public static InputStream getInputStreamForConfigFile(String configFile) throws FileNotFoundException {
+        return new FileInputStream(getFileForConfigFile(configFile));
+    }
+
+    public static File getFileForConfigFile(String configFile) {
         File file = new File(getDaemonEtcDirectory(), configFile);
         assertTrue("configuration file '" + configFile + "' does not exist at " + file.getAbsolutePath(), file.exists());
-        InputStream is = new FileInputStream(file);
-        return is;
+        return file;
     }
     
     public static File getDaemonEtcDirectory() {
