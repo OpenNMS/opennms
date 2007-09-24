@@ -50,7 +50,7 @@ import java.util.List;
  * 
  * 
  */
-public class OutageSvcTimesList extends ArrayList {
+public class OutageSvcTimesList extends ArrayList<Outage> {
     /**
      * 
      */
@@ -140,9 +140,7 @@ public class OutageSvcTimesList extends ArrayList {
 
         m_outTime = 0;
 
-        Iterator iter = iterator();
-        while (iter.hasNext()) {
-            Outage svcTime = (Outage) iter.next();
+        for(Outage svcTime : this) {
             long outtime = svcTime.getDownTime(curTime, rollingWindow);
             if (outtime > 0)
                 m_outTime += outtime;
@@ -158,24 +156,22 @@ public class OutageSvcTimesList extends ArrayList {
      * @param curTime
      *            the current time from which the down time is to be calculated
      * @param rollingWindow
-     *            the last window for which the downtime is to be calculated
+     *            the last window for which the down time is to be calculated
      * 
      */
-    public List getServiceOutages(String nodeName, long curTime, long rollingWindow) {
+    public List<OutageSince> getServiceOutages(String nodeName, long curTime, long rollingWindow) {
         if (nodeName == null)
             return null;
 
-        // for each individual outage, get the downtime
+        // for each individual outage, get the down time
         // 
         // calculate effective start time
         long startTime = curTime - rollingWindow;
-        List retList = new ArrayList();
+        List<OutageSince> retList = new ArrayList<OutageSince>();
 
-        Iterator iter = iterator();
-        while (iter.hasNext()) {
-            Outage svcTime = (Outage) iter.next();
+        for(Outage svcTime : this) {
 
-            // ignore if the outage doesnt fall within the window.
+            // ignore if the outage doesn't fall within the window.
             //
             if (svcTime.getRegainedTime() > 0) {
                 if (svcTime.getRegainedTime() <= startTime)
@@ -202,9 +198,8 @@ public class OutageSvcTimesList extends ArrayList {
 
     public String toString() {
         String retVal = "";
-        ArrayList rpt = this;
-        for (int i = 0; i < rpt.size(); i++) {
-            retVal += " \n" + ((Outage) rpt.get(i)).toString();
+        for(Outage outage : this) {
+            retVal += "\n" + outage;
         }
         return retVal;
     }

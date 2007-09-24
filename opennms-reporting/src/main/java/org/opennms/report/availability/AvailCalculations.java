@@ -87,7 +87,7 @@ public class AvailCalculations extends Object {
     /**
      * Services map
      */
-    private Map m_services = null;
+    private Map<String, Map<IfService, OutageSvcTimesList>> m_services = null;
 
     /**
      * End time of the last month.
@@ -117,17 +117,12 @@ public class AvailCalculations extends Object {
     /**
      * Nodes that match this category.
      */
-    private List m_nodes;
+    private List<Node> m_nodes;
 
     /**
      * Monitored Services for the category
      */
-    private List m_monitoredServices;
-
-    /**
-     * Report Format
-     */
-    private String m_format;
+    private List<String> m_monitoredServices;
 
     /**
      * This is used for the PDF Report generation
@@ -153,7 +148,7 @@ public class AvailCalculations extends Object {
      * @param format
      *            Value can be "SVG / all"
      */
-    public AvailCalculations(List nodes, long endTime, long lastMonthEndTime, List monitoredServices, Report report, TreeMap offenders, double warning, double normal, String comments, String name, String format, String monthFormat, int catIndex, int sectionIndex) {
+    public AvailCalculations(List<Node> nodes, long endTime, long lastMonthEndTime, List<String> monitoredServices, Report report, TreeMap<Double, List<String>> offenders, double warning, double normal, String comments, String name, String format, String monthFormat, int catIndex, int sectionIndex) {
         m_sectionIndex = sectionIndex;
         org.opennms.report.availability.Category category = new org.opennms.report.availability.Category();
         category.setWarning(warning);
@@ -164,10 +159,8 @@ public class AvailCalculations extends Object {
         category.setNodeCount(nodes.size());
         int ipaddrCount = 0;
         int serviceCount = 0;
-
-        ListIterator lstNode = (ListIterator) nodes.listIterator();
-        while (lstNode.hasNext()) {
-            Node tmpNode = (Node) lstNode.next();
+        
+        for(Node tmpNode : nodes) {
             if (tmpNode != null) {
                 ipaddrCount += tmpNode.getInterfaceCount();
                 serviceCount += tmpNode.getServiceCount();
@@ -188,11 +181,11 @@ public class AvailCalculations extends Object {
         m_report = report;
 
         m_nodes = nodes;
-        m_format = format;
+
         m_endTime = endTime;
         String label;
         String descr;
-        String period;
+
 
         // Please node the following 4 formats are displayed on the graphical
         // report.
@@ -201,7 +194,6 @@ public class AvailCalculations extends Object {
         // (iii) MonthToDateDailyAvailability
         // (iv) lastMoTop20offenders
 
-        SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/yyyy");
         if (log.isDebugEnabled())
             log.debug("Now computing last 12 months daily availability ");
         //
@@ -343,27 +335,20 @@ public class AvailCalculations extends Object {
                 log.debug("Computed MTDTotalAvailability");
         }
 
-        m_services = new HashMap();
-        ListIterator lstIter = nodes.listIterator();
-        while (lstIter.hasNext()) {
-            Node node = (Node) lstIter.next();
+        m_services = new HashMap<String, Map<IfService, OutageSvcTimesList>>();
+            
+        for(Node node : nodes) {
             if (node != null) {
-                List interfaces = node.getInterfaces();
-                ListIterator lstIterIntf = interfaces.listIterator();
-                while (lstIterIntf.hasNext()) {
-                    Interface intf = (Interface) lstIterIntf.next();
+                for(Interface intf : node.getInterfaces()) {
                     if (intf != null) {
-                        List svcs = intf.getServices();
-                        ListIterator lstIterSvcs = svcs.listIterator();
-                        while (lstIterSvcs.hasNext()) {
-                            Service svc = (Service) lstIterSvcs.next();
+                        for(Service svc : intf.getServices()) {
                             if (svc != null) {
                                 OutageSvcTimesList outages = svc.getOutages();
                                 if (outages != null) {
                                     IfService ifservice = new IfService(node.getNodeID(), intf.getName(), -1, node.getName(), svc.getName());
-                                    Map svcOutages = (Map) m_services.get(svc.getName());
+                                    Map<IfService, OutageSvcTimesList> svcOutages = m_services.get(svc.getName());
                                     if (svcOutages == null)
-                                        svcOutages = new HashMap();
+                                        svcOutages = new HashMap<IfService, OutageSvcTimesList>();
                                     svcOutages.put(ifservice, outages);
                                     m_services.put(svc.getName(), svcOutages);
                                 }
@@ -460,30 +445,24 @@ public class AvailCalculations extends Object {
 
         // For each monitored service, get all individual outages.
         //
-        TreeMap treeMap = null;
-        Set serviceNames = m_services.keySet();
-        Iterator iterator = serviceNames.iterator();
-        while (iterator.hasNext()) {
-            treeMap = new TreeMap();
-            String service = (String) iterator.next();
-            Map ifSvcOutageList = (Map) m_services.get(service);
-            Set keysIfServices = ifSvcOutageList.keySet();
-            Iterator ifSvcIter = keysIfServices.iterator();
-            while (ifSvcIter.hasNext()) {
-                IfService ifservice = (IfService) ifSvcIter.next();
+        TreeMap<Long, List<OutageSince>> treeMap = null;
+        
+        for(String service : m_services.keySet()) {
+            treeMap = new TreeMap<Long, List<OutageSince>>();
+            Map<IfService, OutageSvcTimesList> ifSvcOutageList = m_services.get(service);
+            
+            for(IfService ifservice : ifSvcOutageList.keySet()) {
                 if (ifservice != null) {
                     OutageSvcTimesList outageSvcList = (OutageSvcTimesList) ifSvcOutageList.get(ifservice);
                     if (outageSvcList != null) {
                         long rollingWindow = m_daysInLastMonth * ROLLING_WINDOW;
-                        List svcOutages = outageSvcList.getServiceOutages(ifservice.getNodeName(), m_endLastMonthTime, rollingWindow);
-                        Iterator iter = svcOutages.iterator();
-                        while (iter.hasNext()) {
-                            OutageSince outageSince = (OutageSince) iter.next();
+                        List<OutageSince> svcOutages = outageSvcList.getServiceOutages(ifservice.getNodeName(), m_endLastMonthTime, rollingWindow);
+                        for(OutageSince outageSince : svcOutages) {
                             if (outageSince != null) {
                                 long outage = outageSince.getOutage() / 1000;
-                                List tmpList = (List) treeMap.get(new Long(outage));
+                                List<OutageSince> tmpList = treeMap.get(new Long(outage));
                                 if (tmpList == null)
-                                    tmpList = new ArrayList();
+                                    tmpList = new ArrayList<OutageSince>();
                                 tmpList.add(outageSince);
                                 treeMap.put(new Long(-1 * outage), tmpList);
                             }
@@ -492,16 +471,14 @@ public class AvailCalculations extends Object {
                 }
             }
             log.debug("Top 20 service outages from the list " + treeMap);
-            Set outageKeys = treeMap.keySet();
-            Iterator lstIter = outageKeys.iterator();
+            
+            
             int top20Count = 0;
             Rows rows = new Rows();
-            loop: while (lstIter.hasNext()) {
-                Long outage = (Long) lstIter.next();
-                List list = (List) treeMap.get(outage);
-                ListIterator listIterator = list.listIterator();
-                while (listIterator.hasNext()) {
-                    OutageSince outageSince = (OutageSince) listIterator.next();
+
+            loop : for(Long outage : treeMap.keySet()) {
+                List<OutageSince> list = treeMap.get(outage);
+                for(OutageSince outageSince : list) {
                     top20Count++;
                     String nodeName = outageSince.getNodeName();
 
@@ -629,7 +606,7 @@ public class AvailCalculations extends Object {
      *            Section descr.
      * 
      */
-    private void lastMoTopNOffenders(TreeMap offenders, CatSections catSections, String label, String descr) {
+    private void lastMoTopNOffenders(TreeMap<Double, List<String>> offenders, CatSections catSections, String label, String descr) {
         // copy this method from the outage data code.
         //
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -638,20 +615,20 @@ public class AvailCalculations extends Object {
             log.debug("Offenders " + offenders);
             log.debug("Inside lastMoTopNOffenders");
         }
-        Set percentValues = offenders.keySet();
-        Iterator iter = percentValues.iterator();
+        Set<Double> percentValues = offenders.keySet();
+        Iterator<Double> iter = percentValues.iterator();
 
         Rows rows = new Rows();
         int top20Count = 0;
         loop: while (iter.hasNext()) {
             Double percent = (Double) iter.next();
             if (percent.doubleValue() < 100.0) {
-                List nodes = (List) offenders.get(percent);
-                if (nodes != null) {
-                    ListIterator lstIter = nodes.listIterator();
+                List<String> nodeNames = offenders.get(percent);
+                if (nodeNames != null) {
+                    ListIterator<String> lstIter = nodeNames.listIterator();
                     while (lstIter.hasNext()) {
                         top20Count++;
-                        String nodeName = (String) lstIter.next();
+                        String nodeName = lstIter.next();
 
                         Value dateValue = new Value();
                         dateValue.setContent(nodeName);
@@ -756,7 +733,7 @@ public class AvailCalculations extends Object {
             log.debug("Inside lastNDaysDailyAvailability");
         int numdays = 0;
 	    CalendarTableBuilder calBuilder = new CalendarTableBuilder(endTime);
-        TreeMap treeMap = new TreeMap();
+        TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
         SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
         String periodEnd = fmt.format(new java.util.Date(endTime));
         String periodFrom = "";
@@ -768,9 +745,7 @@ public class AvailCalculations extends Object {
             //
             // get the outage and service count.
             //
-            ListIterator listIter = m_nodes.listIterator();
-            while (listIter.hasNext()) {
-                Node node = (Node) listIter.next();
+            for(Node node : m_nodes) {
                 outage += node.getOutage(endTime, ROLLING_WINDOW);
                 serviceCount += node.getServiceCount();
             }
@@ -793,12 +768,12 @@ public class AvailCalculations extends Object {
             endTime -= ROLLING_WINDOW;
         }
 
-        Set keyDates = treeMap.keySet();
-        Iterator iter = keyDates.iterator();
+        Set<Date> keyDates = treeMap.keySet();
+        Iterator<Date> iter = keyDates.iterator();
         int dateSlot = 0;
 		while (iter.hasNext()) {
-			Date key = (Date) iter.next();
-            Double percent = (Double) treeMap.get(key);
+			Date key = iter.next();
+            Double percent = treeMap.get(key);
                         log.debug("Inserting value " + percent.doubleValue() + " into date slot " + dateSlot);
 			dateSlot++;
                         log.debug("Inserting value " + percent.doubleValue() + " into date slot " + dateSlot);
@@ -843,7 +818,7 @@ public class AvailCalculations extends Object {
             log.debug("Inside lastNDaysDailyAvailability");
         int numdays = 0;
         Rows rows = new Rows();
-        TreeMap treeMap = new TreeMap();
+        TreeMap<Date, String> treeMap = new TreeMap<Date, String>();
         SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
         String periodEnd = fmt.format(new java.util.Date(endTime));
         String periodFrom = "";
@@ -855,9 +830,7 @@ public class AvailCalculations extends Object {
             //
             // get the outage and service count.
             //
-            ListIterator listIter = m_nodes.listIterator();
-            while (listIter.hasNext()) {
-                Node node = (Node) listIter.next();
+            for(Node node : m_nodes) {
                 outage += node.getOutage(endTime, ROLLING_WINDOW);
                 serviceCount += node.getServiceCount();
             }
@@ -873,16 +846,16 @@ public class AvailCalculations extends Object {
             endTime -= ROLLING_WINDOW;
         }
 
-        Set keyDates = treeMap.keySet();
-        Iterator iter = keyDates.iterator();
+        Set<Date> keyDates = treeMap.keySet();
+        Iterator<Date> iter = keyDates.iterator();
         while (iter.hasNext()) {
-            Date key = (Date) iter.next();
+            Date key = iter.next();
             Value dateValue = new Value();
             SimpleDateFormat fmtmp = new SimpleDateFormat("dd");
             dateValue.setContent(fmtmp.format(key));
             dateValue.setType("title");
 
-            String percent = (String) treeMap.get(key);
+            String percent = treeMap.get(key);
             Value value = new Value();
             value.setContent(percent);
             value.setType("data");
@@ -942,9 +915,7 @@ public class AvailCalculations extends Object {
             //
             // get the outage and service count.
             //
-            ListIterator listIter = m_nodes.listIterator();
-            while (listIter.hasNext()) {
-                Node node = (Node) listIter.next();
+            for(Node node : m_nodes) {
                 serviceCount += node.getServiceCount();
                 outage += node.getOutage(endTime, ROLLING_WINDOW);
             }
@@ -1013,12 +984,12 @@ public class AvailCalculations extends Object {
         calendar.setTime(new Date(endTime));
         int month = calendar.get(Calendar.MONTH);
         int year = calendar.get(Calendar.YEAR);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
         calendar.set(year, month, numDays, 23, 59, 59);
         endTime = calendar.getTime().getTime();
         SimpleDateFormat fmt = new SimpleDateFormat("MMM, yyyy");
         String periodEnd = fmt.format(new java.util.Date(endTime));
-        TreeMap treeMap = new TreeMap(); // Holds all the month/percent
+        TreeMap<Date, String> treeMap = new TreeMap<Date, String>(); // Holds all the month/percent
                                             // values to be displayed in order
                                             // on pdf.
         String periodFrom = null;
@@ -1031,9 +1002,7 @@ public class AvailCalculations extends Object {
             //
             // get the outage and service count.
             //
-            ListIterator listIter = m_nodes.listIterator();
-            while (listIter.hasNext()) {
-                Node node = (Node) listIter.next();
+            for(Node node : m_nodes) {
                 serviceCount += node.getServiceCount();
                 outage += node.getOutage(endTime, rollingWindow);
             }
@@ -1050,28 +1019,28 @@ public class AvailCalculations extends Object {
             calendar.setTime(new Date(endTime));
             month = calendar.get(Calendar.MONTH);
             year = calendar.get(Calendar.YEAR);
-            day = calendar.get(Calendar.DAY_OF_MONTH);
+
             calendar.set(year, month - 1, 1, 0, 0, 0);
             endTime = calendar.getTime().getTime();
             month = calendar.get(Calendar.MONTH);
             year = calendar.get(Calendar.YEAR);
-            day = calendar.get(Calendar.DAY_OF_MONTH);
+
             numDays = getDaysForMonth(endTime);
             calendar.set(year, month, numDays, 23, 59, 59);
             endTime = calendar.getTime().getTime();
         }
 
-        Set keyDates = treeMap.keySet();
-        Iterator iter = keyDates.iterator();
+        Set<Date> keyDates = treeMap.keySet();
+        Iterator<Date> iter = keyDates.iterator();
         while (iter.hasNext()) {
-            Date key = (Date) iter.next();
+            Date key = iter.next();
             Value dateValue = new Value();
             SimpleDateFormat fmtmp = new SimpleDateFormat("MMM");
             dateValue.setContent(fmtmp.format(key) + "");
             dateValue.setType("title");
 
             Value value = new Value();
-            String percent = (String) treeMap.get(key);
+            String percent = treeMap.get(key);
             value.setContent(percent);
             value.setType("data");
 
@@ -1145,7 +1114,7 @@ public class AvailCalculations extends Object {
         calendar.setTime(new java.util.Date(endTime));
         int month = calendar.get(Calendar.MONTH);
         int year = calendar.get(Calendar.YEAR);
-        int days = getDays(calendar.isLeapYear(year), month);
+
         return (getDays(calendar.isLeapYear(year), month));
     }
 
@@ -1165,25 +1134,22 @@ public class AvailCalculations extends Object {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         log.debug("Inside lastNDaysDailyServiceAvailability " + days);
-        String serviceName;
-        Iterator iterator;
+
 
         long outage;
         String periodFrom = "";
         SimpleDateFormat fmtmp = new SimpleDateFormat("dd MMM, yyyy");
         String periodTo = "";
         periodTo = fmtmp.format(new java.util.Date(endTime));
-        Iterator monitoredIter = m_monitoredServices.iterator();
-        while (monitoredIter.hasNext()) {
-            TreeMap treeMap = new TreeMap();
+        for(String service : m_monitoredServices) {
+            TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
             Rows rows = new Rows();
-            String service = (String) monitoredIter.next();
             log.debug("SERvice " + service);
-            TreeMap m_lastNOfftreeMap = new TreeMap();
+
             long curTime = endTime;
-            Map svcOutages = null;
+            Map<IfService, OutageSvcTimesList> svcOutages = null;
             if (m_services != null)
-                svcOutages = (Map) m_services.get(service);
+                svcOutages = m_services.get(service);
             if (svcOutages == null || svcOutages.size() <= 0) {
                 int daysCnt = 0;
                 while (daysCnt++ < days) {
@@ -1195,10 +1161,10 @@ public class AvailCalculations extends Object {
                     curTime -= ROLLING_WINDOW;
                 }
 
-                Set keys = treeMap.keySet();
-                Iterator iter = keys.iterator();
+                Set<Date> keys = treeMap.keySet();
+                Iterator<Date> iter = keys.iterator();
                 while (iter.hasNext()) {
-                    Date tmp = (Date) iter.next();
+                    Date tmp = iter.next();
                     Value dateValue = new Value();
                     SimpleDateFormat fmt = new SimpleDateFormat("dd");
                     dateValue.setContent(fmt.format(tmp) + "");
@@ -1238,8 +1204,8 @@ public class AvailCalculations extends Object {
                     // For each node in the service table.
                     //
                     // Iterate each svc node for getting the ifservice
-                    Set keys = svcOutages.keySet();
-                    Iterator iter = keys.iterator();
+                    Set<IfService> keys = svcOutages.keySet();
+                    Iterator<IfService> iter = keys.iterator();
                     while (iter.hasNext()) {
                         IfService ifservice = (IfService) iter.next();
                         log.debug(ifservice);
@@ -1268,16 +1234,16 @@ public class AvailCalculations extends Object {
                     curTime -= ROLLING_WINDOW;
                 }
 
-                Set keys = treeMap.keySet();
-                Iterator iter = keys.iterator();
+                Set<Date> keys = treeMap.keySet();
+                Iterator<Date> iter = keys.iterator();
                 while (iter.hasNext()) {
-                    Date tmp = (Date) iter.next();
+                    Date tmp = iter.next();
                     Value dateValue = new Value();
                     SimpleDateFormat fmt = new SimpleDateFormat("dd");
                     dateValue.setContent(fmt.format(tmp) + "");
                     dateValue.setType("title");
 
-                    Double val = (Double) treeMap.get(tmp);
+                    Double val = treeMap.get(tmp);
 
                     Value value = new Value();
                     value.setContent("" + val);

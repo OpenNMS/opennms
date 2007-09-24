@@ -67,20 +67,6 @@ final class IPPollAddress {
 
     /**
      * <P>
-     * The default constructor is marked private and will always throw an
-     * UnsupportedOperationException. This is to prevent the use of the default
-     * constructor.
-     * </P>
-     * 
-     * @exception java.lang.UnsupportedOperationException
-     *                Always thrown.
-     */
-    private IPPollAddress() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Default constructor not implemented");
-    }
-
-    /**
-     * <P>
      * Constructs an IPPollAddress object with the specified parameters.
      * </P>
      * 
