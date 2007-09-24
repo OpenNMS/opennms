@@ -44,8 +44,8 @@ package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
@@ -70,19 +70,19 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     private static EventdConfigManager m_eventdConfigMgr;
     
     /**
-     * Hashtable of list of event listeners keyed by event UEI
+     * Hash table of list of event listeners keyed by event UEI
      */
-    private HashMap m_ueiListeners;
+    private Map<String, List<EventListener>> m_ueiListeners;
 
     /**
      * The list of event listeners interested in all events
      */
-    private List m_listeners;
+    private List<EventListener> m_listeners;
 
     /**
-     * Hashtable of event listener threads keyed by the listener's id
+     * Hash table of event listener threads keyed by the listener's id
      */
-    private HashMap m_listenerThreads;
+    private Map<String, ListenerThread> m_listenerThreads;
 
     /**
      * The thread pool handling the events
@@ -111,7 +111,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         /**
          * Queue from which events for the listener are to be read
          */
-        private FifoQueue m_queue;
+        private FifoQueue<Event> m_queue;
 
         /**
          * The thread that is running this runnable.
@@ -126,7 +126,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         /**
          * Constructor
          */
-        ListenerThread(EventListener listener, FifoQueue lq) {
+        ListenerThread(EventListener listener, FifoQueue<Event> lq) {
             m_shutdown = false;
             m_listener = listener;
             ;
@@ -134,7 +134,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
             m_delegateThread = new Thread(this, listener.getName());
         }
 
-        public FifoQueue getQueue() {
+        public FifoQueue<Event> getQueue() {
             return m_queue;
         }
 
@@ -152,10 +152,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
                 log.debug("In ListenerThread " + m_listener.getName() + " run");
 
             while (!m_shutdown) {
-                Object obj = null;
+                Event event = null;
                 try {
-                    obj = m_queue.remove(500);
-                    if (obj == null)
+                    event = m_queue.remove(500);
+                    if (event == null)
                         continue;
                 } catch (InterruptedException ie) {
                     m_shutdown = true;
@@ -166,8 +166,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
                 }
 
                 try {
-                    if (obj != null && obj instanceof Event) {
-                        Event event = (Event) obj;
+                    if (event != null) {
 
                         if (log.isInfoEnabled()) {
                             log.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
@@ -223,9 +222,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
             throw new IllegalStateException("eventd configuration manager not set");
         }
         
-        m_ueiListeners = new HashMap();
-        m_listeners = new ArrayList();
-        m_listenerThreads = new HashMap();
+        m_ueiListeners = new HashMap<String, List<EventListener>>();
+        m_listeners = new ArrayList<EventListener>();
+        m_listenerThreads = new HashMap<String, ListenerThread>();
 
         // get number of threads
         int numReceivers = m_eventdConfigMgr.getReceivers();
@@ -259,7 +258,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     public synchronized void sendNow(Log eventLog) {
 
         // create a new event handler for the events and queue it to the
-        // eventhandler thread pool
+        // event handler thread pool
         try {
             m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
         } catch (InterruptedException iE) {
@@ -290,11 +289,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // send to listeners interested in receiving all events
-        Iterator listenerIter = m_listeners.iterator();
-        while (listenerIter.hasNext()) {
-            EventListener listener = (EventListener) listenerIter.next();
+        for(EventListener listener : m_listeners) {
 
-            ListenerThread listenerThr = (ListenerThread) m_listenerThreads.get(listener.getName());
+            ListenerThread listenerThr = m_listenerThreads.get(listener.getName());
             try {
                 listenerThr.getQueue().add(event);
                 if (log.isDebugEnabled())
@@ -313,15 +310,12 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // send to listeners who are interested in this event uei
-        //Loop to get partial wildcard "directory" matches
+        //Loop to get partial wild card "directory" matches
         while (uei.length() > 0){
-        List listenerList = (List) m_ueiListeners.get(uei);
+        List<EventListener> listenerList = m_ueiListeners.get(uei);
         if (listenerList != null) {
-            listenerIter = listenerList.iterator();
-            while (listenerIter.hasNext()) {
-                EventListener listener = (EventListener) listenerIter.next();
-
-                ListenerThread listenerThread = (ListenerThread) m_listenerThreads.get(listener.getName());
+            for(EventListener listener : listenerList) {
+                ListenerThread listenerThread = m_listenerThreads.get(listener.getName());
                 try {
                     listenerThread.getQueue().add(event);
                     if (log.isDebugEnabled())
@@ -336,13 +330,13 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
             if (log.isDebugEnabled())
                 log.debug("No listener interested in event: " + uei);
         }
-        //Try wildcards: Find / before last character
+        //Try wild cards: Find / before last character
         int i = uei.lastIndexOf("/",uei.length()-2);
         if (i > 0){
            //Split at "/", including the /
            uei = uei.substring (0, i+1);
         } else {
-           //No more wildcards to match
+           //No more wild cards to match
            uei="";
            break;
         }
@@ -354,9 +348,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
      */
     public synchronized void addEventListener(EventListener listener) {
         // create a new queue and listener thread for this listener
-        ListenerThread listenerThread = (ListenerThread) m_listenerThreads.get(listener.getName());
+        ListenerThread listenerThread = m_listenerThreads.get(listener.getName());
         if (listenerThread == null) {
-            FifoQueue lq = new FifoQueueImpl();
+            FifoQueue<Event> lq = new FifoQueueImpl<Event>();
             listenerThread = new ListenerThread(listener, lq);
             listenerThread.start();
 
@@ -367,11 +361,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         m_listeners.add(listener);
 
         // remove listener from uei specific listeners
-        Iterator keysetIter = m_ueiListeners.keySet().iterator();
-        while (keysetIter.hasNext()) {
-            String key = (String) keysetIter.next();
-
-            List listenersList = (List) m_ueiListeners.get(key);
+        for(String key : m_ueiListeners.keySet()) {
+            List<EventListener> listenersList = m_ueiListeners.get(key);
             if (listenersList != null) {
                 listenersList.remove(listener);
             }
@@ -381,7 +372,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     /**
      * Register an event listener interested in the UEIs in the passed list
      */
-    public synchronized void addEventListener(EventListener listener, List ueilist) {
+    public synchronized void addEventListener(EventListener listener, List<String> ueilist) {
         Category log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Adding event listener " + listener.getName() + " for " + ueilist);
@@ -392,9 +383,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // create a new queue and listener thread for this listener
-        ListenerThread listenerThread = (ListenerThread) m_listenerThreads.get(listener.getName());
+        ListenerThread listenerThread = m_listenerThreads.get(listener.getName());
         if (listenerThread == null) {
-            FifoQueue lq = new FifoQueueImpl();
+            FifoQueue<Event> lq = new FifoQueueImpl<Event>();
             listenerThread = new ListenerThread(listener, lq);
             listenerThread.start();
 
@@ -402,15 +393,13 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // add to uei listeners
-        Iterator ueiIter = ueilist.iterator();
-        while (ueiIter.hasNext()) {
-            String uei = (String) ueiIter.next();
+        for(String uei : ueilist) {
 
             // check if there are other listeners already, else create
             // an entry
-            List listenersList = (List) m_ueiListeners.get(uei);
+            List<EventListener> listenersList = m_ueiListeners.get(uei);
             if (listenersList == null) {
-                listenersList = new ArrayList();
+                listenersList = new ArrayList<EventListener>();
                 listenersList.add(listener);
 
                 m_ueiListeners.put(uei, listenersList);
@@ -435,9 +424,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // create a new queue and listener thread for this listener
-        ListenerThread listenerThread = (ListenerThread) m_listenerThreads.get(listener.getName());
+        ListenerThread listenerThread = m_listenerThreads.get(listener.getName());
         if (listenerThread == null) {
-            FifoQueue lq = new FifoQueueImpl();
+            FifoQueue<Event> lq = new FifoQueueImpl<Event>();
             listenerThread = new ListenerThread(listener, lq);
             listenerThread.start();
 
@@ -446,9 +435,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
 
         // check if there are other listeners already, else create
         // an entry
-        List listenersList = (List) m_ueiListeners.get(uei);
+        List<EventListener> listenersList = m_ueiListeners.get(uei);
         if (listenersList == null) {
-            listenersList = new ArrayList();
+            listenersList = new ArrayList<EventListener>();
             listenersList.add(listener);
 
             m_ueiListeners.put(uei, listenersList);
@@ -469,18 +458,15 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
      * stopped until the 'removeListener(EventListener listener)' method is
      * called.
      */
-    public synchronized void removeEventListener(EventListener listener, List ueilist) {
+    public synchronized void removeEventListener(EventListener listener, List<String> ueilist) {
         if (ueilist == null || ueilist.size() == 0) {
             // nothing to do
             return;
         }
 
         // Iterate through the ueis and remove the listener
-        Iterator ueiIter = ueilist.iterator();
-        while (ueiIter.hasNext()) {
-            String uei = (String) ueiIter.next();
-
-            List listenersList = (List) m_ueiListeners.get(uei);
+        for(String uei : ueilist) {
+            List<EventListener> listenersList = m_ueiListeners.get(uei);
             if (listenersList != null) {
                 listenersList.remove(listener);
             }
@@ -502,7 +488,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
             return;
         }
 
-        List listenersList = (List) m_ueiListeners.get(uei);
+        List<EventListener> listenersList = m_ueiListeners.get(uei);
         if (listenersList != null) {
             listenersList.remove(listener);
         }
@@ -519,18 +505,15 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         m_listeners.remove(listener);
 
         // remove listener from uei specific listeners
-        Iterator keysetIter = m_ueiListeners.keySet().iterator();
-        while (keysetIter.hasNext()) {
-            String key = (String) keysetIter.next();
-
-            List listenersList = (List) m_ueiListeners.get(key);
+        for(String key : m_ueiListeners.keySet()) {
+            List<EventListener> listenersList = m_ueiListeners.get(key);
             if (listenersList != null) {
                 listenersList.remove(listener);
             }
         }
 
         // stop the listener thread for this listener
-        ListenerThread listenerThread = (ListenerThread) m_listenerThreads.get(listener.getName());
+        ListenerThread listenerThread = m_listenerThreads.get(listener.getName());
         if (listenerThread != null) {
             listenerThread.stop();
 

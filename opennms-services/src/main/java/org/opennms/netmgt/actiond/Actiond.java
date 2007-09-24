@@ -87,7 +87,7 @@ public final class Actiond extends AbstractServiceDaemon {
 	protected void onInit() {
 		// A queue for execution
         //
-        FifoQueue execQ = new FifoQueueImpl();
+        FifoQueue<String> execQ = new FifoQueueImpl<String>();
 
         // start the event reader
         //

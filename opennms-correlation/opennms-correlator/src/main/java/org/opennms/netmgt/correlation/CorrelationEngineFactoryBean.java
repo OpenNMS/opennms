@@ -23,7 +23,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         return m_correlationEngines;
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return m_correlationEngines.getClass();
     }
 

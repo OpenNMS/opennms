@@ -173,11 +173,11 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         Object constructValue(ApplicationContext context) {
             
             String type = getType();
-            Class typeClass = Object.class;
+            Class<?> typeClass = Object.class;
             if (type != null) {
                 PropertyEditor classEditor = getDefaultEditor(Class.class);
                 classEditor.setAsText(type);
-                typeClass = (Class)classEditor.getValue();
+                typeClass = (Class<?>)classEditor.getValue();
             }
         
             String value = getValue();

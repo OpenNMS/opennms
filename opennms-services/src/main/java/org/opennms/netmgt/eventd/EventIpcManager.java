@@ -73,7 +73,7 @@ public interface EventIpcManager {
     /**
      * Registers an event listener interested in the UEIs in the passed list
      */
-    public void addEventListener(EventListener listener, List ueilist);
+    public void addEventListener(EventListener listener, List<String> ueilist);
 
     /**
      * Registers an event listener interested in the passed UEI
@@ -89,7 +89,7 @@ public interface EventIpcManager {
      * Removes a registered event listener - the UEI list indicates the list of
      * events the listener is no more interested in
      */
-    public void removeEventListener(EventListener listener, List ueiList);
+    public void removeEventListener(EventListener listener, List<String> ueiList);
 
     /**
      * Removes a registered event listener - the UEI indicates an event the

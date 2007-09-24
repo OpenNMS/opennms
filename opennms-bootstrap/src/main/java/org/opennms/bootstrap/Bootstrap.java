@@ -210,7 +210,7 @@ public class Bootstrap {
         Properties p = new Properties();
         p.load(is);
 
-        for (Map.Entry entry : p.entrySet()) {
+        for (Map.Entry<Object, Object> entry : p.entrySet()) {
             String propertyName = entry.getKey().toString();
             Object value = entry.getValue();
             if (value != null) {
@@ -356,9 +356,9 @@ public class Bootstrap {
 
         if (classToExec != null) {
             final String className = classToExec;
-            final Class[] classes = new Class[] { classToExecArgs.getClass() };
+            final Class<?>[] classes = new Class[] { classToExecArgs.getClass() };
             final Object[] methodArgs = new Object[] { classToExecArgs };
-            Class c = cl.loadClass(className);
+            Class<?> c = cl.loadClass(className);
             final Method method = c.getMethod(classToExecMethod, classes);
 
             Runnable execer = new Runnable() {

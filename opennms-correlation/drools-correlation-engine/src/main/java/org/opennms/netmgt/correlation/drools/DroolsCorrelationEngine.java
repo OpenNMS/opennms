@@ -96,7 +96,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     	return m_workingMemory.getObjects().size();
     }
     
-    public List getMemoryObjects() {
+    @SuppressWarnings("unchecked")
+    public List<Object> getMemoryObjects() {
         return m_workingMemory.getObjects();
     }
 
