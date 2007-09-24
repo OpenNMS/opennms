@@ -1544,6 +1544,7 @@
         <event-file>@install.etc.dir@/events/Cisco.airespace.xml</event-file>
         <!-- CIM.events.xml has been deprecated by CPQHPIM.events.xml -->
         <event-file>@install.etc.dir@/events/Colubris.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Covergence.events.xml</event-file>
         <event-file>@install.etc.dir@/events/CPQHPIM.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Clarent.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Clarinet.events.xml</event-file>
