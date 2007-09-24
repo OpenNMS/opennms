@@ -32,3 +32,12 @@ def argFile = new File("${basedir}/target/generated-sources/castor/org/opennms/n
 subst(argFile, /@param\s+_switch\s*$/, "");
 subst(argFile, /@param\s+switch/, "@param _switch");
 
+def genDir = new File("${basedir}/target/generated-sources/castor");
+
+genDir.eachDirRecurse { dir ->
+
+    dir.eachFileMatch( ~/.*Descriptor\.java/) { file ->
+        subst(file, /java\.lang\.Class getJavaClass/, /java\.lang\.Class<?> getJavaClass/)
+    }
+    
+}

@@ -93,13 +93,13 @@ public class AvailabilityReportLocatorServiceTest extends TestCase {
 	
 	public void testLocateReports() {
 		
-		List expectedReports = new ArrayList();
+		List<AvailabilityReportLocator> expectedReports = new ArrayList<AvailabilityReportLocator>();
 		
 		expect(availabilityReportLocatorDao.findAll()).andReturn(expectedReports);
 		
 		replay(availabilityReportLocatorDao);
 		
-		Collection actualReports = locatorService.locateReports();
+		Collection<AvailabilityReportLocator> actualReports = locatorService.locateReports();
 		
 		verify(availabilityReportLocatorDao);
 		

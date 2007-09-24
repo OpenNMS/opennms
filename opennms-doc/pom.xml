@@ -36,7 +36,7 @@
           <entities>
             <entity>
               <name>version</name>
-              <value>${version}</value>
+              <value>${pom.version}</value>
             </entity>
             <entity>
               <name>project</name>

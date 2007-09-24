@@ -55,7 +55,7 @@ public class Cause {
         m_symptom = symptomEvent;
     }
     
-    public Set getImpacted() {
+    public Set<Cause> getImpacted() {
         return m_impacted;
     }
     

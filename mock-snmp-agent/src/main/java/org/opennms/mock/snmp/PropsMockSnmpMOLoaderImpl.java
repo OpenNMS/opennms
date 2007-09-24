@@ -69,8 +69,8 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 		
         Properties moProps = loadProperties(m_moFile);
         if (moProps == null) return null;
-		
-		Enumeration moKeys = moProps.keys();
+
+		Enumeration<Object> moKeys = moProps.keys();
 		while ( moKeys.hasMoreElements() ) {
 			String oidStr = moKeys.nextElement().toString();
 			ManagedObject newMo = getMOFromPropString(oidStr, moProps.getProperty(oidStr));

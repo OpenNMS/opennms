@@ -52,7 +52,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
@@ -96,22 +95,12 @@ public class AvailabilityData extends Object {
     /**
      * List of Node objects that satisfy the filter rule for the category.
      */
-    private List m_nodes;
+    private List<Node> m_nodes;
 
     /**
      * Common Rule for the category group.
      */
     private String m_commonRule;
-
-    /**
-     * Category Name
-     */
-    private String m_categoryName;
-
-    /**
-     * Category Comments
-     */
-    private String m_catComment;
 
     /**
      * End Time of the report.
@@ -137,11 +126,6 @@ public class AvailabilityData extends Object {
      * Category Factory
      */
     CatFactory m_catFactory;
-
-    /**
-     * Rolling window of the last year.
-     */
-    private static long LAST_YEAR_ROLLING_WINDOW;
 
     /**
      * Section Index
@@ -202,9 +186,9 @@ public class AvailabilityData extends Object {
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         log.debug("Inside AvailabilityData");
 
-        m_nodes = new ArrayList();
+        m_nodes = new ArrayList<Node>();
         initializeInterval(calendar, periodEndDate);
-        m_categoryName = categoryName;
+
         Catinfo config = null;
         try {
             CategoryFactory.init();
@@ -225,32 +209,23 @@ public class AvailabilityData extends Object {
             log.debug("CATEGORY " + categoryName);
         }
         if (categoryName.equals("") || categoryName.equals("all")) {
-            Enumeration enumCG = config.enumerateCategorygroup();
             int catCount = 0;
             if (log.isDebugEnabled()) {
                 log.debug("catCount " + catCount);
             }
-            while (enumCG.hasMoreElements()) {
-                Categorygroup cg = (Categorygroup) enumCG.nextElement();
-
+            
+            for(Categorygroup cg : config.getCategorygroupCollection()) {
+            
                 // go through the categories
                 org.opennms.netmgt.config.categories.Categories cats = cg.getCategories();
+            
+                for(org.opennms.netmgt.config.categories.Category cat : cats.getCategoryCollection()) {
 
-                Enumeration enumCat = cats.enumerateCategory();
-                while (enumCat.hasMoreElements()) {
-                    org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) enumCat.nextElement();
-                    Enumeration enumMonitoredSvc = cat.enumerateService();
-                    List monitoredServices = new ArrayList();
-                    while (enumMonitoredSvc.hasMoreElements()) {
-                        String service = (String) enumMonitoredSvc.nextElement();
-                        monitoredServices.add(service);
-                    }
                     if (log.isDebugEnabled()) {
                         log.debug("CATEGORY " + cat.getLabel());
                     }
                     catCount++;
-                    populateDataStructures(cat, report, format, monthFormat,
-                                           catCount);
+                    populateDataStructures(cat, report, format, monthFormat, catCount);
                 }
             }
             if (log.isDebugEnabled()) {
@@ -265,8 +240,7 @@ public class AvailabilityData extends Object {
             populateDataStructures(cat, report, format, monthFormat, 1);
         }
 
-        SimpleDateFormat simplePeriod = new SimpleDateFormat(
-                                                             "MMMMMMMMMMM dd, yyyy");
+        SimpleDateFormat simplePeriod = new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
         String reportPeriod = simplePeriod.format(new java.util.Date(
                                                                      m_12MonthsBack))
                 + " - " + simplePeriod.format(new java.util.Date(m_endTime));
@@ -304,21 +278,15 @@ public class AvailabilityData extends Object {
         try {
             String categoryName = cat.getLabel();
             m_commonRule = m_catFactory.getEffectiveRule(categoryName);
-            Enumeration enumMonitoredSvc = cat.enumerateService();
-            List monitoredServices = new ArrayList();
-            while (enumMonitoredSvc.hasMoreElements()) {
-                String service = (String) enumMonitoredSvc.nextElement();
-                if (log.isDebugEnabled()) {
-                    log.debug("adding service" + service);
-                }
-                monitoredServices.add(service);
-            }
+
+            List<String> monitoredServices = new ArrayList<String>(cat.getServiceCollection());
+
             populateNodesFromDB(cat, monitoredServices);
-            ViewInfo viewInfo = report.getViewInfo();
+            
             if (log.isDebugEnabled()) {
                 log.debug("Nodes " + m_nodes);
             }
-            ListIterator cleanNodes = m_nodes.listIterator();
+            ListIterator<Node> cleanNodes = m_nodes.listIterator();
             while (cleanNodes.hasNext()) {
                 Node node = (Node) cleanNodes.next();
                 if (node != null && !node.hasOutages()) {
@@ -331,8 +299,7 @@ public class AvailabilityData extends Object {
             if (log.isDebugEnabled()) {
                 log.debug("Cleaned Nodes " + m_nodes);
             }
-            TreeMap topOffenders = new TreeMap();
-            topOffenders = getPercentNode();
+            TreeMap<Double, List<String>> topOffenders = getPercentNode();
 
             if (log.isDebugEnabled()) {
                 log.debug("TOP OFFENDERS " + topOffenders);
@@ -384,7 +351,7 @@ public class AvailabilityData extends Object {
     }
 
     /**
-     * Initialise the endTime, start Time, last Months end time and number of days in the
+     * Initialize the endTime, start Time, last Months end time and number of days in the
      * last month.
      */
     
@@ -413,7 +380,7 @@ public class AvailabilityData extends Object {
         
         m_12MonthsBack = tempCal.getTimeInMillis();
         
-        // Reset tempCal to m_end time and calculate last month calanedar details
+        // Reset tempCal to m_end time and calculate last month calendar details
         
         tempCal.setTimeInMillis(m_endTime);
         tempCal.add(Calendar.MONTH, -1);
@@ -432,137 +399,14 @@ public class AvailabilityData extends Object {
     }
     
     /**
-     * Initialise the endTime, last Months end time and number of days in the
-     * last month.
-     */
-    private void initialiseInterval(Calendar calendar, String startMonth,
-            String startDate, String startYear) {
-        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
-
-        int month = Integer.parseInt(startMonth);
-        int day = Integer.parseInt(startDate);
-        int year = Integer.parseInt(startYear);
-        // int month = calendar.get(Calendar.MONTH);
-        // int day = calendar.get(Calendar.DAY_OF_MONTH);
-        // int year = calendar.get(Calendar.YEAR);
-        
-        // Set m_endTime to 23:59 on the day prior to that 
-        // specified by year month day
-        
-        calendar.set(year, month, day - 1, 23, 59, 59); // Set the end Time
-        m_endTime = calendar.getTime().getTime();
-
-        calendar.add(Calendar.YEAR, -1);
-        LAST_YEAR_ROLLING_WINDOW = m_endTime - calendar.getTime().getTime();
-        m_12MonthsBack = m_endTime - LAST_YEAR_ROLLING_WINDOW;
-        
-        //m_12MonthsBack is now 1 year prior to m_endTime
-
-        calendar = new GregorianCalendar();
-        calendar.setTime(new java.util.Date(m_12MonthsBack));
-        month = calendar.get(Calendar.MONTH);
-        day = calendar.get(Calendar.DAY_OF_MONTH);
-        year = calendar.get(Calendar.YEAR);
-        
-        // day is discarded and m_12Months back is now reset to 
-        // the first day of the month, twelve months ago.
-        // The start day has therefore become the first of the month
-        
-        calendar.set(year, month, 1, 0, 0, 0); // Set the end Time
-        m_12MonthsBack = calendar.getTime().getTime();
-
-        if (log.isDebugEnabled()) {
-            log.debug("last Year " + new java.util.Date(m_12MonthsBack));
-            log.debug("End Year " + new java.util.Date(m_endTime));
-            log.debug("Rolling window of the last year "
-                    + LAST_YEAR_ROLLING_WINDOW);
-        }
-        
-        // Create lastMonthCalendar and initialise it to the end period of
-        // the report using m_end_time
-        
-        Calendar lastMonthCalendar = new GregorianCalendar();
-        java.util.Date lastMonthDate = new java.util.Date(
-                                                          new Double(
-                                                                     m_endTime).longValue());
-        lastMonthCalendar.setTime(lastMonthDate);
-        
-        
-        month = lastMonthCalendar.get(Calendar.MONTH) - 1;
-        year = lastMonthCalendar.get(Calendar.YEAR);
-        
-        // now reset lastMonthCalendar to the first of the month prior to end 
-        // period of the report
-        
-        lastMonthCalendar.set(year, month, 1, 0, 0, 0);
-
-        // Number of days in the last month
-        m_daysInLastMonth = getDaysForMonth(lastMonthCalendar.getTime().getTime());
-
-        // Set the end time of the last full month prior to the report end date 
-        lastMonthCalendar.set(year, month, m_daysInLastMonth, 23, 59, 59);
-        m_lastMonthEndTime = lastMonthCalendar.getTime().getTime();
-    }
-
-    /**
-     * Returns the number of days in the month, also considers checks for leap
-     * year.
-     * 
-     * @param isLeap
-     *            the leap year flag.
-     * @param month
-     *            The month whose days count is reqd
-     */
-    private static synchronized int getDays(boolean isLeap, int month) {
-        switch (month) {
-        case 0:
-        case 2:
-        case 4:
-        case 6:
-        case 7:
-        case 9:
-        case 11:
-            return 31;
-
-        case 3:
-        case 5:
-        case 8:
-        case 10:
-            return 30;
-
-        case 1:
-            if (isLeap) {
-                return 29;
-            } else {
-                return 28;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Returns the number of Days in the month
-     * 
-     * @param endTime
-     *            The end of the month (time in milliseconds)
-     */
-    private int getDaysForMonth(long endTime) {
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(new java.util.Date(endTime));
-        int month = calendar.get(Calendar.MONTH);
-        int year = calendar.get(Calendar.YEAR);
-        return (getDays(calendar.isLeapYear(year), month));
-    }
-
-    /**
      * Returns the nodes.
      */
-    public List getNodes() {
+    public List<Node> getNodes() {
         return m_nodes;
     }
 
     /**
-     * Initialises the database connection.
+     * Initializes the database connection.
      */
     public void initialiseConnection() throws IOException, MarshalException,
             ValidationException, ClassNotFoundException, SQLException {
@@ -625,7 +469,7 @@ public class AvailabilityData extends Object {
      * Returns percent/node combinations for the last month. This is used to
      * get the last months top 20 offenders
      */
-    public TreeMap getPercentNode() {
+    public TreeMap<Double, List<String>> getPercentNode() {
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         int days = m_daysInLastMonth;
         long endTime = m_lastMonthEndTime;
@@ -640,11 +484,9 @@ public class AvailabilityData extends Object {
             log.debug("getPercentNode: End time "
                     + new java.util.Date(endTime));
         }
-        TreeMap percentNode = new TreeMap();
-        Iterator nodeIter = m_nodes.iterator();
-
-        while (nodeIter.hasNext()) {
-            Node node = (Node) nodeIter.next();
+        TreeMap<Double, List<String>> percentNode = new TreeMap<Double, List<String>>();
+        
+        for(Node node : m_nodes) {
             if (node != null) {
                 double percent = node.getPercentAvail(endTime, rollingWindow);
                 String nodeName = node.getName();
@@ -652,12 +494,12 @@ public class AvailabilityData extends Object {
                     log.debug("Node " + nodeName + " " + percent + "%");
                 }
                 if (percent < 100.0) {
-                    List tmp = (List) percentNode.get(new Double(percent));
-                    if (tmp == null) {
-                        tmp = new ArrayList();
+                    List<String> nodeNames = percentNode.get(new Double(percent));
+                    if (nodeNames == null) {
+                        nodeNames = new ArrayList<String>();
                     }
-                    tmp.add(nodeName);
-                    percentNode.put(new Double(percent), tmp);
+                    nodeNames.add(nodeName);
+                    percentNode.put(new Double(percent), nodeNames);
                 }
             }
         }
@@ -680,9 +522,9 @@ public class AvailabilityData extends Object {
      */
     private void populateNodesFromDB(
             org.opennms.netmgt.config.categories.Category cat,
-            List monitoredServices) throws SQLException,
+            List<String> monitoredServices) throws SQLException,
             FilterParseException, Exception {
-        m_nodes = new ArrayList();
+        m_nodes = new ArrayList<Node>();
         org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
 
         log.debug("in populateNodesFromDB");
@@ -690,16 +532,16 @@ public class AvailabilityData extends Object {
         initialiseConnection();
         // Prepare the statement to get service entries for each IP
         PreparedStatement servicesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
-        // Prepared statement to get node info for an ip
+        // Prepared statement to get node info for an IP
         PreparedStatement ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
         // Prepared statement to get outages entries
         PreparedStatement outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
 
         /*
-         * Tet the rule for this category, get the list of nodes that satisfy
+         * Get the rule for this category, get the list of nodes that satisfy
          * this rule.
          */
-        m_catComment = cat.getComment();
+
         String filterRule = m_commonRule;
 
         if (log.isDebugEnabled()) {
@@ -709,7 +551,7 @@ public class AvailabilityData extends Object {
         String ip = null;
         ResultSet ipRS = null;
         try {
-            List nodeIPs = FilterDaoFactory.getInstance().getIPList(filterRule);
+            List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(filterRule);
 
             if (log.isDebugEnabled()) {
                 log.debug("Number of IPs satisfying rule: " + nodeIPs.size());
@@ -719,7 +561,7 @@ public class AvailabilityData extends Object {
              * For each of these IP addresses, get the details from the
              * ifServices and services tables.
              */
-            Iterator ipIter = nodeIPs.iterator();
+            Iterator<String> ipIter = nodeIPs.iterator();
             while (ipIter.hasNext()) {
                 ip = (String) ipIter.next();
 
@@ -731,9 +573,6 @@ public class AvailabilityData extends Object {
                     int nodeid = ipRS.getInt(1);
                     String nodeName = ipRS.getString(2);
 
-                    // if(log.isDebugEnabled())
-                    // log.debug("IP->node info lookup result: " + nodeid);
-
                     // get the services for this IP address
                     ResultSet svcRS = null;
                     servicesGetStmt.setLong(1, nodeid);
@@ -744,7 +583,7 @@ public class AvailabilityData extends Object {
 
                     // create node objects for this nodeID/IP/service
                     while (svcRS.next()) {
-                        // read data from the resultset
+                        // read data from the resultSet
                         int svcid = svcRS.getInt(1);
                         String svcname = svcRS.getString(2);
 
@@ -752,11 +591,7 @@ public class AvailabilityData extends Object {
                          * If the list is empty, we assume all services are
                          * monitored. If it has any, we use it as a filter
                          */
-                        if (monitoredServices.isEmpty()
-                                || monitoredServices.contains(svcname)) {
-                            // if(log.isDebugEnabled())
-                            // log.debug("services result: " + nodeid + "\t" +
-                            // ip + "\t" + svcname);
+                        if (monitoredServices.isEmpty() || monitoredServices.contains(svcname)) {
 
                             OutageSvcTimesList outageSvcTimesList = new OutageSvcTimesList();
                             getOutagesNodeIpSvc(nodeid, nodeName, ip, svcid,
@@ -851,10 +686,7 @@ public class AvailabilityData extends Object {
         org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
         // Get outages for this node/ip/svc pair
         try {
-            // if (log.isDebugEnabled())
-            // log.debug("Node " + nodeid + " ipaddr " + ipaddr + " serviceid
-            // "
-            // + serviceid);
+
             outagesGetStmt.setInt(1, nodeid);
             outagesGetStmt.setString(2, ipaddr);
             outagesGetStmt.setInt(3, serviceid);
@@ -862,7 +694,7 @@ public class AvailabilityData extends Object {
             ResultSet rs = outagesGetStmt.executeQuery();
 
             if (m_nodes != null && m_nodes.size() > 0) {
-                ListIterator lstIter = m_nodes.listIterator();
+                ListIterator<Node> lstIter = m_nodes.listIterator();
                 boolean foundFlag = false;
                 Node oldNode = null;
                 while (lstIter.hasNext()) {
@@ -926,7 +758,7 @@ public class AvailabilityData extends Object {
     public void addNode(String nodeName, int nodeid, String ipaddr,
             String serviceid, long losttime, long regainedtime) {
         if (m_nodes == null) {
-            m_nodes = new ArrayList();
+            m_nodes = new ArrayList<Node>();
         } else {
             if (m_nodes.size() <= 0) {
                 Node newNode = new Node(nodeName, nodeid);
@@ -948,9 +780,9 @@ public class AvailabilityData extends Object {
             {
                 Node newNode = null;
                 boolean foundFlag = false;
-                ListIterator lstIter = m_nodes.listIterator();
+                ListIterator<Node> lstIter = m_nodes.listIterator();
                 while (lstIter.hasNext()) {
-                    newNode = (Node) lstIter.next();
+                    newNode = lstIter.next();
                     if (newNode.getNodeID() == nodeid) {
                         foundFlag = true;
                         break;

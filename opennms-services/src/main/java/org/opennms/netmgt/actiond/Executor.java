@@ -68,12 +68,12 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The input queue of runnable commands.
      */
-    private FifoQueue m_execQ;
+    private FifoQueue<String> m_execQ;
 
     /**
      * The list of outstanding commands.
      */
-    private List m_processes;
+    private List<DatedProc> m_processes;
 
     /**
      * The maximum time that a command can execute.
@@ -213,9 +213,9 @@ final class Executor implements Runnable, PausableFiber {
                 // 1/5 of the maximum run time.
                 //
                 synchronized (m_processes) {
-                    Iterator i = m_processes.iterator();
+                    Iterator<DatedProc> i = m_processes.iterator();
                     while (i.hasNext()) {
-                        DatedProc dp = (DatedProc) i.next();
+                        DatedProc dp = i.next();
                         try {
                             int rc = dp.getProcess().exitValue();
 
@@ -296,7 +296,7 @@ final class Executor implements Runnable, PausableFiber {
         // get the processing elements.
         //
         StringBuffer buf = new StringBuffer();
-        List args = new ArrayList(5);
+        List<String> args = new ArrayList<String>(5);
         char[] chars = cmd.toCharArray();
 
         boolean dquoted = false;
@@ -345,7 +345,7 @@ final class Executor implements Runnable, PausableFiber {
         // Convert to string array
         //
         String[] results = new String[args.size()];
-        return (String[]) args.toArray(results);
+        return args.toArray(results);
     }
 
     /**
@@ -359,8 +359,8 @@ final class Executor implements Runnable, PausableFiber {
      *            The maximum runtime of a process.
      * 
      */
-    Executor(FifoQueue execQ, long maxRunTime, int maxProcesses) {
-        m_processes = Collections.synchronizedList(new LinkedList());
+    Executor(FifoQueue<String> execQ, long maxRunTime, int maxProcesses) {
+        m_processes = Collections.synchronizedList(new LinkedList<DatedProc>());
         m_execQ = execQ;
         m_maxWait = maxRunTime;
         m_worker = null;
@@ -436,7 +436,7 @@ final class Executor implements Runnable, PausableFiber {
             //
             String cmd = null;
             try {
-                cmd = (String) m_execQ.remove(1000);
+                cmd = m_execQ.remove(1000);
                 if (cmd == null) // status check time
                 {
                     continue; // goto top of loop

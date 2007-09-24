@@ -55,7 +55,7 @@ import java.util.Iterator;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class IPPollRange implements Iterable {
+final class IPPollRange implements Iterable<IPPollAddress> {
     /**
      * The range to cycle over.
      */
@@ -83,13 +83,13 @@ final class IPPollRange implements Iterable {
      * @see java.util.Iterator
      * @see java.util.Enumeration
      */
-    final class IPPollRangeGenerator implements Enumeration, Iterator {
+    final class IPPollRangeGenerator implements Enumeration<IPPollAddress>, Iterator<IPPollAddress> {
         /**
          * <P>
          * The range of address to generate.
          * </P>
          */
-        private Enumeration m_range;
+        private Enumeration<InetAddress> m_range;
 
         /**
          * <P>
@@ -99,7 +99,7 @@ final class IPPollRange implements Iterable {
          * @param en
          *            The Enumeration to use for address generation.
          */
-        public IPPollRangeGenerator(Enumeration en) {
+        public IPPollRangeGenerator(Enumeration<InetAddress> en) {
             m_range = en;
         }
 
@@ -121,7 +121,7 @@ final class IPPollRange implements Iterable {
          * @exception java.util.NoSuchElementException
          *                Thrown if there are no more elements in the iteration.
          */
-        public Object nextElement() {
+        public IPPollAddress nextElement() {
             return new IPPollAddress((InetAddress) m_range.nextElement(), m_timeout, m_retries);
         }
 
@@ -144,7 +144,7 @@ final class IPPollRange implements Iterable {
          * @exception java.util.NoSuchElementException
          *                Thrown if there are no more elements in the iteration.
          */
-        public Object next() {
+        public IPPollAddress next() {
             return nextElement();
         }
 
@@ -275,7 +275,7 @@ final class IPPollRange implements Iterable {
      * pollable addresses.
      * </P>
      */
-    Enumeration elements() {
+    Enumeration<IPPollAddress> elements() {
         return new IPPollRangeGenerator(m_range.elements());
     }
 
@@ -285,7 +285,7 @@ final class IPPollRange implements Iterable {
      * pollable address information.
      * </P>
      */
-    public Iterator iterator() {
+    public Iterator<IPPollAddress> iterator() {
         return new IPPollRangeGenerator(m_range.elements());
     }
 }
