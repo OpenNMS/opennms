@@ -67,16 +67,16 @@
 <p>
   Possible causes could be that the database is not responding,
   the OpenNMS application has stopped or is not running, or there
-  is an issue with Tomcat.
+  is an issue with the servlet container.
 </p>
 
 <p>
   You can try going to the main page and hitting "refresh"
   in your browser, but there is a good chance that will have
-  no effect. Please bring this to the attention of the person
-  responsible for maintaining OpenNMS for your organization, and
-  have them insure that OpenNMS, Tomcat and the database are all
-  running without errors.
+  no effect. Please bring this message to the attention of the
+  person responsible for maintaining OpenNMS for your organization,
+  and have them insure that OpenNMS, the external servlet container
+  (if applicable), and the database are all running without errors.
 </p>
 
 <h3>Error Details</h3>
