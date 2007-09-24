@@ -1448,11 +1448,11 @@
     <severity>Normal</severity>
   </event> 
   <event>
+    <uei>uei.opennms.org/internal/discoveryConfigChange</uei>
+    <event-label>OpenNMS-defined internal event: discovery configuration changed</event-label>
     <descr>
       This event is sent by the WebUI or the user when discovery configuration has changed and should be reloaded
     </descr>
-    <uei>uei.opennms.org/internal/discoveryConfigChange</uei>
-    <event-label>OpenNMS-defined internal event: discovery configuration changed</event-label>
     <logmsg dest='logndisplay'>
       The discovery configuration has been changed and should be reloaded
     </logmsg>
@@ -1512,11 +1512,11 @@
   </event>
   
   <event>
+    <uei>uei.opennms.org/internal/promoteQueueData</uei>
+    <event-label>A request has been made promote data from the RRD Queue</event-label>
     <descr>
       This event is generated to invoke the promotion data of the Queueing RRD Strategy.
     </descr>
-    <uei>uei.opennms.org/internal/promoteQueueData</uei>
-    <event-label>A request has been made promote data from the RRD Queue</event-label>
     <logmsg dest='logndisplay'>
       A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
     </logmsg>
