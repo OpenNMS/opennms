@@ -63,6 +63,18 @@ public class DatabasePopulator {
 
     public void populateDatabase() {
         OnmsDistPoller distPoller = createDistPoller("localhost", "127.0.0.1");
+        
+        
+        OnmsCategory ac = new OnmsCategory("DEV_AC");
+        OnmsCategory mid = new OnmsCategory("IMP_mid");
+        OnmsCategory ops = new OnmsCategory("OPS_Online");
+        
+        getCategoryDao().save(ac);
+        getCategoryDao().save(mid);
+        getCategoryDao().save(ops);
+
+        getCategoryDao().flush();
+
 
         createServiceType("ICMP");
         createServiceType("SNMP");
@@ -72,6 +84,9 @@ public class DatabasePopulator {
         
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
+        builder.addCategory(ac);
+        builder.addCategory(mid);
+        builder.addCategory(ops);
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
@@ -86,6 +101,7 @@ public class DatabasePopulator {
         getNodeDao().flush();
         
         builder.addNode("node2").setForeignSource("imported:").setForeignId("2");
+        builder.addCategory(mid);
         builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -98,6 +114,7 @@ public class DatabasePopulator {
         getNodeDao().flush();
         
         builder.addNode("node3").setForeignSource("imported:").setForeignId("3");
+        builder.addCategory(ops);
         builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -110,6 +127,7 @@ public class DatabasePopulator {
         getNodeDao().flush();
         
         builder.addNode("node4").setForeignSource("imported:").setForeignId("4");
+        builder.addCategory(ac);
         builder.addInterface("192.168.4.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -123,6 +141,7 @@ public class DatabasePopulator {
 
         //This node purposely doesn't have a foreignId style assetNumber
         builder.addNode("alternate-node1").getAssetRecord().setAssetNumber("5");
+        builder.addCategory(ac);
         builder.addInterface("10.1.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -136,6 +155,7 @@ public class DatabasePopulator {
         
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
         builder.addNode("alternate-node2").getAssetRecord().setDisplayCategory("category1");
+        builder.addCategory(ac);
         builder.addInterface("10.1.2.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));

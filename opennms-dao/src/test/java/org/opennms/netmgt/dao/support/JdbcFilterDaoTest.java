@@ -92,6 +92,26 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         }
         ta.verifyAnticipated();
     }
+    
+    public void testWithManyCatIncAndServiceIdentifiersInRules() throws Exception {
+        JdbcFilterDao dao = new JdbcFilterDao();
+        dao.setDataSource(getDataSource());
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        
+        dao.afterPropertiesSet();
+        
+        // node1 has all the categories and an 192.168.1.1
+        
+        String rule = "(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == 1) & (ipAddr == '192.168.1.1') & (serviceName == 'ICMP')" ;
+        
+        assertTrue(dao.isRuleMatching(rule));
+
+        // node2 doesn't have all the categories but does have 192.168.2.1
+        
+        String rule2 = "(catincIMP_mid) & (catincDEV_AC) & (catincOPS_Online) & (nodeId == 2) & (ipAddr == '192.168.2.1') & (serviceName == 'ICMP')" ;
+
+        assertFalse(dao.isRuleMatching(rule2));
+    }
 
     public void testAfterPropertiesSetNoSchemaFactory() {
         ThrowableAnticipator ta = new ThrowableAnticipator();

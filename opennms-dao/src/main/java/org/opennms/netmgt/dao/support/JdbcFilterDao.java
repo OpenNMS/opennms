@@ -365,6 +365,8 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         
         String sql = translation.getStatement();
         
+        
+        
         Connection conn = null;
         
         try {
@@ -394,7 +396,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             return matches;
         } catch (SQLException e) {
-            log().info("SQL Exception occured query results: " + e, e);
+            log().warn("SQL Exception occured testing rule \""+ rule + "\" ("+sql+") for matching results: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (Exception e) {
             log().fatal("Exception getting database connection: " + e, e);

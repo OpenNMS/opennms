@@ -162,4 +162,8 @@ public class NetworkBuilder {
 		return m_currentNode;
 	}
 
+    public void addCategory(OnmsCategory cat) {
+        m_currentNode.addCategory(cat);
+    }
+
 }
