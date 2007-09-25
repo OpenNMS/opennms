@@ -154,7 +154,7 @@ final class TcpStreamHandler implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            Category log = ThreadCategory.getInstance(getClass());
+            Category log = log();
             if (log.isDebugEnabled())
                 log.debug("Interrupting and joining the thread context " + m_context.getName());
 
@@ -179,25 +179,22 @@ final class TcpStreamHandler implements Runnable {
             m_context.notifyAll();
         }
 
-        // get a category
-        // 
-        Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
+        boolean isTracing = log().isDebugEnabled();
 
         // check the stop flag
         //
         if (m_stop) {
             if (isTracing)
-                log.debug("The stop flag was set prior to thread entry, closing connection");
+                log().debug("The stop flag was set prior to thread entry, closing connection");
             try {
                 m_connection.close();
             } catch (IOException e) {
                 if (isTracing)
-                    log.debug("An error occured while closing the connection", e);
+                    log().error("An error occured while closing the connection", e);
             }
 
             if (isTracing)
-                log.debug("Thread context exiting");
+                log().debug("Thread context exiting");
 
             return;
         }
@@ -206,7 +203,7 @@ final class TcpStreamHandler implements Runnable {
         //
         InetAddress sender = m_connection.getInetAddress();
         if (isTracing) {
-            log.debug("Event Log Stream Handler Started for " + sender);
+            log().debug("Event Log Stream Handler Started for " + sender);
         }
 
         // This linked list is used to exchange
@@ -225,7 +222,7 @@ final class TcpStreamHandler implements Runnable {
             try {
                 tchunker.wait();
             } catch (InterruptedException e) {
-                log.error("The thread was interrupted", e);
+                log().error("The thread was interrupted", e);
             }
         }
 
@@ -239,7 +236,7 @@ final class TcpStreamHandler implements Runnable {
                         try {
                             pipeXchange.wait(500);
                         } catch (InterruptedException e) {
-                            log.error("The thread was interrupted", e);
+                            log().error("The thread was interrupted", e);
                             break MAINLOOP;
                         }
                     } else {
@@ -259,7 +256,7 @@ final class TcpStreamHandler implements Runnable {
                 try {
                     pipeIn = new PipedInputStream((PipedOutputStream) o);
                 } catch (IOException e) {
-                    log.error("An I/O exception occured construction a record reader", e);
+                    log().error("An I/O exception occured construction a record reader", e);
                     break MAINLOOP;
                 }
 
@@ -286,13 +283,13 @@ final class TcpStreamHandler implements Runnable {
             boolean doCleanup = false;
             try {
                 eLog = (Log) Unmarshaller.unmarshal(Log.class, in);
-                if (log.isDebugEnabled())
-                    log.debug("Event record converted");
+                if (log().isDebugEnabled())
+                    log().debug("Event record converted");
             } catch (ValidationException e) {
-                log.debug("The XML record is not valid", new ValidationException(e.getMessage()));
+                log().error("The XML record is not valid", new ValidationException(e.getMessage()));
                 doCleanup = true;
             } catch (MarshalException e) {
-                log.debug("Could not unmarshall the XML record", new MarshalException(e.getMessage()));
+                log().error("Could not unmarshall the XML record", new MarshalException(e.getMessage()));
                 doCleanup = true;
             }
 
@@ -393,7 +390,7 @@ final class TcpStreamHandler implements Runnable {
                             //
                             try {
                                 if (isTracing)
-                                    log.debug("handling event, uei = " + events[ndx].getUei());
+                                    log().debug("handling event, uei = " + events[ndx].getUei());
 
                                 // shortcut and BOTH parts MUST execute!
                                 //
@@ -403,7 +400,7 @@ final class TcpStreamHandler implements Runnable {
                                     }
                                 }
                             } catch (Throwable t) {
-                                log.warn("An exception occured while processing an event", t);
+                                log().warn("An exception occured while processing an event", t);
                             }
                         }
 
@@ -446,7 +443,7 @@ final class TcpStreamHandler implements Runnable {
                                 try {
                                     hdl.receiptSent(receipt);
                                 } catch (Throwable t) {
-                                    log.warn("An exception occured while processing an event receipt", t);
+                                    log().warn("An exception occured while processing an event receipt", t);
                                 }
 
                             } // end iteration over handler list.
@@ -454,61 +451,65 @@ final class TcpStreamHandler implements Runnable {
                         } // end synchronization
 
                         if (isTracing) {
-                            log.debug("Sending Event Receipt {");
+                            log().debug("Sending Event Receipt {");
                             StringWriter swriter = new StringWriter();
                             try {
                                 Marshaller.marshal(receipt, swriter);
                             } catch (Exception e) {
-                                log.debug("An error occured during marshalling", e);
+                                log().error("An error occured during marshalling", e);
                             }
-                            log.debug(swriter.getBuffer().toString());
-                            log.debug("}");
+                            log().debug(swriter.getBuffer().toString());
+                            log().debug("}");
                         }
                     } catch (ValidationException e) {
-                        log.warn("Failed to send event-receipt XML document", e);
+                        log().warn("Failed to send event-receipt XML document", e);
                         break MAINLOOP;
                     } catch (MarshalException e) {
-                        log.warn("Failed to send event-receipt XML document", e);
+                        log().warn("Failed to send event-receipt XML document", e);
                         break MAINLOOP;
                     } catch (IOException e) {
-                        log.warn("Failed to send event-receipt XML document", e);
+                        log().warn("Failed to send event-receipt XML document", e);
                         break MAINLOOP;
                     }
                 }
             } else if (isTracing) {
-                log.debug("The agent sent an empty event stream");
+                log().debug("The agent sent an empty event stream");
             }
 
         } // end main loop
 
         try {
             if (isTracing)
-                log.debug("stopping record handler");
+                log().debug("stopping record handler");
 
             chunker.stop();
 
             if (isTracing)
-                log.debug("record handler stopped");
+                log().debug("record handler stopped");
         } catch (InterruptedException e) {
-            log.warn("The thread was interrupted while trying to close the record handler", e);
+            log().warn("The thread was interrupted while trying to close the record handler", e);
         }
 
         // regardless of any errors, be sure to release the socket.
         //
         try {
             if (isTracing)
-                log.debug("closing connnection");
+                log().debug("closing connnection");
 
             m_connection.close();
 
             if (isTracing)
-                log.debug("connnection closed ");
+                log().debug("connnection closed ");
         } catch (IOException e) {
-            log.warn("An I/O exception occured while closing the TCP/IP connection", e);
+            log().warn("An I/O exception occured while closing the TCP/IP connection", e);
         }
 
         if (isTracing)
-            log.debug("Thread exiting");
+            log().debug("Thread exiting");
 
     } // end run
+
+	private Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
 }
