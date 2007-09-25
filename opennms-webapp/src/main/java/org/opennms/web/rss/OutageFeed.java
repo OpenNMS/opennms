@@ -54,10 +54,10 @@ public class OutageFeed extends AbstractFeed {
                 entry.setPublishedDate(summary.getTimeDown());
                 
                 if (summary.getTimeUp() == null) {
-                    entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()));
+                    entry.setTitle(sanitizeTitle(summary.getNodeLabel()));
                     entry.setUpdatedDate(summary.getTimeDown());
                 } else {
-                    entry.setTitle("outage: " + sanitizeTitle(summary.getNodeLabel()) + " (resolved)");
+                    entry.setTitle(sanitizeTitle(summary.getNodeLabel()) + " (resolved)");
                     entry.setUpdatedDate(summary.getTimeUp());
                 }
                 entry.setLink(link);
