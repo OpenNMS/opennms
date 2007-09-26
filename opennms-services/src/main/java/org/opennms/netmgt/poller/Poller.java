@@ -701,9 +701,9 @@ public class Poller extends AbstractServiceDaemon {
         }
         try {
             IcmpPlugin p = new IcmpPlugin();
-            Map<String, Integer> map = new HashMap<String, Integer>();
-            map.put("retry", new Integer(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
-            map.put("timeout", new Integer(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("retry", new Long(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
+            map.put("timeout", new Long(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
 
             result = p.isProtocolSupported(addr, map);
         } catch (IOException e) {
