@@ -65,14 +65,14 @@ public class ParameterMap extends Object {
 
         if (oValue != null && oValue instanceof String) {
             try {
-                value = Integer.parseInt((String) oValue);
+                value = Long.parseLong((String) oValue);
             } catch (NumberFormatException ne) {
                 value = defValue;
                 ThreadCategory.getInstance(ParameterMap.class).info("getLongByKey: Failed to convert value " + oValue + " for key " + key);
             }
             map.put(key, new Long(value));
         } else if (oValue != null) {
-            value = ((Long) oValue).longValue();
+            value = ((Number) oValue).longValue();
         }
         return value;
 	}
