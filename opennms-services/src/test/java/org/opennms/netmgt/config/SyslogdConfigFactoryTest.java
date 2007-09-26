@@ -51,7 +51,7 @@ public class SyslogdConfigFactoryTest extends TestCase {
     
     public SyslogdConfigFactoryTest() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/main/test/org/opennms/netmgt/test-configurations/opennms/");
+        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
     }
 
@@ -65,7 +65,7 @@ public class SyslogdConfigFactoryTest extends TestCase {
 
         DataSourceFactory.setInstance(db);
 
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/test-configurations/opennms/etc/syslogd-configuration.xml");
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/etc/syslogd-configuration.xml");
         m_factory = new SyslogdConfigFactory(rdr);
         rdr.close();
     }
