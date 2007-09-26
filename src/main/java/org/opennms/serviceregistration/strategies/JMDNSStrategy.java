@@ -40,7 +40,6 @@ public class JMDNSStrategy implements ServiceRegistrationStrategy {
 		if (registered == true) {
 			if (jmdns != null && si != null) {
 				jmdns.unregisterService(si);
-				jmdns.close();
 				registered = false;
 			} else {
 				System.err.println("WARNING: unregister() has been called, but registration previously failed.");

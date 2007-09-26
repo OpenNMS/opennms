@@ -1,8 +1,8 @@
 package org.opennms.serviceregistration;
 
 import org.opennms.serviceregistration.strategies.AppleStrategy;
-import org.opennms.serviceregistration.strategies.JMDNSStrategy;
 import org.opennms.serviceregistration.strategies.NullStrategy;
+/* import org.opennms.serviceregistration.strategies.JMDNSStrategy; */
 
 public class ServiceRegistrationFactory {
 	private static ServiceRegistrationStrategy s;
@@ -18,6 +18,7 @@ public class ServiceRegistrationFactory {
 				// we try the next thing then
 			}
 		}
+		/*
 		if (s == null) {
 			try {
 				s = new JMDNSStrategy();
@@ -25,6 +26,7 @@ public class ServiceRegistrationFactory {
 				// we try the next thing then
 			}
 		}
+		*/
 		if (s == null) {
 			s = new NullStrategy();
 		}
