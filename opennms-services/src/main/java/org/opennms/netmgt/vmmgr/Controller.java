@@ -104,8 +104,9 @@ public class Controller {
     
     /**
      * Default read timeout for HTTP requests in milliseconds.
+     * The default is zero which means wait forever.
      */
-    private static final int DEFAULT_HTTP_REQUEST_READ_TIMEOUT = 30000;
+    private static final int DEFAULT_HTTP_REQUEST_READ_TIMEOUT = 0;
     
     private boolean m_verbose = false;
     private String m_invokeUrl = DEFAULT_INVOKER_URL;
