@@ -98,7 +98,7 @@ fi
 show_help () {
     cat <<END
 
-Usage: $0 [-n] [-t] [-v] [-Q] <command> [<service>]
+Usage: $0 [-n] [-t] [-c timeout] [-v] [-Q] <command> [<service>]
  
   command options: start|stop|restart|status|check|pause|resume|kill
 
@@ -109,6 +109,7 @@ Usage: $0 [-n] [-t] [-v] [-Q] <command> [<service>]
 
     -n    "No execute" mode.  Don't call Java to do anything.
     -t    Test mode.  Enable JPDA on port 8001.
+    -c    Controller HTTP connection timeout in seconds.
     -v    Verbose mode.  When used with the "status" command, gives the
           results for all OpenNMS services.  When used with "start", enables
           some verbose debugging, such as details on garbage collection.
@@ -216,7 +217,7 @@ doStart(){
 	echo "begin ulimit settings:" >> "$REDIRECT"
 	ulimit -a >> "$REDIRECT"
 	echo "end ulimit settings" >> "$REDIRECT"
-	CMD="$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
+	CMD="$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 	echo "Executing command: $CMD" >> "$REDIRECT"
 	$CMD >>"$REDIRECT" 2>&1 &
 	OPENNMS_PID=$!
@@ -255,7 +256,7 @@ doPause(){
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL pause $SERVICE"
 	if [ -z "$NOEXECUTE" ]; then
-	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
     else
 	echo "OpenNMS is not running."
@@ -267,7 +268,7 @@ doResume(){
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL resume $SERVICE"
 	if [ -z "$NOEXECUTE" ]; then
-	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
     else
 	echo "OpenNMS is not running."
@@ -304,7 +305,7 @@ doStop() {
 	if [ -z "$NOEXECUTE" ]; then
 	    APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	    APP_PARMS_BEFORE="-u $INVOKE_URL stop $SERVICE"
-	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
 
 	sleep 5
@@ -319,7 +320,7 @@ doKill(){
     if doStatus; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL exit"
-	$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
     fi
 
     pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
@@ -342,7 +343,7 @@ doStatus(){
     if [ -z "$NOEXECUTE" ]; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL $STATUS_VERBOSE status"
-	$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
     fi
 }
 
@@ -433,8 +434,11 @@ VERBOSE=0
 
 NAME="opennms"
 
-while getopts ntvQ c; do
+while getopts c:ntvQ c; do
     case $c in
+	c)
+	    APP_PARMS_CONTROLLER="$APP_PARMS_CONTROLLER -t $OPTARG"
+	    ;;
 	n)
 	    NOEXECUTE="foo"
 	    ;;
