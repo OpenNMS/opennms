@@ -59,7 +59,7 @@ public class SyslogdTest extends OpenNMSTestCase {
 
     public SyslogdTest() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/resources/org/opennms/netmgt/test-configurations/opennms");
+        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
     }
 
