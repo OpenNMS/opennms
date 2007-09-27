@@ -26,9 +26,11 @@
     as such it only has to be built once, instead of for each platform.</para>
 
     <para>However, now jicmp has to be installed. The goal is to provide
-    packages for most distributions. For RPM-based distros, the source code
-    tarball can be <ulink
-    url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=240236">fetched
+    packages for most distributions via our online repositories. If packages
+    are not yet available for your distribution, you will need to build jicmp
+    from source. For RPM-based Linux distributions, the source code tarball can
+    be
+    <ulink url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=240236">fetched
     from Sourceforge</ulink>, and the command</para>
 
     <para><programlisting>rpmbuild -tb [source tarball filename]</programlisting></para>
