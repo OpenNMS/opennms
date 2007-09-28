@@ -36,11 +36,14 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -156,5 +159,28 @@ public final class DiscoveryConfigFactory {
      */
     public synchronized DiscoveryConfiguration getConfiguration() {
         return m_config;
+    }
+    
+    /**
+     * @param xml
+     * @throws IOException
+     */
+    protected void saveXml(String xml) throws IOException {
+        if (xml != null) {
+            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME));
+            fileWriter.write(xml);
+            fileWriter.flush();
+            fileWriter.close();
+        }
+    }
+    public synchronized void saveConfiguration(DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {
+        // marshall to a string first, then write the string to the file. This
+        // way the original config
+        // isn't lost if the xml from the marshall is hosed.
+        StringWriter stringWriter = new StringWriter();
+        Marshaller.marshal(configuration, stringWriter);
+        String xml = stringWriter.toString();
+        ThreadCategory.getInstance(DiscoveryConfigFactory.class).debug("saving configuration... \n");
+        saveXml(xml);
     }
 }
