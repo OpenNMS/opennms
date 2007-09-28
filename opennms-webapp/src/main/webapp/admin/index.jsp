@@ -135,6 +135,7 @@
     <h3>Options</h3>
     <div class="boxWrapper">
       <ul class="plain">  
+        <li><a href="admin/discovery/index.jsp">Configure Discovery</a></li>
         <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a></li>
         <!-- <a href="admin/eventconf/list.jsp">Configure Events</a> -->
         <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
@@ -178,6 +179,10 @@
   <div class="TwoColRight">
       <h3>Option Descriptions</h3>
       <div class="boxWrapper">
+        <p><b>Configure Discovery</b> allows you, the Administrator, to add or delete
+            ip address specific and range to discover. 
+        </p>   
+              
         <p><b>Configure Users and Groups</b> allows you, the Administrator, to add, modify or delete
             existing users.   If adding or modifying users, be prepared with user
             IDs, passwords, notification contact information (pager numbers and/or

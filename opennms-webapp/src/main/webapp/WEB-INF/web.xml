@@ -358,6 +358,16 @@
     </init-param>
   </servlet>
   
+  <!-- Servlet for modify Discovery configuration service -->
+  <servlet>
+    <servlet-name>actionDiscovery</servlet-name>
+    <servlet-class>org.opennms.web.admin.discovery.ActionDiscoveryServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>modifyDiscoveryConfig</servlet-name>
+    <servlet-class>org.opennms.web.admin.discovery.ModifyDiscoveryConfigurationServlet</servlet-class>
+  </servlet>  
+  
   <servlet>
     <servlet-name>importAssets</servlet-name>
     <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
@@ -949,6 +959,17 @@
     <servlet-name>nodeLabelChange</servlet-name>
     <url-pattern>/admin/nodeLabelChange</url-pattern>
   </servlet-mapping>
+  
+    <!--servlet mapping for restart discovery servlet-->
+  <servlet-mapping>
+    <servlet-name>actionDiscovery</servlet-name>
+    <url-pattern>/admin/discovery/actionDiscovery</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>modifyDiscoveryConfig</servlet-name>
+    <url-pattern>/admin/discovery/modifyDiscoveryConfig</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>modifyAsset</servlet-name>
     <url-pattern>/asset/modifyAsset</url-pattern>
