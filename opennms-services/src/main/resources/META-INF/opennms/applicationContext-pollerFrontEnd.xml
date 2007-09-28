@@ -28,7 +28,8 @@
 	</bean>
     
     <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-	  <property name="triggers">
+      <property name="schedulerName" value="PollerFrontEnd" />
+      <property name="triggers">
 	    <list><ref bean="configCheckTrigger"/></list>
 	  </property>
     </bean>

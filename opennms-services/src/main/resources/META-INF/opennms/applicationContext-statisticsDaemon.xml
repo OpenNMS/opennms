@@ -24,7 +24,11 @@
       <property name="reportDefinitionBuilder" ref="reportDefinitionBuilder"/>
     </bean>
 
-    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="schedulerName" value="Statsd" />
+    </bean>
+    
+    
 	
     <tx:annotation-driven/>
 </beans>

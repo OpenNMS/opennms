@@ -41,6 +41,7 @@
 	</bean>
 	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+      <property name="schedulerName" value="PollerBackEnd" />
 	  <property name="triggers">
 	    <list><ref bean="monitorCheckTrigger"/></list>
 	  </property>
