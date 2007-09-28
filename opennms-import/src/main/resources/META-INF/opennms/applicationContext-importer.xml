@@ -48,6 +48,7 @@
  </bean>
  
  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+   <property name="schedulerName" value="Importer" />
    <property name="triggers">
      <list><ref bean="cronImportTrigger"/></list>
    </property>
