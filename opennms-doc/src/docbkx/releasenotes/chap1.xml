@@ -4,6 +4,10 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.3.8 is (TODO: list 1.3.8 highlights)</para>
+  
+  <para>The code word for 1.3.8 is TBD</para>
+
   <para>Release 1.3.7 is probably the best OpenNMS ever released. It removes
   the need for Tomcat, adds several new features including a SmokePing clone
   called StrafePing, and includes several performance enhancements.</para>
