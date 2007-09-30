@@ -5,10 +5,11 @@
   <subtitle>Supported UNIX-like OSes</subtitle>
 
   <para>OpenNMS is written almost entirely in Java, and should be able to run
-  on any system that suuports the Java 1.4 Virtual Machine. There are
-  requirements for other programs such as PostgreSQL, Perl, RRDTool and
-  Tomcat4, but the 1.4 JDK is the key requirement (as most of the other
-  packages can be compiled from source).</para>
+  on any system that supports the Sun Java Virtual Machine (Java 1.4 for
+  OpenNMS 1.2.x, Java 5 or 6 for OpenNMS 1.3.x). There are
+  requirements for other programs such as PostgreSQL, Perl, and (for OpenNMS
+  1.2.x) Tomcat 4 and RRDTool, but the JDK is the key requirement as most of
+  the other packages can be compiled from source.</para>
 
   <para>The following are the systems that support or are known to run
   OpenNMS.</para>
@@ -16,7 +17,7 @@
   <section id="chap4sect1">
     <title>Fully Supported</title>
 
-    <para>The following Linux distributions and other unix-like systems are
+    <para>The following Linux distributions and other Unix-like systems are
     supported out-of-the-box with native installation packages.</para>
 
     <bridgehead>Red Hat Enterprise Linux 3, Red Hat Enterprise Linux 4 and Red
@@ -32,7 +33,7 @@
     <bridgehead>SuSE 9 and SuSE 10</bridgehead>
 
     <formalpara>
-      <title>Debian</title>
+      <title>Debian and Ubuntu</title>
 
       <para>Debian stable (1.2.x) packages (for Sarge and later) are available
       at the following apt-repository: <programlisting>deb http://debian.opennms.org/ stable main</programlisting>.
@@ -41,6 +42,13 @@
 	  For more instructions see this <ulink
       url="http://opennms.netstatz.com/Debian_ONMS_HOWTO.html#toc2">How-To</ulink>
       written by Ian MacDonald.</para>
+      
+      <para>These same packages and apt-repositories should work equally well with
+      recent Ubuntu releases. The unstable (1.3.x) packages in particular are
+      tested to work with Ubuntu releases 6.10 (Edgy Eft) and 7.04 (Feisty Fawn).
+      The lack of a <programlisting>sun-java5-jdk</programlisting> package in any
+      official repository for LTS release 6.06 (Dapper Drake) disqualifies this
+      release as a viable target for official OpenNMS packages. 
     </formalpara>
 
     <formalpara>
@@ -65,11 +73,11 @@
   <section id="chap4sect2">
     <title>Officially Unsupported</title>
 
-    <para>OpenNMS 1.3.2 requires Java 5 (a 1.5 JDK), Tomcat 5.5, RRDTool 1.2
-    and PostgreSQL 7.4. Any operating system that can support these
-    dependencies should be able to run OpenNMS. However, since a lot of the
-    older distributions do not support packages for these applications it will
-    be much harder to get them installed, and so they are not officially
+    <para>OpenNMS 1.3.7 requires Java 5 (a 1.5 JDK), RRDTool 1.2 (for
+    optional features), and PostgreSQL 7.4, 8.1, or 8.2. Any operating system
+    that can support these dependencies should be able to run OpenNMS. However,
+    since many older distributions do not support packages for these applications
+    it will be much harder to get them installed, and so they are not officially
     supported.</para>
 
     <para>A number of distributions that used to be supported are still able
