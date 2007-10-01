@@ -99,7 +99,7 @@ public class Linkd extends AbstractServiceDaemon {
     /**
      * The Db connection read and write handler
      */
-    private QueryManager m_queryMgr = new DbEventWriter();    
+    private QueryManager m_queryMgr;
     
     /**
     * Linkd Configuration Initialization
@@ -134,8 +134,6 @@ public class Linkd extends AbstractServiceDaemon {
 					.info("init: Category Level Set to "
 							+ log().getLevel().toString());
 
-		m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
-		
 		nodes = new ArrayList<LinkableNode>();
 
 		activepackages = new ArrayList<String>();
@@ -606,5 +604,9 @@ public class Linkd extends AbstractServiceDaemon {
 		return m_scheduler.getReadyRunnable(runnable);
 		
 	}
+
+    public void setQueryManager(QueryManager queryMgr) {
+        m_queryMgr = queryMgr;
+    }
 
 }
