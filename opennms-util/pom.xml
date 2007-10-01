@@ -9,8 +9,8 @@
   <name>OpenNMS Utilities</name>
   <dependencies>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring</artifactId>
     </dependency>
   </dependencies>
 </project>
