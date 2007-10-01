@@ -97,25 +97,25 @@ public final class IfCollector implements Runnable {
     /**
      * The list of supported protocols on this interface.
      */
-    private List m_protocols;
+    private List<SupportedProtocol> m_protocols;
 
     /**
      * The list of sub-targets found via SNMP. Indexed by InetAddress
      */
-    private Map m_subTargets;
+    private Map<InetAddress, List<SupportedProtocol>> m_subTargets;
 
     /**
      * List of SnmpInt32 objects representing each of the unnamed/non-IP
      * interfaces found via SNMP
      */
-    private List m_nonIpInterfaces;
+    private List<Integer> m_nonIpInterfaces;
 
     /**
      * Boolean flag which indicates if SNMP collection is to be done.
      */
     private boolean m_doSnmpCollection;
 
-    private Set m_previouslyProbed;
+    private Set<InetAddress> m_previouslyProbed;
 
     /**
      * This class is used to encapsulate the supported protocol information
@@ -257,13 +257,13 @@ public final class IfCollector implements Runnable {
         this(pluginManager, addr, doSnmpCollection, new HashSet());
     }
 
-    IfCollector(PluginManager pluginManager, InetAddress addr, boolean doSnmpCollection, Set previouslyProbed) {
+    IfCollector(PluginManager pluginManager, InetAddress addr, boolean doSnmpCollection, Set<InetAddress> previouslyProbed) {
         m_pluginManager = pluginManager;
         m_target = addr;
         m_doSnmpCollection = doSnmpCollection;
         m_smbCollector = null;
         m_snmpCollector = null;
-        m_protocols = new ArrayList(8);
+        m_protocols = new ArrayList<SupportedProtocol>(8);
         m_subTargets = null;
         m_nonIpInterfaces = null;
         m_previouslyProbed = previouslyProbed;
@@ -279,7 +279,7 @@ public final class IfCollector implements Runnable {
     /**
      * Returns the supported protocols for this interface.
      */
-    List getSupportedProtocols() {
+    List<SupportedProtocol> getSupportedProtocols() {
         return m_protocols;
     }
 
@@ -296,7 +296,7 @@ public final class IfCollector implements Runnable {
      * {@link java.util.List lists}of supported protocols.
      * 
      */
-    Map getAdditionalTargets() {
+    Map<InetAddress, List<SupportedProtocol>> getAdditionalTargets() {
         return m_subTargets;
     }
 
@@ -311,7 +311,7 @@ public final class IfCollector implements Runnable {
      * Returns the list of non-IP interfaces..
      * 
      */
-    List getNonIpInterfaces() {
+    List<Integer> getNonIpInterfaces() {
         return m_nonIpInterfaces;
     }
 
@@ -372,9 +372,9 @@ public final class IfCollector implements Runnable {
         // First run the plugins to find out all the capabilities
         // for the interface
         //
-        Iterator iter = m_protocols.iterator();
+        Iterator<SupportedProtocol> iter = m_protocols.iterator();
         while (iter.hasNext()) {
-            SupportedProtocol proto = (SupportedProtocol) iter.next();
+            SupportedProtocol proto = iter.next();
             if (proto.getProtocolName().equalsIgnoreCase("snmp")) {
                 isSnmp = true;
             } else if (proto.getProtocolName().equalsIgnoreCase("smb")) {
@@ -413,8 +413,8 @@ public final class IfCollector implements Runnable {
                 // now probe the remaining interfaces, if any
                 //
                 if (m_snmpCollector.hasIpAddrTable() && m_snmpCollector.hasIfTable()) {
-                    m_subTargets = new TreeMap(KnownIPMgr.AddrComparator.comparator);
-                    m_nonIpInterfaces = new ArrayList();
+                    m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(KnownIPMgr.AddrComparator.comparator);
+                    m_nonIpInterfaces = new ArrayList<Integer>();
 
                     // Iterate over ifTable entries
                     //
@@ -431,7 +431,7 @@ public final class IfCollector implements Runnable {
 
                         // Get list of all IP addresses for the current ifIndex
                         //
-                        List ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries(), ifIndex.intValue());
+                        List<InetAddress> ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries(), ifIndex.intValue());
                         if (ipAddrs == null || ipAddrs.size() == 0) {
                             // Non IP interface
                             InetAddress nonIpAddr = null;
@@ -442,16 +442,16 @@ public final class IfCollector implements Runnable {
                             }
 
                             if (ipAddrs == null) {
-                                ipAddrs = new ArrayList();
+                                ipAddrs = new ArrayList<InetAddress>();
                             }
                             ipAddrs.add(nonIpAddr);
                         }
 
                         // Iterate over this interface's IP address list
                         //
-                        Iterator s = ipAddrs.iterator();
+                        Iterator<InetAddress> s = ipAddrs.iterator();
                         while (s.hasNext()) {
-                            InetAddress subtarget = (InetAddress) s.next();
+                            InetAddress subtarget = s.next();
 
                             // if the target failed to convert or if it
                             // is equal to the current target then skip it
@@ -492,7 +492,7 @@ public final class IfCollector implements Runnable {
 
                             // ok it appears to be ok, so probe it!
                             //
-                            List probelist = new ArrayList();
+                            List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
                             if (log().isDebugEnabled()) {
                                 log().debug("----------------------------------------------------------------------------------------");
                                 log().debug("ifCollector.run: probing subtarget " + subtarget.getHostAddress());
@@ -510,7 +510,7 @@ public final class IfCollector implements Runnable {
                 } // end if(ipAddrTable and ifTable entries collected)
 
                 else if (m_snmpCollector.hasIpAddrTable()) {
-                    m_subTargets = new TreeMap(KnownIPMgr.AddrComparator.comparator);
+                    m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(KnownIPMgr.AddrComparator.comparator);
 
                     List ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries());
                     // Iterate over this interface's IP address list
@@ -541,7 +541,7 @@ public final class IfCollector implements Runnable {
 
                         // ok it appears to be ok, so probe it!
                         //
-                        List probelist = new ArrayList();
+                        List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
                         if (log().isDebugEnabled()) {
                             log().debug("----------------------------------------------------------------------------------------");
                             log().debug("ifCollector.run: probing subtarget " + subtarget.getHostAddress());

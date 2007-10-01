@@ -322,7 +322,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
 
         // Retrieve the appropriate Collection object
         // 
-        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = m_collectionMap.get(cName);
         if (collection == null) {
             return new ArrayList<MibObject>();
         }
@@ -363,11 +363,11 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         // an empty Mask list matches ALL IP addresses (default is INCLUDE).
         //
         List<SystemDef> systemList = new ArrayList<SystemDef>();
-        Enumeration e = collection.getSystems().enumerateSystemDef();
+        Enumeration<SystemDef> e = collection.getSystems().enumerateSystemDef();
 
         SystemDef system = null;
         while (e.hasMoreElements()) {
-            system = (SystemDef) e.nextElement();
+            system = e.nextElement();
 
             // Match on sysoid?
             boolean bMatchSysoid = false;
@@ -408,11 +408,11 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             boolean bMatchIPAddress = true; // default is INCLUDE
             if (bMatchSysoid == true) {
                 if (anAddress != null) {
-                    List addrList = null;
-                    List maskList = null;
+                    List<String> addrList = null;
+                    List<String> maskList = null;
                     if (system.getIpList() != null) {
-                        addrList = (List) system.getIpList().getIpAddrCollection();
-                        maskList = (List) system.getIpList().getIpAddrMaskCollection();
+                        addrList = system.getIpList().getIpAddrCollection();
+                        maskList = system.getIpList().getIpAddrMaskCollection();
                     }
 
                     // If either Address list or Mask list exist then
@@ -435,9 +435,9 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
                     if (bMatchIPAddress == false) {
 
                         if (maskList != null && maskList.size() > 0) {
-                            Iterator iter = maskList.iterator();
+                            Iterator<String> iter = maskList.iterator();
                             while (iter.hasNext()) {
-                                String currMask = (String) iter.next();
+                                String currMask = iter.next();
                                 if (anAddress.indexOf(currMask) == 0) {
                                     if (log().isDebugEnabled())
                                         log().debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
@@ -461,16 +461,16 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         // SystemDefs
         List<MibObject> mibObjectList = new ArrayList<MibObject>();
 
-        Iterator i = systemList.iterator();
+        Iterator<SystemDef> i = systemList.iterator();
         while (i.hasNext()) {
-            system = (SystemDef) i.next();
+            system = i.next();
 
             // Next process each of the SystemDef's groups
-            List groupList = (List) (system.getCollect().getIncludeGroupCollection());
-            Iterator j = groupList.iterator();
+            List<String> groupList = system.getCollect().getIncludeGroupCollection();
+            Iterator<String> j = groupList.iterator();
             while (j.hasNext()) {
                 // Call processGroupName on each group within the SystemDef
-                String grpName = (String) j.next();
+                String grpName = j.next();
                 processGroupName(cName, grpName, ifType, mibObjectList);
             }
         }
@@ -504,10 +504,10 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         Category log = log();
 
         // Using the collector name retrieve the group map
-        Map groupMap = (Map) m_collectionGroupMap.get(cName);
+        Map<String, Group> groupMap = m_collectionGroupMap.get(cName);
 
         // Next use the groupName to access the Group object
-        Group group = (Group) groupMap.get(groupName);
+        Group group = groupMap.get(groupName);
 
         // Verify that we have a valid Group object...generate
         // warning message if not...
@@ -521,11 +521,11 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         }
 
         // Process any sub-groups contained within this group
-        List groupNameList = (List) group.getIncludeGroupCollection();
-        Iterator i = groupNameList.iterator();
+        List<String> groupNameList = group.getIncludeGroupCollection();
+        Iterator<String> i = groupNameList.iterator();
         while (i.hasNext()) {
             // Recursive call to process sub-groups
-            processGroupName(cName, (String) i.next(), ifType, mibObjectList);
+            processGroupName(cName, i.next(), ifType, mibObjectList);
         }
 
         // Add this group's objects to the object list provided
@@ -621,7 +621,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             if (log.isDebugEnabled()) {
                 log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are included for ifType: " + ifType);
             }
-            List objectList = (List) group.getMibObjCollection();
+            List<MibObj> objectList = group.getMibObjCollection();
             processObjectList(groupName, groupIfType, objectList, mibObjectList);
         } else {
             if (log.isDebugEnabled())
@@ -641,10 +641,10 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * @param mibObjectList
      *            List of MibObject objects currently being built
      */
-    private void processObjectList(String groupName, String groupIfType, List objectList, List<MibObject> mibObjectList) {
-        Iterator i = objectList.iterator();
+    private void processObjectList(String groupName, String groupIfType, List<MibObj> objectList, List<MibObject> mibObjectList) {
+        Iterator<MibObj> i = objectList.iterator();
         while (i.hasNext()) {
-            MibObj mibObj = (MibObj) i.next();
+            MibObj mibObj = i.next();
 
             // Create a MibObject from the castor MibObj
             MibObject aMibObject = new MibObject();
@@ -678,7 +678,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * @return RRD step size for the specified collection
      */
     public int getStep(String cName) {
-        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = m_collectionMap.get(cName);
         if (collection != null)
             return collection.getRrd().getStep();
         else
@@ -693,10 +693,10 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * 
      * @return list of RRA strings.
      */
-    public List getRRAList(String cName) {
-        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
+    public List<String> getRRAList(String cName) {
+        SnmpCollection collection = m_collectionMap.get(cName);
         if (collection != null)
-            return (List) collection.getRrd().getRraCollection();
+            return collection.getRrd().getRraCollection();
         else
             return null;
 
@@ -711,7 +711,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * @return SNMP storage flag
      */
     public String getSnmpStorageFlag(String cName) {
-        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = m_collectionMap.get(cName);
         if (collection != null)
             return collection.getSnmpStorageFlag();
         else
@@ -728,7 +728,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * @return max number of variables per pdu or -1 upon error
      */
     public int getMaxVarsPerPdu(String cName) {
-        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = m_collectionMap.get(cName);
         if (collection != null)
             return collection.getMaxVarsPerPdu();
         else
@@ -786,19 +786,19 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         m_collectionMap = new HashMap<String,SnmpCollection>();
         m_collectionGroupMap = new HashMap<String,Map<String,Group>>();
 
-        java.util.Collection collections = m_config.getSnmpCollectionCollection();
-        Iterator citer = collections.iterator();
+        java.util.Collection<SnmpCollection> collections = m_config.getSnmpCollectionCollection();
+        Iterator<SnmpCollection> citer = collections.iterator();
         while (citer.hasNext()) {
-            SnmpCollection collection = (SnmpCollection) citer.next();
+            SnmpCollection collection = citer.next();
 
             // Build group map for this collection
             Map<String,Group> groupMap = new HashMap<String,Group>();
 
             Groups groups = collection.getGroups();
-            java.util.Collection groupList = groups.getGroupCollection();
-            Iterator giter = groupList.iterator();
+            java.util.Collection<Group> groupList = groups.getGroupCollection();
+            Iterator<Group> giter = groupList.iterator();
             while (giter.hasNext()) {
-                Group group = (Group) giter.next();
+                Group group = giter.next();
                 groupMap.put(group.getName(), group);
 }
             m_collectionGroupMap.put(collection.getName(), groupMap);
