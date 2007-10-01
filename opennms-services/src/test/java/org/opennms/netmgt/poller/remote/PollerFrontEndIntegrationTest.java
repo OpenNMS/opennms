@@ -147,16 +147,16 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
         assertTrue(m_frontEnd.isRegistered());
         Integer monitorId = m_settings.getMonitorId();
         
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from location_monitors where id=?", monitorId));
-        assertEquals(5, getJdbcTemplate().queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", monitorId));
+        assertEquals(1, getSimpleJdbcTemplate().queryForInt("select count(*) from location_monitors where id=?", monitorId));
+        assertEquals(5, getSimpleJdbcTemplate().queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", monitorId));
 
-        assertEquals(System.getProperty("os.name"), getJdbcTemplate().queryForObject("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", String.class, monitorId, "os.name"));
+        assertEquals(System.getProperty("os.name"), getSimpleJdbcTemplate().queryForObject("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", String.class, monitorId, "os.name"));
         
         Thread.sleep(10000);
         
-        assertEquals(0, getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId));
+        assertEquals(0, getSimpleJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId));
         
-        assertTrue("Could not find any pollResults", 0 < getJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
+        assertTrue("Could not find any pollResults", 0 < getSimpleJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
 
         m_frontEnd.stop();
     }

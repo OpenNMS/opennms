@@ -776,7 +776,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>service-registration</artifactId>
-        <version>0.1</version>
+        <version>0.2-SNAPSHOT</version>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -791,6 +791,11 @@ opennms.home = ${opennms.home}
         <artifactId>mock-snmp-agent</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-acegi</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -825,12 +830,29 @@ opennms.home = ${opennms.home}
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao</artifactId>
+        <type>test-jar</type>
+        <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-daemon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-drools</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-hibernate</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -895,6 +917,12 @@ opennms.home = ${opennms.home}
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-services</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-site</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -915,6 +943,11 @@ opennms.home = ${opennms.home}
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-spring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-test</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -931,6 +964,11 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp-ng</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webstart</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -984,7 +1022,8 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>c3p0</groupId>
         <artifactId>c3p0</artifactId>
-        <version>0.9.0-pre5</version>
+        <version>0.9.1.2</version>
+        <!-- <version>0.9.0-pre5</version> -->
       </dependency>
       <dependency>
         <groupId>org.codehaus.castor</groupId>
@@ -1203,12 +1242,12 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>mx4j</groupId>
         <artifactId>mx4j</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>mx4j</groupId>
         <artifactId>mx4j-remote</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>mx4j</groupId>
@@ -1225,39 +1264,6 @@ opennms.home = ${opennms.home}
         <artifactId>jldap</artifactId>
         <version>2005.10.03</version>
       </dependency>
-
-      <!--
-           As of Acegi Security 1.0.1 as released in the Maven 2 repository,
-           version 1.2.7 of the various Spring projects listed below are
-           dependencies of org.acegisecurity:acegi-security.  We use
-           Spring 2, so we need to exclude thse dependencies of
-           Acegi Security and make sure that the bits of OpenNMS that use
-           Acegi Security have dependencies for the Spring 2 versions of
-           these dependencies (remoting, jdbc, support, and mock).
-	-->
-      <dependency>
-        <groupId>org.acegisecurity</groupId>
-        <artifactId>acegi-security</artifactId>
-        <version>1.0.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-remoting</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-support</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-mock</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>org.dhcp.jdhcp</groupId>
         <artifactId>jdhcp</artifactId>
@@ -1267,54 +1273,6 @@ opennms.home = ${opennms.home}
         <groupId>org.extremecomponents</groupId>
         <artifactId>extremecomponents</artifactId>
         <version>1.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>3.2.0.ga</version>
-        <exclusions>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>asm</groupId>
-            <artifactId>asm-attrs</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-annotations</artifactId>
-        <version>3.2.0.ga</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.persistence</groupId>
-            <artifactId>ejb</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>asm</groupId>
-            <artifactId>asm-attrs</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.samba.jcifs</groupId>
@@ -1330,82 +1288,6 @@ opennms.home = ${opennms.home}
         <groupId>org.snmp4j</groupId>
         <artifactId>snmp4j-agent</artifactId>
         <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring</artifactId>
-        <version>2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-hibernate3</artifactId>
-        <version>2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <!-- need to use cglib-nodep instead -->
-            <groupId>asm</groupId>
-            <artifactId>asm-attrs</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-mock</artifactId>
-        <version>2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-remoting</artifactId>
-        <version>2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jdbc</artifactId>
-        <version>2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-support</artifactId>
-        <version>2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>oro</groupId>

@@ -79,7 +79,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         
         assertNotNull("getJdbcTemplate() should not return null", getJdbcTemplate());
-        assertNotNull("getJdbcTemplate().getJdbcOperations() should not return null", getJdbcTemplate().getJdbcOperations());
+        assertNotNull("getJdbcTemplate().getJdbcOperations() should not return null", getSimpleJdbcTemplate().getJdbcOperations());
 
         getJdbcTemplate().update("INSERT INTO service ( serviceId, serviceName ) VALUES ( 1, 'HTTP' )");
 

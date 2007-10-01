@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
@@ -264,7 +265,7 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests e
      * 
      * @return JDBC template
      */
-    protected SimpleJdbcTemplate getJdbcTemplate() {
+    public SimpleJdbcTemplate getSimpleJdbcTemplate() {
         return new SimpleJdbcTemplate(jdbcTemplate);
     }
 }
