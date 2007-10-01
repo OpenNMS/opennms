@@ -1713,7 +1713,7 @@ final class DbNodeEntry {
         stmt.setInt(1, m_nodeId);
 
         ResultSet rset = stmt.executeQuery();
-        List l = new ArrayList();
+        List<DbIpInterfaceEntry> l = new ArrayList<DbIpInterfaceEntry>();
 
         while (rset.next()) {
             String saddr = rset.getString(1);
@@ -1743,7 +1743,7 @@ final class DbNodeEntry {
         stmt.close();
 
         DbIpInterfaceEntry[] entries = new DbIpInterfaceEntry[l.size()];
-        return (DbIpInterfaceEntry[]) l.toArray(entries);
+        return l.toArray(entries);
     }
 
     DbIpInterfaceEntry[] getManagedInterfaces() throws SQLException {
@@ -1770,7 +1770,7 @@ final class DbNodeEntry {
         stmt.setInt(1, m_nodeId);
 
         ResultSet rset = stmt.executeQuery();
-        List l = new ArrayList();
+        List<DbIpInterfaceEntry> l = new ArrayList<DbIpInterfaceEntry>();
 
         while (rset.next()) {
             String saddr = rset.getString(1);
@@ -1800,7 +1800,7 @@ final class DbNodeEntry {
         stmt.close();
 
         DbIpInterfaceEntry[] entries = new DbIpInterfaceEntry[l.size()];
-        return (DbIpInterfaceEntry[]) l.toArray(entries);
+        return l.toArray(entries);
     }
 
     static DbIpInterfaceEntry getPrimarySnmpInterface(DbIpInterfaceEntry[] ipInterfaces) {
@@ -1838,7 +1838,7 @@ final class DbNodeEntry {
         stmt.setInt(1, m_nodeId);
 
         ResultSet rset = stmt.executeQuery();
-        List l = new ArrayList();
+        List<DbSnmpInterfaceEntry> l = new ArrayList<DbSnmpInterfaceEntry>();
 
         while (rset.next()) {
             String saddr = rset.getString(1);
@@ -1867,7 +1867,7 @@ final class DbNodeEntry {
         stmt.close();
 
         DbSnmpInterfaceEntry[] entries = new DbSnmpInterfaceEntry[l.size()];
-        return (DbSnmpInterfaceEntry[]) l.toArray(entries);
+        return l.toArray(entries);
     }
 
     /**
