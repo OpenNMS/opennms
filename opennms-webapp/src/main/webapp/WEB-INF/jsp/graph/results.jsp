@@ -205,7 +205,7 @@
       </script>
       
       <div align="center">
-        <img id="zoom" src="${graphUrl}" />
+        <img id="zoomImage" src="${graphUrl}" />
       </div>
     </c:when>
 
@@ -307,10 +307,10 @@
 		'load',
 		function() {
 			myCropper = new Cropper.Img(
-				'zoom',
+				'zoomImage',
 				{
-					minHeight: $('zoom').getDimensions().height,
-					maxHeight: $('zoom').getDimensions().height,
+					minHeight: $('zoomImage').getDimensions().height,
+					maxHeight: $('zoomImage').getDimensions().height,
 					onEndCrop: changeRRDImage
 				}
 			)
