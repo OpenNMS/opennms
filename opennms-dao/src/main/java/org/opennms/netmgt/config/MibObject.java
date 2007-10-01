@@ -341,11 +341,11 @@ public class MibObject implements Collectable {
     	}
     }
 
-    public static CollectionTracker[] getCollectionTrackers(List objList) {
+    public static CollectionTracker[] getCollectionTrackers(List<MibObject> objList) {
         CollectionTracker[] trackers = new CollectionTracker[objList.size()];
         int index = 0;
-        for (Iterator it = objList.iterator(); it.hasNext();) {
-            MibObject mibObj = (MibObject) it.next();
+        for (Iterator<MibObject> it = objList.iterator(); it.hasNext();) {
+            MibObject mibObj = it.next();
             trackers[index++] = mibObj.getCollectionTracker();
         }
         return trackers;

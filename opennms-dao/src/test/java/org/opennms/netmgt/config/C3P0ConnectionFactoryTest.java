@@ -5,19 +5,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
-import javax.sql.DataSource;
+import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
-import junit.framework.TestCase;
 
 public class C3P0ConnectionFactoryTest extends TestCase {
 

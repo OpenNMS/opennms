@@ -51,6 +51,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         return (OnmsAssetRecord)findUnique("from OnmsAssetRecord rec where rec.nodeId = ?", id);
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource) {
         List assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '"+foreignSource+"%'");
         Map<String, Integer> assetNumberMap = new HashMap<String, Integer>();

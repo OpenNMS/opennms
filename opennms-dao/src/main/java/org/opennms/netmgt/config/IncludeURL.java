@@ -38,7 +38,7 @@ import org.opennms.core.utils.IpListFromUrl;
 public class IncludeURL {
 	
 	private String m_urlName;
-	private List m_ipList;
+	private List<String> m_ipList;
 
 	public IncludeURL(String urlName) {
 		m_urlName = urlName;
@@ -49,11 +49,11 @@ public class IncludeURL {
 		return m_urlName;
 	}
 
-	public void setIpList(List ipList) {
+	public void setIpList(List<String> ipList) {
 		m_ipList = ipList;
 	}
 	
-	public List getIpList() {
+	public List<String> getIpList() {
 		return m_ipList;
 	}
 
@@ -87,7 +87,7 @@ public class IncludeURL {
 		boolean bRet = false;
 	
 		// get list of IPs in this URL
-		List iplist = getIpList();
+		List<String> iplist = getIpList();
 		if (iplist != null && iplist.size() > 0) {
 			bRet = iplist.contains(addr);
 		}
@@ -96,7 +96,7 @@ public class IncludeURL {
 	}
 
 	void createIpList() {
-		List iplist = IpListFromUrl.parse(getName());
+		List<String> iplist = IpListFromUrl.parse(getName());
 		if (iplist.size() > 0) {
 			setIpList(iplist);
 		}
