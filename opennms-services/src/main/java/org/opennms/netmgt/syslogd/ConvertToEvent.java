@@ -67,6 +67,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
@@ -78,6 +79,7 @@ import java.util.regex.Pattern;
 final class ConvertToEvent {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
     private static String m_localAddr;
 
@@ -343,6 +345,14 @@ final class ConvertToEvent {
             }
         }
 
+        // We will need these shortly
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
+        
+        Pattern msgPat;
+        Matcher msgMat;
+
         // Time to verify UEI matching.
 
         Iterator match = ueiList.getUeiMatchCollection().iterator();
@@ -350,12 +360,44 @@ final class ConvertToEvent {
         while (match.hasNext()) {
 
             uei = (UeiMatch) match.next();
-            log.debug("Matching text of a Syslogd event to :" + uei.getMatch());
-            if (message.contains(uei.getMatch())) {
-                //We can pass a new UEI on this
-                log.debug("Changed the UEI of a Syslogd event to :" + uei.getUei());
-                event.setUei(uei.getUei());
-
+            if (uei.getMatch().getType().equals("substr")) {
+                log.debug("Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+            	if (message.contains(uei.getMatch().getExpression())) {
+                    //We can pass a new UEI on this
+                    log.debug("Changed the UEI of a Syslogd event, based on substring match, to :" + uei.getUei());
+                    event.setUei(uei.getUei());
+                    // I think we want to stop processing here so the first
+                    // ueiMatch wins, right?
+                    break;
+                }
+            } else if (uei.getMatch().getType().equals("regex")) {
+                log.debug("Attempting regex match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                try {
+            		msgPat = Pattern.compile(uei.getMatch().getExpression(), Pattern.MULTILINE);
+            		msgMat = msgPat.matcher(message);
+                } catch(PatternSyntaxException pse) {
+            		log.error("Failed to compile regex pattern '"+uei.getMatch().getExpression()+"'", pse);
+            		msgMat = null;
+            	}
+            	if ((msgMat != null) && (msgMat.matches())) {
+            		// We matched a UEI
+            		log.debug("Changed the UEI of a Syslogd event, based on regex match, to :" + uei.getUei());
+            		event.setUei(uei.getUei());
+            		if (msgMat.groupCount() > 0) {
+            			for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
+            				log.debug("Added parm 'group"+groupNum+"' with value '"+msgMat.group(groupNum)+"' to Syslogd event based on regex match group");
+            				eventParm = new Parm();
+            				eventParm.setParmName("group"+groupNum);
+            				parmValue = new Value();
+            				parmValue.setContent(msgMat.group(groupNum));
+            				eventParm.setValue(parmValue);
+            				eventParms.addParm(eventParm);
+            			}
+            		}
+                    // I think we want to stop processing here so the first
+                    // ueiMatch wins, right?
+            		break;
+            	}
             }
         }
 
@@ -364,14 +406,32 @@ final class ConvertToEvent {
         match = hideMessage.getHideMatchCollection().iterator();
 
         HideMatch hide;
+    	boolean doHide = false;
         while (match.hasNext()) {
-
             hide = (HideMatch) match.next();
-            if (message.contains(hide.getMatch())) {
-                //We can pass a new UEI on this
-                log.debug("Hiding syslog message from Event - May contain sensitive data");
-                message = "The message logged has been removed due to configuration of Syslogd";
-
+            if (hide.getMatch().getType().equals("substr")) {
+                if (message.contains(hide.getMatch().getExpression())) {
+                    // We should hide the message based on this match
+                	doHide = true;
+                }            	
+            } else if (hide.getMatch().getType().equals("regex")) {
+            	try {
+                	msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
+                	msgMat = msgPat.matcher(message);            		
+            	} catch (PatternSyntaxException pse) {
+            		log.error("Failed to compile regex pattern '"+hide.getMatch().getExpression()+"'", pse);
+            		msgMat = null;
+            	}
+            	if ((msgMat != null) && (msgMat.matches())) {
+                    // We should hide the message based on this match
+            		doHide = true;
+            	}
+            }
+            if (doHide) {
+	            log.debug("Hiding syslog message from Event - May contain sensitive data");
+	            message = HIDDEN_MESSAGE;
+	            // We want to stop here, no point in checking further hideMatches
+	            break;
             }
         }
 
@@ -410,10 +470,6 @@ final class ConvertToEvent {
         event.setLogmsg(logmsg);
 
         // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
         eventParm = new Parm();
         eventParm.setParmName("syslogmessage");
         parmValue = new Value();

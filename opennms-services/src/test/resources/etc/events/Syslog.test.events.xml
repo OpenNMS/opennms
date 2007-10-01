@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/tests/syslogd/substrUeiRewriteTest</uei>
+        <event-label>Syslogd test event: substrUeiRewriteTest</event-label>
+        <descr>This is only a test</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: substrUeiRewriteTest&lt;/p&gt;</logmsg>
+        <severity xmlns="">Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteTest</uei>
+        <event-label>Syslogd test event: regexUeiRewriteTest</event-label>
+        <descr>This is only a test</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;Syslogd test event: regexUeiRewriteTest&lt;/p&gt;</logmsg>
+        <severity xmlns="">Warning</severity>
+    </event>
+</events>

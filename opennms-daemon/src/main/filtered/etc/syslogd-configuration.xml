@@ -11,8 +11,17 @@
     <!-- Use the following to convert UEI ad-hoc -->
     <ueiList>
         <ueiMatch>
-            <match>CRISCO</match>
+            <match type="substr" expression="CRISCO"/>
             <uei>CISCO</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*fancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*"
+            <uei>uei.example.org/syslog/fancyd/userFailure</uei>
+            <!-- In the event definition for the above UEI, you can refer to the
+                 parenthesized match groups above:
+                 %parm[group1]% or %parm[#1]% will have the username
+                 %parm[group2[% or %parm[#2]% will have the device name
+            -->
         </ueiMatch>
     </ueiList>
 
@@ -20,7 +29,10 @@
 
     <hideMessage>
         <hideMatch>
-            <match>TEST</match>
+            <match type="substr" expression="SECRET"/>
+        </hideMatch>
+        <hideMatch>
+            <match type="regex" expression=".*(double|triple)secret.*"/>
         </hideMatch>
     </hideMessage>
 

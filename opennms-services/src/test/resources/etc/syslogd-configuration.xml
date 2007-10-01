@@ -10,14 +10,21 @@
 
     <ueiList>
         <ueiMatch>
-            <match>CRISCO</match>
-            <uei>CISCO</uei>
+            <match type="substr" expression="CRISCO"/>
+            <uei>uei.opennms.org/tests/syslogd/substrUeiRewriteTest</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*?foo: (\d+) out of (\d+) tests failed for (\S+)$"/>
+            <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteTest</uei>
         </ueiMatch>
     </ueiList>
 
     <hideMessage>
         <hideMatch>
-            <match>TEST</match>
+            <match type="substr" expression="TEST"/>
+        </hideMatch>
+        <hideMatch>
+            <match type="regex" expression="[Dd]ouble secret"/>
         </hideMatch>
     </hideMessage>
 
