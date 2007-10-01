@@ -51,7 +51,7 @@ function changeRRDImage(coords,dimensions) {
 
     var left  = zoomGraphLeftOffset;
     var right = zoomGraphRightOffset; // the right offset is relative to the right-side
-    var RRDImgWidth  = $('zoom').getDimensions().width;
+    var RRDImgWidth  = $('zoomImage').getDimensions().width;
     var RRDImgUsable = RRDImgWidth - left + right;  
     var form = $('range_form');
 
