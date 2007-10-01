@@ -165,6 +165,10 @@ public class DbEventWriter implements QueryManager {
 
 	}
 
+        public DbEventWriter(DataSource dataSource) {
+	    dbConnectionFactory = dataSource;
+	}
+
 	private Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
