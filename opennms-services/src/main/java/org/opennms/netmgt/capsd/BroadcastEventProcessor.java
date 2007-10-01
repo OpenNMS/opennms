@@ -422,7 +422,7 @@ final class BroadcastEventProcessor implements EventListener {
     private void createMessageSelectorAndSubscribe() {
         // Create the selector for the ueis this service is interested in
         //
-        List ueiList = new ArrayList();
+        List<String> ueiList = new ArrayList<String>();
 
         // newSuspectInterface
         ueiList.add(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
