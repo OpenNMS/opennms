@@ -43,6 +43,7 @@ import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
+import org.opennms.netmgt.linkd.DbEventWriter;
 
 public class Linkd implements LinkdMBean {
    public final static String LOG4J_CATEGORY = "OpenNMS.Linkd";
@@ -82,6 +83,7 @@ public class Linkd implements LinkdMBean {
         linkd.setEventMgr(mgr);
         linkd.setDbConnectionFactory(DataSourceFactory.getInstance());
         linkd.setLinkdConfig(LinkdConfigFactory.getInstance());
+	linkd.setQueryManager(new DbEventWriter(DataSourceFactory.getDataSource()));
         
 	    linkd.init();
 	}
