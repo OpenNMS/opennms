@@ -10,6 +10,10 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
@@ -20,10 +24,6 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j-agent</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
     </dependency>
   </dependencies>
 </project>

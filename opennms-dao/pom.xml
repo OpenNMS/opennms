@@ -45,6 +45,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-hibernate</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
@@ -55,6 +59,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -72,11 +80,6 @@
       <artifactId>castor</artifactId>
     </dependency>
 
-    <!-- this is here as we exclude the version hibernate depends on -->
-    <dependency>
-      <groupId>cglib</groupId>
-      <artifactId>cglib-nodep</artifactId>
-    </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils-core</artifactId>
@@ -115,26 +118,6 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-hibernate3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-mock</artifactId>
     </dependency>
     <dependency>
       <groupId>oro</groupId>

@@ -141,15 +141,22 @@
       -->
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-acegi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
     </dependency>
     <!-- XXX the required test JARs should be moved into a separate project -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-hibernate</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -162,18 +169,15 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
-      <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
-      <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -194,11 +198,14 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring</artifactId>
+    </dependency>
     <!-- XXX the required test JARs should be moved into a separate project -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -326,50 +333,6 @@
       <artifactId>gwt-widgets-server</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-hibernate3</artifactId>
-    </dependency>
-    <!--
-         This is a dependency of Acegi Security that we need to depend on
-         because we are excluding the Spring 1.x dependency of this project
-         from org.acegisecurity:acegi-security.
-      -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-mock</artifactId>
-    </dependency>
-    <!--
-         This is a dependency of Acegi Security that we need to depend on
-         because we are excluding the Spring 1.x dependency of this project
-         from org.acegisecurity:acegi-security.
-      -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-remoting</artifactId>
-    </dependency>
-    <!--
-         This is a dependency of Acegi Security that we need to depend on
-         because we are excluding the Spring 1.x dependency of this project
-         from org.acegisecurity:acegi-security.
-      -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
-    </dependency>
-    <!--
-         This is a dependency of Acegi Security that we need to depend on
-         because we are excluding the Spring 1.x dependency of this project
-         from org.acegisecurity:acegi-security.
-      -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-support</artifactId>
-    </dependency>
-    <dependency>
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
     </dependency>
@@ -401,10 +364,6 @@
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.acegisecurity</groupId>
-      <artifactId>acegi-security</artifactId>
     </dependency>
   </dependencies>
 </project>
