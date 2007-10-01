@@ -66,9 +66,9 @@ public class CollectdPackage {
 	}
 
 	private void createIncludeURLs(Package pkg) {
-		Enumeration urlEnum = pkg.enumerateIncludeUrl();
+		Enumeration<String> urlEnum = pkg.enumerateIncludeUrl();
 		while (urlEnum.hasMoreElements()) {
-			m_includeURLs.add(new IncludeURL((String)urlEnum.nextElement()));
+			m_includeURLs.add(new IncludeURL(urlEnum.nextElement()));
 		}
 	}
 	
@@ -90,9 +90,9 @@ public class CollectdPackage {
 		Package pkg = getPackage();
 		boolean result = false;
 	
-		Enumeration esvcs = pkg.enumerateService();
+		Enumeration<Service> esvcs = pkg.enumerateService();
 		while (result == false && esvcs.hasMoreElements()) {
-			Service tsvc = (Service) esvcs.nextElement();
+			Service tsvc = esvcs.nextElement();
 			if (tsvc.getName().equalsIgnoreCase(svcName)) {
 				// Ok its in the package. Now check the
 				// status of the service
@@ -107,9 +107,9 @@ public class CollectdPackage {
 	boolean hasSpecific(long addr) {
 		Package pkg = getPackage();
 		boolean has_specific = false;
-		Enumeration espec = pkg.enumerateSpecific();
+		Enumeration<String> espec = pkg.enumerateSpecific();
 		while (!has_specific && espec.hasMoreElements()) {
-			long speca = IPSorter.convertToLong(espec.nextElement().toString());
+			long speca = IPSorter.convertToLong(espec.nextElement());
 			if (speca == addr)
 				has_specific = true;
 		}
@@ -120,9 +120,9 @@ public class CollectdPackage {
 		Package pkg = getPackage();
 		boolean has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
 	
-		Enumeration eincs = pkg.enumerateIncludeRange();
+		Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
 		while (!has_range_include && eincs.hasMoreElements()) {
-			IncludeRange rng = (IncludeRange) eincs.nextElement();
+			IncludeRange rng = eincs.nextElement();
 			long start = IPSorter.convertToLong(rng.getBegin());
 			if (addr > start) {
 				long end = IPSorter.convertToLong(rng.getEnd());
@@ -143,9 +143,9 @@ public class CollectdPackage {
 	boolean hasExcludeRange(long addr, boolean has_specific) {
 		Package pkg = getPackage();
 		boolean has_range_exclude = false;
-		Enumeration eex = pkg.enumerateExcludeRange();
+		Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
 		while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-			ExcludeRange rng = (ExcludeRange) eex.nextElement();
+			ExcludeRange rng = eex.nextElement();
 			long start = IPSorter.convertToLong(rng.getBegin());
 			if (addr > start) {
 				long end = IPSorter.convertToLong(rng.getEnd());
@@ -194,8 +194,8 @@ public class CollectdPackage {
 	}
 
 	boolean hasSpecificUrl(String iface, boolean has_specific) {
-		for (Iterator it = getIncludeURLs().iterator(); it.hasNext() && !has_specific;) {
-			IncludeURL includeURL = (IncludeURL) it.next();
+		for (Iterator<IncludeURL> it = getIncludeURLs().iterator(); it.hasNext() && !has_specific;) {
+			IncludeURL includeURL = it.next();
 			has_specific = includeURL.interfaceInUrl(iface);
 		}
 		return has_specific;

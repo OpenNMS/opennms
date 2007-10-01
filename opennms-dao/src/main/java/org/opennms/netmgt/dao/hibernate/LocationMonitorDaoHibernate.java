@@ -344,6 +344,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     			);
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(int nodeId) {
         List l = getHibernateTemplate().find(
                         "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +

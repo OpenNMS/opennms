@@ -54,7 +54,7 @@ public interface DataCollectionConfig {
     
     int getStep(String collectionName);
 
-    List getRRAList(String collectionName);
+    List<String> getRRAList(String collectionName);
 
     String getRrdPath();
 

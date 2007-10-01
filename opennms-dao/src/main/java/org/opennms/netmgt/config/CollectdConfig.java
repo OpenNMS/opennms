@@ -70,9 +70,9 @@ public class CollectdConfig {
 
     private void createPackageObjects(String localServer, boolean verifyServer) {
         m_packages = new LinkedList<CollectdPackage>();
-        Enumeration pkgEnum = m_config.enumeratePackage();
+        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            Package pkg = (Package) pkgEnum.nextElement();
+            Package pkg = pkgEnum.nextElement();
             m_packages.add(new CollectdPackage(pkg, localServer, verifyServer));
         }
     }
@@ -103,8 +103,8 @@ public class CollectdConfig {
         // Multiple threads maybe asking for the m_pkgIpMap field so create
         // with temp map then assign when finished.
 
-        for (Iterator it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = (CollectdPackage) it.next();
+        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            CollectdPackage wpkg = it.next();
             wpkg.createIpList(localServer, verifyServer);
         }
     }
@@ -119,8 +119,8 @@ public class CollectdConfig {
     }
 
     public CollectdPackage getPackage(String name) {
-        for (Iterator it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = (CollectdPackage) it.next();
+        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            CollectdPackage wpkg = it.next();
             if (wpkg.getName().equals(name)) {
                 return wpkg;
             }
@@ -136,8 +136,8 @@ public class CollectdConfig {
      * @return True if the domain exists
      */
     public boolean domainExists(String name) {
-        for (Iterator it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = (CollectdPackage) it.next();
+        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            CollectdPackage wpkg = it.next();
             if ((wpkg.ifAliasDomain() != null)
                     && wpkg.ifAliasDomain().equals(name)) {
                 return true;
@@ -161,8 +161,8 @@ public class CollectdConfig {
     public boolean isServiceCollectionEnabled(String ipAddr, String svcName) {
         boolean result = false;
 
-        for (Iterator it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = (CollectdPackage) it.next();
+        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            CollectdPackage wpkg = it.next();
 
             // Does the package include the interface?
             //

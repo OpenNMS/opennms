@@ -41,6 +41,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -213,7 +214,7 @@ public class JMXDataSource  {
                 // Truncate MIB object name/alias if it exceeds the 19 char max for
                 // RRD data source names.
                 if (this.getName().length() > MAX_DS_NAME_LENGTH) {
-                        if (log.isEnabledFor(Priority.WARN))
+                        if (log.isEnabledFor(Level.WARN))
                                 log.warn(
                                         "buildDataSourceList: Mib object name/alias '"
                                                 + obj.getAlias()
@@ -406,7 +407,7 @@ public class JMXDataSource  {
         
             String collectionName = m_collectionName;
 	        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
-	        List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
+	        List<String> rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
 		boolean result=false;
 		try {
 		        RrdUtils.createRRD(owner, repository.getAbsolutePath(), getName(), step, getType(), getHeartbeat(), getMin(), getMax(), rraList);

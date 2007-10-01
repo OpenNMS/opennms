@@ -210,9 +210,9 @@ public final class DatabaseSchemaConfigFactory {
      * @return The name of the driver table
      */
     public Table getPrimaryTable() {
-        Enumeration e = getDatabaseSchema().enumerateTable();
+        Enumeration<Table> e = getDatabaseSchema().enumerateTable();
         while (e.hasMoreElements()) {
-            Table t = (Table) e.nextElement();
+            Table t = e.nextElement();
             if (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true")) {
                 if (t.getKey() != null && t.getKey().equals("primary")) {
                     return t;
@@ -230,9 +230,9 @@ public final class DatabaseSchemaConfigFactory {
      * @return the table if it is found, null otherwise.
      */
     public Table getTableByName(String name) {
-        Enumeration e = getDatabaseSchema().enumerateTable();
+        Enumeration<Table> e = getDatabaseSchema().enumerateTable();
         while (e.hasMoreElements()) {
-            Table t = (Table) e.nextElement();
+            Table t = e.nextElement();
             if (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true")) {
                 if (t.getName() != null && t.getName().equals(name)) {
                     return t;
@@ -255,12 +255,12 @@ public final class DatabaseSchemaConfigFactory {
     public Table findTableByVisableColumn(String colName) {
         Table table = null;
 
-        Enumeration etbl = getDatabaseSchema().enumerateTable();
+        Enumeration<Table> etbl = getDatabaseSchema().enumerateTable();
         OUTER: while (etbl.hasMoreElements()) {
-            Table t = (Table) etbl.nextElement();
-            Enumeration ecol = t.enumerateColumn();
+            Table t = etbl.nextElement();
+            Enumeration<Column> ecol = t.enumerateColumn();
             while (ecol.hasMoreElements()) {
-                Column col = (Column) ecol.nextElement();
+                Column col = ecol.nextElement();
                 if (col.getVisable() == null || col.getVisable().equalsIgnoreCase("true")) {
                     if (col.getName().equalsIgnoreCase(colName)) {
                         table = t;
@@ -369,15 +369,15 @@ public final class DatabaseSchemaConfigFactory {
         while (joinableCount < joinableSet.size()) {
             joinableCount = joinableSet.size();
             Set<String> newSet = new HashSet<String>(joinableSet);
-            Enumeration e = getDatabaseSchema().enumerateTable();
+            Enumeration<Table> e = getDatabaseSchema().enumerateTable();
             // for each table not already in the set
             while (e.hasMoreElements()) {
-                Table t = (Table) e.nextElement();
+                Table t = e.nextElement();
                 if (!joinableSet.contains(t.getName()) && (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true"))) {
-                    Enumeration ejoin = t.enumerateJoin();
+                    Enumeration<Join> ejoin = t.enumerateJoin();
                     // for each join does it join a table in the set?
                     while (ejoin.hasMoreElements()) {
-                        Join j = (Join) ejoin.nextElement();
+                        Join j = ejoin.nextElement();
                         if (joinableSet.contains(j.getTable())) {
                             newSet.add(t.getName());
                             primaryJoins.put(t.getName(), j);

@@ -119,14 +119,14 @@ public final class ReparentViaSmb {
      * Contains hard-coded list of NetBIOS names which are not subject to
      * reparenting via SMB.
      */
-    private static List m_netbiosNamesToSkip;
+    private static List<String> m_netbiosNamesToSkip;
 
     //
     // Static initialization block to initialize list of NetBIOS names
     // which should not be considered for reparenting
     //
     static {
-        m_netbiosNamesToSkip = new ArrayList(4);
+        m_netbiosNamesToSkip = new ArrayList<String>(4);
         m_netbiosNamesToSkip.add("WORKSTATION");
         m_netbiosNamesToSkip.add("DEFAULT");
         m_netbiosNamesToSkip.add("OEMCOMPUTER");
