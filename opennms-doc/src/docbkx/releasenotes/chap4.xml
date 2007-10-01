@@ -39,7 +39,7 @@
       at the following apt-repository: <programlisting>deb http://debian.opennms.org/ stable main</programlisting>.
       Debian unstable (1.3.x) packages (for Etch and later) are
       available at the following apt-repository: <programlisting>deb http://debian.opennms.org/ unstable main</programlisting>.
-	  For more instructions see this <ulink
+      For more instructions see this <ulink
       url="http://opennms.netstatz.com/Debian_ONMS_HOWTO.html#toc2">How-To</ulink>
       written by Ian MacDonald.</para>
       
@@ -48,7 +48,7 @@
       tested to work with Ubuntu releases 6.10 (Edgy Eft) and 7.04 (Feisty Fawn).
       The lack of a <programlisting>sun-java5-jdk</programlisting> package in any
       official repository for LTS release 6.06 (Dapper Drake) disqualifies this
-      release as a viable target for official OpenNMS packages. 
+      release as a viable target for official OpenNMS packages. </para>
     </formalpara>
 
     <formalpara>
