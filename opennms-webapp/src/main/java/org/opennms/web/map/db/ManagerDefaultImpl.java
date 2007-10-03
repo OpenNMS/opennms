@@ -41,7 +41,6 @@
  */
 package org.opennms.web.map.db;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
@@ -56,18 +55,13 @@ import java.util.Vector;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.acegisecurity.GrantedAuthority;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.ConfigFileConstants;
 
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
-import org.opennms.web.acegisecurity.Authentication;
-import org.opennms.web.acegisecurity.UserDaoImpl;
 import org.opennms.web.event.EventUtil;
 
 import org.opennms.web.map.MapsException;
@@ -77,6 +71,7 @@ import org.opennms.web.map.MapsConstants;
 
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.config.MapStartUpConfig;
+
 import org.opennms.web.map.db.datasources.DataSourceInterface;
 
 import org.opennms.web.map.view.Manager;
