@@ -41,7 +41,7 @@ public class Poll extends Ssh implements org.opennms.netmgt.protocols.Poll {
             ps.setProperty("response-time", (nanoEndTime - nanoStartTime) / 100000.0);
         } else if (errorMessage.matches("^.*java.net.NoRouteToHostException.*$")) {
             ps = PollStatus.unavailable("no route to host");
-        } else if (errorMessage.matches("^.*java.io.InterruptedIOException.*$")) {
+        } else if (errorMessage.matches("^.*(timeout: socket is not established|java.io.InterruptedIOException).*$")) {
             ps = PollStatus.unavailable("connection timed out");
         } else if (errorMessage.matches("^.*(connection is closed by foreign host|java.net.ConnectException).*$")) {
             ps = PollStatus.unavailable("connection exception");
