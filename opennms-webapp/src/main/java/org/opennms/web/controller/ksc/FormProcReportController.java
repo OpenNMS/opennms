@@ -61,6 +61,7 @@ public class FormProcReportController extends AbstractController implements Init
         String show_graphtype = request.getParameter("show_graphtype");
         String g_index = request.getParameter("graph_index");
         int graph_index = Integer.parseInt(g_index);
+        int graphs_per_line = Integer.parseInt(request.getParameter("graphs_per_line"));
      
         // Save the global variables into the working report
         report.setTitle(report_title);
@@ -74,6 +75,12 @@ public class FormProcReportController extends AbstractController implements Init
             report.setShow_timespan_button(false);
         } else {
             report.setShow_timespan_button(true);
+        } 
+        
+        if (graphs_per_line > 0) {
+            report.setGraphs_per_line(graphs_per_line);
+        } else {
+            report.setGraphs_per_line(0);
         } 
 
         if (action.equals("Save")) {

@@ -84,6 +84,7 @@ public class CustomReportController extends AbstractController implements Initia
 
         modelAndView.addObject("showTimeSpan", report.getShow_timespan_button());
         modelAndView.addObject("showGraphType", report.getShow_graphtype_button());
+        modelAndView.addObject("graphsPerLine", report.getGraphs_per_line());
         
         modelAndView.addObject("title", report.getTitle());
         modelAndView.addObject("resultSets", resultSets);
