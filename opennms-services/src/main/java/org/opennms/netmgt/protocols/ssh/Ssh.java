@@ -90,7 +90,6 @@ public class Ssh {
         } catch (JSchException e) {
             m_exception = e;
             if (e.getCause() != null) {
-                log().debug("got a root cause");
                 Class cause = e.getCause().getClass();
                 if (cause == ConnectException.class) {
                     log().debug("connection refused", e);
@@ -109,17 +108,18 @@ public class Ssh {
                     return false;
                 }
             } else {
-                log().debug("did not get a root cause");
                 // ugh, string parse, maybe we can get him to fix this in a newer jsch release
-                if (e.getMessage().matches("^.*(connection is closed by foreign host|java.io.(IOException|InterruptedIOException)|java.net.(ConnectException|NoRouteToHostException)).*$")) {
+                if (e.getMessage().matches("^.*(socket is not established|connection is closed by foreign host|java.io.(IOException|InterruptedIOException)|java.net.(ConnectException|NoRouteToHostException)).*$")) {
                     log().debug("did not connect enough to verify SSH server", e);
                     return false;
                 }
             }
             if (m_session != null) {
-                m_serverVersion = m_session.getServerVersion();
+                if (m_session.isConnected()) {
+                    m_serverVersion = m_session.getServerVersion();
+                }
             }
-            log().debug("passed exception: " + e.getMessage());
+            log().debug("valid SSH server is listening: " + e.getMessage());
             return true;
         }
     }
