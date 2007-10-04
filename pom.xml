@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>service-registration</artifactId>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
   <description>service registration and unregistration</description>
   <scm>
     <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-discovery/trunk</connection>
