@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>service-registration</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.2</version>
   <description>service registration and unregistration</description>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/trunk</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/trunk</developerConnection>
-    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/service-registration/trunk</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/tags/service-registration-0.2</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/tags/service-registration-0.2</developerConnection>
+    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/service-registration/tags/service-registration-0.2</url>
   </scm>
   <build>
     <plugins>
