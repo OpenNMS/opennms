@@ -99,7 +99,7 @@ public class SyslogdConfigFactoryTest extends TestCase {
 
     public void testUEI() {
         for (UeiMatch uei : m_factory.getUeiList().getUeiMatchCollection()) {
-            assertTrue( ( "substr".equals(uei.getMatch().getType()) ) || ( "regex".equals(uei.getMatch().getType()) ) );
+            assertTrue( uei.getMatch().getType().equals("substr") || uei.getMatch().getType().equals("regex") );
             if (uei.getMatch().getType().equals("substr")) {
                 assertEquals("CRISCO", uei.getMatch().getExpression());
             } else if (uei.getMatch().getType().equals("regex")) {
