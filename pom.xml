@@ -5,9 +5,9 @@
   <version>0.2-SNAPSHOT</version>
   <description>service registration and unregistration</description>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-discovery/trunk</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-discovery/trunk</developerConnection>
-    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/service-discovery/trunk</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/trunk</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/trunk</developerConnection>
+    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/service-registration/trunk</url>
   </scm>
   <build>
     <plugins>
