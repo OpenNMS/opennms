@@ -99,14 +99,23 @@ public class SyslogdConfigFactoryTest extends TestCase {
 
     public void testUEI() {
         for (UeiMatch uei : m_factory.getUeiList().getUeiMatchCollection()) {
-            assertEquals("CRISCO", uei.getMatch());
-            assertEquals("CISCO", uei.getUei());
+            assertTrue( ( "substr".equals(uei.getMatch().getType()) ) || ( "regex".equals(uei.getMatch().getType()) ) );
+            if (uei.getMatch().getType().equals("substr")) {
+                assertEquals("CRISCO", uei.getMatch().getExpression());
+            } else if (uei.getMatch().getType().equals("regex")) {
+                assertEquals("uei.opennms.org/tests/syslogd/substrUeiRewriteTest", uei.getUei());
+            }
         }
     }
 
     public void testHideTheseMessages() {
         for (HideMatch hide : m_factory.getHideMessages().getHideMatchCollection()) {
-            assertEquals("TEST", hide.getMatch());
+            assertTrue( ( "substr".equals(hide.getMatch().getType()) ) || ( "regex".equals(hide.getMatch().getType()) ) );
+            if (hide.getMatch().getType().equals("substr")) {
+                assertEquals("TEST", hide.getMatch().getExpression());
+            } else if (hide.getMatch().getType().equals("regex")) {
+                assertEquals("[Dd]ouble secret", hide.getMatch().getExpression());
+            }
         }
     }
 
