@@ -99,7 +99,8 @@ public class SyslogdConfigFactoryTest extends TestCase {
 
     public void testUEI() {
         for (UeiMatch uei : m_factory.getUeiList().getUeiMatchCollection()) {
-            assertTrue( uei.getMatch().getType().equals("substr") || uei.getMatch().getType().equals("regex") );
+            boolean typeOk = ( uei.getMatch().getType().equals("substr") || uei.getMatch().getType().equals("regex") );
+            assertTrue(typeOk);
             if (uei.getMatch().getType().equals("substr")) {
                 assertEquals("CRISCO", uei.getMatch().getExpression());
             } else if (uei.getMatch().getType().equals("regex")) {
@@ -110,7 +111,8 @@ public class SyslogdConfigFactoryTest extends TestCase {
 
     public void testHideTheseMessages() {
         for (HideMatch hide : m_factory.getHideMessages().getHideMatchCollection()) {
-            assertTrue( ( "substr".equals(hide.getMatch().getType()) ) || ( "regex".equals(hide.getMatch().getType()) ) );
+            boolean typeOk = ( hide.getMatch().getType().equals("substr") || hide.getMatch().getType().equals("regex") );
+            assertTrue(typeOk);
             if (hide.getMatch().getType().equals("substr")) {
                 assertEquals("TEST", hide.getMatch().getExpression());
             } else if (hide.getMatch().getType().equals("regex")) {
