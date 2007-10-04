@@ -137,7 +137,7 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     public void testGetEventUEIS() {
         List ueis=EventconfFactory.getInstance().getEventUEIs();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 3, ueis.size());
+        assertEquals("Count must be correct", 5, ueis.size());
         assertTrue("Must contain known UEI", ueis.contains(knownUEI1));
         assertTrue("Must contain known UEI", ueis.contains(knownSubfileUEI1));
         assertTrue("Must contain known UEI", ueis.contains(knownSubSubfileUEI1));
@@ -146,7 +146,7 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     public void testGetLabels() {
         Map labels=EventconfFactory.getInstance().getEventLabels();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 3, labels.size());
+        assertEquals("Count must be correct", 5, labels.size());
         assertTrue("Must contain known UEI", labels.containsKey(knownUEI1));
         assertEquals("Must have known Label", labels.get(knownUEI1), knownLabel1);
         assertTrue("Must contain known UEI", labels.containsKey(knownSubfileUEI1));
