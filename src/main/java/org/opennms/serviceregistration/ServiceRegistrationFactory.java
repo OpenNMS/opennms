@@ -1,9 +1,5 @@
 package org.opennms.serviceregistration;
 
-import org.opennms.serviceregistration.strategies.AppleStrategy;
-import org.opennms.serviceregistration.strategies.NullStrategy;
-import org.opennms.serviceregistration.strategies.JMDNSStrategy;
-
 public class ServiceRegistrationFactory {
 	private static ServiceRegistrationStrategy s;
 	private static final String CLASS_PROPERTY = "org.opennms.serviceregistration.strategy";
@@ -31,6 +27,8 @@ public class ServiceRegistrationFactory {
 		                s = (ServiceRegistrationStrategy)(Class.forName(className).newInstance());
 		            } catch (NoClassDefFoundError e) {
 		                // fall through silently for now
+		            } catch (UnsatisfiedLinkError e) {
+                        // fall through silently for now
 		            }
 		            if (s != null) {
 		                break;
