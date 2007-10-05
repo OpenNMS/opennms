@@ -118,5 +118,13 @@ public class SnmpThresholdConfiguration {
         m_thresholdGroup.setNodeResourceType(nodeResourceType);
     }
 
+    public Map<String,ThresholdResourceType> getGenericResourceTypeMap() {
+        return m_thresholdGroup.getGenericResourceTypeMap();
+    }
+
+    public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) {
+        m_thresholdGroup.setGenericResourceTypeMap(genericResourceTypeMap);
+    }
+
 
 }

@@ -32,6 +32,8 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -42,6 +44,7 @@ public class ThresholdGroup {
 	private File m_rrdRepository;
 	private ThresholdResourceType m_nodeResourceType;
 	private ThresholdResourceType m_ifResourceType;
+	private Map<String,ThresholdResourceType> m_genericResourceTypeMap = new HashMap<String,ThresholdResourceType>();
 
 	public ThresholdResourceType getIfResourceType() {
 		return m_ifResourceType;
@@ -57,8 +60,6 @@ public class ThresholdGroup {
 
 	public ThresholdGroup(String name) {
 		m_name = name;
-		
-		
 	}
 
 	public String getName() {
@@ -86,5 +87,16 @@ public class ThresholdGroup {
 	public ThresholdResourceType getNodeResourceType() {
 		return m_nodeResourceType;
 	}
+
+        /*
+         * There are many GenericResourceTypes, for this reason, this will be mapped using a Map indexed by GenericResourceType name.
+         */
+        public Map<String,ThresholdResourceType> getGenericResourceTypeMap() { // agalue
+            return m_genericResourceTypeMap;
+        }
+
+        public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) { // agalue
+            m_genericResourceTypeMap = genericResourceTypeMap;
+        }
 
 }
