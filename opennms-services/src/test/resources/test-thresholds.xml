@@ -1,5 +1,19 @@
 <?xml version="1.0"?>
 <thresholding-config>
+
+        <group name="generic-snmp"
+                rrdRepository = "@install.share.dir@/rrd/snmp/">
+                <threshold type="high" ds-name="ifInOctets"  ds-type="if" value="90" rearm="50" trigger="1">
+                	<resource-filter field='snmpifdesc'>wlan0</resource-filter>
+                </threshold>
+                <threshold type="high" ds-name="ifOutOctets"  ds-type="if" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frReceivedFrames"  ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frSentFrames"  ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1">
+                	<resource-filter field='frIntf'>^0$</resource-filter>
+                	<resource-filter field='frDlci'>^1.+</resource-filter>                	
+                </threshold>
+        </group>
+
         <group name="default-snmp"
                 rrdRepository = "@install.share.dir@/rrd/snmp/">
                 <threshold type="high" ds-name="avgBusy5"  ds-type="node" value="90" rearm="50" trigger="3"/>

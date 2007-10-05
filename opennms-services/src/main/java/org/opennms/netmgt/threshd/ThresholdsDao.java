@@ -31,8 +31,10 @@
 //
 package org.opennms.netmgt.threshd;
 
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
+
 public interface ThresholdsDao {
 	
 	ThresholdGroup get(String name);
-
+        ThresholdingConfigFactory getThresholdingConfigFactory();
 }

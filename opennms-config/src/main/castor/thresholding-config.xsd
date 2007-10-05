@@ -74,6 +74,14 @@
 
   <!-- Expression definitions -->
   <complexType name="basethresholddef" abstract="true">
+    <sequence>
+       <element maxOccurs="unbounded" minOccurs="0" ref="this:resource-filter">
+         <annotation>
+           <documentation>The filter used to select the ds by a string</documentation>
+         </annotation>
+       </element>
+    </sequence>
+
     <attribute name="type" type="string" use="required">
       <annotation>
         <documentation>
@@ -163,6 +171,16 @@
     </attribute>
   </complexType>
 
+  <element name="resource-filter">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="field" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+  
   <element name="threshold">
     <annotation>
       <documentation>Threshold definition</documentation>
