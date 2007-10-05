@@ -208,6 +208,7 @@
   </bean>
 
   <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
+    <property name="resourceDao" ref="resourceDao"/>
   </bean>
   
   <!--  "includes" -->  
