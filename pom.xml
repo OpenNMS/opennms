@@ -108,7 +108,7 @@
     <site>
       <id>opennms-site</id>
       <name>OpenNMS Build Website</name>
-      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites/${project.version}/${project.artifactId}</url>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites/service-registration/${project.version}/</url>
     </site>
   </distributionManagement>
 </project>
