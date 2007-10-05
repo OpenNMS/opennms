@@ -168,110 +168,108 @@
             <input type="button" value="Add New Graph" onclick="addNewGraph()" alt="Add a new graph to the Report"/>
         </p>
 
-        <p>
-                <table class="normal">
-                     <tr>
-                         <td class="normal">
-                             <c:choose>
-                               <c:when test="${showTimeSpan}">
-                                 <c:set var="checked" value="checked"/>
-                               </c:when>
-                               
-                               <c:otherwise>
-                                 <c:set var="checked" value=""/>
-                               </c:otherwise>
-                             </c:choose>
-                             <input type="checkbox" name="show_timespan" ${checked} />
-                         </td>
-                         <td class="normal">
-                             Show Timespan Button (allows global manipulation of report timespan)
-                         </td>
-                     </tr>
-                     <tr>
-                         <td class="normal">
-                             <c:choose>
-                               <c:when test="${showGraphType}">
-                                 <c:set var="checked" value="checked"/>
-                               </c:when>
-                               
-                               <c:otherwise>
-                                 <c:set var="checked" value=""/>
-                               </c:otherwise>
-                             </c:choose>
-                             <input type="checkbox" name="show_graphtype" ${checked} />
-                         </td>
-                         <td class="normal">
-                             Show Graphtype Button (allows global manipulation of report prefabricated graph type)
-                         </td>
-                     </tr>
-                     <tr>
-                         <td class="normal">
-                                <select name="graphs_per_line">
-                                   <c:choose>
-                                     <c:when test="${graphsPerLine == 0}">
-                                        <option selected value="0">default</option>
-                                     </c:when>
-                                     <c:otherwise>
-                                        <option value="0">default</option>
-                                     </c:otherwise>
-                                   </c:choose>
-                                   <c:choose>
-                                     <c:when test="${graphsPerLine == 1}">
-                                        <option selected value="1">1</option>
-                                     </c:when>
-                                     <c:otherwise>
-                                        <option value="1">1</option>
-                                     </c:otherwise>
-                                   </c:choose>
-                                   <c:choose>
-                                     <c:when test="${graphsPerLine == 2}">
-                                        <option selected value="2">2</option>
-                                     </c:when>
-                                     <c:otherwise>
-                                        <option value="2">2</option>
-                                     </c:otherwise>
-                                   </c:choose>
-                                   <c:choose>
-                                     <c:when test="${graphsPerLine == 3}">
-                                        <option selected value="3">3</option>
-                                     </c:when>
-                                     <c:otherwise>
-                                        <option value="3">3</option>
-                                     </c:otherwise>
-                                   </c:choose>
-                                   <c:choose>
-                                     <c:when test="${graphsPerLine == 4}">
-                                        <option selected value="4">4</option>
-                                     </c:when>
-                                     <c:otherwise>
-                                        <option value="4">4</option>
-                                     </c:otherwise>
-                                   </c:choose>
-                                   <c:choose>
-                                     <c:when test="${graphsPerLine == 5}">
-                                        <option selected value="5">5</option>
-                                     </c:when>
-                                     <c:otherwise>
-                                        <option value="5">5</option>
-                                     </c:otherwise>
-                                   </c:choose>
-                                   <c:choose>
-                                     <c:when test="${graphsPerLine == 6}">
-                                        <option selected value="6">6</option>
-                                     </c:when>
-                                     <c:otherwise>
-                                        <option value="6">6</option>
-                                     </c:otherwise>
-                                   </c:choose>
-                                </select>
-                         </td>
-                         <td class="normal">
-                             Number of graphs to show per line in the report.
-                         </td>
-                     </tr>
+        <table class="normal">
+             <tr>
+                 <td class="normal">
+                     <c:choose>
+                       <c:when test="${showTimeSpan}">
+                         <c:set var="checked" value="checked"/>
+                       </c:when>
+                       
+                       <c:otherwise>
+                         <c:set var="checked" value=""/>
+                       </c:otherwise>
+                     </c:choose>
+                     <input type="checkbox" name="show_timespan" ${checked} />
+                 </td>
+                 <td class="normal">
+                     Show Timespan Button (allows global manipulation of report timespan)
+                 </td>
+             </tr>
+             <tr>
+                 <td class="normal">
+                     <c:choose>
+                       <c:when test="${showGraphType}">
+                         <c:set var="checked" value="checked"/>
+                       </c:when>
+                       
+                       <c:otherwise>
+                         <c:set var="checked" value=""/>
+                       </c:otherwise>
+                     </c:choose>
+                     <input type="checkbox" name="show_graphtype" ${checked} />
+                 </td>
+                 <td class="normal">
+                     Show Graphtype Button (allows global manipulation of report prefabricated graph type)
+                 </td>
+             </tr>
+             <tr>
+                 <td class="normal">
+                        <select name="graphs_per_line">
+                           <c:choose>
+                             <c:when test="${graphsPerLine == 0}">
+                                <option selected value="0">default</option>
+                             </c:when>
+                             <c:otherwise>
+                                <option value="0">default</option>
+                             </c:otherwise>
+                           </c:choose>
+                           <c:choose>
+                             <c:when test="${graphsPerLine == 1}">
+                                <option selected value="1">1</option>
+                             </c:when>
+                             <c:otherwise>
+                                <option value="1">1</option>
+                             </c:otherwise>
+                           </c:choose>
+                           <c:choose>
+                             <c:when test="${graphsPerLine == 2}">
+                                <option selected value="2">2</option>
+                             </c:when>
+                             <c:otherwise>
+                                <option value="2">2</option>
+                             </c:otherwise>
+                           </c:choose>
+                           <c:choose>
+                             <c:when test="${graphsPerLine == 3}">
+                                <option selected value="3">3</option>
+                             </c:when>
+                             <c:otherwise>
+                                <option value="3">3</option>
+                             </c:otherwise>
+                           </c:choose>
+                           <c:choose>
+                             <c:when test="${graphsPerLine == 4}">
+                                <option selected value="4">4</option>
+                             </c:when>
+                             <c:otherwise>
+                                <option value="4">4</option>
+                             </c:otherwise>
+                           </c:choose>
+                           <c:choose>
+                             <c:when test="${graphsPerLine == 5}">
+                                <option selected value="5">5</option>
+                             </c:when>
+                             <c:otherwise>
+                                <option value="5">5</option>
+                             </c:otherwise>
+                           </c:choose>
+                           <c:choose>
+                             <c:when test="${graphsPerLine == 6}">
+                                <option selected value="6">6</option>
+                             </c:when>
+                             <c:otherwise>
+                                <option value="6">6</option>
+                             </c:otherwise>
+                           </c:choose>
+                        </select>
+                 </td>
+                 <td class="normal">
+                     Number of graphs to show per line in the report.
+                 </td>
+             </tr>
 
-                </table> 
-        </p>
+        </table> 
 
         <p>
                 <input type="button" value="Save" onclick="saveReport()" alt="Save the Report to File"/>
