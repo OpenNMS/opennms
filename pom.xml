@@ -17,12 +17,12 @@
     <url>http://bugs.opennms.org/</url>
   </issueManagement>  
   <ciManagement>
-    <system>CruiseControl</system>
-    <url>http://ci.opennms.org/</url>
+    <system>Hudson</system>
+    <url>http://internal.opennms.com:8081/</url>
     <notifiers>
       <notifier>
         <type>htmlmail</type>
-        <address>opennms-devel@lists.sourceforge.net</address>
+        <address>ci@lists.opennms.com</address>
       </notifier>
     </notifiers>
   </ciManagement>
@@ -34,6 +34,17 @@
       <roles>
         <role>OGP Member</role>
         <role>Software Architect</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
+    <developer>
+      <id>rangerrick</id>
+      <name>Benjamin Reed</name>
+      <email>ranger@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Developer</role>
       </roles>
       <organization>The OpenNMS Group</organization>
       <timezone>-5</timezone>
