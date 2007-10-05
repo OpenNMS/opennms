@@ -13571,6 +13571,174 @@
 	<severity>Minor</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
 </event>
+<!-- The following three definitions are to work around a bug that
+     causes Covergence devices to send systemHalt traps when they
+		 mean to send sIPCallFail traps -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.21798.1.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>Not Found</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendors/Covergence/CXC-MIB/sIPCallFail</uei>
+	<event-label>CXC-MIB defined trap event: sIPCallFail</event-label>
+	<descr>
+&lt;p&gt;sip: &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailSessionID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailFrom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailTo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sIPCallFail trap received 
+			sIPCallFailSessionID=%parm[#1]% 
+			sIPCallFailFrom=%parm[#2]% 
+			sIPCallFailTo=%parm[#3]% 
+			sIPCallFailReason=%parm[#4]% 
+			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.21798.1.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>Not Acceptable</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendors/Covergence/CXC-MIB/sIPCallFail</uei>
+	<event-label>CXC-MIB defined trap event: sIPCallFail</event-label>
+	<descr>
+&lt;p&gt;sip: &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailSessionID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailFrom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailTo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sIPCallFail trap received 
+			sIPCallFailSessionID=%parm[#1]% 
+			sIPCallFailFrom=%parm[#2]% 
+			sIPCallFailTo=%parm[#3]% 
+			sIPCallFailReason=%parm[#4]% 
+			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.21798.1.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>Forbidden</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendors/Covergence/CXC-MIB/sIPCallFail</uei>
+	<event-label>CXC-MIB defined trap event: sIPCallFail</event-label>
+	<descr>
+&lt;p&gt;sip: &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailSessionID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailFrom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailTo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sIPCallFail trap received 
+			sIPCallFailSessionID=%parm[#1]% 
+			sIPCallFailFrom=%parm[#2]% 
+			sIPCallFailTo=%parm[#3]% 
+			sIPCallFailReason=%parm[#4]% 
+			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+</event>
 <event>
 	<mask>
 		<maskelement>
@@ -13597,7 +13765,6 @@
 	<severity>Major</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
-<!-- TODO: break webServiceAvailabilityChange into 3 separate events by ~NewState -->
 <event>
 	<mask>
 		<maskelement>
