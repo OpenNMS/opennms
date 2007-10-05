@@ -571,33 +571,35 @@ public class Poller extends AbstractServiceDaemon {
 
         if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI) && getPollerConfig().pathOutageEnabled()) {
             String[] criticalPath = getCriticalPath(nodeId);
-            boolean isPathOk = true;
-            isPathOk = testCriticalPath(criticalPath);
-            if(!isPathOk) {
-                log.debug("Critical path test failed for node " + nodeId);
-                // add eventReason, criticalPathIp, criticalPathService parms
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
-                parmValue = new Value();
-                parmValue.setContent(EventConstants.PARM_VALUE_PATHOUTAGE);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+            if(criticalPath[0] != null && !criticalPath[0].equals("")) {
+                if(!testCriticalPath(criticalPath)) {
+                    log.debug("Critical path test failed for node " + nodeId);
+                    // add eventReason, criticalPathIp, criticalPathService parms
+                    eventParm = new Parm();
+                    eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
+                    parmValue = new Value();
+                    parmValue.setContent(EventConstants.PARM_VALUE_PATHOUTAGE);
+                    eventParm.setValue(parmValue);
+                    eventParms.addParm(eventParm);
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_IP);
-                parmValue = new Value();
-                parmValue.setContent(criticalPath[0]);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                    eventParm = new Parm();
+                    eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_IP);
+                    parmValue = new Value();
+                    parmValue.setContent(criticalPath[0]);
+                    eventParm.setValue(parmValue);
+                    eventParms.addParm(eventParm);
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_SVC);
-                parmValue = new Value();
-                parmValue.setContent(criticalPath[1]);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+                    eventParm = new Parm();
+                    eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_SVC);
+                    parmValue = new Value();
+                    parmValue.setContent(criticalPath[1]);
+                    eventParm.setValue(parmValue);
+                    eventParms.addParm(eventParm);
+                } else {
+                    log.debug("Critical path test passed for node " + nodeId);
+                }
             } else {
-                log.debug("Critical path test passed for node " + nodeId);
+                log.debug("No Critical path to test for node " + nodeId);
             }
         }
 
@@ -693,6 +695,7 @@ public class Poller extends AbstractServiceDaemon {
         //TODO: Generalize the service
         InetAddress addr = null;
         boolean result = true;
+        log().debug("Test critical path IP " + criticalPath[0]);
         try {
             addr = InetAddress.getByName(criticalPath[0]);
         } catch (UnknownHostException e ) {
