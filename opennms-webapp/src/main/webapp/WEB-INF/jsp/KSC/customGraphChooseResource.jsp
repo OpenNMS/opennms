@@ -153,12 +153,12 @@
       <c:otherwise>
         <p>
           This resource has the following prefabricated graphs available:
-          <ul>
-            <c:forEach var="prefabGraph" items="${parentResourcePrefabGraphs}">
-              <li>${prefabGraph.name}</li>
-            </c:forEach>
-          </ul>
         </p>
+        <ul>
+          <c:forEach var="prefabGraph" items="${parentResourcePrefabGraphs}">
+            <li>${prefabGraph.name}</li>
+          </c:forEach>
+        </ul>
         
         <form method="get" name="resourceSelected" action="KSC/customGraphEditDetails.htm" >
           <input type="hidden" name="resourceId" value="${parentResource.id}"/>
