@@ -10,6 +10,29 @@
     <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/trunk</developerConnection>
     <url>http://opennms.svn.sourceforge.net/viewvc/opennms/service-registration/trunk</url>
   </scm>
+  <ciManagement>
+    <system>Hudson</system>
+    <url>http://internal.opennms.com:8081/</url>
+    <notifiers>
+      <notifier>
+        <type>htmlmail</type>
+        <address>ci@lists.opennms.com</address>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+  <developers>
+    <developer>
+      <id>rangerrick</id>
+      <name>Benjamin Reed</name>
+      <email>ranger@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Developer</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
   <build>
     <plugins>
       <plugin>
