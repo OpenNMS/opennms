@@ -18,7 +18,11 @@ import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.support.GenericIndexResourceType;
+import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.Util;
@@ -31,6 +35,14 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private static final String SAVE_BUTTON_TITLE="Save";
     private static final String CANCEL_BUTTON_TITLE="Cancel";
+    private static final String ADDFILTER_BUTTON_TITLE="Add";
+    private static final String EDIT_BUTTON_TITLE="Edit";
+    private static final String DELETE_BUTTON_TITLE="Delete";
+    private static final String UPDATE_BUTTON_TITLE="Update";
+    private static final String MOVEUP_BUTTON_TITLE="Up";
+    private static final String MOVEDOWN_BUTTON_TITLE="Down";
+    
+    private ResourceDao m_resourceDao;
     
     private boolean eventConfChanged=false; 
     @Override
@@ -89,6 +101,12 @@ public class ThresholdController extends AbstractController implements Initializ
         Collection<String> dsTypes=new ArrayList<String>();
         dsTypes.add("node");
         dsTypes.add("if"); // "interface" is a wrong word
+        
+        Collection<OnmsResourceType> resourceTypes = m_resourceDao.getResourceTypes();
+        for (OnmsResourceType resourceType : resourceTypes) {
+            if (resourceType instanceof GenericIndexResourceType)
+                dsTypes.add(resourceType.getName());
+        }
         modelAndView.addObject("dsTypes",dsTypes);
 
         Collection<String> thresholdTypes=new ArrayList<String>();
@@ -99,6 +117,12 @@ public class ThresholdController extends AbstractController implements Initializ
       
         modelAndView.addObject("saveButtonTitle", SAVE_BUTTON_TITLE);
         modelAndView.addObject("cancelButtonTitle", CANCEL_BUTTON_TITLE);
+        modelAndView.addObject("addFilterButtonTitle", ADDFILTER_BUTTON_TITLE);
+        modelAndView.addObject("editButtonTitle", EDIT_BUTTON_TITLE);
+        modelAndView.addObject("deleteButtonTitle", DELETE_BUTTON_TITLE);
+        modelAndView.addObject("updateButtonTitle", UPDATE_BUTTON_TITLE);
+        modelAndView.addObject("moveUpButtonTitle", MOVEUP_BUTTON_TITLE);
+        modelAndView.addObject("moveDownButtonTitle", MOVEDOWN_BUTTON_TITLE);
     }
     
     private ModelAndView gotoNewThreshold(String groupName) {
@@ -197,6 +221,76 @@ public class ThresholdController extends AbstractController implements Initializ
         
         return modelAndView;
     }
+
+    private void moveThresholdFilter(Threshold threshold, int oldPos, int newPos) {
+        if (newPos >= 0 && newPos < threshold.getResourceFilterCount()) {
+            ResourceFilter oldFilter = (ResourceFilter)threshold.getResourceFilterCollection().get(oldPos);
+            ResourceFilter newFilter = (ResourceFilter)threshold.getResourceFilterCollection().get(newPos);
+            threshold.getResourceFilterCollection().set(newPos, oldFilter);
+            threshold.getResourceFilterCollection().set(oldPos, newFilter);
+        }
+    }
+    
+    private ModelAndView finishThresholdFilterEdit(HttpServletRequest request) throws ServletException {
+        ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
+        ModelAndView modelAndView;
+        
+        int thresholdIndex=Integer.parseInt(request.getParameter("thresholdIndex"));
+        String groupName=request.getParameter("groupName");
+        String submitAction=request.getParameter("submitAction");
+
+        Threshold threshold=configFactory.getGroup(groupName).getThreshold(thresholdIndex);
+        modelAndView=new ModelAndView("admin/thresholds/editThreshold");
+        
+        // Save Threshold Filters on HTTP Session in order to restore the original
+        // list if user clicks on "Cancel"
+        List saved = (List)request.getSession(true).getAttribute("savedFilters");
+        if (saved == null || saved.size() == 0) {
+            saved = new ArrayList(threshold.getResourceFilterCollection());
+            request.getSession(false).setAttribute("savedFilters", saved);
+        }
+
+        String stringIndex = request.getParameter("filterSelected");
+        int filterIndex = stringIndex != null && !stringIndex.equals("") ? Integer.parseInt(stringIndex) - 1 : 0;
+
+        if (ADDFILTER_BUTTON_TITLE.equals(submitAction)) {
+            String field = request.getParameter("filterField");
+            String content = request.getParameter("filterRegexp");
+            if (field != null && !field.equals("") && content != null && !content.equals("")) {
+                ResourceFilter filter = new ResourceFilter();
+                filter.setField(field);
+                filter.setContent(content);
+                threshold.addResourceFilter(filter);
+            }
+        } else if (DELETE_BUTTON_TITLE.equals(submitAction)) {
+            threshold.getResourceFilterCollection().remove(filterIndex);
+        } else if (EDIT_BUTTON_TITLE.equals(submitAction)) {
+            modelAndView.addObject("filterSelected", request.getParameter("filterSelected"));
+        } else if (UPDATE_BUTTON_TITLE.equals(submitAction)) {
+            ResourceFilter filter = (ResourceFilter)threshold.getResourceFilterCollection().get(filterIndex);
+            filter.setField(request.getParameter("updateFilterField"));
+            filter.setContent(request.getParameter("updateFilterRegexp"));            
+        } else if (MOVEUP_BUTTON_TITLE.equals(submitAction)) {
+            moveThresholdFilter(threshold, filterIndex, filterIndex - 1);
+        } else if (MOVEDOWN_BUTTON_TITLE.equals(submitAction)) {
+            moveThresholdFilter(threshold, filterIndex, filterIndex + 1);
+        }
+
+        commonFinishEdit(request, threshold);
+        threshold.setDsName(request.getParameter("dsName"));
+        
+        String isNew=request.getParameter("isNew");
+        if("true".equals(isNew))
+            modelAndView.addObject("isNew", true);
+
+        modelAndView.addObject("threshold", threshold);
+        modelAndView.addObject("thresholdIndex", thresholdIndex);
+        modelAndView.addObject("groupName", groupName);
+        addStandardEditingBits(modelAndView);
+        
+        return modelAndView;
+    }
+
     
     private ModelAndView gotoEditExpression(String expressionIndexString, String groupName) throws ServletException {
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
@@ -361,8 +455,14 @@ public class ThresholdController extends AbstractController implements Initializ
             if("true".equals(isNew)) {
                 //It was a new Threshold, but the user hit cancel.  Remove the new threshold from the group
                 group.removeThreshold(threshold);
+            } else {
+                ArrayList filters = (ArrayList)request.getSession(false).getAttribute("savedFilters");
+                threshold.setResourceFilterCollection(filters);
             }
+        } else {
+            return finishThresholdFilterEdit(request);
         }
+        request.getSession(false).removeAttribute("savedFilters");
         //and got back to the editGroup page
         modelAndView=new ModelAndView("admin/thresholds/editGroup");
         modelAndView.addObject("group",configFactory.getGroup(groupName));
@@ -428,5 +528,8 @@ public class ThresholdController extends AbstractController implements Initializ
 
     }
 
+    public void setResourceDao(ResourceDao resourceDao) {
+        m_resourceDao = resourceDao;
+    }
 
 }

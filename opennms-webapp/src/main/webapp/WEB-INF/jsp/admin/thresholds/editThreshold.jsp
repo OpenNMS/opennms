@@ -44,11 +44,11 @@
     <jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp'>Threshold Groups</a>" />
     <jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp?groupName=${groupName}&editGroup'>Edit Group</a>" />
 	<jsp:param name="breadcrumb" value="Edit Threshold" />
-    
+	
 </jsp:include>
 <h3>Edit threshold</h3>
 
-<form action="admin/thresholds/index.htm" method="post">
+<form name="frm" action="admin/thresholds/index.htm" method="post">
 <input type="hidden" name="finishThresholdEdit" value="1"/>
 <input type="hidden" name="thresholdIndex" value="${thresholdIndex}"/>
 <input type="hidden" name="groupName" value="${groupName}"/>
@@ -112,6 +112,36 @@
   </table>
   <input type="submit" name="submitAction" value="${saveButtonTitle}"/>
   <input type="submit" name="submitAction" value="${cancelButtonTitle}"/>
+<input type="hidden" name="filterSelected" value="${filterSelected}"/>
+<h3>Resource Filters</h3>
+<table class="normal">
+<tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
+  <c:forEach items="${threshold.resourceFilter}" var="filter" varStatus="i">
+    <tr>
+        <c:choose>
+          <c:when test="${i.count==filterSelected}">
+            <td><input type="text" name="updateFilterField" size="60" value="${filter.field}"/></td>
+            <td><input type="text" name="updateFilterRegexp" size="60" value="${filter.content}"/></td>          
+            <td><input type="submit" name="submitAction" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
+          </c:when>
+          <c:otherwise>
+            <td class="standard">${filter.field}</td>
+            <td class="standard">${filter.content}</td>
+            <td><input type="submit" name="submitAction" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                <input type="submit" name="submitAction" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                <input type="submit" name="submitAction" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                <input type="submit" name="submitAction" value="${moveDownButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                </td>
+          </c:otherwise>
+        </c:choose>
+    </tr>
+  </c:forEach>
+    <tr>
+        <td><input type="text" name="filterField" size="60"/></td>
+        <td><input type="text" name="filterRegexp" size="60"/></td>
+        <td><input type="submit" name="submitAction" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
+    </tr>
+</table>
 </form>
 <h3>Help</h3>
 <p>
@@ -119,13 +149,14 @@
 Conversely, a "low" threshold triggers when the value of the data source drops below the "value", and is re-armed when it exceeds the "re-arm" value<br>
 "relativeChange" is for thresholds that trigger when the change in data source value from one collection to the next is greater than "value" percent.<br>
 <b>Expression</b>: A  mathematical expression involving datasource names which will be evaluated and compared to the threshold values<br>
-<b>Data source type</b>: Node for "node-level" data items, and "interface" for interface-level items.  <br>
+<b>Data source type</b>: "node" for node-level data items, "if" for interface-level items, or any Generic Resource Type defined on datacollection-config.xml. Node-level will ignore filter configuration.<br>
 <b>Datasource label</b>: The name of the collected "string" type data item to use as a label when reporting this threshold<br>
 <b>Value</b>: Use depends on the type of threshold<br>
 <b>Re-arm</b>: Use depends on the type of threshold; it is unused/ignored for relativeChange thresholds<br>
 <b>Trigger</b>: The number of times the threshold must be "exceeded" in a row before the threshold will be triggered.  Not used for relativeChange thresholds.<br>
 <b>Triggered UEI</b>: A custom UEI to send into the events system when this threshold is triggered.  If left blank, it defaults to the standard thresholds UEIs.<br>
 <b>Rearmed UEI</b>: A custom UEI to send into the events system when this threshold is re-armed.  If left blank, it defaults to the standard thresholds UEIs.<br>
-<b>Example UEIs</b>: A typical UEI is of the format <i>"uei.opennms.org/&lt;category&gt;/&lt;name&gt;"</i>.  It is recommended that when creating custom UEIs for thresholds, you use a one-word version of your company name as the category to avoid name conflicts.  The "name" portion is up to you
+<b>Example UEIs</b>: A typical UEI is of the format <i>"uei.opennms.org/&lt;category&gt;/&lt;name&gt;"</i>.  It is recommended that when creating custom UEIs for thresholds, you use a one-word version of your company name as the category to avoid name conflicts.  The "name" portion is up to you.<br>
+<b>Filters</b>: Only apply for interfaces and Generic Resources. They are applied in order. If the resource match any of them, the threshold will be processed.
 </p>
 <jsp:include page="/includes/footer.jsp" flush="false"/>
