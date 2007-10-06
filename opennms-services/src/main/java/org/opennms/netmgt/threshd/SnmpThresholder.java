@@ -521,8 +521,14 @@ public final class SnmpThresholder implements ServiceThresholder {
         if (log().isDebugEnabled()) {
             log().debug("checkResourceDir: threshold checking generic resource dir: " + directory.getAbsolutePath());
         }
-
+        
         String resourceType = directory.getName();
+        
+        if (!directory.exists()) {
+        	log().debug("Aborting check because this node does not support Resource Type " + resourceType);
+        	return;
+        }
+
         SnmpThresholdConfiguration config = snmpIface.getThresholdConfiguration(); 
         if (log().isDebugEnabled()) {
             log().debug("checkResourceDir: group="  + config.getGroupName() + ", resourceType=" + resourceType);
