@@ -15,7 +15,7 @@
             <uei>CISCO</uei>
         </ueiMatch>
         <ueiMatch>
-            <match type="regex" expression=".*fancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*"
+            <match type="regex" expression=".*fancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
             <uei>uei.example.org/syslog/fancyd/userFailure</uei>
             <!-- In the event definition for the above UEI, you can refer to the
                  parenthesized match groups above:
