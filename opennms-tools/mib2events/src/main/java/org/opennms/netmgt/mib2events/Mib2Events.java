@@ -44,6 +44,7 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 
 public class Mib2Events
 {
@@ -229,6 +230,7 @@ public class Mib2Events
 	
 	public static Logmsg getTrapEventLogmsg(MibValueSymbol trapValueSymbol) {
 		Logmsg msg = new Logmsg();
+		msg.setDest("logndisplay");
 		msg.setContent("Log messages coming soon");
 		return msg;
 	}
@@ -241,7 +243,25 @@ public class Mib2Events
 		descr = m.replaceAll("\n");
 		m = Pattern.compile("$").matcher(descr);
 		descr = m.replaceAll("\n");
+		StringBuffer dbuf = new StringBuffer(descr);
+		dbuf.append("\n");
+		
+		int vbNum = 1;
+		for (MibValue vb : getTrapVars(trapValueSymbol)) {
+			dbuf.append("\n\t").append(vb.getName()).append("=%parm[#").append(vbNum).append("]%");
+			vbNum++;
+		}
+		
+		descr = dbuf.toString();
 		return descr;
+	}
+	
+	public static AlarmData getTrapEventAlarmData() {
+		AlarmData ad = new AlarmData();
+		ad.setReductionKey("%uei%:%dpname%:%nodeid%:%interface%");
+		ad.setAlarmType(1);
+		ad.setAutoClean(false);
+		return ad;
 	}
 	
 	public static Event getTrapEvent(MibValueSymbol trapValueSymbol, String ueibase) {
@@ -254,6 +274,7 @@ public class Mib2Events
 		evt.setEventLabel(getTrapEventLabel(trapValueSymbol));
 		evt.setLogmsg(getTrapEventLogmsg(trapValueSymbol));
 		evt.setSeverity("Indeterminate");
+		evt.setAlarmData(getTrapEventAlarmData());
 		evt.setDescr(getTrapEventDescr(trapValueSymbol));
 		
 		// Construct the event mask object
@@ -267,11 +288,15 @@ public class Mib2Events
 		me = new Maskelement();
 		me.setMename("generic");
 		me.addMevalue("6");
+		mask.addMaskelement(me);
 		
 		// The "specific" mask element (trap specific-type)
 		me = new Maskelement();
 		me.setMename("specific");
 		me.addMevalue(getTrapSpecificType(trapValueSymbol));
+		mask.addMaskelement(me);
+		
+		evt.setMask(mask);
 		
 		return evt;
 	}
