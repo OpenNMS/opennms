@@ -39,6 +39,7 @@ import java.io.Reader;
 
 import junit.framework.TestCase;
 
+import java.util.List;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -98,15 +99,16 @@ public class SyslogdConfigFactoryTest extends TestCase {
     }
 
     public void testUEI() {
-        for (UeiMatch uei : m_factory.getUeiList().getUeiMatchCollection()) {
-            boolean typeOk = ( uei.getMatch().getType().equals("substr") || uei.getMatch().getType().equals("regex") );
-            assertTrue(typeOk);
-            if (uei.getMatch().getType().equals("substr")) {
-                assertEquals("CRISCO", uei.getMatch().getExpression());
-            } else if (uei.getMatch().getType().equals("regex")) {
-                assertEquals("uei.opennms.org/tests/syslogd/substrUeiRewriteTest", uei.getUei());
-            }
-        }
+        List<UeiMatch> ueiList = m_factory.getUeiList().getUeiMatchCollection();
+        UeiMatch uei = ueiList.get(0);
+        assertEquals("substr", uei.getMatch().getType());
+        assertEquals("CRISCO", uei.getMatch().getExpression());
+        assertEquals("uei.opennms.org/tests/syslogd/substrUeiRewriteTest", uei.getUei());
+        
+        uei = ueiList.get(1);
+        assertEquals("regex", uei.getMatch().getType());
+        assertEquals(".*?foo: (\\d+) out of (\\d+) tests failed for (\\S+)$", uei.getMatch().getExpression());
+        assertEquals("uei.opennms.org/tests/syslogd/regexUeiRewriteTest", uei.getUei());
     }
 
     public void testHideTheseMessages() {
