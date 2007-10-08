@@ -71,6 +71,7 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.ThreadPool;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 /*
@@ -118,7 +119,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         m_moFile = moFile;
         agent.setThreadPool(ThreadPool.create("RequestPool", 4));
     }
-
+    
     public static MockSnmpAgent createAgentAndRun(Resource moFile, String bindAddress) throws InterruptedException {
         try {
             if (moFile.getInputStream() == null) {
@@ -149,6 +150,21 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
         return agent;
     }
+    
+    public static void main(String[] args) {
+    	if (args.length < 2) {
+    		System.err.println("Usage: MockSnmpAgent props-file listen-addr\n\nWhere props-file is relative to CLASSPATH\nand listen-addr is of the form 10.11.12.13/1161 to listen on port 1161");
+    		System.exit(1);
+    	}
+    	ClassPathResource moFile = new ClassPathResource(args[0]);
+       	String bindAddress = args[1];
+    	
+    	try {
+    		MockSnmpAgent agt = MockSnmpAgent.createAgentAndRun(moFile, bindAddress);
+    	} catch (InterruptedException e) {
+    		System.exit(0);
+    	}
+    }    
 
     public void shutDownAndWait() throws InterruptedException {
         if (!isRunning()) {
