@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<configExtensions>
+		<configExtension>xml</configExtension>
+	</configExtensions>
+	<configs>
+		<config>src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
+	</configs>
+	<configSets>
+		<configSet>
+			<name><![CDATA[DAOs]]></name>
+			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
+			</configs>
+		</configSet>
+	</configSets>
+</beansProjectDescription>

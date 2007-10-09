@@ -5,14 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-	<bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
-	</bean>
-
-	<bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-pollerConfig-factory">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
-	</bean>
-
     <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
       <constructor-arg><value>600000</value></constructor-arg>
     </bean>

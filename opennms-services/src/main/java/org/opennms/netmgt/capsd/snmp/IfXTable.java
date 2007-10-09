@@ -41,7 +41,6 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -64,7 +63,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc2233.txt">RFC2233 </A>
  */
-public final class IfXTable extends SnmpTable {
+public final class IfXTable extends SnmpTable<IfXTableEntry> {
 
     /**
      * <P>
@@ -80,17 +79,15 @@ public final class IfXTable extends SnmpTable {
         super(address, "ifXTable", IfXTableEntry.ms_elemList);
     }
 
-    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected IfXTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfXTableEntry(inst.toInt());
     }
     
     public String getIfName(int ifIndex) {
     
         // Find ifXTable entry with matching ifIndex
-        //
-        Iterator iter = getEntries().iterator();
-        while (iter.hasNext()) {
-            IfXTableEntry ifXEntry = (IfXTableEntry) iter.next();
+
+        for(IfXTableEntry ifXEntry : getEntries()) {
     
             int ifXIndex = -1;
             Integer snmpIfIndex = ifXEntry.getIfIndex();
@@ -109,10 +106,8 @@ public final class IfXTable extends SnmpTable {
 
     public String getIfAlias(int ifIndex) {
         // Find ifXTable entry with matching ifIndex
-        //
-        Iterator iter = getEntries().iterator();
-        while (iter.hasNext()) {
-            IfXTableEntry ifXEntry = (IfXTableEntry) iter.next();
+
+        for(IfXTableEntry ifXEntry : getEntries()) {
     
             int ifXIndex = -1;
             Integer snmpIfIndex = ifXEntry.getIfIndex();

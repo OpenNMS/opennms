@@ -20,6 +20,42 @@
      <constructor-arg ref="daoContext" />
    </bean>
    
+   <bean id="commonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-commonConfigs.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daemonContext" />
+   </bean>
+   
+   <bean id="collectdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-collectd.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="commonContext" />
+   </bean>
+   
+   <bean id="capsdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-capsd.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="commonContext" />
+   </bean>
+   
+   <bean id="provisionerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-provisioner.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="commonContext" />
+   </bean>
+   
    
    <bean id="pollerBackEndContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
@@ -28,7 +64,7 @@
          <value>META-INF/opennms/applicationContext-exportedPollerBackEnd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="commonContext" />
    </bean>
    
     <bean id="statisticsDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">

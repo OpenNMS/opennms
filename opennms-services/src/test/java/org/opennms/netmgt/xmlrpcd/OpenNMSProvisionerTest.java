@@ -40,7 +40,6 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +69,7 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
@@ -171,7 +171,10 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
 
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(db);
+
         m_syncer = new JdbcCapsdDbSyncer();
+        m_syncer.setJdbcTemplate(jdbcTemplate);
         m_syncer.setOpennmsServerConfig(OpennmsServerConfigFactory.getInstance());
         m_syncer.setCapsdConfig(m_capsdConfig);
         m_syncer.setPollerConfig(m_pollerConfig);
@@ -179,12 +182,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         m_syncer.setNextSvcIdSql(db.getNextServiceIdStatement());
         m_syncer.afterPropertiesSet();
 
-        Connection conn = db.getConnection();
-        try {
-            m_syncer.syncServices(conn);
-        } finally {
-            conn.close();
-        }
+        m_syncer.syncServices();
 
     }
 
