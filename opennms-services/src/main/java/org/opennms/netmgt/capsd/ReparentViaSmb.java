@@ -101,19 +101,19 @@ public final class ReparentViaSmb {
      * List of LightWeightNodeEntry objects intialized from the content of the
      * 'node' table.
      */
-    private List m_existingNodeList;
+    private List<LightWeightNodeEntry> m_existingNodeList;
 
     /**
      * Contains a mapping of reparent nodes and the list of interfaces which
      * were reparented under them.
      */
-    private Map m_reparentedIfMap;
+    private Map<LightWeightNodeEntry, List<LightWeightIfEntry>> m_reparentedIfMap;
 
     /**
      * Contains of mapping of reparent nodes and the list of duplicate nodes
      * associated with them.
      */
-    private Map m_reparentNodeMap;
+    private Map<LightWeightNodeEntry, List<LightWeightNodeEntry>> m_reparentNodeMap;
 
     /**
      * Contains hard-coded list of NetBIOS names which are not subject to
@@ -326,18 +326,6 @@ public final class ReparentViaSmb {
     }
 
     /**
-     * The class' default constructor. The constructor will always throw an
-     * exception and not designed to be instantianted without a database
-     * connection and CapsReader object.
-     * 
-     * @exception java.lang.UnsupportedOperationException
-     *                Always thrown by the constructor.
-     */
-    private ReparentViaSmb() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("default constructor not supported");
-    }
-
-    /**
      * Class constructor.
      * 
      * @param connection
@@ -364,7 +352,7 @@ public final class ReparentViaSmb {
      */
     private void buildNodeLists() throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
-        m_existingNodeList = new ArrayList();
+        m_existingNodeList = new ArrayList<LightWeightNodeEntry>();
 
         PreparedStatement stmt = m_connection.prepareStatement(SQL_DB_RETRIEVE_NODES);
         try {
@@ -400,10 +388,10 @@ public final class ReparentViaSmb {
         // Each of the other (duplicate) nodes will be added to a reparent
         // list and then added to the map under the reparent node key.
         //
-        Iterator outer = m_existingNodeList.iterator();
+        Iterator<LightWeightNodeEntry> outer = m_existingNodeList.iterator();
 
         while (outer.hasNext()) {
-            LightWeightNodeEntry outerEntry = (LightWeightNodeEntry) outer.next();
+            LightWeightNodeEntry outerEntry = outer.next();
             String outerNetbiosName = outerEntry.getNetbiosName();
 
             // Skip this node if NetBIOS name is null or is in list to skip
@@ -414,11 +402,11 @@ public final class ReparentViaSmb {
             if (outerEntry.isDuplicate())
                 continue;
 
-            List duplicateNodeList = null;
+            List<LightWeightNodeEntry> duplicateNodeList = null;
 
-            Iterator inner = m_existingNodeList.iterator();
+            Iterator<LightWeightNodeEntry> inner = m_existingNodeList.iterator();
             while (inner.hasNext()) {
-                LightWeightNodeEntry innerEntry = (LightWeightNodeEntry) inner.next();
+                LightWeightNodeEntry innerEntry = inner.next();
                 String innerNetbiosName = innerEntry.getNetbiosName();
 
                 // Skip if inner node id is less than or equal to
@@ -439,7 +427,7 @@ public final class ReparentViaSmb {
                     // We've found two nodes with same NetBIOS name
                     // Add innerEntry to duplicate node list
                     if (duplicateNodeList == null)
-                        duplicateNodeList = new ArrayList();
+                        duplicateNodeList = new ArrayList<LightWeightNodeEntry>();
 
                     innerEntry.setDuplicate(true); // mark node as duplicate
                     duplicateNodeList.add(innerEntry); // add to current dup
@@ -453,7 +441,7 @@ public final class ReparentViaSmb {
             if (duplicateNodeList != null) {
                 // We found duplicates...add to reparent map
                 if (m_reparentNodeMap == null)
-                    m_reparentNodeMap = new HashMap();
+                    m_reparentNodeMap = new HashMap<LightWeightNodeEntry, List<LightWeightNodeEntry>>();
 
                 if (log.isDebugEnabled())
                     log.debug("ReparentViaSmb.retrieveNodeData: adding dup list w/ " + duplicateNodeList.size() + " to reparent Map for reparent nodeid " + outerEntry.getNodeId());
@@ -500,18 +488,18 @@ public final class ReparentViaSmb {
      */
     private void reparentInterfaces() throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
-        List reparentedIfList = null;
+        List<LightWeightIfEntry> reparentedIfList = null;
         m_reparentedIfMap = null;
 
         PreparedStatement ipInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE);
         PreparedStatement snmpInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_SNMP_INTERFACE);
         PreparedStatement ifServicesStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IF_SERVICES);
 
-        Set keys = m_reparentNodeMap.keySet();
-        Iterator iter = keys.iterator();
+        Set<LightWeightNodeEntry> keys = m_reparentNodeMap.keySet();
+        Iterator<LightWeightNodeEntry> iter = keys.iterator();
 
         while (iter.hasNext()) {
-            LightWeightNodeEntry reparentNode = (LightWeightNodeEntry) iter.next();
+            LightWeightNodeEntry reparentNode = iter.next();
             int reparentNodeID = reparentNode.getNodeId();
 
             // Now construct a "heavier weight" DbNodeEntry object for this
@@ -521,12 +509,12 @@ public final class ReparentViaSmb {
             reparentNode.setHeavyWeightNodeEntry(DbNodeEntry.get(reparentNodeID));
 
             // Retrieve duplicate node list for this reparent node key
-            List dupList = (List) m_reparentNodeMap.get(reparentNode);
+            List<LightWeightNodeEntry> dupList = m_reparentNodeMap.get(reparentNode);
             log.debug("ReparentViaSmb.retrieveNodeData: duplicate node list retrieved, list size=" + dupList.size());
 
-            Iterator dupIter = dupList.iterator();
+            Iterator<LightWeightNodeEntry> dupIter = dupList.iterator();
             while (dupIter.hasNext()) {
-                LightWeightNodeEntry dupNode = (LightWeightNodeEntry) dupIter.next();
+                LightWeightNodeEntry dupNode = dupIter.next();
                 int dupNodeID = dupNode.getNodeId();
 
                 try {
@@ -560,7 +548,7 @@ public final class ReparentViaSmb {
                             LightWeightIfEntry lwIfEntry = new LightWeightIfEntry(ifAddress, hostName, reparentNodeID, dupNodeID);
 
                             if (reparentedIfList == null)
-                                reparentedIfList = new ArrayList();
+                                reparentedIfList = new ArrayList<LightWeightIfEntry>();
                             reparentedIfList.add(lwIfEntry);
 
                             if (log.isDebugEnabled())
@@ -633,7 +621,7 @@ public final class ReparentViaSmb {
             // the reparented interface map with the reparent node as the key
             if (reparentedIfList != null && !reparentedIfList.isEmpty()) {
                 if (m_reparentedIfMap == null)
-                    m_reparentedIfMap = new HashMap();
+                    m_reparentedIfMap = new HashMap<LightWeightNodeEntry, List<LightWeightIfEntry>>();
 
                 m_reparentedIfMap.put(reparentNode, reparentedIfList);
             }
@@ -654,12 +642,12 @@ public final class ReparentViaSmb {
         if (log.isDebugEnabled())
             log.debug("generateEvents:  Generating reparent events...reparentedIfMap size: " + m_reparentedIfMap.size());
 
-        Set keys = m_reparentedIfMap.keySet();
-        Iterator iter = keys.iterator();
+        Set<LightWeightNodeEntry> keys = m_reparentedIfMap.keySet();
+        Iterator<LightWeightNodeEntry> iter = keys.iterator();
 
         while (iter.hasNext()) {
             // Get reparent node object
-            LightWeightNodeEntry reparentNode = (LightWeightNodeEntry) iter.next();
+            LightWeightNodeEntry reparentNode = iter.next();
             if (!reparentNode.hasHeavyWeightNodeEntry()) {
                 log.warn("generateEvents:  No valid reparent node entry for node " + reparentNode.getNodeId() + ". Unable to generate reparenting events.");
                 continue;
@@ -669,12 +657,12 @@ public final class ReparentViaSmb {
                 log.debug("generateEvents: generating events for reparent node w/ id/netbiosName: " + reparentNode.getNodeId() + "/" + reparentNode.getNetbiosName());
 
             // Get list of interface objects associated with this reparent node
-            List ifList = (List) m_reparentedIfMap.get(reparentNode);
+            List<LightWeightIfEntry> ifList = m_reparentedIfMap.get(reparentNode);
             if (ifList != null && !ifList.isEmpty()) {
-                Iterator ifIter = ifList.iterator();
+                Iterator<LightWeightIfEntry> ifIter = ifList.iterator();
 
                 while (ifIter.hasNext()) {
-                    LightWeightIfEntry lwIfEntry = (LightWeightIfEntry) ifIter.next();
+                    LightWeightIfEntry lwIfEntry = ifIter.next();
 
                     // Generate interfaceReparented event
                     sendInterfaceReparentedEvent(lwIfEntry.getAddress(), lwIfEntry.getHostName(), lwIfEntry.getParentNodeId(), lwIfEntry.getOldParentNodeId(), reparentNode.getHeavyWeightNodeEntry());

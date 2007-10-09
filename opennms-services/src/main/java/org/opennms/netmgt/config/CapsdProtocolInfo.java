@@ -84,7 +84,7 @@ public final class CapsdProtocolInfo {
     /**
      * the map or parameters passed to the plugin
      */
-    private Map<String, String> m_parameters;
+    private Map<String, Object> m_parameters;
 
     /**
      * The integer value that represents the action that should be taken to
@@ -104,7 +104,7 @@ public final class CapsdProtocolInfo {
      * @param action
      *            The action to take.
      */
-    public CapsdProtocolInfo(String proto, Plugin plugin, Map<String, String> params, CapsdProtocolInfo.Action action) {
+    public CapsdProtocolInfo(String proto, Plugin plugin, Map<String, Object> params, CapsdProtocolInfo.Action action) {
         m_plugin = plugin;
         m_protocol = proto;
         m_parameters = params;
@@ -128,7 +128,7 @@ public final class CapsdProtocolInfo {
     /**
      * Returns the input parameters for the plugin
      */
-    public Map<String, String> getParameters() {
+    public Map<String, Object> getParameters() {
         return m_parameters;
     }
 

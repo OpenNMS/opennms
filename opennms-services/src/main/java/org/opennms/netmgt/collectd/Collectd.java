@@ -140,8 +140,6 @@ public final class Collectd extends AbstractServiceDaemon implements
      */
     private CollectorConfigDao m_collectorConfigDao;
 
-    private MonitoredServiceDao m_monSvcDao;
-
     private IpInterfaceDao m_ifaceDao;
 
     static class SchedulingCompletedFlag {
@@ -320,9 +318,10 @@ public final class Collectd extends AbstractServiceDaemon implements
             m_transTemplate.execute(new TransactionCallback() {
 
                 public Object doInTransaction(TransactionStatus status) {
+                    
                     // Loop through collectors and schedule for each one present
-                    for (Iterator it = getCollectorNames().iterator(); it.hasNext();) {
-                        scheduleInterfacesWithService((String) it.next());
+                    for(String name : getCollectorNames()) {
+                        scheduleInterfacesWithService(name);
                     }
                     return null;
                 }
@@ -516,9 +515,7 @@ public final class Collectd extends AbstractServiceDaemon implements
          * schedule it for collection
          */
         CollectdConfig config = cCfgFactory.getCollectdConfig();
-        for (Iterator it = config.getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = (CollectdPackage) it.next();
-
+        for(CollectdPackage wpkg : config.getPackages()) {
             /*
              * Make certain the the current service is in the package
              * and enabled!
@@ -552,8 +549,6 @@ public final class Collectd extends AbstractServiceDaemon implements
                 continue;
             }
 
-            Collection outageCalendars = new LinkedList();
-
             if (log().isDebugEnabled()) {
                 StringBuffer sb = new StringBuffer();
                 sb.append("getSpecificationsForInterface: address/service: ");
@@ -565,7 +560,7 @@ public final class Collectd extends AbstractServiceDaemon implements
                 log().debug(sb.toString());
             }
             
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, outageCalendars, getServiceCollector(svcName)));
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, Collections.EMPTY_LIST, getServiceCollector(svcName)));
         }
         return matchingPkgs;
     }
@@ -777,9 +772,9 @@ public final class Collectd extends AbstractServiceDaemon implements
         // which match the deleted nodeId/IP address pair for deletion
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            ListIterator liter = getCollectableServices().listIterator();
+            ListIterator<CollectableService> liter = getCollectableServices().listIterator();
             while (liter.hasNext()) {
-                cSvc = (CollectableService) liter.next();
+                cSvc = liter.next();
 
                 // Only interested in entries with matching nodeId and IP
                 // address
@@ -849,9 +844,9 @@ public final class Collectd extends AbstractServiceDaemon implements
             Value parmValue = null;
             String parmContent = null;
 
-            Enumeration parmEnum = parms.enumerateParm();
+            Enumeration<Parm> parmEnum = parms.enumerateParm();
             while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
+                Parm parm = parmEnum.nextElement();
                 parmName = parm.getParmName();
                 parmValue = parm.getValue();
                 if (parmValue == null)
@@ -892,9 +887,9 @@ public final class Collectd extends AbstractServiceDaemon implements
         OnmsIpInterface iface = null;
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            Iterator iter = getCollectableServices().iterator();
+            Iterator<CollectableService> iter = getCollectableServices().iterator();
             while (iter.hasNext()) {
-                cSvc = (CollectableService) iter.next();
+                cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
                 if (addr.getHostAddress().equals(event.getInterface())) {
@@ -948,9 +943,9 @@ public final class Collectd extends AbstractServiceDaemon implements
         // which match the deleted nodeId for deletion.
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            ListIterator liter = getCollectableServices().listIterator();
+            ListIterator<CollectableService> liter = getCollectableServices().listIterator();
             while (liter.hasNext()) {
-                cSvc = (CollectableService) liter.next();
+                cSvc = liter.next();
 
                 // Only interested in entries with matching nodeId
                 if (!(cSvc.getNodeId() == nodeId))
@@ -1043,16 +1038,15 @@ public final class Collectd extends AbstractServiceDaemon implements
         // event parms.
         //
         String oldPrimaryIfAddr = null;
-        String newPrimaryIfAddr = null;
         Parms parms = event.getParms();
         if (parms != null) {
             String parmName = null;
             Value parmValue = null;
             String parmContent = null;
 
-            Enumeration parmEnum = parms.enumerateParm();
+            Enumeration<Parm> parmEnum = parms.enumerateParm();
             while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
+                Parm parm = parmEnum.nextElement();
                 parmName = parm.getParmName();
                 parmValue = parm.getValue();
                 if (parmValue == null)
@@ -1063,11 +1057,6 @@ public final class Collectd extends AbstractServiceDaemon implements
                 // old primary SNMP interface (optional parameter)
                 if (parmName.equals(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS)) {
                     oldPrimaryIfAddr = parmContent;
-                }
-
-                // old primary SNMP interface (optional parameter)
-                else if (parmName.equals(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS)) {
-                    newPrimaryIfAddr = parmContent;
                 }
             }
         }
@@ -1086,9 +1075,9 @@ public final class Collectd extends AbstractServiceDaemon implements
             //
             synchronized (getCollectableServices()) {
                 CollectableService cSvc = null;
-                ListIterator liter = getCollectableServices().listIterator();
+                ListIterator<CollectableService> liter = getCollectableServices().listIterator();
                 while (liter.hasNext()) {
-                    cSvc = (CollectableService) liter.next();
+                    cSvc = liter.next();
 
                     InetAddress addr = (InetAddress) cSvc.getAddress();
                     if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {
@@ -1165,9 +1154,9 @@ public final class Collectd extends AbstractServiceDaemon implements
         //
         OnmsIpInterface iface = null;
         synchronized (getCollectableServices()) {
-            Iterator iter = getCollectableServices().iterator();
+            Iterator<CollectableService> iter = getCollectableServices().iterator();
             while (iter.hasNext()) {
-                CollectableService cSvc = (CollectableService) iter.next();
+                CollectableService cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
                 if (log.isDebugEnabled())
@@ -1227,9 +1216,9 @@ public final class Collectd extends AbstractServiceDaemon implements
         // for deletion.
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            ListIterator liter = getCollectableServices().listIterator();
+            ListIterator<CollectableService> liter = getCollectableServices().listIterator();
             while (liter.hasNext()) {
-                cSvc = (CollectableService) liter.next();
+                cSvc = liter.next();
 
                 // Only interested in entries with matching nodeId, IP address
                 // and service
@@ -1281,14 +1270,6 @@ public final class Collectd extends AbstractServiceDaemon implements
         return m_collectorConfigDao;
     }
 
-    public void setMonitoredServiceDao(MonitoredServiceDao monSvcDao) {
-        m_monSvcDao = monSvcDao;
-    }
-
-    private MonitoredServiceDao getMonitoredServiceDao() {
-        return m_monSvcDao;
-    }
-
     public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
     }
@@ -1335,12 +1316,11 @@ public final class Collectd extends AbstractServiceDaemon implements
                                 + svcName + ", classname "
                                 + collector.getClassName());
                 }
-                Class cc = Class.forName(collector.getClassName());
+                Class<?> cc = Class.forName(collector.getClassName());
                 ServiceCollector sc = (ServiceCollector) cc.newInstance();
 
                 // Attempt to initialize the service collector
-                Map properties = null; // properties not currently used
-                sc.initialize(properties);
+                sc.initialize(Collections.EMPTY_MAP);
 
                 setServiceCollector(svcName, sc);
             } catch (Throwable t) {

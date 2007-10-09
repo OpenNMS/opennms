@@ -175,7 +175,6 @@ public class CollectdTest extends TestCase {
         m_collectd.setEventIpcManager(getEventIpcManager());
         m_collectd.setCollectorConfigDao(getCollectorConfigDao());
         m_collectd.setIpInterfaceDao(getIpInterfaceDao());
-        m_collectd.setMonitoredServiceDao(getMonitoredServiceDao());
         m_collectd.setScheduler(m_scheduler);
 
         Package pkg = new Package();
@@ -383,7 +382,7 @@ public class CollectdTest extends TestCase {
         MockServiceCollector.setDelegate(getCollector());
         
         // Setup expectation
-        m_collector.initialize(null);
+        m_collector.initialize(Collections.EMPTY_MAP);
 
         expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector));
     }

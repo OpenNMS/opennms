@@ -55,9 +55,13 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
+import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Forward;
+import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Script;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 
@@ -79,7 +83,7 @@ public class EventUtils {
      * @param ueiList
      *            the list of events the listener is interested
      */
-    public static void addEventListener(EventListener listener, List ueiList) {
+    public static void addEventListener(EventListener listener, List<String> ueiList) {
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(listener, ueiList);
     }
@@ -514,9 +518,9 @@ public class EventUtils {
         if (parms == null)
             return defaultValue;
 
-        Enumeration parmEnum = parms.enumerateParm();
+        Enumeration<Parm> parmEnum = parms.enumerateParm();
         while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+            Parm parm = parmEnum.nextElement();
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
                     return parm.getValue().getContent();
@@ -546,9 +550,9 @@ public class EventUtils {
         if (parms == null)
             throw new InsufficientInformationException("parameter " + parmName + " required but but no parms are available.");
 
-        Enumeration parmEnum = parms.enumerateParm();
+        Enumeration<Parm> parmEnum = parms.enumerateParm();
         while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+            Parm parm = parmEnum.nextElement();
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
                     // we found a matching parm
@@ -1231,7 +1235,7 @@ public class EventUtils {
             }
             if (event.getAutoactionCount() > 0) {
             	b.append(" Autoactions:");
-            	for (Iterator i = event.getAutoactionCollection().iterator(); i.hasNext(); ) {
+            	for (Iterator<Autoaction> i = event.getAutoactionCollection().iterator(); i.hasNext(); ) {
             		b.append(" " + i.next().toString());
             	}
             b.append("\n");
@@ -1248,7 +1252,7 @@ public class EventUtils {
     }
     if (event.getForwardCount() > 0) {
             b.append(" Forwards:");
-            for (Iterator i = event.getForwardCollection().iterator(); i.hasNext(); ) {
+            for (Iterator<Forward> i = event.getForwardCollection().iterator(); i.hasNext(); ) {
             	b.append(" " + i.next().toString());
             }
             b.append("\n");
@@ -1261,7 +1265,7 @@ public class EventUtils {
     }
     if (event.getLoggroupCount() > 0) {
             b.append(" Loggroup:");
-            for (Iterator i = event.getLoggroupCollection().iterator(); i.hasNext(); ) {
+            for (Iterator<String> i = event.getLoggroupCollection().iterator(); i.hasNext(); ) {
             	b.append(" " + i.next().toString());
             }
             b.append("\n");
@@ -1281,7 +1285,7 @@ public class EventUtils {
     b.append(" Nodeid: " + event.getNodeid() + "\n");
     if (event.getOperactionCount() > 0) {
             b.append(" Operaction:");
-            for (Iterator i = event.getOperactionCollection().iterator(); i.hasNext(); ) {
+            for (Iterator<Operaction> i = event.getOperactionCollection().iterator(); i.hasNext(); ) {
             	b.append(" " + i.next().toString());
             }
             b.append("\n");
@@ -1294,7 +1298,7 @@ public class EventUtils {
     }
     if (event.getScriptCount() > 0) {
             b.append(" Script:");
-            for (Iterator i = event.getScriptCollection().iterator(); i.hasNext(); ) {
+            for (Iterator<Script> i = event.getScriptCollection().iterator(); i.hasNext(); ) {
             	b.append(" " + i.next().toString());
             }
             b.append("\n");
@@ -1338,8 +1342,8 @@ public class EventUtils {
     	
     	StringBuffer b = new StringBuffer();
     	b.append("Parms:\n");
-    	for (Enumeration e = parms.enumerateParm(); e.hasMoreElements(); ) {
-    		Parm p = (Parm) e.nextElement();
+    	for (Enumeration<Parm> e = parms.enumerateParm(); e.hasMoreElements(); ) {
+    		Parm p = e.nextElement();
     		b.append(" ");
     		b.append(p.getParmName());
     		b.append(" = ");

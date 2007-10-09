@@ -89,6 +89,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.IfCollector.SupportedProtocol;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
@@ -168,10 +169,6 @@ public final class RescanProcessor implements Runnable {
 
     final static String SQL_DB_DELETE_DUP_SNMPINTERFACE = "DELETE FROM snmpinterface WHERE nodeid =?";
 
-    private final static String SELECT_METHOD_MIN = "min";
-
-    private final static String SELECT_METHOD_MAX = "max";
-
     /**
      * SQL statement used to retrieve service IDs so that service name can be
      * determined from ID, and map of service names
@@ -183,8 +180,6 @@ public final class RescanProcessor implements Runnable {
      * when rescan discovers new interface
      */
     private final static String SQL_DB_UPDATE_ISMANAGED = "UPDATE ipinterface SET ismanaged=? WHERE nodeID=? AND ipaddr=? AND isManaged!='D'";
-
-    final static Map m_serviceNames = new HashMap();
 
     /**
      * Information necessary to schedule the node.
@@ -497,13 +492,11 @@ public final class RescanProcessor implements Runnable {
 
                 // Update subtargets
                 if (collectorWithSnmp.hasAdditionalTargets()) {
-                    Map subTargets = collectorWithSnmp.getAdditionalTargets();
-                    Iterator xiter = subTargets.keySet().iterator();
-                    while (xiter.hasNext()) {
-                        InetAddress subIf = (InetAddress) xiter.next();
+                    Map<InetAddress, List<SupportedProtocol>> subTargets = collectorWithSnmp.getAdditionalTargets();
+                    for(InetAddress subIf : subTargets.keySet()) {
                         updateInterface(dbc, now, node,
                                         collectorWithSnmp.getTarget(), subIf,
-                                        (List) subTargets.get(subIf),
+                                        subTargets.get(subIf),
                                         snmpCollector, doesSnmp);
                         updatedIfList.add(subIf);
                     }
@@ -511,10 +504,7 @@ public final class RescanProcessor implements Runnable {
 
                 // Add any new non-IP interfaces
                 if (collectorWithSnmp.hasNonIpInterfaces()) {
-                    Iterator iter =
-                        collectorWithSnmp.getNonIpInterfaces().iterator();
-                    while (iter.hasNext()) {
-                        Integer ifIndex = (Integer) iter.next();
+                    for(Integer ifIndex : collectorWithSnmp.getNonIpInterfaces()) {
 
                         updateNonIpInterface(dbc, now, node, ifIndex.intValue(),
                                              snmpCollector);
@@ -546,14 +536,12 @@ public final class RescanProcessor implements Runnable {
 
             // Update subtargets
             if (ifc.hasAdditionalTargets()) {
-                Map subTargets = ifc.getAdditionalTargets();
-                Set keys = subTargets.keySet();
-                Iterator xiter = keys.iterator();
-                while (xiter.hasNext()) {
-                    InetAddress subIf = (InetAddress) xiter.next();
+                Map<InetAddress, List<SupportedProtocol>> subTargets = ifc.getAdditionalTargets();
+                for(InetAddress subIf : subTargets.keySet()) {
+
                     if (!updatedIfList.contains(subIf)) {
                         updateInterface(dbc, now, node, ifc.getTarget(), subIf,
-                                        (List) subTargets.get(subIf),
+                                        subTargets.get(subIf),
                                         snmpCollector, doesSnmp);
                         updatedIfList.add(subIf);
                     }
@@ -685,11 +673,11 @@ public final class RescanProcessor implements Runnable {
 
         // Find the ifTable entry for this interface
         IfTable ift = snmpc.getIfTable();
-        Iterator ifiter = ift.getEntries().iterator();
+        Iterator<IfTableEntry> ifiter = ift.getEntries().iterator();
         IfTableEntry ifte = null;
         boolean match = false;
         while (ifiter.hasNext()) {
-            ifte = (IfTableEntry) ifiter.next();
+            ifte = ifiter.next();
 
             // index
             Integer sint = ifte.getIfIndex();
@@ -836,7 +824,7 @@ public final class RescanProcessor implements Runnable {
      *             if there is a problem updating the ipInterface table.
      */
     private void updateInterface(Connection dbc, Date now, DbNodeEntry node,
-            InetAddress target, InetAddress ifaddr, List protocols,
+            InetAddress target, InetAddress ifaddr, List<SupportedProtocol> protocols,
             IfSnmpCollector snmpc, boolean doesSnmp) throws SQLException {
         /*
          * Reparenting
@@ -1112,7 +1100,6 @@ public final class RescanProcessor implements Runnable {
     throws SQLException {
 
         Category log = ThreadCategory.getInstance(getClass());
-        boolean duplicate = false;
 
         PreparedStatement ifStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_INTERFACE);
         PreparedStatement svcStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_SERVICES);
@@ -1463,7 +1450,7 @@ public final class RescanProcessor implements Runnable {
      * @throws SQLException
      *             if there is a problem updating the ifservices table.
      */
-    private void updateServiceInfo(Connection dbc, DbNodeEntry node, DbIpInterfaceEntry dbIpIfEntry, boolean isNewIpEntry, List protocols) throws SQLException {
+    private void updateServiceInfo(Connection dbc, DbNodeEntry node, DbIpInterfaceEntry dbIpIfEntry, boolean isNewIpEntry, List<SupportedProtocol> protocols) throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
         CapsdConfig cFactory = CapsdConfigFactory.getInstance();
@@ -1498,9 +1485,9 @@ public final class RescanProcessor implements Runnable {
                       + dbIpIfEntry.getHostname());
         }
 
-        Iterator iproto = protocols.iterator();
+        Iterator<SupportedProtocol> iproto = protocols.iterator();
         while (iproto.hasNext()) {
-            IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
+            SupportedProtocol p = iproto.next();
             Number sid = m_capsdDbSyncer.getServiceId(p.getProtocolName());
 
             /*
@@ -1816,10 +1803,10 @@ public final class RescanProcessor implements Runnable {
 
             // Find the ifTable entry for this interface
             IfTable ift = snmpc.getIfTable();
-            Iterator ifiter = ift.getEntries().iterator();
+            Iterator<IfTableEntry> ifiter = ift.getEntries().iterator();
             IfTableEntry ifte = null;
             while (ifiter.hasNext()) {
-                ifte = (IfTableEntry) ifiter.next();
+                ifte = ifiter.next();
 
                 // index
                 Integer sint = ifte.getIfIndex();
@@ -1981,7 +1968,6 @@ public final class RescanProcessor implements Runnable {
             }
 
             // Create and load SNMP Interface entry from the database
-            boolean newSnmpIfTableEntry = false;
             DbSnmpInterfaceEntry dbSnmpIfEntry =
                 DbSnmpInterfaceEntry.get(dbc, node.getNodeId(), ifIndex);
             if (dbSnmpIfEntry == null) {
@@ -1996,7 +1982,6 @@ public final class RescanProcessor implements Runnable {
                 }
                 dbSnmpIfEntry = DbSnmpInterfaceEntry.create(node.getNodeId(),
                                                             ifIndex);
-                newSnmpIfTableEntry = true;
             }
 
             /*
@@ -2026,7 +2011,7 @@ public final class RescanProcessor implements Runnable {
             }
 
             // Create and load SNMP Interface entry from the database
-            boolean newSnmpIfTableEntry = false;
+
             DbSnmpInterfaceEntry dbSnmpIfEntry =
                 DbSnmpInterfaceEntry.get(dbc, node.getNodeId(), ifIndex);
             if (dbSnmpIfEntry == null) {
@@ -2041,7 +2026,7 @@ public final class RescanProcessor implements Runnable {
                 }
                 dbSnmpIfEntry = DbSnmpInterfaceEntry.create(node.getNodeId(),
                                                             ifIndex);
-                newSnmpIfTableEntry = true;
+
             }
 
             /*
@@ -2059,141 +2044,6 @@ public final class RescanProcessor implements Runnable {
 
             // Update the database
             dbSnmpIfEntry.store(dbc);
-        }
-    }
-
-    /**
-     * This method checks if a suspect node entry is a duplicate node to the
-     * updating node by verify if each interface in the suspect node is
-     * contained in the ipAddrTable of the updating node.
-     * 
-     * @param dbc
-     *            Database connection
-     * @param suspectNode
-     *            the suspect node to verify duplication.
-     * @param snmpc
-     *            the SNMP collection of the updating node.
-     */
-    private boolean isDuplicateNode(Connection dbc, DbNodeEntry suspectNode,
-            IfSnmpCollector snmpc) {
-        Category log = ThreadCategory.getInstance(getClass());
-        if (suspectNode == null) {
-            log.debug("isDuplicateNode: null node.");
-            return false;
-        }
-
-        // Retrieve list of interfaces associated with the suspect node
-        try {
-            DbIpInterfaceEntry[] tmpIfArray = suspectNode.getInterfaces(dbc);
-
-            for (int i = 0; i < tmpIfArray.length; i++) {
-                InetAddress addr = tmpIfArray[i].getIfAddress();
-                int ifIndex = tmpIfArray[i].getIfIndex();
-
-                // Skip non-IP or loopback interfaces
-                if (addr.getHostAddress().equals("0.0.0.0") || addr.getHostAddress().startsWith("127.")) {
-                    continue;
-                }
-
-                int indexFromSnmpc = snmpc.getIfIndex(addr);
-                if (ifIndex != indexFromSnmpc) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("isDuplicateNode: Interface/ifindex: " + addr.getHostAddress() + "/" + ifIndex + " is not in the ipAddrTable of the updating node.");
-                    }
-                    return false;
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("isDuplicateNode: Interface: " + addr.getHostAddress() + " found a match in the ipAddrTable of the updating node.");
-                    }
-                }
-            }
-
-            return true;
-        } catch (SQLException sqlE) {
-            log.error("isDuplicateNode: failed to retrieve all interfaces for the supect node" + suspectNode.getNodeId(), sqlE);
-            return false;
-        }
-    }
-
-    /**
-     * Responsible for iterating inserting an entry into the ifServices table
-     * for each protocol supported by the interface.
-     * 
-     * @param node
-     *            Node entry
-     * @param ipIfEntry
-     *            DbIpInterfaceEntry object
-     * @param protocols
-     *            List of supported protocols
-     * @param addrUnmanaged
-     *            Boolean flag indicating if interface is managed or unmanaged
-     *            according to the Capsd configuration.
-     * @param ifIndex
-     *            Interface index or -1 if index is not known
-     * @param ipPkg
-     *            Poller package to which the interface belongs
-     * 
-     * @throws SQLException
-     *             if an error occurs adding interfaces to the ipInterface
-     *             table.
-     */
-    private void addSupportedProtocols(DbNodeEntry node, DbIpInterfaceEntry ipIfEntry, List protocols, boolean addrUnmanaged, int ifIndex, org.opennms.netmgt.config.poller.Package ipPkg) throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
-        InetAddress ifaddr = ipIfEntry.getIfAddress();
-        if (ifaddr.getHostAddress().equals("0.0.0.0")) {
-            if (log.isDebugEnabled()) {
-                log.debug("addSupportedProtocols: node " + node.getNodeId() + ": Cant add ip services for non-ip interface. Just return.");
-            }
-            return;
-        } 
-
-        // add the supported protocols
-        Iterator iproto = protocols.iterator();
-        while (iproto.hasNext()) {
-            IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
-            Number sid = m_capsdDbSyncer.getServiceId(p.getProtocolName());
-
-            DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
-
-            // now fill in the entry
-            if (addrUnmanaged) {
-                ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
-            } else {
-                boolean svcToBePolled = false;
-                if (ipPkg != null) {
-                    svcToBePolled = PollerConfigFactory.getInstance().isPolled(p.getProtocolName(), ipPkg);
-                    if (!svcToBePolled) {
-                        svcToBePolled = PollerConfigFactory.getInstance().isPolled(ifaddr.getHostAddress(), p.getProtocolName());
-                    }
-                }
-
-                if (svcToBePolled) {
-                    ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-                } else {
-                    ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
-                    log.debug("addSupportedProtocols: node " + node.getNodeId() + ": Setting status to NOT_POLLED");
-		}  
-            }
-
-            /*
-             * Set qualifier if available. Currently the qualifier field
-             * is used to store the port at which the protocol was found.
-             */
-            if (p.getQualifiers() != null && p.getQualifiers().get("port") != null) {
-                try {
-                    Integer port = (Integer) p.getQualifiers().get("port");
-                    ifSvcEntry.setQualifier(port.toString());
-                } catch (ClassCastException ccE) {
-                    // Do nothing
-                }
-            }
-
-            ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
-            ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);
-            if (ifIndex != -1) {
-                ifSvcEntry.setIfIndex(ifIndex);
-            }
-            ifSvcEntry.store();
         }
     }
 
@@ -2457,15 +2307,11 @@ public final class RescanProcessor implements Runnable {
 
             // Now go through list of sub-targets
             if (ifc.hasAdditionalTargets()) {
-                Map subTargets = ifc.getAdditionalTargets();
-                Set keys = subTargets.keySet();
-                Iterator siter = keys.iterator();
+                Map<InetAddress, List<SupportedProtocol>> subTargets = ifc.getAdditionalTargets();
+                for(InetAddress xifaddr : subTargets.keySet()) {
 
-                while (siter.hasNext()) {
-                    // Add eligible subtargets.
-                    InetAddress xifaddr = (InetAddress) siter.next();
                     if (addresses.contains(xifaddr) == false) {
-                        if (SuspectEventProcessor.supportsSnmp((List) subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc) && SuspectEventProcessor.getIfType(xifaddr, snmpc) == 24) {
+                        if (SuspectEventProcessor.supportsSnmp(subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc) && SuspectEventProcessor.getIfType(xifaddr, snmpc) == 24) {
                             if (log.isDebugEnabled()) {
                                 log.debug("buildLBSnmpAddressList: adding subtarget interface " + xifaddr.getHostAddress() + " temporarily marked as primary!");
                             }
@@ -2528,15 +2374,12 @@ public final class RescanProcessor implements Runnable {
 
             // Now go through list of sub-targets
             if (ifc.hasAdditionalTargets()) {
-                Map subTargets = ifc.getAdditionalTargets();
-                Set keys = subTargets.keySet();
-                Iterator siter = keys.iterator();
-
-                while (siter.hasNext()) {
+                Map<InetAddress, List<SupportedProtocol>> subTargets = ifc.getAdditionalTargets();
+                
+                for(InetAddress xifaddr : subTargets.keySet()) {
                     // Add eligible subtargets.
-                    InetAddress xifaddr = (InetAddress) siter.next();
                     if (addresses.contains(xifaddr) == false) {
-                        if (SuspectEventProcessor.supportsSnmp((List) subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc)) {
+                        if (SuspectEventProcessor.supportsSnmp(subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc)) {
                             if (log.isDebugEnabled()) {
                                 log.debug("buildSnmpAddressList: adding subtarget interface " + xifaddr.getHostAddress() + " temporarily marked as primary!");
                             }
@@ -2564,9 +2407,6 @@ public final class RescanProcessor implements Runnable {
     private InetAddress determinePrimaryIpInterface(Map<String, IfCollector> collectorMap) {
         Category log = ThreadCategory.getInstance(getClass());
 
-        // For now hard-coding primary interface address selection method to MIN
-        String method = SELECT_METHOD_MIN;
-
         Collection<IfCollector> values = collectorMap.values();
         Iterator<IfCollector> iter = values.iterator();
         InetAddress primaryIf = null;
@@ -2579,17 +2419,16 @@ public final class RescanProcessor implements Runnable {
                 continue;
             } else {
                 // Test the target interface of the collector first.
-                primaryIf = SuspectEventProcessor.compareAndSelectPrimary(currIf, primaryIf, method);
+                primaryIf = SuspectEventProcessor.compareAndSelectPrimary(currIf, primaryIf);
 
                 // Now test each of the collected subtargets
                 if (ifc.hasAdditionalTargets()) {
-                    Map subTargets = ifc.getAdditionalTargets();
-                    Set keys = subTargets.keySet();
-                    Iterator siter = keys.iterator();
+                    Map<InetAddress, List<SupportedProtocol>> subTargets = ifc.getAdditionalTargets();
+                    Iterator<InetAddress> siter = subTargets.keySet().iterator();
 
                     while (siter.hasNext()) {
-                        currIf = (InetAddress) siter.next();
-                        primaryIf = SuspectEventProcessor.compareAndSelectPrimary(currIf, primaryIf, method);
+                        currIf = siter.next();
+                        primaryIf = SuspectEventProcessor.compareAndSelectPrimary(currIf, primaryIf);
                     }
                 }
             }
@@ -2846,99 +2685,6 @@ public final class RescanProcessor implements Runnable {
     }
 
     /**
-     * Determines if the passed InetAddress object represents an interface
-     * alias. The interface is an alias if the IpAddrTable collected from it via
-     * SNMP does not contain itself.
-     * 
-     * @param ipAddr
-     *            Address of interface to be tested
-     * @param snmpc
-     *            IfSnmpCollector object containing SNMP collected ifTable and
-     *            ipAddrTable information.
-     * 
-     * @return TRUE if the provided IP address is an alias, FALSE otherwise.
-     */
-    private boolean isInterfaceAlias(InetAddress ipAddr, IfSnmpCollector snmpc) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // Sanity check...null parms?
-        if (ipAddr == null || snmpc == null) {
-            throw new IllegalArgumentException("ipAddr and snmpc parms cannot be null.");
-        }
-
-        // SNMP collection successful?
-        if (!snmpc.hasIpAddrTable()) {
-            return false;
-        }
-
-        // Verify that SNMP collection contains ifTable and ipAddrTable entries
-        IfTable ifTable = null;
-        IpAddrTable ipAddrTable = null;
-
-        if (snmpc.hasIfTable()) {
-            ifTable = snmpc.getIfTable();
-        }
-
-        if (snmpc.hasIpAddrTable()) {
-            ipAddrTable = snmpc.getIpAddrTable();
-        }
-
-        if (ifTable == null || ipAddrTable == null) {
-            return false;
-        }
-
-        /*
-         * Loop through the interface table entries until there are no more
-         * entries or we've found a match
-         */
-        boolean isAlias = true;
-        Iterator iter = ifTable.getEntries().iterator();
-
-        while (iter.hasNext()) {
-            IfTableEntry ifEntry = (IfTableEntry) iter.next();
-
-            if (ifEntry.getIfIndex() == null) {
-                log.debug("isInterfaceAlias:  Breaking from loop");
-                break;
-            }
-
-            /*
-             * Get the list of IP addresses for the current index and
-             * determine if the provided address is present.
-             */
-            int ifIndex = -1;
-
-            Integer snmpIfIndex = ifEntry.getIfIndex();
-            if (snmpIfIndex != null) {
-                ifIndex = snmpIfIndex.intValue();
-            }
-
-            List addrList = IpAddrTable.getIpAddresses(ipAddrTable.getEntries(), ifIndex);
-            Iterator addrIter = addrList.iterator();
-            while (addrIter.hasNext()) {
-                InetAddress tmpAddr = (InetAddress) addrIter.next();
-
-                /*
-                 * Compare temp address to the provided IP address...as soon as
-                 * we find a match we're done.
-                 */
-                if (tmpAddr != null && tmpAddr.getHostAddress().equals(ipAddr.getHostAddress())) {
-                    // Match found, break out of inner while loop
-                    isAlias = false;
-                    break;
-                }
-            }
-
-            // If match found break out of outer while loop
-            if (isAlias == false) {
-                break;
-            }
-        } // end while
-
-        return isAlias;
-    }
-
-    /**
      * This method is used to verify if each interface on a node stored in the
      * database is in the specified SNMP data collection.
      * 
@@ -2979,7 +2725,7 @@ public final class RescanProcessor implements Runnable {
             return false;
         }
 
-        List ipAddrList = IpAddrTable.getIpAddresses(ipAddrTable.getEntries());
+        List<InetAddress> ipAddrList = ipAddrTable.getIpAddresses();
 
         /*
          * Loop through the interface table entries until there are no more
@@ -2992,10 +2738,8 @@ public final class RescanProcessor implements Runnable {
                 continue;
             }
 
-            Iterator iter = ipAddrList.iterator();
             boolean found = false;
-            while (iter.hasNext()) {
-                InetAddress addr = (InetAddress) iter.next();
+            for(InetAddress addr : ipAddrList) {
 
                 // Skip non-IP or loopback interfaces
                 if (addr.getHostAddress().equals("0.0.0.0") || addr.getHostAddress().startsWith("127.")) {
@@ -3054,16 +2798,15 @@ public final class RescanProcessor implements Runnable {
         // this indicates whether or not we found an iface the responds to snmp
         boolean doesSnmp = true;
         
-        IfSnmpCollector prevSnmpc = null;
         IpAddrTable ipAddTable = null;
-        List prevAddrList = null;
+        List<InetAddress> prevAddrList = null;
         boolean snmpcAgree = false;
         boolean gotSnmpc = false;
         Map<String, IfCollector> collectorMap =
             new HashMap<String, IfCollector>();
         Map<String, IfCollector> nonSnmpCollectorMap =
             new HashMap<String, IfCollector>();
-        Set probedAddrs = new HashSet();
+        Set<InetAddress> probedAddrs = new HashSet<InetAddress>();
 
         boolean gotSnmpCollection = false;
         DbIpInterfaceEntry oldPrimarySnmpInterface =
@@ -3122,29 +2865,27 @@ public final class RescanProcessor implements Runnable {
                         snmpcAgree = true;
                         collectorMap.put(ifaddr.getHostAddress(), collector);
                         ipAddTable = snmpc.getIpAddrTable();
-                        prevAddrList =
-                            IpAddrTable.getIpAddresses(ipAddTable.getEntries());
-                        prevSnmpc = snmpc;
+                        prevAddrList = ipAddTable.getIpAddresses();
+
                         if (log.isDebugEnabled()) {
                             log.debug("SNMP data collected via "
                                       + ifaddr.getHostAddress()
                                       + " does not agree with database.  "
                                       + "Tentatively adding to the "
                                       + "collectorMap and continuing");
-                            Iterator h = prevAddrList.iterator();
-                            while (h.hasNext()) {
-                                log.debug("IP address in list = " + h.next());
+                            for(InetAddress a : prevAddrList) {
+                                log.debug("IP address in list = " + a);
                             }
                         }
                     } else if (ipAddTable != null && snmpcAgree == true) {
                         ipAddTable = snmpc.getIpAddrTable();
-                        List addrList =
-                            IpAddrTable.getIpAddresses(ipAddTable.getEntries());
+                        List<InetAddress> addrList = ipAddTable.getIpAddresses();
+
                         boolean listMatch = true;
                         String jstring = null;
                         String kstring = null;
-                        Iterator j = prevAddrList.iterator();
-                        Iterator k = addrList.iterator();
+                        Iterator<InetAddress> j = prevAddrList.iterator();
+                        Iterator<InetAddress> k = addrList.iterator();
                         while (j.hasNext()) {
                             jstring = j.next().toString();
                             if (k.hasNext()) {
@@ -3287,7 +3028,6 @@ public final class RescanProcessor implements Runnable {
                             updatePrimarySnmpInterface(dbc, dbNodeEntry,
                                                        collectorMap, oldPriIf);
 
-                        DbNodeEntry updatedNodeEntry =
                             updateNode(dbc, now, dbNodeEntry, newSnmpPrimaryIf,
                                        dbInterfaces, collectorMap);
                     }
@@ -3334,7 +3074,7 @@ public final class RescanProcessor implements Runnable {
 
     private boolean scanPrimarySnmpInterface(Category log,
             DbIpInterfaceEntry oldPrimarySnmpInterface,
-            Map<String, IfCollector> collectorMap, Set probedAddrs) {
+            Map<String, IfCollector> collectorMap, Set<InetAddress> probedAddrs) {
         boolean gotSnmpCollection = false;
 
         /*
@@ -3419,26 +3159,21 @@ public final class RescanProcessor implements Runnable {
             }
         }
         
-	CollectdConfigFactory r = CollectdConfigFactory.getInstance();
-
         InetAddress newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses, strict);
         String psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
 
         if (newSnmpPrimaryIf == null) {
-            CollectdConfigFactory r1 = CollectdConfigFactory.getInstance();
             newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses, strict);
             psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
         }
 
         strict = false;
         if (newSnmpPrimaryIf == null) {
-            CollectdConfigFactory r1 = CollectdConfigFactory.getInstance();
             newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses, strict);
             psiType = "DB loopback addresses";
         }
 
         if (newSnmpPrimaryIf == null) {
-            CollectdConfigFactory r1 = CollectdConfigFactory.getInstance();
             newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses, strict);
             psiType = "DB addresses";
         }

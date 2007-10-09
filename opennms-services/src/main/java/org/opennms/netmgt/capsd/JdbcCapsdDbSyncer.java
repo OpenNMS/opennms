@@ -12,7 +12,7 @@
  *
  * 2007 May 06: Log at INFO level when we delete a record from the ifServices
  *              table. - dj@opennms.org
- * 2007 May 06: Created this file.  Pulled databse synchronization code out
+ * 2007 May 06: Created this file.  Pulled database synchronization code out
  *              of CapsdConfigManager into CapsdDbSyncer interface and into
  *              this file. - dj@opennms.org
  *
@@ -58,11 +58,14 @@ import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.PollerConfigFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
 public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
+    
     /**
      * <P>
      * LightWeightIfEntry is designed to hold specific information about an IP
@@ -450,6 +453,8 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     private PollerConfig m_pollerConfig;
 
     private String m_nextSvcIdSql = DEFAULT_NEXT_SVC_ID_SQL;
+    
+    private JdbcTemplate m_jdbcTemplate;
 
     public JdbcCapsdDbSyncer() {
         
@@ -484,30 +489,35 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
 
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncServices(java.sql.Connection)
+     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncServices()
      */
+    public void syncServices() {
+        m_jdbcTemplate.execute(new ConnectionCallback() {
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                syncServices(con);
+                return null;
+            }
+            
+        });
+    }
+    
+    
     public void syncServices(Connection conn) throws SQLException {
-        if (conn == null) {
-            log().error("CapsdConfigFactory.syncServices: Sync failed...must have valid database connection.");
-            return;
-        }
         
-        List serviceNames = syncServicesTable(conn);
+        List<String> serviceNames = syncServicesTable(conn);
     
         PreparedStatement delFromOutagesStmt = null;
         PreparedStatement delFromIfServicesStmt = null;
         try { 
             
-            List protocols = getCapsdConfig().getConfiguredProtocols();
+            List<String> protocols = getCapsdConfig().getConfiguredProtocols();
             
             /*
              * now iterate over the services from the 'service' table
              * and determine if any no longer exist in the list of
              * configured protocols
              */
-            Iterator s = serviceNames.iterator();
-            while (s.hasNext()) {
-                String service = (String) s.next();
+           for(String service : serviceNames) {
                 if (!protocols.contains(service)) {
                     if (log().isDebugEnabled()) {
                         log().debug("syncServices: service " + service + " exists in the database but not in the Capsd config file.");
@@ -535,6 +545,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                 delFromIfServicesStmt.close();
             }
         }
+        
     }
 
     private Category log() {
@@ -542,8 +553,19 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncServicesTable(java.sql.Connection)
+     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncServicesTable()
      */
+    @SuppressWarnings("unchecked")
+    public List<String> syncServicesTable() {
+        return (List<String>)m_jdbcTemplate.execute(new ConnectionCallback() {
+
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                return syncServicesTable(con);
+            }
+            
+        });
+    }
+    
     public List<String> syncServicesTable(Connection conn) throws SQLException {
         log().debug("syncServicesTable: synchronizing services list with the database");
         
@@ -609,10 +631,21 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         }
         return serviceNames;
     }
-
+    
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncManagementState(java.sql.Connection)
+     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncManagementState()
      */
+    public void syncManagementState() {
+        m_jdbcTemplate.execute(new ConnectionCallback() {
+
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                syncManagementState(con);
+                return null;
+            }
+            
+        });
+    }
+
     public void syncManagementState(Connection conn) throws SQLException {
         boolean verifyServer = getOpennmsServerConfig().verifyServer();
         String localServer = getOpennmsServerConfig().getServerName();
@@ -862,8 +895,19 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncSnmpPrimaryState(java.sql.Connection)
+     * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncSnmpPrimaryState()
      */
+    public void syncSnmpPrimaryState() {
+        m_jdbcTemplate.execute(new ConnectionCallback() {
+
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                syncSnmpPrimaryState(con);
+                return null;
+            }
+            
+        });
+    }
+
     public synchronized void syncSnmpPrimaryState(Connection conn) throws SQLException {
         if (conn == null) {
             throw new IllegalArgumentException("Sync failed...must have valid database connection.");
@@ -967,10 +1011,10 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         if (log().isDebugEnabled()) {
             log().debug("syncSnmpPrimaryState: iterating over nodes in map and checking primary SNMP interface, node count: " + nodes.size());
         }
-        Iterator niter = nodes.keySet().iterator();
+        Iterator<Integer> niter = nodes.keySet().iterator();
         while (niter.hasNext()) {
             // Get the nodeid (key)
-            Integer nId = (Integer) niter.next();
+            Integer nId = niter.next();
             if (log().isDebugEnabled()) {
                 log().debug("building SNMP address list for node " + nId);
             }
@@ -1092,12 +1136,6 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     }
 
 
-    public void init() {
-        setOpennmsServerConfig(OpennmsServerConfigFactory.getInstance());
-        setPollerConfig(PollerConfigFactory.getInstance());
-        setCollectdConfig(CollectdConfigFactory.getInstance());
-    }
-    
     public CapsdConfig getCapsdConfig() {
         return m_capsdConfig;
     }
@@ -1131,6 +1169,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     }
     
     public void afterPropertiesSet() {
+        Assert.state(m_jdbcTemplate != null, "property jdbcTemplate must be set to a non-null value");
         Assert.state(m_capsdConfig != null, "property capsdConfig must be set to a non-null value");
         Assert.state(m_opennmsServerConfig != null, "property opennmsServerConfig must be set to a non-null value");
         Assert.state(m_pollerConfig != null, "property pollerConfig must be set to a non-null value");
@@ -1178,6 +1217,16 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#isInterfaceInDB(java.sql.Connection, java.net.InetAddress)
      */
+    public boolean isInterfaceInDB(final InetAddress ifAddress) {
+        return ((Boolean)m_jdbcTemplate.execute(new ConnectionCallback() {
+
+            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+                    return isInterfaceInDB(con, ifAddress) ? Boolean.TRUE : Boolean.FALSE;
+            }
+            
+        })).booleanValue();
+    }
+    
     public boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException {
         boolean result = false;
     
@@ -1207,6 +1256,10 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
 
     public String getNextSvcIdSql() {
        return m_nextSvcIdSql;
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        m_jdbcTemplate = jdbcTemplate;
     }
     
 

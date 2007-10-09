@@ -217,7 +217,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         init();
     }
 
-    public void init() {
+    public synchronized void init() {
         if (m_eventdConfigMgr == null) {
             throw new IllegalStateException("eventd configuration manager not set");
         }

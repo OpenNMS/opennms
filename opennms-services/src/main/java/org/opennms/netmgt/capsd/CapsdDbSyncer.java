@@ -65,14 +65,13 @@ public interface CapsdDbSyncer {
      * Note that the 'service' table entry will remain in the database since
      * events most likely exist which refer to the service.
      */
-    public abstract void syncServices(Connection conn) throws SQLException;
-
+    public abstract void syncServices();
+    
     /**
      * Synchronize configured services list with the database.
      */
-    public abstract List<String> syncServicesTable(Connection conn)
-            throws SQLException;
-
+    public abstract List<String> syncServicesTable();
+    
     /**
      * Responsible for syncing up the 'isManaged' field of the ipInterface table
      * and the 'status' field of the ifServices table based on the capsd and
@@ -99,9 +98,8 @@ public interface CapsdDbSyncer {
      * @exception SQLException
      *                Thrown if an error occurs while syncing the database.
      */
-    public abstract void syncManagementState(Connection conn)
-            throws SQLException;
-
+    public abstract void syncManagementState();
+    
     /**
      * Responsible for syncing up the 'isPrimarySnmp' field of the ipInterface
      * table based on the capsd and collectd configurations. Note that the
@@ -114,12 +112,13 @@ public interface CapsdDbSyncer {
      * @exception SQLException
      *                Thrown if an error occurs while syncing the database.
      */
-    public abstract void syncSnmpPrimaryState(Connection conn)
-            throws SQLException;
-
+    public abstract void syncSnmpPrimaryState();
+    
     /**
      * 
      */
+    public abstract boolean isInterfaceInDB(InetAddress ifAddress);
+    
     public abstract boolean isInterfaceInDB(Connection dbConn,
             InetAddress ifAddress) throws SQLException;
 

@@ -86,7 +86,7 @@ public class PluginManager implements InitializingBean {
                     Plugin oplugin = m_pluginsByClass.get(plugin.getClassName());
                     m_pluginsByProtocol.put(plugin.getProtocol(), oplugin);
                 } else {
-                    Class cplugin = Class.forName(plugin.getClassName());
+                    Class<?> cplugin = Class.forName(plugin.getClassName());
                     Object oplugin = cplugin.newInstance();
                     if (!(oplugin instanceof Plugin)) {
                         throw new ValidationException("CapsdConfigFactory: successfully to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName() + ", however the class is not an instance of " + Plugin.class.getName());
@@ -214,7 +214,7 @@ public class PluginManager implements InitializingBean {
     
                 // it's either on specifically, or by default
                 // so map it parameters
-                Map<String, String> params = new TreeMap<String, String>();
+                Map<String, Object> params = new TreeMap<String, Object>();
     
                 // add the plugin defaults first, then specifics
                 addProperties(getCapsdConfig().getPluginProperties(plugin), params);
@@ -233,7 +233,7 @@ public class PluginManager implements InitializingBean {
     
                 // it's either on specifically, or by default
                 // so map it parameters
-                Map<String, String> params = new TreeMap<String, String>();
+                Map<String, Object> params = new TreeMap<String, Object>();
                 addProperties(getCapsdConfig().getPluginProperties(plugin), params);
     
                 lprotos.add(new CapsdProtocolInfo(plugin.getProtocol(), m_pluginsByProtocol.get(plugin.getProtocol()), params, Action.SCAN));
@@ -251,7 +251,7 @@ public class PluginManager implements InitializingBean {
         return lprotos.toArray(result);
     }
 
-    private void addProperties(List<Property> properties, Map<String, String> params) {
+    private void addProperties(List<Property> properties, Map<String, Object> params) {
         for (Property property : properties) {
             params.put(property.getKey(), property.getValue());
         }

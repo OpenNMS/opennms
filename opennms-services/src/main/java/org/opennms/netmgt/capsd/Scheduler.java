@@ -90,11 +90,6 @@ final class Scheduler implements Runnable, PausableFiber {
     private static final int SMB_REPARENTING_IDENTIFIER = -1;
 
     /**
-     * The name of this fiber.
-     */
-    private String m_name;
-
-    /**
      * The status for this fiber.
      */
     private int m_status;
@@ -108,7 +103,7 @@ final class Scheduler implements Runnable, PausableFiber {
      * List of NodeInfo objects representing each of the nodes in the database
      * capability of being scheduled.
      */
-    private List m_knownNodes;
+    private List<NodeInfo> m_knownNodes;
 
     /**
      * The configured interval (in milliseconds) between rescans
@@ -125,7 +120,7 @@ final class Scheduler implements Runnable, PausableFiber {
      * The rescan queue where new RescanProcessor objects are enqueued for
      * execution.
      */
-    private FifoQueue m_rescanQ;
+    private FifoQueue<RescanProcessor> m_rescanQ;
 
     private CapsdDbSyncer m_capsdDbSyncer;
 
@@ -198,16 +193,15 @@ final class Scheduler implements Runnable, PausableFiber {
      * Constructs a new instance of the scheduler.
      * 
      */
-    Scheduler(CapsdDbSyncer syncer, PluginManager pluginManager, FifoQueue rescanQ) throws SQLException {
+    Scheduler(CapsdDbSyncer syncer, PluginManager pluginManager, FifoQueue<RescanProcessor> rescanQ) throws SQLException {
         m_capsdDbSyncer = syncer;
         m_pluginManager = pluginManager;
         m_rescanQ = rescanQ;
 
-        m_name = FIBER_NAME;
         m_status = START_PENDING;
         m_worker = null;
 
-        m_knownNodes = Collections.synchronizedList(new LinkedList());
+        m_knownNodes = Collections.synchronizedList(new LinkedList<NodeInfo>());
         Category log = ThreadCategory.getInstance(getClass());
 
         // Get rescan interval from configuration factory
@@ -359,9 +353,9 @@ final class Scheduler implements Runnable, PausableFiber {
      */
     void unscheduleNode(int nodeId) {
         synchronized (m_knownNodes) {
-            Iterator iter = m_knownNodes.iterator();
+            Iterator<NodeInfo> iter = m_knownNodes.iterator();
             while (iter.hasNext()) {
-                NodeInfo nodeInfo = (NodeInfo) iter.next();
+                NodeInfo nodeInfo = iter.next();
                 if (nodeInfo.getNodeId() == nodeId) {
                     ThreadCategory.getInstance(getClass()).debug("unscheduleNode: removing node " + nodeId + " from the scheduler.");
                     m_knownNodes.remove(nodeInfo);
@@ -550,9 +544,9 @@ final class Scheduler implements Runnable, PausableFiber {
             synchronized (m_knownNodes) {
                 if (log.isDebugEnabled())
                     log.debug("Scheduler.run: iterating over known nodes list to schedule...");
-                Iterator iter = m_knownNodes.iterator();
+                Iterator<NodeInfo> iter = m_knownNodes.iterator();
                 while (iter.hasNext()) {
-                    NodeInfo node = (NodeInfo) iter.next();
+                    NodeInfo node = iter.next();
 
                     // Don't schedule if already scheduled
                     if (node.isScheduled())

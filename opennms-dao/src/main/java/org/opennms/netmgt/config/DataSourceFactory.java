@@ -53,6 +53,7 @@ import javax.sql.DataSource;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 /**
  * <p>
@@ -108,7 +109,12 @@ public final class DataSourceFactory implements DataSource {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
         DataSource dataSource = new C3P0ConnectionFactory(cfgFile.getPath(), dsName);
-        setInstance(dsName,dataSource);
+        
+        // Springframework provided proxies that make working with transactions much easier
+        LazyConnectionDataSourceProxy lazyProxy = new LazyConnectionDataSourceProxy(dataSource);
+        lazyProxy.afterPropertiesSet();
+        
+        setInstance(dsName, lazyProxy);
     }
 
     private static boolean isLoaded(String dsName) {

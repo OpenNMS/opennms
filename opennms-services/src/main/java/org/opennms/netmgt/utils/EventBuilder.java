@@ -141,6 +141,10 @@ public class EventBuilder {
         return addParam(parmName, Integer.toString(val));
     }
     
+    public EventBuilder addParam(String parmName, char ch) {
+        return addParam(parmName, Character.toString(ch));
+    }
+    
     public EventBuilder addParam(String parmName, Collection<String> vals) {
         String val = StringUtils.collectionToCommaDelimitedString(vals);
         return addParam(parmName, val);

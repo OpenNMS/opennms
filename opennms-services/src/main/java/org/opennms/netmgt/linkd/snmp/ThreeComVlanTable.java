@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -53,13 +52,13 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public class ThreeComVlanTable extends SnmpTable {
+public class ThreeComVlanTable extends SnmpTable<ThreeComVlanTableEntry> {
 
 	public ThreeComVlanTable(InetAddress address) {
         super(address, "threeComVlanTable", ThreeComVlanTableEntry.threeComVlan_elemList);
     }
     
-    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected ThreeComVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new ThreeComVlanTableEntry();
     }
 

@@ -1846,9 +1846,8 @@ final class DbNodeEntry {
             if (rset.wasNull())
                 ifIndex = -1;
 
-            InetAddress addr = null;
             try {
-                addr = InetAddress.getByName(saddr);
+                InetAddress.getByName(saddr);
             } catch (UnknownHostException e) {
                 ThreadCategory.getInstance(getClass()).warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
                 continue;

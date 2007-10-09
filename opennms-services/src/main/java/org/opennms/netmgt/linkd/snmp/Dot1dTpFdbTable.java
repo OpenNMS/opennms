@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -54,13 +53,13 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  *
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  */
-public class Dot1dTpFdbTable extends SnmpTable{
+public class Dot1dTpFdbTable extends SnmpTable<Dot1dTpFdbTableEntry> {
 
 	public Dot1dTpFdbTable(InetAddress address) {
         super(address, "dot1dTpFdbTable", Dot1dTpFdbTableEntry.ms_elemList);
     }
     
-    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected Dot1dTpFdbTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new Dot1dTpFdbTableEntry();
     }
 

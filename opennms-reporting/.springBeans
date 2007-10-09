@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<configExtensions>
+		<configExtension>xml</configExtension>
+	</configExtensions>
+	<configs>
+		<config>src/main/resources/META-INF/opennms/applicationContext-reporting.xml</config>
+		<config>src/main/resources/META-INF/opennms/standaloneApplicationContext-reporting.xml</config>
+	</configs>
+	<configSets>
+		<configSet>
+			<name><![CDATA[Reporting]]></name>
+			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
+				<config>src/main/resources/META-INF/opennms/applicationContext-reporting.xml</config>
+			</configs>
+		</configSet>
+	</configSets>
+</beansProjectDescription>

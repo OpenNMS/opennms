@@ -34,44 +34,7 @@
 
 package org.opennms.netmgt.capsd.jmx;
 
-import java.net.UnknownHostException;
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-public interface CapsdMBean {
-    public void init();
-
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String getStatusText();
-
-    public String status();
-
-    /**
-     * This method is used by other managed beans to forward an IP Address for
-     * capability scanning. The If the interface converts properly then it is
-     * scanned as a suspect interface for the discovery of all the services and
-     * other interfaces that exists on the node.
-     * 
-     * @param ifAddr
-     *            The address of the suspect interface.
-     * 
-     * @throws java.net.UnknownHostException
-     *             Thrown if the address cannot be converted to aa proper
-     *             internet address.
-     */
-    public void scanSuspectInterface(String ifAddr) throws UnknownHostException;
-
-    /**
-     * This method is used to force an existing node to be capability rescaned.
-     * The main reason for its existance is as a hook for JMX managed beans to
-     * invoke forced rescans allowing the main rescan logic to remain in the
-     * capsd agent.
-     * 
-     * @param nodeId
-     *            The node identifier from the database.
-     */
-    public void rescanInterfaceParent(Integer nodeId);
+public interface CapsdMBean extends BaseOnmsMBean {
 }

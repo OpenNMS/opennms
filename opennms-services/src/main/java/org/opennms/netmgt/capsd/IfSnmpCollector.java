@@ -90,18 +90,6 @@ public final class IfSnmpCollector implements Runnable {
     private IfXTable m_ifXTable;
 
     /**
-     * The default constructor. Since this class requires an IP address to
-     * collect SNMP information the default constructor is declared private and
-     * will also throw an exception
-     * 
-     * @throws java.lang.UnsupportedOperationException
-     *             Always thrown.
-     */
-    private IfSnmpCollector() {
-        throw new UnsupportedOperationException("default constructor not supported");
-    }
-
-    /**
      * Constructs a new snmp collector for a node using the passed interface as
      * the collection point. The collection does not occur until the
      * <code>run</code> method is invoked.

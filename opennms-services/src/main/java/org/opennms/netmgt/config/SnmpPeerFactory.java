@@ -216,7 +216,7 @@ public final class SnmpPeerFactory extends PeerFactory {
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
      */
-    public void define(InetAddress ip, String community) throws UnknownHostException {
+    private void define(InetAddress ip, String community) throws UnknownHostException {
         Category log = log();
 
         // Convert IP to long so that it easily compared in range elements
@@ -332,7 +332,7 @@ public final class SnmpPeerFactory extends PeerFactory {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }
     
-    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
+    private synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
 
         if (m_config == null) {
             SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
@@ -688,7 +688,7 @@ public final class SnmpPeerFactory extends PeerFactory {
         return m_config;
     }
 
-    public static synchronized void setSnmpConfig(SnmpConfig m_config) {
+    private static synchronized void setSnmpConfig(SnmpConfig m_config) {
         SnmpPeerFactory.m_config = m_config;
     }
 

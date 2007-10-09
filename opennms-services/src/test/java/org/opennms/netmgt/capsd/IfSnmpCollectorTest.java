@@ -173,8 +173,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         assertFalse("ipAddrTable collection should not hahve failed", ipAddrTable.failed());
         assertEquals("ipAddrTable ifIndex of 127.0.0.1", 1, ipAddrTable.getIfIndex(InetAddress.getByName(DEFAULT_HOST)));
         
-        List entries = ipAddrTable.getEntries();
-        List addresses = IpAddrTable.getIpAddresses(entries);
+        List addresses = ipAddrTable.getIpAddresses();
         assertTrue("ipAddrTable should contain 172.20.1.201", addresses.contains(InetAddress.getByName("172.20.1.201")));
         assertTrue("ipAddrTable should contain 127.0.0.1 like any good IP stack should", addresses.contains(InetAddress.getByName(DEFAULT_HOST)));
     }

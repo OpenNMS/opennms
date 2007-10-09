@@ -57,7 +57,6 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
-import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CapsdProtocolInfo;
 
@@ -134,7 +133,7 @@ public final class IfCollector implements Runnable {
         /**
          * The map of qualifiers from the plugin that discovered this protocol.
          */
-        private final Map m_qualifiers;
+        private final Map<String, Object> m_qualifiers;
 
         /**
          * Creates a new supported protocol based upon the protocol string and
@@ -145,7 +144,7 @@ public final class IfCollector implements Runnable {
          * @param qualifiers
          *            The protocol qualifiers.
          */
-        SupportedProtocol(String protoName, Map qualifiers) {
+        SupportedProtocol(String protoName, Map<String, Object> qualifiers) {
             m_name = protoName;
             m_qualifiers = qualifiers;
         }
@@ -161,7 +160,7 @@ public final class IfCollector implements Runnable {
          * Returns the map of qualifiers from the plugin that discovered this
          * protocol.
          */
-        Map getQualifiers() {
+        Map<String, Object> getQualifiers() {
             return m_qualifiers;
         }
     }
@@ -200,7 +199,7 @@ public final class IfCollector implements Runnable {
 
             try {
                 Plugin p = plugins[i].getPlugin();
-                Map q = plugins[i].getParameters();
+                Map<String, Object> q = plugins[i].getParameters();
                 boolean r = p.isProtocolSupported(target, q);
 
                 if (log().isDebugEnabled()) {
@@ -232,15 +231,6 @@ public final class IfCollector implements Runnable {
     }
 
     /**
-     * Default constructor. This constructor is disallowed since the collector
-     * must have a target IP address to collect on. This constructor will always
-     * throw an Unsupported Operation Exception.
-     */
-    private IfCollector() {
-        throw new UnsupportedOperationException("default construction not available!");
-    }
-
-    /**
      * Constructs a new collector instance. The collector's target is passed as
      * an argument to the constructor. Very little initialization is preformed
      * in the constructor. The main work of the class is preformed in the
@@ -254,7 +244,7 @@ public final class IfCollector implements Runnable {
      * 
      */
     IfCollector(PluginManager pluginManager, InetAddress addr, boolean doSnmpCollection) {
-        this(pluginManager, addr, doSnmpCollection, new HashSet());
+        this(pluginManager, addr, doSnmpCollection, new HashSet<InetAddress>());
     }
 
     IfCollector(PluginManager pluginManager, InetAddress addr, boolean doSnmpCollection, Set<InetAddress> previouslyProbed) {
@@ -410,18 +400,16 @@ public final class IfCollector implements Runnable {
                 m_snmpCollector = new IfSnmpCollector(m_target);
                 m_snmpCollector.run();
 
-                // now probe the remaining interfaces, if any
-                //
                 if (m_snmpCollector.hasIpAddrTable() && m_snmpCollector.hasIfTable()) {
                     m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(KnownIPMgr.AddrComparator.comparator);
                     m_nonIpInterfaces = new ArrayList<Integer>();
 
                     // Iterate over ifTable entries
                     //
-                    Iterator i = m_snmpCollector.getIfTable().getEntries().iterator();
+                    Iterator<IfTableEntry> i = m_snmpCollector.getIfTable().getEntries().iterator();
                     while (i.hasNext()) {
                         // IpAddrTableEntry entry = (IpAddrTableEntry)i.next();
-                        IfTableEntry ifEntry = (IfTableEntry) i.next();
+                        IfTableEntry ifEntry = i.next();
 
                         // Get the ifIndex
                         //
@@ -431,7 +419,8 @@ public final class IfCollector implements Runnable {
 
                         // Get list of all IP addresses for the current ifIndex
                         //
-                        List<InetAddress> ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries(), ifIndex.intValue());
+                        int index = ifIndex.intValue();
+                        List<InetAddress> ipAddrs = m_snmpCollector.getIpAddrTable().getIpAddresses(index);
                         if (ipAddrs == null || ipAddrs.size() == 0) {
                             // Non IP interface
                             InetAddress nonIpAddr = null;
@@ -512,12 +501,12 @@ public final class IfCollector implements Runnable {
                 else if (m_snmpCollector.hasIpAddrTable()) {
                     m_subTargets = new TreeMap<InetAddress, List<SupportedProtocol>>(KnownIPMgr.AddrComparator.comparator);
 
-                    List ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries());
+                    List<InetAddress> ipAddrs = m_snmpCollector.getIpAddrTable().getIpAddresses();
                     // Iterate over this interface's IP address list
                     //
-                    Iterator s = ipAddrs.iterator();
+                    Iterator<InetAddress> s = ipAddrs.iterator();
                     while (s.hasNext()) {
-                        InetAddress subtarget = (InetAddress) s.next();
+                        InetAddress subtarget = s.next();
 
                         // if the target failed to convert or if it
                         // is equal to the current target then skip it

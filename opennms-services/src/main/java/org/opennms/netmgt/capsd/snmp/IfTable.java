@@ -39,7 +39,6 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -72,7 +71,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IfTable extends SnmpTable {
+public final class IfTable extends SnmpTable<IfTableEntry> {
     
 
     /**
@@ -89,7 +88,7 @@ public final class IfTable extends SnmpTable {
         super(address, "ifTable", IfTableEntry.ms_elemList);
     }
     
-    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected IfTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfTableEntry();
     }
 
@@ -101,9 +100,8 @@ public final class IfTable extends SnmpTable {
     public int getOperStatus(int ifIndex) {
         if (getEntries() == null)
             return -1;
-        Iterator i = getEntries().iterator();
-        while (i.hasNext()) {
-            IfTableEntry entry = (IfTableEntry) i.next();
+        
+        for(IfTableEntry entry : getEntries()) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 // found it
@@ -120,9 +118,8 @@ public final class IfTable extends SnmpTable {
     public int getAdminStatus(int ifIndex) {
         if (getEntries() == null)
             return -1;
-        Iterator i = getEntries().iterator();
-        while (i.hasNext()) {
-            IfTableEntry entry = (IfTableEntry) i.next();
+        
+        for(IfTableEntry entry : getEntries()) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 // found it
@@ -139,9 +136,8 @@ public final class IfTable extends SnmpTable {
     public int getIfType(int ifIndex) {
         if (getEntries() == null)
             return -1;
-        Iterator i = getEntries().iterator();
-        while (i.hasNext()) {
-            IfTableEntry entry = (IfTableEntry) i.next();
+        
+        for(IfTableEntry entry : getEntries()) {
             Integer ndx = entry.getIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
                 // found it
@@ -158,9 +154,7 @@ public final class IfTable extends SnmpTable {
     public String getIfDescr(final int ifIndex) {
         String ifDescr = null;   
         if (getEntries() != null) {
-            Iterator i = getEntries().iterator();
-            while (i.hasNext()) {
-                IfTableEntry entry = (IfTableEntry) i.next();
+            for(IfTableEntry entry : getEntries()) {
                 Integer ndx = entry.getIfIndex();
                 if (ndx != null && ndx.intValue() == ifIndex) {
                     ifDescr = entry.getIfDescr();
@@ -173,9 +167,7 @@ public final class IfTable extends SnmpTable {
     public Long getIfSpeed(final int ifIndex) {
         Long ifSpeed = null;   
         if (getEntries() != null) {
-            Iterator i = getEntries().iterator();
-            while (i.hasNext()) {
-                IfTableEntry entry = (IfTableEntry) i.next();
+            for(IfTableEntry entry : getEntries()) {
                 Integer ndx = entry.getIfIndex();
                 if (ndx != null && ndx.intValue() == ifIndex) {
                     ifSpeed = entry.getIfSpeed();
@@ -188,9 +180,7 @@ public final class IfTable extends SnmpTable {
     public String getPhysAddr(final int ifIndex) {
         String physAddr = null;   
         if (getEntries() != null) {
-            Iterator i = getEntries().iterator();
-            while (i.hasNext()) {
-                IfTableEntry entry = (IfTableEntry) i.next();
+            for(IfTableEntry entry : getEntries()) {
                 Integer ndx = entry.getIfIndex();
                 if (ndx != null && ndx.intValue() == ifIndex) {
                     physAddr = entry.getPhysAddr();

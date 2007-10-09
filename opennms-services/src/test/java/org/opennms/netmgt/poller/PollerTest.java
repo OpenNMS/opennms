@@ -41,11 +41,9 @@ package org.opennms.netmgt.poller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.capsd.CapsdDbSyncerFactory;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -77,6 +75,7 @@ import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class PollerTest extends TestCase {
     private static final String CAPSD_CONFIG = "\n"
@@ -863,18 +862,21 @@ public class PollerTest extends TestCase {
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
         
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
+
         JdbcCapsdDbSyncer syncer = new JdbcCapsdDbSyncer();
+        syncer.setJdbcTemplate(jdbcTemplate);
         syncer.setOpennmsServerConfig(onmsSvrConfig);
         syncer.setCapsdConfig(capsdConfig);
         syncer.setPollerConfig(m_pollerConfig);
         syncer.setCollectdConfig(collectdConfig);
         syncer.setNextSvcIdSql(m_db.getNextServiceIdStatement());
         syncer.afterPropertiesSet();
-        CapsdDbSyncerFactory.setInstance(syncer);
 
 		OpenNMSProvisioner provisioner = new OpenNMSProvisioner();
 		provisioner.setPollerConfig(m_pollerConfig);
 		provisioner.setCapsdConfig(capsdConfig);
+		provisioner.setCapsdDbSyncer(syncer);
 
 		provisioner.setEventManager(m_eventMgr);
 		provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53,

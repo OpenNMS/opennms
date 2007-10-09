@@ -38,8 +38,6 @@
 package org.opennms.netmgt.xmlrpcd;
 
 import java.net.MalformedURLException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -51,7 +49,6 @@ import java.util.Properties;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.CapsdDbSyncerFactory;
 import org.opennms.netmgt.capsd.CapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -64,7 +61,6 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.config.DataSourceFactory;
 
 public class OpenNMSProvisioner implements Provisioner {
     
@@ -96,6 +92,7 @@ public class OpenNMSProvisioner implements Provisioner {
     private CapsdConfig m_capsdConfig;
     private PollerConfig m_pollerConfig;
     private EventIpcManager m_eventManager;
+    private CapsdDbSyncer m_capsdDbSyncer;
 
 
 
@@ -384,22 +381,9 @@ public class OpenNMSProvisioner implements Provisioner {
     }
     
     private void syncServices() {
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            try {
-                getCapsdDbSyncer().syncServicesTable(conn);
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Unable to update the services table with new serivces: " + e, e);
-        }
+        getCapsdDbSyncer().syncServicesTable();
     }
     
-    private CapsdDbSyncer getCapsdDbSyncer() {
-        return CapsdDbSyncerFactory.getInstance();
-    }
-
     private void addServiceToPackage(Package pkg, String serviceId, int interval, Properties parms) {
         Service svc = m_pollerConfig.getServiceInPackage(serviceId, pkg);
         if (svc == null) {
@@ -426,7 +410,7 @@ public class OpenNMSProvisioner implements Provisioner {
     }
     
     public Parameter findParamterWithKey(Service svc, String key) {
-        Enumeration e = svc.enumerateParameter();
+        Enumeration<Parameter> e = svc.enumerateParameter();
         while(e.hasMoreElements()) {
             Parameter parameter = (Parameter)e.nextElement();
             if (key.equals(parameter.getKey())) {
@@ -697,6 +681,14 @@ public class OpenNMSProvisioner implements Provisioner {
     }
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
+    }
+    
+    private CapsdDbSyncer getCapsdDbSyncer() {
+        return m_capsdDbSyncer;
+    }
+
+    public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
+        m_capsdDbSyncer = capsdDbSyncer;
     }
 
 }

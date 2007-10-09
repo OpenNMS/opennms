@@ -136,18 +136,6 @@ final class IfSmbCollector implements Runnable {
     }
 
     /**
-     * The default constructor. This constructor is marked as private to
-     * disallows creation without an IP address. In addtion this constructo will
-     * alwasy throw an exception.
-     * 
-     * @throws java.lang.UnsupportedOperationException
-     *             Always thrown.
-     */
-    private IfSmbCollector() {
-        throw new UnsupportedOperationException("Default construct not available");
-    }
-
-    /**
      * Constructs a new SMB collector targeted at the passed address. The
      * presence of an Exchange server is set to false.
      * 
