@@ -44,7 +44,6 @@ import java.net.InetAddress;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -62,7 +61,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  *
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  */
-public class IpNetToMediaTable	extends SnmpTable
+public class IpNetToMediaTable	extends SnmpTable<IpNetToMediaTableEntry>
 {
 	/**
 	 * <P>Constructs an IpNetToMediaTable object that is used to collect
@@ -79,7 +78,7 @@ public class IpNetToMediaTable	extends SnmpTable
 	public IpNetToMediaTable(InetAddress address) {
 	        super(address, "ipNetToMediaTable", IpNetToMediaTableEntry.ms_elemList);
 	    }	
-    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected IpNetToMediaTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IpNetToMediaTableEntry();
     }
 

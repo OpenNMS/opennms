@@ -19,7 +19,15 @@
      <property name="order" value="2" />
    </bean>
    
+   <!-- 
+    DataSourceFactory has been changed to return TransactionAwareDataSources so
+    legacy code can participate in transactions properly.
+    -->
    <bean id="dataSource" class="org.opennms.netmgt.config.DataSourceFactoryBean" />
+   
+   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+   		<property name="dataSource" ref="dataSource" />
+   </bean>
 
 	<bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
 	

@@ -81,7 +81,7 @@ final class KnownIPMgr {
     /**
      * The set of all discovered addresses
      */
-    private static Map m_known = new TreeMap(AddrComparator.comparator);
+    private static Map<InetAddress, Object> m_known = new TreeMap<InetAddress, Object>(AddrComparator.comparator);
 
     /**
      * This class is used to encapsulate the elements of importants from the IP
@@ -226,7 +226,7 @@ final class KnownIPMgr {
      * @author <a href="http://www.opennms.org/">OpenNMS </a>
      * 
      */
-    static final class AddrComparator implements Comparator {
+    static final class AddrComparator implements Comparator<InetAddress> {
         /**
          * Singular instance of the comparator that can be used in multiple
          * trees.
@@ -247,7 +247,7 @@ final class KnownIPMgr {
          *         <tt>a</tt>==<tt>b</tt>, or greater than zero if
          *         <tt>a</tt> &gt; <tt>b</tt>.
          */
-        public int compare(Object a, Object b) {
+        public int compare(InetAddress a, InetAddress b) {
             int rc = 0;
             if (a != null && b == null) {
                 rc = -1;
@@ -255,8 +255,8 @@ final class KnownIPMgr {
                 rc = 1;
             } else if (a != null) // and b != null
             {
-                byte[] ax = ((InetAddress) a).getAddress();
-                byte[] bx = ((InetAddress) b).getAddress();
+                byte[] ax = a.getAddress();
+                byte[] bx = b.getAddress();
 
                 for (int x = 0; x < ax.length && rc == 0; x++)
                     rc = (ax[x] < 0 ? 256 + ax[x] : ax[x]) - (bx[x] < 0 ? 256 + bx[x] : bx[x]);
@@ -414,7 +414,7 @@ final class KnownIPMgr {
      */
     static synchronized InetAddress[] knownSet() {
         InetAddress[] set = new InetAddress[m_known.size()];
-        return (InetAddress[]) m_known.keySet().toArray(set);
+        return m_known.keySet().toArray(set);
     }
 
 } // end KnownIPMgr

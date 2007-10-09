@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+	<bean id="init-onmsServerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.init</value></property>
+	</bean>
+
+	<bean id="onmsServerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-onmsServerConfig-factory">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.getInstance</value></property>
+	</bean>
+	
+	<bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
+	</bean>
+
+	<bean id="pollOutagesConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-pollOutagesConfig-factory">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.getInstance</value></property>
+	</bean>
+	
+	<bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
+	</bean>
+
+	<bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-pollerConfig-factory">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
+	</bean>
+	
+	<!--  collectd config factory is now init'd in the dao context -->
+
+
+	<bean id="init-capsdConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.CapsdConfigFactory.init</value></property>
+	</bean>
+
+	<bean id="capsdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-capsdConfig-factory">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.CapsdConfigFactory.getInstance</value></property>
+	</bean>
+	
+	<bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+	</bean>
+
+	<bean id="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-snmpPeerFactory">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.getInstance</value></property>
+	</bean>
+	
+	<bean name="syncer" class="org.opennms.netmgt.capsd.JdbcCapsdDbSyncer">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+		<property name="opennmsServerConfig" ref="onmsServerConfig" />
+		<property name="capsdConfig" ref="capsdConfig" />
+		<property name="pollerConfig" ref="pollerConfig" />
+		<property name="collectdConfig" ref="collectdConfig" />
+	</bean>
+
+	
+	
+</beans>

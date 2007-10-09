@@ -45,9 +45,9 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 
-abstract public class SnmpTable  extends AggregateTracker {
+abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
     
-    private Map<SnmpInstId,SnmpTableEntry> m_results = new TreeMap<SnmpInstId,SnmpTableEntry>();
+    private Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
     private InetAddress m_address;
     private String m_tableName;
 
@@ -58,7 +58,7 @@ abstract public class SnmpTable  extends AggregateTracker {
     }
     
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        SnmpTableEntry entry = m_results.get(inst);
+        T entry = m_results.get(inst);
         if (entry == null) {
             entry = createTableEntry(base, inst, val);
             m_results.put(inst, entry);
@@ -66,10 +66,10 @@ abstract public class SnmpTable  extends AggregateTracker {
         entry.storeResult(base, inst, val);
     }
 
-    protected abstract SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val);
+    protected abstract T createTableEntry(SnmpObjId base, SnmpInstId inst, Object val);
 
-    public List getEntries() {
-        return new ArrayList(m_results.values());
+    public List<T> getEntries() {
+        return new ArrayList<T>(m_results.values());
     }
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving "+m_tableName+" from "+m_address+". "+msg);

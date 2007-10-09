@@ -58,6 +58,7 @@ import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class ScanSuspectTest extends OpenNMSTestCase {
     private Capsd m_capsd;
@@ -70,10 +71,13 @@ public class ScanSuspectTest extends OpenNMSTestCase {
 
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost() + "/9161");
 
-        m_capsd = Capsd.getInstance();
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml"));
         CapsdConfigFactory.setInstance(capsdConfig);
+
+        
+        
+        
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
         
         OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("opennms-server.xml"));
         OpennmsServerConfigFactory.setInstance(onmsSvrConfig);
@@ -85,9 +89,30 @@ public class ScanSuspectTest extends OpenNMSTestCase {
         DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/datacollection-config.xml")));
 
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+  
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
+
+        JdbcCapsdDbSyncer syncer = new JdbcCapsdDbSyncer();
+        syncer.setJdbcTemplate(jdbcTemplate);
+        syncer.setOpennmsServerConfig(OpennmsServerConfigFactory.getInstance());
+        syncer.setCapsdConfig(CapsdConfigFactory.getInstance());
+        syncer.setPollerConfig(PollerConfigFactory.getInstance());
+        syncer.setCollectdConfig(CollectdConfigFactory.getInstance());
+        syncer.setNextSvcIdSql(m_db.getNextServiceIdStatement());
+        syncer.afterPropertiesSet();
+
+        PluginManager pluginManager = new PluginManager();
+        pluginManager.setCapsdConfig(capsdConfig);
+        pluginManager.afterPropertiesSet();
         
-        CapsdDbSyncerFactory.init();
-        ((JdbcCapsdDbSyncer) CapsdDbSyncerFactory.getInstance()).setNextSvcIdSql(m_db.getNextServiceIdStatement());
+        EventProcessorFactory eventProcessorFactory = new EventProcessorFactory();
+        eventProcessorFactory.setCapsdDbSyncer(syncer);
+        eventProcessorFactory.setPluginManager(pluginManager);
+
+        m_capsd = new Capsd();
+        m_capsd.setPluginManager(pluginManager);
+        m_capsd.setCapsdDbSyncer(syncer);
+        m_capsd.setEventProcessorFactory(eventProcessorFactory);
     }
 
     @Override

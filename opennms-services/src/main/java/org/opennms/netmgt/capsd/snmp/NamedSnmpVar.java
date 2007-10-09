@@ -66,7 +66,7 @@ public final class NamedSnmpVar implements Collectable {
     /**
      * The class object for the class name stored in the m_type string.
      */
-    private Class m_typeClass;
+    private Class<?> m_typeClass;
 
     /**
      * The alias name for the object identifier.
@@ -182,7 +182,7 @@ public final class NamedSnmpVar implements Collectable {
      * @exception java.lang.ClassNotFoundException
      *                Thrown from this method if forName() fails.
      */
-    public Class getTypeClass() throws ClassNotFoundException {
+    public Class<?> getTypeClass() throws ClassNotFoundException {
         if (m_typeClass == null) {
             m_typeClass = Class.forName(m_type);
         }

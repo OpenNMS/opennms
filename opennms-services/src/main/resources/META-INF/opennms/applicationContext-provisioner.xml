@@ -2,31 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-	<bean id="pollerConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
-	</bean>
-	
-	<bean id="capsdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.CapsdConfigFactory.init</value></property>
-	</bean>
-	
-	<bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
-	</bean>
-	
-	<bean id="eventManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
-		<property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
-	</bean>
-
-	<bean id="pollerConfig" class="org.opennms.netmgt.config.PollerConfigFactory"
-		depends-on="pollerConfigFactory-init"
-		factory-method="getInstance"/>
-	
-	<bean id="capsdConfig"
-		class="org.opennms.netmgt.config.CapsdConfigFactory"
-		depends-on="capsdConfigFactory-init"
-		factory-method="getInstance"/>
-
 	<bean id="provisioner" class="org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner">
 		<property name="pollerConfig">
 			<ref bean="pollerConfig"/>
@@ -37,6 +12,7 @@
 		<property name="eventManager">
 			<ref bean="eventManager"/>
 		</property>
+
 	</bean>
 	
 	<bean id="exporter" class="org.opennms.spring.xmlrpc.XmlRpcServiceExporter">

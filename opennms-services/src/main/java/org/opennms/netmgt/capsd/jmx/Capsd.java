@@ -32,60 +32,18 @@
 
 package org.opennms.netmgt.capsd.jmx;
 
-import java.net.UnknownHostException;
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class Capsd implements CapsdMBean {
-    public void init() {
-        org.opennms.netmgt.capsd.Capsd.getInstance().init();
+public class Capsd extends AbstractSpringContextJmxServiceDaemon implements CapsdMBean {
+
+    @Override
+    protected String getLoggingPrefix() {
+        return "OpenNMS.Capsd";
     }
 
-    public void start() {
-        org.opennms.netmgt.capsd.Capsd.getInstance().start();
+    @Override
+    protected String getSpringContext() {
+        return "capsdContext";
     }
 
-    public void stop() {
-        org.opennms.netmgt.capsd.Capsd.getInstance().stop();
-    }
-
-    /**
-     * This method is used by other managed beans to forward an IP Address for
-     * capability scanning. The If the interface converts properly then it is
-     * scanned as a suspect interface for the discovery of all the services and
-     * other interfaces that exists on the node.
-     * 
-     * @param ifAddr
-     *            The address of the suspect interface.
-     * 
-     * @throws java.net.UnknownHostException
-     *             Thrown if the address cannot be converted to aa proper
-     *             internet address.
-     */
-    public void scanSuspectInterface(String ifAddr) throws UnknownHostException {
-        org.opennms.netmgt.capsd.Capsd.getInstance().scanSuspectInterface(ifAddr);
-    }
-
-    /**
-     * This method is used to force an existing node to be capability rescaned.
-     * The main reason for its existance is as a hook for JMX managed beans to
-     * invoke forced rescans allowing the main rescan logic to remain in the
-     * capsd agent.
-     * 
-     * @param nodeId
-     *            The node identifier from the database.
-     */
-    public void rescanInterfaceParent(Integer nodeId) {
-        org.opennms.netmgt.capsd.Capsd.getInstance().rescanInterfaceParent(nodeId);
-    }
-
-    public int getStatus() {
-        return org.opennms.netmgt.capsd.Capsd.getInstance().getStatus();
-    }
-
-    public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    public String status() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
 }

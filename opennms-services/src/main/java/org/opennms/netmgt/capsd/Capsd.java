@@ -40,22 +40,14 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
@@ -81,11 +73,6 @@ public class Capsd extends AbstractServiceDaemon {
     private static final String LOG4J_CATEGORY = "OpenNMS.Capsd";
 
     /**
-     * Singleton instance of the Capsd class
-     */
-    private static final Capsd m_singleton = new Capsd();
-
-    /**
      * Database synchronization lock for synchronizing write access to the
      * database between the SuspectEventProcessor and RescanProcessor thread
      * pools
@@ -104,6 +91,11 @@ public class Capsd extends AbstractServiceDaemon {
      * Rescan scheduler thread
      */
     private Scheduler m_scheduler;
+    
+    /**
+     * Factory for creating event processors
+     */
+    private EventProcessorFactory m_eventProcessorFactory;
 
     /**
      * Event receiver.
@@ -114,15 +106,17 @@ public class Capsd extends AbstractServiceDaemon {
      * The pool of threads that are used to executed the SuspectEventProcessor
      * instances queued by the event processor (BroadcastEventProcessor).
      */
-    private RunnableConsumerThreadPool m_suspectRunner;
+    private RunnableConsumerThreadPool<SuspectEventProcessor> m_suspectRunner;
 
     /**
      * The pool of threads that are used to executed RescanProcessor instances
      * queued by the rescan scheduler thread.
      */
-    private RunnableConsumerThreadPool m_rescanRunner;
+    private RunnableConsumerThreadPool<RescanProcessor> m_rescanRunner;
 
     private PluginManager m_pluginManager;
+    
+    private CapsdDbSyncer m_capsdDbSyncer;
 
     /**
      * <P>
@@ -159,20 +153,6 @@ public class Capsd extends AbstractServiceDaemon {
 	}
 
 	protected void onInit() {
-		initialCapsdConfig();
-
-        initializePollerConfig();
-
-        initializeCollectdConfig();
-
-        initializeDataSourceFactory();
-
-        initializeSnmpPeerFactory();
-        
-        initializePluginManager();
-        
-        initializeSyncer();
-
         /*
          * Get connection to the database and use it to sync the
          * content of the database with the latest configuration
@@ -190,42 +170,25 @@ public class Capsd extends AbstractServiceDaemon {
          * the latest configuration information via a call to
          * syncSnmpPrimaryState()
          */
-        java.sql.Connection conn = null;
-        try {
-            conn = DataSourceFactory.getInstance().getConnection();
 
-            log().debug("init: Loading services into database...");
-            getCapsdDbSyncer().syncServices(conn);
-
-            log().debug("init: Syncing management state...");
-            getCapsdDbSyncer().syncManagementState(conn);
-
-            log().debug("init: Syncing primary SNMP interface state...");
-            getCapsdDbSyncer().syncSnmpPrimaryState(conn);     
-        } catch (SQLException sqlE) {
-            log().fatal("SQL Exception while syncing database with latest configuration information.", sqlE);
-            throw new UndeclaredThrowableException(sqlE);
-        } catch (Throwable t) {
-            log().fatal("Unknown error while syncing database with latest configuration information.", t);
-            throw new UndeclaredThrowableException(t);
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-            }
-        }
+        log().debug("init: Loading services into database...");
+        getCapsdDbSyncer().syncServices();
+        
+        log().debug("init: Syncing management state...");
+        getCapsdDbSyncer().syncManagementState();
+        
+        log().debug("init: Syncing primary SNMP interface state...");
+        getCapsdDbSyncer().syncSnmpPrimaryState();     
 
         // Create the suspect event and rescan thread pools
-        m_suspectRunner = new RunnableConsumerThreadPool("Capsd Suspect Pool", 0.0f, 0.0f, CapsdConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
+        m_suspectRunner = new RunnableConsumerThreadPool<SuspectEventProcessor>("Capsd Suspect Pool", 0.0f, 0.0f, CapsdConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
 
         /*
          * Only stop thread if nothing in queue.
          * Always start thread if queue is not
          * empty and max threads has not been reached.
          */
-        m_rescanRunner = new RunnableConsumerThreadPool("Capsd Rescan Pool",
+        m_rescanRunner = new RunnableConsumerThreadPool<RescanProcessor>("Capsd Rescan Pool",
 							0.0f, 0.0f,
                 CapsdConfigFactory.getInstance().getMaxRescanThreadPoolSize());
 
@@ -250,116 +213,12 @@ public class Capsd extends AbstractServiceDaemon {
         // Create an event receiver.
         log().debug("init: Creating event broadcast event receiver");
         try {
-            m_receiver = new BroadcastEventProcessor(getCapsdDbSyncer(), m_pluginManager, m_suspectRunner.getRunQueue(), m_scheduler);
+            m_receiver = new BroadcastEventProcessor(m_suspectRunner.getRunQueue(), m_scheduler, m_eventProcessorFactory);
         } catch (Throwable t) {
             log().error("Failed to initialized the broadcast event receiver", t);
             throw new UndeclaredThrowableException(t);
         }
 	}
-
-    private void initializeSnmpPeerFactory() {
-        // Initialize the SNMP Peer Factory
-        try {
-            SnmpPeerFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-    }
-
-    private void initializeDataSourceFactory() {
-        // Initialize the Database configuration factory
-        try {
-            DataSourceFactory.init();
-        } catch (IOException ie) {
-            log().fatal("IOException loading database config", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log().fatal("Marshall Exception loading database config", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log().fatal("Validation Exception loading database config", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (ClassNotFoundException ce) {
-            log().fatal("Class lookup failure loading database config", ce);
-            throw new UndeclaredThrowableException(ce);
-        } catch (PropertyVetoException pve) {
-            log().fatal("Property veto failure loading database config", pve);
-            throw new UndeclaredThrowableException(pve);
-        } catch (SQLException sqle) {
-            log().fatal("SQL exception loading database config", sqle);
-            throw new UndeclaredThrowableException(sqle);
-        }
-    }
-
-    private void initializeCollectdConfig() {
-        // Initialize the collectd configuration factory.
-        try {
-            CollectdConfigFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-    }
-
-    private void initializePollerConfig() {
-        // Initialize the poller configuration factory.
-        try {
-            PollerConfigFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load poller configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load poller configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load poller configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-    }
-
-    private void initialCapsdConfig() {
-        // Initialize the Capsd configuration factory.
-        try {
-            CapsdConfigFactory.init();
-        } catch (MarshalException ex) {
-            log().error("Failed to load Capsd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load Capsd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load Capsd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-    }
-
-    private void initializeSyncer() {
-        CapsdDbSyncerFactory.init();
-    }
-    
-    private void initializePluginManager() {
-        m_pluginManager = new PluginManager();
-        m_pluginManager.setCapsdConfig(CapsdConfigFactory.getInstance());
-        try {
-            m_pluginManager.afterPropertiesSet();
-        } catch (ValidationException e) {
-            log().error("Failed to initialize PluginManager: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
 
     protected void onStart() {
 		// Start the suspect event and rescan thread pools
@@ -392,10 +251,6 @@ public class Capsd extends AbstractServiceDaemon {
         return m_address;
     }
 
-    public static Capsd getInstance() {
-        return m_singleton;
-    }
-
     static Object getDbSyncLock() {
         return m_dbSyncLock;
     }
@@ -418,20 +273,16 @@ public class Capsd extends AbstractServiceDaemon {
         try {
             ThreadCategory.setPrefix(getName());
             InetAddress addr = InetAddress.getByName(ifAddr);
-            SuspectEventProcessor proc = new SuspectEventProcessor(getCapsdDbSyncer(), m_pluginManager, addr.getHostAddress());
+            SuspectEventProcessor proc = m_eventProcessorFactory.createSuspectEventProcessor(addr.getHostAddress());
             proc.run();
         } finally {
             ThreadCategory.setPrefix(prefix);
         }
     }
 
-    private CapsdDbSyncer getCapsdDbSyncer() {
-        return CapsdDbSyncerFactory.getInstance();
-    }
-
     /**
-     * This method is used to force an existing node to be capability rescaned.
-     * The main reason for its existance is as a hook for JMX managed beans to
+     * This method is used to force an existing node to be capability rescanned.
+     * The main reason for its existence is as a hook for JMX managed beans to
      * invoke forced rescans allowing the main rescan logic to remain in the
      * capsd agent.
      * 
@@ -446,6 +297,22 @@ public class Capsd extends AbstractServiceDaemon {
         } finally {
             ThreadCategory.setPrefix(prefix);
         }
+    }
+
+    public void setPluginManager(PluginManager pluginManager) {
+        m_pluginManager = pluginManager;
+    }
+
+    private CapsdDbSyncer getCapsdDbSyncer() {
+        return m_capsdDbSyncer;
+    }
+
+    public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
+        m_capsdDbSyncer = capsdDbSyncer;
+    }
+
+    public void setEventProcessorFactory(EventProcessorFactory eventProcessorFactory) {
+        m_eventProcessorFactory = eventProcessorFactory;
     }
 
 } // end Capsd class

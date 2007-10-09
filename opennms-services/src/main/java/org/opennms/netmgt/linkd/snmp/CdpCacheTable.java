@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -56,7 +55,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public class CdpCacheTable extends SnmpTable {
+public class CdpCacheTable extends SnmpTable<CdpCacheTableEntry> {
 
 	/**
 	 * <P>
@@ -78,7 +77,7 @@ public class CdpCacheTable extends SnmpTable {
 	{
         super(address, "cdpCacheTable", CdpCacheTableEntry.cdpCache_elemList);
 	}
-    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected CdpCacheTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new CdpCacheTableEntry();
     }
 
