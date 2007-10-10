@@ -152,18 +152,19 @@ my $event = <<END;
 <log>
  <events>
   <event $uuidattribute>
-   <source>$SOURCE</source>
-   <host>$HOSTNAME</host>
-   <time>$week[$wday], $month[$month] $mday, $year $hour:$min:$sec $ap $ZONE</time>
    <uei>$UEI</uei>
+   <source>$SOURCE</source>
 END
 
 $event .= "   <nodeid>$NODEID</nodeid>\n"          if (defined $NODEID);
+
+$event .= <<END;
+   <time>$week[$wday], $month[$month] $mday, $year $hour:$min:$sec $ap $ZONE</time>
+   <host>$HOSTNAME</host>
+END
+
 $event .= "   <interface>$INTERFACE</interface>\n" if (defined $INTERFACE);
 $event .= "   <service>$SERVICE</service>\n"       if (defined $SERVICE);
-$event .= "   <descr>$DESCR</descr>\n"             if (defined $DESCR);
-$event .= "   <severity>$SEVERITY</severity>\n"    if (defined $SEVERITY);
-$event .= "   <operinstruct>$OPERINSTR</operinstruct>\n" if (defined $OPERINSTR);
 
 if (@PARMS) {
   $event .= "   <parms>\n";
@@ -178,6 +179,9 @@ END
   $event .= "   </parms>\n";
 }
 
+$event .= "   <descr>$DESCR</descr>\n"             if (defined $DESCR);
+$event .= "   <severity>$SEVERITY</severity>\n"    if (defined $SEVERITY);
+$event .= "   <operinstruct>$OPERINSTR</operinstruct>\n" if (defined $OPERINSTR);
 $event .= <<END;
   </event>
  </events>
