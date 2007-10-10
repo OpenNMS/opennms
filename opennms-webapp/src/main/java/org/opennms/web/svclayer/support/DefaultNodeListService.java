@@ -277,8 +277,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             List<OnmsArpInterface> displayArpInterfaces = new LinkedList<OnmsArpInterface>();
             if (command.getListInterfaces()) {
                 if (command.hasIfAlias()) {
+                    String ifAliasMatchString = (".*" + command.getIfAlias().toLowerCase().replaceAll("([\\W])", "\\\\$0").replaceAll("_", ".") + ".*"); 
                     for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                        if (intf.getSnmpInterface() != null && intf.getSnmpInterface().getIfAlias() != null && intf.getSnmpInterface().getIfAlias().toLowerCase().contains(command.getIfAlias().toLowerCase())) {
+                        if (intf.getSnmpInterface() != null && intf.getSnmpInterface().getIfAlias() != null && intf.getSnmpInterface().getIfAlias().toLowerCase().matches(ifAliasMatchString)) {
                             displayInterfaces.add(intf);
                         }
                     }
