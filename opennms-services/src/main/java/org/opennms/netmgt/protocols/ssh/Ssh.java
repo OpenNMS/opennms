@@ -1,5 +1,6 @@
 package org.opennms.netmgt.protocols.ssh;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
@@ -28,35 +29,119 @@ public class Ssh {
     private InetAddress m_address;
     private Integer m_port = DEFAULT_PORT;
     private Integer m_timeout = DEFAULT_TIMEOUT;
-    
+    private File m_keydir;
+    private String m_username;
+    private String m_password;
+
+    /**
+     * Set the address to connect to.
+     * 
+     * @param address the address
+     */
     public void setAddress(InetAddress address) {
         m_address = address;
     }
-    
+ 
+    /**
+     * Get the address to connect to.
+     * @return the address
+     */
     public InetAddress getAddress() {
         return m_address;
     }
-    
+
+    /**
+     * Set the port to connect to.
+     * @param port the port
+     */
     public void setPort(int port) {
         m_port = port;
     }
     
+    /**
+     * Get the port to connect to.
+     * @return the port
+     */
     public Integer getPort() {
         return m_port;
     }
     
+    /**
+     * Set the timeout in milliseconds. 
+     * @param milliseconds the timeout
+     */
     public void setTimeout(int milliseconds) {
         m_timeout = milliseconds;
     }
 
+    /**
+     * Get the timeout in milliseconds.
+     * @return the timeout
+     */
     public Integer getTimeout() {
         return m_timeout;
     }
     
+    /**
+     * Set the directory to search for SSH keys.
+     * @param directory the directory
+     */
+    public void setKeyDirectory(File directory) {
+        m_keydir = directory;
+    }
+    
+    /**
+     * Get the directory to search for SSH keys.
+     * @return the directory
+     */
+    public File getKeyDirectory() {
+        return m_keydir;
+    }
+    
+    /**
+     * Set the username to connect as.
+     * @param username the username
+     */
+    public void setUsername(String username) {
+        m_username = username;
+    }
+    
+    /**
+     * Get the username to connect as.
+     * @return the username
+     */
+    public String getUsername() {
+        return m_username;
+    }
+    
+    /**
+     * Set the password to connect with.
+     * @param password the password
+     */
+    public void setPassword(String password) {
+        m_password = password;
+    }
+
+    /**
+     * Get the password to connect with.
+     * @return the password
+     */
+    public String getPassword() {
+        return m_password;
+    }
+    
+    /**
+     * Get the SSH server version banner.
+     * @return the version string
+     */
     public String getServerVersion() {
         return m_serverVersion;
     }
 
+    /**
+     * Get the Jsch session object.
+     * @return the session
+     */
     protected Session getSession() {
         return m_session;
     }
