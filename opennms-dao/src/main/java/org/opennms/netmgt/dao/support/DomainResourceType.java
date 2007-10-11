@@ -83,11 +83,14 @@ public class DomainResourceType implements OnmsResourceType {
     }
 
     public String getLinkForResource(OnmsResource resource) {
-        try {
-            return "element/nodeList.htm?listInterfaces=true&ifAlias=" + URLEncoder.encode(resource.getName(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("URLEncoder.encode complained about UTF-8.  My opinion about that is: WTF? " + e, e);
-        }
+        // Need a search for hosts in a domain. The present nodeList capability won't support it.
+        // Just return null for now
+        //try {
+        //    return "element/nodeList.htm?listInterfaces=true&domain=" + URLEncoder.encode(resource.getName(), "UTF-8");
+        //} catch (UnsupportedEncodingException e) {
+        //    throw new IllegalStateException("URLEncoder.encode complained about UTF-8.  My opinion about that is: WTF? " + e, e);
+        //}
+        return null;
     }
     
     public OnmsResource createChildResource(String domain) {
