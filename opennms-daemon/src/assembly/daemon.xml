@@ -55,6 +55,9 @@
       <excludes>
         <exclude>gwt-*.jar</exclude>
         <exclude>extremecomponents-*.jar</exclude>
+        <exclude>jstl-*.jar</exclude>
+        <exclude>jsp-api-*.jar</exclude>
+        <exclude>servlet-api-*.jar</exclude>
       </excludes>
     </fileSet>
     <fileSet>
@@ -63,6 +66,9 @@
       <includes>
         <include>gwt-*.jar</include>
         <include>extremecomponents-*.jar</include>
+        <exclude>jsp-api-*.jar</exclude>
+        <exclude>jstl-*.jar</exclude>
+        <exclude>servlet-api-*.jar</exclude>
       </includes>
     </fileSet>
   </fileSets>

@@ -310,16 +310,9 @@
       <artifactId>jnlp-servlet</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- replaced by jsp-2.1 from Jetty
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    -->
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-2.1</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
