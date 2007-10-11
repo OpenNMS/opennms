@@ -289,7 +289,9 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
 
         List<String> ifaces = getQueryableInterfacesForDomain(domain);
         for (String iface : ifaces) {
-            resources.add(getResourceByDomainAndInterface(domain, iface));
+            OnmsResource resource = getResourceByDomainAndInterface(domain, iface); 
+            resource.setLink("element/nodeList.htm?listInterfaces=true&ifAlias=" + iface);
+            resources.add(resource);
         }
 
         return resources;
