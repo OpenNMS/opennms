@@ -1568,6 +1568,7 @@
         <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
         <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/MRV.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
         <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Netbotz.events.xml</event-file>
