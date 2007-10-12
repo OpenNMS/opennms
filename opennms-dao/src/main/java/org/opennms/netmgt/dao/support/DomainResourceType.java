@@ -35,8 +35,6 @@
 //
 package org.opennms.netmgt.dao.support;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -85,11 +83,6 @@ public class DomainResourceType implements OnmsResourceType {
     public String getLinkForResource(OnmsResource resource) {
         // Need a search for hosts in a domain. The present nodeList capability won't support it.
         // Just return null for now
-        //try {
-        //    return "element/nodeList.htm?listInterfaces=true&domain=" + URLEncoder.encode(resource.getName(), "UTF-8");
-        //} catch (UnsupportedEncodingException e) {
-        //    throw new IllegalStateException("URLEncoder.encode complained about UTF-8.  My opinion about that is: WTF? " + e, e);
-        //}
         return null;
     }
     
