@@ -890,7 +890,6 @@ public final class DiscoveryLink implements ReadyRunnable {
 			macsParsed.clear();
 			macToAtinterface.clear();
 			atNodes.clear();
-			//nodeToMac.clear();
 
 			Linkd.getInstance().updateDiscoveryLinkCollection(this);
 
