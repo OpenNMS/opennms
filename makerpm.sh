@@ -17,7 +17,7 @@ if [ $RELEASE_MAJOR -eq 0 ]; then
 	RELEASE_MINOR=`date +%Y%m%d`
 	if which svn > /dev/null; then
 	        SVN_DUMMY=`svn info . | grep -i 'last changed rev' | awk -F': ' '{ print $2 }'`
-	        if [ "$SVN_DUMMY" ]; then RELEASE_MINOR=$SVN_DUMMY; fi
+	        if [ "$SVN_DUMMY" ]; then RELEASE_MINOR="${SVN_DUMMY}.snapshot"; fi
 	fi
 	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR
 else
