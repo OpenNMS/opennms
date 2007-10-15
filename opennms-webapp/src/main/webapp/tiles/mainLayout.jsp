@@ -46,11 +46,10 @@
 <html>
 	<head>
 		<title><tiles:getAsString name="title"/></title>
+		<base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
 		<link rel="stylesheet" type="text/css" href="css/styles.css" />
   		<script src="javascripts/prototype.js" type="text/javascript"></script>
 		<script src="javascripts/scriptaculous.js" type="text/javascript"></script>
-		<base href="<%= request.getScheme() + "://" + request.getServerName() + ":" +
-   			  	request.getServerPort() + request.getContextPath() + "/" %>"/>
 	</head>
 
 	<body>
