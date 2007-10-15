@@ -66,9 +66,11 @@ import java.util.Map;
  * params); </CODE>
  * <P>
  * 
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  */
+
 public class NsclientManager {
     /**
      * The default socket timeout.
@@ -927,6 +929,8 @@ public class NsclientManager {
             }
 
             return pack;
+        } catch (NumberFormatException nfe) {
+            throw new NsclientException("Unable to parse numeric value returned from parameter '" + param.getParamString() + "'", nfe);
         } catch (NsclientException e) {
             throw e;
         }
@@ -948,6 +952,7 @@ public class NsclientManager {
     private NsclientPacket checkFileAge(NsclientCheckParams param)
             throws NsclientException {
         NsclientPacket pack = null;
+        String responseValue = "";
         try {
             // send/receive the request
             pack = sendCheckRequest(m_Password + "&" + CHECK_FILEAGE + "&"
@@ -964,7 +969,8 @@ public class NsclientManager {
             // SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy
             // h:mm:ss a");
             String[] results = pack.getResponse().split("&");
-            double minutes = Double.parseDouble(results[0]);
+            responseValue = results[0];
+            double minutes = Double.parseDouble(responseValue);
 
             // check the age of the file, if it's newer than the
             // warning/critical, change the state.
@@ -978,6 +984,8 @@ public class NsclientManager {
             }
 
             return pack;
+        } catch (NumberFormatException nfe) {
+            throw new NsclientException("Unable to parse result '" + responseValue + "' as a Double", nfe);
         } catch (NsclientException e) {
             throw e;
         }
