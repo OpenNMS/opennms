@@ -50,6 +50,7 @@ AutoReqProv:		no
 Requires:		opennms-webui     >= %{version}-%{release}
 Requires:		opennms-core      = %{version}-%{release}
 Requires:		postgresql-server >= 7.4
+Requires:		iplike
 
 BuildRequires:		jdk               >= 1.5
 
