@@ -47,7 +47,8 @@ public class NodeNameLikeFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" NODE.NODEID=EVENTS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
+        return (" EVENTID IN (SELECT EVENTID FROM EVENTS JOIN NODE ON EVENTS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%')");
+        // return (" NODE.NODEID=EVENTS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
     }
 
     public String getDescription() {
