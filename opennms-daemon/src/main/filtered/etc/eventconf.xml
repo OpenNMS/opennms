@@ -9,6 +9,87 @@
                         <doNotOverride>script</doNotOverride>
                 </security>
         </global>
+        <event-file>@install.etc.dir@/events/ia.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/3Com.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/ADIC-v2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Adtran.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Adtran.Atlas.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Alteon.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Altiga.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/APC.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/APC.Best.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/APC.Exide.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/BackupExec.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/BEA.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/BGP4.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/BlackBerryServer.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Brocade.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco.5300dchan.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco.airespace.xml</event-file>
+        <!-- CIM.events.xml has been deprecated by CPQHPIM.events.xml -->
+        <event-file>@install.etc.dir@/events/Colubris.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Covergence.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/CPQHPIM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Clarent.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Clarinet.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cricket.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Dell-DRAC2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/DellOpenManage.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/F5.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Fore.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/FoundryNetworks.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/FujitsuSiemens.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Groupwise.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/HP.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IBM-UMS.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IBMRSA2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IEEE802dot11.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Intel.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IPUnity-SES-MIB.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Liebert.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Liebert.600SM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/MRV.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Netbotz.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Netgear.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Netscreen.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/NetSNMP.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Nokia.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/NORTEL.Contivity.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Oracle.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/OSPF.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Patrol.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Pixelmetrix.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Primecluster.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Quintum.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Redline.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/RFC1628.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Rightfax.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Sensaphone.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
+<!--        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file> -->
+        <event-file>@install.etc.dir@/events/Syslogd.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/TrippLite.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/TUT.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/UPS-MIB.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Veraz.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/VMWare.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Waverider.3000.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Xerox-V2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
+
         <event>
                 <uei>MATCH-ANY-UEI</uei>
                 <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
@@ -1523,86 +1604,6 @@
     <severity>Normal</severity>
   </event>
 
-        <event-file>@install.etc.dir@/events/ia.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/3Com.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/ADIC-v2.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Adtran.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Adtran.Atlas.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Alteon.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Altiga.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/APC.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/APC.Best.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/APC.Exide.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/BackupExec.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/BEA.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/BGP4.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/BlackBerryServer.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Brocade.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Cisco2.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Cisco.5300dchan.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Cisco.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Cisco.airespace.xml</event-file>
-        <!-- CIM.events.xml has been deprecated by CPQHPIM.events.xml -->
-        <event-file>@install.etc.dir@/events/Colubris.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Covergence.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/CPQHPIM.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Clarent.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Clarinet.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Cricket.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Dell-DRAC2.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/DellOpenManage.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/F5.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Fore.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/FoundryNetworks.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/FujitsuSiemens.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Groupwise.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/HP.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/IBM-UMS.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/IBMRSA2.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/IEEE802dot11.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Intel.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/IPUnity-SES-MIB.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Liebert.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Liebert.600SM.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/MRV.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Netbotz.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Netgear.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Netscreen.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/NetSNMP.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Nokia.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/NORTEL.Contivity.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Oracle.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/OSPF.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Patrol.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Pixelmetrix.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Primecluster.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Quintum.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Redline.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/RFC1628.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Rightfax.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Sensaphone.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
-<!--        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file> -->
-        <event-file>@install.etc.dir@/events/Syslogd.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/TrippLite.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/TUT.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/UPS-MIB.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Veraz.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/VMWare.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Waverider.3000.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Xerox-V2.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
 
         <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
   
