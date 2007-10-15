@@ -76,6 +76,12 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         Connector connector = new SelectChannelConnector();
         Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
         connector.setPort(port);
+
+        String host = System.getProperty("org.opennms.netmgt.jetty.host");
+        if (host != null) {
+            connector.setHost(host);
+        }
+
         m_server.addConnector(connector);
 
         HandlerCollection handlers = new HandlerCollection();
