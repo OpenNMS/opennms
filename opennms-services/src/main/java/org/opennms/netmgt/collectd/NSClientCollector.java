@@ -113,16 +113,18 @@ public class NSClientCollector implements ServiceCollector {
                             log().info("unable to collect params for attribute '" + attrib.getName() + "'", e);
                         }
 
-                        attribute = new NSClientCollectionAttribute(attrib.getAlias(), attrib.getType(), result.getResponse());
-                        builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
-                        builder.declareAttribute(attribute);
-                        log().debug("doCollection: setting attribute: " + attribute);
-                        builder.setAttributeValue(attribute, attribute.getValue());
+                        if (result != null) {
+                            attribute = new NSClientCollectionAttribute(attrib.getAlias(), attrib.getType(), result.getResponse());
+                            builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
+                            builder.declareAttribute(attribute);
+                            log().debug("doCollection: setting attribute: " + attribute);
+                            builder.setAttributeValue(attribute, attribute.getValue());
 
-                        try {
-                            builder.commit();
-                        } catch (RrdException e) {
-                            throw new NSClientCollectorException("Error writing RRD", e);
+                            try {
+                                builder.commit();
+                            } catch (RrdException e) {
+                                throw new NSClientCollectorException("Error writing RRD", e);
+                            }
                         }
                     }
                     manager.close(); // Only close once all the attribs have
