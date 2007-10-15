@@ -66,11 +66,6 @@ import org.opennms.web.element.NetworkElementFactory;
 public abstract class Util extends Object {
 
     /**
-     * Internal flag used to cache a servlet context parameter
-     */
-    protected static Boolean usePortInBaseUrls;
-
-    /**
      * Return a string that represents the fully qualified URL for our servlet
      * context, suitable for use in the HTML <em>base</em> tag.
      * 
@@ -78,6 +73,12 @@ public abstract class Util extends Object {
      * As an example, suppose your host was www.mycompany.com, you are serving
      * from port 80, and your web application name was "opennms," then this
      * method would return: <code>http://www.mycompany.com:80/opennms/</code>
+     * </p>
+     *
+     * <p>
+     * If this guess is wrong, you can override it by setting the property
+     * <code>opennms.web.base-url</code> in opennms.properties
+     * (for embedded Jetty) or WEB-INF/configuration.properties (for Tomcat).
      * </p>
      * 
      * @param request
@@ -88,33 +89,60 @@ public abstract class Util extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        // get what the web browser thinks is the URL
-        StringBuffer buffer = request.getRequestURL();
-
-        // get a string version of the buffer so we can search in it
-        String string = buffer.toString();
-
-        // find the "//" in something like "http://host"
-        int schemeSlashesIndex = string.indexOf("//");
-
-        // find the "/" at the end of "http://host:port/"
-        int schemeHostPortIndex = string.indexOf("/", schemeSlashesIndex + 2);
-
-        // truncate everything after the base scheme, host, and port values
-        buffer.setLength(schemeHostPortIndex);
-
-        String context = request.getContextPath();
-
-        // if the context is not the root context
-        if (!context.equals("")) {
-            // context will always start with a slash
-            buffer.append(context);
+        String tmpl = Vault.getProperty("opennms.web.base-url");
+        if (tmpl == null) {
+            tmpl = "%s://%x%c/";
         }
+        return substituteUrl(request, tmpl);
+    }
 
-        // add a trailing slash
-        buffer.append("/");
+    protected static final char[] substKeywords = { 's', 'h', 'p', 'x', 'c' };
 
-        return buffer.toString();
+    protected static String substituteUrl(HttpServletRequest request,
+                                          String tmpl) {
+        String[] replacements = {
+            request.getScheme(),                        // %s
+            request.getServerName(),                    // %h
+            Integer.toString(request.getServerPort()),  // %p
+            getHostHeader(request),                     // %x
+            request.getContextPath()                    // %c
+        };
+
+        StringBuffer out = new StringBuffer(48);
+        for (int i = 0; i < tmpl.length();) {
+            char c = tmpl.charAt(i++);
+            if (c == '%' && i < tmpl.length()) {
+                char d = tmpl.charAt(i++);
+                for (int key = 0; key < substKeywords.length; ++key) {
+                    if (d == substKeywords[key]) {
+                        out.append(replacements[key]);
+                        break;
+                    }
+                }
+            }
+            else {
+                out.append(c);
+            }
+        }
+        return out.toString();
+    }
+
+    protected static final String[] hostHeaders = {
+        "X-Forwarded-Host",     // Apache ProxyPass
+        "X-Host",               // lighttpd
+        "Host"                  // unproxied
+    };
+
+    /** Obtains the host and port used by the end user. */
+    public static String getHostHeader(HttpServletRequest request) {
+        for (int i = 0; i < hostHeaders.length; ++i) {
+            String ret = request.getHeader(hostHeaders[i]);
+            if (ret != null) {
+                return ret;
+            }
+        }
+        return request.getServerName() + ":"
+                + Integer.toString(request.getServerPort());
     }
 
     /**
