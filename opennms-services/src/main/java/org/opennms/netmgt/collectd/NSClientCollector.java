@@ -56,13 +56,8 @@ public class NSClientCollector implements ServiceCollector {
     public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
         String collectionName = parameters.get("nsclient-collection");
         final CollectionAgent theAgent = agent; // For ResourceIdentifier
-                                                // anonymous class to access the
-                                                // var
 
-        // Find out what attribs to collect for this node, then collect and
-        // store them
-
-        // Find attribs to collect - check groups in configuration. For each,
+        // Find attributes to collect - check groups in configuration. For each,
         // check scheduled nodes to see if that group should be collected
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
@@ -119,16 +114,20 @@ public class NSClientCollector implements ServiceCollector {
                         }
 
                         if (result != null) {
-                            attribute = new NSClientCollectionAttribute(attrib.getAlias(), attrib.getType(), result.getResponse());
-                            builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
-                            builder.declareAttribute(attribute);
-                            log().debug("doCollection: setting attribute: " + attribute);
-                            builder.setAttributeValue(attribute, attribute.getValue());
+                            if (result.getResultCode() != NsclientPacket.RES_STATE_OK) {
+                                log().info("not writing parameters for attribute '" + attrib.getName() + "', state is not 'OK'");
+                            } else {
+                                attribute = new NSClientCollectionAttribute(attrib.getAlias(), attrib.getType(), result.getResponse());
+                                builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
+                                builder.declareAttribute(attribute);
+                                log().debug("doCollection: setting attribute: " + attribute);
+                                builder.setAttributeValue(attribute, attribute.getValue());
 
-                            try {
-                                builder.commit();
-                            } catch (RrdException e) {
-                                throw new NSClientCollectorException("Error writing RRD", e);
+                                try {
+                                    builder.commit();
+                                } catch (RrdException e) {
+                                    throw new NSClientCollectorException("Error writing RRD", e);
+                                }
                             }
                         }
                     }

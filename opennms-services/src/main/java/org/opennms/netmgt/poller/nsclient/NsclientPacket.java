@@ -39,7 +39,7 @@ import java.util.Map;
  * This object implements the packets created by the
  * <code>NsclientManager</code> system.
  * 
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  */
 public class NsclientPacket {
     /**
@@ -65,7 +65,7 @@ public class NsclientPacket {
 
     /**
      * This value is used to state the the service check was validated and
-     * needs immediate attention, an outage has occured.
+     * needs immediate attention, an outage has occurred.
      */
     public static final short RES_STATE_CRIT = 2;
 
