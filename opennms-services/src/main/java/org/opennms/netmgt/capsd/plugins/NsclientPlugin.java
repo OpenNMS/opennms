@@ -135,7 +135,6 @@ public class NsclientPlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
-        Category log = ThreadCategory.getInstance(getClass());
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         int port = NsclientManager.DEFAULT_PORT;
@@ -176,7 +175,7 @@ public class NsclientPlugin extends AbstractPlugin {
                                        timeout, params);
 
         if (pack == null) {
-            log.debug("Received a null packet response from isServer.");
+            log().debug("Received a null packet response from isServer.");
             return false;
         }
 
@@ -217,33 +216,32 @@ public class NsclientPlugin extends AbstractPlugin {
             NsclientCheckParams params) {
         boolean isAServer = false;
 
-        // get a logger.
-        Category log = ThreadCategory.getInstance(getClass());
-
+        NsclientPacket response = null;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
             try {
                 NsclientManager client = new NsclientManager(host.getHostAddress(), port, password);
-                NsclientPacket response = null;
 
                 client.setTimeout(timeout);
                 client.init();
 
                 response = client.processCheckCommand(NsclientManager.convertStringToType(command), params);
-                log.debug("NsclientPlugin: " + command + ": " + response.getResponse());
+                log().debug("NsclientPlugin: " + command + ": " + response.getResponse());
                 isAServer = true;
-
-                return response;
             } catch (NsclientException e) {
                 StringBuffer message = new StringBuffer();
                 message.append("NsclientPlugin: Check failed... NsclientManager returned exception: ");
                 message.append(e.getMessage());
                 message.append(" : ");
                 message.append((e.getCause() == null ? "": e.getCause().getMessage()));
-                log.error(message.toString());
+                log().error(message.toString());
                 isAServer = false;
             }
         }
-        return null;
+        return response;
     }
+
+	private Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
 
 }
