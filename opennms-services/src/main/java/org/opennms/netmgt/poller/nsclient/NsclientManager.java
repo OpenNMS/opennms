@@ -401,32 +401,29 @@ public class NsclientManager {
 
             // handle exceptions.
         } catch (UnknownHostException e) {
-            throw new NsclientException("Unknown host: " + m_HostName, e);
+            closeSocketAndThrow(new NsclientException("Unknown host: " + m_HostName, e));
         } catch (ConnectException e) {
-            throw new NsclientException("Connection refused to " + m_HostName + ":" + m_PortNumber, e);
+            closeSocketAndThrow(new NsclientException("Connection refused to " + m_HostName + ":" + m_PortNumber, e));
         } catch (NoRouteToHostException e) {
-            throw new NsclientException("Unable to connect to host: " + m_HostName + ", no route to host.", e);
+            closeSocketAndThrow(new NsclientException("Unable to connect to host: " + m_HostName + ", no route to host.", e));
         } catch (InterruptedIOException e) {
-            if (!m_Socket.isClosed()) {
-                try {
-                    m_Socket.close();
-                } catch (IOException ioe) {
-                    // we still want to throw the main exception
-                }
-            }
-            throw new NsclientException("Unable to connect to host: " + m_HostName + ":" + m_PortNumber + ", exceeded timeout of " + m_Timeout, e);
+            closeSocketAndThrow(new NsclientException("Unable to connect to host: " + m_HostName + ":" + m_PortNumber + ", exceeded timeout of " + m_Timeout, e));
         } catch (IOException e) {
-            if (!m_Socket.isClosed()) {
-                try {
-                    m_Socket.close();
-                } catch (IOException ioe) {
-                    // we still want to throw the main exception
-                }
-            }
-            throw new NsclientException("An unexpected I/O exception occured connecting to host: " + m_HostName + ":" + m_PortNumber, e);
+            closeSocketAndThrow(new NsclientException("An unexpected I/O exception occured connecting to host: " + m_HostName + ":" + m_PortNumber, e));
         }
     }
 
+    private void closeSocketAndThrow(NsclientException e) throws NsclientException {
+        if (m_Socket != null && !m_Socket.isClosed()) {
+            try {
+                m_Socket.close();
+            } catch (IOException ioe) {
+                log().info("unable to close socket after a previous failure failure", e);
+            }
+        }
+        throw e;
+    }
+    
     /**
      * Closes the socket.
      */
