@@ -47,6 +47,9 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 /**
  * <P>
  * This class is designed to be used by plugins, services and programs to
@@ -178,7 +181,7 @@ public class NsclientManager {
      */
     public static Map<String, String> CheckStrings = new HashMap<String, String>();
     /**
-     * This static block initialzies the global check strings map with the
+     * This static block initializes the global check strings map with the
      * default values used for performing string->type->string conversions.
      */
     static {
@@ -230,7 +233,12 @@ public class NsclientManager {
      * @see convertTypeToString
      */
     public static String convertStringToType(String type) {
-        return CheckStrings.get(type);
+        for (Map.Entry<String, String> e : CheckStrings.entrySet()) {
+            if (type.equalsIgnoreCase(e.getKey())) {
+                return e.getValue();
+            }
+        }
+        return null;
     }
 
     /**
@@ -384,8 +392,7 @@ public class NsclientManager {
         try {
             // set up socket
             m_Socket = new Socket();
-            m_Socket.connect(new InetSocketAddress(m_HostName, m_PortNumber),
-                             m_Timeout);
+            m_Socket.connect(new InetSocketAddress(m_HostName, m_PortNumber), m_Timeout);
             m_Socket.setSoTimeout(m_Timeout);
 
             // get buffer streams for read/write.
@@ -396,20 +403,27 @@ public class NsclientManager {
         } catch (UnknownHostException e) {
             throw new NsclientException("Unknown host: " + m_HostName, e);
         } catch (ConnectException e) {
-            throw new NsclientException("Connection refused to " + m_HostName
-                    + ":" + m_PortNumber, e);
+            throw new NsclientException("Connection refused to " + m_HostName + ":" + m_PortNumber, e);
         } catch (NoRouteToHostException e) {
-            throw new NsclientException("Unable to connect to host: "
-                    + m_HostName + ", no route to host.", e);
-            // there was something here about UndeclaredThrowableException(e)
+            throw new NsclientException("Unable to connect to host: " + m_HostName + ", no route to host.", e);
         } catch (InterruptedIOException e) {
-            throw new NsclientException("Unable to connect to host: "
-                    + m_HostName + ", exceeded timeout of " + m_Timeout);
+            if (!m_Socket.isClosed()) {
+                try {
+                    m_Socket.close();
+                } catch (IOException ioe) {
+                    // we still want to throw the main exception
+                }
+            }
+            throw new NsclientException("Unable to connect to host: " + m_HostName + ":" + m_PortNumber + ", exceeded timeout of " + m_Timeout, e);
         } catch (IOException e) {
-            throw new NsclientException(
-                                        "An unexpected I/O exception occured connecting to host: "
-                                                + m_HostName + ":"
-                                                + m_PortNumber, e);
+            if (!m_Socket.isClosed()) {
+                try {
+                    m_Socket.close();
+                } catch (IOException ioe) {
+                    // we still want to throw the main exception
+                }
+            }
+            throw new NsclientException("An unexpected I/O exception occured connecting to host: " + m_HostName + ":" + m_PortNumber, e);
         }
     }
 
@@ -569,14 +583,18 @@ public class NsclientManager {
             // then convert them to arrays.
             Integer[] remVer = new Integer[4];
             Integer[] minVer = new Integer[4];
-            
-            for (int i = 0; i < 4; i++) {
-            	if (minimum[i] != null) {
-            		minVer[i] = Integer.parseInt(minimum[i]);
-            	}
-            	if (remote[i] != null) {
-            		remVer[i] = Integer.parseInt(remote[i]);
-            	}
+
+            try {
+                for (int i = 0; i < 4; i++) {
+                    if (minimum[i] != null) {
+                        minVer[i] = Integer.parseInt(minimum[i]);
+                    }
+                    if (remote[i] != null) {
+                        remVer[i] = Integer.parseInt(remote[i]);
+                    }
+                }
+            } catch (NumberFormatException nfe) {
+                return handleNumberFormatException(pack, nfe);
             }
 
             if (minVer[0] == null || remVer[0].compareTo(minVer[0]) > 0) {
@@ -644,6 +662,8 @@ public class NsclientManager {
             }
 
             return pack;
+        } catch (NumberFormatException nfe) {
+            return handleNumberFormatException(pack, nfe);
         } catch (NsclientException e) {
             throw e;
         }
@@ -822,6 +842,8 @@ public class NsclientManager {
             }
 
             return pack;
+        } catch (NumberFormatException nfe) {
+            return handleNumberFormatException(pack, nfe);
         } catch (NsclientException e) {
             throw e;
         }
@@ -875,6 +897,8 @@ public class NsclientManager {
                 }
             }
             return pack;
+        } catch (NumberFormatException nfe) {
+            return handleNumberFormatException(pack, nfe);
         } catch (NsclientException e) {
             throw e;
         }
@@ -930,7 +954,7 @@ public class NsclientManager {
 
             return pack;
         } catch (NumberFormatException nfe) {
-            throw new NsclientException("Unable to parse numeric value returned from parameter '" + param.getParamString() + "'", nfe);
+            return handleNumberFormatException(pack, nfe);
         } catch (NsclientException e) {
             throw e;
         }
@@ -949,8 +973,7 @@ public class NsclientManager {
      *             this method rethrows the exception thrown by
      *             <code>sendCheckRequest</code>
      */
-    private NsclientPacket checkFileAge(NsclientCheckParams param)
-            throws NsclientException {
+    private NsclientPacket checkFileAge(NsclientCheckParams param) throws NsclientException {
         NsclientPacket pack = null;
         String responseValue = "";
         try {
@@ -985,7 +1008,7 @@ public class NsclientManager {
 
             return pack;
         } catch (NumberFormatException nfe) {
-            throw new NsclientException("Unable to parse result '" + responseValue + "' as a Double", nfe);
+            return handleNumberFormatException(pack, nfe);
         } catch (NsclientException e) {
             throw e;
         }
@@ -993,6 +1016,22 @@ public class NsclientManager {
 
     private String prepList(String list) {
         return list.replaceAll(",", "&");
+    }
+    
+    private NsclientPacket handleNumberFormatException(NsclientPacket pack, NumberFormatException e) throws NsclientException {
+        String errorMessage = "Unable to parse numeric value returned (" + pack.getResponse() + ")";
+        
+        if (pack != null) {
+            pack.setResultCode(NsclientPacket.RES_STATE_UNKNOWN);
+            log().info(errorMessage, e);
+            return pack;
+        } else {
+            throw new NsclientException(errorMessage, e);
+        }
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }
