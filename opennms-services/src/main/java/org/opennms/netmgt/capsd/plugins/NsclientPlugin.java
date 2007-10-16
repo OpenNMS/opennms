@@ -222,26 +222,24 @@ public class NsclientPlugin extends AbstractPlugin {
 
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
             try {
-                NsclientManager client = new NsclientManager(
-                                                             host.getHostAddress(),
-                                                             port, password);
+                NsclientManager client = new NsclientManager(host.getHostAddress(), port, password);
                 NsclientPacket response = null;
 
                 client.setTimeout(timeout);
                 client.init();
 
-                response = client.processCheckCommand(
-                                                      NsclientManager.convertStringToType(command),
-                                                      params);
-                log.debug("NsclientPlugin: " + command + ": "
-                        + response.getResponse());
+                response = client.processCheckCommand(NsclientManager.convertStringToType(command), params);
+                log.debug("NsclientPlugin: " + command + ": " + response.getResponse());
                 isAServer = true;
 
                 return response;
             } catch (NsclientException e) {
-                log.debug("NsclientPlugin: Check failed: " + e.getMessage());
-                log.debug("NsclientManager returned exception: "
-                        + e.getMessage() + " : " + e.getCause().getMessage());
+                StringBuffer message = new StringBuffer();
+                message.append("NsclientPlugin: Check failed... NsclientManager returned exception: ");
+                message.append(e.getMessage());
+                message.append(" : ");
+                message.append((e.getCause() == null ? "": e.getCause().getMessage()));
+                log.error(message.toString());
                 isAServer = false;
             }
         }
