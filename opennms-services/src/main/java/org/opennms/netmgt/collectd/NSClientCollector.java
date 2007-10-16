@@ -71,8 +71,9 @@ public class NSClientCollector implements ServiceCollector {
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 log().debug("Checking availability of group " + wpm.getName());
+                NsclientManager manager = null;
                 try {
-                    NsclientManager manager = agentState.getManager();
+                    manager = agentState.getManager();
                     manager.init();
                     NsclientCheckParams params = new NsclientCheckParams(wpm.getKeyvalue());
                     NsclientPacket result = manager.processCheckCommand(NsclientManager.CHECK_COUNTER, params);
@@ -81,6 +82,10 @@ public class NSClientCollector implements ServiceCollector {
                     agentState.setGroupIsAvailable(wpm.getName(), isAvailable);
                 } catch (NsclientException e) {
                     throw new NSClientCollectorException("Error checking group (" + wpm.getName() + ") availability", e);
+                } finally {
+                    if (manager != null) {
+                        manager.close();
+                    }
                 }
             }
 
