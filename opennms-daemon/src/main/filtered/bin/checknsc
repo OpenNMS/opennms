@@ -1,0 +1,5 @@
+#!/bin/sh -
+
+SERVICES_JAR=`ls -1 "@install.dir@"/lib/*.jar | grep opennms-services- | head -n 1`
+COMMONS_CLI_JAR=`ls -1 "@install.dir@"/lib/commons-cli-*.jar | head -n 1`
+exec @install.bin.dir@/runjava -r -- -Xmx256m -cp "$SERVICES_JAR:$COMMONS_CLI_JAR" org.opennms.netmgt.poller.nsclient.CheckNsc "$@"
