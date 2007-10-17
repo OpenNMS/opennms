@@ -144,7 +144,9 @@
         <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
         <li><a href="javascript:addInterfacePost()">Add Interface</a></li>
         <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+<!-- Removed this - see bug 586
         <li><a href="admin/pollerConfig/index.jsp">Configure Pollers</a></li>
+-->
         <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
         <li><a href="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
         <li><a href="admin/categories.htm">Manage Node Categories</a></li>
