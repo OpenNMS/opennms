@@ -222,11 +222,11 @@
         
         <p><b>Delete Nodes</b> is an interface to permanently delete nodes from the database.
         </p>
-
+<!--
         <p><b>Configure Pollers</b> provides an easy way to modify the polling status of 
             standard services.  It also enables the user to add and delete custom services.
         </p>
-        
+-->        
         <p><b>Import and Export Asset Information</b> provides an easy-to-use interface
             for adding data to OpenNMS's asset inventory from your database
             or spreadsheet application, as well as extracting data from the asset
