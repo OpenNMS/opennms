@@ -80,8 +80,9 @@ public class PipedMarshaller {
                 ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
                 throw new UndeclaredThrowableException(e);
             } catch (IOException e) {
-                ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
-                throw new UndeclaredThrowableException(e);
+                ThreadCategory.getInstance(this.getClass()).warn("Failed to convert category to xml", e);
+                // don't rethrow, it just bubbles up into output.log and confuses people, the error still shows in rtc.log
+                // throw new UndeclaredThrowableException(e);
             }
         }
 
