@@ -13,25 +13,23 @@ public class FuzzyDateFormatter {
 
     protected static String formatNumber(Double number, String singular, String plural) {
         String returnVal;
-        returnVal = String.format("%.1f", number.doubleValue());
+        returnVal = Long.toString(Math.round(number.doubleValue()));
         
-        if (returnVal.equals("1.0")) {
+        if (returnVal.equals("1")) {
             returnVal = number.intValue() + " " + singular;
-        } else if (returnVal.endsWith(".0")) {
-            returnVal = number.intValue() + " " + plural;
         } else {
             returnVal = returnVal + " " + plural;
         }
-        System.err.println("returning " + returnVal + " for number " + number.doubleValue());
+        // System.err.println("returning " + returnVal + " for number " + number.doubleValue());
         return returnVal;
     }
 
     public static String calculateDifference(Date start, Date end) {
         Long difference = Math.abs(end.getTime() - start.getTime());
-        System.err.println("difference = " + difference);
+        // System.err.println("difference = " + difference);
         
         double days = (difference.doubleValue() / MILLISECONDS_PER_DAY);
-        System.err.println("days = " + days);
+        // System.err.println("days = " + days);
         
         if (days < 1) {
             double hours = (difference.doubleValue() / MILLISECONDS_PER_HOUR);

@@ -34,6 +34,8 @@ package org.opennms.web.outage;
 
 import java.util.Date;
 
+import org.opennms.core.utils.FuzzyDateFormatter;
+
 /**
  * A data structure holding information on all outages on a single IP address.
  * 
@@ -79,6 +81,11 @@ public class OutageSummary extends Object {
 
     public Date getTimeUp() {
         return (this.timeUp);
+    }
+    
+    public String getFuzzyTimeDown() {
+        // mmm... I *love* Get Fuzzy!
+        return FuzzyDateFormatter.calculateDifference(this.getTimeDown(), new Date());
     }
     
     public String toString() {

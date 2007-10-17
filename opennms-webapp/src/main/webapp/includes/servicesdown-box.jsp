@@ -85,13 +85,13 @@
           <c:url var="nodeLink" value="element/node.jsp">
             <c:param name="node" value="${summary.nodeId}"/>
           </c:url>
-          <li><a href="${nodeLink}">${summary.nodeLabel}</a></li>
+          <li><a href="${nodeLink}">${summary.nodeLabel}</a> (${summary.fuzzyTimeDown})</li>
         </c:forEach>
       </ul>
     
       <c:if test="${moreCount > 0}">
         <p class="noBottomMargin" align="right">
-          <c:url var="moreLink" value="outage/index.jsp"/>
+          <c:url var="moreLink" value="outage/current.jsp"/>
           <a href="${moreLink}">${moreCount} more...</a>
         </p>
       </c:if>
