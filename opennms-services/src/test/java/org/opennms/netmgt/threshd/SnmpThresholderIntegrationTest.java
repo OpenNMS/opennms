@@ -36,6 +36,8 @@
 package org.opennms.netmgt.threshd;
 
 
+import java.io.File;
+
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -60,7 +62,7 @@ public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
         String serviceName = "SNMP";
         String groupName = "default-snmp";
         
-        setupThresholdConfig(rrdRepository+"/"+nodeId, fileName, nodeId, ipAddress, serviceName, groupName);
+        setupThresholdConfig(rrdRepository+File.separator+nodeId, fileName, nodeId, ipAddress, serviceName, groupName);
 
         
         m_thresholder = new SnmpThresholder();

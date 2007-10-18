@@ -412,14 +412,13 @@ public abstract class JMXCollector implements ServiceCollector {
 
         HashMap dsList = buildDataSourceList(collectionName, attrMap);
         nodeInfo.setDsMap(dsList);
-        nodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(
-                                                                                     collectionName));
+        nodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
 
         // Add the JMXNodeInfo object as an attribute of the interface
         agent.setAttribute(NODE_INFO_KEY, nodeInfo);
         agent.setAttribute("collectionName", collectionName);
 
-        File repos = new File(m_rrdPath + "/" + nodeID + "/" + collectionName);
+        File repos = new File(m_rrdPath + File.separator + nodeID + File.separator + collectionName);
         if (!repos.exists()) {
             repos.mkdir();
         }
@@ -628,24 +627,24 @@ public abstract class JMXCollector implements ServiceCollector {
         List rraList =
             JMXDataCollectionConfigFactory.getInstance().getRRAList(collectionName);
 
-        File repos = new File(directory + "/" + collectionDir);
+        File repos = new File(directory + File.separator + collectionDir);
         if (!repos.exists()) {
             repos.mkdir();
         }
 
         if (keyField == null) {
-            return RrdUtils.createRRD(creator, directory + "/"
+            return RrdUtils.createRRD(creator, directory + File.separator
                     + collectionDir, ds.getName(), step, ds.getType(),
                                       ds.getHeartbeat(), ds.getMin(),
                                       ds.getMax(), rraList);
         } else {
             if (keyField.equals("")) {
-                return RrdUtils.createRRD(creator, directory + "/"
+                return RrdUtils.createRRD(creator, directory + File.separator
                         + collectionDir, ds.getName(), step, ds.getType(),
                                           ds.getHeartbeat(), ds.getMin(),
                                           ds.getMax(), rraList);
             } else {
-                return RrdUtils.createRRD(creator, directory + "/"
+                return RrdUtils.createRRD(creator, directory + File.separator
                         + collectionDir, keyField + "_" + ds.getName(), step,
                                           ds.getType(), ds.getHeartbeat(),
                                           ds.getMin(), ds.getMax(), rraList);
@@ -718,7 +717,7 @@ public abstract class JMXCollector implements ServiceCollector {
                         createRRD(collectionName, ipaddr, nodeRepository, ds,
                                   collectionDir, null);
                         RrdUtils.updateRRD(ipaddr.getHostAddress(),
-                                           nodeRepository + "/" + collectionDir,
+                                           nodeRepository + File.separator + collectionDir,
                                            ds.getName(),
                                            attribute.getValue().toString());
                     } catch (Throwable e1) {
@@ -731,13 +730,13 @@ public abstract class JMXCollector implements ServiceCollector {
                                   collectionDir, key);
                         if (key.equals("")) {
                             RrdUtils.updateRRD(ipaddr.getHostAddress(),
-                                               nodeRepository + "/"
+                                               nodeRepository + File.separator
                                                        + collectionDir,
                                                ds.getName(), ""
                                                        + attribute.getValue());
                         } else {
                             RrdUtils.updateRRD(ipaddr.getHostAddress(),
-                                               nodeRepository + "/"
+                                               nodeRepository + File.separator
                                                        + collectionDir, key
                                                        + "_" + ds.getName(),
                                                "" + attribute.getValue());
@@ -767,7 +766,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     private String fixKey(String key, String attrName, String substitutions) {
         String newKey = key;
-        if (key.startsWith("/")) {
+        if (key.startsWith(File.separator)) {
             newKey = key.substring(1);
         }
         if (substitutions != null && substitutions.length() > 0) {

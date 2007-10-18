@@ -446,7 +446,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         // -----------------------------------------------------------
 
         // Get File object representing the node directory
-        File nodeDirectory = new File(repository + File.separator + nodeId.toString() + "/" + dsDir);
+        File nodeDirectory = new File(repository + File.separator + nodeId.toString() + File.separator + dsDir);
         //if (!RrdFileConstants.isValidRRDNodeDir(nodeDirectory)) {
         //    log.error("Node directory for " + nodeDirectory + " does not exist or is not a valid RRD node directory.");
         //    log.error("Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress());
