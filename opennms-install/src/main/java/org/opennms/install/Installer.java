@@ -344,8 +344,8 @@ public class Installer {
         // database-related options
         options.addOption("d", "do-database",      false, "perform database actions");
         
-        options.addOption("u", "username",         true, "username of the database administrator (default: 'opennms')");
-        options.addOption("p", "password",         true, "password of the database administrator (default: 'opennms')");
+        options.addOption("u", "username",         true, "username of the database account (default: 'opennms')");
+        options.addOption("p", "password",         true, "password of the database account (default: 'opennms')");
         options.addOption("a", "admin-username",   true, "username of the database administrator (default: 'postgres')");
         options.addOption("A", "admin-password",   true, "password of the database administrator (default: '')");
         options.addOption("D", "database-url",     true, "JDBC database URL (default: jdbc:postgresql://localhost:5432/");
@@ -755,10 +755,12 @@ public class Installer {
             }
         }
 
-    	String[] defaults = { "/usr/lib/jni", "/usr/lib", "/usr/local/lib" };
-    	for (String entry : defaults) {
-    	    searchPaths.add(entry);
-    	}
+	if (!System.getProperty("os.name").contains("Windows")) {
+    	    String[] defaults = { "/usr/lib/jni", "/usr/lib", "/usr/local/lib" };
+    	    for (String entry : defaults) {
+    	        searchPaths.add(entry);
+    	    }
+        }
 
     	m_out.println("- searching for " + libname + ":");
     	for (String dirname : searchPaths) {
@@ -814,12 +816,18 @@ public class Installer {
     	if (jrrd_path != null && jrrd_path.length() != 0) {
     		libraryProps.put("opennms.library.jrrd", jrrd_path);
     	}
-    	
-        File f = new File(m_opennms_home + File.separator + "etc"
+
+	File f = null;    	
+	try {
+            f = new File(m_opennms_home + File.separator + "etc"
                 + File.separator + LIBRARY_PROPERTY_FILE);
-        f.createNewFile();
-        FileOutputStream os = new FileOutputStream(f);
-    	libraryProps.store(os, null);
+            f.createNewFile();
+            FileOutputStream os = new FileOutputStream(f);
+            libraryProps.store(os, null);
+        } catch (IOException e) {
+            m_out.println("unable to write to " + f.getPath());
+            throw e;
+        }
     }
     
     public void pingLocalhost() throws IOException {
