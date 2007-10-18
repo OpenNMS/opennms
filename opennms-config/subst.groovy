@@ -3,7 +3,7 @@ import java.io.File;
 basedir = project.basedir;
 
 def subst(srcFile, pattern, substition) {
-    File workDir = new File("${basedir}/target/groovy_tmp");
+    File workDir = new File("${basedir}" + File.separator + "target" + File.separator + "groovy_tmp");
     workDir.mkdirs();
     
     File tmpFile = File.createTempFile("subst", "tmp", workDir);
@@ -27,12 +27,12 @@ def subst(srcFile, pattern, substition) {
     
 }
 
-def argFile = new File("${basedir}/target/generated-sources/castor/org/opennms/netmgt/config/notificationCommands/Argument.java")
+def argFile = new File("${basedir}" + File.separator + "target" + File.separator + "generated-sources" + File.separator + "castor" + File.separator + "org" + File.separator + "opennms" + File.separator + "netmgt" + File.separator + "config" + File.separator + "notificationCommands" + File.separator + "Argument.java");
 
 subst(argFile, /@param\s+_switch\s*$/, "");
 subst(argFile, /@param\s+switch/, "@param _switch");
 
-def genDir = new File("${basedir}/target/generated-sources/castor");
+def genDir = new File("${basedir}" + File.separator + "target" + File.separator + "generated-sources" + File.separator + "castor");
 
 genDir.eachDirRecurse { dir ->
 
