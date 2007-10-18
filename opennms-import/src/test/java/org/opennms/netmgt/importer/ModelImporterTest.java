@@ -282,7 +282,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         assertEquals(10, mi.getNodeDao().countAll());
         
 //        ImportVisitor visitor = new ImportAccountant();
-//        mi.loadResource("/"+"tec_dump.xml.smalltest.delete");
+//        mi.loadResource(File.separator+"tec_dump.xml.smalltest.delete");
 //        mi.visitImport(visitor);
         
     }
