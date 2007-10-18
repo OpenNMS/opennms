@@ -180,8 +180,7 @@ public class Bootstrap {
         ClassLoader l = Thread.currentThread().getContextClassLoader();
 
         try {
-            String classFile = Bootstrap.class.getName().replace('.', '/')
-                    + ".class";
+            String classFile = Bootstrap.class.getName().replace('.', '/') + ".class";
             URL url = l.getResource(classFile);
             if (url.getProtocol().equals("jar")) {
                 URL subUrl = new URL(url.getFile());
@@ -189,6 +188,7 @@ public class Bootstrap {
                     String filePath = subUrl.getFile();
                     int i = filePath.lastIndexOf('!');
                     File file = new File(filePath.substring(0, i));
+                    String returnFile = file.getParentFile().getParentFile().getPath();
                     return file.getParentFile().getParentFile();
                 }
             }
@@ -248,16 +248,19 @@ public class Bootstrap {
      */
 
     private static boolean loadDefaultProperties(File opennmsHome) throws IOException {
-		boolean propertiesLoaded = false;
+		boolean propertiesLoaded = true;
 		File etc = new File(opennmsHome, "etc");
 		File bootstrapFile = new File(etc, BOOT_PROPERTIES_NAME);
-		if (loadProperties(bootstrapFile)) {
-		    propertiesLoaded = true;
-		}
+		loadProperties(bootstrapFile);
+
 		File rrdFile = new File(etc, RRD_PROPERTIES_NAME);
 		loadProperties(rrdFile);
+		
 		File libraryFile = new File(etc, LIBRARY_PROPERTIES_NAME);
-		loadProperties(libraryFile);
+		if (!loadProperties(libraryFile)) {
+			propertiesLoaded = false;
+		}
+		
 		return propertiesLoaded;
 	}
 
@@ -302,9 +305,8 @@ public class Bootstrap {
         if (opennmsHome != null) {
             propertiesLoaded = loadDefaultProperties(new File(opennmsHome));
         }
-
+        
         /*
-         * This would search for the bootstrap.properties file in the JAR
          * containing this code. We no longer need this file in the JAR,
          * though, since we can determine everything we need at runtime.
          */
