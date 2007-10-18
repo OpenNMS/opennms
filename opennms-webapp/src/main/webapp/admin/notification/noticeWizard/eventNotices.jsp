@@ -159,9 +159,11 @@
             </td>
             <td>
               <%if (curNotif.getStatus().equals("on")) { %>
-                <input type="button" value="Turn Off" onclick="javascript:setStatus('<%=key%>','off')"/>
+                <input type="radio" value="Off" onclick="javascript:setStatus('<%=key%>','off')"/>Off
+                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('<%=key%>','on')"/>On
               <% } else { %>
-                 <input type="button" value="Turn On" onclick="javascript:setStatus('<%=key%>','on')"/>
+                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('<%=key%>','off')"/>Off
+                <input type="radio" value="On" onclick="javascript:setStatus('<%=key%>','on')"/>On
               <% } %>
             </td>
             <td>
