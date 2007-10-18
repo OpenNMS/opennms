@@ -97,7 +97,7 @@ public class Main {
         
         File homeDir = new File(System.getProperty("user.home"));
         String homeUrl = homeDir.toURI().toString();
-        if (homeUrl.endsWith("/")) {
+        if (homeUrl.endsWith(File.separator)) {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
         System.err.println("user.home.url = "+homeUrl);
