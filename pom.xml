@@ -586,6 +586,25 @@ opennms.home = ${opennms.home}
 
   <profiles>
     <profile>
+      <id>windows</id>
+      
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+  
+      <properties>
+        <platform>windows</platform>
+        <platform.jdk.include.dir>${java.home}\..\include</platform.jdk.include.dir>
+        <platform.javahOS>win32</platform.javahOS>
+        <platform.define>__WIN32__</platform.define>
+        <platform.shlib>dll</platform.shlib>
+        <platform.jni>dll</platform.jni>
+      </properties>
+    </profile>
+
+    <profile>
       <id>macosx</id>
       
       <activation>
