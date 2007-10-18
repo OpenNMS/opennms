@@ -5,13 +5,13 @@ all              = [0 .. 0xffff];
 letter           = ['a' .. 'z'] | ['A' .. 'Z'];
 number           = ['0' .. '9'];
 white_space      = (' ' | 9 | 10 | 13)*;
-name_part        = (letter | number)*;
+name_part        = (letter | number | '-')*;
 name             = letter name_part ( '_' name_part)*;
 list             = (number* ',')* number*;
 range            = number* '-' number*;
-service_ident    = 'is' (name | (letter* '-' number*) );
-notservice_ident    = 'notis' (name | (letter* '-' number*) );
-catinc_ident    = 'catinc' (name | (letter* '-' number*) );
+service_ident    = 'is' name;
+notservice_ident    = 'notis' name;
+catinc_ident    = 'catinc' name;
 
 Tokens
 semi             = ';';
