@@ -89,7 +89,7 @@ public class DefaultRrdDaoTest extends TestCase {
                 "-",
                 "--start=" + (start / 1000),
                 "--end=" + (end / 1000),
-                "DEF:ds=" + rrdDir + "/" + rrdFile + ":ifInOctets:AVERAGE",
+                "DEF:ds=" + rrdDir + File.separator + rrdFile + ":ifInOctets:AVERAGE",
                 "PRINT:ds:AVERAGE:\"%le\""
         };
         String commandString = StringUtils.arrayToDelimitedString(command, " ");
@@ -133,7 +133,7 @@ public class DefaultRrdDaoTest extends TestCase {
         int interval = 300000;
         Double expectedValue = new Double(1.0);
         
-        String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + "/" + rrdDir + "/" + rrdFile;
+        String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + File.separator + rrdDir + File.separator + rrdFile;
         expect(m_rrdStrategy.fetchLastValue(fullRrdFilePath, attribute.getName(), interval)).andReturn(expectedValue);
 
         m_mocks.replayAll();
@@ -162,7 +162,7 @@ public class DefaultRrdDaoTest extends TestCase {
         int range = 300000;
         Double expectedValue = new Double(1.0);
         
-        String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + "/" + rrdDir + "/" + rrdFile;
+        String fullRrdFilePath = m_dao.getRrdBaseDirectory().getAbsolutePath() + File.separator + rrdDir + File.separator + rrdFile;
         expect(m_rrdStrategy.fetchLastValueInRange(fullRrdFilePath, attribute.getName(), interval, range)).andReturn(expectedValue);
 
         m_mocks.replayAll();
