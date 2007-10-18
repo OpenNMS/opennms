@@ -1,4 +1,5 @@
 import java.io.File;
+import org.apache.commons.io.FileUtils;
 
 basedir = project.basedir;
 
@@ -7,10 +8,9 @@ def subst(srcFile, pattern, substition) {
     workDir.mkdirs();
     
     File tmpFile = File.createTempFile("subst", "tmp", workDir);
-    if (!srcFile.renameTo(tmpFile)) {
-        fail("Unable to rename "+srcFile+" to "+tmpFile+" Aborting!");
-    }
-    
+    FileUtils.copyFile(srcFile, tmpFile);
+	srcFile.delete();
+	
     srcFile.withPrintWriter { out ->
         def lineNo = 0;
         tmpFile.eachLine { line ->
@@ -24,7 +24,7 @@ def subst(srcFile, pattern, substition) {
         }
     }
     
-    
+	tmpFile.delete();    
 }
 
 def argFile = new File("${basedir}" + File.separator + "target" + File.separator + "generated-sources" + File.separator + "castor" + File.separator + "org" + File.separator + "opennms" + File.separator + "netmgt" + File.separator + "config" + File.separator + "notificationCommands" + File.separator + "Argument.java");
