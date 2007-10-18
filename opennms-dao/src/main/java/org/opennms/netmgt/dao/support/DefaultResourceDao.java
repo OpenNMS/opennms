@@ -541,7 +541,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Assert.notNull(locMon, "locMon argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
         
-        return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + "/" + ipInterface.getIpAddress());
+        return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + File.separator + ipInterface.getIpAddress());
     }
     
     public List<OnmsResource> findTopLevelResources() {

@@ -141,7 +141,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         String monitor = definitionName + "-" + locationMonitorId;
         
         String label = intf + " from " + monitor;
-        String resource = locationMonitorId + "/" + intf;
+        String resource = locationMonitorId + File.separator + intf;
 
         Set<OnmsAttribute> set =
             new LazySet<OnmsAttribute>(new AttributeLoader(definitionName, locationMonitorId,
@@ -159,7 +159,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     
     /*
     private int getLocationMonitorIdFromResource(String resource) {
-        int index = resource.indexOf("/");
+        int index = resource.indexOf(File.separator);
         if (index == -1) {
             throw new IllegalArgumentException("Resource name \"" + resource
                                                + "\" isn't a valid resource "
@@ -171,7 +171,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
     
     private String getIpAddressFromResource(String resource) {
-        int index = resource.indexOf("/");
+        int index = resource.indexOf(File.separator);
         if (index == -1) {
             throw new IllegalArgumentException("Resource name \"" + resource
                                                + "\" isn't a valid resource "
