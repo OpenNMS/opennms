@@ -28,7 +28,7 @@
             <phase>generate-sources</phase>
             <goals>
               <goal>execute</goal>
-            </goals>  
+            </goals>
             <configuration>
               <source>${pom.basedir}/subst.groovy</source>
             </configuration>
@@ -38,6 +38,11 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.castor</groupId>
       <artifactId>castor</artifactId>
