@@ -261,8 +261,12 @@ public class Pinger {
 	public static List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws IOException, InterruptedException {
 	    ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);
 	    
+	    if (timeout == 0) {
+	        timeout = DEFAULT_TIMEOUT;
+	    }
+	    
 	    for (int i = 0; i < count; i++) {
-	        PingRequest request = new PingRequest(host, (short) i, DEFAULT_TIMEOUT, 0, cb);
+	        PingRequest request = new PingRequest(host, (short) i, timeout, 0, cb);
 	        ping(request);
 	        Thread.sleep(pingInterval);
 	    }
