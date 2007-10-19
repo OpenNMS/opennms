@@ -278,16 +278,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
 
         try {
-        	System.err.println("command = " + command);
-        	
             String[] commandArray = tokenize(command, " \t", false);
 
-            System.err.print("Jrobin command array: ");
-            for (String s : commandArray) {
-            	System.err.print(s + " << ");
-            }
-            System.err.println("end");
-            
             RrdGraphDef graphDef = createGraphDef(workDir, commandArray);
             graphDef.setSignature("OpenNMS/JRobin");
 
