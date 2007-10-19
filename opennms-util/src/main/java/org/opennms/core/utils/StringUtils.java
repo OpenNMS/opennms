@@ -161,6 +161,8 @@ public class StringUtils {
                 } else {
                     if (tokens.indexOf(ch) >= 0) {
                         currToken.append('\\').append(ch);
+                    } else if (currToken.toString().startsWith("DEF:")) {
+                        currToken.append('\\').append(ch);
                     } else {
                         // silently pass through the character *without* the \ in front of it
                         currToken.append(ch);
