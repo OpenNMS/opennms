@@ -30,7 +30,7 @@
     <automation name="cleanUp" interval="30000" action-name="deletePastClearedAlarms" active="true" />
     <automation name="GC" interval="300000" action-name="garbageCollect" active="true" />
     <automation name="unclear" interval="30000" trigger-name="selectClearedAlarms" action-name="resetSeverity" active="true" />
-    <automation name="escalation" interval="30000" trigger-name="selectSuspectAlarms" action-name="escalateAlarm" action-event="eventEscalated" active="true" />
+    <automation name="escalation" interval="30000" trigger-name="selectSuspectAlarms" action-name="escalateAlarm" action-event="eventEscalated" active="false" />
     <automation name="purgeStatisticsReports" interval="3600000" action-name="deletePurgeableStatisticsReports" active="true" />
   </automations>
   
