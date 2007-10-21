@@ -39,7 +39,7 @@
       <attribute name="graphs_per_line" use="optional">
         <simpleType>
           <restriction base="int">
-            <minInclusive value="1"/>
+            <minInclusive value="0"/>
           </restriction>
         </simpleType>
       </attribute>
