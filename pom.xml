@@ -110,7 +110,6 @@
     <module>opennms-remote-poller</module>
     <module>opennms-webapp</module>
     <module>opennms-daemon</module>
-    <module>opennms-doc</module>
   </modules>
   <build>
   <pluginManagement>
@@ -586,6 +585,20 @@ opennms.home = ${opennms.home}
 
   <profiles>
     <profile>
+      <id>buildDocs</id>
+      <activation>
+        <os>
+          <family>!windows</family>
+        </os>
+      </activation>
+
+      <modules>
+        <module>opennms-doc</module>
+      </modules>
+
+    </profile>
+
+    <profile>
       <id>windows</id>
       
       <activation>
@@ -602,6 +615,7 @@ opennms.home = ${opennms.home}
         <platform.shlib>dll</platform.shlib>
         <platform.jni>dll</platform.jni>
       </properties>
+
     </profile>
 
     <profile>
