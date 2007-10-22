@@ -188,7 +188,6 @@ public class Bootstrap {
                     String filePath = subUrl.getFile();
                     int i = filePath.lastIndexOf('!');
                     File file = new File(filePath.substring(0, i));
-                    String returnFile = file.getParentFile().getParentFile().getPath();
                     return file.getParentFile().getParentFile();
                 }
             }
