@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<linkd-configuration threads="30" initial_sleep_time="3600000"
+<linkd-configuration threads="5" initial_sleep_time="3600000"
                      snmp_poll_interval="18000000" discovery_link_interval="300000" 
 					 auto-discovery="false" 
 					 enable-discovery-download="false"
@@ -9,7 +9,8 @@
                      use-bridge-discovery="true"
                      save-route-table="true" 
                      save-stp-node-table="true"
-                     save-stp-interface-table="true">
+                     save-stp-interface-table="true"
+                     force-ip-route-discovery-on-ethernet="false">
     
     
     <!--

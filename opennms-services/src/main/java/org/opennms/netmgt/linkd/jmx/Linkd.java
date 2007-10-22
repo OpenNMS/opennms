@@ -83,7 +83,7 @@ public class Linkd implements LinkdMBean {
         linkd.setEventMgr(mgr);
         linkd.setDbConnectionFactory(DataSourceFactory.getInstance());
         linkd.setLinkdConfig(LinkdConfigFactory.getInstance());
-	linkd.setQueryManager(new DbEventWriter(DataSourceFactory.getDataSource()));
+        linkd.setQueryManager(new DbEventWriter(DataSourceFactory.getDataSource()));
         
 	    linkd.init();
 	}
