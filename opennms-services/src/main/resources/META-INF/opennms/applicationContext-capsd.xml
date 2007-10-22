@@ -19,5 +19,4 @@
         <property name="eventProcessorFactory" ref="eventProcessorFactory" />
     </bean>
 
-
 </beans>
