@@ -76,7 +76,7 @@ public class LinkableNode extends Object {
 	HashMap<Integer,Integer> bridgePortIfindex = new HashMap<Integer,Integer>();
 
 
-	private LinkableNode() {
+	LinkableNode() {
 		throw new UnsupportedOperationException(
 		"default constructor not supported");
 	}
@@ -295,10 +295,10 @@ public class LinkableNode extends Object {
 
 	List<Integer> getBridgePortsFromMac(String macAddress) {
 		List<Integer> ports = new ArrayList<Integer>();
-		Iterator ite = portMacs.keySet().iterator();
+		Iterator<Integer> ite = portMacs.keySet().iterator();
 		while (ite.hasNext()) {
-			Integer intePort = (Integer) ite.next();
-			Set macs = (Set) portMacs.get(intePort);
+			Integer intePort = ite.next();
+			Set<String> macs = portMacs.get(intePort);
 			if (macs.contains(macAddress)) {
 				ports.add(intePort);
 			}
@@ -316,9 +316,9 @@ public class LinkableNode extends Object {
 	}
 
 	int getBridgePort(int ifindex) {
-		Iterator ite = bridgePortIfindex.keySet().iterator();
+		Iterator<Integer> ite = bridgePortIfindex.keySet().iterator();
 		while (ite.hasNext() ) {
-			Integer curBridgePort = (Integer) ite.next();
+			Integer curBridgePort = ite.next();
 			Integer curIfIndex = (Integer) bridgePortIfindex.get(curBridgePort);
 			if (curIfIndex.intValue() == ifindex) return curBridgePort.intValue();
 		}
@@ -338,7 +338,7 @@ public class LinkableNode extends Object {
 	/**
 	 * @return Returns the portMacs.
 	 */
-	HashMap getPortMacs() {
+	HashMap<Integer, Set<String>> getPortMacs() {
 		return portMacs;
 	}
 
@@ -368,7 +368,7 @@ public class LinkableNode extends Object {
 	/**
 	 * @return Returns the stpInterfaces.
 	 */
-	public HashMap getStpInterfaces() {
+	public HashMap<String,List<BridgeStpInterface>> getStpInterfaces() {
 		return BridgeStpInterfaces;
 	}
 	/**

@@ -32,7 +32,7 @@ public class AtInterface {
 	String ipAddress;
 
 
-	private AtInterface() {
+	AtInterface() {
 		throw new UnsupportedOperationException(
 		"default constructor not supported");
 	}
