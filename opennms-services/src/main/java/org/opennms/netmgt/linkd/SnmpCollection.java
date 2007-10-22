@@ -43,6 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -182,7 +183,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * The list of vlan snmp collection object
 	 */
 
-	public java.util.Map<Vlan,SnmpVlanCollection> m_snmpVlanCollection = new HashMap<Vlan,SnmpVlanCollection>();
+	public java.util.Map<Vlan,SnmpVlanCollection> m_snmpVlanCollection; 
 
 	/**
 	 * The scheduler object
@@ -239,7 +240,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		m_ipRoute = null;
 		m_vlanTable = null;
 		m_CdpCache = null;
-		m_snmpVlanCollection.clear();
+		m_snmpVlanCollection = new HashMap<Vlan,SnmpVlanCollection>();
 	}
 
 	/**
@@ -476,7 +477,7 @@ public final class SnmpCollection implements ReadyRunnable {
 				m_CdpCache = null;
 				m_vlanTable = null;
 
-				log().warn("SnmpCollection.run: collection interrupted, exiting",
+				log().error("SnmpCollection.run: collection interrupted, exiting",
 						e);
 				return;
 			}

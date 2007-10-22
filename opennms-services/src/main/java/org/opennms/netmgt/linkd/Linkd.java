@@ -218,7 +218,7 @@ public class Linkd extends AbstractServiceDaemon {
 				if (log().isDebugEnabled())
 					log().debug("ScheduleCollectionForNode: package active: " +snmpcoll.getPackageName());
 			} else {
-				// schedule discoverylink
+				// schedule discovery link
 				if (log().isDebugEnabled())
 					log().debug("ScheduleCollectionForNode: Schedulink Discovery Link for Active Package: " + snmpcoll.getPackageName());
 				DiscoveryLink discovery = m_linkdConfig.getDiscoveryLink(snmpcoll.getPackageName());
@@ -542,7 +542,7 @@ public class Linkd extends AbstractServiceDaemon {
 		m_linkdConfig = config;
 	}
 	
-	private LinkableNode getNode(int nodeid) {
+	LinkableNode getNode(int nodeid) {
 		synchronized (nodes) {
 			Iterator<LinkableNode> ite = nodes.iterator();
 			while (ite.hasNext()) {
@@ -553,7 +553,7 @@ public class Linkd extends AbstractServiceDaemon {
 		return null;
 	}
 
-	private LinkableNode getNode(String ipaddr) {
+	LinkableNode getNode(String ipaddr) {
 		
 		synchronized (nodes) {
 			Iterator<LinkableNode> ite = nodes.iterator();

@@ -175,6 +175,16 @@
 				</annotation>
 			</attribute>
 
+			<attribute name="force-ip-route-discovery-on-ethernet" type="boolean"
+				use="required">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links using ip route tables
+						on ethernet interfaces.
+					</documentation>
+				</annotation>
+			</attribute>
+
 		</complexType>
 	</element>
 
@@ -470,8 +480,19 @@
 					</documentation>
 				</annotation>
 			</attribute>
+
+			<attribute name="force-ip-route-discovery-on-ethernet" type="boolean">
+				<annotation>
+					<documentation>
+						Whether Linkd has to find links using ip route tables
+						on ethernet interfaces.
+					</documentation>
+				</annotation>
+			</attribute>
+		
 			
 		</complexType>
+		
 	</element>
 
 	<element name="filter">

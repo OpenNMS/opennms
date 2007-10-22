@@ -785,6 +785,18 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		else discoveryLink.setDiscoveryUsingRoutes(useIpRouteDiscovery());
 		if (pkg.hasEnableDiscoveryDownload()) discoveryLink.setEnableDownloadDiscovery(pkg.getEnableDiscoveryDownload());
 		else discoveryLink.setEnableDownloadDiscovery(enableDiscoveryDownload());
+		if (pkg.hasForceIpRouteDiscoveryOnEthernet()) discoveryLink.setForceIpRouteDiscoveryOnEtherNet(pkg.getForceIpRouteDiscoveryOnEthernet());
+		else discoveryLink.setForceIpRouteDiscoveryOnEtherNet(forceIpRouteDiscoveryOnEthernet());
 		return discoveryLink;
     }
+
+	private boolean forceIpRouteDiscoveryOnEthernet() {
+		boolean forceIpRouteDiscoveryOnEthernet = false;
+
+		if (m_config.hasForceIpRouteDiscoveryOnEthernet()) {
+			forceIpRouteDiscoveryOnEthernet = m_config.getForceIpRouteDiscoveryOnEthernet();
+		}
+
+		return forceIpRouteDiscoveryOnEthernet;
+	}
 }

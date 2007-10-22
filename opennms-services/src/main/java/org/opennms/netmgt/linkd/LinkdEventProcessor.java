@@ -41,25 +41,21 @@
 package org.opennms.netmgt.linkd;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 
 /**
- * @author <a href="mailto:rssntn67@yahoo.it">Antonio Russo</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
@@ -69,12 +65,6 @@ final class LinkdEventProcessor implements EventListener {
      * local openNMS server name
      */
     private String m_localServer = null;
-
-    /**
-     * Set of event ueis that we should notify when we receive and when a
-     * success or failure occurs.
-     */
-    private Set m_notifySet = new HashSet();
 
     /**
      * The Linkd rescan scheduler
