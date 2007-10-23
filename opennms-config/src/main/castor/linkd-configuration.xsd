@@ -176,7 +176,7 @@
 			</attribute>
 
 			<attribute name="force-ip-route-discovery-on-ethernet" type="boolean"
-				use="required">
+				use="optional" default="false" >
 				<annotation>
 					<documentation>
 						Whether Linkd has to find links using ip route tables
@@ -481,7 +481,7 @@
 				</annotation>
 			</attribute>
 
-			<attribute name="force-ip-route-discovery-on-ethernet" type="boolean">
+			<attribute name="force-ip-route-discovery-on-ethernet" type="boolean" use="optional" default="false" >
 				<annotation>
 					<documentation>
 						Whether Linkd has to find links using ip route tables
