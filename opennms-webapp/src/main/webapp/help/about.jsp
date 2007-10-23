@@ -65,7 +65,7 @@
 <table class="standard">
   <tr>
     <td class="standardheader">Version:</td>
-    <td class="standard"><%=Vault.getProperty("version.full")%></td>
+    <td class="standard"><%=Vault.getProperty("version.display")%></td>
   </tr>
 
   <tr>
