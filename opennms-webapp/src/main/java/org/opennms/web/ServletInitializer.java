@@ -40,6 +40,8 @@
 
 package org.opennms.web;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -118,34 +120,55 @@ public class ServletInitializer extends Object {
 
         if (factory == null) {
             try {
-                String propertiesResource = "/WEB-INF/configuration.properties";
-                // read the OpenNMS properties
                 Properties properties = new Properties(System.getProperties());
-                InputStream configurationStream = context.getResourceAsStream(propertiesResource);
-                if (configurationStream == null) {
-                    throw new ServletException("Could not load properties from resource \'" + propertiesResource + "\'");
-                }
-                properties.load(configurationStream);
-                configurationStream.close();
 
-                Enumeration initParamNames = context.getInitParameterNames();
-                while (initParamNames.hasMoreElements()) {
-                    String name = (String) initParamNames.nextElement();
-                    properties.put(name, context.getInitParameter(name));
-                }
-
+                // first, check if opennms.home is set, if so, we already have properties
+                // because we're in Jetty
                 String homeDir = properties.getProperty("opennms.home");
+                if (homeDir == null) {
 
+                    // If not, load properties from configuration.properties
+                    String propertiesResource = "/WEB-INF/configuration.properties";
+
+                    InputStream configurationStream = context.getResourceAsStream(propertiesResource);
+                    if (configurationStream == null) {
+                        throw new ServletException("Could not load properties from resource '" + propertiesResource + "'");
+                    } else {
+                        properties.load(configurationStream);
+                        configurationStream.close();
+                    }
+                    
+                }
+                
+                homeDir = properties.getProperty("opennms.home");
                 if (homeDir == null) {
                     throw new ServletException("The opennms.home context parameter must be set.");
+                }
+                String etcDir = homeDir + File.separator + "etc";
+
+                // now that we've got opennms.home, load $OPENNMS_HOME/etc/opennms.properties
+                // in case it isn't-- but if anything is already set, we don't override it.
+                
+                Properties opennmsProperties = new Properties();
+                InputStream configurationStream = new FileInputStream(etcDir + File.separator + "opennms.properties");
+                opennmsProperties.load(configurationStream);
+                configurationStream.close();
+
+                for (Enumeration<Object> opennmsKeys = opennmsProperties.keys(); opennmsKeys.hasMoreElements(); ) {
+                    Object key = opennmsKeys.nextElement();
+                    if (!properties.containsKey(key)) {
+                        properties.put(key, opennmsProperties.get(key));
+                    }
+                }
+                
+                Enumeration<?> initParamNames = context.getInitParameterNames();
+                while (initParamNames.hasMoreElements()) {
+                    String name = (String)initParamNames.nextElement();
+                    properties.put(name, context.getInitParameter(name));
                 }
 
                 Vault.setProperties(properties);
                 Vault.setHomeDir(homeDir);
-
-                // initialize Log4J for use inside the webapp
-//                org.apache.log4j.LogManager.resetConfiguration();
-//                PropertyConfigurator.configure(homeDir + "/etc/log4j.properties");
 
                 // get the database parameters
                 String dbUrl = properties.getProperty("opennms.db.url");
@@ -158,7 +181,7 @@ public class ServletInitializer extends Object {
                 String dbMgrClass = properties.getProperty("opennms.db.poolman");
 
                 if (dbMgrClass != null) {
-                    Class clazz = Class.forName(dbMgrClass);
+                    Class<?> clazz = Class.forName(dbMgrClass);
                     factory = (DbConnectionFactory) clazz.newInstance();
                     factory.init(dbUrl, dbDriver, username, password);
                     Vault.setDbConnectionFactory(factory);
