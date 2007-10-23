@@ -43,13 +43,6 @@
       </excludes>
     </fileSet>
     <fileSet>
-    <directory>target/classes/etc</directory>
-    <outputDirectory>jetty-webapps/opennms/WEB-INF</outputDirectory>
-    <includes>
-      <include>log4j.properties</include>
-    </includes>
-  </fileSet>
-  <fileSet>
       <directory>target/dependency/WEB-INF/lib</directory>
       <outputDirectory>lib</outputDirectory>
       <excludes>
