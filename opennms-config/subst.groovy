@@ -1,5 +1,7 @@
 import java.io.File;
+import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
+import com.twmacinta.util.MD5;
 
 basedir = project.basedir;
 
@@ -9,21 +11,29 @@ def subst(srcFile, pattern, substition) {
     
     File tmpFile = File.createTempFile("subst", "tmp", workDir);
     FileUtils.copyFile(srcFile, tmpFile);
-	srcFile.delete();
-	
-    srcFile.withPrintWriter { out ->
+
+    tmpFile.withPrintWriter { out ->
         def lineNo = 0;
-        tmpFile.eachLine { line ->
+        srcFile.eachLine { line ->
             lineNo++;
             def newline = line.replaceAll(pattern, substition);
             if (newline != line) {
-                log.debug("${srcFile}");
-                log.info("${srcFile.name}: Replaced line ${lineNo} >${line}< with >${newline}<");
+                log.debug("${tmpFile}");
+                // log.info("${tmpFile.name}: Replaced line ${lineNo} >${line}< with >${newline}<");
             }
             out.println(newline);
         }
     }
-    
+
+	before = MD5.asHex(MD5.getHash(srcFile));
+	after = MD5.asHex(MD5.getHash(tmpFile));
+	
+	if (before != after) {
+		FileUtils.copyFile(tmpFile, srcFile);
+	} else {
+		log.debug("skipping ${srcFile}: file is unchanged");
+	}
+	
 	tmpFile.delete();    
 }
 
