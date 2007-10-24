@@ -28,7 +28,7 @@
 					<annotation>
 						<documentation>
 							A section to get specific Vendors Vlan
-							informations.
+							informations that are used to get vlan tables on nodes.
 						</documentation>
 					</annotation>
 				</element>
@@ -49,7 +49,7 @@
 				<annotation>
 					<documentation>
 						The max number of threads used for polling snmp
-						devices.
+						devices and discovery links.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -84,93 +84,91 @@
 			</attribute>
 
 			<attribute name="auto-discovery" type="boolean"
-				use="required">
+				use="optional" default="false">
 				<annotation>
 					<documentation>
 						Whether Linkd should generate newSuspect events
-						for ip addresses from devices unknown to OpenNMS.
-						This flags overwrite auto-discovery package flags.
+						for ip addresses unknown to OpenNMS found on nodes snmp tables.
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="enable-discovery-download" type="boolean"
-				use="required">
+				use="optional" default="false">
 				<annotation>
 					<documentation>
-						Whether DiscoveryLink should try to get 
-						specific snmp bridge info.
+						Whether Discovery Link should try to get 
+						specific snmp bridge info probably lost in snmp data collection.
 						Should be enabled only in very complex network
-						where snmpCollection often fails.   
+						where snmpCollection often fails.
+						Enabling this flags slows the discovery process a lot.   
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="enable-vlan-discovery" type="boolean"
-				use="required">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether SnmpCollection has to find Vlans on devices to
-						performs snmp data (Bridge) collection .
+						Whether SnmpCollection has to collect snmp Vlan tables on devices.
+						The Vlan data collection is made using the classes defined in vlans elements. 
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="use-cdp-discovery" type="boolean"
-				use="required">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether Linkd has to find links on devices using
-						cisco discovery protocol.
+						Whether links discovery process should use 
+						cisco discovery protocol snmp tables.
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="use-ip-route-discovery" type="boolean"
-				use="required">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether DiscoveryLink has to find links on devices using
+						Whether links discovery process should use
 						ip route tables.
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="use-bridge-discovery" type="boolean"
-				use="required">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether DiscoveryLink has to find links on devices using
-						bridge info.
+						Whether links discovery process should use
+						snmp bridge and spanning tree tables.
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="save-route-table" type="boolean"
-				use="required">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether Linkd has save to database ip route tables
+						Whether Linkd has to save snmp ip route tables to database
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="save-stp-node-table" type="boolean"
-				use="required">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether Linkd has save to database table stpnode.
+						Whether Linkd has save bridge base informations to database.
 					</documentation>
 				</annotation>
 			</attribute>
 
 			<attribute name="save-stp-interface-table" type="boolean"
-				use="required">
+				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether Linkd has to download Spanning Tree
-						table on devices and save to database table
-						stpinterface.
+						Whether Linkd has to save to database bridge interfaces informations to database.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -384,7 +382,7 @@
 			<attribute name="snmp_poll_interval" type="long">
 				<annotation>
 					<documentation>
-						Snmp Poll Time interval in mill seconds.
+						OverWrite link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -392,8 +390,7 @@
 			<attribute name="discovery_link_interval" type="long">
 				<annotation>
 					<documentation>
-						Time interval in mill seconds from last snmp collection
-						and link discovery.
+						OverWrite link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -401,9 +398,7 @@
 			<attribute name="auto-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether Linkd should generate newSuspect events
-						for ip addresses from devices unknown to OpenNMS.
-						This flags overwrite auto-discovery package flags.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -411,10 +406,7 @@
 			<attribute name="enable-discovery-download" type="boolean">
 				<annotation>
 					<documentation>
-						Whether DiscoveryLink should try to get 
-						specific snmp bridge info.
-						Should be enabled only in very complex network
-						where snmpCollection often fails.   
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -422,8 +414,7 @@
 			<attribute name="enable-vlan-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether SnmpCollection has to find Vlans on devices to
-						performs snmp data (Bridge) collection .
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -431,8 +422,7 @@
 			<attribute name="use-cdp-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether Linkd has to find links on devices using
-						cisco discovery protocol.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -440,8 +430,7 @@
 			<attribute name="use-ip-route-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether DiscoveryLink has to find links on devices using
-						ip route tables.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -449,8 +438,7 @@
 			<attribute name="use-bridge-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						Whether DiscoveryLink has to find links on devices using
-						bridge info.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -458,7 +446,7 @@
 			<attribute name="save-route-table" type="boolean">
 				<annotation>
 					<documentation>
-						Whether Linkd has save to database ip route tables
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -466,7 +454,7 @@
 			<attribute name="save-stp-node-table" type="boolean">
 				<annotation>
 					<documentation>
-						Whether Linkd has save to database table stpnode.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -474,9 +462,7 @@
 			<attribute name="save-stp-interface-table" type="boolean">
 				<annotation>
 					<documentation>
-						Whether Linkd has to download Spanning Tree
-						table on devices and save to database table
-						stpinterface.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
@@ -484,8 +470,7 @@
 			<attribute name="force-ip-route-discovery-on-ethernet" type="boolean" use="optional" default="false" >
 				<annotation>
 					<documentation>
-						Whether Linkd has to find links using ip route tables
-						on ethernet interfaces.
+						OverWrite default value of link-configuration corresponding attribute	
 					</documentation>
 				</annotation>
 			</attribute>
