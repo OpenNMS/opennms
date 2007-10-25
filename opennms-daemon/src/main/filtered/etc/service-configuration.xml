@@ -267,7 +267,7 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
-<!-- To unable maps (topology discovery) uncommenet this service
+<!-- To enable network topology discovery uncomment this service
     <service>
         <name>OpenNMS:Name=Linkd</name>
         <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
