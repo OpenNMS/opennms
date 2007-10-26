@@ -149,7 +149,7 @@
 -->
         <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
         <li><a href="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
-        <li><a href="admin/categories.htm">Manage Node Categories</a></li>
+        <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
         <li><a href="admin/applications.htm">Manage Applications</a></li>
         <li><a href="admin/provisioningGroups.htm">Manage Provisioning Groups</a></li>
         <li><a href="admin/thresholds/index.htm">Manage Thresholds</a></li>
