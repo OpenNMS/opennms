@@ -12,7 +12,7 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<h3>Edit categories on ${model.node.label}</h3>
+<h3>Edit surveillance categories on ${model.node.label}</h3>
 
 <p>
 Node <a href="<c:url value='element/node.jsp?node=${model.node.id}'/>">${model.node.label}</a> (node ID: ${model.node.id}) has ${fn:length(model.node.categories)} categories 

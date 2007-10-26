@@ -48,7 +48,7 @@
 <div id="category-box">
 
 <h3>
-  Category Memberships
+  Surveillance Category Memberships
   <c:if test="${isAdmin == 'true'}">
     (<a href="<c:url value='admin/categories.htm?edit&node=${param.node}'/>">Edit</a>)
   </c:if>
