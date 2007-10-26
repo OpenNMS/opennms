@@ -25,6 +25,26 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
       <version>${droolsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-jci-eclipse</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-jci-janino</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-eclipse</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-janino</artifactId>
+      <version>1.0</version>
     </dependency>
   </dependencies>
 </project>
