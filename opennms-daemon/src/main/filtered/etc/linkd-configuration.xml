@@ -30,6 +30,7 @@
         <vendor vendor_name="3Com3870" sysoidRootMask=".1.3.6.1.4.1.43.1"
                 class-name="org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable">
             <specific>8.43</specific>
+            <specific>8.61</specific>
         </vendor>
 
         <vendor vendor_name="Nortel" sysoidRootMask=".1.3.6.1.4.1.45.3"
