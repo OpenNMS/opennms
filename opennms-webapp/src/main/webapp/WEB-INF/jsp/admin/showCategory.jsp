@@ -12,7 +12,7 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<h3>Category ${model.category.name}</h3>
+<h3>Surveillance Category ${model.category.name}</h3>
 
 <p>
 Category '${model.category.name}' has ${fn:length(model.memberNodes)} nodes
