@@ -241,8 +241,8 @@
             (or any combination of the four) for any interface/node for any time.  
 	</p>
 
-	<p><b>Manage node categories</b> allows you to manage node categories
-	  (groups of nodes).
+	<p><b>Manage Surveillance Categories</b> allows you to add and delete surveillance
+          categories and edit the list of nodes belonging to each category.
 	</p>
 
 	<p><b>Manage applications</b> allows you to manage applications (groups
