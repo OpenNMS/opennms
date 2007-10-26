@@ -9,7 +9,7 @@
 	<jsp:param name="breadcrumb" value="Categories" />
 </jsp:include>
 
-<h3>Categories</h3>
+<h3>Surveillance Categories</h3>
 
 <table>
   <tr>
