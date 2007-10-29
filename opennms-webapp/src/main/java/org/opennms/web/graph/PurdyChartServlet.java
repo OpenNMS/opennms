@@ -101,13 +101,13 @@ public class PurdyChartServlet extends HttpServlet {
         pw.println("<h1>"+chartName+"</h1>");
         pw.close();
 */
-        response.setContentType("image/jpeg");
+        response.setContentType("image/png");
         OutputStream out = response.getOutputStream();
         
         log().debug("doGet: displaying chart: "+chartName);
         
         try {
-                ChartUtils.getBarChart(chartName, out);
+                ChartUtils.getBarChartPNG(chartName, out);
         } catch (MarshalException e) {
             log().error("Error marshalling chart-configuration.xml: ",e);
         } catch (ValidationException e) {
