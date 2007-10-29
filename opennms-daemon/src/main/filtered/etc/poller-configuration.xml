@@ -25,7 +25,7 @@
 			<parameter key="rrd-base-name" value="icmp"/>
 			<parameter key="ds-name" value="icmp"/>
 		</service>
-		<service name="StrafePing" interval="300000" user-defined="false" status="on">
+		<service name="StrafePing" interval="300000" user-defined="false" status="off">
 			<parameter key="retry" value="0"/>
 			<parameter key="timeout" value="3000"/>
 
