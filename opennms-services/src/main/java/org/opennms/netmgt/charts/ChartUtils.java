@@ -305,6 +305,34 @@ public class ChartUtils {
     }
     
     /**
+     * Helper method that returns the JFreeChart to an output stream written in JPEG format.
+     * @param chartName
+     * @param out
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void getBarChartPNG(String chartName, OutputStream out) throws MarshalException, ValidationException, IOException, SQLException {
+        BarChart chartConfig = getBarChartConfigByName(chartName);
+        JFreeChart chart = getBarChart(chartName);
+        ImageSize imageSize = chartConfig.getImageSize();
+        int hzPixels;
+        int vtPixels;
+        
+        if (imageSize == null) {
+            hzPixels = 400;
+            vtPixels = 400;
+        } else {            
+            hzPixels = imageSize.getHzSize().getPixels();
+            vtPixels = imageSize.getVtSize().getPixels();
+        }
+        
+        ChartUtilities.writeChartAsPNG(out, chart, hzPixels, vtPixels, false, 6);
+        
+    }
+    
+    /**
      * Helper method that returns the JFreeChart as a PNG byte array.
      * 
      * @param chartName
