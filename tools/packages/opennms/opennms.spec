@@ -287,7 +287,7 @@ rm -rf $RPM_BUILD_ROOT
 %config %{webappsdir}/%{servletdir}/WEB-INF/configuration.properties
 
 
-%post
+%post core
 
 echo -e "- moving *.sql.rpmnew files (if any)... \c"
 if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
@@ -336,6 +336,9 @@ echo " *** make a few other changes before you start OpenNMS.  See the"
 echo " *** install guide and release notes for details."
 
 %changelog
+* Mon Oct 29 2007 Benjamin Reed <ranger@opennms.org>
+- Make sure the postinstall happens in opennms-core, not opennms.
+
 * Tue Sep 18 2007 Benjamin Reed <ranger@opennms.org>
 - Look for existing libraries and auto-populate libraries.properties,
   if possible.
