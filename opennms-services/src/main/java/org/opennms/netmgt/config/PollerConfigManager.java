@@ -506,14 +506,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      *            The package to lookup up service.
      */
     public synchronized boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
-        Category log = log();
-    
         if (pkg == null) {
-            log.warn("serviceInPackageAndEnabled:  pkg argument is NULL!!");
+            log().warn("serviceInPackageAndEnabled:  pkg argument is NULL!!");
             return false;
         } else {
-            if (log.isDebugEnabled())
-                log.debug("serviceInPackageAndEnabled: svcName=" + svcName + " pkg=" + pkg.getName());
+            if (log().isDebugEnabled())
+                log().debug("serviceInPackageAndEnabled: svcName=" + svcName + " pkg=" + pkg.getName());
         }
     
         for(Service svc : services(pkg)) {
@@ -580,16 +578,21 @@ abstract public class PollerConfigManager implements PollerConfig {
         
         for(Package pkg : packages()) {
     
-            boolean inPkg = interfaceInPackage(ipaddr, pkg);
-            if (inPkg)
+            if (interfaceInPackage(ipaddr, pkg)) {
                 return pkg;
+            }
         }
     
         return null;
     }
 
     public Package getFirstLocalPackageMatch(String ipaddr) {
-        throw new UnsupportedOperationException("PollerConfigManager.getFirstLocalPackageMatch is not yet implemented");
+        for(Package pkg : packages()) {
+            if (!pkg.getRemote() && interfaceInPackage(ipaddr, pkg)) {
+                return pkg;
+            }
+        }
+        return null;
     }
 
     /**
@@ -643,7 +646,12 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     public boolean isPolledLocally(String ipaddr) {
-        throw new UnsupportedOperationException("PollerConfigManager.isPolledLocally is not yet implemented");
+        for(Package pkg : packages()) {
+            if (!pkg.getRemote() && interfaceInPackage(ipaddr, pkg)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -695,16 +703,8 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     
         for(Package pkg : packages()) {
-            //
-            // Check if interface is in a package and if the service
-            // is enabled for that package
-            //
-            boolean ipInPkg = interfaceInPackage(ipaddr, pkg);
-            if (ipInPkg) {
-                boolean svcInPkg = serviceInPackageAndEnabled(svcName, pkg);
-                if (svcInPkg) {
-                    return true;
-                }
+            if (serviceInPackageAndEnabled(svcName, pkg) && interfaceInPackage(ipaddr, pkg)) {
+                return true;
             }
         }
     
@@ -712,7 +712,17 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     public boolean isPolledLocally(String ipaddr, String svcName) {
-        throw new UnsupportedOperationException("PollerConfigManager.isPolledLocally is not yet implemented");
+        if (!serviceMonitored(svcName)) {
+            return false;
+        }
+        
+        for(Package pkg : packages()) {
+            if (serviceInPackageAndEnabled(svcName, pkg) && interfaceInPackage(ipaddr, pkg)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**

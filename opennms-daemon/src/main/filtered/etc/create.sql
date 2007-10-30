@@ -409,8 +409,9 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --#                     'A' - Alias
 --#                     'D' - Deleted
 --#                     'U' - Unmanaged
---#			'F' - Forced Unmanaged (via the user interface)
+--#                     'F' - Forced Unmanaged (via the user interface)
 --#                     'N' - Not polled as part of any package
+--#                     'X' - Remotely Monitored only
 --#  ipStatus        : If interface supports SNMP this field will
 --#                    hold a numeric representation of interface's
 --#                    operational status (same as 'snmpIfOperStatus'
@@ -491,6 +492,7 @@ create table service (
 --#                'F' - Forced unmanaged (via user interface)
 --#                'N' - Not polled as part of any of the packages that the
 --#                      interface belongs to
+--#                'X' - service is remotely monitored only
 --#  source    : Flag indicating how the service was detected.
 --#                'P' - Plugin
 --#                'F' - Forced (via CapsdPluginBehavior.conf)

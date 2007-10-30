@@ -168,8 +168,11 @@
             <tr class="CellStatus">
 	      <%
                 if (svcs.length < 1) {
-                  availClass = "Indeterminate";
-                  availValue = "Not Monitored";
+                    availClass = "Indeterminate";
+                    availValue = "Not Monitored";
+                } else if (!ElementUtil.hasLocallyMonitoredServices(svcs)) {
+                    availClass = "Indeterminate";
+                    availValue = "Remotely Monitored";
                 } else {
                   availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, intfValue);
                   availValue = CategoryUtil.formatValue(intfValue) + "%";

@@ -843,7 +843,7 @@ public final class DbIfServiceEntry {
 
     boolean updateNotify(char newNotify) {
         if (newNotify != m_notify) {
-            setStatus(newNotify);
+            setNotify(newNotify);
             return true;
         }
         return false;

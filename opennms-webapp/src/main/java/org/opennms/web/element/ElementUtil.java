@@ -174,6 +174,16 @@ public class ElementUtil extends Object {
         Map<Character, String> statusMap = getServiceStatusMap();
         return statusMap.get(new Character(c));
     }
+    
+    public static boolean hasLocallyMonitoredServices(Service[] svcs) {
+        for(Service svc : svcs) {
+            char status = svc.getStatus();
+            if (status != 'X') {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static final int DEFAULT_TRUNCATE_THRESHOLD = 28;
 
