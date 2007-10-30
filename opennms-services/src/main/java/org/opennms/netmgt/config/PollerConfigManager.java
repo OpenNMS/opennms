@@ -143,19 +143,16 @@ abstract public class PollerConfigManager implements PollerConfig {
     private void createUrlIpMap() {
         m_urlIPMap = new HashMap<String, List<String>>();
     
-        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            Package pkg = pkgEnum.nextElement();
+        for(Package pkg : packages()) {
     
-            Enumeration<String> urlEnum = pkg.enumerateIncludeUrl();
-            while (urlEnum.hasMoreElements()) {
-                String urlname = urlEnum.nextElement();
+            for(String url : includeURLs(pkg)) {
     
-                List<String> iplist = IpListFromUrl.parse(urlname);
+                List<String> iplist = IpListFromUrl.parse(url);
                 if (iplist.size() > 0) {
-                    m_urlIPMap.put(urlname, iplist);
+                    m_urlIPMap.put(url, iplist);
                 }
             }
+
         }
     }
 
@@ -188,28 +185,25 @@ abstract public class PollerConfigManager implements PollerConfig {
         return m_config;
     }
 
-    public synchronized Package getPackage(String name) {
-        Enumeration<Package> packageEnum = m_config.enumeratePackage();
-        while (packageEnum.hasMoreElements()) {
-            Package thisPackage = packageEnum.nextElement();
-            if (thisPackage.getName().equals(name)) {
-                return thisPackage;
+    public synchronized Package getPackage(final String name) {
+        
+        for(Package pkg : packages()) {
+
+            if (pkg.getName().equals(name)) {
+                return pkg;
             }
         }
         return null;
     }
     
     public ServiceSelector getServiceSelectorForPackage(Package pkg) {
-        String filter = pkg.getFilter().getContent();
         
         List<String> svcNames = new LinkedList<String>();
-        
-        Enumeration<Service> pkgServices = pkg.enumerateService();
-        while(pkgServices.hasMoreElements()) {
-            svcNames.add(pkgServices.nextElement().getName());
+        for(Service svc : services(pkg)) {
+            svcNames.add(svc.getName());
         }
         
-
+        String filter = pkg.getFilter().getContent();
         return new ServiceSelector(filter, svcNames);
     }
 
@@ -357,12 +351,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     private void createPackageIpListMap() {
         m_pkgIpMap = new HashMap<Package, List<String>>();
+        
+        for(Package pkg : packages()) {
     
-        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            Package pkg = pkgEnum.nextElement();
-    
-            //
             // Get a list of ipaddress per package agaist the filter rules from
             // database and populate the package, IP list map.
             //
@@ -379,6 +370,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             } catch (Throwable t) {
                 log().error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List: " + t, t);
             }
+
         }
     }
 
@@ -459,6 +451,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         long addr = IPSorter.convertToLong(iface);
+        
         Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
             IncludeRange rng = eincs.nextElement();
@@ -523,20 +516,17 @@ abstract public class PollerConfigManager implements PollerConfig {
                 log.debug("serviceInPackageAndEnabled: svcName=" + svcName + " pkg=" + pkg.getName());
         }
     
-        boolean result = false;
-    
-        Enumeration<Service> esvcs = pkg.enumerateService();
-        while (result == false && esvcs.hasMoreElements()) {
-            Service tsvc = esvcs.nextElement();
-            if (tsvc.getName().equalsIgnoreCase(svcName)) {
+        for(Service svc : services(pkg)) {
+            if (svc.getName().equalsIgnoreCase(svcName)) {
                 // Ok its in the package. Now check the
                 // status of the service
-                String status = tsvc.getStatus();
-                if (status == null || status.equals("on"))
-                    result = true;
+                String status = svc.getStatus();
+                if (status == null || status.equals("on")) {
+                    return true;
+                }
             }
         }
-        return result;
+        return false;
     }
 
     /**
@@ -548,9 +538,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     public synchronized Service getServiceInPackage(String svcName, Package pkg) {
         
-        Enumeration<Service> e = pkg.enumerateService();
-        while(e.hasMoreElements()) {
-            Service svc = e.nextElement();
+        for(Service svc : services(pkg)) {
             if (svcName.equals(svc.getName()))
                 return svc;
         }
@@ -566,9 +554,8 @@ abstract public class PollerConfigManager implements PollerConfig {
     public synchronized boolean serviceMonitored(String svcName) {
         boolean result = false;
     
-        Enumeration<Monitor> monitorEnum = m_config.enumerateMonitor();
-        while (monitorEnum.hasMoreElements()) {
-            Monitor monitor = monitorEnum.nextElement();
+        for(Monitor monitor : monitors()) {
+
             if (monitor.getService().equals(svcName)) {
                 result = true;
                 break;
@@ -590,9 +577,8 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return the first package that the ip belongs to, null if none
      */
     public synchronized Package getFirstPackageMatch(String ipaddr) {
-        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            Package pkg = pkgEnum.nextElement();
+        
+        for(Package pkg : packages()) {
     
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg)
@@ -619,15 +605,15 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
     
-        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         List<String> matchingPkgs = new ArrayList<String>();
-        while (pkgEnum.hasMoreElements()) {
-            Package pkg = pkgEnum.nextElement();
-            String pkgName = pkg.getName();
+
+        for(Package pkg : packages()) {
+
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg) {
-                matchingPkgs.add(pkgName);
+                matchingPkgs.add(pkg.getName());
             }
+
         }
     
         return matchingPkgs;
@@ -645,10 +631,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return true if the ip is part of atleast one package, false otherwise
      */
     public synchronized boolean isPolled(String ipaddr) {
-        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            Package pkg = pkgEnum.nextElement();
-    
+        
+        for(Package pkg : packages()) {
+            
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg)
                 return true;
@@ -709,10 +694,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             return false;
         }
     
-        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            Package pkg = pkgEnum.nextElement();
-    
+        for(Package pkg : packages()) {
             //
             // Check if interface is in a package and if the service
             // is enabled for that package
@@ -761,9 +743,29 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Enumeration<Package> enumeratePackage() {
         return getConfiguration().enumeratePackage();
     }
-
+    
     public Enumeration<Monitor> enumerateMonitor() {
         return getConfiguration().enumerateMonitor();
+    }
+    
+    public Iterable<Service> services(Package pkg) {
+        return pkg.getServiceCollection();
+    }
+    
+    public Iterable<String> includeURLs(Package pkg) {
+        return pkg.getIncludeUrlCollection();
+    }
+    
+    public Iterable<Parameter> parameters(Service svc) {
+        return svc.getParameterCollection();
+    }
+
+    public Iterable<Package> packages() {
+        return getConfiguration().getPackageCollection();
+    }
+
+    public Iterable<Monitor> monitors() {
+        return getConfiguration().getMonitorCollection();
     }
 
     public int getThreads() {
@@ -808,9 +810,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     
     public synchronized Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
-        Enumeration<Monitor> monitors = enumerateMonitor();
-        while (monitors.hasMoreElements()) {
-            Monitor monitor = monitors.nextElement();
+        for(Monitor monitor : monitors()) {
             try {
                 Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
                 if (isDistributableToContext(mc, context)) {
@@ -902,9 +902,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     
 
     private String getServiceParameter(Service svc, String key) {
-        Enumeration<Parameter> parms = svc.enumerateParameter();
-        while(parms.hasMoreElements()) {
-            Parameter parm = parms.nextElement();
+        
+        for(Parameter parm : parameters(svc)) {
+
             if (key.equals(parm.getKey())) {
             	if (parm.getValue() != null) {
             		return parm.getValue();
@@ -916,5 +916,4 @@ abstract public class PollerConfigManager implements PollerConfig {
         return null;
     }
     
-
 }
