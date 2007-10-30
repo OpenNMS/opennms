@@ -25,20 +25,6 @@
 			<parameter key="rrd-base-name" value="icmp"/>
 			<parameter key="ds-name" value="icmp"/>
 		</service>
-		<service name="StrafePing" interval="300000" user-defined="false" status="off">
-			<parameter key="retry" value="0"/>
-			<parameter key="timeout" value="3000"/>
-
-			<!-- how many concurrent pings to send; if you modify this, you will have to modify response-graph.properties as well! -->
-			<parameter key="ping-count" value="20"/>
-			<!-- how many pings need to fail for the service to be considered down -->
-			<parameter key="failure-ping-count" value="20"/>
-			<!-- how long to wait (in milliseconds) between packets -->
-			<parameter key="wait-interval" value="50"/>
-
-			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-			<parameter key="rrd-base-name" value="strafeping"/>
-		</service>
 		<service name="DNS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="5000"/>
@@ -172,6 +158,36 @@
 		<downtime begin="432000000" delete="true"/>			<!-- anything after 5 days delete -->
 
 	</package>
+ 
+<!-- Moved StrafePing to its own package.  This allows for more flexible configuration of which interfaces
+     will have StrafePing statistical analysis rather than being on for or off for all interfaces.  Change
+     this package's filter / ranges for directing the StrafePinger to choice interfaces.  Note: Strafing all
+     of your network interface may create high loads on the NMS file system.  -->
+     
+  <package name="strafer" >
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range>begin="10.1.1.1" end="10.1.1.10"</include-range>
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="StrafePing" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="0"/>
+      <parameter key="timeout" value="3000"/>
+      <parameter key="ping-count" value="20"/>
+      <parameter key="failure-ping-count" value="20"/>
+      <parameter key="wait-interval" value="50"/>
+      <parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
+      <parameter key="rrd-base-name" value="strafeping"/>
+    </service>
+    <downtime interval="30000" begin="0" end="300000"/>     <!-- 30s, 0, 5m -->
+    <downtime interval="300000" begin="300000" end="43200000"/> <!-- 5m, 5m, 12h -->
+    <downtime interval="600000" begin="43200000" end="432000000"/>  <!-- 10m, 12h, 5d -->
+    <downtime begin="432000000" delete="true"/>         <!-- anything after 5 days delete -->
+  </package>  
 
    <monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
    <monitor service="StrafePing" 	class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/>
