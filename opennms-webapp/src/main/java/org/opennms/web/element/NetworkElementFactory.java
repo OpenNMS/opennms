@@ -1006,27 +1006,27 @@ public class NetworkElementFactory extends Object {
 
             Object element = null;
             
-            service.m_id = rs.getInt("id");
-            service.m_nodeId = rs.getInt("nodeid");
-            service.m_ifIndex = rs.getInt("ifindex");
-            service.m_ipAddr = rs.getString("ipaddr");
+            service.setId(rs.getInt("id"));
+            service.setNodeId(rs.getInt("nodeid"));
+            service.setIfIndex(rs.getInt("ifindex"));
+            service.setIpAddress(rs.getString("ipaddr"));
 
             element = rs.getTimestamp("lastgood");
             if (element != null)
-                service.m_lastGood = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+                service.setLastGood(Util.formatDateToUIString(new Date(((Timestamp) element).getTime())));
 
-            service.m_serviceId = rs.getInt("serviceid");
-            service.m_serviceName = rs.getString("servicename");
+            service.setServiceId(rs.getInt("serviceid"));
+            service.setServiceName(rs.getString("servicename"));
 
             element = rs.getTimestamp("lastfail");
             if (element != null)
-                service.m_lastFail = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+                service.setLastFail(Util.formatDateToUIString(new Date(((Timestamp) element).getTime())));
 
-            service.m_notify = rs.getString("notify");
+            service.setNotify(rs.getString("notify"));
 
             element = rs.getString("status");
             if (element != null) {
-                service.m_status = ((String) element).charAt(0);
+                service.setStatus(((String) element).charAt(0));
             }
 
             services.add(service);
