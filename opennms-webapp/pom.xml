@@ -10,7 +10,7 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <properties>
-    <gwtVersion>1.3.3</gwtVersion>
+    <gwtVersion>1.4.60</gwtVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
   </properties>
