@@ -1037,12 +1037,10 @@ final class SuspectEventProcessor implements Runnable {
             else {
                 boolean svcToBePolled = false;
                 if (ipPkg != null) {
-                    svcToBePolled = PollerConfigFactory.getInstance().isPolled(
-                                                                               p.getProtocolName(),
+                    svcToBePolled = PollerConfigFactory.getInstance().isPolled(p.getProtocolName(),
                                                                                ipPkg);
                     if (!svcToBePolled)
-                        svcToBePolled = PollerConfigFactory.getInstance().isPolled(
-                                                                                   ifaddr.getHostAddress(),
+                        svcToBePolled = PollerConfigFactory.getInstance().isPolled(ifaddr.getHostAddress(),
                                                                                    p.getProtocolName());
                 }
 

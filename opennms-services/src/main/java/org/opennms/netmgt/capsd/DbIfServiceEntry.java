@@ -90,6 +90,8 @@ public final class DbIfServiceEntry {
 
     public final static char STATUS_RESUME = 'R';
 
+    public final static char STATUS_REMOTE = 'X';
+
     final static char SOURCE_PLUGIN = 'P';
 
     final static char SOURCE_FORCED = 'F';

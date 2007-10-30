@@ -119,7 +119,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetetive database access.
      */
-    private Map<org.opennms.netmgt.config.poller.Package, List<String>> m_pkgIpMap;
+    private Map<Package, List<String>> m_pkgIpMap;
     /**
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
@@ -140,19 +140,18 @@ abstract public class PollerConfigManager implements PollerConfig {
      * configured URL to a list of IPs configured in that URL - done at init()
      * time so that repeated file reads can be avoided
      */
-    @SuppressWarnings("unchecked")
     private void createUrlIpMap() {
         m_urlIPMap = new HashMap<String, List<String>>();
     
-        Enumeration pkgEnum = m_config.enumeratePackage();
+        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            Package pkg = pkgEnum.nextElement();
     
-            Enumeration urlEnum = pkg.enumerateIncludeUrl();
+            Enumeration<String> urlEnum = pkg.enumerateIncludeUrl();
             while (urlEnum.hasMoreElements()) {
-                String urlname = (String) urlEnum.nextElement();
+                String urlname = urlEnum.nextElement();
     
-                java.util.List<String> iplist = IpListFromUrl.parse(urlname);
+                List<String> iplist = IpListFromUrl.parse(urlname);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(urlname, iplist);
                 }
@@ -189,10 +188,10 @@ abstract public class PollerConfigManager implements PollerConfig {
         return m_config;
     }
 
-    public synchronized org.opennms.netmgt.config.poller.Package getPackage(String name) {
-        Enumeration packageEnum = m_config.enumeratePackage();
+    public synchronized Package getPackage(String name) {
+        Enumeration<Package> packageEnum = m_config.enumeratePackage();
         while (packageEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package thisPackage = (org.opennms.netmgt.config.poller.Package) packageEnum.nextElement();
+            Package thisPackage = packageEnum.nextElement();
             if (thisPackage.getName().equals(name)) {
                 return thisPackage;
             }
@@ -200,7 +199,6 @@ abstract public class PollerConfigManager implements PollerConfig {
         return null;
     }
     
-    @SuppressWarnings("unchecked")
     public ServiceSelector getServiceSelectorForPackage(Package pkg) {
         String filter = pkg.getFilter().getContent();
         
@@ -258,7 +256,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         boolean bRet = false;
     
         // get list of IPs in this URL
-        java.util.List iplist = (java.util.List) m_urlIPMap.get(url);
+        List<String> iplist = m_urlIPMap.get(url);
         if (iplist != null && iplist.size() > 0) {
             bRet = iplist.contains(addr);
         }
@@ -358,11 +356,11 @@ abstract public class PollerConfigManager implements PollerConfig {
      * from the database.
      */
     private void createPackageIpListMap() {
-        m_pkgIpMap = new HashMap<org.opennms.netmgt.config.poller.Package, List<String>>();
+        m_pkgIpMap = new HashMap<Package, List<String>>();
     
-        Enumeration pkgEnum = m_config.enumeratePackage();
+        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            Package pkg = pkgEnum.nextElement();
     
             //
             // Get a list of ipaddress per package agaist the filter rules from
@@ -431,13 +429,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.poller.Package pkg) {
+    public synchronized boolean interfaceInPackage(String iface, Package pkg) {
         Category log = log();
     
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
+        List<String> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
             filterPassed = ipList.contains(iface);
         }
@@ -456,14 +454,14 @@ abstract public class PollerConfigManager implements PollerConfig {
         boolean has_range_include = false;
         boolean has_range_exclude = false;
  
-        // if there are NO include rances then treat act as if the user include
+        // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         long addr = IPSorter.convertToLong(iface);
-        Enumeration eincs = pkg.enumerateIncludeRange();
+        Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = (IncludeRange) eincs.nextElement();
+            IncludeRange rng = eincs.nextElement();
             long start = IPSorter.convertToLong(rng.getBegin());
             if (addr > start) {
                 long end = IPSorter.convertToLong(rng.getEnd());
@@ -475,21 +473,21 @@ abstract public class PollerConfigManager implements PollerConfig {
             }
         }
     
-        Enumeration espec = pkg.enumerateSpecific();
+        Enumeration<String> espec = pkg.enumerateSpecific();
         while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement().toString());
+            long speca = IPSorter.convertToLong(espec.nextElement());
             if (speca == addr)
                 has_specific = true;
         }
     
-        Enumeration eurl = pkg.enumerateIncludeUrl();
+        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
         while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
+            has_specific = interfaceInUrl(iface, eurl.nextElement());
         }
     
-        Enumeration eex = pkg.enumerateExcludeRange();
+        Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
         while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = (ExcludeRange) eex.nextElement();
+            ExcludeRange rng = eex.nextElement();
             long start = IPSorter.convertToLong(rng.getBegin());
             if (addr > start) {
                 long end = IPSorter.convertToLong(rng.getEnd());
@@ -514,7 +512,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param pkg
      *            The package to lookup up service.
      */
-    public synchronized boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.poller.Package pkg) {
+    public synchronized boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
         Category log = log();
     
         if (pkg == null) {
@@ -527,9 +525,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     
         boolean result = false;
     
-        Enumeration esvcs = pkg.enumerateService();
+        Enumeration<Service> esvcs = pkg.enumerateService();
         while (result == false && esvcs.hasMoreElements()) {
-            Service tsvc = (Service) esvcs.nextElement();
+            Service tsvc = esvcs.nextElement();
             if (tsvc.getName().equalsIgnoreCase(svcName)) {
                 // Ok its in the package. Now check the
                 // status of the service
@@ -550,9 +548,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     public synchronized Service getServiceInPackage(String svcName, Package pkg) {
         
-        Enumeration e = pkg.enumerateService();
+        Enumeration<Service> e = pkg.enumerateService();
         while(e.hasMoreElements()) {
-            Service svc = (Service)e.nextElement();
+            Service svc = e.nextElement();
             if (svcName.equals(svc.getName()))
                 return svc;
         }
@@ -568,9 +566,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     public synchronized boolean serviceMonitored(String svcName) {
         boolean result = false;
     
-        Enumeration monitorEnum = m_config.enumerateMonitor();
+        Enumeration<Monitor> monitorEnum = m_config.enumerateMonitor();
         while (monitorEnum.hasMoreElements()) {
-            Monitor monitor = (Monitor) monitorEnum.nextElement();
+            Monitor monitor = monitorEnum.nextElement();
             if (monitor.getService().equals(svcName)) {
                 result = true;
                 break;
@@ -591,10 +589,10 @@ abstract public class PollerConfigManager implements PollerConfig {
      * 
      * @return the first package that the ip belongs to, null if none
      */
-    public synchronized org.opennms.netmgt.config.poller.Package getFirstPackageMatch(String ipaddr) {
-        Enumeration pkgEnum = m_config.enumeratePackage();
+    public synchronized Package getFirstPackageMatch(String ipaddr) {
+        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            Package pkg = pkgEnum.nextElement();
     
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg)
@@ -602,6 +600,10 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     
         return null;
+    }
+
+    public Package getFirstLocalPackageMatch(String ipaddr) {
+        throw new UnsupportedOperationException("PollerConfigManager.getFirstLocalPackageMatch is not yet implemented");
     }
 
     /**
@@ -617,10 +619,10 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
     
-        Enumeration pkgEnum = m_config.enumeratePackage();
+        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         List<String> matchingPkgs = new ArrayList<String>();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            Package pkg = pkgEnum.nextElement();
             String pkgName = pkg.getName();
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg) {
@@ -643,9 +645,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return true if the ip is part of atleast one package, false otherwise
      */
     public synchronized boolean isPolled(String ipaddr) {
-        Enumeration pkgEnum = m_config.enumeratePackage();
+        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            Package pkg = pkgEnum.nextElement();
     
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg)
@@ -653,6 +655,10 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     
         return false;
+    }
+
+    public boolean isPolledLocally(String ipaddr) {
+        throw new UnsupportedOperationException("PollerConfigManager.isPolledLocally is not yet implemented");
     }
 
     /**
@@ -670,7 +676,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return true if the ip is part of atleast one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
-    public synchronized boolean isPolled(String svcName, org.opennms.netmgt.config.poller.Package pkg) {
+    public synchronized boolean isPolled(String svcName, Package pkg) {
         // Check if the service is enabled for this package and
         // if there is a monitor for that service
         //
@@ -703,9 +709,9 @@ abstract public class PollerConfigManager implements PollerConfig {
             return false;
         }
     
-        Enumeration pkgEnum = m_config.enumeratePackage();
+        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            Package pkg = pkgEnum.nextElement();
     
             //
             // Check if interface is in a package and if the service
@@ -723,6 +729,10 @@ abstract public class PollerConfigManager implements PollerConfig {
         return false;
     }
 
+    public boolean isPolledLocally(String ipaddr, String svcName) {
+        throw new UnsupportedOperationException("PollerConfigManager.isPolledLocally is not yet implemented");
+    }
+
     /**
      * Retrieves configured RRD step size.
      * 
@@ -731,7 +741,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * 
      * @return RRD step size for the specified collection
      */
-    public int getStep(org.opennms.netmgt.config.poller.Package pkg) {
+    public int getStep(Package pkg) {
         return pkg.getRrd().getStep();
     }
 
@@ -743,17 +753,16 @@ abstract public class PollerConfigManager implements PollerConfig {
      * 
      * @return list of RRA strings.
      */
-    @SuppressWarnings("unchecked")
-    public List<String> getRRAList(org.opennms.netmgt.config.poller.Package pkg) {
+    public List<String> getRRAList(Package pkg) {
         return pkg.getRrd().getRraCollection();
     
     }
 
-    public Enumeration enumeratePackage() {
+    public Enumeration<Package> enumeratePackage() {
         return getConfiguration().enumeratePackage();
     }
 
-    public Enumeration enumerateMonitor() {
+    public Enumeration<Monitor> enumerateMonitor() {
         return getConfiguration().enumerateMonitor();
     }
 
@@ -789,19 +798,19 @@ abstract public class PollerConfigManager implements PollerConfig {
     
     }
 
-    public synchronized Map getServiceMonitors() {
+    public synchronized Map<String, ServiceMonitor> getServiceMonitors() {
         return m_svcMonitors;
     }
 
     public synchronized ServiceMonitor getServiceMonitor(String svcName) {
-        return (ServiceMonitor) getServiceMonitors().get(svcName);
+        return getServiceMonitors().get(svcName);
     }
     
     public synchronized Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
-        Enumeration monitors = enumerateMonitor();
+        Enumeration<Monitor> monitors = enumerateMonitor();
         while (monitors.hasMoreElements()) {
-            Monitor monitor = (Monitor) monitors.nextElement();
+            Monitor monitor = monitors.nextElement();
             try {
                 Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
                 if (isDistributableToContext(mc, context)) {
@@ -837,9 +846,8 @@ abstract public class PollerConfigManager implements PollerConfig {
        return declaredContexts;
     }
 
-    @SuppressWarnings("unchecked")
     private Class<? extends ServiceMonitor> findServiceMonitorClass(Monitor monitor) throws ClassNotFoundException {
-        Class mc = Class.forName(monitor.getClassName());
+        Class<? extends ServiceMonitor> mc = Class.forName(monitor.getClassName()).asSubclass(ServiceMonitor.class);
         if (!ServiceMonitor.class.isAssignableFrom(mc)) {
             throw new CastorDataAccessFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
         }
@@ -853,9 +861,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
 	public void releaseAllServiceMonitors() {
-		Iterator iter = getServiceMonitors().values().iterator();
+		Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
 	    while (iter.hasNext()) {
-	        ServiceMonitor sm = (ServiceMonitor) iter.next();
+	        ServiceMonitor sm = iter.next();
 	        sm.release();
 	    }
 	}
@@ -893,7 +901,6 @@ abstract public class PollerConfigManager implements PollerConfig {
     
     
 
-    @SuppressWarnings("unchecked")
     private String getServiceParameter(Service svc, String key) {
         Enumeration<Parameter> parms = svc.enumerateParameter();
         while(parms.hasMoreElements()) {
@@ -908,6 +915,6 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
         return null;
     }
-
+    
 
 }
