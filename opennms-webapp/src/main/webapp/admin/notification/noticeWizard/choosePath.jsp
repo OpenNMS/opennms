@@ -194,18 +194,25 @@
                 <td colspan="3">Can be used in both the text message and email subject:</td>
               </tr>
               <tr>
-                <td>%noticeid% = notification ID number</td>
-                <td>%time% = time sent</td>
-                <td>%severity% = event severity</td>                          
+                <td>%noticeid% = Notification ID number</td>
+                <td>%time% = Time sent</td>
+                <td>%severity% = Event severity</td>                          
               </tr>
               <tr>
-                <td>%nodelabel% = may be IP address or empty</td>
+                <td>%nodelabel% = May be IP address or empty</td>
                 <td>%interface% = IP address, may be empty</td>
-                <td>%service% = service name, may be empty</td>
-                <td>&nbsp;</td>                                                    
+                <td>%service% = Service name, may be empty</td>
               </tr>
               <tr>
-				<td>%eventid% = event ID, may be empty</td>
+				<td>%eventid% = Event ID, may be empty</td>
+				<td>%parm[a_parm_name]% = Value of a named event parameter</td>
+				<td>%parm[#N]% = Value of the event parameter at index N</td>
+			  </tr>
+			  <tr>
+			    <td>%ifalias% = SNMP ifAlias of affected interface</td>
+			    <td>%interfaceresolve% = Reverse DNS name of interface IP address</td>
+               <td>%operinstruct% = Operator instructions from event definition</td>		     
+			  </tr>
             </table>
           </td>
          </tr>
