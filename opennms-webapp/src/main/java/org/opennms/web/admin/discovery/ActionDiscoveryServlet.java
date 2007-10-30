@@ -204,7 +204,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
             log.info("Restart Discovery requested!");  
             sess.removeAttribute("discoveryConfiguration");
-            response.sendRedirect(org.opennms.web.Util.calculateUrlBase( request )+"/event/query?msgmatchany=Discovery");
+            response.sendRedirect(org.opennms.web.Util.calculateUrlBase( request )+"event/query?msgmatchany=Discovery");
             return;
         }
         
