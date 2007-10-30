@@ -33,40 +33,40 @@
 package org.opennms.web.element;
 
 public class Service {
-    int m_id;
+    private int m_id;
     
-    int m_nodeId;
+    private int m_nodeId;
 
-    int m_ifIndex;
+    private int m_ifIndex;
 
-    String m_ipAddr;
+    private String m_ipAddr;
 
-    int m_serviceId;
+    private int m_serviceId;
 
-    String m_serviceName;
+    private String m_serviceName;
 
-    String m_lastGood;
+    private String m_lastGood;
 
-    String m_lastFail;
+    private String m_lastFail;
 
-    String m_notify;
+    private String m_notify;
 
-    char m_status;
+    private char m_status;
 
     public Service() {
     }
 
     public Service(int id, int nodeid, int ifindex, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
-        m_id = id;
-        m_nodeId = nodeid;
-        m_ifIndex = ifindex;
-        m_ipAddr = ipaddr;
-        m_serviceId = serviceid;
-        m_serviceName = serviceName;
-        m_lastGood = lastGood;
-        m_lastFail = lastFail;
-        m_notify = notify;
-        m_status = status;
+        setId(id);
+        setNodeId(nodeid);
+        setIfIndex(ifindex);
+        setIpAddress(ipaddr);
+        setServiceId(serviceid);
+        setServiceName(serviceName);
+        setLastGood(lastGood);
+        setLastFail(lastFail);
+        setNotify(notify);
+        setStatus(status);
     }
 
     public int getId() {
@@ -110,18 +110,58 @@ public class Service {
     }
 
     public boolean isManaged() {
-        return (m_status == 'A');
+        return (getStatus() == 'A');
     }
 
     public String toString() {
-        StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n");
-        str.append("Ifindex = " + m_ifIndex + "\n");
-        str.append("Ipaddr = " + m_ipAddr + "\n");
-        str.append("Service id = " + m_serviceId + "\n");
-        str.append("Service name = " + m_serviceName + "\n");
-        str.append("Last Good = " + m_lastGood + "\n");
-        str.append("Last Fail  = " + m_lastFail + "\n");
-        str.append("Status = " + m_status + "\n");
+        StringBuffer str = new StringBuffer("Node Id = " + getNodeId() + "\n");
+        str.append("Ifindex = " + getIfIndex() + "\n");
+        str.append("Ipaddr = " + getIpAddress() + "\n");
+        str.append("Service id = " + getServiceId() + "\n");
+        str.append("Service name = " + getServiceName() + "\n");
+        str.append("Last Good = " + getLastGood() + "\n");
+        str.append("Last Fail  = " + getLastFail() + "\n");
+        str.append("Status = " + getStatus() + "\n");
         return str.toString();
+    }
+
+    void setId(int id) {
+        m_id = id;
+    }
+
+    void setNodeId(int nodeId) {
+        m_nodeId = nodeId;
+    }
+
+    void setIfIndex(int ifIndex) {
+        m_ifIndex = ifIndex;
+    }
+
+    void setIpAddress(String ipAddr) {
+        m_ipAddr = ipAddr;
+    }
+
+    void setServiceId(int serviceId) {
+        m_serviceId = serviceId;
+    }
+
+    void setServiceName(String serviceName) {
+        m_serviceName = serviceName;
+    }
+
+    void setLastGood(String lastGood) {
+        m_lastGood = lastGood;
+    }
+
+    void setLastFail(String lastFail) {
+        m_lastFail = lastFail;
+    }
+
+    void setNotify(String notify) {
+        m_notify = notify;
+    }
+
+    void setStatus(char status) {
+        m_status = status;
     }
 }

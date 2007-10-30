@@ -154,6 +154,7 @@ public class ElementUtil extends Object {
         map.put(new Character('N'), "Not Monitored");
         map.put(new Character('R'), "Rescan to Resume");
         map.put(new Character('S'), "Rescan to Suspend");
+        map.put(new Character('X'), "Remotely Monitored");
 
         m_serviceStatusMap = map;
     }
