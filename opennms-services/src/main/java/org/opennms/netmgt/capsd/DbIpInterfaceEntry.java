@@ -96,6 +96,8 @@ public final class DbIpInterfaceEntry {
     public final static char STATE_FORCED = 'F';
 
     public final static char STATE_NOT_POLLED = 'N';
+    
+    public final static char STATE_REMOTE = 'X';
 
     public final static char STATE_UNKNOWN = ' ';
 

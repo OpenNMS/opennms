@@ -1035,19 +1035,13 @@ final class SuspectEventProcessor implements Runnable {
             if (addrUnmanaged)
                 ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
             else {
-                boolean svcToBePolled = false;
-                if (ipPkg != null) {
-                    svcToBePolled = PollerConfigFactory.getInstance().isPolled(p.getProtocolName(),
-                                                                               ipPkg);
-                    if (!svcToBePolled)
-                        svcToBePolled = PollerConfigFactory.getInstance().isPolled(ifaddr.getHostAddress(),
-                                                                                   p.getProtocolName());
-                }
-
-                if (svcToBePolled)
+                if (isServicePolledLocally(ifaddr.getHostAddress(), p.getProtocolName(), ipPkg)) {
                     ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-                else
+                } else if (isServicePolled(ifaddr.getHostAddress(), p.getProtocolName(), ipPkg)) {
+                    ifSvcEntry.setStatus(DbIpInterfaceEntry.STATE_REMOTE);
+                } else {
                     ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
+                }
             }
 
             // Set qualifier if available. Currently the qualifier field
@@ -1069,6 +1063,26 @@ final class SuspectEventProcessor implements Runnable {
                 ifSvcEntry.setIfIndex(ifIndex);
             ifSvcEntry.store();
         }
+    }
+
+    private boolean isServicePolled(String ifAddr, String svcName, org.opennms.netmgt.config.poller.Package ipPkg) {
+        boolean svcToBePolled = false;
+        if (ipPkg != null) {
+            svcToBePolled = PollerConfigFactory.getInstance().isPolled(svcName, ipPkg);
+            if (!svcToBePolled)
+                svcToBePolled = PollerConfigFactory.getInstance().isPolled(ifAddr, svcName);
+        }
+        return svcToBePolled;
+    }
+
+    private boolean isServicePolledLocally(String ifAddr, String svcName, org.opennms.netmgt.config.poller.Package ipPkg) {
+        boolean svcToBePolled = false;
+        if (ipPkg != null && !ipPkg.getRemote()) {
+            svcToBePolled = PollerConfigFactory.getInstance().isPolled(svcName, ipPkg);
+            if (!svcToBePolled)
+                svcToBePolled = PollerConfigFactory.getInstance().isPolledLocally(ifAddr, svcName);
+        }
+        return svcToBePolled;
     }
 
     /**

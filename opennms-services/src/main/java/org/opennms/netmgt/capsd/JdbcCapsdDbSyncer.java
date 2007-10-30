@@ -835,33 +835,31 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                          * try the first package that had the ip first, if
                          * service is not enabled, try all packages
                          */
-                        boolean svcToBePolled = false;
                         char oldStatus = svcStatus;
                         char newStatus = 'U';
-                        if (ipPkg != null) {
-                            svcToBePolled = getPollerConfig().isPolled(svcName, ipPkg);
-                            if (!svcToBePolled) {
-                                svcToBePolled = getPollerConfig().isPolled(ipaddress, svcName);
-                            }
-                        }
-    
+                        boolean svcToBePolledLocally = isServicePolledLocally(ipaddress, svcName, ipPkg);
+                        boolean svcToBePolledRemotely = isServicePolled(ipaddress, svcName, ipPkg);
+                        
                         if (log().isDebugEnabled()) {
-                            log().debug("syncManagementState: " + ipaddress + "/" + svcName + " to be polled based on poller config?: " + svcToBePolled);
+                            log().debug("syncManagementState: " + ipaddress + "/" + svcName + " to be polled based on poller config?: " + svcToBePolledLocally);
                         }
     
-                        if ((svcStatus == DbIfServiceEntry.STATUS_ACTIVE && svcToBePolled) || (svcStatus == DbIfServiceEntry.STATUS_NOT_POLLED && !ipToBePolled)) {
+                        if ((svcStatus == DbIfServiceEntry.STATUS_ACTIVE && svcToBePolledLocally) || (svcStatus == DbIfServiceEntry.STATUS_NOT_POLLED && !ipToBePolled)) {
                             // current status is right
                             if (log().isDebugEnabled()) {
                                 log().debug("syncManagementState: " + ifEntry.getNodeId() + "/" + ipaddress + "/" + svcName + " status = " + svcStatus + " - no change in status");
                             }
                         } else {
                             // Update the 'ifServices' table
-                            if (svcStatus == DbIfServiceEntry.STATUS_SUSPEND && svcToBePolled) {
+                            if (svcStatus == DbIfServiceEntry.STATUS_SUSPEND && svcToBePolledLocally) {
                                 svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_FORCED }));
                                 newStatus = 'F';
-                            } else if (svcToBePolled) {
+                            } else if (svcToBePolledLocally) {
                                 svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_ACTIVE }));
                                 newStatus = 'A';
+                            } else if (svcToBePolledRemotely) {
+                                svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_REMOTE }));
+                                newStatus = 'X';
                             } else {
                                 svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_NOT_POLLED }));
                                 newStatus = 'N';
@@ -893,6 +891,28 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
             }
         }
     }
+    
+    private boolean isServicePolled(String ifAddr, String svcName, org.opennms.netmgt.config.poller.Package ipPkg) {
+        boolean svcToBePolled = false;
+        if (ipPkg != null) {
+            svcToBePolled = getPollerConfig().isPolled(svcName, ipPkg);
+            if (!svcToBePolled)
+                svcToBePolled = getPollerConfig().isPolled(ifAddr, svcName);
+        }
+        return svcToBePolled;
+    }
+
+    private boolean isServicePolledLocally(String ifAddr, String svcName, org.opennms.netmgt.config.poller.Package ipPkg) {
+        boolean svcToBePolled = false;
+        if (ipPkg != null && !ipPkg.getRemote()) {
+            svcToBePolled = getPollerConfig().isPolled(svcName, ipPkg);
+            if (!svcToBePolled)
+                svcToBePolled = getPollerConfig().isPolledLocally(ifAddr, svcName);
+        }
+        return svcToBePolled;
+    }
+
+
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncSnmpPrimaryState()
