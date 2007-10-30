@@ -126,11 +126,12 @@ final public class IcmpMonitor extends IPv4Monitor {
         }
         
         if (rtt != null) {
-        	serviceStatus = PollStatus.available();
-        	serviceStatus.setResponseTime(rtt);
+            return PollStatus.available(rtt);
+        } else {
+            // TODO add a reason code for unavailability
+            return PollStatus.unavailable();
         }
-        
-        return serviceStatus;
+
     }
 
 }

@@ -118,10 +118,10 @@ public interface PollerConfig {
     public abstract boolean pathOutageEnabled();
 
     /**
-     * This method is used to rebuild the package agaist iplist mapping when
+     * This method is used to rebuild the package against ip list mapping when
      * needed. When a node gained service event occurs, poller has to determine
      * which package the ip/service combination is in, but if the interface is a
-     * newly added one, the package iplist should be rebuilt so that poller
+     * newly added one, the package ip list should be rebuilt so that poller
      * could know which package this ip/service pair is in.
      */
     public abstract void rebuildPackageIpListMap();
@@ -131,7 +131,7 @@ public interface PollerConfig {
      * @param pkg
      * @return
      */
-    public abstract List getIpList(Package pkg);
+    public abstract List<String> getIpList(Package pkg);
     /**
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package
@@ -149,7 +149,7 @@ public interface PollerConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    public abstract boolean interfaceInPackage(String iface, org.opennms.netmgt.config.poller.Package pkg);
+    public abstract boolean interfaceInPackage(String iface, Package pkg);
 
     /**
      * Returns true if the service is part of the package and the status of the
@@ -161,7 +161,7 @@ public interface PollerConfig {
      * @param pkg
      *            The package to lookup up service.
      */
-    public abstract boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.poller.Package pkg);
+    public abstract boolean serviceInPackageAndEnabled(String svcName, Package pkg);
 
     /**
      * Return the Service object with the given name from the give Package.
@@ -184,61 +184,107 @@ public interface PollerConfig {
      * Returns the first package that the ip belongs to, null if none.
      * 
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      * 
      * @param ipaddr
      *            the interface to check
      * 
      * @return the first package that the ip belongs to, null if none
      */
-    public abstract org.opennms.netmgt.config.poller.Package getFirstPackageMatch(String ipaddr);
+    public abstract Package getFirstPackageMatch(String ipaddr);
 
     /**
-     * Returns true if the ip is part of atleast one package.
+     * Returns the first package that the ip belongs to that is not marked as remote, null if none.
      * 
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      * 
      * @param ipaddr
      *            the interface to check
      * 
-     * @return true if the ip is part of atleast one package, false otherwise
+     * @return the first package that the ip belongs to, null if none
+     */
+    public abstract Package getFirstLocalPackageMatch(String ipaddr);
+
+    /**
+     * Returns true if the ip is part of at least one package.
+     * 
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     * 
+     * @param ipaddr
+     *            the interface to check
+     * 
+     * @return true if the ip is part of at least one package, false otherwise
      */
     public abstract boolean isPolled(String ipaddr);
+
+    /**
+     * Returns true if the ip is part of at least one package that is NOT marked
+     * as remote
+     * 
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     * 
+     * @param ipaddr
+     *            the interface to check
+     * 
+     * @return true if the ip is part of at least one package, false otherwise
+     */
+    public abstract boolean isPolledLocally(String ipaddr);
 
     /**
      * Returns true if this package has the service enabled and if there is a
      * monitor for this service.
      * 
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      * 
      * @param svcName
      *            the service to check
      * @param pkg
      *            the package to check
      * 
-     * @return true if the ip is part of atleast one package and the service is
+     * @return true if the ip is part of at least one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
-    public abstract boolean isPolled(String svcName, org.opennms.netmgt.config.poller.Package pkg);
+    public abstract boolean isPolled(String svcName, Package pkg);
 
     /**
-     * Returns true if the ip is part of atleast one package and if this package
+     * Returns true if the ip is part of at least one package and if this package
      * has the service enabled and if there is a monitor for this service.
      * 
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      * 
      * @param ipaddr
      *            the interface to check
      * @param svcName
      *            the service to check
      * 
-     * @return true if the ip is part of atleast one package and the service is
+     * @return true if the ip is part of at least one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
     public abstract boolean isPolled(String ipaddr, String svcName);
+
+    
+    /**
+     * Returns true if the ip is part of at least one package and if this package
+     * has the service enabled and if there is a monitor for this service and the
+     * package is NOT marked as remote
+     * 
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     * 
+     * @param ipaddr
+     *            the interface to check
+     * @param svcName
+     *            the service to check
+     * 
+     * @return true if the ip is part of at least one package and the service is
+     *         enabled in this package and monitored, false otherwise
+     */
+    public abstract boolean isPolledLocally(String ipaddr, String svcName);
 
     /**
      * Retrieves configured RRD step size.
@@ -248,7 +294,7 @@ public interface PollerConfig {
      * 
      * @return RRD step size for the specified collection
      */
-    public abstract int getStep(org.opennms.netmgt.config.poller.Package pkg);
+    public abstract int getStep(Package pkg);
 
     /**
      * Retrieves configured list of RoundRobin Archive statements.
@@ -258,13 +304,13 @@ public interface PollerConfig {
      * 
      * @return list of RRA strings.
      */
-    public abstract List getRRAList(Package pkg);
+    public abstract List<String> getRRAList(Package pkg);
     
-    public abstract List getAllPackageMatches(String ipAddr);
+    public abstract List<String> getAllPackageMatches(String ipAddr);
     
     public abstract String getNextOutageIdSql();
     
-    public Enumeration enumeratePackage();
+    public Enumeration<Package> enumeratePackage();
     
     public Package getPackage(String pkgName);
     
@@ -272,7 +318,7 @@ public interface PollerConfig {
 
     public int getThreads();
 
-    public Map getServiceMonitors();
+    public Map<String, ServiceMonitor> getServiceMonitors();
     
     public void releaseAllServiceMonitors();
 

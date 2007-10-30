@@ -451,5 +451,17 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         throw new UnsupportedOperationException("not yet implelmented");
     }
 
+    public Package getFirstLocalPackageMatch(String ipaddr) {
+        throw new UnsupportedOperationException("MockPollerConfig.getFirstLocalPackageMatch is not yet implemented");
+    }
+
+    public boolean isPolledLocally(String ipaddr) {
+        throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
+    }
+
+    public boolean isPolledLocally(String ipaddr, String svcName) {
+        throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
+    }
+
 
 }
