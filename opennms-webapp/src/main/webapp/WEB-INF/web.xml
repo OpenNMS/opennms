@@ -16,11 +16,15 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>
         /WEB-INF/applicationContext-common.xml
-    	classpath:/META-INF/opennms/applicationContext-dao.xml
     	classpath:/META-INF/opennms/applicationContext-reporting.xml
     	classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
         /WEB-INF/applicationContext-acegi-security.xml
     </param-value>
+  </context-param>
+  
+  <context-param>
+    <param-name>parentContextKey</param-name>
+    <param-value>daoContext</param-value>
   </context-param>
   
   <!-- RTC Subscription parameters -->  
