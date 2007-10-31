@@ -382,7 +382,7 @@
   <p>
     The <i><b>Port</b></i> column shows the ports at which the service
     will be polled. If there is more than one port, the values should
-    be seperated by colons (:).
+    be separated by colons (:).
   </p>
 
   <p>
