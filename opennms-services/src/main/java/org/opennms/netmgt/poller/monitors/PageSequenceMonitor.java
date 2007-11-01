@@ -453,12 +453,13 @@ public class PageSequenceMonitor extends IPv4Monitor {
             
 			client = parms.createHttpClient();
 
-            long startTime = System.currentTimeMillis();
+            long startTime = System.nanoTime();
             
             parms.getPageSequence().execute(client, svc);
 
-            long endTime = System.currentTimeMillis();
-            return PollStatus.available(endTime - startTime);
+            long endTime = System.nanoTime();
+            double responseTime = (endTime - startTime)/1000000.0;
+            return PollStatus.available(responseTime);
 
         } catch (PageSequenceMonitorException e) {
             return PollStatus.unavailable(e.getMessage());

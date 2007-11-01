@@ -53,7 +53,6 @@ import org.apache.log4j.Level;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -211,19 +210,19 @@ public class JDBCMonitor extends IPv4Monitor {
 		String url = null;
 		url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipv4Addr.getCanonicalHostName());
 		log().debug("JDBC url: " + url);
+		
+		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-		int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		String db_user = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
 		String db_pass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
 
 		Properties props = new Properties();
 		props.setProperty("user", db_user);
 		props.setProperty("password", db_pass);
-		props.setProperty("timeout", String.valueOf(timeout / 1000));
+		props.setProperty("timeout", String.valueOf(tracker.getTimeoutInSeconds()));
 
 
-		for (int attempts = 0; attempts <= retries; attempts++) {
+		for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
 			try {
 				con = driver.connect(url, props);
 
@@ -233,12 +232,12 @@ public class JDBCMonitor extends IPv4Monitor {
 				if (con != null) {
 					log().debug("JDBC Connection Established");
 
-					long sentTime = System.currentTimeMillis();
+					tracker.startAttempt();
 
 					status = checkDatabaseStatus(con, parameters);
 
 					if (status.isAvailable()) {
-						long responseTime = System.currentTimeMillis() - sentTime;
+						double responseTime = tracker.elapsedTimeInMillis();
 						status = PollStatus.available(responseTime);
 
 						log().debug("JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());

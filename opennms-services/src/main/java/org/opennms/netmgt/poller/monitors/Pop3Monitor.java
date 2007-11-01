@@ -57,9 +57,7 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -133,32 +131,29 @@ final public class Pop3Monitor extends IPv4Monitor {
 
         // Process parameters
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT) + 1;
 
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
+        if (log().isDebugEnabled())
+            log().debug("poll: address = " + ipv4Addr + ", port = " + port + ", " + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 //
                 // create a connected socket
                 //
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
-                log.debug("Pop3Monitor: connected to host: " + ipv4Addr + " on port: " + port);
+                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.setSoTimeout(tracker.getSoTimeout());
+                log().debug("Pop3Monitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -171,7 +166,7 @@ final public class Pop3Monitor extends IPv4Monitor {
                 // Server response should start with: "+OK"
                 //
                 String banner = rdr.readLine();
-                responseTime = System.currentTimeMillis() - sentTime;
+                double responseTime = tracker.elapsedTimeInMillis();
 
                 if (banner == null)
                     continue;
@@ -204,11 +199,10 @@ final public class Pop3Monitor extends IPv4Monitor {
             } catch (NoRouteToHostException e) {
             	
             	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
-                break; // Break out of for(;;)
                 
             } catch (InterruptedIOException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             	
             } catch (ConnectException e) {
             	
@@ -223,8 +217,8 @@ final public class Pop3Monitor extends IPv4Monitor {
                         socket.close();
 
                 } catch (IOException e) {
-                    if (log.isDebugEnabled())
-                        log.debug("poll: Error closing socket.", e);
+                    if (log().isDebugEnabled())
+                        log().debug("poll: Error closing socket.", e);
                 }
             }
         }

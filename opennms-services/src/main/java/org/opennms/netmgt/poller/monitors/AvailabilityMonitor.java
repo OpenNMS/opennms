@@ -35,10 +35,10 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.log4j.Level;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.utils.ParameterMap;
 /**
  * This class uses the Java 5 isReachable method to determine up/down and is
  * currently considered "experimental".  Please give it a try and let us
@@ -48,6 +48,8 @@ import org.opennms.netmgt.utils.ParameterMap;
  */
 @Distributable
 public class AvailabilityMonitor extends IPv4Monitor {
+    
+    
 
     private static final int DEFAULT_RETRY = 3;
     private static final int DEFAULT_TIMEOUT = 3000;
@@ -59,28 +61,21 @@ public class AvailabilityMonitor extends IPv4Monitor {
     }
 
     public PollStatus poll(MonitoredService svc, Map parameters) {
-        int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-        long responseTime = -1;
-        String reason = null;
-        int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        boolean reachable = false;
-        try {
-            for (int i = 0; i < retries; i++) {
-                long begin = System.currentTimeMillis();
-                reachable = svc.getAddress().isReachable(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
-                long end = System.currentTimeMillis();
-                if (reachable) {
-                    responseTime = end - begin;
-                    break;
+        
+        TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+        
+        for(timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
+            try {
+                timeoutTracker.startAttempt();
+                if (svc.getAddress().isReachable(timeoutTracker.getSoTimeout())) {
+                    return PollStatus.available(timeoutTracker.elapsedTimeInMillis());
                 }
+            } catch (IOException e) {
+                logDown(Level.INFO, "Unable to contact "+svc.getIpAddr(), e);
             }
-            reason = (reachable ? null : "Unreachable");
-            serviceStatus = (reachable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-        return PollStatus.get(serviceStatus, reason, responseTime);
+        
+        return logDown(Level.INFO, svc+" failed to respond");
     }
 
     public void release() {

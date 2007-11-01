@@ -17,18 +17,18 @@ import com.jcraft.jsch.Session;
 
 public class Ssh {
     // 30 second timeout
-    public static final Integer DEFAULT_TIMEOUT = 30000;
+    public static final int DEFAULT_TIMEOUT = 30000;
     
     // SSH port is 22
-    public static final Integer DEFAULT_PORT = 22;
+    public static final int DEFAULT_PORT = 22;
     
     JSch m_jsch = new JSch();
     private Session m_session;
     private Throwable m_exception;
     private String m_serverVersion;
     private InetAddress m_address;
-    private Integer m_port = DEFAULT_PORT;
-    private Integer m_timeout = DEFAULT_TIMEOUT;
+    private int m_port = DEFAULT_PORT;
+    private int m_timeout = DEFAULT_TIMEOUT;
     private File m_keydir;
     private String m_username;
     private String m_password;
@@ -62,7 +62,7 @@ public class Ssh {
      * Get the port to connect to.
      * @return the port
      */
-    public Integer getPort() {
+    public int getPort() {
         return m_port;
     }
     
@@ -78,7 +78,7 @@ public class Ssh {
      * Get the timeout in milliseconds.
      * @return the timeout
      */
-    public Integer getTimeout() {
+    public int getTimeout() {
         return m_timeout;
     }
     
@@ -156,12 +156,6 @@ public class Ssh {
     protected boolean connect() throws InsufficientParametersException {
         if (getAddress() == null) {
             throw new InsufficientParametersException("you must specify an address");
-        }
-        if (getPort() == null) {
-            throw new InsufficientParametersException("you must specify a port");
-        }
-        if (getTimeout() == null) {
-            throw new InsufficientParametersException("you must specify a timeout");
         }
         
         m_exception = null;

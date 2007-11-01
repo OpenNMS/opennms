@@ -1,8 +1,10 @@
 package org.opennms.netmgt.protocols.ssh;
 
 import java.net.InetAddress;
+import java.util.Collections;
 
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.monitors.TimeoutTracker;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
 
 public class Poll extends Ssh implements org.opennms.netmgt.protocols.Poll {
@@ -24,10 +26,10 @@ public class Poll extends Ssh implements org.opennms.netmgt.protocols.Poll {
         setTimeout(timeout);
     }
 
-    public PollStatus poll() throws InsufficientParametersException {
-        long nanoStartTime = System.nanoTime();
+    public PollStatus poll(TimeoutTracker tracker) throws InsufficientParametersException {
+        tracker.startAttempt();
         boolean isAvailable = connect();
-        long nanoEndTime = System.nanoTime();
+        double responseTime = tracker.elapsedTimeInMillis();
 
         PollStatus ps = PollStatus.unavailable();
         
@@ -37,8 +39,7 @@ public class Poll extends Ssh implements org.opennms.netmgt.protocols.Poll {
         }
         
         if (isAvailable) {
-            ps = PollStatus.available();
-            ps.setProperty("response-time", (nanoEndTime - nanoStartTime) / 100000.0);
+            ps = PollStatus.available(responseTime);
         } else if (errorMessage.matches("^.*java.net.NoRouteToHostException.*$")) {
             ps = PollStatus.unavailable("no route to host");
         } else if (errorMessage.matches("^.*(timeout: socket is not established|java.io.InterruptedIOException).*$")) {
@@ -50,6 +51,12 @@ public class Poll extends Ssh implements org.opennms.netmgt.protocols.Poll {
         }
         
         return ps;
+    }
+    
+    public PollStatus poll() throws InsufficientParametersException {
+        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), 1, getTimeout());
+        return poll(tracker);
+        
     }
 
 }

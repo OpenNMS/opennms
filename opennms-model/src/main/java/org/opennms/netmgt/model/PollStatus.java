@@ -113,52 +113,56 @@ public class PollStatus implements Serializable {
     }
 
     public static PollStatus decode(String statusName) {
-        return decode(statusName, null, -1L);
+        return decode(statusName, null, null);
     }
 
     public static PollStatus decode(String statusName, String reason) {
-        return decode(statusName, reason, -1L);
+        return decode(statusName, reason, null);
     }
 
-    public static PollStatus decode(String statusName, double responseTime) {
+    public static PollStatus decode(String statusName, Double responseTime) {
         return decode(statusName, null, responseTime);
     }
 
-    public static PollStatus decode(String statusName, String reason, double responseTime) {
+    public static PollStatus decode(String statusName, String reason, Double responseTime) {
         return new PollStatus(decodeStatusName(statusName), reason, responseTime);
     }
 
     public static PollStatus get(int status, String reason) {
-        return get(status, reason, -1L);
+        return get(status, reason, null);
     }
 
-    public static PollStatus get(int status, String reason, double responseTime) {
+    public static PollStatus get(int status, Double responseTime) {
+        return get(status, null, responseTime);
+    }
+
+    public static PollStatus get(int status, String reason, Double responseTime) {
         return new PollStatus(status, reason, responseTime);
     }
 
     private PollStatus() {
-        this(SERVICE_UNKNOWN, null, -1L);
+        this(SERVICE_UNKNOWN, null, null);
     }
 
-    private PollStatus(int statusCode, String reason, double responseTime) {
+    private PollStatus(int statusCode, String reason, Double responseTime) {
         m_statusCode = statusCode;
         m_reason = reason;
         setResponseTime(responseTime);
     }
 
     public static PollStatus up() {
-        return up(-1L);
+        return up(null);
     }
 
-    public static PollStatus up(double responseTime) {
+    public static PollStatus up(Double responseTime) {
         return available(responseTime);
     }
 
     public static PollStatus available() {
-        return available(-1L);
+        return available(null);
     }
 
-    public static PollStatus available(double responseTime) {
+    public static PollStatus available(Double responseTime) {
         return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
     }
 
@@ -167,7 +171,7 @@ public class PollStatus implements Serializable {
     }
 
     public static PollStatus unknown(String reason) {
-        return new PollStatus(SERVICE_UNKNOWN, reason, -1L);
+        return new PollStatus(SERVICE_UNKNOWN, reason, null);
     }
 
     public static PollStatus unresponsive() {
@@ -175,7 +179,7 @@ public class PollStatus implements Serializable {
     }
 
     public static PollStatus unresponsive(String reason) {
-        return new PollStatus(SERVICE_UNRESPONSIVE, reason, -1L);
+        return new PollStatus(SERVICE_UNRESPONSIVE, reason, null);
     }
 
     public static PollStatus down() {
@@ -191,7 +195,7 @@ public class PollStatus implements Serializable {
     }
 
     public static PollStatus unavailable(String reason) {
-        return new PollStatus(SERVICE_UNAVAILABLE, reason, -1L);
+        return new PollStatus(SERVICE_UNAVAILABLE, reason, null);
     }
 
     public boolean equals(Object o) {
@@ -258,13 +262,19 @@ public class PollStatus implements Serializable {
     }
 
     @Column(name="responseTime", nullable=true)
-    public double getResponseTime() {
-    	return getProperty("response-time").doubleValue();
+    public Double getResponseTime() {
+        Number val = getProperty("response-time");
+        return (val == null ? null : val.doubleValue());
+    	
     }
 
     /* stores the individual item for compatibility with database schema, as well as the new property map */
-    public void setResponseTime(double responseTime) {
-        m_properties.put("response-time", responseTime);
+    public void setResponseTime(Double responseTime) {
+        if (responseTime == null) {
+            m_properties.remove("response-time");
+        } else {
+            m_properties.put("response-time", responseTime);
+        }
     }
 
     @Transient
