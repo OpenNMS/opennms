@@ -405,7 +405,7 @@ public class PollerFrontEndTest extends TestCase {
         m_frontEnd.addPropertyChangeListener(m_registrationListener);
         m_frontEnd.addServicePollStateChangedListener(m_polledServiceListener);
 
-        m_serviceStatus = PollStatus.available(1234L);
+        m_serviceStatus = PollStatus.available(1234.0);
 
     }
 
