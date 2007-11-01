@@ -183,7 +183,7 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         
         assertFalse(rrdFile.exists());
         
-        PollStatus status = PollStatus.available(1234);
+        PollStatus status = PollStatus.available(1234.0);
         
         m_backEnd.reportResult(locationMonitorId, serviceId, status);
         
