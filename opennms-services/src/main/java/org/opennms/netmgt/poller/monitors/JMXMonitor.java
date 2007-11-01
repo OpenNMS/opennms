@@ -59,15 +59,9 @@ public abstract class JMXMonitor extends IPv4Monitor {
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
     public PollStatus poll(MonitoredService svc, Map map) {
+        
         NetworkInterface iface = svc.getNetInterface();
 
-
-        /*
-         * TODO: Use it or loose it.
-         * Commented out because it is not currently used in this monitor
-         */
-        //boolean        res           = false;
-        //InitialContext ctx           = null;
         PollStatus     serviceStatus = PollStatus.unavailable();
         String         dsName        = null;
         InetAddress    ipv4Addr      = (InetAddress)iface.getAddress();
@@ -81,27 +75,19 @@ public abstract class JMXMonitor extends IPv4Monitor {
 
             long t0 = 0;
             for (int attempts=0; attempts <= retry && !serviceStatus.isAvailable(); attempts++)    {
-                /*
-                 * TODO: Use it or loose it.
-                 * Commented out because it is not currently used in this monitor
-                 */
-                //URL jmxLink = null;
+
                 try {
                     
-                     t0 = System.currentTimeMillis();
+                     t0 = System.nanoTime();
                     
                      connection = getMBeanServerConnection(map, ipv4Addr);
                      if (connection != null) {
-                         /*
-                          * TODO: Use it or loose it.
-                          * Commented out because it is not currently used in this monitor
-                          */
-                         //Integer result = connection.getMBeanServer().getMBeanCount();
+
                          connection.getMBeanServer().getMBeanCount();
                        
-                         long responseTime = System.currentTimeMillis() - t0;
+                         long nanoResponseTime = System.nanoTime() - t0;
 
-                         serviceStatus = PollStatus.available(responseTime);
+                         serviceStatus = PollStatus.available(nanoResponseTime / 1000000.0);
 
                      }
                     

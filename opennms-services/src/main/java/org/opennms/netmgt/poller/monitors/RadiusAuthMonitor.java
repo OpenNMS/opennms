@@ -168,9 +168,9 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
         if (parameters == null) {
             throw new NullPointerException();
         }
+        
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         int authport = ParameterMap.getKeyedInteger(parameters, "authport", DEFAULT_AUTH_PORT);
         int acctport = ParameterMap.getKeyedInteger(parameters, "acctport", DEFAULT_ACCT_PORT);
         String user = ParameterMap.getKeyedString(parameters, "user", DEFAULT_USER);
@@ -183,7 +183,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
 
         RadiusClient rc = null;
         try {
-            rc = new RadiusClient(ipv4Addr.getCanonicalHostName(), authport ,acctport, secret, timeout);
+            rc = new RadiusClient(ipv4Addr.getCanonicalHostName(), authport ,acctport, secret, tracker.getConnectionTimeout());
         } catch(RadiusException rex) {
         	return logDown(Level.ERROR, "Radius Exception: " + rex.getMessage());
         } catch(InvalidParameterException ivpex) {
@@ -191,16 +191,15 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
         }
 
 
-        for (int attempts = 0; attempts <= retry; attempts++) {
+        for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
             try {
-                long responseTime = -1;
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
                 
                 ChapUtil chapUtil = new ChapUtil();
                 RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
                 RadiusAttribute userNameAttribute;
                 userNameAttribute = new RadiusAttribute(RadiusAttributeValues.USER_NAME,user.getBytes());
-		log.debug(getClass().getName() + ": attempting Radius auth with authType: " + authType);
+                log.debug(getClass().getName() + ": attempting Radius auth with authType: " + authType);
                 accessRequest.setAttribute(userNameAttribute);
                 if(authType.equalsIgnoreCase("chap")){
                     byte[] chapChallenge = chapUtil.getNextChapChallenge(16);
@@ -212,7 +211,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
                 RadiusPacket accessResponse = rc.authenticate(accessRequest);
                 
                 if ( accessResponse.getPacketType() == RadiusPacket.ACCESS_ACCEPT ){
-                    responseTime = System.currentTimeMillis() - sentTime;
+                    double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);
                     if (log.isDebugEnabled()) {
                         log.debug(getClass().getName() + ": Radius service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());

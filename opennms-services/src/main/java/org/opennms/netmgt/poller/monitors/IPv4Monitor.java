@@ -180,7 +180,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
 	    return PollStatus.unavailable(reason);
 	}
 	
-	protected PollStatus logUp(Level level, long responseTime, String logMsg) {
+	protected PollStatus logUp(Level level, double responseTime, String logMsg) {
 		String className = ClassUtils.getShortName(getClass());
 	    log().debug(className+": "+logMsg);
 	    return PollStatus.available(responseTime);

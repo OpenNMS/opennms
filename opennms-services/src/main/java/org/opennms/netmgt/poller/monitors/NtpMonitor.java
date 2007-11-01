@@ -122,9 +122,9 @@ final public class NtpMonitor extends IPv4Monitor {
 
         // get the parameters
         //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // get the address and NTP address request
         //
@@ -132,19 +132,21 @@ final public class NtpMonitor extends IPv4Monitor {
 
         PollStatus serviceStatus = PollStatus.unavailable();
         DatagramSocket socket = null;
-        long responseTime = -1;
+        double responseTime = -1.0;
         try {
             socket = new DatagramSocket();
-            socket.setSoTimeout(timeout); // will force the
+            socket.setSoTimeout(tracker.getSoTimeout()); // will force the
             // InterruptedIOException
 
-            for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+            for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
                 try {
                     // Send NTP request
                     //
                     byte[] data = new NtpMessage().toByteArray();
                     DatagramPacket outgoing = new DatagramPacket(data, data.length, ipv4Addr, port);
-                    long sentTime = System.currentTimeMillis();
+
+                    tracker.startAttempt();
+
                     socket.send(outgoing);
 
                     // Get NTP Response
@@ -152,7 +154,7 @@ final public class NtpMonitor extends IPv4Monitor {
                     // byte[] buffer = new byte[512];
                     DatagramPacket incoming = new DatagramPacket(data, data.length);
                     socket.receive(incoming);
-                    responseTime = System.currentTimeMillis() - sentTime;
+                    responseTime = tracker.elapsedTimeInMillis();
                     double destinationTimestamp = (System.currentTimeMillis() / 1000.0) + 2208988800.0;
 
                     // Validate NTP Response

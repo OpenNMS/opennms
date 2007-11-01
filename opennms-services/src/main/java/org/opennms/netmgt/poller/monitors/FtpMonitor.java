@@ -166,9 +166,10 @@ final public class FtpMonitor extends IPv4Monitor {
 
         // get the parameters
         //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         String userid = ParameterMap.getKeyedString(parameters, "userid", null);
         String password = ParameterMap.getKeyedString(parameters, "password", null);
 
@@ -177,21 +178,20 @@ final public class FtpMonitor extends IPv4Monitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         if (log.isDebugEnabled())
-            log.debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + " timeout: " + timeout + " retry: " + retry);
+            log.debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
-        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 //
                 // create a connected socket
                 //
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
+                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.setSoTimeout(tracker.getSoTimeout());
 
                 log.debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
                 // We're connected, so upgrade status to unresponsive
@@ -203,7 +203,7 @@ final public class FtpMonitor extends IPv4Monitor {
                 // line for a valid return.
                 //
                 String banner = lineRdr.readLine();
-                responseTime = System.currentTimeMillis() - sentTime;
+                double responseTime = tracker.elapsedTimeInMillis();
 
                 if (banner == null)
                     continue;
@@ -414,10 +414,9 @@ final public class FtpMonitor extends IPv4Monitor {
             	
             	serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + ipv4Addr, e);
 
-            	break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
 
             } catch (ConnectException e) {
             	

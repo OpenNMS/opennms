@@ -52,7 +52,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -140,16 +139,15 @@ final public class LdapMonitor extends IPv4Monitor {
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-	int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-	String reason = null;
+        int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
+        String reason = null;
+	
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // get the parameters
         //
-	long responseTime = -1;
         int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
         int ldapPort = ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
-        int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
         String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
 
@@ -170,29 +168,31 @@ final public class LdapMonitor extends IPv4Monitor {
         // NoRouteToHost exception will only be thrown after about 5 minutes,
         // thus tying
         // up the thread
+        Double responseTime = null;
         Socket socket = null;
         try {
 
             socket = new Socket();
-            socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), timeout);
-            socket.setSoTimeout(timeout);
+            socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), tracker.getConnectionTimeout());
+            socket.setSoTimeout(tracker.getSoTimeout());
             log().debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
 
             // We're connected, so upgrade status to unresponsive
-	    serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
+            serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
+        
 
             if (socket != null)
                 socket.close();
 
             // lets detect the service
-            LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
+            LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(tracker.getSoTimeout()));
 
-            long sentTime = System.currentTimeMillis();
             
-            for (int attempts = 1; attempts <= retries && !(serviceStatus == PollStatus.SERVICE_AVAILABLE); attempts++) {
-                log().debug("polling LDAP on " + address + ", attempt " + attempts + " of " + (retries == 0 ? "1" : retries + ""));
+            for (tracker.reset(); tracker.shouldRetry() && !(serviceStatus == PollStatus.SERVICE_AVAILABLE); tracker.nextAttempt()) {
+                log().debug("polling LDAP on " + address + ", " + tracker);
 
                 // connect to the ldap server
+                tracker.startAttempt();
                 try {
                     lc.connect(address, ldapPort);
                     log().debug("connected to LDAP server " + address + " on port " + ldapPort);
@@ -208,7 +208,7 @@ final public class LdapMonitor extends IPv4Monitor {
                         lc.bind(ldapVersion, ldapDn, password.getBytes());
                         if (log().isDebugEnabled()) {
                             log().debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
-                            log().debug("poll: responseTime= " + responseTime + "ms");
+                            log().debug("poll: responseTime= " + tracker.elapsedTimeInMillis() + "ms");
                         }
                     } catch (LDAPException e) {
                         try {
@@ -235,12 +235,12 @@ final public class LdapMonitor extends IPv4Monitor {
                     results = lc.search(searchBase, searchScope, searchFilter, attrs, attributeOnly);
 
                     if (results != null && results.hasMore()) {
-			responseTime = System.currentTimeMillis() - sentTime;
+                        responseTime = tracker.elapsedTimeInMillis();
                         log().debug("search yielded results");
                         serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
                         log().debug("no results found from search");
-			reason = "No results found from search";
+                        reason = "No results found from search";
                         serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
                     }
                 } catch (LDAPException e) {
@@ -269,14 +269,14 @@ final public class LdapMonitor extends IPv4Monitor {
         	log().debug("No route to host " + address, e);
         	reason = "No route to host " + address;
         } catch (InterruptedIOException e) {
-        	log().debug("did not connect to host within timeout: " + timeout);
-        	reason = "did not connect to host within timeout: " + timeout;
+        	log().debug("did not connect to host with "+tracker);
+        	reason = "did not connect to host with "+tracker;
         } catch (Throwable t) {
         	log().debug("An undeclared throwable exception caught contacting host " + address, t);
         	reason = "An undeclared throwable exception caught contacting host " + address;
         }
-
-	return PollStatus.get(serviceStatus, reason, responseTime);
+        
+        return PollStatus.get(serviceStatus, reason, responseTime);
     }
 
 }

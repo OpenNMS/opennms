@@ -58,7 +58,6 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
@@ -166,39 +165,35 @@ final public class SmtpMonitor extends IPv4Monitor {
 
         // Get interface address from NetworkInterface
         //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
+        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        }
+        
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        // Process parameters
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
         // Get interface address from NetworkInterface
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
+        if (log().isDebugEnabled())
+            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 // create a connected socket
                 //
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
+                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.setSoTimeout(tracker.getSoTimeout());
 
-                log.debug("SmtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                log().debug("SmtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -237,8 +232,8 @@ final public class SmtpMonitor extends IPv4Monitor {
                         continue;
                 }
 
-                if (log.isDebugEnabled())
-                    log.debug("poll: banner = " + banner);
+                if (log().isDebugEnabled())
+                    log().debug("poll: banner = " + banner);
 
                 StringTokenizer t = new StringTokenizer(banner);
                 int rc = Integer.parseInt(t.nextToken());
@@ -254,7 +249,7 @@ final public class SmtpMonitor extends IPv4Monitor {
                     // verify the correct output.
                     //
                     String response = rdr.readLine();
-                    responseTime = System.currentTimeMillis() - sentTime;
+                    double responseTime = tracker.elapsedTimeInMillis();
 
                     if (response == null)
                         continue;
@@ -340,7 +335,7 @@ final public class SmtpMonitor extends IPv4Monitor {
             	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             } catch (ConnectException e) {
             	serviceStatus = logDown(Level.DEBUG, "Connection exception for address " + ipv4Addr.getHostAddress(), e);
             } catch (IOException e) {
@@ -352,8 +347,8 @@ final public class SmtpMonitor extends IPv4Monitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log.isDebugEnabled())
-                        log.debug("poll: Error closing socket.", e);
+                    if (log().isDebugEnabled())
+                        log().debug("poll: Error closing socket.", e);
                 }
             }
         }
