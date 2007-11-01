@@ -157,10 +157,10 @@ final public class ImapMonitor extends IPv4Monitor {
         //
         Category log = ThreadCategory.getInstance(getClass());
 
+        
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         // Retries
         //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
         // Get interface address from NetworkInterface
@@ -168,22 +168,21 @@ final public class ImapMonitor extends IPv4Monitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         if (log.isDebugEnabled())
-            log.debug("ImapMonitor.poll: address: " + ipv4Addr + " port: " + port + " timeout: " + timeout + " retry: " + retry);
+            log.debug("ImapMonitor.poll: address: " + ipv4Addr + " port: " + port + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 //
                 // create a connected socket
                 //
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
+                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.setSoTimeout(tracker.getSoTimeout());
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -195,7 +194,8 @@ final public class ImapMonitor extends IPv4Monitor {
                 // line for a valid return.
                 //
                 String banner = rdr.readLine();
-                responseTime = System.currentTimeMillis() - sentTime;
+                
+                double responseTime = tracker.elapsedTimeInMillis();
 
                 if (log.isDebugEnabled())
                     log.debug("ImapMonitor.Poll(): banner: " + banner);
@@ -229,12 +229,12 @@ final public class ImapMonitor extends IPv4Monitor {
             } catch (NoRouteToHostException e) {
             	
             	serviceStatus = logDown(Level.WARN,"No route to host exception for address: " + ipv4Addr, e);
-                break; // Break out of for(;;)
+
             } catch (ConnectException e) {
                 // Connection refused. Continue to retry.
             	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             } catch (IOException e) {
             	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
             } finally {

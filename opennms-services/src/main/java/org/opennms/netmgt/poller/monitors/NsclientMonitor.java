@@ -41,13 +41,12 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.utils.ParameterMap;
-
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
-import org.opennms.netmgt.poller.nsclient.NsclientPacket;
 import org.opennms.netmgt.poller.nsclient.NsclientManager;
+import org.opennms.netmgt.poller.nsclient.NsclientPacket;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This class is designed to be used by the service poller framework to test
@@ -101,7 +100,7 @@ public class NsclientMonitor extends IPv4Monitor {
         // This will hold the data the server sends back.
         NsclientPacket response = null;
         // Used to track how long the request took.
-        long responseTime = -1;
+        Double responseTime = null;
 
         NetworkInterface iface = svc.getNetInterface();
         Category log = ThreadCategory.getInstance(getClass());
@@ -128,28 +127,22 @@ public class NsclientMonitor extends IPv4Monitor {
         int warnPerc = ParameterMap.getKeyedInteger(parameters,
                                                     "warningPercent", 0);
 
-        // Connection related parameters.
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry",
-                                                 DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout",
-                                                   DEFAULT_TIMEOUT);
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
 
         // Get the address we're going to poll.
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        for (int attempts = 0; attempts <= retry
-                && serviceStatus != PollStatus.SERVICE_AVAILABLE; attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {
             try {
-                // Get the time, so we can keep track of how long the request
-                // took.
-                long sentTime = System.currentTimeMillis();
+                
+                tracker.startAttempt();
 
                 // Create a client, set up details and connect.
                 NsclientManager client = new NsclientManager(
                                                              ipv4Addr.getHostAddress(),
                                                              port, password);
-                client.setTimeout(timeout);
+                client.setTimeout(tracker.getSoTimeout());
                 client.setPassword(password);
                 client.init();
 
@@ -165,7 +158,7 @@ public class NsclientMonitor extends IPv4Monitor {
                                                       NsclientManager.convertStringToType(command),
                                                       clientParams);
                 // Now save the time it took to process the check command.
-                responseTime = System.currentTimeMillis() - sentTime;
+                responseTime = tracker.elapsedTimeInMillis();
 
                 if (response == null) {
                     continue;
@@ -177,6 +170,8 @@ public class NsclientMonitor extends IPv4Monitor {
                 } else if (response.getResultCode() == NsclientPacket.RES_STATE_CRIT) {
                     serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
                     reason = response.getResponse();
+                    // set this to null so we don't try to save data when the node is down
+                    responseTime = null;
                 }
 
             } catch (NsclientException e) {

@@ -47,9 +47,7 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -120,22 +118,16 @@ final public class NrpeMonitor extends IPv4Monitor {
 		String reason = null;
 
         //
-        // Process parameters
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
-        //
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4) {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
         }
 
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         String command = ParameterMap.getKeyedString(parameters, "command", NrpePacket.HELLO_COMMAND);
         int port = ParameterMap.getKeyedInteger(parameters, "port", CheckNrpe.DEFAULT_PORT);
         int padding = ParameterMap.getKeyedInteger(parameters, "padding", NrpePacket.DEFAULT_PADDING);
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
 		/*
         // Port
@@ -155,27 +147,27 @@ final public class NrpeMonitor extends IPv4Monitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled()) {
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
+        if (log().isDebugEnabled()) {
+            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
         }
 
         // Give it a whirl
         //
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-        long responseTime = -1;
+        Double responseTime = null;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != PollStatus.SERVICE_AVAILABLE; attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 //
                 // create a connected socket
                 //
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
-                log.debug("NrpeMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.setSoTimeout(tracker.getSoTimeout());
+                log().debug("NrpeMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
@@ -223,9 +215,10 @@ final public class NrpeMonitor extends IPv4Monitor {
                 */
 
 				NrpePacket response = NrpePacket.receivePacket(socket.getInputStream(), padding);
-                responseTime = System.currentTimeMillis() - sentTime;
+                responseTime = tracker.elapsedTimeInMillis();
 				if (response.getResultCode() == 0) {
                     serviceStatus = PollStatus.SERVICE_AVAILABLE;
+                    reason = null;
                 } else {
                     serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
 					reason = "NRPE command returned code " + response.getResultCode() +
@@ -233,34 +226,33 @@ final public class NrpeMonitor extends IPv4Monitor {
                 }
             } catch (NoRouteToHostException e) {
 				reason = "No route to host exception for address " + ipv4Addr.getHostAddress();
-                if (log.isEnabledFor(Level.WARN)) {
+                if (log().isEnabledFor(Level.WARN)) {
 	                e.fillInStackTrace();
-                    log.warn("poll: " + reason, e);
+                    log().warn("poll: " + reason, e);
                 }
-                break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-                reason = "did not connect to host within timeout: " + timeout + " attempt: " + attempts;
-                log.debug("NrpeMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                reason = "did not connect to host within " + tracker;
+                log().debug("NrpeMonitor: did not connect to host within " + tracker);
             } catch (ConnectException e) {
 				reason = "Connection exception for address: " + ipv4Addr;
                 // Connection refused. Continue to retry.
                 //
-                if (log.isDebugEnabled()) {
+                if (log().isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    log.debug("poll: " + reason, e);
+                    log().debug("poll: " + reason, e);
                 }
             } catch (NrpeException e) {
 				reason = "NrpeException while polling address: " + ipv4Addr;
-                if (log.isDebugEnabled()) {
+                if (log().isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    log.debug("poll: " + reason, e);
+                    log().debug("poll: " + reason, e);
                 }
             } catch (IOException e) {
                 // Ignore
 				reason = "IOException while polling address: " + ipv4Addr;
-                if (log.isDebugEnabled()) {
+                if (log().isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    log.debug("poll: " + reason, e);
+                    log().debug("poll: " + reason, e);
                 }
             } finally {
                 try {
@@ -269,9 +261,9 @@ final public class NrpeMonitor extends IPv4Monitor {
                         socket.close();
                     }
                 } catch (IOException e) {
-                    if (log.isDebugEnabled()) {
+                    if (log().isDebugEnabled()) {
 	                    e.fillInStackTrace();
-                        log.debug("poll: Error closing socket.", e);
+                        log().debug("poll: Error closing socket.", e);
                     }
                 }
             }
@@ -280,7 +272,11 @@ final public class NrpeMonitor extends IPv4Monitor {
         //
         // return the status of the service
         //
-		return PollStatus.get(serviceStatus, reason, responseTime);
+        if (reason == null) {
+            return PollStatus.get(serviceStatus, responseTime);
+        } else {
+            return PollStatus.get(serviceStatus, reason);
+        }
     }
 
 }

@@ -51,9 +51,7 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -117,18 +115,12 @@ final public class SshMonitor extends IPv4Monitor {
         NetworkInterface iface = svc.getNetInterface();
 
         //
-        // Process parameters
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
-        //
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
         //
@@ -145,32 +137,31 @@ final public class SshMonitor extends IPv4Monitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
+        if (log().isDebugEnabled())
+            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
 
         // Give it a whirl
         //
         PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 //
                 // create a connected socket
                 //
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
-                log.debug("SshMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.setSoTimeout(tracker.getSoTimeout());
+                log().debug("SshMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
 
                 if (strBannerMatch == null || strBannerMatch.equals("*")) {
-                    serviceStatus = PollStatus.available(System.currentTimeMillis() - sentTime);
+                    serviceStatus = PollStatus.available(tracker.elapsedTimeInMillis());
                     break;
                 }
 
@@ -181,13 +172,13 @@ final public class SshMonitor extends IPv4Monitor {
                 // line for a valid return.
                 //
                 String response = rdr.readLine();
-                responseTime = System.currentTimeMillis() - sentTime;
+                double responseTime = tracker.elapsedTimeInMillis();
 
                 if (response == null)
                     continue;
-                if (log.isDebugEnabled()) {
-                    log.debug("poll: banner = " + response);
-                    log.debug("poll: responseTime= " + responseTime + "ms");
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: banner = " + response);
+                    log().debug("poll: responseTime= " + responseTime + "ms");
                 }
 
                 if (response.indexOf(strBannerMatch) > -1) {
@@ -210,7 +201,7 @@ final public class SshMonitor extends IPv4Monitor {
             	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             } catch (ConnectException e) {
             	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
             } catch (IOException e) {
@@ -222,8 +213,8 @@ final public class SshMonitor extends IPv4Monitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log.isDebugEnabled())
-                        log.debug("poll: Error closing socket.", e);
+                    if (log().isDebugEnabled())
+                        log().debug("poll: Error closing socket.", e);
                 }
             }
         }

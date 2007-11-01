@@ -34,9 +34,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.RE;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -62,6 +60,10 @@ final public class JschSshMonitor extends IPv4Monitor {
 
     private static final int DEFAULT_RETRY = 0;
 
+    public static final int DEFAULT_TIMEOUT = 3000;
+    
+    public static final int DEFAULT_PORT = 22;
+
     /**
      * Poll an {@link InetAddress} for SSH availability.
      * 
@@ -77,24 +79,15 @@ final public class JschSshMonitor extends IPv4Monitor {
      * @return a {@link PollStatus} status object
      */
     public PollStatus poll(InetAddress address, Map parameters) {
-        int retries = DEFAULT_RETRY;
+
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
+        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+        String banner = ParameterMap.getKeyedString(parameters, "banner", null);
+        String match = ParameterMap.getKeyedString(parameters, "match", null);
 
         PollStatus ps = PollStatus.unavailable();
-        Category log = ThreadCategory.getInstance(getClass());
-        Poll ssh = new Poll(address);
-
-        String banner = null;
-        String match = null;
-        int port = ssh.getPort();
-        int timeout = ssh.getTimeout();
-
-        if (parameters != null) {
-            retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-            timeout = ParameterMap.getKeyedInteger(parameters, "timeout", timeout);
-            port = ParameterMap.getKeyedInteger(parameters, "port", port);
-            banner = ParameterMap.getKeyedString(parameters, "banner", null);
-            match = ParameterMap.getKeyedString(parameters, "match", null);
-        }
+        Poll ssh = new Poll(address, port, tracker.getConnectionTimeout());
 
         RE regex = null;
         if (match == null && (banner == null || banner.equals("*"))) {
@@ -105,11 +98,11 @@ final public class JschSshMonitor extends IPv4Monitor {
             regex = new RE(banner);
         }
 
-        for (int attempts = 0; attempts <= retries && !ps.isAvailable(); attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
             try {
-                ps = ssh.poll();
+                ps = ssh.poll(tracker);
             } catch (InsufficientParametersException e) {
-                log.error(e);
+                log().error(e);
                 break;
             }
 
@@ -127,15 +120,15 @@ final public class JschSshMonitor extends IPv4Monitor {
                 String response = ssh.getServerVersion();
 
                 if (regex.match(response)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("isServer: matching response=" + response);
+                    if (log().isDebugEnabled()) {
+                        log().debug("isServer: matching response=" + response);
                     }
                     return ps;
                 } else {
                     // Got a response but it didn't match... no need to attempt
                     // retries
-                    if (log.isDebugEnabled()) {
-                        log.debug("isServer: NON-matching response=" + response);
+                    if (log().isDebugEnabled()) {
+                        log().debug("isServer: NON-matching response=" + response);
                     }
                     return PollStatus.unavailable("server responded, but banner did not match '" + banner + "'");
                 }
@@ -143,7 +136,7 @@ final public class JschSshMonitor extends IPv4Monitor {
         }
         return ps;        
     }
-    
+
     /**
      * Poll the specified address for service availability.
      * 

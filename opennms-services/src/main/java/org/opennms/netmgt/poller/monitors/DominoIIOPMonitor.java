@@ -44,7 +44,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
@@ -56,7 +55,6 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -137,8 +135,8 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         int IORport = ParameterMap.getKeyedInteger(parameters, "ior-port", DEFAULT_IORPORT);
 
         // Port
@@ -150,7 +148,7 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
+            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", "+tracker);
 
 
         // Lets first try to the the IOR via HTTP, if we can't get that then any
@@ -163,46 +161,35 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
             return logDown(Level.DEBUG, "failed to get the corba IOR from " + ipv4Addr, e);
         }
 
-        // SO LETS DO IT THE OLD FASHIONED WAY
-        String failureReason = null; 
+        PollStatus status = null;
         
-        for (int attempts = 0; attempts <= retry; attempts++) {
+        for(tracker.reset(); tracker.shouldRetry() && !status.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 //
                 // create a connected socket
                 //
-            	long startTime = System.currentTimeMillis();
+                
+                tracker.startAttempt();
+                
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
-                long endTime = System.currentTimeMillis();
+                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.setSoTimeout(tracker.getSoTimeout());
+
                 log.debug("DominoIIOPMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // got here so its up...
-                return PollStatus.up(endTime - startTime);
+                
+                return PollStatus.up(tracker.elapsedTimeInMillis());
+                
             } catch (NoRouteToHostException e) {
-                e.fillInStackTrace();
-                log.warn("DominoIIOPMonitor: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
-                
-                return PollStatus.unavailable("No route to host exception for address " + ipv4Addr.getHostAddress());
+                status = logDown(Level.WARN, " No route to host exception for address " + ipv4Addr.getHostAddress(), e);
             } catch (InterruptedIOException e) {
-            	failureReason = "did not connect to host within timeout: " + timeout + " attempt: " + attempts;
-                log.debug("DominoIIOPMonitor: "+failureReason);
+                status = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             } catch (ConnectException e) {
-                // Connection refused. Continue to retry.
-                //
-                e.fillInStackTrace();
-                failureReason = "Connection exception for address: " + ipv4Addr+" : "+e.getMessage();
-                if (log.isDebugEnabled())
-                    log.debug("DominoIIOPMonitor: "+failureReason, e);
+                status = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr+" : "+e.getMessage());
             } catch (IOException e) {
-                // Ignore
-                e.fillInStackTrace();
-                failureReason = "IOException while polling address: " + ipv4Addr+" : "+e.getMessage();
-                if (log.isDebugEnabled())
-                    log.debug("DominoIIOPMonitor: "+failureReason, e);
-                
+                status = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr+" : "+e.getMessage());
             } finally {
                 try {
                     // Close the socket
@@ -219,7 +206,7 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         //
         // return the status of the service
         //
-        return PollStatus.unavailable(failureReason);
+        return status;
     }
 
     /**

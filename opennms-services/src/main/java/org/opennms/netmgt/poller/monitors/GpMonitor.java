@@ -122,18 +122,13 @@ final public class GpMonitor extends IPv4Monitor {
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
         String hoption = ParameterMap.getKeyedString(parameters, "hoption", "--hostname");
         String toption = ParameterMap.getKeyedString(parameters, "toption", "--timeout");
         //
         // convert timeout to seconds for ExecRunner
         //
-        if (0 < timeout && timeout < 1000)
-            timeout = 1;
-        else
-            timeout = timeout / 1000;
-
         String args = ParameterMap.getKeyedString(parameters, "args", null);
 
         // Script
@@ -152,16 +147,15 @@ final public class GpMonitor extends IPv4Monitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", script = " + script + ", arguments = " + args + ", timeout(seconds) = " + timeout + ", retry = " + retry);
+            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", script = " + script + ", arguments = " + args + ", " + tracker);
 
         // Give it a whirl
         //
         PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             try {
-                long sentTime = System.currentTimeMillis();
+                tracker.startAttempt();
 
                 int exitStatus = 100;
 
@@ -169,14 +163,17 @@ final public class GpMonitor extends IPv4Monitor {
 		// --timeout. If the optional parameter option-type is set to short, then the former
 		// will be used.
 
+
+                int timeoutInSeconds = (int)tracker.getTimeoutInSeconds();
+
                 ExecRunner er = new ExecRunner();
-                er.setMaxRunTimeSecs(timeout);
+                er.setMaxRunTimeSecs(timeoutInSeconds);
                 if (args == null)
-                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout);
+                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeoutInSeconds);
                 else
-                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout + " " + args);
+                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeoutInSeconds + " " + args);
                 
-                responseTime = System.currentTimeMillis() - sentTime;
+                double responseTime = tracker.elapsedTimeInMillis();
                 
                 if (exitStatus != 0) {
                 	

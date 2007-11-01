@@ -129,7 +129,7 @@ final public class DhcpMonitor extends IPv4Monitor {
             // 
             responseTime = Dhcpd.isServer(ipv4Addr, (long) timeout, retry);
             if (responseTime >= 0) {
-                serviceStatus = PollStatus.available(responseTime);
+                serviceStatus = PollStatus.available((double)responseTime);
             }
         } catch (IOException ioE) {
             ioE.fillInStackTrace();

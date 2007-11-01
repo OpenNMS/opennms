@@ -117,15 +117,10 @@ final public class CitrixMonitor extends IPv4Monitor {
         //
         // get the parameters
         //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        
+        TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+        
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-
-
-        // don't let the user set the timeout to 0, an infinite loop will occur
-        // if the server is down
-        if (timeout == 0)
-            timeout = 10;
 
         // Extract the address
         //
@@ -133,21 +128,19 @@ final public class CitrixMonitor extends IPv4Monitor {
         String host = ipv4Addr.getHostAddress();
 
         if (log().isDebugEnabled())
-            log().debug("CitrixMonitor.poll: Polling interface: " + host + " timeout: " + timeout + " retry: " + retry);
+            log().debug("CitrixMonitor.poll: Polling interface: " + host + timeoutTracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
-        long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+        for(timeoutTracker.reset(); timeoutTracker.shouldRetry() && !serviceStatus.isAvailable(); timeoutTracker.nextAttempt()) {
             Socket socket = null;
             try {
-                // create a connected socket
-                //
-                long sentTime = System.currentTimeMillis();
-
+                
+                timeoutTracker.startAttempt();
+                
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
-                socket.setSoTimeout(timeout);
+                socket.connect(new InetSocketAddress(ipv4Addr, port), timeoutTracker.getConnectionTimeout());
+                socket.setSoTimeout(timeoutTracker.getSoTimeout());
                 log().debug("CitrixMonitor: connected to host: " + host + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
@@ -164,8 +157,7 @@ final public class CitrixMonitor extends IPv4Monitor {
                 while (!serviceStatus.isAvailable()) {
                     buffer.append((char) reader.read());
                     if (buffer.toString().indexOf("ICA") > -1) {
-                        responseTime = System.currentTimeMillis() - sentTime;
-                        serviceStatus = PollStatus.available(responseTime);
+                        serviceStatus = PollStatus.available(timeoutTracker.elapsedTimeInMillis());
                     } else {
                         serviceStatus = PollStatus.unavailable("magic cookie 'ICA' missing from service greeting.");
                     }
@@ -177,12 +169,12 @@ final public class CitrixMonitor extends IPv4Monitor {
             	
             } catch (NoRouteToHostException e) {
 
-            	// No route to host!! No need to perform retries.
-                return logDown(Level.INFO, "Unable to test host " + host + ", no route available", e);
+            	// No route to host!! Try retries anyway in case strict timeouts are enabled
+                serviceStatus = logDown(Level.INFO, "Unable to test host " + host + ", no route available", e);
             
             } catch (InterruptedIOException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host " + host +" within timeout: " + timeoutTracker);
                 		
             } catch (IOException e) {
             	
@@ -201,6 +193,7 @@ final public class CitrixMonitor extends IPv4Monitor {
                 } catch (IOException e) {
                 }
             }
+            
         }
 
         //

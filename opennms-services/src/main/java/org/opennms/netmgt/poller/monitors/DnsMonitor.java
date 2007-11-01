@@ -124,9 +124,8 @@ final public class DnsMonitor extends IPv4Monitor {
 
         // get the parameters
         //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // Host to lookup?
         //
@@ -151,27 +150,28 @@ final public class DnsMonitor extends IPv4Monitor {
 
         PollStatus serviceStatus = PollStatus.unavailable();
         DatagramSocket socket = null;
-        long responseTime = -1;
         try {
             socket = new DatagramSocket();
-            socket.setSoTimeout(timeout); // will force the
-                                            // InterruptedIOException
+            socket.setSoTimeout(timeoutTracker.getSoTimeout()); // will force the InterruptedIOException
 
-            for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+            for (timeoutTracker.reset(); timeoutTracker.shouldRetry() && !serviceStatus.isAvailable(); timeoutTracker.nextAttempt()) {
                 try {
                     // Send DNS request
                     //
                     byte[] data = request.buildRequest();
                     DatagramPacket outgoing = new DatagramPacket(data, data.length, ipv4Addr, port);
-                    long sentTime = System.currentTimeMillis();
+                    
+                    byte[] buffer = new byte[512];
+                    DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
+
+                    timeoutTracker.startAttempt();
+
                     socket.send(outgoing);
 
                     // Get DNS Response
-                    //
-                    byte[] buffer = new byte[512];
-                    DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
                     socket.receive(incoming);
-                    responseTime = System.currentTimeMillis() - sentTime;
+
+                    double responseTime = timeoutTracker.elapsedTimeInMillis();
 
                     // Validate DNS Response
                     // IOException thrown if packet does not decode as expected.
@@ -181,20 +181,16 @@ final public class DnsMonitor extends IPv4Monitor {
 
                 } catch (InterruptedIOException ex) {
                     // Ignore, no response received.
+                } catch (NoRouteToHostException e) {
+                    serviceStatus = logDown(Level.DEBUG, "No route to host exception for address: " + ipv4Addr, e);
+                } catch (ConnectException e) {
+                    serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+                } catch (IOException ex) {
+                    serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, ex);
                 }
             }
-        } catch (NoRouteToHostException e) {
-
-        	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address: " + ipv4Addr, e);
-        	
-        } catch (ConnectException e) {
-        	
-        	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
-        	
         } catch (IOException ex) {
-        	
-        	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, ex);
-        	
+            serviceStatus = logDown(Level.DEBUG, "Failed to create Datagram Socket for : " + ipv4Addr, ex);
         } finally {
             if (socket != null)
                 socket.close();

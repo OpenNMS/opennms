@@ -127,27 +127,32 @@ public class HttpMonitor extends IPv4Monitor {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
         }
 
-
+        
         String cmd = buildCommand(iface, parameters);
 
         // Cycle through the port list
         //
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;
+        Double responseTime = null;
         int currentPort = -1;
-        long nanoResponseTime = -1;
+
         for (int portIndex = 0; portIndex < getPorts(parameters).length && serviceStatus != PollStatus.SERVICE_AVAILABLE; portIndex++) {
             currentPort = getPorts(parameters)[portIndex];
 
+            TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
             if (log().isDebugEnabled()) {
-                log().debug("Port = " + currentPort + ", Address = " + getIpv4Addr(iface) + ", Timeout = " + getTimeout(parameters) + ", Retry = " + getRetries(parameters));
+                log().debug("Port = " + currentPort + ", Address = " + getIpv4Addr(iface) + ", " + tracker);
             }
 
-            for (int attempts = 0; attempts <= getRetries(parameters) && serviceStatus != PollStatus.SERVICE_AVAILABLE; attempts++) {
+            for(tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {
                 Socket socket = null;
                 try {
-                    socket = createSocket(iface, parameters, currentPort);
-                    socket.connect(new InetSocketAddress(getIpv4Addr(iface), currentPort), getTimeout(parameters));
+                    tracker.startAttempt();
+                    
+                    socket = createSocket(iface, currentPort, tracker.getSoTimeout());
+                    socket.connect(new InetSocketAddress(getIpv4Addr(iface), currentPort), tracker.getConnectionTimeout());
                     socket = wrapSocket(socket);
                     log().debug("HttpMonitor: connected to host: " + getIpv4Addr(iface) + " on port: " + currentPort);
 
@@ -157,7 +162,6 @@ public class HttpMonitor extends IPv4Monitor {
                     //
                     // Issue HTTP 'GET' command and check the return code in the response
                     //
-                    long nanoSentTime = System.nanoTime();
                     socket.getOutputStream().write(cmd.getBytes());
 
                     //
@@ -166,14 +170,16 @@ public class HttpMonitor extends IPv4Monitor {
                     //
                     BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String line = lineRdr.readLine();
-                    nanoResponseTime = System.nanoTime() - nanoSentTime;
+                    
                     if (line == null) {
                         continue;
                     }
 
+                    responseTime = tracker.elapsedTimeInMillis();
+                    
                     if (log().isDebugEnabled()) {
                         log().debug("poll: response= " + line);
-                        log().debug("poll: responseTime= " + (nanoResponseTime / 1000000) + "ms");
+                        log().debug("poll: responseTime= " + responseTime + "ms");
                     }
 
                     if (line.startsWith("HTTP/")) {
@@ -256,10 +262,12 @@ public class HttpMonitor extends IPv4Monitor {
                     log().warn("checkStatus: No route to host exception for address " + getIpv4Addr(iface) + ": " + e.getMessage());
                     portIndex = getPorts(parameters).length; // Will cause outer for(;;) to terminate
                     reason = "No route to host exception";
-                    break; // Break out of inner for(;;)
+                    
+                    // don't break in case 'strict timeouts are enabled'
+                    //break; 
                 } catch (InterruptedIOException e) {
                     // Ignore
-                    log().info("checkStatus: did not connect to host within timeout: " + getTimeout(parameters) + " attempt: " + attempts);
+                    log().info("checkStatus: did not connect to host with " + tracker);
                     reason = "HTTP connection timeout";
                 } catch (ConnectException e) {
                     // Connection Refused. Continue to retry.
@@ -308,16 +316,15 @@ public class HttpMonitor extends IPv4Monitor {
             parameters.put("qualifier", testedPorts.toString());
             reason += "/Ports: "+testedPorts.toString();
             log().debug("checkStatus: Reason: \""+reason+"\"");
+            return PollStatus.unavailable(reason);
+
         } else if (serviceStatus == PollStatus.SERVICE_AVAILABLE) {
             parameters.put("qualifier", Integer.toString(currentPort));
+            return PollStatus.available(responseTime);
+        } else {
+            return PollStatus.get(serviceStatus, reason);
         }
 
-        //
-        // return the status of the service
-        //
-        PollStatus ps = PollStatus.get(serviceStatus, reason);
-        ps.setProperty("response-time", nanoResponseTime / 1000000.0);
-        return ps;
     }
     
     
@@ -326,10 +333,9 @@ public class HttpMonitor extends IPv4Monitor {
         return socket;
     }
 
-    protected Socket createSocket(final NetworkInterface iface, final Map<String, String> parameters, final int currentPort) throws IOException, SocketException {
-        Socket socket;
-        socket = new Socket();
-        socket.setSoTimeout(getTimeout(parameters));
+    protected Socket createSocket(final NetworkInterface iface, final int currentPort, int soTimeout) throws IOException, SocketException {
+        Socket socket = new Socket();
+        socket.setSoTimeout(soTimeout);
         return socket;
     }
 
@@ -443,14 +449,6 @@ public class HttpMonitor extends IPv4Monitor {
 
     protected int[] getPorts(final Map<String, String> parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
-    }
-
-    private int getTimeout(final Map<String, String> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-    }
-
-    private int getRetries(final Map<String, String> parameters) {
-        return ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
     }
 
     private String getDefaultResponseRange(String url) {
