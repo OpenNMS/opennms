@@ -63,7 +63,7 @@ class DemoPollService implements PollService {
         
         m_pollCount++;
         if (m_pollCount % m_repetitions == 0) {
-        	m_currentStatus = (m_currentStatus.isDown() ? PollStatus.up(100+m_pollCount) : PollStatus.down("pollCount is "+m_pollCount));
+        	m_currentStatus = (m_currentStatus.isDown() ? PollStatus.up(100.0+m_pollCount) : PollStatus.down("pollCount is "+m_pollCount));
         }
         
         return status;

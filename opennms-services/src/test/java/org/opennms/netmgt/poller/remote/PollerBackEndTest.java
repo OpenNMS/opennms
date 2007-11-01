@@ -353,7 +353,7 @@ public class PollerBackEndTest extends TestCase {
 
         long now = System.currentTimeMillis();
 
-        PollStatus httpResult = PollStatus.available(1000L);
+        PollStatus httpResult = PollStatus.available(1000.0);
         httpResult.setTimestamp(new Date(now - 300000));
 
         m_httpCurrentStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_httpService, httpResult);
@@ -583,7 +583,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
 
-        final PollStatus newStatus = PollStatus.available(1234);
+        final PollStatus newStatus = PollStatus.available(1234.0);
 
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
 
@@ -700,7 +700,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
 
-        final PollStatus newStatus = PollStatus.available(1234);
+        final PollStatus newStatus = PollStatus.available(1234.0);
 
         OnmsLocationSpecificStatus expectedStatus = new OnmsLocationSpecificStatus(m_locationMonitor, m_dnsService, newStatus);
 
@@ -723,7 +723,7 @@ public class PollerBackEndTest extends TestCase {
 
         expect(m_locMonDao.getMostRecentStatusChange(m_locationMonitor, m_httpService)).andReturn(m_httpCurrentStatus);
 
-        final PollStatus newStatus = PollStatus.available(1776);
+        final PollStatus newStatus = PollStatus.available(1776.0);
 
         // called when saving performance data
         expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
