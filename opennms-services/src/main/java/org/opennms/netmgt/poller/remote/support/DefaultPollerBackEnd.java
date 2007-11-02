@@ -351,7 +351,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
         OnmsLocationSpecificStatus newStatus = new OnmsLocationSpecificStatus(locationMonitor, monSvc, pollResult);
 
-        if (newStatus.getPollResult().getResponseTime() >= 0) {
+        if (newStatus.getPollResult().getResponseTime() != null) {
             Package pkg = getPollingPackageForMonitor(locationMonitor);
             m_pollerConfig.saveResponseTimeData(Integer.toString(locationMonitorID), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
         }
