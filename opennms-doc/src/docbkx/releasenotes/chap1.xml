@@ -4,15 +4,17 @@
 
   <subtitle>About This Release</subtitle>
 
-  <para>Release 1.3.8 is (TODO: list 1.3.8 highlights)</para>
-  
-  <para>The code word for 1.3.8 is TBD</para>
+  <para>Release 1.3.8 is the next step on the road toward 1.8. Lots of bug
+  fixes and some new features. The biggest news is initial support for running
+  OpenNMS on Windows.</para>
+
+  <para>The code word for 1.3.8 is "keynote"</para>
 
   <para>Release 1.3.7 is probably the best OpenNMS ever released. It removes
   the need for Tomcat, adds several new features including a SmokePing clone
   called StrafePing, and includes several performance enhancements.</para>
 
-  <para>The code word for 1.3.7 is "speedy" </para>
+  <para>The code word for 1.3.7 is "speedy"</para>
 
   <para>Release 1.3.6 is the first release where the main OpenNMS application
   is pure Java. All of the C-based JNI code has been moved to packages outside
