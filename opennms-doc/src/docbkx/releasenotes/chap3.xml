@@ -8,21 +8,20 @@
 
   <section>
     <title>OpenNMS 1.3.8 Known Issues</title>
-    
+
     <para>The order of elements in some of the XML configuration files is
     enforced more strictly than before. This change may cause problems with
-    customized OpenNMS configuration files (especially event definitions)
-    that worked fine with previous releases. Correcting the ordering of
-    elements in these files against the XML schema definitions (available
-    from the <ulink url="http://www.opennms.org/">wiki</ulink>) may be
-    necessary.</para>
+    customized OpenNMS configuration files (especially event definitions) that
+    worked fine with previous releases. Correcting the ordering of elements in
+    these files against the XML schema definitions (available from the <ulink
+    url="http://www.opennms.org/">wiki</ulink>) may be necessary.</para>
   </section>
-  
+
   <section>
     <title>OpenNMS 1.3.7 Known Issues</title>
 
     <para>The zoom feature will not work on Windows using IE or Opera. The
-    workaround is to use Firefox.</para>
+    workaround is to use Firefox. (corrected in 1.3.8)</para>
   </section>
 
   <section>
