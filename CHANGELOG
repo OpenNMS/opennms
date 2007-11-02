@@ -1,8 +1,37 @@
 1.3.7 to 1.3.8
 ----------------------------------------------------------------------
+- Fixes for a number of bugs:
+  http://bugzilla.opennms.org/showdependencytree.cgi?id=2043
+- Initial support for running on Windows, including fixes in a number
+  of places for path-handling.
+- Allow "-" in service and category names (bug #697)
+- Allow specifying a timeout for status on startup (opennms -c)
+- Add a convenience script for testing NSClient connections
+  ($OPENNMS_HOME/bin/checknsc)
+- Moved StrafePing to it's own own package since it can cause a lot
+  of I/O when doing response-time collection; to re-enable it, add
+  your ranges to the strafer package in poller-configuration.xml.
+- Added some performance-enhancing indexes to the database.
+- Added SNMP trap definitions and data collection for IPUnity,
+  Convergence, and MRV devices.
+- Many linkd improvements.
+- Many syslogd improvements.
+- Use jsch for a new SSH poller (bug #782)
+- Configurably allow treating "no route to host" or "connection
+  refused" as hard or soft errors. (bug #904)
+- The outages display on the front page now tells how long the outage
+  has been occurring. (bug #1552)
+- The Jetty daemon is now more versatile, with support for setting
+  the listen address, as well as the base URL for proxying behind
+  mod_proxy (bug #2064)
+- Unified (to some extent) the opennms.properties and webapp
+  configuration.properties files.  The opennms.properties file is now
+  the canonical location for configuration, and
+  WEB-INF/configuration.properties overrides it's defaults.
 - Added the ability to specific per report how many graphs to
   display in a KSC report.
-- RSS feeds for events, alarms, outages, and notifications
+- RSS feeds for events, alarms, outages, and notifications; see
+  http://www.opennms.org/index.php/WebUI_RSS_Feeds
 - fix bug where hitting [-] on some browser pages (alarm, etc.)
   caused an exception
 
