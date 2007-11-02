@@ -223,7 +223,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
          for (File sqlFile : sqlFiles) {
            String cmd = System.getProperty("psql.command", "psql") ;
            System.err.println("psql.command = " + cmd);
-           cmd = cmd+" test -U opennms -f " + sqlFile.getAbsolutePath();
+           cmd = cmd+" test -U opennms -f \"" + sqlFile.getAbsolutePath() + '"';
 
            System.err.println("Executing: " + cmd);
            Process p = Runtime.getRuntime().exec(cmd);
