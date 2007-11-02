@@ -16,6 +16,8 @@
   Convergence, and MRV devices.
 - Many linkd improvements.
 - Many syslogd improvements.
+- Reworked the installer to be a little more verbose in what it's
+  attempting (and if it fails), see install -h for options
 - Use jsch for a new SSH poller (bug #782)
 - Configurably allow treating "no route to host" or "connection
   refused" as hard or soft errors. (bug #904)
