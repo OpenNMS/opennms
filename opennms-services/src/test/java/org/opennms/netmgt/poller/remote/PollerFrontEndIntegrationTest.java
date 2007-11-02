@@ -152,7 +152,7 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
 
         assertEquals(System.getProperty("os.name"), getSimpleJdbcTemplate().queryForObject("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", String.class, monitorId, "os.name"));
         
-        Thread.sleep(10000);
+        Thread.sleep(15000);
         
         assertEquals(0, getSimpleJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId));
         
