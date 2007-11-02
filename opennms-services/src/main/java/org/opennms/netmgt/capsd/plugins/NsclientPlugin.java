@@ -233,7 +233,7 @@ public class NsclientPlugin extends AbstractPlugin {
                 message.append(e.getMessage());
                 message.append(" : ");
                 message.append((e.getCause() == null ? "": e.getCause().getMessage()));
-                log().error(message.toString());
+                log().info(message.toString());
                 isAServer = false;
             }
         }
