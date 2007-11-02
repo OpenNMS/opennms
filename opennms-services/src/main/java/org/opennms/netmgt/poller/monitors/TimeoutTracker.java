@@ -120,7 +120,7 @@ public class TimeoutTracker {
     @Override
     public String toString() {
         return new StringBuilder(64)
-            .append("timeout: ").append(elapsedTimeInMillis()).append("ms")
+            .append("timeout: ").append(getTimeoutInMillis()).append("ms")
             .append(" retry: ").append(m_attempt).append(" of ").append(m_retry)
             .toString();
 

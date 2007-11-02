@@ -14,7 +14,9 @@ public class TimeoutTrackerTest extends TestCase {
         
         int count = 0;
         for(tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
+            tracker.startAttempt();
             count++;
+            assertTrue(tracker.elapsedTimeInMillis() < 100);
         }
         
         assertEquals("expected one try and 2 retries", 3, count);
