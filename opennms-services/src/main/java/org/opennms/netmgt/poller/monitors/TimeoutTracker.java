@@ -13,7 +13,7 @@ public class TimeoutTracker {
     
     private int m_attempt = 0;
     private long m_nextRetryTimeNanos = -1L;
-    private long m_attemptStartTimeNanos = 1L;
+    private long m_attemptStartTimeNanos = -1L;
 
     public TimeoutTracker(Map parameters, int defaultRetry, int defaultTimeout) {
         m_retry = ParameterMap.getKeyedInteger(parameters, "retry", defaultRetry);
@@ -24,6 +24,8 @@ public class TimeoutTracker {
         m_timeoutInNanos = TimeUnit.NANOSECONDS.convert(m_timeoutInMillis, TimeUnit.MILLISECONDS);
 
         m_strictTimeouts = ParameterMap.getKeyedBoolean(parameters, "strict-timeout", false);
+        
+        resetAttemptStartTime();
 
     }
 
@@ -55,12 +57,16 @@ public class TimeoutTracker {
     
     public void reset() {
         m_attempt = 0;
+        resetAttemptStartTime();
+    }
+
+    private void resetAttemptStartTime() {
         m_attemptStartTimeNanos = -1L;
     }
 
     public void nextAttempt() {
         m_attempt++;
-        m_attemptStartTimeNanos = -1L;
+        resetAttemptStartTime();
     }
 
     public int getAttempt() {
@@ -76,7 +82,7 @@ public class TimeoutTracker {
         // create a connected socket
         //
         m_attemptStartTimeNanos = System.nanoTime();
-        m_nextRetryTimeNanos = m_attemptStartTimeNanos = m_timeoutInNanos;
+        m_nextRetryTimeNanos = m_attemptStartTimeNanos + m_timeoutInNanos;
 
     }
 
@@ -101,7 +107,8 @@ public class TimeoutTracker {
     
     public long elapsedTimeNanos() {
         assertStarted();
-        return System.nanoTime() - m_attemptStartTimeNanos;
+        long nanoTime = System.nanoTime();
+        return nanoTime - m_attemptStartTimeNanos;
     }
     
     public double elapsedTime(TimeUnit unit) {
