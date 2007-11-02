@@ -52,7 +52,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.6-SNAPSHOT</version>
+        <version>1.6</version>
         <configuration>
           <moduleName>${moduleName}</moduleName>
           <homePage>${moduleHtml}</homePage>
