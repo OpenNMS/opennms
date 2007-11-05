@@ -9,6 +9,8 @@ public class TimeoutTracker {
 
     private int m_retry;
     private long m_timeoutInNanos;
+    private long m_timeoutInMillis;
+    private long m_timeoutInSeconds;
     private boolean m_strictTimeouts;
     
     private int m_attempt = 0;
@@ -19,9 +21,10 @@ public class TimeoutTracker {
         m_retry = ParameterMap.getKeyedInteger(parameters, "retry", defaultRetry);
 
         // make sure the timeout is a least 10 millis
-        long m_timeoutInMillis = Math.max(10, ParameterMap.getKeyedInteger(parameters, "timeout", defaultTimeout));
-        
-        m_timeoutInNanos = TimeUnit.NANOSECONDS.convert(m_timeoutInMillis, TimeUnit.MILLISECONDS);
+        m_timeoutInMillis = Math.max(10L, ParameterMap.getKeyedInteger(parameters, "timeout", defaultTimeout));
+        m_timeoutInNanos = Math.max(10000000L, TimeUnit.NANOSECONDS.convert(m_timeoutInMillis, TimeUnit.MILLISECONDS));
+        m_timeoutInSeconds = Math.max(1L, TimeUnit.SECONDS.convert(m_timeoutInMillis, TimeUnit.SECONDS));
+
 
         m_strictTimeouts = ParameterMap.getKeyedBoolean(parameters, "strict-timeout", false);
         
@@ -34,27 +37,14 @@ public class TimeoutTracker {
     }
     
     public long getTimeoutInMillis() {
-        return getTimeout(TimeUnit.MILLISECONDS);
+        return m_timeoutInMillis;
     }
     
     public long getTimeoutInSeconds() {
-        return getTimeout(TimeUnit.SECONDS);
+        return m_timeoutInSeconds;
     }
     
 
-    public long getTimeout(TimeUnit units) {
-        long rounder = TimeUnit.NANOSECONDS.convert(1, units);
-        // add rounder so it rounds to the nearest rather than truncating
-        long converted = units.convert(m_timeoutInNanos + rounder / 2, TimeUnit.NANOSECONDS);
-        
-        // never return 0 which often means an infinite timeout
-        if (converted == 0) {
-            return 1;
-        } else {
-            return converted;
-        }
-    }
-    
     public void reset() {
         m_attempt = 0;
         resetAttemptStartTime();
@@ -79,8 +69,7 @@ public class TimeoutTracker {
             sleep(m_nextRetryTimeNanos - now);
             now = System.nanoTime();
         }
-        // create a connected socket
-        //
+
         m_attemptStartTimeNanos = System.nanoTime();
         m_nextRetryTimeNanos = m_attemptStartTimeNanos + m_timeoutInNanos;
 
@@ -102,21 +91,24 @@ public class TimeoutTracker {
     }
     
     public double elapsedTimeInMillis() {
-        return elapsedTime(TimeUnit.MILLISECONDS);
+        return convertFromNanos(elapsedTimeNanos(), TimeUnit.MILLISECONDS);
     }
     
     public long elapsedTimeNanos() {
-        assertStarted();
         long nanoTime = System.nanoTime();
+        assertStarted();
         return nanoTime - m_attemptStartTimeNanos;
     }
     
     public double elapsedTime(TimeUnit unit) {
-        double nanos = elapsedTimeNanos();
+        return convertFromNanos(elapsedTimeNanos(), unit);
+    }
+
+    private double convertFromNanos(double nanos, TimeUnit unit) {
         double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, unit);
         return nanos/nanosPerUnit;
     }
-
+    
     @Override
     public String toString() {
         return new StringBuilder(64)
