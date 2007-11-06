@@ -69,7 +69,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
-import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -78,7 +77,6 @@ import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -95,9 +93,10 @@ import org.opennms.netmgt.xml.event.Value;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-public final class Collectd extends AbstractServiceDaemon implements
+public class Collectd extends AbstractServiceDaemon implements
         EventListener {
     
     private static CollectdInstrumentation s_instrumentation = null;
@@ -174,6 +173,13 @@ public final class Collectd extends AbstractServiceDaemon implements
     }
 
     protected void onInit() {
+        Assert.notNull(m_collectorConfigDao, "collectorConfigDao must not be null");
+        Assert.notNull(m_eventIpcManager, "eventIpcManager must not be null");
+        Assert.notNull(m_transTemplate, "transTemplate must not be null");
+        Assert.notNull(m_ifaceDao, "ifaceDao must not be null");
+        Assert.notNull(m_nodeDao, "nodeDao must not be null");
+        
+        
         log().debug("init: Initializing collection daemon");
         
         // make sure the instrumentation gets initialized
@@ -451,6 +457,7 @@ public final class Collectd extends AbstractServiceDaemon implements
                     sb.append(iface);
                     sb.append('/');
                     sb.append(svcName);
+                    log().debug(sb.toString());
                 }
                 CollectableService cSvc = null;
 
@@ -507,15 +514,13 @@ public final class Collectd extends AbstractServiceDaemon implements
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
         Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
 
-        CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
 
         /*
          * Compare interface/service pair against each collectd package
          * For each match, create new SnmpCollector object and
          * schedule it for collection
          */
-        CollectdConfig config = cCfgFactory.getCollectdConfig();
-        for(CollectdPackage wpkg : config.getPackages()) {
+        for(CollectdPackage wpkg : getCollectorConfigDao().getPackages()) {
             /*
              * Make certain the the current service is in the package
              * and enabled!
@@ -623,7 +628,7 @@ public final class Collectd extends AbstractServiceDaemon implements
 
     private void refreshServicePackages() {
     	for (CollectableService thisService : m_collectableServices) {
-            thisService.refreshPackage();
+            thisService.refreshPackage(getCollectorConfigDao());
         }
     }
 
@@ -684,8 +689,12 @@ public final class Collectd extends AbstractServiceDaemon implements
                 handleServiceDeleted(event);
             }
         } catch (InsufficientInformationException e) {
-            log().info(e.getMessage());
+            handleInsufficientInfo(e);
         }
+    }
+
+    protected void handleInsufficientInfo(InsufficientInformationException e) {
+        log().info(e.getMessage());
     }
 
     private void handleDupNodeDeleted(Event event)
@@ -997,8 +1006,8 @@ public final class Collectd extends AbstractServiceDaemon implements
     private void scheduleForCollection(Event event) {
         // This moved to here from the scheduleInterface() for better behavior
         // during initialization
-        CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
-        cCfgFactory.rebuildPackageIpListMap();
+        
+        getCollectorConfigDao().rebuildPackageIpListMap();
 
         scheduleInterface((int) event.getNodeid(), event.getInterface(),
                           event.getService(), false);

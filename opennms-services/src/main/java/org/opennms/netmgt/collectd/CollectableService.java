@@ -46,6 +46,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -53,7 +54,6 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * <P>
@@ -185,12 +185,19 @@ final class CollectableService implements ReadyRunnable {
 	/**
 	* Uses the existing package name to try and re-obtain the package from the collectd config factory.
 	* Should be called when the collect config has been reloaded.
+	 * @param collectorConfigDao 
 	*/
-	public void refreshPackage() {
-		m_spec.refresh();
+	public void refreshPackage(CollectorConfigDao collectorConfigDao) {
+		m_spec.refresh(collectorConfigDao);
 	}
 
-	/**
+    @Override
+    public String toString() {
+        return "CollectableService for service "+m_nodeId+':'+getAddress()+':'+getServiceName();
+    }
+
+
+    /**
      * This method is used to evaluate the status of this interface and service
      * pair. If it is time to run the collection again then a value of true is
      * returned. If the interface is not ready then a value of false is

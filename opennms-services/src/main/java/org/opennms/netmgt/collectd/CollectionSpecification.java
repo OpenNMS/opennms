@@ -39,11 +39,11 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
@@ -261,8 +261,8 @@ public class CollectionSpecification {
 	    return outageFound;
 	}
 
-	public void refresh() {
-		CollectdPackage refreshedPackage=CollectdConfigFactory.getInstance().getPackage(getPackageName());
+	public void refresh(CollectorConfigDao collectorConfigDao) {
+		CollectdPackage refreshedPackage=collectorConfigDao.getPackage(getPackageName());
 		if(refreshedPackage!=null) {
 			setPackage(refreshedPackage);
 		}

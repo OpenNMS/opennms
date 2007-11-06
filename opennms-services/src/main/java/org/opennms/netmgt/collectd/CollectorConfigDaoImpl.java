@@ -39,10 +39,6 @@ package org.opennms.netmgt.collectd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -53,20 +49,13 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
 
 public class CollectorConfigDaoImpl implements CollectorConfigDao {
-
-    private ScheduledOutagesDao m_scheduledOutagesDao;
 
     public CollectorConfigDaoImpl() {
 
         loadConfigFactory();
 
-    }
-
-    public void setScheduledOutageConfigDao(ScheduledOutagesDao scheduledOutagesDao) {
-        m_scheduledOutagesDao = scheduledOutagesDao;
     }
 
     private void loadConfigFactory() {
@@ -94,26 +83,26 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
         return CollectdConfigFactory.getInstance().getCollectdConfig();
     }
 
-    /*
-    private ServiceCollector getServiceCollector(String svcName) {
-        return getConfig().getServiceCollector(svcName);
-    }
-    */
-
-    /*
-    public Set getCollectorNames() {
-        return getConfig().getCollectorNames();
-    }
-    */
 
     public int getSchedulerThreads() {
         return getConfig().getThreads();
     }
 
 
-    @SuppressWarnings("unchecked")
     public Collection<Collector> getCollectors() {
         return getConfig().getConfig().getCollectorCollection();
+    }
+
+    public void rebuildPackageIpListMap() {
+        getConfig().rebuildPackageIpListMap();
+    }
+    
+    public Collection<CollectdPackage> getPackages() {
+        return getConfig().getPackages();
+    }
+    
+    public CollectdPackage getPackage(String name) {
+        return getConfig().getPackage(name);
     }
 
 }
