@@ -49,6 +49,8 @@ import org.opennms.netmgt.config.collectd.Package;
 public class CollectdConfig {
     private CollectdConfiguration m_config;
     private Collection<CollectdPackage> m_packages;
+    private String m_localServer;
+    private boolean m_verifyServer;
 
     /**
      * Convenience object for CollectdConfiguration.
@@ -59,6 +61,8 @@ public class CollectdConfig {
      */
     protected CollectdConfig(CollectdConfiguration config, String localServer, boolean verifyServer) {
         m_config = config;
+        m_localServer = localServer;
+        m_verifyServer = verifyServer;
 
 //      instantiateCollectors();
 
@@ -107,6 +111,10 @@ public class CollectdConfig {
             CollectdPackage wpkg = it.next();
             wpkg.createIpList(localServer, verifyServer);
         }
+    }
+    
+    public void rebuildPackageIpListMap() {
+        createPackageIpListMap(m_localServer, m_verifyServer);
     }
 
     /**

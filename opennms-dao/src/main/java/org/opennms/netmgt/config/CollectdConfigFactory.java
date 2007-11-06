@@ -115,7 +115,7 @@ public class CollectdConfigFactory {
 	 * that collectd could know which package this ip/service pair is in.
 	 */
 	public synchronized void rebuildPackageIpListMap() {
-		m_collectdConfig.createPackageIpListMap(m_localServer, m_verifyServer);
+		m_collectdConfig.rebuildPackageIpListMap();
 	}
 
 	/**
