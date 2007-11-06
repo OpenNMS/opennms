@@ -48,6 +48,10 @@ public class NetworkBuilder {
 	public NetworkBuilder(OnmsDistPoller distPoller) {
 		m_distPoller = distPoller;
 	}
+	
+	public NetworkBuilder(String name, String ipAddress) {
+	    m_distPoller = new OnmsDistPoller(name, ipAddress);
+	}
 
 	public NodeBuilder addNode(String label) {
 		m_currentNode = new OnmsNode(m_distPoller);
