@@ -41,6 +41,7 @@
  */
 package org.opennms.web.map.db;
 
+
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
@@ -54,10 +55,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
@@ -71,7 +70,6 @@ import org.opennms.web.map.MapsConstants;
 
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.config.MapStartUpConfig;
-
 import org.opennms.web.map.db.datasources.DataSourceInterface;
 
 import org.opennms.web.map.view.Manager;
@@ -461,12 +459,11 @@ public class ManagerDefaultImpl implements Manager {
 
     private VElement localRefreshElement(VElement mapElement) throws MapsException {
     	Vector<Integer> deletedNodeids= dbManager.getDeletedNodes();
-    	//List<VElementInfo> velemslist = dbManager.getOutagedElements();
     	
     	java.util.Map<Integer,OutageInfo> outagedNodes=getOutagedNodes();
     	VElement[] velems = {mapElement};
     	java.util.Map<Integer,Double> avails=dbManager.getAvails(velems);
-    	Set nodesBySource = new HashSet();
+    	Set<Integer> nodesBySource = new HashSet<Integer>();
     	if(dataSource!=null)
     		nodesBySource = dbManager.getNodeIdsBySource(filter);
 
@@ -748,7 +745,7 @@ public class ManagerDefaultImpl implements Manager {
 	}
 
     /**
-     * Create a new (not child) empty Submap with the identifier setted to id.
+     * Create a new element child of the map with mapId (this map must be the sessionMap)
      * 
      * @param mapId
      * @param elementId
@@ -770,7 +767,10 @@ public class ManagerDefaultImpl implements Manager {
 
     }
 	
-	
+	/**
+	 * 
+	 * Create a new element child of the map with mapId (this map must be the sessionMap)
+	 */
 	public VElement newElement(int elementId, String type) throws MapsException {
 		if(sessionMap==null) throw new MapNotFoundException("session map in null");
 		return newElement(sessionMap.getId(),elementId,type);
@@ -779,7 +779,7 @@ public class ManagerDefaultImpl implements Manager {
 
 
     /**
-     * Create a new (not child) empty Submap with the identifier setted to id.
+     * Create a new element child of the map with mapId (this map must be the sessionMap).
      * 
      * @param mapId
      * @param elementId
@@ -957,14 +957,22 @@ public class ManagerDefaultImpl implements Manager {
 
     
     /**
-     * Refreshs avail,severity and status of the map in input and its elements
+     * Reloads elements of map and theirs avail,severity and status
      * @param map 
      * @return the map refreshed
      */
     public VMap reloadMap(VMap map)throws MapsException{
-		VElement[] velems = localRefreshElements((map.getAllElements()));
-		map.addElements(velems);
-		map.removeAllLinks();
+    	
+		//VElement[] velems = localRefreshElements((map.getAllElements()));
+    	Element[] elems = dbManager.getElementsOfMap(map.getId());
+    	VElement[] velems = new VElement[elems.length];
+    	for(int i=0; i<elems.length;i++) {
+    		velems[i]=new VElement(elems[i]);
+    	}
+    	velems = localRefreshElements(velems);
+    	map.removeAllLinks();
+		map.removeAllElements();
+    	map.addElements(velems);
 		return map;
     }
     
@@ -1329,7 +1337,7 @@ public class ManagerDefaultImpl implements Manager {
 	    	    		elements.add(new Integer(i));
 	    	    		node2Element.put(nodeid,elements);
 	    	    	}
-	    	    		                	         	}
+	    	    }
 	        }else{
 	        	return null;
 	        }

@@ -55,7 +55,7 @@ import org.opennms.web.map.MapsException;
 
 public class MapPropertiesFactory extends Object {
 
-	private static boolean m_loaded = false;
+	private boolean m_loaded = false;
 
 	/**
 	 * Descriptive information about this factory.
@@ -71,74 +71,74 @@ public class MapPropertiesFactory extends Object {
 	 * The map.properties file that is read for the list of severities and
 	 * statuses settings for map view.
 	 */
-	protected static File mapPropertiesFile;
+	protected File mapPropertiesFile;
 
 	protected String mapPropertiesFileString;
 
 	/**
 	 * The Log4J category for logging web authentication messages.
 	 */
-	protected static Category log = null;
+	protected Category log = null;
 
-	protected static Map[] propertiesMaps = null;
+	protected Map[] propertiesMaps = null;
 
-	protected static Map<String,Status> statusesMap = null;
+	protected  Map<String,Status> statusesMap = null;
 
-	protected static Status[] orderedStatuses = null;
+	protected  Status[] orderedStatuses = null;
 
-	protected static Map<String,Severity> severitiesMap = null;
+	protected  Map<String,Severity> severitiesMap = null;
 
-	protected static Severity[] orderedSeverities = null;
+	protected  Severity[] orderedSeverities = null;
 
-	protected static Map<String,Avail> availsMap = null;
+	protected  Map<String,Avail> availsMap = null;
 
-	protected static Avail[] orderedAvails = null;
+	protected  Avail[] orderedAvails = null;
 
-	protected static Map<String,String> iconsMap = null;
+	protected  Map<String,String> iconsMap = null;
 
-	protected static Map<String,String> bgImagesMap = null;
+	protected  Map<String,String> bgImagesMap = null;
 
-	protected static Map<Integer,Link> linksMap = null;
+	protected  Map<Integer,Link> linksMap = null;
 	
-	protected static Map<Integer,Set<Link>> linksBySnmpTypeMap = null;
+	protected  Map<Integer,Set<Link>> linksBySnmpTypeMap = null;
 	
-	protected static Map<String,LinkStatus> linkStatusesMap = null;
+	protected  Map<String,LinkStatus> linkStatusesMap = null;
 
-	protected static String defaultNodeIcon = null;
+	protected  String defaultNodeIcon = null;
 	
-	protected static String defaultMapIcon = null;
+	protected  String defaultMapIcon = null;
 	
-	public final static String MULTILINK_BEST_STATUS ="best"; 
+	public static final  String MULTILINK_BEST_STATUS ="best"; 
 	
-	public final static String MULTILINK_WORST_STATUS ="worst";
+	public static final  String MULTILINK_WORST_STATUS ="worst";
 	
-	protected static String multilinkStatus = MULTILINK_BEST_STATUS;
+	protected  String multilinkStatus = MULTILINK_BEST_STATUS;
 	
-	protected static int defaultLink = -1;
+	protected  int defaultLink = -1;
 
-	protected static Severity defaultSeverity;
+	protected  Severity defaultSeverity;
 	
-	protected static Severity indeterminateSeverity;
+	protected  Severity indeterminateSeverity;
 	
-	protected static Status unknownStatus;
+	protected  Status unknownStatus;
 	
-	protected static Status defaultStatus;
+	protected  Status defaultStatus;
 	
-	protected static Avail undefinedAvail;
+	protected  Avail undefinedAvail;
 	
-	protected static Avail disabledAvail;
+	protected  Avail disabledAvail;
 	
-	protected static boolean availEnabled=true;
+	protected  boolean availEnabled=true;
 	
-	protected static boolean doubleClickEnabled=true;
+	protected  boolean doubleClickEnabled=true;
 	
-	protected static boolean contextMenuEnabled=true;
+	protected  boolean contextMenuEnabled=true;
 	
-	protected static boolean reload=false;
+	protected  boolean reload=false;
 
-	protected static String severityMapAs = "avg"; 
+	protected  String severityMapAs = "avg"; 
 
-	protected static ContextMenu cmenu;
+	protected  ContextMenu cmenu;
 	
 	
 	public String getMapPropertiesFileString() {
@@ -158,7 +158,7 @@ public class MapPropertiesFactory extends Object {
 	}
 
 	public void setContextMenu(ContextMenu cmenu) {
-		MapPropertiesFactory.cmenu = cmenu;
+		cmenu = cmenu;
 	}
 
 	public boolean isContextMenuEnabled() {
@@ -219,10 +219,10 @@ public class MapPropertiesFactory extends Object {
 		
 		log.info("Init");
 		if (mapPropertiesFileString == null) {
-			MapPropertiesFactory.mapPropertiesFile = ConfigFileConstants.getFile(ConfigFileConstants.MAP_PROPERTIES_FILE_NAME);
+			mapPropertiesFile = ConfigFileConstants.getFile(ConfigFileConstants.MAP_PROPERTIES_FILE_NAME);
 			log.info("Using default map properties file: "+mapPropertiesFile.getPath());
 		}else{ 		
-			MapPropertiesFactory.mapPropertiesFile = new File(mapPropertiesFileString);
+			mapPropertiesFile = new File(mapPropertiesFileString);
 			log.info("Using map properties file: "+mapPropertiesFile.getPath());
 		}
 
@@ -375,13 +375,13 @@ public class MapPropertiesFactory extends Object {
 	}
 
 	public String getInfo() {
-		return (MapPropertiesFactory.info);
+		return (info);
 	}
 
-	public static String getProperty(String key)throws FileNotFoundException,IOException{
+	public String getProperty(String key)throws FileNotFoundException,IOException{
 		// read the file
 		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
+		props.load(new FileInputStream(mapPropertiesFile));
 		return props.getProperty(key);
 	}
 	
@@ -395,7 +395,7 @@ public class MapPropertiesFactory extends Object {
 	 *	-sourcesMap: source label (String) to DataSource 
 	 *	-factoriesMap: factory label (String) to MapsFactory
 	 */
-	protected static Map[] parseMapProperties() throws FileNotFoundException,
+	protected Map[] parseMapProperties() throws FileNotFoundException,
 			IOException {
 		log.debug("Parsing map.properties...");
 		severitiesMap = new HashMap<String,Severity>();
@@ -409,7 +409,7 @@ public class MapPropertiesFactory extends Object {
 
 		// read the file
 		Properties props = new Properties();
-		props.load(new FileInputStream(MapPropertiesFactory.mapPropertiesFile));
+		props.load(new FileInputStream(mapPropertiesFile));
 		
 		//load context menu flag
 		String cntxtmenu = props.getProperty("enable.contextmenu");
