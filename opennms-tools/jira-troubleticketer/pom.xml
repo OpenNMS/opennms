@@ -75,7 +75,7 @@
         <dependency>
             <groupId>com.atlassian.jira.rpc.soap.client</groupId>
             <artifactId>jira-ws-client</artifactId>
-            <version>1.0-20070216.123709-2</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
