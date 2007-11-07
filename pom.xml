@@ -816,7 +816,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>service-registration</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3</version>
       </dependency>
 
       <!--  opennms dependencies -->
