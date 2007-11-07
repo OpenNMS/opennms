@@ -40,7 +40,12 @@
    String breadcrumb1 = "<a href='Index.map'>Map</a>";
    String breadcrumb2 = "View Network Map";
 
+   //avoid cache
+   response.setHeader("Cache-Control","no-store");
+   response.setHeader("Pragma","no-cache");
+   response.setHeader("Expires","0"); 
 %>
+
 <c:choose>
 	<c:when test="${!manager.mapStartUpConfig.fullScreen}">
 		<jsp:include page="/includes/header.jsp" flush="false" >
