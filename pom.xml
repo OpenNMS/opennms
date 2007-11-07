@@ -132,13 +132,13 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>2.0-alpha1</version>
       </plugin>
       <plugin>
         <inherited>false</inherited>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>1.0-alpha-2</version>
         <configuration>
           <fileName>${groovy.fileName}</fileName>
         </configuration>
@@ -1427,6 +1427,12 @@ opennms.home = ${opennms.home}
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases />
+      <id>codehaus</id>
+      <name>Maven/Codehaus Repository</name>
+      <url>http://repository.codehaus.org</url>
     </pluginRepository>
     <pluginRepository>
       <releases />
