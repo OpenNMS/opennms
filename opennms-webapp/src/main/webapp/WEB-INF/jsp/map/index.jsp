@@ -44,12 +44,19 @@
   <jsp:param name="location" value="map" />  
   <jsp:param name="breadcrumb" value="Maps" />
 </jsp:include>
-<!-- Body -->
+
+<%
+	//avoid cache
+	response.setHeader("Cache-Control","no-store");
+	response.setHeader("Pragma","no-cache");
+	response.setHeader("Expires","0"); 
+%>
 <script language="Javascript" type="text/javascript" >
 	
 	function viewMap()
 		{
 		var vmf = document.getElementById("viewMapForm");
+ 		vmf.action=vmf.action+(location.pathname.substr(location.pathname.lastIndexOf(".")+1));
  		var dimension=vmf.dim.value;
 		
 		if(dimension=="auto")
@@ -97,7 +104,7 @@
   <div class="TwoColLeft">
       <h3>Mapping</h3>    
     <div class="boxWrapper">
-          <form method="POST" id="viewMapForm" action="Map.map">
+          <form method="POST" id="viewMapForm" action="Map.">
             <input name="dimension" type="hidden"/>
             <p align="right">View "fullscreen":
             <select name="fullscreen">
