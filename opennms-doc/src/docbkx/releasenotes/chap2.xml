@@ -44,6 +44,19 @@
         </listitem>
       </itemizedlist>
 
+      <para>In order to use the "strict timeout" option, simply add it as a
+      parameter to your monitor config in poller-configuration.xml:</para>
+
+      <para><programlisting>                &lt;service name="SMTP" interval="300000" user-defined="false" status="on"&gt;
+                        &lt;parameter key="retry" value="1"/&gt;
+                        &lt;parameter key="timeout" value="3000"/&gt;
+                        &lt;parameter key="strict-timeout" value="true"/&gt;
+                        &lt;parameter key="port" value="25"/&gt;
+                        &lt;parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/&gt;
+                        &lt;parameter key="rrd-base-name" value="smtp"/&gt;
+                        &lt;parameter key="ds-name" value="smtp"/&gt;
+                &lt;/service&gt;</programlisting></para>
+
       <para>Probably the biggest new feature is the ability to run on Windows.
       We are testing an installer now and will be releasing it soon.</para>
     </section>
