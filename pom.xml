@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>service-registration</artifactId>
-  <version>0.4-SNAPSHOT</version>
+  <version>0.3-SNAPSHOT</version>
   <description>service registration and unregistration</description>
   <name>Service Registration for Applications</name>
   <scm>
