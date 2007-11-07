@@ -1448,7 +1448,6 @@
 	  <includeGroup>ucd-loadavg</includeGroup>
 	  <includeGroup>ucd-memory</includeGroup>
 	  <includeGroup>ucd-sysstat</includeGroup>
-	  <includeGroup>ucd-diskio</includeGroup>
 	  <includeGroup>asterisk-scalars</includeGroup>
 	</collect>
       </systemDef>
@@ -1636,7 +1635,6 @@
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-          <includeGroup>ucd-diskio</includeGroup>
         </collect>
       </systemDef>
 
@@ -1649,7 +1647,6 @@
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
-          <includeGroup>ucd-diskio</includeGroup>
         </collect>
       </systemDef>
 
