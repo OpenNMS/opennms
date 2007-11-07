@@ -69,20 +69,33 @@
     </build>
 
     <dependencies>
-
-        <!-- Cutting edge ++ -->
-
-        <dependency>
-            <groupId>com.atlassian.jira.rpc.soap.client</groupId>
-            <artifactId>jira-ws-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-services</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+  <!-- we add the ws-client as a dependency in a profile only while we are not tagging
+       since we cannot release with a SNAPSHOT dependency.  When there is a released
+       wersion can make it a regular dependency -->
+  <profiles>
+    <profile>
+      <id>not-tagging</id>
+      <activation>
+        <property>
+          <name>!tagging</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- Cutting edge ++ -->
+        <dependency>
+            <groupId>com.atlassian.jira.rpc.soap.client</groupId>
+            <artifactId>jira-ws-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
 </project>
