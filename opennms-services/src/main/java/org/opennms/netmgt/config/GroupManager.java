@@ -390,18 +390,17 @@ public abstract class GroupManager {
      * "groups.xml"
      */
     public synchronized void renameGroup(String oldName, String newName) throws Exception {
-        /*
-         * NEED TO REIMPLEMENT THIS // Check if the group exists if(oldName !=
-         * null || !oldName.equals("") || newName != "" || oldName != "") {
-         * if(groups.containsKey(oldName)) { grp = (Group)groups.get(oldName);
-         *  // Remove the group. groups.remove(oldName);
-         * grp.setGroupName(newName); groups.put(newName, grp);
-         *  // Remove the user in the view. viewFactory.renameGroup(oldName,
-         * newName); } else throw new Exception("GroupFactory:rename Group
-         * doesnt exist:" + oldName); } else { throw new
-         * Exception("GroupFactory:rename Invalid group name:" + oldName ); } //
-         * Saves into "groups.xml" file groupWriter.save(groups.values());
-         */
+    	if (oldName != null || !oldName.equals("")) {
+    		if (m_groups.containsKey(oldName)) {
+    			Group grp = (Group)m_groups.get(oldName);
+    			grp.setName(newName);
+    			m_groups.put(newName, grp);
+    		} else {
+    			throw new Exception("GroupFactory.renameGroup: Group doesn't exist: " + oldName);
+    		}
+    		// Save into groups.xml
+    		saveGroups();
+    	}
     }
 
     /**

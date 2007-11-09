@@ -56,18 +56,37 @@ public class RenameGroupServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String groupName = request.getParameter("groupName");
-        String newName = request.getParameter("newName");
-
-        // now save to the xml file
         try {
-            GroupFactory.init();
-            GroupManager groupFactory = GroupFactory.getInstance();
-            groupFactory.renameGroup(groupName, newName);
+        	GroupFactory.init();
         } catch (Exception e) {
-            throw new ServletException("Error renaming group " + groupName + " to " + newName, e);
+        	throw new ServletException("RenameGroupServlet: Error initialising group factory." + e);
         }
-
-        response.sendRedirect("list.jsp");
+        GroupManager groupFactory = GroupFactory.getInstance();
+        
+    	String groupName = request.getParameter("groupName");
+        String newName = request.getParameter("newName");
+        if (newName == null) {
+        	newName = "";
+        }
+        
+        // now save to the xml file
+        boolean hasGroup = false;
+        try {
+        	hasGroup = groupFactory.hasGroup(newName);
+        } catch (Exception e) {
+        	throw new ServletException("Can't determine if group " + newName + " already exists in groups.xml.", e);
+        }
+        if (hasGroup) {
+        	response.sendRedirect("list.jsp?action=cantrename");
+        } else {
+	        try {
+	            groupFactory.renameGroup(groupName, newName);
+	        } catch (Exception e) {
+	            throw new ServletException("Error renaming group " + groupName + " to " + newName, e);
+	        }
+	
+	        response.sendRedirect("list.jsp");
+        }
     }
+
 }
