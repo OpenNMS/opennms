@@ -172,7 +172,7 @@
          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
           <% if (!curUser.getUserId().equals("admin")) { %>
           <td width="5%" rowspan="2" align="center"> 
-            <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>')"><img src="images/trash.gif" alt="<%="Delete " + curUser.getUserId()%>"></a> 
+            <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><img src="images/trash.gif" alt="<%="Delete " + curUser.getUserId()%>"></a> 
             
           </td>
           <% } else { %>
