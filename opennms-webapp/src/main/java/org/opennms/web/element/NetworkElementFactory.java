@@ -596,6 +596,42 @@ public class NetworkElementFactory extends Object {
         return intfs;
     }
 
+    /**
+     * Returns true if node has any snmpIfAliases
+     *
+     * @Param nodeId
+     *               The nodeId of the node we are looking at
+     *               the ifAlias string we are looking for
+     * @return boolean
+     *               true if node has any snmpIfAliases
+     */
+    public static boolean nodeHasIfAliases(int nodeId) throws SQLException {
+
+        boolean hasAliases = false;
+
+        if (nodeId > 0) {
+            Connection conn = Vault.getDbConnection();
+
+            try {
+               PreparedStatement stmt = conn.prepareStatement("SELECT ID FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE '%_%' AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND ISMANAGED != 'D'");
+                stmt.setInt(1, nodeId);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    hasAliases = true;
+                }
+
+                rs.close();
+                stmt.close();
+
+            } finally {
+                Vault.releaseDbConnection(conn);
+            }
+        }
+
+        return hasAliases;
+    }
+
     public static Interface[] getAllInterfacesOnNode(int nodeId) throws SQLException {
         Interface[] intfs = null;
         Connection conn = Vault.getDbConnection();
@@ -623,7 +659,7 @@ public class NetworkElementFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND ISMANAGED != 'D'");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND ISMANAGED != 'D' ORDER BY IPADDR, IFINDEX");
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
 
