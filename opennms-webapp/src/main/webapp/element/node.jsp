@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2007 Nov 12: change interfaces box to table
 // 2007 Jun 02: Refactor to MVC pattern and pull reusable code into
 //              for dealing with nodes into ElementUtil. - dj@opennms.org
 // 2007 May 27: Organize imports, cleanup breadcrumbs. - dj@opennms.org
@@ -148,36 +149,40 @@
 
 <%
     Node node_db = ElementUtil.getNodeByParams(request);
+    int nodeId = node_db.getNodeId();
     
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
-    nodeModel.put("id", Integer.toString(node_db.getNodeId()));
+    nodeModel.put("id", Integer.toString(nodeId));
     nodeModel.put("label", node_db.getLabel());
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
-    links.addAll(createLinkForService(node_db.getNodeId(), m_telnetServiceId, "Telnet", "telnet://", ""));
-    links.addAll(createLinkForService(node_db.getNodeId(), m_httpServiceId, "HTTP", "http://", "/"));
-    links.addAll(createLinkForService(node_db.getNodeId(), m_dellServiceId, "OpenManage", "https://", ":1311"));
+    links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", ""));
+    links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/"));
+    links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311"));
     nodeModel.put("links", links);
 
-    Asset asset = m_model.getAsset(node_db.getNodeId());
+    Asset asset = m_model.getAsset(nodeId);
     nodeModel.put("asset", asset);
     if (asset != null && asset.getBuilding() != null && asset.getBuilding().length() > 0) {
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db.getNodeId()));
-    nodeModel.put("vlans", NetworkElementFactory.getVlansOnNode(node_db.getNodeId()));
+    nodeModel.put("resources", m_resourceService.findNodeChildResources(nodeId));
+    nodeModel.put("vlans", NetworkElementFactory.getVlansOnNode(nodeId));
     nodeModel.put("admin", request.isUserInRole(Authentication.ADMIN_ROLE));
     
     // get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(node_db.getNodeId());
+    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId);
     if (intfs != null) { 
         nodeModel.put("intfs", intfs);
     } else {
         nodeModel.put("intfs", new Interface[0]);
     }
+
+    // see if any interfaces have ifAliases
+    nodeModel.put("hasIfAliases", NetworkElementFactory.nodeHasIfAliases(nodeId));
     
-    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(node_db.getNodeId(), m_snmpServiceId);
+    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(nodeId, m_snmpServiceId);
     if (snmpServices != null && snmpServices.length > 0) {
         for (Interface intf : intfs) {
             if ("P".equals(intf.getIsSnmpPrimary())) {
@@ -188,8 +193,8 @@
     }
     
     nodeModel.put("status", getStatusStringWithDefault(node_db));
-    nodeModel.put("showIpRoute", NetworkElementFactory.isRouteInfoNode(node_db.getNodeId()));
-    nodeModel.put("showBridge", NetworkElementFactory.isBridgeNode(node_db.getNodeId()));
+    nodeModel.put("showIpRoute", NetworkElementFactory.isRouteInfoNode(nodeId));
+    nodeModel.put("showBridge", NetworkElementFactory.isBridgeNode(nodeId));
     
     nodeModel.put("node", node_db);
     
@@ -363,31 +368,76 @@
   <!-- Interface box -->
   <h3>Interfaces</h3>
   <div class="boxWrapper">
-    <ul class="plain">
+    <table>
+      <tr>
+        <th>Interface</th>
+        <th>Index</th>
+        <th>Description</th>
+        <c:if test="${model.hasIfAliases}">
+          <th>IfAlias</th>
+        </c:if>
+      </tr>
       <c:forEach items="${model.intfs}" var="intf">
         <c:url var="interfaceLink" value="element/interface.jsp">
           <c:param name="ipinterfaceid" value="${intf.id}"/>
         </c:url>
-        <li>
-          <c:choose>
-            <c:when test="${intf.ipAddress == '0.0.0.0'}">
-              <a href="${interfaceLink}">Non-IP</a>
-            </c:when>
-            
-            <c:otherwise>
-              <a href="${interfaceLink}">${intf.ipAddress}</a>
-              <c:if test="${intf.ipAddress != intf.hostname}">
-                (${intf.hostname})
+        <tr>
+          <td>
+            <c:choose>
+              <c:when test="${intf.ipAddress == '0.0.0.0'}">
+                <c:choose>
+                  <c:when test="${intf.snmpIfName != null && intf.snmpIfName != ''}">
+                    <a href="${interfaceLink}">${intf.snmpIfName}</a>
+                  </c:when>
+                  <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
+                    <a href="${interfaceLink}">${intf.snmpIfDescription}</a>
+                  </c:when>
+                  <c:otherwise>
+                    <a href="${interfaceLink}">Non-IP</a>
+                  </c:otherwise>
+                </c:choose>
+              </c:when>
+              <c:otherwise>
+                <a href="${interfaceLink}">${intf.ipAddress}</a>
+                <c:if test="${intf.ipAddress != intf.hostname}">
+                  (${intf.hostname})
+                </c:if>
+              </c:otherwise>
+            </c:choose>
+          </td>
+          <td>
+            <c:choose>
+              <c:when test="${intf.ifIndex > 0}">
+                ${intf.ifIndex}
+              </c:when>
+              <c:otherwise>
+                &nbsp;
+              </c:otherwise>
+            </c:choose>
+          </td>
+          <td>
+            <c:choose>
+              <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
+                ${intf.snmpIfDescription}
+              </c:when>
+              <c:when test="${intf.snmpIfName != null && intf.snmpIfName != '' && intf.ipAddress != '0.0.0.0'}">
+                ${intf.snmpIfName}
+               </c:when>
+              <c:otherwise>
+                &nbsp;
+              </c:otherwise>
+            </c:choose>
+          </td>
+          <c:if test="${model.hasIfAliases}">
+            <td>
+              <c:if test="${intf.snmpIfAlias != null && intf.snmpIfAlias != ''}">
+                ${intf.snmpIfAlias}
               </c:if>
-            </c:otherwise>
-          </c:choose>
-          
-          <c:if test="${intf.ifIndex != 0}">
-            (ifIndex: ${intf.ifIndex}-${intf.snmpIfDescription})
+            </td>
           </c:if>
-        </li>
+        </tr>
       </c:forEach>
-    </ul>
+    </table>
   </div>
 
   <!-- Vlan box if available -->
