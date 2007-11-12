@@ -79,7 +79,7 @@ argTest()
 
 #
 # Function: javaCheck()
-# Requires: varible $JP (java path)
+# Requires: variable $JP (java path)
 # This function verifies the version of the java
 # command found in the javaPath() and the
 # javaFind() functions.
@@ -89,7 +89,8 @@ javaCheck()
 	echo "    Checking Java version for 1.4+..."
 	ret=`$JP -version 2>&1`
 	echo "    Version is: $ret"
-	if [[ $ret == *1.4* ]]
+	echo $ret | grep '1\.[456789]\.' 1>/dev/null 2>/dev/null 
+	if [ $? = 0 ]
 	then
 		return 0
 	else
@@ -250,6 +251,7 @@ fi
 javaFind
 if [ "$?" -eq "1" ]
 then
+    echo Failed to find a Java 1.4 or greater JRE.  Exiting.
 	exit 1
 fi
 
