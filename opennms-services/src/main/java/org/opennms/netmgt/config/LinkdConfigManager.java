@@ -304,7 +304,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
 	public boolean autoDiscovery() {
 
-		boolean autodiscovery = true; 
+		boolean autodiscovery = false; 
 		if (m_config.hasAutoDiscovery()) {
 			autodiscovery = m_config.getAutoDiscovery();
 		}
