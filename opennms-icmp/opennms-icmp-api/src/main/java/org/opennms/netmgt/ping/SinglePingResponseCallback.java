@@ -13,7 +13,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     Long responseTime = null;
     
 	public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
-	    info("got response for " + packet.getTID() + "/" + packet.getSequenceId() + " with a responseTime "+packet.getPingRTT());
+	    info("got response for address " + address + ", thread " + packet.getTID() + ", seq " + packet.getSequenceId() + " with a responseTime "+packet.getPingRTT());
 	    responseTime = packet.getPingRTT();
 	    bs.signalAll();
 	}
@@ -23,7 +23,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
 	public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
-	    info("timed out pinging " + packet.getTID() + "/" + packet.getSequenceId());
+	    info("timed out pinging address " + address + ", thread " + packet.getTID() + ", seq " + packet.getSequenceId());
 	    bs.signalAll();
 	}
 
