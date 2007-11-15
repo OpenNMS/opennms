@@ -22,6 +22,7 @@ import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
@@ -332,6 +333,7 @@ public class SnmpThresholderTest extends TestCase {
         createDsProperties(r1Dir, sources, "rfc1315-frame-relay");
                 
         // Creating strings.properties for Resource 1
+        strings.setProperty("frName", "caracas");
         strings.setProperty("frDlci", "100");
         strings.setProperty("frIntf", "0");
         File sFile1 = m_fileAnticipator.tempFile(r1Dir, "strings.properties");
@@ -364,6 +366,11 @@ public class SnmpThresholderTest extends TestCase {
         m_snmpThresholder.checkResourceDir(rtDir, m_thresholdInterface, new Date(start), events);
         //assertEquals(3, events.getEventCount()); // with no Filters. See test-thresholds.xml
         assertEquals(2, events.getEventCount()); // with Filters Enabled. See test-thresholds.xml
+        // Validating ds-value for bug 2129
+        for (Event e : events.getEvent()) {
+        	assertEquals("label", e.getParms().getParm(5).getParmName());
+        	assertEquals("caracas", e.getParms().getParm(5).getValue().getContent());
+        }
     }
     
     private void createDsProperties(File dir, List<String> sources, String group) throws Exception {
