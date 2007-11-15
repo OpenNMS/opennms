@@ -548,7 +548,8 @@ public final class SnmpThresholder implements ServiceThresholder {
                 if (log().isDebugEnabled()) {
                     log().debug("checkResourceDir: resource=" + resource);
                 }
-                processThresholdForResource(file, snmpIface, date, events, thresholdMap.get(threshKey), resource);
+                String dsLabelValue = getDataSourceLabel(file, snmpIface, thresholdMap.get(threshKey));
+                processThresholdForResource(file, snmpIface, date, events, thresholdMap.get(threshKey), dsLabelValue);
             }
         }
     }

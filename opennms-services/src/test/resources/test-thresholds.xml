@@ -7,8 +7,8 @@
                 	<resource-filter field='snmpifdesc'>wlan0</resource-filter>
                 </threshold>
                 <threshold type="high" ds-name="ifOutOctets"  ds-type="if" value="90" rearm="50" trigger="1"/>
-                <threshold type="high" ds-name="frReceivedFrames"  ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1"/>
-                <threshold type="high" ds-name="frSentFrames"  ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1">
+                <threshold type="high" ds-name="frReceivedFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frSentFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1">
                 	<resource-filter field='frIntf'>^0$</resource-filter>
                 	<resource-filter field='frDlci'>^1.+</resource-filter>                	
                 </threshold>
