@@ -814,28 +814,31 @@ public final class EventUtil {
 
 		String nodeLabel = null;
 		java.sql.Connection dbConn = null;
-		Statement stmt = null;
 		try {
-			// Get datbase connection from the factory
-			dbConn = DataSourceFactory.getInstance().getConnection();
+		    Statement stmt = null;
+		    try {
+		        // Get datbase connection from the factory
+		        dbConn = DataSourceFactory.getInstance().getConnection();
 
-			// Issue query and extract nodeLabel from result set
-			stmt = dbConn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT nodelabel FROM node WHERE nodeid="
-							+ String.valueOf(nodeId));
-			if (rs.next()) {
-				nodeLabel = (String) rs.getString("nodelabel");
-			}
+		        // Issue query and extract nodeLabel from result set
+		        stmt = dbConn.createStatement();
+		        ResultSet rs = stmt
+		                .executeQuery("SELECT nodelabel FROM node WHERE nodeid="
+		                        + String.valueOf(nodeId));
+		        if (rs.next()) {
+		            nodeLabel = (String) rs.getString("nodelabel");
+		        }
+		    } finally {
+		        // Close the statement
+		        if (stmt != null) {
+		            try {
+		                stmt.close();
+		            } catch (Exception e) {
+		                // do nothing
+		            }
+		        }
+		    }
 		} finally {
-			// Close the statement
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (Exception e) {
-					// do nothing
-				}
-			}
 
 			// Close the database connection
 			if (dbConn != null) {
@@ -868,29 +871,32 @@ public final class EventUtil {
 		
 		String ifAlias = null;
 		java.sql.Connection dbConn = null;
-		Statement stmt = null;
 		try {
-			// Get database connection from the factory
-			dbConn = DataSourceFactory.getInstance().getConnection();
+	        Statement stmt = null;
+	        try {
+	            // Get database connection from the factory
+	            dbConn = DataSourceFactory.getInstance().getConnection();
 			
-			// Issue query and extract ifAlias from result set
-			stmt = dbConn.createStatement();
-			ResultSet rs = stmt
-			.executeQuery("SELECT snmpifalias FROM snmpinterface WHERE nodeid="
-					+ nodeId + " and ipaddr='" + ipaddr + "'");
-			// Assumes only one response.  It will pick the first hit
-			if (rs.next()) {
-				ifAlias = (String) rs.getString("snmpifalias");
-			}
+	            // Issue query and extract ifAlias from result set
+	            stmt = dbConn.createStatement();
+	            ResultSet rs = stmt
+	                 .executeQuery("SELECT snmpifalias FROM snmpinterface WHERE nodeid="
+					     + nodeId + " and ipaddr='" + ipaddr + "'");
+	            // Assumes only one response.  It will pick the first hit
+	            if (rs.next()) {
+	                ifAlias = (String) rs.getString("snmpifalias");
+	            }
+	        } finally {
+	            // Close the statement
+	            if (stmt != null) {
+	                try {
+	                    stmt.close();
+	                } catch (Exception e) {
+	                    // do nothing
+	                }
+	            }
+	        }
 		} finally {
-			// Close the statement
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (Exception e) {
-					// do nothing
-				}
-			}
 			
 			// Close the database connection
 			if (dbConn != null) {
