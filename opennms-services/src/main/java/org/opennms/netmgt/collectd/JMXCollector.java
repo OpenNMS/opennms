@@ -41,7 +41,13 @@ import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -388,9 +394,10 @@ public abstract class JMXCollector implements ServiceCollector {
         } finally {
             try {
                 stmt.close();
-                dbConn.close();
             } catch (Exception e) {
                 // Ignore
+            } finally {
+                 try { dbConn.close(); } catch(Exception e) {}
             }
         }
 
