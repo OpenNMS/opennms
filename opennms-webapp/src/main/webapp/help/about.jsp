@@ -166,8 +166,8 @@
       	   <td>
 		<p>
         	Powered By Tomcat<br/>
-		<a href="http://tomcat.apache.org/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" width="77" height="80"
-      		   border="0" alt="tomcat.apache.org"></a>.
+		<a href="http://jetty.mortbay.org" target="_new"><img src="images/powered_by_jetty.gif" hspace="0" vspace="0"
+      		   border="0" alt="jetty.mortbay.org"></a>.
       		</p>
 	   </td>
            <td>
@@ -183,6 +183,13 @@
         	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power_95x51_4.gif" hspace="0" vspace="0" width="95" height="51"
            	border="0" alt="www.postgresql.org"></a>
       		</p>      
+	   </td>
+      	   <td>
+		<p>
+        	Powered By Tomcat<br/>
+		<a href="http://tomcat.apache.org/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" width="77" height="80"
+      		   border="0" alt="tomcat.apache.org"></a>.
+      		</p>
 	   </td>
 	   </tr>
 	</table>
