@@ -86,6 +86,9 @@ final class AlarmWriter extends Persist {
             m_getHostNameStmt.close();
             m_getNextIdStmt.close();
             m_insStmt.close();
+            m_reductionQuery.close();
+            m_upDateStmt.close();
+            m_updateEventStmt.close();
         } catch (SQLException sqle) {
             ThreadCategory.getInstance(AlarmWriter.class).warn("SQLException while closing prepared statements", sqle);
         } finally {

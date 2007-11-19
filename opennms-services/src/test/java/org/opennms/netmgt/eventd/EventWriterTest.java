@@ -79,32 +79,32 @@ public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         EventWriter eWriter = new EventWriter("SELECT nextval('eventsNxtId')");
         
         try {
-        EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
-        bldr.addParam("test", "testVal");
-        bldr.addParam("test2", "valWith\u0000Null\u0000");
-        
-        byte[] bytes = new byte[] { 0x07, (byte)0xD7, 0x04, 0x0A, 0x01, 0x17, 0x06, 0x00, 0x2B, 0x00, 0x00 };
-        
+            EventBuilder bldr = new EventBuilder("testUei", "testSource");
+            bldr.setLogDest("logndisplay");
+            bldr.addParam("test", "testVal");
+            bldr.addParam("test2", "valWith\u0000Null\u0000");
 
-        SnmpValue snmpVal = SnmpUtils.getValueFactory().getOctetString(bytes);
-        
-        assertFalse(snmpVal.isDisplayable());
-        
-        bldr.addParam("test3", snmpVal.toString());
-        
-        String b64 = EventConstants.toString(EventConstants.XML_ENCODING_BASE64, snmpVal);
-        
-        System.err.println(b64);
-        
-        bldr.addParam("test", b64);
-        
-        System.err.println(snmpVal.toString());
-        
-        eWriter.persistEvent(null, bldr.getEvent());
-        
+            byte[] bytes = new byte[] { 0x07, (byte)0xD7, 0x04, 0x0A, 0x01, 0x17, 0x06, 0x00, 0x2B, 0x00, 0x00 };
+
+
+            SnmpValue snmpVal = SnmpUtils.getValueFactory().getOctetString(bytes);
+
+            assertFalse(snmpVal.isDisplayable());
+
+            bldr.addParam("test3", snmpVal.toString());
+
+            String b64 = EventConstants.toString(EventConstants.XML_ENCODING_BASE64, snmpVal);
+
+            System.err.println(b64);
+
+            bldr.addParam("test", b64);
+
+            System.err.println(snmpVal.toString());
+
+            eWriter.persistEvent(null, bldr.getEvent());
+
         } finally {
-        eWriter.close();
+            eWriter.close();
         }
     }
 
@@ -117,15 +117,15 @@ public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         EventWriter eWriter = new EventWriter("SELECT nextval('eventsNxtId')");
         
         try {
-        EventBuilder bldr = new EventBuilder("testUei", "testSource");
-        bldr.setLogDest("logndisplay");
+            EventBuilder bldr = new EventBuilder("testUei", "testSource");
+            bldr.setLogDest("logndisplay");
         
-        bldr.setDescription("abc\u0000def");
+            bldr.setDescription("abc\u0000def");
         
-        eWriter.persistEvent(null, bldr.getEvent());
+            eWriter.persistEvent(null, bldr.getEvent());
         
         } finally {
-        eWriter.close();
+            eWriter.close();
         }
     }
 
