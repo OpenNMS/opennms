@@ -78,7 +78,7 @@ public class Vault extends Object {
      * Stores the directory where the OpenNMS configuration files can be found.
      * The default is <em>/opt/OpenNMS</em>.
      */
-    protected static String homeDir = "/opt/OpenNMS/";
+    protected static String homeDir = "/opt/opennms/";
 
     /**
      * A delegate object that encapsulates the JDBC database connection
