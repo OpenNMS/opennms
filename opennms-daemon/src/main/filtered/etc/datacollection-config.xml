@@ -1326,11 +1326,11 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.4" instance="sinfNetInstance" alias="netBytesTotalPerSec" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.5" instance="sinfNetInstance" alias="netCurrentBandwidth" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.6" instance="sinfNetInstance" alias="netOutputQueueLen" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.7" instance="sinfNetInstance" alias="netPktsOutDiscard" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.8" instance="sinfNetInstance" alias="netPktsOutErrors" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.9" instance="sinfNetInstance" alias="netPktsRcvdDiscard" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.10" instance="sinfNetInstance" alias="netPktsRcvdErrors" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.11" instance="sinfNetInstance" alias="netPktsRcvdUnknown" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.7" instance="sinfNetInstance" alias="netPktsOutDiscard" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.8" instance="sinfNetInstance" alias="netPktsOutErrors" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.9" instance="sinfNetInstance" alias="netPktsRcvdDiscard" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.10" instance="sinfNetInstance" alias="netPktsRcvdErrors" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.11" instance="sinfNetInstance" alias="netPktsRcvdUnknown" type="Counter" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.12" instance="sinfNetInstance" alias="netPktsRcvdPerSec" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.13" instance="sinfNetInstance" alias="netPktsSentPerSec" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.14" instance="sinfNetInstance" alias="netPktsPerSec" type="Gauge32" />
