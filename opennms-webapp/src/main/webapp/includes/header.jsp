@@ -89,7 +89,7 @@
 			<p align="right">
 				<c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
-						User: <strong>${pageContext.request.remoteUser}</strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+						User: <a href="account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
 						- <a href="j_acegi_logout">Log out</a><br/>
 					</c:when>
 					<c:otherwise>

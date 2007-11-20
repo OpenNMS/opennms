@@ -560,6 +560,29 @@
     <servlet-class>org.opennms.web.admin.views.DeleteViewServlet</servlet-class>
   </servlet>
 
+
+<!-- Servlets for user account self-service -->
+  <!-- servlet for self-service password change entry point-->
+  <servlet>
+    <servlet-name>newPasswordEntry</servlet-name>
+    <servlet-class>org.opennms.web.account.selfService.NewPasswordEntryServlet</servlet-class>
+  </servlet>
+   <!-- servlet for self-service password change action -->
+  <servlet>   
+    <servlet-name>newPasswordAction</servlet-name>
+    <servlet-class>org.opennms.web.account.selfService.NewPasswordActionServlet</servlet-class>
+  </servlet>
+  
+  <!-- Servlet mappings for user account self-service -->
+  <servlet-mapping>
+    <servlet-name>newPasswordEntry</servlet-name>
+    <url-pattern>/account/selfService/newPasswordEntry</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>newPasswordAction</servlet-name>
+    <url-pattern>/account/selfService/newPasswordAction</url-pattern>
+  </servlet-mapping>
+  
   
   <servlet>
     <servlet-name>nodeLabelChange</servlet-name>
