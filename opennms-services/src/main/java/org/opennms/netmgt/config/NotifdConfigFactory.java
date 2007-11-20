@@ -184,7 +184,7 @@ public class NotifdConfigFactory extends NotifdConfigManager {
     /**
      * 
      */
-    protected void update() throws IOException, MarshalException, ValidationException {
+    protected synchronized void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_notifdConfFile.lastModified()) {
             NotifdConfigFactory.getInstance().reload();
         }

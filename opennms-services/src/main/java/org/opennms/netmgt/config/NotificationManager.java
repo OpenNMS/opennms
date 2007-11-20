@@ -284,11 +284,11 @@ public abstract class NotificationManager {
      * @return int, the sequence id from the database, 0 by default if there is
      *         database trouble
      */
-    public synchronized int getNoticeId() throws SQLException, IOException, MarshalException, ValidationException {
+    public int getNoticeId() throws SQLException, IOException, MarshalException, ValidationException {
         return getNxtId(m_configManager.getNextNotifIdSql());
     }
 
-    public synchronized int getUserNotifId() throws SQLException, IOException, MarshalException, ValidationException {
+    public int getUserNotifId() throws SQLException, IOException, MarshalException, ValidationException {
         return getNxtId(m_configManager.getNextUserNotifIdSql());
     }
 
