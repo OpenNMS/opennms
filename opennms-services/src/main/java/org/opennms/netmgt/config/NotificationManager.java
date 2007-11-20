@@ -530,13 +530,14 @@ public abstract class NotificationManager {
     public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo, String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
         Category log = log();
         if (noticeId < 0) return;
-        log.debug("updating usersnotified: ID = " + getUserNotifId()+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
+        int userNotifId = getUserNotifId();
+        log.debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         Connection connection = null;
         try {
             connection = getConnection();
             PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (id, userid, notifyid, notifytime, media, contactinfo, autonotify) values (?,?,?,?,?,?,?)");
     
-            insert.setInt(1, getUserNotifId());
+            insert.setInt(1, userNotifId);
             insert.setString(2, userId);
             insert.setInt(3, noticeId);
     
