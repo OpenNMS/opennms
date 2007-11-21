@@ -186,7 +186,7 @@
 	var DELETENODES_ACTION = "<c:out value="${mapsConstants.DELETENODES_ACTION}"/>";
 	var DELETEMAPS_ACTION = "<c:out value="${mapsConstants.DELETEMAPS_ACTION}"/>";
 	var CLEAR_ACTION = "<c:out value="${mapsConstants.CLEAR_ACTION}"/>";
-	var LOAD_NODES_INFO_ACTION = "<c:out value="${mapsConstants.ADDNODES_ACTION}"/>";
+	var LOAD_NODES_INFO_ACTION = "<c:out value="${mapsConstants.LOAD_ELEM_INFO_ACTION}"/>";
 	var DELETEMAP_ACTION = "<c:out value="${mapsConstants.DELETEMAP_ACTION}"/>";
 	var SWITCH_MODE_ACTION = "<c:out value="${mapsConstants.SWITCH_MODE_ACTION}"/>";
 	var LOADMAPS_ACTION = "<c:out value="${mapsConstants.LOADMAPS_ACTION}"/>";
