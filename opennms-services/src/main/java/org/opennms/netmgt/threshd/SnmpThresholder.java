@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -587,12 +588,14 @@ public final class SnmpThresholder implements ServiceThresholder {
         log().debug("checkFilters: resource=" + resourceDir.getName() + ", group=" + thresholdGroup + ", type=" + resourceType + ", filters=" + filters.length);
         int count = 1;
         for (ResourceFilter f : filters) {
-            log().debug("checkFilters: filter #" + count + ": " + f.getField() + " ~ m/" + f.getContent() + "/");
+            log().debug("checkFilters: filter #" + count + ": field=" + f.getField() + ", regex=" + f.getContent());
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
             String attr = getAttributeValue(resourceDir, resourceType, f.getField());
             if (attr != null) {
-                boolean pass = Pattern.matches(f.getContent(), attr);
+                Pattern p = Pattern.compile(f.getContent());
+                Matcher m = p.matcher(attr);
+                boolean pass = m.find();
                 log().debug("checkFilters: the value of " + dataSource + " is " + attr + ". Pass filter? " + pass);
                 if (pass) return true;
             }
