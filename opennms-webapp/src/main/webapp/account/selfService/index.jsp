@@ -69,8 +69,9 @@
     <h3>Account Self-Service Options</h3>
     <div class="boxWrapper">
     <p>
-    Currently, account self-service is limited to password changes. Note that in some installations, changing your
-    password here may have no effect.
+    Currently, account self-service is limited to password changes. Note that in environments using a
+    reduced sign-on system such as LDAP, changing your password here may have no effect and may not even be
+    possible.
     </p>
     <p>
     If you require further changes to your account, please contact the person within your organization responsible for
