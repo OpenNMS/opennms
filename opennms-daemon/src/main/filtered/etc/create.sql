@@ -1756,7 +1756,7 @@ create table datalinkinterface (
 
     constraint pk_datalinkinterface primary key (nodeid,ifindex),
 	constraint fk_ia_nodeID5 foreign key (nodeid) references node on delete cascade,
-	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid) ON DELETE CASCADE,
+	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid) ON DELETE CASCADE
 );
 
 create index dlint_node_idx on datalinkinterface(nodeid);
