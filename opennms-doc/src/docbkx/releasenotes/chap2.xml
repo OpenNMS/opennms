@@ -10,6 +10,40 @@
   development that will happen this week.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.3.9</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para>There are a couple of new features in this release:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>There is now a way to add and delete groups through the
+          webUI.</para>
+        </listitem>
+
+        <listitem>
+          <para>Users can change their password by clicking on their username
+          in the web page header.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added event definitions for Oracle and ISS events.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>In certain cases the number of allowed database connections could
+      be completely exhausted, causing discovery and notifications to stop
+      working. This has been corrected.</para>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.3.8</title>
 
     <section>
