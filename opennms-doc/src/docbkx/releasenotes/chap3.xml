@@ -7,6 +7,14 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <section>
+    <title>OpenNMS 1.3.9 Known Issues</title>
+
+    <para>The User Account Self-Service window (i.e. the page that allows
+    users to change their passwords) will cause a warning that the application
+    is trying to close a window on IE6. </para>
+  </section>
+
+  <section>
     <title>OpenNMS 1.3.8 Known Issues</title>
 
     <para>The order of elements in some of the XML configuration files is
