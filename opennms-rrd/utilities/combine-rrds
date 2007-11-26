@@ -13,6 +13,8 @@ my $top         = getcwd;
 my $pattern     = shift;
 my @directories = @ARGV;
 
+my $use_higher_value = 0;
+
 my $entries;
 
 if (not defined $pattern or not @directories or not -d $directories[0])
@@ -108,7 +110,7 @@ for my $entry (sort keys %$entries)
 						{
 							my $oldvalue = $oldentries->{$cf}->{$pdp_per_row}->{$time};
 
-							if ($newvalue eq 'NaN' or $oldvalue > $newvalue) {
+							if ($newvalue eq 'NaN' or ($use_higher_value and $oldvalue > $newvalue)) {
 								print OUTPUT "<!-- " . scalar(localtime($time)) . " / " . $time . " --> <row><v> " . $oldvalue . " </v></row>\n";
 								$skip = 1;
 							}
