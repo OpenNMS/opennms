@@ -103,12 +103,13 @@ for my $entry (sort keys %$entries)
 					}
 					elsif ($line =~ /<\!-- .*? \/ (\d+) --> <row><v>\s*(.*?)\s*<\/v><\/row>/)
 					{
-						my ($time, $value) = ($1, $2);
-						if ($value eq "NaN")
+						my ($time, $newvalue) = ($1, $2);
+						if (exists $oldentries->{$cf}->{$pdp_per_row}->{$time})
 						{
-							if (exists $oldentries->{$cf}->{$pdp_per_row}->{$time})
-							{
-								print OUTPUT "<!-- " . scalar(localtime($time)) . " / " . $time . " --> <row><v> " . $oldentries->{$cf}->{$pdp_per_row}->{$time} . " </v></row>\n";
+							my $oldvalue = $oldentries->{$cf}->{$pdp_per_row}->{$time};
+
+							if ($newvalue eq 'NaN' or $oldvalue > $newvalue) {
+								print OUTPUT "<!-- " . scalar(localtime($time)) . " / " . $time . " --> <row><v> " . $oldvalue . " </v></row>\n";
 								$skip = 1;
 							}
 						}
