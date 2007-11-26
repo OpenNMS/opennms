@@ -28,7 +28,7 @@ find( sub
 {
 	return unless ($File::Find::name =~ /\.rrd$/);
 	my $fullname = $top . '/' . $File::Find::name;
-	
+
 	my $directory = dirname($fullname);
 	my $name      = basename($fullname);
 	my $shortdir  = $directory;
@@ -37,6 +37,8 @@ find( sub
 		my @stat = stat($fullname);
 		my $time = $stat[9];
 		$entries->{$shortdir}->{$name}->{$time} = $fullname;
+	} else {
+		print "did not match: $File::Find::name\n";
 	}
 
 	#print "shortdir = $shortdir, directory = $directory, name = $name, fullname = $fullname\n";
