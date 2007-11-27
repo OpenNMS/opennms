@@ -14,10 +14,10 @@ rule "openIssue"
 	then
 		println( "Found nodeDown event " + $e + " for node " + $node );
 		Outage $outage = new Outage( $node, $e );
-		assert( $outage );
+		insert( $outage );
 		
 		PossibleCause $cause = new PossibleCause( $node, $outage, true );
-		assert( $cause );
+		insert( $cause );
 		
 		retract( $e );
 		println( "Initial Possible cause: " + $cause ); 
@@ -30,7 +30,7 @@ rule "parentDependency"
 		not ( PossibleCause( $node2 : node -> ( $node2 == $node.getParent() ), outage == $outage ) )
 	then
 	    PossibleCause $cause = new PossibleCause( $node.getParent(), $outage );
-		assert( $cause );
+		insert( $cause );
 		println( "Possible cause: " + $cause );
 end
 
@@ -51,7 +51,7 @@ rule "verify possible causes"
 		$outage : Outage( node == $node )
 	then
 		$possibleCause.setVerified( true );
-		modify( $possibleCause );
+		update( $possibleCause );
 		println( "Verified " + $possibleCause );
 end
 	
@@ -63,7 +63,7 @@ rule "parentless node is its own root cause"
 	then
 		$outage.setCause( $node );
 		println( $outage );
-		modify( $outage );
+		update( $outage );
 		println( "Found root cause for " + $outage + " : " + $node + " since it has no parents");
 end
 
@@ -76,7 +76,7 @@ rule "no parent causes possible"
 		not( PossibleCause( node == ( $node.getParent() ), outage == $outage ) )
 	then
 		$outage.setCause( $node );
-		modify( $outage );
+		update( $outage );
 		println( "Found root cause for " + $outage + " : " + $node + " since its parent cause is resolved.");
 end
 

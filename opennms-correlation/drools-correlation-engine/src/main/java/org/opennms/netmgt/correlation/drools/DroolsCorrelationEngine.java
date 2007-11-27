@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.drools.RuleBase;
@@ -29,7 +32,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     @Override
     public synchronized void correlate(Event e) {
         System.err.println("Begin correlation for Event " + e.getDbid() + " uei: " + e.getUei());
-        m_workingMemory.assertObject(e);
+        m_workingMemory.insert(e);
         m_workingMemory.fireAllRules();
         System.err.println("End correlation for Event " + e.getDbid() + " uei: " + e.getUei());
     }
@@ -38,7 +41,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     protected synchronized void timerExpired(Integer timerId) {
         System.err.println("Begin processing for Timer " + timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
-        m_workingMemory.assertObject(expiration);
+        m_workingMemory.insert(expiration);
         m_workingMemory.fireAllRules();
         System.err.println("End processing for Timer " + timerId);
     }
@@ -61,8 +64,9 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     }
 
     public void initialize() throws Exception {
-        PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
-        conf.setJavaLanguageLevel( "1.5" );
+        Properties props = new Properties();
+        props.setProperty("drools.dialect.java.compiler.lnglevel", "1.5");
+        PackageBuilderConfiguration conf = new PackageBuilderConfiguration(props);
         PackageBuilder builder = new PackageBuilder( conf );
         
         loadRules(builder);
@@ -70,7 +74,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         ruleBase.addPackage( builder.getPackage() );
 
-        m_workingMemory = ruleBase.newWorkingMemory();
+        m_workingMemory = ruleBase.newStatefulSession();
         m_workingMemory.setGlobal("engine", this);
         
         for (Map.Entry<String, Object> entry : m_globals.entrySet()) {
@@ -93,12 +97,20 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     }
     
     public int getMemorySize() {
-    	return m_workingMemory.getObjects().size();
+        int count = 0;
+        for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
+            count++;
+        }
+    	return count;
     }
     
     @SuppressWarnings("unchecked")
     public List<Object> getMemoryObjects() {
-        return m_workingMemory.getObjects();
+        List<Object> objects = new LinkedList<Object>();
+        for(Iterator<Object> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
+            
+        }
+        return objects;
     }
 
     public void setName(String name) {

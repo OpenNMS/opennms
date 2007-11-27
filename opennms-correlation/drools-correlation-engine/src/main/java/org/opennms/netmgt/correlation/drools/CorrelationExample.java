@@ -3,6 +3,7 @@ package org.opennms.netmgt.correlation.drools;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class CorrelationExample {
         final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         ruleBase.addPackage( builder.getPackage() );
 
-        final WorkingMemory workingMemory = ruleBase.newWorkingMemory();
+        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
 
         final WorkingMemoryFileLogger logger = new WorkingMemoryFileLogger( workingMemory );
         logger.setFileName( "log/correlation" );
@@ -68,7 +69,7 @@ public class CorrelationExample {
 			public void simulate(WorkingMemory memory) {
 				sleep(m_delay);
     			System.out.println("Start simulation of "+this);
-				memory.assertObject(m_event);
+				memory.insert(m_event);
 				memory.fireAllRules();
     			System.out.println("End simulation of "+this);
 			}
@@ -135,7 +136,7 @@ public class CorrelationExample {
     	public  void simulate(WorkingMemory memory) {
     		for( SimItem item : m_eventSequence ) {
     			item.simulate(memory);
-    			System.out.println("Memory Size = " + memory.getObjects().size() );
+    			System.out.println("Memory Size = " + getObjectCount(memory) );
     		}
     	}
     }
@@ -275,6 +276,16 @@ public class CorrelationExample {
 		public String toString() {
 			return "PossibleCause[ node=" + m_node + " , outage=" + m_outage + " ]";
 		}
+    }
+
+
+
+    public static int getObjectCount(WorkingMemory memory) {
+        int count = 0;
+        for(Iterator<?> it = memory.iterateObjects(); it.hasNext(); it.next()) {
+            count++;
+        }
+        return count;
     }
     
 

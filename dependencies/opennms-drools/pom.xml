@@ -13,7 +13,7 @@
     can depend on to use the drools library.
   </description>
   <properties>
-    <droolsVersion>3.0.5</droolsVersion>
+    <droolsVersion>4.0.3</droolsVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -25,26 +25,15 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
       <version>${droolsVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-jci-eclipse</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-jci-janino</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-jci-eclipse</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-jci-janino</artifactId>
-      <version>1.0</version>
     </dependency>
   </dependencies>
+  <repositories>
+    <!-- add this here so their version of other stuff doesn't leak into the other modules -->
+    <repository>
+      <releases />
+      <id>jboss-repo</id>
+      <name>JBoss Repository</name>
+      <url>http://repository.jboss.com/maven2</url>
+    </repository>
+  </repositories>
 </project>

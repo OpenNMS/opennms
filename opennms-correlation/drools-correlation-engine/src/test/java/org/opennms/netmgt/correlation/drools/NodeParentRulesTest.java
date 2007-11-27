@@ -17,7 +17,7 @@ public class NodeParentRulesTest extends CorrelationRulesTestCase {
         
         NodeService nodeService = m_mocks.createMock(NodeService.class);
         
-        expect(nodeService.getParentNode(1L)).andReturn(null);
+        expect(nodeService.getParentNode(1L)).andReturn(null).atLeastOnce();
         
         m_mocks.replayAll();
         
