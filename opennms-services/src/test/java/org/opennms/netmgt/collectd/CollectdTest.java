@@ -64,6 +64,7 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -93,6 +94,7 @@ public class CollectdTest extends TestCase {
     private FilterDao m_filterDao;
     private EventIpcManager m_eventIpcManager;
     private CollectorConfigDao m_collectorConfigDao;
+    private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipIfDao;
     private MonitoredServiceDao m_monSvcDao;
     private ServiceCollector m_collector;
@@ -102,6 +104,9 @@ public class CollectdTest extends TestCase {
 
     private PlatformTransactionManager m_transactionManager;
 
+    private CollectdPackage m_collectdPackage;
+
+
     @Override
     protected void setUp() throws Exception {
 
@@ -110,6 +115,7 @@ public class CollectdTest extends TestCase {
         // Test setup
         m_eventIpcManager = m_easyMockUtils.createMock(EventIpcManager.class);
         m_collectorConfigDao = m_easyMockUtils.createMock(CollectorConfigDao.class);
+        m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_ipIfDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
         m_monSvcDao = m_easyMockUtils.createMock(MonitoredServiceDao.class);
         m_collector = m_easyMockUtils.createMock(ServiceCollector.class);
@@ -174,6 +180,7 @@ public class CollectdTest extends TestCase {
         m_collectd = new Collectd();
         m_collectd.setEventIpcManager(getEventIpcManager());
         m_collectd.setCollectorConfigDao(getCollectorConfigDao());
+        m_collectd.setNodeDao(getNodeDao());
         m_collectd.setIpInterfaceDao(getIpInterfaceDao());
         m_collectd.setScheduler(m_scheduler);
 
@@ -185,14 +192,14 @@ public class CollectdTest extends TestCase {
         Service svc = new Service();
         pkg.addService(svc);
         svc.setName("SNMP");
+        svc.setStatus("on");
         Parameter parm = new Parameter();
         parm.setKey("parm1");
         parm.setValue("value1");
         svc.addParameter(parm);
 
-        CollectdPackage wpkg = new CollectdPackage(pkg, "localhost", false);
+        m_collectdPackage = new CollectdPackage(pkg, "localhost", false);
 
-        m_spec = new CollectionSpecification(wpkg, "SNMP", null, getCollector());
     }
 
     @Override
@@ -211,6 +218,10 @@ public class CollectdTest extends TestCase {
 
     private ServiceCollector getCollector() {
         return m_collector;
+    }
+    
+    private NodeDao getNodeDao() {
+        return m_nodeDao;
     }
 
     private MonitoredServiceDao getMonitoredServiceDao() {
@@ -242,6 +253,9 @@ public class CollectdTest extends TestCase {
     }
 
     public void testCreate() {
+        
+        setupTransactionManager();
+        
         String svcName = "SNMP";
         setupCollector(svcName);
 
@@ -288,12 +302,10 @@ public class CollectdTest extends TestCase {
 
     public void testNoMatchingSpecs() {
         String svcName = "SNMP";
-        OnmsIpInterface iface = getInterface();
-        List<CollectionSpecification> specs = new ArrayList<CollectionSpecification>(0);
 
         setupCollector(svcName);
-        expect(m_ipIfDao.findByServiceType("SNMP")).andReturn(new ArrayList<OnmsIpInterface>(0));
-        setupSpecs(iface, svcName, specs);
+        expect(m_ipIfDao.findByServiceType(svcName)).andReturn(new ArrayList<OnmsIpInterface>(0));
+
         setupTransactionManager();
 
         m_easyMockUtils.replayAll();
@@ -313,7 +325,6 @@ public class CollectdTest extends TestCase {
     public void testOneMatchingSpec() {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
-        List<CollectionSpecification> specs = Collections.singletonList(getCollectionSpecification());
 
         setupCollector(svcName);
         
@@ -321,9 +332,10 @@ public class CollectdTest extends TestCase {
         expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, String.class))).andReturn(ServiceCollector.COLLECTION_SUCCEEDED);
         
         setupInterface(iface);
-        setupSpecs(iface, svcName, specs);
         
         setupTransactionManager();
+        
+        expect(m_collectorConfigDao.getPackages()).andReturn(Collections.singleton(m_collectdPackage));
         
         m_easyMockUtils.replayAll();
 
