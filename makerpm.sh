@@ -83,7 +83,7 @@ echo "=== Building RPMs ==="
 rpmbuild -bb --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
 
 if [ -n "$GPG" ]; then
-	if [ `$GPG --list-keys opennms@opennms.org 2>/dev/null | grep -c '^sub'` -gt 0 ]; then
+	if [ `$GPG $GPGOPTS --list-keys opennms@opennms.org 2>/dev/null | grep -c '^sub'` -gt 0 ]; then
 		rpm --define "_signature gpg" --define "_gpg_name opennms@opennms.org" --resign "$WORKDIR"/RPMS/noarch/*.rpm
 	fi
 fi
