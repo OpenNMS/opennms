@@ -23,7 +23,7 @@ rule "newIssue"
 	then
 		Cause $c = new Cause( Type.POSSIBLE, $nodeid, $e );
 		println( "Found nodeDown event " + $uei + " for node " + $nodeid +". Asserting: " + $c );
-		assert( $c );
+		insert( $c );
 end
 
 rule "possibleCauses"
@@ -37,7 +37,7 @@ rule "possibleCauses"
 			Cause $parent = possibleCause( engine, $parentNode, $e, POLL_INTERVAL );
 			$parent.addImpacted( $c );
 			println( "No Cause for parent. Asserting: " + $parent );
-			assert( $parent );
+			insert( $parent );
 		} else {
 			println( "No parent for node " + $cause );
 		}
@@ -51,7 +51,7 @@ rule "existingCause"
 	then
 		$parent.addImpacted( $c );
 		println(" Adding cause " + $c +" to existing parent " + $parent );
-		modify( $parent );
+		update( $parent );
 end
  
 rule "resolveIssue"

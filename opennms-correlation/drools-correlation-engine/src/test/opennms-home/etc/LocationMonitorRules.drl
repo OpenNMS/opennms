@@ -26,8 +26,8 @@ rule "first service lost event received"
 		Affliction $aff = new Affliction( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) );
 		println( "Affliction detected by monitor " + locationMonitor( $e ) + " for nodeId = " + $nodeid + ": " + $aff );
 		retract( $e );
-		assert( $aff );
-		assert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
+		insert( $aff );
+		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
 end
 
 rule "service lost detected by additional monitor"
@@ -38,8 +38,8 @@ rule "service lost detected by additional monitor"
 	then
 		$aff.addReporter( locationMonitor( $e ) );
 		retract( $e );
-		modify( $aff );
-		assert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
+		update( $aff );
+		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
 		println(" Added reporter " + locationMonitor( $e ) + " to affliction " + $aff);
 end
 
@@ -50,7 +50,7 @@ rule "wide spread affliction"
 	then
 		sendWideSpreadOutageEvent( engine, $nodeid, $ipAddr, $svcName );
 		$aff.setType( Type.WIDE_SPREAD );
-		modify( $aff );
+		update( $aff );
 end
 
 rule "affliction resolved for one monitor"
@@ -61,8 +61,8 @@ rule "affliction resolved for one monitor"
 	then
 		$aff.removeReporter( locationMonitor( $e ) );
 		$flap.setEndTime( new Date() );
-		modify( $aff );
-		modify( $flap );
+		update( $aff );
+		update( $flap );
 		retract( $e );
 		println(" Monitor " + locationMonitor( $e ) + " has reported up for afflication " + $aff );
 end
@@ -72,9 +72,9 @@ rule "create flap count for flap if it doesn't exist"
 		$flap : Flap( $nodeid : nodeid, $ipAddr : ipAddr, $svcName : svcName, $locMon : locationMonitor, endTime != null, counted == false )
 		not FlapCount( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, locationMonitor == $locMon)
 	then
-		assert( new FlapCount( $nodeid, $ipAddr, $svcName, $locMon ) );
+		insert( new FlapCount( $nodeid, $ipAddr, $svcName, $locMon ) );
 		$flap.setCounted( true );
-		modify( $flap );
+		update( $flap );
 end
 
 rule "count"
@@ -83,9 +83,9 @@ rule "count"
 		$flapCount : FlapCount( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, locationMonitor == $locMon )
 	then
 		$flapCount.increment();
-		modify( $flapCount );
+		update( $flapCount );
 		$flap.setCounted( true );
-		modify( $flap );
+		update( $flap );
 end
 
 rule "retract expired flaps"
@@ -98,7 +98,7 @@ rule "retract expired flaps"
 		if ( $flapCount.getCount() == 0 ) {
 			retract( $flapCount );
 		} else {
-			modify( $flapCount );
+			update( $flapCount );
 		}
 		retract( $flap );
 		retract( $expiration );
@@ -112,7 +112,7 @@ rule "flap count exceeded"
 	then
 		sendServiceFlappingEvent( engine, $nodeid, $ipAddr, $svcName, $locMon );
 		$flapCount.setAlerted( true );
-		modify( $flapCount );
+		update( $flapCount );
 		println("Service flapping!");
 end
 
