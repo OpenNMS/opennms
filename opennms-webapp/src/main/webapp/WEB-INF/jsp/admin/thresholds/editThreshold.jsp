@@ -112,6 +112,7 @@
   </table>
   <input type="submit" name="submitAction" value="${saveButtonTitle}"/>
   <input type="submit" name="submitAction" value="${cancelButtonTitle}"/>
+  
 <input type="hidden" name="filterSelected" value="${filterSelected}"/>
 <h3>Resource Filters</h3>
 <table class="normal">
@@ -142,6 +143,7 @@
         <td><input type="submit" name="submitAction" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
     </tr>
 </table>
+  
 </form>
 <h3>Help</h3>
 <p>
@@ -156,7 +158,8 @@ Conversely, a "low" threshold triggers when the value of the data source drops b
 <b>Trigger</b>: The number of times the threshold must be "exceeded" in a row before the threshold will be triggered.  Not used for relativeChange thresholds.<br>
 <b>Triggered UEI</b>: A custom UEI to send into the events system when this threshold is triggered.  If left blank, it defaults to the standard thresholds UEIs.<br>
 <b>Rearmed UEI</b>: A custom UEI to send into the events system when this threshold is re-armed.  If left blank, it defaults to the standard thresholds UEIs.<br>
-<b>Example UEIs</b>: A typical UEI is of the format <i>"uei.opennms.org/&lt;category&gt;/&lt;name&gt;"</i>.  It is recommended that when creating custom UEIs for thresholds, you use a one-word version of your company name as the category to avoid name conflicts.  The "name" portion is up to you.<br>
+<b>Example UEIs</b>: A typical UEI is of the format <i>"uei.opennms.org/&lt;category&gt;/&lt;name&gt;"</i>.  It is recommended that when creating custom UEIs for thresholds,<br>
+you use a one-word version of your company name as the category to avoid name conflicts.  The "name" portion is up to you.<br>
 <b>Filters</b>: Only apply for interfaces and Generic Resources. They are applied in order. If the resource match any of them, the threshold will be processed.
 </p>
 <jsp:include page="/includes/footer.jsp" flush="false"/>

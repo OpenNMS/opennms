@@ -222,7 +222,7 @@ public class ThresholdController extends AbstractController implements Initializ
         return modelAndView;
     }
 
-    private void moveThresholdFilter(Threshold threshold, int oldPos, int newPos) {
+    private void moveThresholdFilter(Basethresholddef threshold, int oldPos, int newPos) {
         if (newPos >= 0 && newPos < threshold.getResourceFilterCount()) {
             ResourceFilter oldFilter = (ResourceFilter)threshold.getResourceFilterCollection().get(oldPos);
             ResourceFilter newFilter = (ResourceFilter)threshold.getResourceFilterCollection().get(newPos);
@@ -231,28 +231,50 @@ public class ThresholdController extends AbstractController implements Initializ
         }
     }
     
-    private ModelAndView finishThresholdFilterEdit(HttpServletRequest request) throws ServletException {
-        ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
-        ModelAndView modelAndView;
-        
-        int thresholdIndex=Integer.parseInt(request.getParameter("thresholdIndex"));
-        String groupName=request.getParameter("groupName");
-        String submitAction=request.getParameter("submitAction");
+    private List<ResourceFilter> getFilterList(HttpServletRequest request, boolean create) {
+        return (List<ResourceFilter>)request.getSession(create).getAttribute("savedFilters");
+    }
 
-        Threshold threshold=configFactory.getGroup(groupName).getThreshold(thresholdIndex);
-        modelAndView=new ModelAndView("admin/thresholds/editThreshold");
+    private void setFilterList(HttpServletRequest request, List<ResourceFilter> filters) {
+        if (filters == null) {
+            request.getSession(false).removeAttribute("savedFilters");
+        } else {
+            request.getSession(false).setAttribute("savedFilters", filters);
+        }
+    }
+
+    private ModelAndView finishThresholdFilterEdit(HttpServletRequest request, Basethresholddef threshold) throws ServletException {
         
-        // Save Threshold Filters on HTTP Session in order to restore the original
-        // list if user clicks on "Cancel"
-        List saved = (List)request.getSession(true).getAttribute("savedFilters");
+        boolean isExpression = threshold instanceof Expression;
+        
+        int thresholdIndex;
+        if (isExpression) {
+            thresholdIndex = Integer.parseInt(request.getParameter("expressionIndex"));
+        } else {
+            thresholdIndex = Integer.parseInt(request.getParameter("thresholdIndex"));
+
+        }
+
+        ModelAndView modelAndView;        
+        if (isExpression) {
+            modelAndView = new ModelAndView("admin/thresholds/editExpression");
+        } else {
+            modelAndView = new ModelAndView("admin/thresholds/editThreshold");
+        }
+        
+        List<ResourceFilter> saved = getFilterList(request, true);
         if (saved == null || saved.size() == 0) {
-            saved = new ArrayList(threshold.getResourceFilterCollection());
-            request.getSession(false).setAttribute("savedFilters", saved);
+            saved = new ArrayList<ResourceFilter>(threshold.getResourceFilterCollection());
+            setFilterList(request, saved);
         }
 
         String stringIndex = request.getParameter("filterSelected");
         int filterIndex = stringIndex != null && !stringIndex.equals("") ? Integer.parseInt(stringIndex) - 1 : 0;
 
+        /*
+         * Save Threshold Filters on HTTP Session in order to restore the original list if user clicks on "Cancel"
+         */
+        String submitAction = request.getParameter("submitAction");
         if (ADDFILTER_BUTTON_TITLE.equals(submitAction)) {
             String field = request.getParameter("filterField");
             String content = request.getParameter("filterRegexp");
@@ -275,23 +297,31 @@ public class ThresholdController extends AbstractController implements Initializ
         } else if (MOVEDOWN_BUTTON_TITLE.equals(submitAction)) {
             moveThresholdFilter(threshold, filterIndex, filterIndex + 1);
         }
-
+        
         commonFinishEdit(request, threshold);
-        threshold.setDsName(request.getParameter("dsName"));
+        if (isExpression) {
+        	((Expression)threshold).setExpression(request.getParameter("expression"));        	
+        } else {
+        	((Threshold)threshold).setDsName(request.getParameter("dsName"));
+        }
         
         String isNew=request.getParameter("isNew");
         if("true".equals(isNew))
             modelAndView.addObject("isNew", true);
 
-        modelAndView.addObject("threshold", threshold);
-        modelAndView.addObject("thresholdIndex", thresholdIndex);
-        modelAndView.addObject("groupName", groupName);
+        if (isExpression) {
+        	modelAndView.addObject("expression", threshold);
+            modelAndView.addObject("expressionIndex", thresholdIndex);
+        } else {
+        	modelAndView.addObject("threshold", threshold);
+            modelAndView.addObject("thresholdIndex", thresholdIndex);
+        }
+        modelAndView.addObject("groupName", request.getParameter("groupName"));
         addStandardEditingBits(modelAndView);
         
         return modelAndView;
     }
 
-    
     private ModelAndView gotoEditExpression(String expressionIndexString, String groupName) throws ServletException {
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
@@ -456,13 +486,16 @@ public class ThresholdController extends AbstractController implements Initializ
                 //It was a new Threshold, but the user hit cancel.  Remove the new threshold from the group
                 group.removeThreshold(threshold);
             } else {
-                ArrayList filters = (ArrayList)request.getSession(false).getAttribute("savedFilters");
-                threshold.setResourceFilterCollection(filters);
+                List<ResourceFilter> filters = getFilterList(request, false);
+                if (filters != null)
+                	threshold.setResourceFilter(filters);
             }
         } else {
-            return finishThresholdFilterEdit(request);
+            return finishThresholdFilterEdit(request, threshold);
         }
-        request.getSession(false).removeAttribute("savedFilters");
+        // Remove Filters from Session
+        setFilterList(request, null);
+        
         //and got back to the editGroup page
         modelAndView=new ModelAndView("admin/thresholds/editGroup");
         modelAndView.addObject("group",configFactory.getGroup(groupName));
@@ -491,8 +524,17 @@ public class ThresholdController extends AbstractController implements Initializ
             if("true".equals(isNew)) {
                 //It was a new Threshold, but the user hit cancel.  Remove the new threshold from the group
                 group.removeExpression(expression);
+            } else {
+                List<ResourceFilter> filters = getFilterList(request, false);
+                if (filters != null)
+                	expression.setResourceFilter(filters);
             }
+        } else {
+            return finishThresholdFilterEdit(request, expression);
         }
+        // Remove Filters from Session
+        setFilterList(request, null);
+
         //and got back to the editGroup page
         modelAndView=new ModelAndView("admin/thresholds/editGroup");
         modelAndView.addObject("group",configFactory.getGroup(groupName));
