@@ -185,7 +185,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
         if (selectedOptions==null || selectedOptions.size()==0)
         {
             selectedOptions = new ArrayList<String>();
-            selectedOptions.add("email");
+            selectedOptions.add("javaEmail");
         }
 
         for(String curCommand : commands.keySet()) {
