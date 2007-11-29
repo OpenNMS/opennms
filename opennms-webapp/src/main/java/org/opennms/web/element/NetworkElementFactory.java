@@ -46,6 +46,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,6 +59,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -100,6 +103,8 @@ public class NetworkElementFactory extends Object {
      */
     private NetworkElementFactory() {
     }
+
+    private static final Comparator<Interface> INTERFACE_COMPARATOR = new InterfaceComparator();
 
     /**
      * Translate a node id into a human-readable node label. Note these values
@@ -659,7 +664,7 @@ public class NetworkElementFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND ISMANAGED != 'D' ORDER BY IPADDR, IFINDEX");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND ISMANAGED != 'D' ORDER BY IFINDEX");
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
 
@@ -984,6 +989,7 @@ public class NetworkElementFactory extends Object {
             intfs.add(intf);
         }
 
+        Collections.sort(intfs, INTERFACE_COMPARATOR);
         return (Interface[]) intfs.toArray(new Interface[intfs.size()]);
 
     }
@@ -2463,4 +2469,27 @@ public class NetworkElementFactory extends Object {
         return theirNodes.toArray(new Node[0]);
     }
 
+    public static class InterfaceComparator implements Comparator<Interface> {
+        public int compare(Interface o1, Interface o2) {
+
+            // Sort by IP first if the IPs are non-0.0.0.0
+            if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
+                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
+                    return 1;
+                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            } else {
+                // Sort IPs that are non-0.0.0.0 so they are first
+                if (!"0.0.0.0".equals(o1.getIpAddress())) {
+                    return -1;
+                } else if (!"0.0.0.0".equals(o2.getIpAddress())) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+    }
 }

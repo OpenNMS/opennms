@@ -17,6 +17,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
+import org.opennms.core.utils.IPSorter;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
@@ -357,8 +358,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if ((diff = o1.getIpAddress().compareTo(o2.getIpAddress())) != 0) {
-                    return diff;
+                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
+                    return 1;
+                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
+                    return -1;
+                } else {
+                    return 0;
                 }
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first
@@ -417,8 +422,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if ((diff = o1.getIpAddress().compareTo(o2.getIpAddress())) != 0) {
-                    return diff;
+                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
+                    return 1;
+                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
+                    return -1;
+                } else {
+                    return 0;
                 }
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first

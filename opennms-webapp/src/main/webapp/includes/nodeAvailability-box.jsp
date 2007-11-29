@@ -66,18 +66,7 @@
 	private double m_warningThreshold;
   
     private ServiceNameComparator m_serviceComparator = new ServiceNameComparator();
-    private InterfaceIpAddressComparator m_interfaceComparator = new InterfaceIpAddressComparator();
     
-    public Interface[] getInterfaces(int nodeId) throws java.sql.SQLException {
-        Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId);
-        
-        if (intfs != null) {
-            Arrays.sort(intfs, m_interfaceComparator); 
-        }
-
-        return intfs;
-    }
-
     public Service[] getServices(Interface intf) throws java.sql.SQLException {
         Assert.notNull(intf, "intf argument cannot be null");
         
@@ -154,7 +143,7 @@
   </tr>
 
 <%  if (overallRtcValue >= 0) { %>
-       <% Interface[] availIntfs = getInterfaces(nodeId); %>
+       <% Interface[] availIntfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId); %>
            
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
           <% Interface intf = availIntfs[i]; %>
