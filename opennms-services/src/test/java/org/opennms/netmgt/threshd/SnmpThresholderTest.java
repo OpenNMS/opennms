@@ -241,7 +241,7 @@ public class SnmpThresholderTest extends TestCase {
         for (Basethresholddef threshold: thresholds) {
             count += threshold.getResourceFilterCount();
         }
-        assertEquals(3, count); // as defined on test-thresholods.xml
+        assertEquals(4, count); // as defined on test-thresholods.xml
     }
     
     public void testInterfaces() throws Exception {
@@ -305,14 +305,13 @@ public class SnmpThresholderTest extends TestCase {
         assertEquals(2, events.getEventCount()); // with Filters Enabled. See test-thresholds.xml
     }
   
-    public void testGenericResourceTypes() throws Exception {
+    public void testThresholdWithGenericResourceTypes() throws Exception {
         System.err.println("--------------------------------------------------------");
         // Set storeByGroup, because JRBs will be created with this feature
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
 
         // Get ThresholdGroup and validate data
         ThresholdGroup group = m_thresholdsDao.get("generic-snmp");
-        assertEquals(1, group.getGenericResourceTypeMap().size());
         assertEquals(2, group.getGenericResourceTypeMap().get("frCircuitIfIndex").getThresholdMap().size());
 
         // Common Variables
@@ -372,7 +371,55 @@ public class SnmpThresholderTest extends TestCase {
         	assertEquals("caracas", e.getParms().getParm(5).getValue().getContent());
         }
     }
-    
+
+    public void testExpressionWithGenericResourceTypes() throws Exception {
+        System.err.println("--------------------------------------------------------");
+        // Set storeByGroup, because JRBs will be created with this feature
+        System.setProperty("org.opennms.rrd.storeByGroup", "true");
+
+        // Get ThresholdGroup and validate data
+        ThresholdGroup group = m_thresholdsDao.get("generic-snmp");
+        assertEquals(1, group.getGenericResourceTypeMap().get("hrStorageIndex").getThresholdMap().size());
+
+        // Common Variables
+        File path = m_fileAnticipator.getTempDir();
+        File nodeDir = m_fileAnticipator.tempDir(path, "1");
+        File rtDir = m_fileAnticipator.tempDir(nodeDir, "hrStorageIndex");
+        Properties strings = new Properties();
+        long start = System.currentTimeMillis();
+        List<String> sources = new ArrayList<String>();
+        sources.add("hrStorageAllocUnits");
+        sources.add("hrStorageSize");
+        sources.add("hrStorageUsed");
+
+        // Create JRB File for Resource 1
+        File r1Dir = m_fileAnticipator.tempDir(rtDir, "opt");
+        File rrd1 = m_fileAnticipator.tempFile(r1Dir, "mib2-host-resources-storage.jrb");
+        createDsProperties(r1Dir, sources, "mib2-host-resources-storage");
+                
+        // Creating strings.properties for Resource 1
+        strings.setProperty("hrStorageDescr", "/opt");
+        File sFile1 = m_fileAnticipator.tempFile(r1Dir, "strings.properties");
+        strings.store(new FileOutputStream(sFile1), null);
+        
+        // Creating JRB content for Resource 1
+        List<String> data1 = new ArrayList<String>();
+        data1.add("2:200:80");
+        createAndUpdateRrd(rrd1, start, sources, data1);
+
+        // Run Thresholds Check and Validate. It must generate 3 events
+        m_thresholdInterface.getThresholdConfiguration().setThresholdGroup(group);
+        Events events = new Events();
+        m_snmpThresholder.checkResourceDir(rtDir, m_thresholdInterface, new Date(start), events);
+        // with no Filters. See test-thresholds.xml
+        assertEquals(1, events.getEventCount());
+        // Validating ds-value for bug 2129
+        for (Event e : events.getEvent()) {
+        	assertEquals("label", e.getParms().getParm(5).getParmName());
+        	assertEquals("/opt", e.getParms().getParm(5).getValue().getContent());
+        }
+    }
+
     private void createDsProperties(File dir, List<String> sources, String group) throws Exception {
         Properties ds = new Properties();
         for (String source : sources) {
