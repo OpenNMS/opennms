@@ -140,7 +140,7 @@ public final class Pop3Plugin extends AbstractPlugin {
                 //
                 StringTokenizer t = new StringTokenizer(lineRdr.readLine());
                 if (t.nextToken().equals("+OK")) {
-                    // POP3 server should recoginize the QUIT command
+                    // POP3 server should recognize the QUIT command
                     //
                     String cmd = "QUIT\r\n";
                     socket.getOutputStream().write(cmd.getBytes());
@@ -225,7 +225,7 @@ public final class Pop3Plugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         int port = DEFAULT_PORT;

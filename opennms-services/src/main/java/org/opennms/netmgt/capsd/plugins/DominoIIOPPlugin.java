@@ -161,7 +161,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#populateConnectionConfig(org.opennms.netmgt.capsd.ConnectionConfig,
      *      java.util.Map)
      */
-    protected void populateConnectionConfig(ConnectionConfig connConfig, Map qualifiers) {
+    protected void populateConnectionConfig(ConnectionConfig connConfig, Map<String, Object> qualifiers) {
         super.populateConnectionConfig(connConfig, qualifiers);
 
         DominoConnectionConfig config = (DominoConnectionConfig) connConfig;
@@ -180,7 +180,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
         // do it the right way won't be able to connect anyway
         //
         try {
-            String IOR = retrieveIORText(config.getInetAddress().getHostAddress(), config.getIorPort());
+            retrieveIORText(config.getInetAddress().getHostAddress(), config.getIorPort());
             return true;
         } catch (FileNotFoundException e) {
             return true;

@@ -269,7 +269,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         int pop3port = DEFAULT_POP3_PORT;

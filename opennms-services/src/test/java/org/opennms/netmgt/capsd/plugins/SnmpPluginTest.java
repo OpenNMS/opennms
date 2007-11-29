@@ -68,7 +68,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     private SnmpPlugin m_plugin = null;
     
     public static TestSuite suite() {
-        Class testClass = SnmpPluginTest.class;
+        Class<?> testClass = SnmpPluginTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
         suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
         suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
@@ -101,7 +101,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
      */
     public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
         InetAddress address = InetAddress.getByName(myLocalHost());
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("forced version", "snmpv1");
         
         if (m_runAssertions) {
@@ -116,7 +116,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
      */
     public void testIsExpectedValue() throws UnknownHostException {
         InetAddress address = InetAddress.getByName(myLocalHost());
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("vbvalue", "\\.1\\.3\\.6\\.1\\.4\\.1.*");
         
         if (m_runAssertions) {
@@ -148,7 +148,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         Reader rdr = new StringReader(getSnmpConfig());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         
-        Map<String, String> qualifiers = new HashMap<String, String>();
+        Map<String, Object> qualifiers = new HashMap<String, Object>();
         qualifiers.put("force version", "snmpv1");
 
         if (m_runAssertions) {

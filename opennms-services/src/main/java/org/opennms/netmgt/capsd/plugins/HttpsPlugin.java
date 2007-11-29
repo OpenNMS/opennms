@@ -97,16 +97,6 @@ public class HttpsPlugin extends HttpPlugin {
     private static final int[] DEFAULT_PORTS = { 443 };
 
     /**
-     * Default number of retries for HTTP requests.
-     */
-    private final static int DEFAULT_RETRY = 1;
-
-    /**
-     * Default timeout (in milliseconds) for HTTP requests.
-     */
-    private final static int DEFAULT_TIMEOUT = 30000; // in milliseconds
-
-    /**
      * @param protocol
      * @param defaultPort
      * @param defaultTimeout
@@ -122,7 +112,7 @@ public class HttpsPlugin extends HttpPlugin {
         // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
         // CERTIFICATES
         SSLSocketFactory sslSF = null;
-        javax.net.ssl.KeyManager[] km = null;
+
         TrustManager[] tm = { new RelaxedX509TrustManager() };
         SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());

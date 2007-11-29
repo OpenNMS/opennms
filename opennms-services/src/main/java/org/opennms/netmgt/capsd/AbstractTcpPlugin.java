@@ -47,7 +47,6 @@ import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -183,7 +182,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
         return new ConnectionConfig(address, port);
     }
 
-    protected List getConnectionConfigList(Map qualifiers, InetAddress address) {
+    protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, InetAddress address) {
         if (m_defaultPort == -1)
             throw new IllegalStateException("m_defaultPort == -1");
 
@@ -191,14 +190,14 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
         return Collections.singletonList(createConnectionConfig(address, port));
     }
 
-    final protected int getKeyedInteger(Map qualifiers, String key, int defaultVal) {
+    final protected int getKeyedInteger(Map<String, Object> qualifiers, String key, int defaultVal) {
         if (qualifiers == null)
             return defaultVal;
         else
             return ParameterMap.getKeyedInteger(qualifiers, key, defaultVal);
     }
 
-    final protected int[] getKeyedIntegerArray(Map qualifiers, String key, int[] defaultVal) {
+    final protected int[] getKeyedIntegerArray(Map<String, Object> qualifiers, String key, int[] defaultVal) {
         if (qualifiers == null)
             return defaultVal;
         else
@@ -254,12 +253,11 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    final public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    final public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 
-        List connList = getConnectionConfigList(qualifiers, address);
+        List<ConnectionConfig> connList = getConnectionConfigList(qualifiers, address);
 
-        for (Iterator it = connList.iterator(); it.hasNext();) {
-            ConnectionConfig config = (ConnectionConfig) it.next();
+        for(ConnectionConfig config : connList) {
             populateConnectionConfig(config, qualifiers);
             if (checkConnection(config)) {
                 if (qualifiers != null)
@@ -272,7 +270,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
     }
 
-    protected void populateConnectionConfig(ConnectionConfig config, Map qualifiers) {
+    protected void populateConnectionConfig(ConnectionConfig config, Map<String, Object> qualifiers) {
         config.setQualifiers(qualifiers);
         config.setTimeout(getKeyedInteger(qualifiers, "timeout", m_defaultTimeout));
         config.setRetry(getKeyedInteger(qualifiers, "retry", m_defaultRetry));
@@ -282,11 +280,11 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
         return true;
     }
 
-    protected void saveConfig(Map qualifiers, ConnectionConfig config) {
+    protected void saveConfig(Map<String, Object> qualifiers, ConnectionConfig config) {
         saveKeyedInteger(qualifiers, "port", config.getPort());
     }
 
-    final protected void saveKeyedInteger(Map qualifiers, String key, int value) {
+    final protected void saveKeyedInteger(Map<String, Object> qualifiers, String key, int value) {
         if (qualifiers != null && !qualifiers.containsKey(key))
             qualifiers.put(key, new Integer(value));
     }

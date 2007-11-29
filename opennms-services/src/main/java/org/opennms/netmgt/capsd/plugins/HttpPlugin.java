@@ -260,10 +260,10 @@ public class HttpPlugin extends AbstractTcpPlugin {
      * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#getConnectionConfigList(java.util.Map,
      *      java.net.InetAddress)
      */
-    protected List getConnectionConfigList(Map qualifiers, InetAddress address) {
+    protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, InetAddress address) {
         int[] ports = getKeyedIntegerArray(qualifiers, "port", m_defaultPorts);
 
-        List list = new LinkedList();
+        List<ConnectionConfig> list = new LinkedList<ConnectionConfig>();
         for (int i = 0; i < ports.length; i++) {
             list.add(createConnectionConfig(address, ports[i]));
         }

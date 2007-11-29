@@ -228,7 +228,7 @@ public final class GpPlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retry = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         String banner = null;

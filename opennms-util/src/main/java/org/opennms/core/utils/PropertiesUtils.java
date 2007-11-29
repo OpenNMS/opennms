@@ -41,7 +41,10 @@ import java.util.Properties;
 
 public class PropertiesUtils {
 	
-	public static interface SymbolTable {
+	private static final String PLACEHOLDER_SUFFIX = "}";
+    private static final String PLACEHOLDER_PREFIX = "${";
+
+    public static interface SymbolTable {
 		public String getSymbolValue(String symbol);
 	}
 	
@@ -64,14 +67,21 @@ public class PropertiesUtils {
      * @return The string with appropriate substitutions made.
      */
     public static String substitute(String initialString, Properties properties) {
-        return substitute(initialString, new PropertyBasedSymbolTable(properties));
+        return substitute(initialString, new PropertyBasedSymbolTable(properties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
     }
+
+    public static String substitute(String initialString, Properties properties, String prefix, String suffix) {
+        return substitute(initialString, new PropertyBasedSymbolTable(properties), prefix, suffix, new ArrayList<String>());
+    }
+
 
     public static String substitute(String initialString, SymbolTable symbols) {
-        return substitute(initialString, symbols, new ArrayList<String>());
+        return substitute(initialString, symbols, PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
     }
 
-    private static String substitute(String initialString, SymbolTable symTable, List<String> list) {
+    private static String substitute(String initialString,
+            SymbolTable symTable, String placeholderPrefix,
+            String placeholderSuffix, List<String> list) {
         if (initialString == null) return null;
         
         StringBuffer result = new StringBuffer(initialString);
@@ -79,16 +89,16 @@ public class PropertiesUtils {
         int startIndex = 0;
         
         while (startIndex >= 0) {
-            int beginIndex = result.indexOf("${", startIndex);
-            int endIndex = (beginIndex < 0 ? -1 : result.indexOf("}", beginIndex+"${".length()));
+            int beginIndex = result.indexOf(placeholderPrefix, startIndex);
+            int endIndex = (beginIndex < 0 ? -1 : result.indexOf(placeholderSuffix, beginIndex+placeholderPrefix.length()));
             if (endIndex >= 0) {
-                String symbol = result.substring(beginIndex+"${".length(), endIndex);
+                String symbol = result.substring(beginIndex+placeholderPrefix.length(), endIndex);
                 if (list.contains(symbol))
-                    throw new IllegalStateException("recursive loop involving symbol ${"+symbol+"}");
+                    throw new IllegalStateException("recursive loop involving symbol "+placeholderPrefix+symbol+placeholderSuffix);
                 String symbolVal = symTable.getSymbolValue(symbol);
                 if (symbolVal != null) {
                     list.add(symbol);
-                    String substVal = substitute(symbolVal, symTable, list);
+                    String substVal = substitute(symbolVal, symTable, placeholderPrefix, placeholderSuffix, list);
                     list.remove(list.size()-1);
                     result.replace(beginIndex, endIndex+1, substVal);
                     startIndex = beginIndex + substVal.length();
@@ -102,5 +112,6 @@ public class PropertiesUtils {
         }
         return result.toString();
     }
+    
 
 }

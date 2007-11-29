@@ -36,11 +36,9 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -117,7 +115,7 @@ public class JDBCPlugin extends AbstractPlugin {
      * @see DBTools#constructUrl
      */
 
-    private boolean isServer(String hostname, Map qualifiers) {
+    private boolean isServer(String hostname, Map<String, Object> qualifiers) {
     	
         String user = ParameterMap.getKeyedString(qualifiers, "user", DBTools.DEFAULT_DATABASE_USER);
         String password = ParameterMap.getKeyedString(qualifiers, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
@@ -167,7 +165,7 @@ public class JDBCPlugin extends AbstractPlugin {
         return status;
     }
     
-    public boolean checkStatus(Connection con, Map qualifiers )
+    public boolean checkStatus(Connection con, Map<String, Object> qualifiers )
     {
     	boolean status = false;
     	ResultSet result = null;
@@ -249,7 +247,7 @@ public class JDBCPlugin extends AbstractPlugin {
         boolean status = false;
 
         try {
-            status = isServer(address.getCanonicalHostName(), Collections.EMPTY_MAP);
+            status = isServer(address.getCanonicalHostName(), new HashMap<String, Object>());
         } catch (Exception exp) {
             log().error(exp);
         }
@@ -278,7 +276,7 @@ public class JDBCPlugin extends AbstractPlugin {
      *             if the properties or the address are not defined
      * @return True if a JDBC server is running on this server, false otherwise
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         boolean status = false;
 
         if (address == null) {

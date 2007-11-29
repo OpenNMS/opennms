@@ -43,6 +43,7 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -53,6 +54,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.utils.AnnotationBasedEventListenerAdapter;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -99,14 +101,36 @@ public class CapsdTest extends OpenNMSTestCase {
         pluginManager.setCapsdConfig(capsdConfig);
         pluginManager.afterPropertiesSet();
         
-        EventProcessorFactory eventProcessorFactory = new EventProcessorFactory();
-        eventProcessorFactory.setCapsdDbSyncer(syncer);
-        eventProcessorFactory.setPluginManager(pluginManager);
+        DefaultProcessorFactory defaultProcessorFactory = new DefaultProcessorFactory();
+        defaultProcessorFactory.setCapsdDbSyncer(syncer);
+        defaultProcessorFactory.setPluginManager(pluginManager);
+        
+        RunnableConsumerThreadPool suspectRunner = 
+            new RunnableConsumerThreadPool("SuspectRunner", 0.0f, 0.0f, 1);
+        
+        RunnableConsumerThreadPool rescanRunner = 
+            new RunnableConsumerThreadPool("RescanRunner", 0.0f, 0.0f, 1);
+        
+        Scheduler scheduler = new Scheduler(rescanRunner.getRunQueue(), defaultProcessorFactory);
+        
+        BroadcastEventProcessor eventHandler = new BroadcastEventProcessor();
+        eventHandler.setSuspectEventProcessorFactory(defaultProcessorFactory);
+        eventHandler.setLocalServer("localhost");
+        eventHandler.setScheduler(scheduler);
+        eventHandler.setSuspectQueue(suspectRunner.getRunQueue());
+        eventHandler.afterPropertiesSet();
+        
+        AnnotationBasedEventListenerAdapter adapter = 
+            new AnnotationBasedEventListenerAdapter(eventHandler, m_eventdIpcMgr);
 
         m_capsd = new Capsd();
-        m_capsd.setPluginManager(pluginManager);
         m_capsd.setCapsdDbSyncer(syncer);
-        m_capsd.setEventProcessorFactory(eventProcessorFactory);
+        m_capsd.setSuspectEventProcessorFactory(defaultProcessorFactory);
+        m_capsd.setCapsdConfig(capsdConfig);
+        m_capsd.setSuspectRunner(suspectRunner);
+        m_capsd.setRescanRunner(rescanRunner);
+        m_capsd.setScheduler(scheduler);
+        m_capsd.setEventListener(adapter);
         m_capsd.afterPropertiesSet();
     }
 

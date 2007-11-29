@@ -37,14 +37,18 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
+import net.sourceforge.jradiusclient.RadiusAttribute;
+import net.sourceforge.jradiusclient.RadiusAttributeValues;
+import net.sourceforge.jradiusclient.RadiusClient;
+import net.sourceforge.jradiusclient.RadiusPacket;
+import net.sourceforge.jradiusclient.exception.InvalidParameterException;
+import net.sourceforge.jradiusclient.exception.RadiusException;
+import net.sourceforge.jradiusclient.util.ChapUtil;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.utils.ParameterMap;
-
-import net.sourceforge.jradiusclient.*;
-import net.sourceforge.jradiusclient.exception.*;
-import net.sourceforge.jradiusclient.util.*;
 
 /**
  * This plugin is used to check a host for Radius Authentication support.
@@ -68,7 +72,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
     private final static String PROTOCOL_NAME = "RadiusAuth";
 
     /**
-     * Number of miliseconds to wait before timing out a radius AUTH request
+     * Number of milliseconds to wait before timing out a radius AUTH request
      */
     public static final int DEFAULT_TIMEOUT = 5000;
 
@@ -98,7 +102,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
     public static final String DEFAULT_USER = "OpenNMS";
 
     /**
-     * Default pasword
+     * Default password
      */
     public static final String DEFAULT_PASSWORD = "OpenNMS";
 
@@ -113,7 +117,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * @param host
      *            The address for the radius server test.
      * @param authport
-     *            Radius authentcation port
+     *            Radius authentication port
      * @param acctport
      *            Radius accounting port - required by jradius
      *            but not explicitly checked
@@ -233,7 +237,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int authport = DEFAULT_AUTH_PORT;
         int acctport = DEFAULT_ACCT_PORT;
         String authType = DEFAULT_AUTH_TYPE;

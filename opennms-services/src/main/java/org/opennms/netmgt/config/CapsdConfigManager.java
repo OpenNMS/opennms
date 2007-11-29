@@ -469,6 +469,10 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     public String getXmlrpc() {
         return m_config.getXmlrpc();
     }
+    
+    public boolean isXmlRpcEnabled() {
+        return "true".equalsIgnoreCase(getXmlrpc());
+    }
 
     /**
 	 * Utility method which compares two InetAddress objects based on the

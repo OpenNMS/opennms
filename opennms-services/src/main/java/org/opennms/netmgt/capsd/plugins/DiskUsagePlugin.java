@@ -130,7 +130,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         Category log = ThreadCategory.getInstance(getClass());
 
         try {

@@ -120,6 +120,8 @@ public interface CapsdConfig {
      */
     public abstract String getXmlrpc();
     
+    public abstract boolean isXmlRpcEnabled();
+    
     public abstract ProtocolPlugin getProtocolPlugin(String svcName);
 
     public abstract void addProtocolPlugin(ProtocolPlugin plugin);

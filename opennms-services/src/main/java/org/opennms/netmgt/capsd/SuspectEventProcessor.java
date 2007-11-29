@@ -1843,10 +1843,9 @@ final class SuspectEventProcessor implements Runnable {
                     + "' newPrimarySnmpIf: '" + newPrimaryAddr + "'");
 
         
-        EventBuilder bldr = new EventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI, EVENT_SOURCE);
+        EventBuilder bldr = createEventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
         bldr.setNodeid(nodeId);
         bldr.setInterface(newPrimaryAddr);
-        bldr.setHost(Capsd.getLocalHostAddress());
         bldr.setService("SNMP");
         
         if (oldPrimaryAddr != null) {
@@ -1880,21 +1879,11 @@ final class SuspectEventProcessor implements Runnable {
             log().debug("reinitializePrimarySnmpInterface: nodeId: " + nodeId
                     + " interface: " + primarySnmpIf.getHostAddress());
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
-
-        newEvent.setSource(EVENT_SOURCE);
-
-        newEvent.setNodeid(nodeId);
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(primarySnmpIf.getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = createEventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
+        bldr.setNodeid(nodeId);
+        bldr.setInterface(primarySnmpIf.getHostAddress());
         
-        sendEvent(newEvent);
+        sendEvent(bldr.getEvent());
 
     }
 

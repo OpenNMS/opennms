@@ -53,14 +53,14 @@ public class JBossPlugin extends JMXPlugin {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.JMXPlugin#getMBeanServer()
      */
-    public ConnectionWrapper getMBeanServerConnection(Map map, InetAddress address) {
+    public ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address) {
         return  JBossConnectionFactory.getMBeanServerConnection(map, address);
     }
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */
-    public String getProtocolName(Map map) {
+    public String getProtocolName(Map<String, Object> map) {
         return "jboss";
     }
     /* (non-Javadoc)
@@ -68,7 +68,7 @@ public class JBossPlugin extends JMXPlugin {
      */
     public boolean isProtocolSupported(InetAddress address) {
         
-        HashMap map = new HashMap();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("port", "1099");
 
         return isProtocolSupported(address, map);

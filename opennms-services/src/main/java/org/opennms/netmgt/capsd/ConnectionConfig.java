@@ -52,7 +52,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 public class ConnectionConfig {
     InetAddress m_inetAddress;
 
-    Map m_qualifiers;
+    Map<String, Object> m_qualifiers;
 
     int m_port;
 
@@ -67,7 +67,7 @@ public class ConnectionConfig {
      * @param default_timeout
      * @param default_retry
      */
-    public ConnectionConfig(InetAddress inetAddress, Map qualifiers, int port, int timeout, int retry) {
+    public ConnectionConfig(InetAddress inetAddress, Map<String, Object> qualifiers, int port, int timeout, int retry) {
         m_inetAddress = inetAddress;
         m_qualifiers = qualifiers;
         m_port = port;
@@ -89,7 +89,7 @@ public class ConnectionConfig {
         return new InetSocketAddress(getInetAddress(), getPort());
     }
     
-    public void setQualifiers(Map qualifiers) {
+    public void setQualifiers(Map<String, Object> qualifiers) {
         m_qualifiers = qualifiers;
     }
 

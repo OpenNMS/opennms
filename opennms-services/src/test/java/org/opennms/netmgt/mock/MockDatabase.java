@@ -60,15 +60,27 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public MockDatabase(String dbName) throws Exception {
-        super(dbName);
-        setPopulateSchema(true);
-        create();
+        this(dbName, true);
     }
 
     public MockDatabase() throws Exception {
+        this(true);
+    }
+    
+    public MockDatabase(String name, boolean createNow) throws Exception {
+        super(name);
+        setPopulateSchema(true);
+        if (createNow) {
+            create();
+        }
+    }
+    
+    public MockDatabase(boolean createNow) throws Exception {
         super();
         setPopulateSchema(true);
-        create();
+        if (createNow) {
+            create();
+        }
     }
     
     public void populate(MockNetwork network) {

@@ -604,7 +604,7 @@ public class EventUtils {
      *            the transaction no.
      * 
      */
-    public static Event createNodeAddedEvent(DbNodeEntry nodeEntry, long txNo) {
+    public static Event createNodeAddedEvent(DbNodeEntry nodeEntry) {
         return createNodeAddedEvent(nodeEntry.getNodeId(), nodeEntry.getLabel(), String.valueOf(nodeEntry.getLabelSource()));
     }
 
@@ -658,7 +658,7 @@ public class EventUtils {
      *            the transaction no.
      * 
      */
-    public static Event createNodeGainedInterfaceEvent(DbNodeEntry nodeEntry, InetAddress ifaddr, long txNo) {
+    public static Event createNodeGainedInterfaceEvent(DbNodeEntry nodeEntry, InetAddress ifaddr) {
         return createNodeGainedInterfaceEvent("OpenNMS.Capsd", nodeEntry.getNodeId(), ifaddr);
     }
 

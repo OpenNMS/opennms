@@ -33,13 +33,10 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
-import javax.management.MBeanServerConnection;
-
-import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 
 
 /*
@@ -57,12 +54,12 @@ public abstract class JMXPlugin extends AbstractPlugin {
      * 
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */
-    public abstract String getProtocolName(Map parameterMap);
+    public abstract String getProtocolName(Map<String, Object> parameterMap);
     
     /*
      * The subclass is responsible for getting the connection.
      */
-    public abstract ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address);
+    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address);
     
     /*
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
@@ -75,7 +72,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
 
-    public boolean isProtocolSupported(InetAddress address, Map map) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> map) {
         
         if (protocolName == null) {
             protocolName = getProtocolName(map);

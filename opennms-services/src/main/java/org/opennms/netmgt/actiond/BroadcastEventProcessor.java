@@ -58,7 +58,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where executable events are enqueued to be executed.
      */
-    private FifoQueue m_execQ;
+    private FifoQueue<String> m_execQ;
 
     /**
      * This constructor subscribes to eventd for all events
@@ -67,7 +67,7 @@ final class BroadcastEventProcessor implements EventListener {
      *            The queue where executable events are stored.
      * 
      */
-    BroadcastEventProcessor(FifoQueue execQ) {
+    BroadcastEventProcessor(FifoQueue<String> execQ) {
         // set up the exectuable queue first
         //
         m_execQ = execQ;
@@ -102,10 +102,10 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Handle autoactions
         //
-        Enumeration walker = event.enumerateAutoaction();
+        Enumeration<Autoaction> walker = event.enumerateAutoaction();
         while (walker.hasMoreElements()) {
             try {
-                Autoaction aact = (Autoaction) walker.nextElement();
+                Autoaction aact = walker.nextElement();
                 if (aact.getState().equalsIgnoreCase("on")) {
                     m_execQ.add(aact.getContent()); // java.lang.String
                 }

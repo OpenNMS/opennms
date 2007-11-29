@@ -110,7 +110,7 @@ public final class JschSshPlugin extends AbstractPlugin {
      * 
      * @return true if the protocol is supported by the address
      */
-    public boolean isProtocolSupported(InetAddress address, Map parameters) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> parameters) {
         JschSshMonitor m = new JschSshMonitor();
 
         return m.poll(address, parameters).isAvailable();

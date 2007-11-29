@@ -53,14 +53,14 @@ public class Jsr160Plugin extends JMXPlugin {
      * 
      * @see org.opennms.netmgt.capsd.JMXPlugin#getMBeanServer(java.util.Map, java.net.InetAddress)
      */
-    public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address) {
+    public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
         return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }
     
     /* The protocol name is used to...
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */
-    public String getProtocolName(Map map) {
+    public String getProtocolName(Map<String, Object> map) {
         return ParameterMap.getKeyedString(map, "friendlyname", "jsr160");
     }
     
@@ -68,7 +68,7 @@ public class Jsr160Plugin extends JMXPlugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
     public boolean isProtocolSupported(InetAddress address) {
-        HashMap map = new HashMap();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("port",           "9004");
         map.put("factory",        "JMXRMI");
         map.put("friendlyname",   "jsr160");

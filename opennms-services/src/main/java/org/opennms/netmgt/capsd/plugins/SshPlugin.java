@@ -157,9 +157,8 @@ public final class SshPlugin extends AbstractPlugin {
                         socket.getOutputStream().write(cmd.getBytes());
                         // get the response code.
                         //
-                        String ssh_response = null;
                         try {
-                            ssh_response = lineRdr.readLine();
+                            lineRdr.readLine();
                         } catch (IOException e) {
                         }
                     } else {
@@ -250,7 +249,7 @@ public final class SshPlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         int port = -1;

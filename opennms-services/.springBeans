@@ -16,6 +16,7 @@
 		<config>src/main/resources/META-INF/opennms/applicationContext-statisticsDaemon.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-troubleTicketer.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-capsd.xml</config>
+		<config>src/test/resources/org/opennms/netmgt/utils/applicationContext-testTAEventIpcMgrTest.xml</config>
 	</configs>
 	<configSets>
 		<configSet>
