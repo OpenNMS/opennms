@@ -75,7 +75,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 				+ ": JDBCStoredProcedurePlugin class loaded");
 	}
 
-	public boolean checkStatus(Connection con, Map qualifiers) {
+	public boolean checkStatus(Connection con, Map<String, Object> qualifiers) {
 		boolean status = false;
 		CallableStatement cs = null;
 		try {

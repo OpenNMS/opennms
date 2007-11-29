@@ -125,7 +125,12 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     public static File getDaemonEtcDirectory() {
-        return new File(getDaemonProjectDirectory(), "src/main/filtered/etc");
+        String etcPath = 
+            "src"+File.separator+
+            "main"+File.separator+
+            "filtered"+File.separator+
+            "etc";
+        return new File(getDaemonProjectDirectory(), etcPath);
     }
     
     public static void setRelativeHomeDirectory(String relativeHomeDirectory) {

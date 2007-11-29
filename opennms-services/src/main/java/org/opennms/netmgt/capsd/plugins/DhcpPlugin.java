@@ -178,7 +178,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      * @return True if the remote interface responds to the DHCP request, false
      *         otherwise
      */
-    public boolean isProtocolSupported(InetAddress host, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress host, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
 

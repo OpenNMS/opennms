@@ -13,7 +13,8 @@
     can depend on to use the spring library.
   </description>
   <properties>
-    <springVersion>2.0.6</springVersion>
+    <springVersion>2.0.7</springVersion>
+    <aspectJVersion>1.5.3</aspectJVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -59,8 +60,47 @@
       <artifactId>cglib-nodep</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aspects</artifactId>
+      <version>${springVersion}</version>
+      <!-- Need to exclude the individual spring jars that include in the main spring jar -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm-attrs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>cglib</groupId>
+          <artifactId>cglib</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-agent</artifactId>
+      <version>${springVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-hibernate</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>${aspectJVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>${aspectJVersion}</version>
     </dependency>
   </dependencies>
 </project>

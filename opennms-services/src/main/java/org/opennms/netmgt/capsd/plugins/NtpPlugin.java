@@ -115,9 +115,6 @@ public final class NtpPlugin extends AbstractPlugin {
             for (int count = 0; count < retries && !isAServer; count++) {
                 try {
                     // Construct a new DNS Address Request
-                    //
-                    NtpMessage request = new NtpMessage();
-
                     // build the datagram packet used to request the address.
                     //
                     byte[] buf = new NtpMessage().toByteArray();
@@ -127,21 +124,14 @@ public final class NtpPlugin extends AbstractPlugin {
                     //
                     socket.send(outpkt);
 
-                    // receive a resposne
+                    // receive a response
                     //
                     DatagramPacket inpkt = new DatagramPacket(data, data.length);
                     socket.receive(inpkt);
                     if (inpkt.getAddress().equals(nserver)) {
-                        // try
-                        // {
-                        NtpMessage msg = new NtpMessage(inpkt.getData());
+                        // parse the incoming data
+                        new NtpMessage(inpkt.getData());
                         isAServer = true;
-                        // }
-                        // catch(IOException ex)
-                        // {
-                        // log.debug("Failed to match response to request, an
-                        // IOException occured", ex);
-                        // }
                     }
                 } catch (InterruptedIOException ex) {
                     // discard this exception, do next loop
@@ -204,7 +194,7 @@ public final class NtpPlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int port = DEFAULT_PORT;
         int timeout = DEFAULT_TIMEOUT;
         int retries = DEFAULT_RETRY;

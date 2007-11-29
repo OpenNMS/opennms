@@ -56,6 +56,7 @@ public class DataSourceFactoryBean implements FactoryBean, InitializingBean, Dis
     }
 
     public void destroy() throws Exception {
+        System.err.println("Closing DataSourceFactory!!!");
         DataSourceFactory.close();
     }
 

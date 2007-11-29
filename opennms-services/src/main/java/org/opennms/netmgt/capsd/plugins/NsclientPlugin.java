@@ -134,7 +134,7 @@ public class NsclientPlugin extends AbstractPlugin {
      *            The map where qualification are set by the plugin.
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;
         int port = NsclientManager.DEFAULT_PORT;

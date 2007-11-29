@@ -78,7 +78,7 @@ public class TemporaryDatabase implements DataSource {
         m_populateSchema = populateSchema;
     }
 
-    protected void create() throws Exception {
+    public void create() throws Exception {
         setupDatabase();
 
         if (m_populateSchema) {
@@ -88,42 +88,53 @@ public class TemporaryDatabase implements DataSource {
 
     private void initializeDatabase() throws Exception {
         m_installerDb = new InstallerDb();
+        try {
 
-        // Create a ByteArrayOutputSteam to effectively throw away output.
-        resetOutputStream();
-        m_installerDb.setDatabaseName(getTestDatabase());
-        m_installerDb.setDataSource(getDataSource());
+            // Create a ByteArrayOutputSteam to effectively throw away output.
+            resetOutputStream();
+            m_installerDb.setDatabaseName(getTestDatabase());
+            m_installerDb.setDataSource(getDataSource());
 
-        m_installerDb.setCreateSqlLocation(ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath());
+            m_installerDb.setCreateSqlLocation(getCreateSqlLocation());
 
-        m_installerDb.setStoredProcedureDirectory(ConfigurationTestUtils.getFileForConfigFile("create.sql").getParentFile().getAbsolutePath());
+            m_installerDb.setStoredProcedureDirectory(getStoredProcDirectory());
 
-        // installerDb.setDebug(true);
+            // installerDb.setDebug(true);
 
-        m_installerDb.readTables();
+            m_installerDb.readTables();
 
-        m_installerDb.createSequences();
-        m_installerDb.updatePlPgsql();
-        m_installerDb.addStoredProcedures();
+            m_installerDb.createSequences();
+            m_installerDb.updatePlPgsql();
+            m_installerDb.addStoredProcedures();
 
-        /*
-        * Here's an example of an iplike function that always returns true.
-        * CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN
-        * RETURN true; END; ' LANGUAGE 'plpgsql';
-        *
-        * Found this in BaseIntegrationTestCase.
-        */
+            /*
+             * Here's an example of an iplike function that always returns true.
+             * CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN
+             * RETURN true; END; ' LANGUAGE 'plpgsql';
+             *
+             * Found this in BaseIntegrationTestCase.
+             */
 
-        if (isSetupIpLike()) {
-            if (!m_installerDb.isIpLikeUsable()) {
-                m_installerDb.setupPlPgsqlIplike();
+            if (isSetupIpLike()) {
+                if (!m_installerDb.isIpLikeUsable()) {
+                    m_installerDb.setupPlPgsqlIplike();
+                }
             }
+
+            m_installerDb.createTables();
+            m_installerDb.insertData();
+        } finally {
+            m_installerDb.closeConnection();
         }
 
-        m_installerDb.createTables();
-        m_installerDb.insertData();
-        m_installerDb.closeConnection();
+    }
 
+    protected String getStoredProcDirectory() {
+        return ConfigurationTestUtils.getFileForConfigFile("create.sql").getParentFile().getAbsolutePath();
+    }
+
+    protected String getCreateSqlLocation() {
+        return ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath();
     }
 
     public boolean isSetupIpLike() {
@@ -241,6 +252,7 @@ public class TemporaryDatabase implements DataSource {
             @Override
             public void run() {
                 try {
+                    Thread.sleep(100);
                     destroyTestDatabase();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -440,5 +452,13 @@ public class TemporaryDatabase implements DataSource {
      */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  //TODO
+    }
+
+    public String getDriver() {
+        return m_driver;
+    }
+
+    public String getUrl() {
+        return m_url;
     }
 }
