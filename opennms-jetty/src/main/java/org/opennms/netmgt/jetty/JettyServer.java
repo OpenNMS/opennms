@@ -40,6 +40,7 @@ import java.util.Properties;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.ajp.Ajp13SocketConnector;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -57,7 +58,8 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
  */
 public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
     
-	int m_port = 8080;
+    int m_port = 8080; 
+    int m_ajp_port = 8081;
     private Server m_server;
     private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
     
@@ -83,6 +85,13 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         }
 
         m_server.addConnector(connector);
+
+        port = Integer.getInteger("org.opennms.netmgt.jetty.ajp-port", m_ajp_port);
+        if (port != null) {
+            connector = new Ajp13SocketConnector();
+            connector.setPort(port);
+            m_server.addConnector(connector);
+        }
 
         HandlerCollection handlers = new HandlerCollection();
 
