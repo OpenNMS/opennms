@@ -182,11 +182,6 @@ public final class RescanProcessor implements Runnable {
     private final static String SQL_DB_UPDATE_ISMANAGED = "UPDATE ipinterface SET ismanaged=? WHERE nodeID=? AND ipaddr=? AND isManaged!='D'";
 
     /**
-     * Information necessary to schedule the node.
-     */
-    private Scheduler.NodeInfo m_scheduledNode;
-
-    /**
      * Indicates if the rescan is in response to a forceRescan event.
      */
     private boolean m_forceRescan;
@@ -216,6 +211,8 @@ public final class RescanProcessor implements Runnable {
 
     private PluginManager m_pluginManager;
 
+    private int m_nodeId;
+
     /**
      * Constructor.
      * 
@@ -227,17 +224,17 @@ public final class RescanProcessor implements Runnable {
      *            just managed interfaces scanned), false otherwise.
      */
     RescanProcessor(Scheduler.NodeInfo nodeInfo, boolean forceRescan, CapsdDbSyncer capsdDbSyncer, PluginManager pluginManager) {
-        // Check the arguments
-        if (nodeInfo == null) {
-            throw new IllegalArgumentException("The nodeInfo parm cannot be null!");
-        }
-
-        m_scheduledNode = nodeInfo;
+        this(nodeInfo.getNodeId(), forceRescan, capsdDbSyncer, pluginManager);
+    }
+    
+    public RescanProcessor(int nodeId, boolean forceRescan, CapsdDbSyncer capsdDbSyncer, PluginManager pluginManager) {
+        m_nodeId = nodeId;
         m_forceRescan = forceRescan;
         m_capsdDbSyncer = capsdDbSyncer;
         m_pluginManager = pluginManager;
 
         m_eventList = new ArrayList<Event>();
+
     }
 
     /**
@@ -2791,19 +2788,19 @@ public final class RescanProcessor implements Runnable {
         }
         
         if (dbNodeEntry.getForeignSource() != null) {
-            log.info("Skipping rescan of node "+m_scheduledNode.getNodeId()+" since it was imported with foreign source "+dbNodeEntry.getForeignSource());
+            log.info("Skipping rescan of node "+getNodeId()+" since it was imported with foreign source "+dbNodeEntry.getForeignSource());
             return;
         }
         
         if (log.isDebugEnabled()) {
-            log.debug("start rescanning node: " + m_scheduledNode.getNodeId());
+            log.debug("start rescanning node: " + getNodeId());
         }
 
         DbIpInterfaceEntry[] dbInterfaces = getInterfaces(dbNodeEntry);
         
         if (dbInterfaces == null) {
             log.debug("no interfaces found in the database to rescan for node: "
-                      + m_scheduledNode.getNodeId());
+                      + getNodeId());
             return;
         }
 
@@ -2869,7 +2866,7 @@ public final class RescanProcessor implements Runnable {
                                       + ifaddr.getHostAddress());
                             log.debug("Adding " + ifaddr.getHostAddress()
                                       + " to collectorMap for node: "
-                                      + m_scheduledNode.getNodeId());
+                                      + getNodeId());
                         }
                         snmpcAgree = false;
                         break;
@@ -2945,7 +2942,7 @@ public final class RescanProcessor implements Runnable {
                     if (log.isDebugEnabled()) {
                         log.debug("Adding " + ifaddr.getHostAddress()
                                   + " to nonSnmpCollectorMap for node: "
-                                  + m_scheduledNode.getNodeId());
+                                  + getNodeId());
                     }
                 }
             }
@@ -2963,7 +2960,7 @@ public final class RescanProcessor implements Runnable {
             if (nonSnmpCollectorMap.size() == 1 && gotSnmpc) {
                 doesSnmp = true;
                 if (log.isDebugEnabled()) {
-                    log.debug("node " + m_scheduledNode.getNodeId()
+                    log.debug("node " + getNodeId()
                               + " appears to be a lame SNMP host... "
                               + "Proceeding");
                 }
@@ -2972,10 +2969,10 @@ public final class RescanProcessor implements Runnable {
                 if (log.isDebugEnabled()) {
                     if (gotSnmpc == false) {
                         log.debug("Could not collect SNMP data for node: "
-                                  + m_scheduledNode.getNodeId());
+                                  + getNodeId());
                     } else {
                         log.debug("Not using SNMP data for node: "
-                                  + m_scheduledNode.getNodeId() + ".  "
+                                  + getNodeId() + ".  "
                                   + "Collection does not agree with database.");
                     }
                 }
@@ -2989,7 +2986,7 @@ public final class RescanProcessor implements Runnable {
              */
             if (log.isDebugEnabled()) {
                 log.debug("SNMP collection for node: "
-                          + m_scheduledNode.getNodeId()
+                          + getNodeId()
                           + " does not agree with database, but there is no "
                           + "conflict among the interfaces on this node which "
                           + "respond to SNMP. Proceeding...");
@@ -3011,10 +3008,10 @@ public final class RescanProcessor implements Runnable {
              * lock prior to performing database inserts or updates.
              */
             log.debug("Waiting for capsd dbLock to process "
-                      + m_scheduledNode.getNodeId());
+                      + getNodeId());
             synchronized (Capsd.getDbSyncLock()) {
                 log.debug("Got capsd dbLock. processing "
-                          + m_scheduledNode.getNodeId());
+                          + getNodeId());
                 // Get database connection
                 dbc = DataSourceFactory.getInstance().getConnection();
 
@@ -3025,7 +3022,7 @@ public final class RescanProcessor implements Runnable {
                  * sync lock was grabbed. Verify that the current nodeid is
                  * still valid (ie, not deleted) before continuing.
                  */
-                if (!isNodeDeleted(dbc, m_scheduledNode.getNodeId())) {
+                if (!isNodeDeleted(dbc, getNodeId())) {
                     // Update interface information
                     now = new Date();
                     updateInterfaces(dbc, now, dbNodeEntry, collectorMap,
@@ -3048,7 +3045,7 @@ public final class RescanProcessor implements Runnable {
                 }
             }
         } catch (Throwable t) {
-            log.error("Error updating records for node ID " + m_scheduledNode.getNodeId() + ": " + t, t);
+            log.error("Error updating records for node ID " + getNodeId() + ": " + t, t);
         } finally {
             // Finished with the database connection, close it.
             try {
@@ -3073,15 +3070,15 @@ public final class RescanProcessor implements Runnable {
             }
         }
 
-        // Update the schedule information for the rescanned node
-        m_scheduledNode.setLastScanned(now);
-        m_scheduledNode.setScheduled(false);
-
         if (log.isDebugEnabled()) {
             log.debug((m_forceRescan ? "Forced r" : "R") + "escan "
-                      + "for node w/ nodeid " + m_scheduledNode.getNodeId()
+                      + "for node w/ nodeid " + getNodeId()
                       + " completed.");
         }
+    }
+
+    private int getNodeId() {
+        return m_nodeId;
     }
 
     private boolean scanPrimarySnmpInterface(Category log,
@@ -3244,17 +3241,17 @@ public final class RescanProcessor implements Runnable {
          * from the database
          */
         if (log.isDebugEnabled()) {
-            log.debug("retrieving managed interfaces for node: " + m_scheduledNode.getNodeId());
+            log.debug("retrieving managed interfaces for node: " + getNodeId());
         }
         
         try {
             dbInterfaces = (m_forceRescan ? dbNodeEntry.getInterfaces() : dbNodeEntry.getManagedInterfaces());
         } catch (NullPointerException npE) {
-            log.error("RescanProcessor: Null pointer when retrieving "+(m_forceRescan ? "" : "managed")+" interfaces for node " + m_scheduledNode.getNodeId(), npE);
-            log.error("Rescan failed for node w/ nodeid " + m_scheduledNode.getNodeId());
+            log.error("RescanProcessor: Null pointer when retrieving "+(m_forceRescan ? "" : "managed")+" interfaces for node " + getNodeId(), npE);
+            log.error("Rescan failed for node w/ nodeid " + getNodeId());
         } catch (SQLException sqlE) {
-            log.error("RescanProcessor: unable to load interface info for nodeId " + m_scheduledNode.getNodeId() + " from the database.", sqlE);
-            log.error("Rescan failed for node w/ nodeid " + m_scheduledNode.getNodeId());
+            log.error("RescanProcessor: unable to load interface info for nodeId " + getNodeId() + " from the database.", sqlE);
+            log.error("Rescan failed for node w/ nodeid " + getNodeId());
         }
         return dbInterfaces;
     }
@@ -3269,12 +3266,12 @@ public final class RescanProcessor implements Runnable {
          * load it from the database
          */
         try {
-            dbNodeEntry = DbNodeEntry.get(m_scheduledNode.getNodeId());
+            dbNodeEntry = DbNodeEntry.get(getNodeId());
         } catch (SQLException e) {
             log.error("RescanProcessor: unable to load node info for nodeId "
-                      + m_scheduledNode.getNodeId() + " from the database.", e);
+                      + getNodeId() + " from the database.", e);
             log.error("Rescan failed for node w/ nodeid "
-                      + m_scheduledNode.getNodeId());
+                      + getNodeId());
         }
         return dbNodeEntry;
     }

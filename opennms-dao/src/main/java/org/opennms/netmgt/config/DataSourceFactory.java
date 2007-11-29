@@ -46,12 +46,15 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
@@ -79,6 +82,8 @@ public final class DataSourceFactory implements DataSource {
     private static DataSource m_singleton = null;
 
     private static Map<String, DataSource> m_dataSources = new HashMap<String, DataSource>();
+    
+    private static List<Runnable> m_closers = new LinkedList<Runnable>();
 
     /**
      * Load the config from the default config file and create the singleton
@@ -100,7 +105,7 @@ public final class DataSourceFactory implements DataSource {
         }
     }
 
-    public static synchronized void init(String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+    public static synchronized void init(final String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
         if (isLoaded(dsName)) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -108,11 +113,20 @@ public final class DataSourceFactory implements DataSource {
         }
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-        DataSource dataSource = new C3P0ConnectionFactory(cfgFile.getPath(), dsName);
+        final C3P0ConnectionFactory dataSource = new C3P0ConnectionFactory(cfgFile.getPath(), dsName);
+        
+        m_closers.add(new Runnable() {
+            public void run() {
+                try {
+                    dataSource.close();
+                } catch (Exception e) {
+                    ThreadCategory.getInstance(DataSourceFactory.class).info("Unabled to close datasource "+dsName);
+                }
+            }
+        });
         
         // Springframework provided proxies that make working with transactions much easier
         LazyConnectionDataSourceProxy lazyProxy = new LazyConnectionDataSourceProxy(dataSource);
-        lazyProxy.afterPropertiesSet();
         
         setInstance(dsName, lazyProxy);
     }
@@ -234,12 +248,14 @@ public final class DataSourceFactory implements DataSource {
     }
 
     public static synchronized void close() throws SQLException {
-        for (DataSource dataSource : m_dataSources.values()) {
-            if (dataSource instanceof ClosableDataSource) {
-                ((ClosableDataSource)dataSource).close();
-            }
+        
+        for(Runnable closer : m_closers) {
+            closer.run();
         }
+        
+        m_closers.clear();
         m_dataSources.clear();
+
     }
 
     public <T> T unwrap(Class<T> iface) throws SQLException {

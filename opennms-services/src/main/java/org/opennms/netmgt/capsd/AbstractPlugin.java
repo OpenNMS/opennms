@@ -88,6 +88,6 @@ public abstract class AbstractPlugin implements Plugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public abstract boolean isProtocolSupported(InetAddress address, Map qualifiers);
+    public abstract boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers);
 
 }

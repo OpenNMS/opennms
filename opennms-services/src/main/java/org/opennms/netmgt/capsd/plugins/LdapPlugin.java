@@ -159,7 +159,7 @@ public final class LdapPlugin extends AbstractPlugin {
 
             log.debug("LDAPPlugin.isServer: connect successful");
 
-            // now go ahead and attempt to determin if LDAP is on this host
+            // now go ahead and attempt to determine if LDAP is on this host
             for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
                 log.debug("LDAPPlugin.isServer: attempt " + attempts + " to connect host " + host.getHostAddress());
                 LDAPConnection lc = null;
@@ -244,7 +244,7 @@ public final class LdapPlugin extends AbstractPlugin {
      * 
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
         int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "port", DEFAULT_PORTS);

@@ -242,4 +242,9 @@ public class MockEventIpcManager implements EventIpcManager {
         
     }
 
+    public void reset() {
+        m_listeners = new ArrayList();
+        m_anticipator.reset();
+    }
+
 }

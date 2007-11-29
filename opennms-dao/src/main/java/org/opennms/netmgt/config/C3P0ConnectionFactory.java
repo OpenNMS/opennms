@@ -220,7 +220,8 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     }
 
     public void close() throws SQLException {
-        m_pool.close();
+        System.err.println("Closing c3p0 pool");
+        m_pool.close(true);
     }
 
     public <T> T unwrap(Class<T> iface) throws SQLException {

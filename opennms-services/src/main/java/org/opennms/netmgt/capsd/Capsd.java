@@ -40,15 +40,15 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
 
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CapsdConfigFactory;
+import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.utils.StoppableEventListener;
+import org.springframework.util.Assert;
 
 /**
  * <P>
@@ -93,30 +93,30 @@ public class Capsd extends AbstractServiceDaemon {
     private Scheduler m_scheduler;
     
     /**
-     * Factory for creating event processors
-     */
-    private EventProcessorFactory m_eventProcessorFactory;
-
-    /**
      * Event receiver.
      */
-    private BroadcastEventProcessor m_receiver;
+    private StoppableEventListener m_eventListener;
 
     /**
      * The pool of threads that are used to executed the SuspectEventProcessor
      * instances queued by the event processor (BroadcastEventProcessor).
      */
-    private RunnableConsumerThreadPool<SuspectEventProcessor> m_suspectRunner;
+    private RunnableConsumerThreadPool m_suspectRunner;
 
     /**
      * The pool of threads that are used to executed RescanProcessor instances
      * queued by the rescan scheduler thread.
      */
-    private RunnableConsumerThreadPool<RescanProcessor> m_rescanRunner;
+    private RunnableConsumerThreadPool m_rescanRunner;
 
-    private PluginManager m_pluginManager;
-    
+    /*
+     * Injected properties, the should be asserted in onInit
+     */
+    private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
+
     private CapsdDbSyncer m_capsdDbSyncer;
+    
+    private CapsdConfig m_capsdConfig;
 
     /**
      * <P>
@@ -143,7 +143,7 @@ public class Capsd extends AbstractServiceDaemon {
 
     protected void onStop() {
 		// Stop the broadcast event receiver
-        m_receiver.close();
+        m_eventListener.stop();
 
         // Stop the Suspect Event Processor thread pool
         m_suspectRunner.stop();
@@ -153,11 +153,17 @@ public class Capsd extends AbstractServiceDaemon {
 	}
 
 	protected void onInit() {
-        /*
-         * Get connection to the database and use it to sync the
-         * content of the database with the latest configuration
-         * information.
-         * 
+	    
+        Assert.state(m_suspectEventProcessorFactory != null, "must set the suspectEventProcessorFactory property");
+        Assert.state(m_capsdDbSyncer != null, "must set the capsdDbSyncer property");
+        Assert.state(m_capsdConfig != null, "must set the capsdConfig property");
+        Assert.state(m_suspectRunner != null, "must set the suspectRunner property");
+        Assert.state(m_rescanRunner != null, "must set the rescanRunner property");
+        Assert.state(m_scheduler != null, "must set the scheduler property");
+        Assert.state(m_eventListener != null, "must set the eventListener property");
+
+	    
+	    /* 
          * First any new services are added to the services table
          * with a call to syncServices().
          *
@@ -180,44 +186,6 @@ public class Capsd extends AbstractServiceDaemon {
         log().debug("init: Syncing primary SNMP interface state...");
         getCapsdDbSyncer().syncSnmpPrimaryState();     
 
-        // Create the suspect event and rescan thread pools
-        m_suspectRunner = new RunnableConsumerThreadPool<SuspectEventProcessor>("Capsd Suspect Pool", 0.0f, 0.0f, CapsdConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
-
-        /*
-         * Only stop thread if nothing in queue.
-         * Always start thread if queue is not
-         * empty and max threads has not been reached.
-         */
-        m_rescanRunner = new RunnableConsumerThreadPool<RescanProcessor>("Capsd Rescan Pool",
-							0.0f, 0.0f,
-                CapsdConfigFactory.getInstance().getMaxRescanThreadPoolSize());
-
-        // Create the rescan scheduler
-        if (log().isDebugEnabled()) {
-            log().debug("init: Creating rescan scheduler");
-        }
-        try {
-            /*
-             * During instantiation, the scheduler will load the
-             * list of known nodes from the database.
-             */
-            m_scheduler = new Scheduler(getCapsdDbSyncer(), m_pluginManager, m_rescanRunner.getRunQueue());
-        } catch (SQLException sqlE) {
-            log().error("Failed to initialize the rescan scheduler.", sqlE);
-            throw new UndeclaredThrowableException(sqlE);
-        } catch (Throwable t) {
-            log().error("Failed to initialize the rescan scheduler.", t);
-            throw new UndeclaredThrowableException(t);
-        }
-
-        // Create an event receiver.
-        log().debug("init: Creating event broadcast event receiver");
-        try {
-            m_receiver = new BroadcastEventProcessor(m_suspectRunner.getRunQueue(), m_scheduler, m_eventProcessorFactory);
-        } catch (Throwable t) {
-            log().error("Failed to initialized the broadcast event receiver", t);
-            throw new UndeclaredThrowableException(t);
-        }
 	}
 
     protected void onStart() {
@@ -273,7 +241,7 @@ public class Capsd extends AbstractServiceDaemon {
         try {
             ThreadCategory.setPrefix(getName());
             InetAddress addr = InetAddress.getByName(ifAddr);
-            SuspectEventProcessor proc = m_eventProcessorFactory.createSuspectEventProcessor(addr.getHostAddress());
+            SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(addr.getHostAddress());
             proc.run();
         } finally {
             ThreadCategory.setPrefix(prefix);
@@ -299,10 +267,6 @@ public class Capsd extends AbstractServiceDaemon {
         }
     }
 
-    public void setPluginManager(PluginManager pluginManager) {
-        m_pluginManager = pluginManager;
-    }
-
     private CapsdDbSyncer getCapsdDbSyncer() {
         return m_capsdDbSyncer;
     }
@@ -311,8 +275,28 @@ public class Capsd extends AbstractServiceDaemon {
         m_capsdDbSyncer = capsdDbSyncer;
     }
 
-    public void setEventProcessorFactory(EventProcessorFactory eventProcessorFactory) {
-        m_eventProcessorFactory = eventProcessorFactory;
+    public void setSuspectEventProcessorFactory(SuspectEventProcessorFactory eventProcessorFactory) {
+        m_suspectEventProcessorFactory = eventProcessorFactory;
+    }
+    
+    public void setCapsdConfig(CapsdConfig capsdConfig) {
+        m_capsdConfig = capsdConfig;
+    }
+
+    public void setSuspectRunner(RunnableConsumerThreadPool suspectRunner) {
+        m_suspectRunner = suspectRunner;
+    }
+
+    public void setRescanRunner(RunnableConsumerThreadPool rescanRunner) {
+        m_rescanRunner = rescanRunner;
+    }
+
+    public void setEventListener(StoppableEventListener eventListener) {
+        m_eventListener = eventListener;
+    }
+
+    public void setScheduler(Scheduler scheduler) {
+        m_scheduler = scheduler;
     }
 
 } // end Capsd class

@@ -49,11 +49,11 @@ import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.util.Assert;
 
-public class RunnableConsumerThreadPool<R extends Runnable> extends Object implements Fiber {
+public class RunnableConsumerThreadPool extends Object implements Fiber {
     /**
      * The queue where runnable objects are added.
      */
-    private SizingFifoQueue<R> m_delegateQ;
+    private SizingFifoQueue<Runnable> m_delegateQ;
 
     /**
      * The list of running fibers in the pool. The list allows the size of the
@@ -589,7 +589,7 @@ public class RunnableConsumerThreadPool<R extends Runnable> extends Object imple
         Assert.state(loMark <= hiMark, "The lo-mark must be less than the hi-mark");
         Assert.state(max > 0, "The maximum number of fibers must be greater than zero");
 
-        m_delegateQ = new SizingFifoQueue<R>();
+        m_delegateQ = new SizingFifoQueue<Runnable>();
         m_fibers = new Fiber[max];
         m_poolName = name;
         m_hiRatio = hiMark;
@@ -611,7 +611,7 @@ public class RunnableConsumerThreadPool<R extends Runnable> extends Object imple
      * 
      * @return The Runnable input queue.
      */
-    public FifoQueue<R> getRunQueue() {
+    public FifoQueue<Runnable> getRunQueue() {
         return m_delegateQ;
     }
 

@@ -64,7 +64,7 @@ public class LoopPlugin implements Plugin {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         
         if (qualifiers == null)
             return false;
@@ -78,11 +78,11 @@ public class LoopPlugin implements Plugin {
         
     }
 
-    private boolean isSupported(Map parameters) {
+    private boolean isSupported(Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "is-supported", "false").equalsIgnoreCase("true");
     }
 
-    private String getIpMatch(Map parameters) {
+    private String getIpMatch(Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*");
     }
 

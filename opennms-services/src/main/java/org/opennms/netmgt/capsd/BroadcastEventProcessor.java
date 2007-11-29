@@ -48,7 +48,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -62,17 +61,18 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.utils.XmlrpcUtil;
+import org.opennms.netmgt.utils.annotations.EventHandler;
+import org.opennms.netmgt.utils.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor implements EventListener {
+@EventListener(name="Capsd:BroadcastEventProcessor")
+public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * SQL statement used to add an interface/server mapping into the database;
@@ -167,12 +167,6 @@ final class BroadcastEventProcessor implements EventListener {
     private String m_localServer = null;
 
     /**
-     * Set of event ueis that we should notify when we receive and when a
-     * success or failure occurs.
-     */
-    private Set<String> m_notifySet = new HashSet<String>();
-
-    /**
      * The Capsd rescan scheduler
      */
     private Scheduler m_scheduler;
@@ -180,48 +174,9 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where suspectInterface events are enqueued for processing.
      */
-    private FifoQueue<SuspectEventProcessor> m_suspectQ;
+    private FifoQueue<Runnable> m_suspectQ;
     
-    private EventProcessorFactory m_eventProcessorFactory;
-
-    /**
-     * Constructor
-     * @param suspectQ
-     *            The queue where new SuspectEventProcessor objects are enqueued
-     *            for running..
-     * @param scheduler
-     *            Rescan scheduler.
-     * @param eventProcessorFactory TODO
-     * @param capsdDbSyncer capsd database syncer that manages service mappings in the database with the configuration file
-     * @param pluginManager plugin manager that is used when doing capabilities scanning
-     */
-    BroadcastEventProcessor(FifoQueue<SuspectEventProcessor> suspectQ, Scheduler scheduler, EventProcessorFactory eventProcessorFactory) {
-        
-        m_eventProcessorFactory = eventProcessorFactory;
-        
-
-        // Suspect queue
-        //
-        m_suspectQ = suspectQ;
-
-        // Scheduler
-        //
-        m_scheduler = scheduler;
-
-        // the local servername
-        m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-
-        // Subscribe to eventd
-        //
-        createMessageSelectorAndSubscribe();
-    }
-
-    /**
-     * Unsubscribe from eventd
-     */
-    public void close() {
-        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
-    }
+    private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
 
     /**
      * Counts the number of interfaces on the node other than a given interface
@@ -355,12 +310,11 @@ final class BroadcastEventProcessor implements EventListener {
      * @param dbConn
      * @param nodeLabel
      * @param ipaddr
-     * @param txNo
      * @return a LinkedList of events to be sent
      * @throws SQLException
      * @throws FailedOperationException
      */
-    private List<Event> createInterfaceOnNode(Connection dbConn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+    private List<Event> createInterfaceOnNode(Connection dbConn, String nodeLabel, String ipaddr) throws SQLException, FailedOperationException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -394,7 +348,7 @@ final class BroadcastEventProcessor implements EventListener {
 
                 // create a nodeEntry
                 DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId, dpName);
-                Event newEvent = EventUtils.createNodeGainedInterfaceEvent(nodeEntry, ifaddr, txNo);
+                Event newEvent = EventUtils.createNodeGainedInterfaceEvent(nodeEntry, ifaddr);
                 eventsToSend.add(newEvent);
 
             }
@@ -415,64 +369,6 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
-     * Create message selector to set to the subscription
-     */
-    private void createMessageSelectorAndSubscribe() {
-        // Create the selector for the ueis this service is interested in
-        //
-        List<String> ueiList = new ArrayList<String>();
-
-        // newSuspectInterface
-        ueiList.add(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-
-        // forceRescan
-        ueiList.add(EventConstants.FORCE_RESCAN_EVENT_UEI);
-
-        // addNode
-        ueiList.add(EventConstants.ADD_NODE_EVENT_UEI);
-        m_notifySet.add(EventConstants.ADD_NODE_EVENT_UEI);
-
-        // deleteNode
-        ueiList.add(EventConstants.DELETE_NODE_EVENT_UEI);
-        m_notifySet.add(EventConstants.DELETE_NODE_EVENT_UEI);
-
-        // addInterface
-        ueiList.add(EventConstants.ADD_INTERFACE_EVENT_UEI);
-        m_notifySet.add(EventConstants.ADD_INTERFACE_EVENT_UEI);
-
-        // deleteInterface
-        ueiList.add(EventConstants.DELETE_INTERFACE_EVENT_UEI);
-        m_notifySet.add(EventConstants.DELETE_INTERFACE_EVENT_UEI);
-
-        // deleteService
-        ueiList.add(EventConstants.DELETE_SERVICE_EVENT_UEI);
-
-        // changeService
-        ueiList.add(EventConstants.CHANGE_SERVICE_EVENT_UEI);
-        m_notifySet.add(EventConstants.CHANGE_SERVICE_EVENT_UEI);
-
-        // updateServer
-        ueiList.add(EventConstants.UPDATE_SERVER_EVENT_UEI);
-        m_notifySet.add(EventConstants.UPDATE_SERVER_EVENT_UEI);
-
-        // updateService
-        ueiList.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
-        m_notifySet.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
-
-        // nodeAdded
-        ueiList.add(EventConstants.NODE_ADDED_EVENT_UEI);
-
-        // nodeDeleted
-        ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
-
-        // duplicateNodeDeleted
-        ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
-
-        EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
-    }
-
-    /**
      * This method add a node with the specified node label to the database. If
      * also adds in interface with the given ipaddress to the node, if the
      * ipaddr is not null
@@ -483,15 +379,12 @@ final class BroadcastEventProcessor implements EventListener {
      *            the node label to identify the node to create.
      * @param ipaddr
      *            the ipaddress to be added into the ipinterface table.
-     * @param txNo
-     *            the transaction no.
-     * 
      * @throws SQLException
      *             if a database error occurs
      * @throws FailedOperationException
      *             if the ipaddr is not resolvable
      */
-    private List<Event> createNodeWithInterface(Connection conn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+    private List<Event> createNodeWithInterface(Connection conn, String nodeLabel, String ipaddr) throws SQLException, FailedOperationException {
         if (nodeLabel == null)
             return Collections.emptyList();
 
@@ -507,7 +400,7 @@ final class BroadcastEventProcessor implements EventListener {
         node.setLabelSource(DbNodeEntry.LABEL_SOURCE_USER);
         node.store(conn);
 
-        Event newEvent = EventUtils.createNodeAddedEvent(node, txNo);
+        Event newEvent = EventUtils.createNodeAddedEvent(node);
         eventsToSend.add(newEvent);
 
         if (ipaddr != null)
@@ -523,7 +416,7 @@ final class BroadcastEventProcessor implements EventListener {
                 ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 ipInterface.store(conn);
 
-                Event gainIfEvent = EventUtils.createNodeGainedInterfaceEvent(node, ifaddress, txNo);
+                Event gainIfEvent = EventUtils.createNodeGainedInterfaceEvent(node, ifaddress);
                 eventsToSend.add(gainIfEvent);
             } catch (UnknownHostException e) {
                 throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
@@ -537,13 +430,12 @@ final class BroadcastEventProcessor implements EventListener {
      * @param dbConn
      * @param nodeLabel
      * @param ipaddr
-     * @param txNo
      * @return eventsToSend
      *          A List Object containing events to be sent
      * @throws SQLException
      * @throws FailedOperationException
      */
-    private List<Event> doAddInterface(Connection dbConn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+    private List<Event> doAddInterface(Connection dbConn, String nodeLabel, String ipaddr) throws SQLException, FailedOperationException {
         List<Event> eventsToSend;
         if (interfaceExists(dbConn, nodeLabel, ipaddr)) {
             if (log().isDebugEnabled()) {
@@ -553,11 +445,11 @@ final class BroadcastEventProcessor implements EventListener {
         }
 
         else if (nodeExists(dbConn, nodeLabel)) {
-            eventsToSend = createInterfaceOnNode(dbConn, nodeLabel, ipaddr, txNo);
+            eventsToSend = createInterfaceOnNode(dbConn, nodeLabel, ipaddr);
         } else {
             // The node does not exist in the database, add the node and
             // the ipinterface into the database.
-            eventsToSend = createNodeWithInterface(dbConn, nodeLabel, ipaddr, txNo);
+            eventsToSend = createNodeWithInterface(dbConn, nodeLabel, ipaddr);
         }
         return eventsToSend;
     }
@@ -572,8 +464,6 @@ final class BroadcastEventProcessor implements EventListener {
      * @param ipaddr
      *            an interface on the node (may be null if no interface is
      *            supplied)
-     * @param txNo
-     *            a transaction number to associate with the modification
      * @return a list of events that need to be sent in response to these
      *         changes
      * @throws SQLException
@@ -581,13 +471,13 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws FailedOperationException
      *             if other errors occur
      */
-    private List<Event> doAddNode(Connection dbConn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+    private List<Event> doAddNode(Connection dbConn, String nodeLabel, String ipaddr) throws SQLException, FailedOperationException {
         List<Event> eventsToSend;
         if (!nodeExists(dbConn, nodeLabel)) {
             // the node does not exist in the database. Add the node with the
             // specified
             // node label and add the ipaddress to the database.
-            eventsToSend = createNodeWithInterface(dbConn, nodeLabel, ipaddr, txNo);
+            eventsToSend = createNodeWithInterface(dbConn, nodeLabel, ipaddr);
         } else {
             eventsToSend = Collections.emptyList();
             if (log().isDebugEnabled()) {
@@ -1120,12 +1010,8 @@ final class BroadcastEventProcessor implements EventListener {
         }        
     }
 
-    /**
-     * Get the local server name
-     */
-    public String getLocalServer() {
-        return m_localServer;
-    }
+    
+    
 
     /**
      * Return an id for this event listener
@@ -1148,7 +1034,8 @@ final class BroadcastEventProcessor implements EventListener {
      *             if the operation fails (because of database error for
      *             example)
      */
-    private void handleAddInterface(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
+    public void handleAddInterface(Event event) throws InsufficientInformationException, FailedOperationException {
         EventUtils.checkInterface(event);
         EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
         if (isXmlRpcEnabled())
@@ -1165,10 +1052,10 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doAddInterface(dbConn, nodeLabel, event.getInterface(), txNo);
+            eventsToSend = doAddInterface(dbConn, nodeLabel, event.getInterface());
         } catch (SQLException sqlE) {
             log().error("addInterfaceHandler: SQLException during add node and ipaddress to the database.", sqlE);
             throw new FailedOperationException("Database error: " + sqlE.getMessage(), sqlE);
@@ -1198,6 +1085,10 @@ final class BroadcastEventProcessor implements EventListener {
         }
     }
 
+    private Connection getConnection() throws SQLException {
+        return DataSourceFactory.getInstance().getConnection();
+    }
+
     /**
      * Process an addNode event.
      * 
@@ -1208,7 +1099,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws FailedOperationException
      *             if an error occurs during processing
      */
-    private void handleAddNode(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
+    public void handleAddNode(Event event) throws InsufficientInformationException, FailedOperationException {
 
         EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
         if (isXmlRpcEnabled()) {
@@ -1222,10 +1114,10 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doAddNode(dbConn, nodeLabel, ipaddr, txNo);
+            eventsToSend = doAddNode(dbConn, nodeLabel, ipaddr);
         } catch (SQLException sqlE) {
             log().error("addNodeHandler: SQLException during add node and ipaddress to tables", sqlE);
             throw new FailedOperationException("database error: " + sqlE.getMessage(), sqlE);
@@ -1265,7 +1157,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws FailedOperationException
      * @return void
      */
-    private void handleChangeService(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
+    public void handleChangeService(Event event) throws InsufficientInformationException, FailedOperationException {
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
         EventUtils.requireParm(event, EventConstants.PARM_ACTION);
@@ -1281,7 +1174,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
             eventsToSend = doChangeService(dbConn, event.getInterface(), event.getService(), action, txNo);
@@ -1323,7 +1216,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws InsufficientInformationException
      *             if the required information is not part of the event
      */
-    private void handleDeleteInterface(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.DELETE_INTERFACE_EVENT_UEI)
+    public void handleDeleteInterface(Event event) throws InsufficientInformationException, FailedOperationException {
         // validate event
         EventUtils.checkEventId(event);
         EventUtils.checkInterface(event);
@@ -1341,7 +1235,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
             String source = (event.getSource() == null ? "OpenNMS.Capsd" : event.getSource());
@@ -1384,7 +1278,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws InsufficientInformationException
      *             if the required information is not part of the event
      */
-    private void handleDeleteNode(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.DELETE_NODE_EVENT_UEI)
+    public void handleDeleteNode(Event event) throws InsufficientInformationException, FailedOperationException {
         // validate event
         EventUtils.checkEventId(event);
         EventUtils.checkNodeId(event);
@@ -1402,7 +1297,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
             String source = (event.getSource() == null ? "OpenNMS.Capsd" : event.getSource());
@@ -1447,7 +1342,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws InsufficientInformationException
      *             if the required information is not part of the event
      */
-    private void handleDeleteService(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
+    public void handleDeleteService(Event event) throws InsufficientInformationException, FailedOperationException {
 
         // validate event
         EventUtils.checkEventId(event);
@@ -1465,7 +1361,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
             String source = (event.getSource() == null ? "OpenNMS.Capsd" : event.getSource());
             eventsToSend = doDeleteService(dbConn, source, event.getNodeid(), event.getInterface(), event.getService(), txNo);
@@ -1504,7 +1400,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
+    @EventHandler(uei=EventConstants.DUP_NODE_DELETED_EVENT_UEI)
+    public void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
 
@@ -1519,7 +1416,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleForceRescan(Event event) throws InsufficientInformationException {
+    @EventHandler(uei=EventConstants.FORCE_RESCAN_EVENT_UEI)
+    public void handleForceRescan(Event event) throws InsufficientInformationException {
         // If the event has a node identifier use it otherwise
         // will need to use the interface to lookup the node id
         // from the database
@@ -1541,7 +1439,7 @@ final class BroadcastEventProcessor implements EventListener {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                dbc = DataSourceFactory.getInstance().getConnection();
+                dbc = getConnection();
 
                 // Retrieve node id
                 stmt = dbc.prepareStatement(SQL_RETRIEVE_NODEID);
@@ -1588,13 +1486,15 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleNewSuspect(Event event) throws InsufficientInformationException {
+    
+    @EventHandler(uei=EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
+    public void handleNewSuspect(Event event) throws InsufficientInformationException {
         // ensure the event has an interface
         EventUtils.checkInterface(event);
         // new poll event
         try {
             log().debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
-            m_suspectQ.add(m_eventProcessorFactory.createSuspectEventProcessor(event.getInterface()));
+            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(event.getInterface()));
         } catch (Exception ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }
@@ -1605,7 +1505,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleNodeAdded(Event event) throws InsufficientInformationException {
+    @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
+    public void handleNodeAdded(Event event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
 
         // Schedule the new node.
@@ -1621,7 +1522,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleNodeDeleted(Event event) throws InsufficientInformationException {
+    @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
+    public void handleNodeDeleted(Event event) throws InsufficientInformationException {
 
         EventUtils.checkNodeId(event);
 
@@ -1637,7 +1539,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      * @param event
      */
-    private void handleUpdateServer(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
+    public void handleUpdateServer(Event event) throws InsufficientInformationException, FailedOperationException {
         // If there is no interface or NMS server found then it cannot be
         // processed
         EventUtils.checkInterface(event);
@@ -1653,15 +1556,15 @@ final class BroadcastEventProcessor implements EventListener {
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
         if (log().isDebugEnabled())
-            log().debug("updateServerHandler:  processing updateServer event for: " + event.getInterface() + " on OpenNMS server: " + getLocalServer());
+            log().debug("updateServerHandler:  processing updateServer event for: " + event.getInterface() + " on OpenNMS server: " + m_localServer);
 
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doUpdateServer(dbConn, nodeLabel, event.getInterface(), action, getLocalServer(), txNo);
+            eventsToSend = doUpdateServer(dbConn, nodeLabel, event.getInterface(), action, m_localServer, txNo);
 
         } catch (SQLException sqlE) {
             log().error("SQLException during updateServer on database.", sqlE);
@@ -1707,7 +1610,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws FailedOperationException
      *             if the operation fails for some reason
      */
-    private void handleUpdateService(Event event) throws InsufficientInformationException, FailedOperationException {
+    @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
+    public void handleUpdateService(Event event) throws InsufficientInformationException, FailedOperationException {
 
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
@@ -1727,7 +1631,7 @@ final class BroadcastEventProcessor implements EventListener {
         List<Event> eventsToSend = null;
         Connection dbConn = null;
         try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
+            dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
             eventsToSend = doUpdateService(dbConn, nodeLabel, event.getInterface(), event.getService(), action, txNo);
@@ -2069,139 +1973,7 @@ final class BroadcastEventProcessor implements EventListener {
 
     }
 
-    /**
-     * This is a helper method to notifiy an XML-RPC server that an error occurred relating to 
-     * an event that has been received.
-     * 
-     * TODO: This method should probably go away, soon, since it's design was pre OpenNMS' XML-RPC
-     * API to add services.  This method was used when services were added via Eventd TCP port 
-     * and the user wanted to track receipt of the event via their XML-RPC server.
-     * 
-     * @param event
-     * @param msg
-     * @param ex
-     */
-    private void notifyEventError(Event event, String msg, Exception ex) {
-        if (!isXmlRpcEnabled())
-            return;
-
-        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
-            int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), msg + ex.getMessage(), status, "OpenNMS.Capsd");
-        }
-    }
-
-    /**
-     * This is a helper method to notifiy an XML-RPC server that an event has been received.
-     * 
-     * TODO: This method should probably go away, soon, since it's design was pre OpenNMS' XML-RPC
-     * API to add services.  This method was used when services were added via Eventd TCP port 
-     * and the user wanted to track receipt of the event via their XML-RPC server.
-     * 
-     * @param event
-     */
-    private void notifyEventReceived(Event event) {
-        if (!isXmlRpcEnabled())
-            return;
-
-        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-
-        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
-            StringBuffer message = new StringBuffer("Received event: ");
-            message.append(event.getUei());
-            message.append(" : ");
-            message.append(event);
-            int status = EventConstants.XMLRPC_NOTIFY_RECEIVED;
-            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), message.toString(), status, "OpenNMS.Capsd");
-        }
-    }
-
-    /**
-     * This is a helper method for putting together appropriate message and verifying that this UEI
-     * is a registered for sending notification to an XML-RPC server and sending that notification
-     * through XmlrpcUtil.
-     * 
-     * FIXME: It may be to create an XMLEvent sub class that overides send().
-     * 
-     * @param event
-     */
-    private void notifyEventSuccess(Event event) {
-        if (!isXmlRpcEnabled())
-            return;
-
-        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-
-        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
-            StringBuffer message = new StringBuffer("Completed processing event: ");
-            message.append(event.getUei());
-            message.append(" : ");
-            message.append(event);
-            int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), message.toString(), status, "OpenNMS.Capsd");
-        }
-    }
-
-    /**
-     * This method is invoked by the EventIpcManager when a new event is
-     * available for processing. Currently only text based messages are
-     * processed by this callback. Each message is examined for its Universal
-     * Event Identifier and the appropriate action is taking based on each UEI.
-     * 
-     * @param event
-     *            The event.
-     * 
-     */
-    public void onEvent(Event event) {
-        try {
-
-            String eventUei = event.getUei();
-            if (eventUei == null) {
-                return;
-            }
-
-            log().debug("Received event: " + eventUei);
-
-            notifyEventReceived(event);
-
-            if (eventUei.equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)) {
-                handleNewSuspect(event);
-            } else if (eventUei.equals(EventConstants.FORCE_RESCAN_EVENT_UEI)) {
-                handleForceRescan(event);
-            } else if (event.getUei().equals(EventConstants.UPDATE_SERVER_EVENT_UEI)) {
-                handleUpdateServer(event);
-            } else if (event.getUei().equals(EventConstants.UPDATE_SERVICE_EVENT_UEI)) {
-                handleUpdateService(event);
-            } else if (event.getUei().equals(EventConstants.ADD_NODE_EVENT_UEI)) {
-                handleAddNode(event);
-            } else if (event.getUei().equals(EventConstants.DELETE_NODE_EVENT_UEI)) {
-                handleDeleteNode(event);
-            } else if (event.getUei().equals(EventConstants.ADD_INTERFACE_EVENT_UEI)) {
-                handleAddInterface(event);
-            } else if (event.getUei().equals(EventConstants.DELETE_INTERFACE_EVENT_UEI)) {
-                handleDeleteInterface(event);
-            } else if (event.getUei().equals(EventConstants.DELETE_SERVICE_EVENT_UEI)) {
-                handleDeleteService(event);
-            } else if (event.getUei().equals(EventConstants.CHANGE_SERVICE_EVENT_UEI)) {
-                handleChangeService(event);
-            } else if (eventUei.equals(EventConstants.NODE_ADDED_EVENT_UEI)) {
-                handleNodeAdded(event);
-            } else if (eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
-                handleNodeDeleted(event);
-            } else if (eventUei.equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
-                handleDupNodeDeleted(event);
-            }
-            notifyEventSuccess(event);
-        } catch (InsufficientInformationException ex) {
-            log().info("BroadcastEventProcessor: insufficient information in event, discarding it: " + ex.getMessage());
-            notifyEventError(event, "Invalid parameters: ", ex);
-        } catch (FailedOperationException ex) {
-            log().error("BroadcastEventProcessor: operation failed for event: " + event.getUei() + ", exception: " + ex.getMessage());
-            notifyEventError(event, "processing failed: ", ex);
-        }
-    } // end onEvent()
-
-    /**
+     /**
      * JDBC Query to servicemap table.  This will soon be cleaned up with Hibernate/DAO code.
      * 
      * @param dbConn
@@ -2283,8 +2055,27 @@ final class BroadcastEventProcessor implements EventListener {
             throw new FailedOperationException("Interface "+ipaddr+" does not exist on a node with nodeLabel "+nodeLabel);
     }
 
-    public void setEventProcessorFactory(EventProcessorFactory eventProcessorFactory) {
-        m_eventProcessorFactory = eventProcessorFactory;
+    public void setSuspectEventProcessorFactory(SuspectEventProcessorFactory suspectEventProcessorFactory) {
+        m_suspectEventProcessorFactory = suspectEventProcessorFactory;
+    }
+
+    public void setScheduler(Scheduler scheduler) {
+        m_scheduler = scheduler;
+    }
+
+    public void setSuspectQueue(FifoQueue<Runnable> suspectQ) {
+        m_suspectQ = suspectQ;
+    }
+
+    public void setLocalServer(String localServer) {
+        m_localServer = localServer;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_suspectEventProcessorFactory != null, "The suspectEventProcessor must be set");
+        Assert.state(m_scheduler != null, "The schedule must be set");
+        Assert.state(m_suspectQ != null, "The scheduleQueue must be set");
+        Assert.state(m_localServer != null, "The localServer must be set");
     }
 
 
