@@ -59,7 +59,7 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
 public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
     
     int m_port = 8080; 
-    int m_ajp_port = 8081;
+
     private Server m_server;
     private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
     
@@ -86,10 +86,10 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
 
         m_server.addConnector(connector);
 
-        port = Integer.getInteger("org.opennms.netmgt.jetty.ajp-port", m_ajp_port);
-        if (port != null) {
+        Integer ajp_port = Integer.getInteger("org.opennms.netmgt.jetty.ajp-port");
+        if (ajp_port != null) {
             connector = new Ajp13SocketConnector();
-            connector.setPort(port);
+            connector.setPort(ajp_port);
             m_server.addConnector(connector);
         }
 
