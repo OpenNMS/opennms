@@ -1400,13 +1400,20 @@ opennms.home = ${opennms.home}
   </dependencyManagement>
   <repositories>
     <repository>
-      <releases />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
     </repository>
     <repository>
-      <snapshots />
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -1417,28 +1424,45 @@ opennms.home = ${opennms.home}
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <releases />
-      <snapshots />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
     </pluginRepository>
     <pluginRepository>
-      <releases />
-      <snapshots />
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
     </pluginRepository>
     <pluginRepository>
-      <releases />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <id>codehaus</id>
       <name>Maven/Codehaus Repository</name>
       <url>http://repository.codehaus.org</url>
     </pluginRepository>
     <pluginRepository>
-      <releases />
-      <snapshots />
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
       <id>codehaus-snapshots</id>
       <name>Maven/Codehaus Snapshot Repository</name>
       <url>http://snapshots.repository.codehaus.org</url>
