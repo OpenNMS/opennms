@@ -79,6 +79,7 @@ import org.opennms.report.datablock.OutageSvcTimesList;
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
  */
+
 public class AvailabilityData extends Object {
     /**
      * The log4j category used to log debug messsages and statements.
@@ -359,10 +360,9 @@ public class AvailabilityData extends Object {
         
         Calendar tempCal = new GregorianCalendar();
         tempCal.setTime(periodEndDate);
-        
-        // Calculate m_endTime as 23:59:59 on the day prior to the report being run
-        
-        tempCal.add(Calendar.DAY_OF_MONTH, -1);
+
+        // This used to be the day prior to the report being run, which is confusing
+        // tempCal.add(Calendar.DAY_OF_MONTH, -1);
         tempCal.set(Calendar.HOUR_OF_DAY, 23);
         tempCal.set(Calendar.MINUTE, 59);
         tempCal.set(Calendar.SECOND, 59);
