@@ -1407,6 +1407,9 @@ opennms.home = ${opennms.home}
     </repository>
     <repository>
       <snapshots />
+      <releases>
+        <enabled>false</enabled>
+      </releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
