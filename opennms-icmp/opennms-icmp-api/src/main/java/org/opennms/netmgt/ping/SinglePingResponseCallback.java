@@ -2,17 +2,20 @@ package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 public class SinglePingResponseCallback implements PingResponseCallback {
-    BarrierSignaler bs = new BarrierSignaler(1);
-    Throwable error = null;
-    Long responseTime = null;
+    private BarrierSignaler bs = new BarrierSignaler(1);
+    private Throwable error = null;
+    private Long responseTime = null;
+    private InetAddress m_host;
     
-	public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
+	public SinglePingResponseCallback(InetAddress host) {
+	    m_host = host;
+    }
+
+    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
 	    info("got response for address " + address + ", thread " + packet.getTID() + ", seq " + packet.getSequenceId() + " with a responseTime "+packet.getPingRTT());
 	    responseTime = packet.getPingRTT();
 	    bs.signalAll();
@@ -38,7 +41,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
     
     public void waitFor() throws InterruptedException {
-        info("waiting to finish");
+        info("waiting for ping to "+m_host+" to finish");
         bs.waitFor();
     }
 
