@@ -120,7 +120,7 @@ public class Pinger {
 	            try {
 	                processPackets();
 	            } catch (InterruptedException e) {
-	                log().error("Thread "+this+" interrupted!");
+                    errorf("Thread %s interrupted!", this);
 	            }
 	        }
 	    };
@@ -130,7 +130,7 @@ public class Pinger {
 	            try {
 	                processReplies();
 	            } catch (InterruptedException e) {
-	                log().error("Thread "+this+" interrupted!");
+                    errorf("Thread %s interrupted!", this);
 	            }
 	        }
 	    };
@@ -140,7 +140,7 @@ public class Pinger {
 	            try {
 	                processTimeouts();
 	            } catch (InterruptedException e) {
-	                log().error("Thread "+this+" interrupted!");
+                    errorf("Thread %s interrupted!", this);
 	            }
 	        }
 	    };
@@ -169,12 +169,20 @@ public class Pinger {
 	        debugf("Looking for request with Id: %s in map %s", id, s_pendingRequests);
 	        PingRequest request = s_pendingRequests.remove(id);
 	        if (request != null) {
-	            debugf("Processing reply %s for request %s", reply, request);
-	            request.processResponse(reply.getPacket());
+	            processReply(reply, request);
 	        } else {
 	            debugf("No request found for reply %s", reply);
 	        }
 	    }
+    }
+
+    private static void processReply(Reply reply, PingRequest request) {
+        try {
+            debugf("Processing reply %s for request %s", reply, request);
+            request.processResponse(reply.getPacket());
+        } catch (Throwable t) {
+            errorf(t, "Unexpected error processingResponse to request: %s, reply is %s", request, reply);
+        }
     }
 
 	private static void processPackets() throws InterruptedException {
@@ -189,7 +197,7 @@ public class Pinger {
                     s_pendingReplyQueue.offer(reply);
                 }
             } catch (IOException e) {
-                log().error("I/O Error occurred reading from ICMP Socket", e);
+                errorf(e, "I/O Error occurred reading from ICMP Socket");
             } catch (IllegalArgumentException e) {
                 // this is not an EchoReply so ignore it
             } catch (IndexOutOfBoundsException e) {
@@ -205,8 +213,7 @@ public class Pinger {
             debugf("Found a possibly timedout request: %s", request);
 	        if (s_pendingRequests.remove(request.getId()) == request) {
 	            // then this request is still pending so we must time it out
-	            debugf("Processing timeout for: %s", request);
-	            PingRequest retry = request.processTimeout();
+	            PingRequest retry = processTimeout(request);
 	            if (retry != null) {
 	                try {
                         ping(retry);
@@ -218,6 +225,16 @@ public class Pinger {
 	        
 	    }
 	}
+
+    private static PingRequest processTimeout(PingRequest request) {
+        try {
+            debugf("Processing timeout for: %s", request);
+            return request.processTimeout();
+        } catch (Throwable t) {
+            errorf(t, "Unexpected error processingTimout to request: %s", request);
+            return null;
+        }
+    }
 	
     public static void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws IOException {
     	ping(new PingRequest(host, sequenceId, timeout, retries, cb));
@@ -279,9 +296,17 @@ public class Pinger {
     }
     
     private static void debugf(String format, Object... args) {
-        //if (log().isDebugEnabled()) {
-        //    log().debug(String.format(format, args));
-        //}
+        if (log().isDebugEnabled()) {
+            log().debug(String.format(format, args));
+        }
+    }
+
+    private static void errorf(String format, Object... args) {
+        log().error(String.format(format, args));
+    }
+
+    private static void errorf(Throwable t, String format, Object... args) {
+        log().error(String.format(format, args), t);
     }
 
 }
