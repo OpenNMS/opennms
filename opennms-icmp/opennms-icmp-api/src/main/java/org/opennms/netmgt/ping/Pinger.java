@@ -10,12 +10,9 @@ import java.util.Map;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ping.PingRequest.RequestId;
-import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * 
@@ -241,7 +238,7 @@ public class Pinger {
      * @throws IOException 
      */
     public static Long ping(InetAddress host, long timeout, int retries) throws InterruptedException, IOException {
-        SinglePingResponseCallback cb = new SinglePingResponseCallback();
+        SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
         ping(host, timeout, retries, (short) 1, cb);
         cb.waitFor();
         return cb.getResponseTime();
