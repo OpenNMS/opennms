@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.netmgt.ping.PingRequest.RequestId;
+import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * 
@@ -44,7 +46,7 @@ import org.opennms.netmgt.ping.PingRequest.RequestId;
  * 
  * Reading from the icmp socket: (icmp socket reader)
  * - read a packet from the socket
- * - construct a reply object
+ * - construct a reply object 
  * - verify it is an opennms gen'd packet
  * - add it to the pendingReply queue
  * 
