@@ -1184,5 +1184,102 @@ public class AlarmFactory extends Object {
 
         return clause;
     }
+    
+    /**
+     * Escalate a list of alarms using the given username and the current time
+     * @throws SQLException 
+     */
+    public static void escalateAlarms(int[] alarmIds, String user) throws SQLException {
+    	escalateAlarms(alarmIds, user, new Date());
+    }
+    
+    /**
+     * Escalate a list of alarms.  The username and time are currently discarded, but
+     * are required for future use.
+     */
+    public static void escalateAlarms(int[] alarmIds, String user, Date time) throws SQLException {
+        if (alarmIds == null || user == null || time == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        if (alarmIds.length > 0) {
+            StringBuffer update = new StringBuffer("UPDATE ALARMS SET SEVERITY = SEVERITY + 1");
+            update.append(" WHERE ALARMID IN (");
+            update.append(alarmIds[0]);
+
+            for (int i = 1; i < alarmIds.length; i++) {
+                update.append(",");
+                update.append(alarmIds[i]);
+            }
+
+            update.append(")");
+            update.append(" AND ALARMTYPE =?");
+            update.append(" AND SEVERITY >=? ");
+            update.append(" AND SEVERITY <?");
+
+            Connection conn = Vault.getDbConnection();
+
+            try {
+                PreparedStatement stmt = conn.prepareStatement(update.toString());
+                stmt.setInt(1, Alarm.PROBLEM_TYPE);
+                stmt.setInt(2, Alarm.NORMAL_SEVERITY);
+                stmt.setInt(3, Alarm.CRITICAL_SEVERITY);
+
+                stmt.executeUpdate();
+                stmt.close();
+            } finally {
+                Vault.releaseDbConnection(conn);
+            }
+        }
+    }
+    
+    /**
+     * Clear a list of alarms, using the given username and the current time
+     * @throws SQLException 
+     */
+    public static void clearAlarms(int[] alarmIds, String user) throws SQLException {
+    	clearAlarms(alarmIds, user, new Date());
+    }
+
+    /**
+     * Clear a list of alarms.  The username and time are currently discarded, but
+     * are required for future use.
+     */
+    public static void clearAlarms(int[] alarmIds, String user, Date time) throws SQLException {
+        if (alarmIds == null || user == null || time == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        if (alarmIds.length > 0) {
+            StringBuffer update = new StringBuffer("UPDATE ALARMS SET SEVERITY =?");
+            update.append(", ALARMTYPE =?");
+            update.append(" WHERE ALARMID IN (");
+            update.append(alarmIds[0]);
+
+            for (int i = 1; i < alarmIds.length; i++) {
+                update.append(",");
+                update.append(alarmIds[i]);
+            }
+
+            update.append(")");
+            update.append(" AND SEVERITY >=?");
+            update.append(" AND SEVERITY <=?");
+
+            Connection conn = Vault.getDbConnection();
+
+            try {
+                PreparedStatement stmt = conn.prepareStatement(update.toString());
+                stmt.setInt(1, Alarm.CLEARED_SEVERITY);
+                stmt.setInt(2, Alarm.RESOLUTION_TYPE);
+                stmt.setInt(3, Alarm.NORMAL_SEVERITY);
+                stmt.setInt(4, Alarm.CRITICAL_SEVERITY);
+
+                stmt.executeUpdate();
+                stmt.close();
+            } finally {
+                Vault.releaseDbConnection(conn);
+            }
+        }
+    }
 
 }
