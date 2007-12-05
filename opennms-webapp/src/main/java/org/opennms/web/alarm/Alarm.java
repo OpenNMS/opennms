@@ -59,6 +59,10 @@ public class Alarm extends Object {
     public static final int MAJOR_SEVERITY = 6;
 
     public static final int CRITICAL_SEVERITY = 7;
+    
+    public static final int PROBLEM_TYPE = 1;
+    
+    public static final int RESOLUTION_TYPE = 2;
 
     /** Unique identifier for the alarm, cannot be null */
     protected int id;
@@ -351,5 +355,6 @@ public class Alarm extends Object {
     public String getServiceName() {
         return (this.serviceName);
     }
+
 
 }

@@ -43,7 +43,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.alarm.*"
+	import="org.opennms.web.alarm.*,
+	        org.opennms.web.acegisecurity.Authentication"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
@@ -86,17 +87,28 @@
     pageContext.setAttribute("alarm", alarm);
     
     String action = null;
-    String buttonName=null;
+    String ackButtonName=null;
+    boolean showEscalate=false;
+    boolean showClear=false;
     
     if (alarm.getAcknowledgeTime()==null)
     {
-        buttonName = "Acknowledge";
+        ackButtonName = "Acknowledge";
         action = AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION;
     }
     else
     {
-        buttonName = "Unacknowledge";
+        ackButtonName = "Unacknowledge";
         action = AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION;
+    }
+    
+    String escalateAction = AlarmSeverityChangeServlet.ESCALATE_ACTION;
+    String clearAction = AlarmSeverityChangeServlet.CLEAR_ACTION;
+    if (alarm.getSeverity() > Alarm.NORMAL_SEVERITY && alarm.getSeverity() < Alarm.CRITICAL_SEVERITY) {
+    	showEscalate=true;
+    }
+    if  (alarm.getSeverity() >= Alarm.NORMAL_SEVERITY && alarm.getSeverity() <= Alarm.CRITICAL_SEVERITY) {
+    	showClear=true;
     }
 %>
 
@@ -233,14 +245,59 @@
         </tr>
       </table>
 
-      <br/>
-      
+<% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) {     %>
+      <table>
+      <tbody>
+      <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+      <th colspan="2">Acknowledgement and Severity Actions</th>
+      </tr>
+      <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+      <td>
       <form method="post" action="alarm/acknowledge">
         <input type="hidden" name="action" value="<%=action%>" />
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
-        <input type="submit" value="<%=buttonName%>" />
+        <input type="submit" value="<%=ackButtonName%>" />
       </form>
+      </td>
+      <td><%=ackButtonName%> this alarm</td>
+      </tr>
+      
+      <%if (showEscalate || showClear) { %>
+      <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+      <td>
+      <form method="post" action="alarm/changeSeverity">
+	  <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+      <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />	  
+      <select name="action">
+      	  <%if (showEscalate) { %>
+          <option value="<%=escalateAction%>">Escalate</option>
+          <% } %>
+      	  <%if (showClear) { %>
+          <option value="<%=clearAction%>">Clear</option>
+          <% } %>
+      </select>
+	  <input type="submit" value="Go"/>
+      </form>
+      </td>
+      <td>
+      <%if (showEscalate) { %>
+      Escalate
+      <% } %>
+      <%if (showEscalate && showClear) { %>
+      or
+      <% } %>
+      <%if (showClear) { %>
+      Clear
+      <% } %>
+      this alarm
+      </td>
+      </tr>
+      <% } // showEscalate || showClear %>      
+      </tbody>
+      </table>
+      
+      <br/>
       
       <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"))) { %>
 
@@ -262,6 +319,7 @@
         <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.troubleTicketState) || (alarm.troubleTicketState != 'OPEN')}" />
       </form>
       
-      <% } %>
+      <% } // alarmTroubleTicketEnabled %>
+      <% } // isUserInRole%>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
