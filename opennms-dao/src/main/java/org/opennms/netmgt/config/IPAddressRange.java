@@ -32,7 +32,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.discovery;
+package org.opennms.netmgt.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
