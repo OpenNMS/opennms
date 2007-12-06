@@ -128,6 +128,58 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     protected Category log() {
         return ThreadCategory.getInstance();
     }
+    
+    protected void fatalf(String format, Object... args) {
+        log().fatal(String.format(format, args));
+    }
+
+    protected void fatalf(Throwable t, String format, Object... args) {
+        log().fatal(String.format(format, args), t);
+    }
+
+    protected void errorf(String format, Object... args) {
+        log().error(String.format(format, args));
+    }
+
+    protected void errorf(Throwable t, String format, Object... args) {
+        log().error(String.format(format, args), t);
+    }
+
+    protected void warnf(String format, Object... args) {
+        log().warn(String.format(format, args));
+    }
+
+    protected void warnf(Throwable t, String format, Object... args) {
+        log().warn(String.format(format, args), t);
+    }
+
+    protected void infof(String format, Object... args) {
+        Category log = log();
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args));
+        }
+    }
+
+    protected void infof(Throwable t, String format, Object... args) {
+        Category log = log();
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args), t);
+        }
+    }
+
+    protected void debugf(String format, Object... args) {
+        Category log = log();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(format, args));
+        }
+    }
+
+    protected void debugf(Throwable t, String format, Object... args) {
+        Category log = log();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(format, args), t);
+        }
+    }
 
     final public void init() {
         String prefix = ThreadCategory.getPrefix();
