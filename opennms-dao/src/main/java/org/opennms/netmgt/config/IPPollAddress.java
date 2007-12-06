@@ -32,7 +32,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.discovery;
+package org.opennms.netmgt.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -49,7 +49,7 @@ import java.net.UnknownHostException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class IPPollAddress {
+public class IPPollAddress {
     /**
      * The dotted decimal IPv4 address for the poll.
      */
@@ -81,7 +81,7 @@ final class IPPollAddress {
      *                Thrown by the InetAddress class if the hostname cannot be
      *                resolved.
      */
-    IPPollAddress(String ipAddress, long timeout, int retries) throws UnknownHostException {
+    public IPPollAddress(String ipAddress, long timeout, int retries) throws UnknownHostException {
         // check if this is a valid IP address
         InetAddress.getByName(ipAddress);
 
@@ -116,7 +116,7 @@ final class IPPollAddress {
      * 
      * @return The timeout associated with the host in 1/1000th of a second.
      */
-    long getTimeout() {
+    public long getTimeout() {
         return m_timeout;
     }
 
@@ -127,7 +127,7 @@ final class IPPollAddress {
      * 
      * @return The retry count for the instance.
      */
-    int getRetries() {
+    public int getRetries() {
         return m_retries;
     }
 
@@ -136,7 +136,7 @@ final class IPPollAddress {
      * 
      * @return The encapsulated internet address.
      */
-    InetAddress getAddress() {
+    public InetAddress getAddress() {
         return m_address;
     }
 

@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class IteratorIterator<T> implements Iterator<T> {
+public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
     
     private Iterator<Iterator<T>> m_iterIter;
     private Iterator<T> m_currentIter;
@@ -77,6 +77,10 @@ public class IteratorIterator<T> implements Iterator<T> {
     
     public void remove() {
         m_currentIter.remove();
+    }
+
+    public Iterator<T> iterator() {
+        return this;
     }
     
     

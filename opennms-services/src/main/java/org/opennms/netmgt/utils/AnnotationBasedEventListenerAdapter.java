@@ -290,13 +290,13 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             }
         }
 
-        Assert.state(!m_ueiToHandlerMap.isEmpty(), "annotatedListener must have EventHandler annotated methods");
+        Assert.state(!m_ueiToHandlerMap.isEmpty(), "annotatedListener must have public EventHandler annotated methods");
 
     }
 
     private void validateMethodAsEventHandler(Method method) {
-        Assert.state(method.getParameterTypes().length == 1, "Invalid number of paremeters. EventHandler methods must take a single event argument");
-        Assert.state(method.getParameterTypes()[0].isAssignableFrom(Event.class), "Parameter of incorrent type. EventHandler methods must take a single event argument");
+        Assert.state(method.getParameterTypes().length == 1, "Invalid number of paremeters for method "+method+". EventHandler methods must take a single event argument");
+        Assert.state(method.getParameterTypes()[0].isAssignableFrom(Event.class), "Parameter of incorrent type for method "+method+". EventHandler methods must take a single event argument");
     }
     
     public void stop() {

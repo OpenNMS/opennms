@@ -36,7 +36,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.discovery;
+package org.opennms.netmgt.config;
 
 import java.net.InetAddress;
 import java.util.Enumeration;
@@ -55,7 +55,7 @@ import java.util.Iterator;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class IPPollRange implements Iterable<IPPollAddress> {
+public class IPPollRange implements Iterable<IPPollAddress> {
     /**
      * The range to cycle over.
      */
@@ -183,7 +183,7 @@ final class IPPollRange implements Iterable<IPPollAddress> {
      * @see IPAddressRange
      * 
      */
-    IPPollRange(String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
+    public IPPollRange(String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
         m_range = new IPAddressRange(fromIP, toIP);
         m_timeout = timeout;
         m_retries = retries;
@@ -246,7 +246,7 @@ final class IPPollRange implements Iterable<IPPollAddress> {
      * of a second increments.
      * </P>
      */
-    long getTimeout() {
+    public long getTimeout() {
         return m_timeout;
     }
 
@@ -255,7 +255,7 @@ final class IPPollRange implements Iterable<IPPollAddress> {
      * Returns the retry count for the object.
      * </P>
      */
-    int getRetries() {
+    public int getRetries() {
         return m_retries;
     }
 
@@ -265,7 +265,7 @@ final class IPPollRange implements Iterable<IPPollAddress> {
      * object.
      * </P>
      */
-    IPAddressRange getAddressRange() {
+    public IPAddressRange getAddressRange() {
         return m_range;
     }
 
@@ -275,7 +275,7 @@ final class IPPollRange implements Iterable<IPPollAddress> {
      * pollable addresses.
      * </P>
      */
-    Enumeration<IPPollAddress> elements() {
+    public Enumeration<IPPollAddress> elements() {
         return new IPPollRangeGenerator(m_range.elements());
     }
 
