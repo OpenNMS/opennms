@@ -119,13 +119,13 @@
 
   <script language="Javascript" type="text/javascript">
     function checkAllCheckboxes() {
-       if( document.acknowledge_form.alarm.length ) {  
-         for( i = 0; i < document.acknowledge_form.alarm.length; i++ ) {
-           document.acknowledge_form.alarm[i].checked = true
+       if( document.alarm_action_form.alarm.length ) {  
+         for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) {
+           document.alarm_action_form.alarm[i].checked = true
          }
        }
        else {
-         document.acknowledge_form.alarm.checked = true
+         document.alarm_action_form.alarm.checked = true
        }
          
     }
@@ -134,38 +134,56 @@
     {
         var isChecked = false
         var numChecked = 0;
- 
-        if (document.acknowledge_form.alarm.length)
+         
+        // Decide to which servlet we will submit
+        if (anAction == "clear" || anAction == "escalate") {
+        	document.alarm_action_form.action = "alarm/changeSeverity";
+        } else if (anAction == "acknowledge" || anAction == "unacknowledge") {
+        	document.alarm_action_form.action = "alarm/acknowledge";
+        }
+        
+        // Decide what our action should be
+        if (anAction == "escalate") {
+        	document.alarm_action_form.action.value = "<%=AlarmSeverityChangeServlet.ESCALATE_ACTION%>";
+        } else if (anAction == "clear") {
+        	document.alarm_action_form.action.value = "<%=AlarmSeverityChangeServlet.CLEAR_ACTION%>";
+        } else if (anAction == "acknowledge") {
+        	document.alarm_action_form.action.value = "<%=AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION%>";
+        } else if (anAction == "unacknowledge") {
+        	document.alarm_action_form.action.value = "<%=AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION%>";
+        }
+        
+        if (document.alarm_action_form.alarm.length)
         {
-            for( i = 0; i < document.acknowledge_form.alarm.length; i++ ) 
+            for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) 
             {
               //make sure something is checked before proceeding
-              if (document.acknowledge_form.alarm[i].checked)
+              if (document.alarm_action_form.alarm[i].checked)
               {
                 isChecked=true;
                 numChecked+=1;
               }
             }
             
-            if (isChecked && document.acknowledge_form.multiple)
+            if (isChecked && document.alarm_action_form.multiple)
             {
-              if (numChecked == parseInt(document.acknowledge_form.alarm.length)) 
+              if (numChecked == parseInt(document.alarm_action_form.alarm.length)) 
               { 
-                var newPageNum = parseInt(document.acknowledge_form.multiple.value) - 1;
-                var findVal = "multiple=" + document.acknowledge_form.multiple.value;
+                var newPageNum = parseInt(document.alarm_action_form.multiple.value) - 1;
+                var findVal = "multiple=" + document.alarm_action_form.multiple.value;
                 var replaceWith = "multiple=" + newPageNum;
-                var tmpRedirect = document.acknowledge_form.redirectParms.value;
-                document.acknowledge_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
-                document.acknowledge_form.submit();
+                var tmpRedirect = document.alarm_action_form.redirectParms.value;
+                document.alarm_action_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
+                document.alarm_action_form.submit();
               } 
               else 
               {
-                document.acknowledge_form.submit();
+                document.alarm_action_form.submit();
               }
             }
             else if (isChecked)
             {
-              document.acknowledge_form.submit();
+              document.alarm_action_form.submit();
             }
             else
             {
@@ -174,9 +192,9 @@
         }
         else
         {
-            if (document.acknowledge_form.alarm.checked)
+            if (document.alarm_action_form.alarm.checked)
             {
-                document.acknowledge_form.submit();
+                document.alarm_action_form.submit();
             }
             else
             {
@@ -207,9 +225,9 @@
 
       <!-- hidden form for acknowledging the result set --> 
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <form action="alarm/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
+          <form method="POST" name="acknowledge_by_filter_form">    
             <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-            <input type="hidden" name="action" value="<%=action%>" />
+            <input type="hidden" name="action" value="" />
             <%=org.opennms.web.Util.makeHiddenTags(request)%>
           </form>      
       <% } %>
@@ -246,7 +264,7 @@
             <% } %>
 
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <form action="alarm/acknowledge" method="POST" name="acknowledge_form">
+          <form action="alarm/acknowledge" method="POST" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           <input type="hidden" name="action" value="<%=action%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>
@@ -423,15 +441,18 @@
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <input TYPE="reset" />
+          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <select name="alarmAction">
         <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-          <input TYPE="reset" />
-          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-          <input type="button" value="Acknowledge Alarms" onClick="submitForm('acknowledge')"/>
+          <option value="acknowledge">Acknowledge Alarms</option>
         <% } else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
-          <input TYPE="reset" />
-          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-          <input type="button" value="Unacknowledge Alarms" onClick="submitForm('unacknowledge')"/>
+          <option value="unacknowledge">Unacknowledge Alarms</option>
         <% } %>
+          <option value="escalate">Escalate Alarms</option>
+          <option value="clear">Clear Alarms</option>
+          </select>
+          <input type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
         </p>
       </form>
