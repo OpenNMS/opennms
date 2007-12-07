@@ -549,7 +549,7 @@
     <descr>
       &lt;p&gt;SCM has been asked to restart.&lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest='logonly'>
       SCM has been asked to restart.
     </logmsg>
     <severity>Indeterminate</severity>
