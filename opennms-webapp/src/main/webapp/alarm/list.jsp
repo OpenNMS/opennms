@@ -138,7 +138,7 @@
         // Decide to which servlet we will submit
         if (anAction == "clear" || anAction == "escalate") {
         	document.alarm_action_form.action = "alarm/changeSeverity";
-        } else if (anAction == "acknowledge" || onAction == "unacknowledge") {
+        } else if (anAction == "acknowledge" || anAction == "unacknowledge") {
         	document.alarm_action_form.action = "alarm/acknowledge";
         }
         
@@ -275,7 +275,6 @@
 					<tr>
                                              <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
 						<% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-
 						<th width="1%">Ack</th>
 						<% } else { %>
 						<th width="1%">UnAck</th>
