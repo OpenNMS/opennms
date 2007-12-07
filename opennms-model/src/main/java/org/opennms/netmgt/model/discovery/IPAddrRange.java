@@ -32,7 +32,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.model.discovery;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -56,7 +56,7 @@ import org.opennms.core.utils.IPSorter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public final class IPAddressRange implements Iterable<InetAddress> {
+public final class IPAddrRange implements Iterable<InetAddress> {
     /**
      * The starting address for the object.
      */
@@ -101,7 +101,7 @@ public final class IPAddressRange implements Iterable<InetAddress> {
         static InetAddress make(long addr) {
             InetAddress naddr = null;
             try {
-                naddr = InetAddress.getByName(IPAddressRange.IPv4String(addr));
+                naddr = InetAddress.getByName(IPAddrRange.IPv4String(addr));
             } catch (UnknownHostException uhE) {
                 naddr = null;
             }
@@ -223,7 +223,7 @@ public final class IPAddressRange implements Iterable<InetAddress> {
      *                resolved.
      * 
      */
-    IPAddressRange(String fromIP, String toIP) throws java.net.UnknownHostException {
+    IPAddrRange(String fromIP, String toIP) throws java.net.UnknownHostException {
         m_begin = IPSorter.convertToLong(InetAddress.getByName(fromIP).getAddress());
         m_end = IPSorter.convertToLong(InetAddress.getByName(toIP).getAddress());
 
@@ -255,7 +255,7 @@ public final class IPAddressRange implements Iterable<InetAddress> {
      *            The ending address.
      * 
      */
-    IPAddressRange(InetAddress start, InetAddress end) {
+    IPAddrRange(InetAddress start, InetAddress end) {
         m_begin = IPSorter.convertToLong(start.getAddress());
         m_end = IPSorter.convertToLong(end.getAddress());
     }

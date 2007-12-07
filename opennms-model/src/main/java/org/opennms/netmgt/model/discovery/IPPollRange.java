@@ -36,7 +36,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.model.discovery;
 
 import java.net.InetAddress;
 import java.util.Enumeration;
@@ -59,7 +59,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
     /**
      * The range to cycle over.
      */
-    private IPAddressRange m_range;
+    private IPAddrRange m_range;
 
     /**
      * The timeout in milliseconds (1/1000th)
@@ -180,11 +180,11 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      *            The number of retries for generated addresses.
      * 
      * @see IPPollAddress
-     * @see IPAddressRange
+     * @see IPAddrRange
      * 
      */
     public IPPollRange(String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
-        m_range = new IPAddressRange(fromIP, toIP);
+        m_range = new IPAddrRange(fromIP, toIP);
         m_timeout = timeout;
         m_retries = retries;
     }
@@ -207,11 +207,11 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      *            The number of retries for generated addresses.
      * 
      * @see IPPollAddress
-     * @see IPAddressRange
+     * @see IPAddrRange
      * 
      */
     IPPollRange(InetAddress start, InetAddress end, long timeout, int retries) {
-        m_range = new IPAddressRange(start, end);
+        m_range = new IPAddrRange(start, end);
         m_timeout = timeout;
         m_retries = retries;
     }
@@ -234,7 +234,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * @see IPPollAddress
      * 
      */
-    IPPollRange(IPAddressRange range, long timeout, int retries) {
+    IPPollRange(IPAddrRange range, long timeout, int retries) {
         m_range = range;
         m_timeout = timeout;
         m_retries = retries;
@@ -265,7 +265,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * object.
      * </P>
      */
-    public IPAddressRange getAddressRange() {
+    public IPAddrRange getAddressRange() {
         return m_range;
     }
 
