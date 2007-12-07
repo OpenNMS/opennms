@@ -1203,7 +1203,13 @@ public class AlarmFactory extends Object {
         }
 
         if (alarmIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE ALARMS SET SEVERITY = SEVERITY + 1");
+            StringBuffer update = new StringBuffer("UPDATE ALARMS SET SEVERITY = (");
+            update.append("CASE WHEN SEVERITY =? THEN ?");
+            update.append(" ELSE (");
+            update.append("  CASE WHEN SEVERITY <? THEN SEVERITY + 1");
+            update.append("  ELSE ? END)");
+            update.append(" END),");
+            update.append(" ALARMTYPE =?");
             update.append(" WHERE ALARMID IN (");
             update.append(alarmIds[0]);
 
@@ -1213,17 +1219,29 @@ public class AlarmFactory extends Object {
             }
 
             update.append(")");
-            update.append(" AND ALARMTYPE =?");
-            update.append(" AND SEVERITY >=? ");
-            update.append(" AND SEVERITY <?");
+            update.append(" AND (");
+            update.append("  ALARMTYPE =? AND");
+            update.append("  SEVERITY =?");
+            update.append(" ) OR (");
+            update.append("  ALARMTYPE =? AND");
+            update.append("  SEVERITY >? AND");
+            update.append("  SEVERITY <=?");
+            update.append(" )");
 
             Connection conn = Vault.getDbConnection();
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
-                stmt.setInt(1, Alarm.PROBLEM_TYPE);
-                stmt.setInt(2, Alarm.NORMAL_SEVERITY);
+                stmt.setInt(1, Alarm.CLEARED_SEVERITY);
+                stmt.setInt(2, Alarm.WARNING_SEVERITY);
                 stmt.setInt(3, Alarm.CRITICAL_SEVERITY);
+                stmt.setInt(4, Alarm.CRITICAL_SEVERITY);
+                stmt.setInt(5, Alarm.PROBLEM_TYPE);
+                stmt.setInt(6, Alarm.RESOLUTION_TYPE);
+                stmt.setInt(7, Alarm.CLEARED_SEVERITY);
+                stmt.setInt(8, Alarm.PROBLEM_TYPE);
+                stmt.setInt(9, Alarm.NORMAL_SEVERITY);
+                stmt.setInt(10, Alarm.CRITICAL_SEVERITY);
 
                 stmt.executeUpdate();
                 stmt.close();

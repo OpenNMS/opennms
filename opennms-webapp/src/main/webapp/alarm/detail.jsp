@@ -104,7 +104,7 @@
     
     String escalateAction = AlarmSeverityChangeServlet.ESCALATE_ACTION;
     String clearAction = AlarmSeverityChangeServlet.CLEAR_ACTION;
-    if (alarm.getSeverity() > Alarm.NORMAL_SEVERITY && alarm.getSeverity() < Alarm.CRITICAL_SEVERITY) {
+    if (alarm.getSeverity() == Alarm.CLEARED_SEVERITY || (alarm.getSeverity() > Alarm.NORMAL_SEVERITY && alarm.getSeverity() < Alarm.CRITICAL_SEVERITY)) {
     	showEscalate=true;
     }
     if  (alarm.getSeverity() >= Alarm.NORMAL_SEVERITY && alarm.getSeverity() <= Alarm.CRITICAL_SEVERITY) {
