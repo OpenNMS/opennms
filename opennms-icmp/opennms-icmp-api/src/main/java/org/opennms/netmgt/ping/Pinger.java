@@ -209,11 +209,12 @@ public class Pinger {
 
 	private static void processTimeouts() throws InterruptedException {  
 	    while (true) {
-	        PingRequest request = s_timeoutQueue.take();
-            debugf("Found a possibly timedout request: %s", request);
-	        if (s_pendingRequests.remove(request.getId()) == request) {
+	        PingRequest timedOutRequest = s_timeoutQueue.take();
+            debugf("Found a possibly timedout request: %s", timedOutRequest);
+	        PingRequest pendingRequest = s_pendingRequests.remove(timedOutRequest.getId());
+            if (pendingRequest == timedOutRequest) {
 	            // then this request is still pending so we must time it out
-	            PingRequest retry = processTimeout(request);
+	            PingRequest retry = processTimeout(timedOutRequest);
 	            if (retry != null) {
 	                try {
                         ping(retry);
@@ -221,6 +222,8 @@ public class Pinger {
                         retry.processError(e);
                     }
 	            }
+	        } else {
+	            errorf("Uh oh! A pending request %s with the same id exists but is not the timout request %s from the queue!", pendingRequest, timedOutRequest);
 	        }
 	        
 	    }
