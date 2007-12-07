@@ -31,35 +31,148 @@
  */
 package org.opennms.netmgt.model.discovery;
 
+import java.util.Collections;
 import java.util.Iterator;
+
+import org.opennms.core.utils.IteratorIterator;
 
 /**
  * IPAddressSet
  *
  * @author brozow
  */
-public interface IPAddressSet extends Iterable<IPAddress> {
-
-    public IPAddressSet union(IPAddress o);
-
-    public IPAddressSet union(IPAddressSet set);
-
-    public boolean contains(IPAddress o);
-
-    public boolean containsAll(IPAddressSet c);
-
-    public boolean isEmpty();
-
-    public Iterator<IPAddress> iterator();
-
-    public IPAddressSet minus(IPAddress o);
-
-    public IPAddressSet minus(IPAddressSet c);
-
-    public IPAddressSet intersect(IPAddressSet c);
-
-    public long size();
+public class IPAddressSet implements Iterable<IPAddress> {
     
-    public IPAddressRange[] getRanges();
+    private IPAddressRange m_firstRange;
+    private IPAddressSet m_remainingRanges;
+    
+    public IPAddressSet() {
+        this(null, null);
+    }
+    
+    public IPAddressSet(IPAddress addr) {
+    	this(new IPAddressRange(addr, addr), null);
+    }
+    
+    public IPAddressSet(IPAddressRange range) {
+    	this(range, null);
+    }
+    
+    public IPAddressSet(IPAddressSet set) {
+        this(set.m_firstRange, set.m_remainingRanges);
+    }
+
+    private IPAddressSet(IPAddressRange firstRange, IPAddressSet remainingRanges) {
+		m_firstRange = firstRange;
+		m_remainingRanges = remainingRanges;
+	}
+
+    public IPAddressSet union(IPAddress addr) {
+        return union(new IPAddressRange(addr, addr));
+    }
+
+    public IPAddressSet union(IPAddressRange range) {
+        if (isEmpty()) {
+            // 0. if current set is empty just make a new set containing the range
+            return new IPAddressSet(range);
+        } else if (range.overlaps(m_firstRange) || range.adjoins(m_firstRange)) {
+            // 1. range overlaps or is adjacent to m_firstRange
+            IPAddressRange newRange = union(range, m_firstRange);
+            return (m_remainingRanges == null ? new IPAddressSet(newRange) : m_remainingRanges.union(newRange));
+        } else if (range.comesBefore(m_firstRange)) {
+            // 2. range comes entirely before and not adjacent m_firstRange
+            return new IPAddressSet(range, this);
+        } else {
+            // 3. range comes entirely after and not adjacent to m_firstRange
+            IPAddressSet remaining = m_remainingRanges == null ? new IPAddressSet(range) : m_remainingRanges.union(range);
+            return new IPAddressSet(m_firstRange, remaining);
+        }
+    }
+
+    private IPAddressRange union(IPAddressRange rangeA, IPAddressRange rangeB) {
+        IPAddress newBegin = IPAddress.min(rangeA.getBegin(), rangeB.getBegin());
+        IPAddress newEnd = IPAddress.max(rangeA.getEnd(), rangeB.getEnd());
+        return new IPAddressRange(newBegin, newEnd);
+    }
+
+    public IPAddressSet union(IPAddressSet set) {
+        if (isEmpty()) {
+            return set;
+        } else if (m_remainingRanges == null) {
+            return set.union(m_firstRange);
+        } else {
+            return m_remainingRanges.union(set).union(m_firstRange);
+        }
+    }
+
+    public boolean contains(IPAddress addr) {
+        if (m_firstRange == null) {
+            return false;
+        } else if (m_firstRange.contains(addr)) {
+            return true;
+        } else  if (m_remainingRanges == null){
+            return false;
+        } else {
+            return m_remainingRanges.contains(addr);
+        }
+    }
+
+    public boolean containsAll(IPAddressSet c) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    public boolean isEmpty() {
+        return (m_firstRange == null);
+    }
+
+    public Iterator<IPAddress> iterator() {
+        if (isEmpty()) {
+            return Collections.EMPTY_SET.iterator();
+        } else if (m_remainingRanges == null) {
+            return m_firstRange.iterator();
+        } else {
+            return new IteratorIterator<IPAddress>(m_firstRange.iterator(), m_remainingRanges.iterator());
+        }
+    }
+
+    public IPAddressSet minus(IPAddress o) {
+        throw new UnsupportedOperationException("not yet implemented");
+        
+    }
+
+    public IPAddressSet minus(IPAddressSet c) {
+        throw new UnsupportedOperationException("not yet implemented");
+        
+    }
+
+    public IPAddressSet intersect(IPAddressSet c) {
+        throw new UnsupportedOperationException("not yet implemented");
+
+    }
+
+    public long size() {
+        if (m_firstRange == null) {
+            return 0;
+        } else if (m_remainingRanges == null) {
+            return m_firstRange.size();
+        } else {
+            return m_firstRange.size()+m_remainingRanges.size();
+        }
+    }
+    
+    public int getRangeCount() {
+        if (m_firstRange == null) {
+            return 0;
+        } else if (m_remainingRanges == null) {
+            return 1;
+        } else {
+            return m_remainingRanges.getRangeCount()+1;
+        }
+    }
+    
+    public IPAddressRange[] getRanges() {
+        throw new UnsupportedOperationException("not yet implemented");
+        
+    }
  
 }

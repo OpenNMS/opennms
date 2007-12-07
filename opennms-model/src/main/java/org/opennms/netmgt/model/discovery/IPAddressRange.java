@@ -44,6 +44,10 @@ public class IPAddressRange implements Iterable<IPAddress> {
     
     private IPAddress m_begin;
     private IPAddress m_end;
+    
+    public IPAddressRange(String begin, String end) {
+        this(new IPAddress(begin), new IPAddress(end));
+    }
 
     public IPAddressRange(IPAddress begin, IPAddress end) {
         if (begin.isGreaterThan(end)) {
@@ -70,6 +74,10 @@ public class IPAddressRange implements Iterable<IPAddress> {
             throw new IllegalArgumentException("addr should not be null");
         }
         return addr.isGreaterThanOrEqualTo(m_begin) && addr.isLessThanOrEqualTo(m_end);
+    }
+    
+    public boolean contains(IPAddressRange range) {
+        return this.contains(range.getBegin()) && this.contains(range.getEnd());
     }
     
     public boolean overlaps(IPAddressRange range) {
