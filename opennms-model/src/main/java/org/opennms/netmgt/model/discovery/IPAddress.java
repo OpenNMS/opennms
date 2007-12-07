@@ -111,7 +111,7 @@ public class IPAddress implements Comparable<IPAddress> {
     }
     
     public boolean isSuccessorOf(IPAddress other) {
-        return other.incr().equals(other);
+        return other.incr().equals(this);
     }
     
     public boolean isLessThan(IPAddress other) {
