@@ -58,10 +58,4 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
         }
     }
 
-    private void debugf(String format, Object... args) {
-        if (log().isDebugEnabled()) {
-            log().debug(String.format(format, args));
-        }
-    }
-
 }
