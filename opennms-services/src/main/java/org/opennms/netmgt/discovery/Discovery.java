@@ -50,9 +50,9 @@ import java.util.TimerTask;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
-import org.opennms.netmgt.config.IPPollAddress;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.utils.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.utils.annotations.EventHandler;
@@ -123,13 +123,13 @@ public class Discovery extends AbstractServiceDaemon {
             m_discoveryFactory = DiscoveryConfigFactory.getInstance();
 
         } catch (Exception e) {
-            log().fatal("Unable to initialize the discovery configuration factory", e);
+            fatalf(e, "Unable to initialize the discovery configuration factory");
             throw new UndeclaredThrowableException(e);
         }
     }
 
     protected void doPings() {
-        log().debug("starting ping sweep");
+        debugf("starting ping sweep");
         initializeConfiguration();
 
 
@@ -148,7 +148,7 @@ public class Discovery extends AbstractServiceDaemon {
             }
         }
 
-        log().debug("finished discovery sweep");
+        debugf("finished discovery sweep");
         m_xstatus = PING_IDLE;
     }
 
@@ -159,7 +159,7 @@ public class Discovery extends AbstractServiceDaemon {
                 try {
                     Pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, cb);
                 } catch (IOException e) {
-                    log().debug("error pinging " + address.getAddress(), e);
+                    debugf(e, "error pinging %s", address.getAddress());
                 }
             }
         }
@@ -181,12 +181,12 @@ public class Discovery extends AbstractServiceDaemon {
 
     private void startTimer() {
         if (m_timer != null) {
-            log().debug("startTimer() called, but a previous timer exists; making sure it's cleaned up");
+            debugf("startTimer() called, but a previous timer exists; making sure it's cleaned up");
             m_xstatus = PING_FINISHING;
             m_timer.cancel();
         }
         
-        log().debug("scheduling new discovery timer");
+        debugf("scheduling new discovery timer");
         m_timer = new Timer("Discovery.Pinger", true);
 
         TimerTask task = new TimerTask() {
@@ -203,12 +203,12 @@ public class Discovery extends AbstractServiceDaemon {
 
     private void stopTimer() {
         if (m_timer != null) {
-            log().debug("stopping existing timer");
+            debugf("stopping existing timer");
             m_xstatus = PING_FINISHING;
             m_timer.cancel();
             m_timer = null;
         } else {
-            log().debug("stopTimer() called, but there is no existing timer");
+            debugf("stopTimer() called, but there is no existing timer");
         }
     }
 
@@ -228,27 +228,6 @@ public class Discovery extends AbstractServiceDaemon {
         startTimer();
     }
 
-    public void onEvent(Event event) {
-        String eventUei = event.getUei();
-        if (eventUei == null)
-            return;
-
-        if (log().isDebugEnabled())
-            log().debug("Received event: " + eventUei);
-
-        if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
-            handleNodeGainedInterface(event);
-        } else if (eventUei.equals(EventConstants.DISC_PAUSE_EVENT_UEI)) {
-            handleDiscoveryPause(event);
-        } else if (eventUei.equals(EventConstants.DISC_RESUME_EVENT_UEI)) {
-            handleDiscoveryResume(event);
-        } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
-            handleInterfaceDeleted(event);
-        } else if (eventUei.equals(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)) {
-            handleDiscoveryConfigurationChanged(event);
-        }
-    }
-
     @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
     public void handleDiscoveryConfigurationChanged(Event event) {
         initializeConfiguration();
@@ -261,14 +240,13 @@ public class Discovery extends AbstractServiceDaemon {
         // remove from known nodes
         m_alreadyDiscovered.remove(event.getInterface());
 
-        if (log().isDebugEnabled())
-            log().debug("Removed " + event.getInterface() + " from known node list");
+        debugf("Removed %s from known node list", event.getInterface());
     }
 
     @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
     public void handleDiscoveryResume(Event event) {
         try {
-            Discovery.getInstance().resume();
+            resume();
         } catch (IllegalStateException ex) {
         }
     }
@@ -276,7 +254,7 @@ public class Discovery extends AbstractServiceDaemon {
     @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
     public void handleDiscoveryPause(Event event) {
         try {
-            Discovery.getInstance().pause();
+            pause();
         } catch (IllegalStateException ex) {
         }
     }
@@ -286,8 +264,7 @@ public class Discovery extends AbstractServiceDaemon {
         // add to known nodes
         m_alreadyDiscovered.add(event.getInterface());
 
-        if (log().isDebugEnabled())
-            log().debug("Added " + event.getInterface() + " as discovered");
+        debugf("Added %s as discovered", event.getInterface());
     }
 
 }
