@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 // 
+// Modifications:
+//
+// 2007 Dec 08: Code formatting. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -42,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -127,7 +132,7 @@ public class Vault extends Object {
             throw new IllegalStateException("You must set a DbConnectionFactory before requesting a database connection.");
         }
 
-        return (dbConnectionFactory.getConnection());
+        return dbConnectionFactory.getConnection();
     }
 
     /**
@@ -161,9 +166,11 @@ public class Vault extends Object {
 
         Vault.properties = properties;
 
-        // for backwards compatibility; put all these
-        // properties into the system properties
-        java.util.Enumeration keys = properties.keys();
+        /*
+         * For backwards compatibility; put all these
+         * properties into the system properties.
+         */
+        Enumeration keys = properties.keys();
         Properties sysProps = System.getProperties();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
@@ -175,14 +182,14 @@ public class Vault extends Object {
      * Return the entire set of application configuration properties.
      */
     public static Properties getProperties() {
-        return (properties);
+        return properties;
     }
 
     /**
      * Return property from the configuration parameter list.
      */
     public static String getProperty(String key) {
-        return (properties.getProperty(key));
+        return properties.getProperty(key);
     }
 
     /**
@@ -203,7 +210,7 @@ public class Vault extends Object {
      * Get the directory that holds the OpenNMS configuration files.
      */
     public static String getHomeDir() {
-        return (homeDir);
+        return homeDir;
     }
 
     /**
@@ -269,5 +276,5 @@ public class Vault extends Object {
         return loadedOK;
     }
 
-} // end Vault class.
+}
 
