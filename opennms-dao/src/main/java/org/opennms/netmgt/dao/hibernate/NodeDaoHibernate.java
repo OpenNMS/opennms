@@ -146,7 +146,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "left join fetch iface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
-                + "where c.name in ("+categoryListToNameList(categories)+")");
+                + "where c.name in ("+categoryListToNameList(categories)+")"
+                + "and n.type != 'D'");
     }
 
     public Collection<OnmsNode> findAllByCategoryLists( Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
