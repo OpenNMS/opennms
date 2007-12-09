@@ -10,6 +10,7 @@
  * 
  * Modifications:
  * 
+ * 2007 Dec 09: Pass CategoryDao to OutagesFilteringView. - dj@opennms.org
  * 2007 Feb 01: Standardize on successView for the view name, cleanup unused code, deduplicate code, and use OnmsCriteria for filtering. - dj@opennms.org
  * 
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -48,16 +49,19 @@ import org.extremecomponents.table.limit.Limit;
 import org.extremecomponents.table.limit.LimitFactory;
 import org.extremecomponents.table.limit.TableLimit;
 import org.extremecomponents.table.limit.TableLimitFactory;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.CurrentOutageParseResponse;
 import org.opennms.web.svclayer.outage.OutageListBuilder;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.opennms.web.svclayer.outage.OutagesFilteringView;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-public class OutageListController extends AbstractController {
+public class OutageListController extends AbstractController implements InitializingBean {
     private static final int ROW_LIMIT = 25;
 
     private OutageService m_outageService;
@@ -68,6 +72,7 @@ public class OutageListController extends AbstractController {
 
     private int m_defaultRowsDisplayed = ROW_LIMIT;
 
+    private CategoryDao m_categoryDao;
 
     public void setOutageService(OutageService service) {
         m_outageService = service;
@@ -118,8 +123,11 @@ public class OutageListController extends AbstractController {
             sortOrder = limit.getSort().getSortOrder();
         }
         
-        OnmsCriteria criteria = new OutagesFilteringView().buildCriteria(request);
-        OnmsCriteria countCriteria = new OutagesFilteringView().buildCriteria(request);
+        OutagesFilteringView filterView = new OutagesFilteringView();
+        filterView.setCategoryDao(m_categoryDao);
+        
+        OnmsCriteria criteria = filterView.buildCriteria(request);
+        OnmsCriteria countCriteria = filterView.buildCriteria(request);
         
         Integer totalRows = m_outageService.getOutageCount(countCriteria);
         Collection<OnmsOutage> foundOutages = m_outageService.getOutagesByRange(rowstart, rowend, orderProperty, sortOrder, criteria);
@@ -148,6 +156,18 @@ public class OutageListController extends AbstractController {
     
     public int getDefaultRowsDisplayed() {
         return m_defaultRowsDisplayed;
+    }
+
+    public CategoryDao getCategoryDao() {
+        return m_categoryDao;
+    }
+
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_categoryDao, "categoryDao property must be set");
     }
 
 }
