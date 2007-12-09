@@ -39,12 +39,7 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true"
-	import="org.opennms.netmgt.config.*,
-		java.util.*,
-		org.opennms.netmgt.config.groups.*
-	"
-%>
+<%@page language="java" contentType="text/html" session="true" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="New Group" />
@@ -91,9 +86,9 @@
       <td width="10%"><label id="groupNameLabel" for="groupName">Group Name:</label></td>
       <td width="100%"><input id="groupName" type="text" name="groupName"></td>
     </tr>
+    <tr>
       <td width="10%"><label id="groupCommentLabel" for="groupComment">Comment:</label></td>
-      <td width="100%"><input id="groupComment" type="text" name="groupComment"></td>      
-      <td
+      <td width="100%"><input id="groupComment" type="text" name="groupComment"></td>
     </tr>
 
     <tr>
