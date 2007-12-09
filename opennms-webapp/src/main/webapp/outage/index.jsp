@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2007 Dec 08: Make the value for the location parameter for the navBar include singular
+//              ("outage") to be like other pages. - dj@opennms.org
 // 2003 Apr 07: Corrected small typo.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 
@@ -47,7 +49,7 @@
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outages" />
   <jsp:param name="headTitle" value="Outages" />
-  <jsp:param name="location" value="outages" />
+  <jsp:param name="location" value="outage" />
   <jsp:param name="breadcrumb" value="Outages" />  
 </jsp:include>
 

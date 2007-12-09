@@ -1,5 +1,3 @@
-<%--
-
 /*
  * This file is part of the OpenNMS(R) Application.
  *
@@ -9,6 +7,10 @@
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 Dec 08: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 Daniel J. Gregor, Jr.
  *
@@ -31,27 +33,29 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
+package org.opennms.web.navigate;
 
---%>
+import javax.servlet.http.HttpServletRequest;
 
-<%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+import org.opennms.netmgt.dao.LocationMonitorDao;
 
-<div class="navbar">
-  <ul>
-    <c:forEach var="entry" items="${model.entries}">
-      <c:if test="${entry.value.display}">
-        <li>
-          <c:choose>
-            <c:when test="${entry.value.displayLink}">
-              <a href="${entry.key.url}">${entry.key.name}</a>
-            </c:when>
-            <c:otherwise>
-              ${entry.key.name}
-            </c:otherwise>
-          </c:choose>
-        </li>
-      </c:if>
-    </c:forEach>
-  </ul>
-</div>
+public class DistributedStatusNavBarEntry extends LocationBasedNavBarEntry {
+    private LocationMonitorDao m_locationMonitorDao;
+    
+    @Override
+    public DisplayStatus evaluate(HttpServletRequest request) {
+        if (m_locationMonitorDao.findAllMonitoringLocationDefinitions().size() > 0) {
+            return super.evaluate(request);
+        } else {
+            return DisplayStatus.NO_DISPLAY;
+        }
+    }
+
+    public LocationMonitorDao getLocationMonitorDao() {
+        return m_locationMonitorDao;
+    }
+
+    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
+        m_locationMonitorDao = locationMonitorDao;
+    }
+}

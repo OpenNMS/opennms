@@ -1,5 +1,3 @@
-<%--
-
 /*
  * This file is part of the OpenNMS(R) Application.
  *
@@ -9,6 +7,10 @@
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2007 Dec 08: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 Daniel J. Gregor, Jr.
  *
@@ -31,27 +33,24 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
+package org.opennms.web.navigate;
 
---%>
+public enum DisplayStatus {
+    NO_DISPLAY(false, false), DISPLAY_NO_LINK(true, false), DISPLAY_LINK(true, true);
+    
+    private boolean m_display;
+    private boolean m_displayLink;
+    
+    DisplayStatus(boolean display, boolean displayLink) {
+        m_display = display;
+        m_displayLink = displayLink;
+    }
 
-<%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+    public boolean isDisplay() {
+        return m_display;
+    }
 
-<div class="navbar">
-  <ul>
-    <c:forEach var="entry" items="${model.entries}">
-      <c:if test="${entry.value.display}">
-        <li>
-          <c:choose>
-            <c:when test="${entry.value.displayLink}">
-              <a href="${entry.key.url}">${entry.key.name}</a>
-            </c:when>
-            <c:otherwise>
-              ${entry.key.name}
-            </c:otherwise>
-          </c:choose>
-        </li>
-      </c:if>
-    </c:forEach>
-  </ul>
-</div>
+    public boolean isDisplayLink() {
+        return m_displayLink;
+    }
+}

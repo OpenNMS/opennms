@@ -1,6 +1,4 @@
-<%--
-
-/*
+/**
  * This file is part of the OpenNMS(R) Application.
  *
  * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
@@ -31,27 +29,22 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
+package org.opennms.web.navigate;
 
---%>
+import java.util.Map;
 
-<%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<div class="navbar">
-  <ul>
-    <c:forEach var="entry" items="${model.entries}">
-      <c:if test="${entry.value.display}">
-        <li>
-          <c:choose>
-            <c:when test="${entry.value.displayLink}">
-              <a href="${entry.key.url}">${entry.key.name}</a>
-            </c:when>
-            <c:otherwise>
-              ${entry.key.name}
-            </c:otherwise>
-          </c:choose>
-        </li>
-      </c:if>
-    </c:forEach>
-  </ul>
-</div>
+/**
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ */
+public class NavBarModel {
+    private Map<NavBarEntry, DisplayStatus> m_entries;
+
+    public NavBarModel(Map<NavBarEntry, DisplayStatus> entries) {
+        m_entries = entries;
+    }
+
+    public Map<NavBarEntry, DisplayStatus> getEntries() {
+        return m_entries;
+    }
+}

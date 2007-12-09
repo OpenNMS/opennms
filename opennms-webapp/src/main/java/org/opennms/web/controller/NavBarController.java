@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Dec 08: Use dependency injection for nav bar items. - dj@opennms.org
+//
 // Copyright (C) 2006 The OpenNMS Group, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,122 +35,48 @@
 //
 package org.opennms.web.controller;
 
-import java.io.File;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
-import org.opennms.web.Util;
-import org.opennms.web.acegisecurity.Authentication;
+import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.NavBarEntry;
+import org.opennms.web.navigate.NavBarModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 public class NavBarController extends AbstractController implements InitializingBean {
-
-    private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
-    private LocationMonitorDao m_locationMonitorDao;
-
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        return new ModelAndView("navBar", "model", createNavBarModel(request));
-    }
-    
-    public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao dao) {
-        m_surveillanceViewConfigDao = dao;
-    }
-    
-    public void setLocationMonitorDao(LocationMonitorDao dao) {
-        m_locationMonitorDao = dao;
-    }
+    private List<NavBarEntry> m_navBarItems;
     
     public void afterPropertiesSet() {
-        Assert.state(m_surveillanceViewConfigDao != null, "surveillanceViewConfigDao property has not been set");
-        Assert.state(m_locationMonitorDao != null, "locationMonitorDao property has not been set");
+        Assert.state(m_navBarItems != null, "navBarItems property has not been set");
+    }
+
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return new ModelAndView("navBar", "model", createNavBarModel(request));
     }
 
     private NavBarModel createNavBarModel(HttpServletRequest request) {
-        String mapEnableLocation = Vault.getHomeDir() + File.separator
-                + "etc" + File.separator + "map.enable";
-        File mapEnableFile = new File(mapEnableLocation);
-
-        String vulnEnableLocation = Vault.getHomeDir() + File.separator
-                + "etc" + File.separator + "vulnerabilities.enable";
-        File vulnEnableFile = new File(vulnEnableLocation);
-
-        LinkedList<NavBarEntry> navBar = new LinkedList<NavBarEntry>();
-        navBar.add(new NavBarEntry("nodelist", "element/nodeList.htm",
-                                   "Node List"));
-        navBar.add(new NavBarEntry("element", "element/index.jsp", "Search"));
-        navBar.add(new NavBarEntry("outages", "outage/index.jsp", "Outages"));
-        navBar.add(new NavBarEntry("pathOutage", "pathOutage/index.jsp",
-                                   "Path Outages"));
-        navBar.add(new NavBarEntry("dashboard", "dashboard.jsp", "Dashboard"));
-        navBar.add(new NavBarEntry("event", "event/index.jsp", "Events"));
-        navBar.add(new NavBarEntry("alarm", "alarm/index.jsp", "Alarms"));
-        navBar.add(new NavBarEntry("notification", "notification/index.jsp",
-                                   "Notification"));
-        navBar.add(new NavBarEntry("asset", "asset/index.jsp", "Assets"));
-        navBar.add(new NavBarEntry("report", "report/index.jsp", "Reports"));
-        navBar.add(new NavBarEntry("chart", "charts/index.jsp", "Charts"));
+        Map<NavBarEntry, DisplayStatus> navBar = new LinkedHashMap<NavBarEntry, DisplayStatus>();
         
-        if (m_surveillanceViewConfigDao.getViews().getViewCount() > 0 &&
-                m_surveillanceViewConfigDao.getDefaultView() != null) {
-            String viewName =
-                m_surveillanceViewConfigDao.getDefaultView().getName();
-            navBar.add(new NavBarEntry("surveillance",
-                                       "surveillanceView.htm?viewName="
-                                           + Util.htmlify(viewName),
-                                       "Surveillance"));
+        for (NavBarEntry entry : getNavBarItems()) {
+            navBar.put(entry, entry.evaluate(request));
         }
-        
-        if (m_locationMonitorDao.findAllMonitoringLocationDefinitions().size() > 0) {
-            navBar.add(new NavBarEntry("distributedstatus",
-                                       "distributedStatusSummary.htm",
-                                       "Distributed Status"));
-        }
-        
-        if (vulnEnableFile.exists()) {
-            navBar.add(new NavBarEntry("vulnerability",
-                                       "vulnerability/index.jsp",
-                                       "Vulnerabilities"));
-        }
-        if (mapEnableFile.exists()) {
-            navBar.add(new NavBarEntry("map", "Index.map", "Map"));
-        }
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
-            navBar.add(new NavBarEntry("admin", "admin/index.jsp", "Admin"));
-        }
-        navBar.add(new NavBarEntry("help", "help/index.jsp", "Help"));
 
-        return new NavBarModel(navBar, request.getParameter("location"));
+        return new NavBarModel(navBar);
     }
 
-    public class NavBarModel {
-        List<NavBarEntry> m_entries;
+    public List<NavBarEntry> getNavBarItems() {
+        return m_navBarItems;
+    }
 
-        String m_location;
-
-        public NavBarModel(List<NavBarEntry> entries, String location) {
-            m_entries = entries;
-            m_location = location;
-        }
-
-        public List<NavBarEntry> getEntries() {
-            return m_entries;
-        }
-
-        public String getLocation() {
-            return m_location;
-        }
-
+    public void setNavBarItems(List<NavBarEntry> navBarItems) {
+        m_navBarItems = navBarItems;
     }
 }
