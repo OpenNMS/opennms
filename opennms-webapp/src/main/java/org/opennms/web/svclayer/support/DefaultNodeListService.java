@@ -1,6 +1,5 @@
 package org.opennms.web.svclayer.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,13 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
-import org.hibernate.type.Type;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
@@ -25,7 +23,6 @@ import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsArpInterface;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -38,7 +35,6 @@ import org.opennms.web.svclayer.support.NodeListModel.NodeModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 public class DefaultNodeListService implements NodeListService, InitializingBean {
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
@@ -200,34 +196,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     
     private void addCriteriaForCategories(OnmsCriteria criteria, String[]... categories) {
         Assert.notNull(criteria, "criteria argument must not be null");
-        Assert.notNull(categories, "categories argument must not be null");
-        Assert.isTrue(categories.length >= 1, "categories must have at least one set of categories");
-
-        // Build a list a list of category IDs to use when building the restrictions
-        List<List<Integer>> categoryIdsList = new ArrayList<List<Integer>>(categories.length);
-        for (String[] categoryStrings : categories) {
-            List<Integer> categoryIds = new ArrayList<Integer>(categoryStrings.length);
-            for (String categoryString : categoryStrings) {
-                OnmsCategory category = m_categoryDao.findByName(categoryString);
-                if (category == null) {
-                    throw new IllegalArgumentException("Could not find category for name '" + categoryString + "'");
-                }
-                categoryIds.add(category.getId());
-            }
-            categoryIdsList.add(categoryIds);
-        }
         
-        for (List<Integer> categoryIds : categoryIdsList) {
-            Type[] types = new Type[categoryIds.size()];
-            String[] questionMarks = new String[categoryIds.size()];
-            Type theOneAndOnlyType = new IntegerType();
-            
-            for (int i = 0; i < categoryIds.size(); i++) {
-                types[i] = theOneAndOnlyType;
-                questionMarks[i] = "?";
-            }
-            String sql = "{alias}.nodeId in (select distinct cn.nodeId from category_node cn where cn.categoryId in (" + StringUtils.arrayToCommaDelimitedString(questionMarks) + "))";
-            criteria.add(Restrictions.sqlRestriction(sql, categoryIds.toArray(new Integer[categoryIds.size()]), types));
+        for (Criterion criterion : m_categoryDao.getCriterionForCategorySetsUnion(categories)) {
+            criteria.add(criterion);
         }
     }
         
@@ -271,7 +242,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
     private NodeListModel createModelForNodes(NodeListCommand command, Collection<OnmsNode> onmsNodes) {
         int interfaceCount = 0;
-        int arpInterfaceCount = 0;
         List<NodeModel> displayNodes = new LinkedList<NodeModel>();
         for (OnmsNode node : onmsNodes) {
             List<OnmsIpInterface> displayInterfaces = new LinkedList<OnmsIpInterface>();
