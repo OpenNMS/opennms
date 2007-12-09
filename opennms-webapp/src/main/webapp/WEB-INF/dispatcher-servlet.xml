@@ -211,10 +211,117 @@
     <property name="resourceDao" ref="resourceDao"/>
   </bean>
   
-  <!--  "includes" -->  
+  <!--  "includes" -->
   <bean name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
-    <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
-    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+    <property name="navBarItems">
+      <list>
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Node List"/>
+          <property name="url" value="element/nodeList.htm"/>
+          <property name="locationMatch" value="nodelist"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Search"/>
+          <property name="url" value="element/index.jsp"/>
+          <property name="locationMatch" value="element"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Outages"/>
+          <property name="url" value="outage/index.jsp"/>
+          <property name="locationMatch" value="outage"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Path Outages"/>
+          <property name="url" value="pathOutage/index.jsp"/>
+          <property name="locationMatch" value="pathOutage"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Dashboard"/>
+          <property name="url" value="dashboard.jsp"/>
+          <property name="locationMatch" value="dashboard"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Events"/>
+          <property name="url" value="event/index.jsp"/>
+          <property name="locationMatch" value="event"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Alarms"/>
+          <property name="url" value="alarm/index.jsp"/>
+          <property name="locationMatch" value="alarm"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Notifications"/>
+          <property name="url" value="notification/index.jsp"/>
+          <property name="locationMatch" value="notification"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Assets"/>
+          <property name="url" value="asset/index.jsp"/>
+          <property name="locationMatch" value="asset"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Reports"/>
+          <property name="url" value="report/index.jsp"/>
+          <property name="locationMatch" value="report"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Charts"/>
+          <property name="url" value="charts/index.jsp"/>
+          <property name="locationMatch" value="chart"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.SurveillanceViewNavBarEntry">
+          <property name="name" value="Surveillance"/>
+          <property name="url" value=""/>
+          <property name="locationMatch" value="surveillance"/>
+          <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
+        </bean>
+        
+        <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
+          <property name="name" value="Distributed Status"/>
+          <property name="url" value="distributedStatusSummary.htm"/>
+          <property name="locationMatch" value="distributedstatus"/>
+          <property name="locationMonitorDao" ref="locationMonitorDao"/>
+        </bean>
+                
+        <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
+          <property name="name" value="Vulnerabilities"/>
+          <property name="url" value="vulnerability/index.jsp"/>
+          <property name="locationMatch" value="vulnerability"/>
+          <property name="file" value="${opennms.home}/etc/vulnerabilities.enable"/>
+        </bean>
+                
+        <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
+          <property name="name" value="Map"/>
+          <property name="url" value="Index.map"/>
+          <property name="locationMatch" value="map"/>
+          <property name="file" value="${opennms.home}/etc/map.enable"/>
+        </bean>
+        
+        <bean class="org.opennms.web.navigate.AdminUserNavBarEntry">
+          <property name="name" value="Admin"/>
+          <property name="url" value="admin/index.jsp"/>
+          <property name="locationMatch" value="admin"/>
+        </bean>
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Help"/>
+          <property name="url" value="help/index.jsp"/>
+          <property name="locationMatch" value="help"/>
+        </bean>
+      </list>
+    </property>
   </bean>
   
   <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
