@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Dec 09: Add getCriterionForCategorySetsUnion. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,9 +35,15 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.List;
+
+import org.hibernate.criterion.Criterion;
 import org.opennms.netmgt.model.OnmsCategory;
 
 public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
 	
     public abstract OnmsCategory findByName(String name);
+    
+    public abstract List<Criterion> getCriterionForCategorySetsUnion(String[]... categories);
+
 }
