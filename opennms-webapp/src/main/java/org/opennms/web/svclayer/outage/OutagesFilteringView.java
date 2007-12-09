@@ -9,6 +9,8 @@
  *
  * Modifications:
  * 
+ * 2007 Dec 09: Add abililty to filter on one or two sets of
+ *              categories, like in the node list. - dj@opennms.org
  * 2007 Feb 01: Indent and add buildCriteria method. - dj@opennms.org
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -42,11 +44,15 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 
 public class OutagesFilteringView {
+
+    private CategoryDao m_categoryDao;
 
     // String whoooha = "select 1154363839::int4::abstime;";
 
@@ -184,6 +190,16 @@ public class OutagesFilteringView {
             criteria.createAlias("node.assetRecord", "assetRecord");
             criteria.add(Restrictions.eq("assetRecord.building", request.getParameter("building")));
         }
+        
+        if (request.getParameter("category1") != null && request.getParameter("category2") != null) {
+            for (Criterion criterion : m_categoryDao.getCriterionForCategorySetsUnion(request.getParameterValues("category1"), request.getParameterValues("category2"))) {
+                criteria.add(criterion);
+            }
+        } else if (request.getParameter("category1") != null) {
+            for (Criterion criterion : m_categoryDao.getCriterionForCategorySetsUnion(request.getParameterValues("category1"))) {
+                criteria.add(criterion);
+            }
+        }
 
         if ("true".equals(request.getParameter("currentOutages"))) {
             criteria.add(Restrictions.isNull("ifRegainedService"));
@@ -194,6 +210,14 @@ public class OutagesFilteringView {
         }
 
         return criteria;
+    }
+
+    public CategoryDao getCategoryDao() {
+        return m_categoryDao;
+    }
+
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
     }
 
 }
