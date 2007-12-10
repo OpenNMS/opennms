@@ -167,6 +167,7 @@ public class Pinger {
             	request.processError(new IllegalStateException("Duplicate ping request; keeping old request: "+oldRequest+"; removing new request: "+request));
             	return;
             }
+            s_pendingRequests.put(request.getId(), request);
             request.sendRequest(s_icmpSocket);
         }
         debugf("Scheding timeout for request to %s in %d ms", request, request.getDelay(TimeUnit.MILLISECONDS));
