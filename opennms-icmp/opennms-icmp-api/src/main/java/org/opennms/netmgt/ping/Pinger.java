@@ -237,7 +237,7 @@ public class Pinger {
                         retry.processError(e);
                     }
 	            }
-	        } else {
+	        } else if (pendingRequest != null) {
 	            errorf("Uh oh! A pending request %s with the same id exists but is not the timout request %s from the queue!", pendingRequest, timedOutRequest);
 	        }
 	        
