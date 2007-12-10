@@ -61,7 +61,7 @@
 	  <!-- hidden form for adding a new Notification -->
 	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
-	  	<input type="hidden" name="uei" value="" /> <!-- Set by java script -->
+	  	<input type="hidden" id="uei" name="uei" value="" /> <!-- Set by java script -->
 	  	<input type="hidden" name="returnPage" value="/opennms/admin/thresholds/index.htm?groupName=${group.name}&editGroup" />
 	  </form>
 
@@ -92,8 +92,8 @@
 			<td class="standard">${threshold.value}</td>
 			<td class="standard">${threshold.rearm}</td>
 			<td class="standard">${threshold.trigger}</td>
-			<td class="standard"><a href="javascript: void submitNewNotificationForm('${expression.triggeredUEI}');" title="Edit notifications for this uei">${threshold.triggeredUEI}</a></td>
-			<td class="standard"><a href="javascript: void submitNewNotificationForm('${expression.rearmedUEI}');" title="Edit notifications for this uei">${threshold.rearmedUEI}</a></td>
+			<td class="standard"><a href="javascript: void submitNewNotificationForm('${threshold.triggeredUEI}');" title="Edit notifications for this uei">${threshold.triggeredUEI}</a></td>
+			<td class="standard"><a href="javascript: void submitNewNotificationForm('${threshold.rearmedUEI}');" title="Edit notifications for this uei">${threshold.rearmedUEI}</a></td>
 			<td class="standard"><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&editThreshold">Edit</a></td>
 			<td class="standard"><a href="admin/thresholds/index.htm?groupName=${group.name}&thresholdIndex=${thresholdIndex.index}&deleteThreshold">Delete</a></td>
         </tr>
