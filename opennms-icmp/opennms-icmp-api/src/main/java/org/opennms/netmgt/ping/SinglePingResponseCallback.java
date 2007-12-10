@@ -45,6 +45,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     public void waitFor() throws InterruptedException {
         info("waiting for ping to "+m_host+" to finish");
         bs.waitFor();
+        info("finished waiting for ping to "+m_host+" to finish");
     }
 
     public Long getResponseTime() {
