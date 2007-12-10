@@ -135,9 +135,25 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
 
-    public IPAddressSet minus(IPAddress o) {
-        throw new UnsupportedOperationException("not yet implemented");
+    public IPAddressSet minus(IPAddress addr) {
+        return minus(new IPAddressRange(addr, addr));
+    }
+    
+    public IPAddressSet minus(IPAddressRange range) {
+        // 0. it this set is empty
+        //return this;
+        // 1. if the new range doesn't overlap the first range
+        //return new IPAddressSet(m_firstRange, m_remainingRanges.minus(range));
         
+        // 2. else
+        //IPAddressSet firstWithoutRange = minus(m_firstRange, range);
+        //return m_remainingRanges.minus(range).union(firstWithoutRange);
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+    
+    private IPAddressSet minus(IPAddressRange firstRange, IPAddressRange range) {
+        IPAddressSet result = new IPAddressSet();
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
     public IPAddressSet minus(IPAddressSet c) {
