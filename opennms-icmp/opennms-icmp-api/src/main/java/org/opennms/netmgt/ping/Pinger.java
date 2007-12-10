@@ -202,6 +202,8 @@ public class Pinger {
                 // this is not an EchoReply so ignore it
             } catch (IndexOutOfBoundsException e) {
                 // this packet is not a valid EchoReply ignore it
+            } catch (Throwable t) {
+                errorf(t, "Unexpect Exception processing reply packet!");
             }
             
         }
@@ -218,7 +220,7 @@ public class Pinger {
 	            if (retry != null) {
 	                try {
                         ping(retry);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         retry.processError(e);
                     }
 	            }
