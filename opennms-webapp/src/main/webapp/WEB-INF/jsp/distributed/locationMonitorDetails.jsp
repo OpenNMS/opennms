@@ -6,7 +6,7 @@
 <jsp:include page="/includes/header.jsp" flush="false">
   <jsp:param name="title" value="Location Monitor Details" />
   <jsp:param name="headTitle" value="Location Monitor  Details" />
-  <jsp:param name="breadcrumb" value="<a href='admin/'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='distributed/locationMonitorList.htm'>Location Monitors</a>" />
   <jsp:param name="breadcrumb" value="Details" />
 </jsp:include>
