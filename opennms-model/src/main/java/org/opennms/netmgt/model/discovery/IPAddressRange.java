@@ -170,4 +170,5 @@ public class IPAddressRange implements Iterable<IPAddress> {
         buf.append('[').append(m_begin).append(',').append(m_end).append(']');
         return buf.toString();
     }
+
 }

@@ -193,8 +193,19 @@ public class IPAddressSetTest extends TestCase {
         //fail("Not yet implemented");
     }
 
-    public void testMinusIPAddress() {
-        //fail("Not yet implemented");
+    public void XXXtestMinusIPAddress() {
+        IPAddressSet set = new IPAddressSet(new IPAddressRange(m_oneDot1, m_oneDot9));
+        set = set.minus(new IPAddress(m_oneDot6));
+
+        assertEquals(8, set.size());
+        assertEquals(2, set.getRangeCount());
+        
+        assertEquals(set.size(), iterateAndCount(set));
+        
+        assertTrue(set.contains(m_oneDot3));
+        assertFalse(set.contains(m_oneDot6));
+        assertTrue(set.contains(m_oneDot8));
+       
     }
 
     public void testMinusIPAddressSet() {
