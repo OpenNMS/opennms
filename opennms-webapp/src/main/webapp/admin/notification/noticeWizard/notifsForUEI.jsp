@@ -109,7 +109,7 @@
 <form action="admin/notification/noticeWizard/notificationWizard"  method="POST" name="editForm">
 	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTIFS_FOR_UEI%>"/>
 	<input type="hidden" name="userAction" value="edit"/>
-	<input type="hidden" name="notice" value=""/>
+	<input type="hidden" id="notice" name="notice" value=""/>
 </form>
 
 <form action="admin/notification/noticeWizard/notificationWizard"  method="POST" name="newNotificationForm">
