@@ -67,7 +67,7 @@ function addbookmark()
 		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/report/", "Report - OpenNMS Web Console View ");
 		if(document.forms[0].role.value == "true")
 		{
-			javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/admin/", "Admin - OpenNMS Web Console View ");
+			javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/admin/index.jsp", "Admin - OpenNMS Web Console View ");
 		}
 	}
 	else if(!document.all)
