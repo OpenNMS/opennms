@@ -121,6 +121,8 @@ public class Pinger {
 	                processPackets();
 	            } catch (InterruptedException e) {
                     errorf("Thread %s interrupted!", this);
+	            } catch (Throwable t) {
+                    errorf(t, "Unexpected exception on Thread %s!", this);
 	            }
 	        }
 	    };
@@ -131,6 +133,8 @@ public class Pinger {
 	                processReplies();
 	            } catch (InterruptedException e) {
                     errorf("Thread %s interrupted!", this);
+	            } catch (Throwable t) {
+                    errorf(t, "Unexpected exception on Thread %s!", this);
 	            }
 	        }
 	    };
@@ -141,6 +145,8 @@ public class Pinger {
 	                processTimeouts();
 	            } catch (InterruptedException e) {
                     errorf("Thread %s interrupted!", this);
+	            } catch (Throwable t) {
+                    errorf(t, "Unexpected exception on Thread %s!", this);
 	            }
 	        }
 	    };
