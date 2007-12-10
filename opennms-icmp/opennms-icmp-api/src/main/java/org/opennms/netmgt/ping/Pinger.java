@@ -98,15 +98,17 @@ public class Pinger {
     private static Thread s_timeoutProcessor;
     
     /**
-     * Initialize a Pinger object, specifying the timeout and retries.
-     * @param defaultTimeout the timeout, in milliseconds, to wait for returned packets.
-     * @param defaultRetries the number of times to retry a given ping packet
+     * Constructs a Pinger object.
      * @throws IOException
      */
 	public Pinger() throws IOException {
 		initialize();
 	}
 	
+	//FIXME: This should be private
+	/**
+	 * Initializes this singleton
+	 */
 	public synchronized static void initialize() throws IOException {   
 	    if (s_initialized) return;
 	    
@@ -156,11 +158,15 @@ public class Pinger {
 	    s_socketReader.start();
 	    s_initialized = true;
 	}
-	
+
     private static void ping(PingRequest request) throws IOException {
         initialize();
         synchronized(s_pendingRequests) {
-            s_pendingRequests.put(request.getId(), request);
+            PingRequest oldRequest = s_pendingRequests.get(request.getId());
+            if (oldRequest != null) {
+            	request.processError(new IllegalStateException("Duplicate ping request; keeping old request: "+oldRequest+"; removing new request: "+request));
+            	return;
+            }
             request.sendRequest(s_icmpSocket);
         }
         debugf("Scheding timeout for request to %s in %d ms", request, request.getDelay(TimeUnit.MILLISECONDS));
