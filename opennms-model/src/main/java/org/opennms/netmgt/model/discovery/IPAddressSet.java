@@ -33,6 +33,8 @@ package org.opennms.netmgt.model.discovery;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.opennms.core.utils.IteratorIterator;
 
@@ -46,8 +48,10 @@ public class IPAddressSet implements Iterable<IPAddress> {
     private IPAddressRange m_firstRange;
     private IPAddressSet m_remainingRanges;
     
+    public static final IPAddressSet EMPTY = new IPAddressSet();
+    
     public IPAddressSet() {
-        this(null, null);
+        this((IPAddressRange)null, (IPAddressSet)null);
     }
     
     public IPAddressSet(IPAddress addr) {
@@ -66,6 +70,10 @@ public class IPAddressSet implements Iterable<IPAddress> {
 		m_firstRange = firstRange;
 		m_remainingRanges = remainingRanges;
 	}
+
+    public IPAddressSet(IPAddress begin, IPAddress end) {
+        this(end.isLessThan(begin) ? null : new IPAddressRange(begin, end), null);
+    }
 
     public IPAddressSet union(IPAddress addr) {
         return union(new IPAddressRange(addr, addr));
@@ -125,6 +133,7 @@ public class IPAddressSet implements Iterable<IPAddress> {
         return (m_firstRange == null);
     }
 
+    @SuppressWarnings("unchecked")
     public Iterator<IPAddress> iterator() {
         if (isEmpty()) {
             return Collections.EMPTY_SET.iterator();
@@ -140,30 +149,58 @@ public class IPAddressSet implements Iterable<IPAddress> {
     }
     
     public IPAddressSet minus(IPAddressRange range) {
-        // 0. it this set is empty
-        //return this;
-        // 1. if the new range doesn't overlap the first range
-        //return new IPAddressSet(m_firstRange, m_remainingRanges.minus(range));
-        
-        // 2. else
-        //IPAddressSet firstWithoutRange = minus(m_firstRange, range);
-        //return m_remainingRanges.minus(range).union(firstWithoutRange);
-        throw new UnsupportedOperationException("not yet implemented");
+        if (isEmpty()) {
+            return this;
+        } else if (m_remainingRanges == null) {
+            return minus(m_firstRange, range);
+        } else {
+            return minus(m_firstRange, range).union(m_remainingRanges.minus(range));
+        }
+    }
+
+    private IPAddressSet minus(IPAddressRange rangeA, IPAddressRange rangeB) {
+        if (!rangeA.overlaps(rangeB)) {
+            return this;
+        } else {
+            return new IPAddressSet(rangeA.getBegin(), rangeB.getBegin().decr()).union(new IPAddressSet(rangeB.getEnd().incr(), rangeA.getEnd()));
+        }
     }
     
-    private IPAddressSet minus(IPAddressRange firstRange, IPAddressRange range) {
-        IPAddressSet result = new IPAddressSet();
-        throw new UnsupportedOperationException("not yet implemented");
+    public IPAddressSet minus(IPAddressSet set) {
+        if (set.isEmpty()) {
+            return this;
+        } else if (set.m_remainingRanges == null) {
+            return minus(set.m_firstRange);
+        } else {
+            return minus(set.m_firstRange).intersect(minus(set.m_remainingRanges));
+        }
     }
-
-    public IPAddressSet minus(IPAddressSet c) {
-        throw new UnsupportedOperationException("not yet implemented");
+    
+    public IPAddressSet intersect(IPAddressRange range) {
+        if (isEmpty()) {
+            return this;
+        }
         
+        IPAddress newBegin = IPAddress.max(m_firstRange.getBegin(), range.getBegin());
+        IPAddress newEnd = IPAddress.min(m_firstRange.getEnd(), range.getEnd());
+        
+        if (m_remainingRanges == null) {
+            return new IPAddressSet(newBegin, newEnd);
+        } else if (newEnd.isLessThan(newBegin)) {
+            return m_remainingRanges.intersect(range);
+        } else {
+            return new IPAddressSet(new IPAddressRange(newBegin, newEnd), m_remainingRanges.intersect(range));
+        }
     }
 
-    public IPAddressSet intersect(IPAddressSet c) {
-        throw new UnsupportedOperationException("not yet implemented");
-
+    public IPAddressSet intersect(IPAddressSet set) {
+        if (set.isEmpty()) {
+            return this;
+        } else if (set.m_remainingRanges == null) {
+            return intersect(set.m_firstRange);
+        } else {
+            return intersect(set.m_firstRange).union(intersect(set.m_remainingRanges));
+        }
     }
 
     public long size() {
@@ -187,8 +224,38 @@ public class IPAddressSet implements Iterable<IPAddress> {
     }
     
     public IPAddressRange[] getRanges() {
-        throw new UnsupportedOperationException("not yet implemented");
-        
+        List<IPAddressRange> accumulator = new LinkedList<IPAddressRange>();
+        computeRanges(accumulator);
+        return (IPAddressRange[]) accumulator.toArray(new IPAddressRange[accumulator.size()]);
     }
+    
+    private void computeRanges(List<IPAddressRange> accumulator) {
+        if (m_firstRange != null) {
+            accumulator.add(m_firstRange);
+        }
+        if (m_remainingRanges != null) {
+            computeRanges(accumulator);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "{" + toStringHelper(new StringBuilder(), false) + "}";
+    }
+
+    private StringBuilder toStringHelper(StringBuilder buf, boolean leadingComma) {
+        if (m_firstRange != null) {
+            if (leadingComma) {
+                buf.append(", ");
+            }
+            buf.append(m_firstRange);
+        }
+        if (m_remainingRanges != null) {
+            m_remainingRanges.toStringHelper(buf, true);
+        }
+        return buf;
+    }
+    
+    
  
 }
