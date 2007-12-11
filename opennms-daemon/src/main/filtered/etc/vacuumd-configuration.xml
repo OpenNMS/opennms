@@ -28,7 +28,9 @@
   <automations>
     <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
     <automation name="cleanUp" interval="30000" action-name="deletePastClearedAlarms" active="true" />
+    <automation name="fullCleanUp" interval="30000" action-name="deleteAllPastClearedAlarms" active="true" />
     <automation name="GC" interval="300000" action-name="garbageCollect" active="true" />
+    <automation name="fullGC" interval="300000" action-name="fullGarbageCollect" active="true" />
     <automation name="unclear" interval="30000" trigger-name="selectClearedAlarms" action-name="resetSeverity" active="true" />
     <automation name="escalation" interval="30000" trigger-name="selectSuspectAlarms" action-name="escalateAlarm" action-event="eventEscalated" active="false" />
     <automation name="purgeStatisticsReports" interval="3600000" action-name="deletePurgeableStatisticsReports" active="true" />
@@ -99,7 +101,7 @@
     <action name="garbageCollect" >
       <statement>
         DELETE FROM alarms
-         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 days'
+         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
            AND alarmacktime IS NULL
       </statement>
     </action>
@@ -108,18 +110,43 @@
     <action name="garbageCollect" >
       <statement>
         DELETE FROM alarms
-         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '5 days'
+         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
            AND alarmacktime IS NULL
       </statement>
     </action>
     -->
   
+    <!-- action used for postgres 7.4 compatibility -->
+    <action name="fcGarbageCollect" >
+      <statement>
+        DELETE FROM alarms
+         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
+      </statement>
+    </action>
+  
+    <!-- a better action when using postgres 8.1 
+    <action name="garbageCollect" >
+      <statement>
+        DELETE FROM alarms
+         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
+      </statement>
+    </action>
+    -->
+    
     <action name="deletePastClearedAlarms" >
       <statement>
         DELETE from alarms
          WHERE severity &lt;= 3
            AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '2 minutes'
            AND alarmacktime IS NULL
+      </statement>
+    </action>
+
+    <action name="deleteAllPastClearedAlarms" >
+      <statement>
+        DELETE from alarms
+         WHERE severity &lt;= 3
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
       </statement>
     </action>
   
