@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 import org.opennms.netmgt.snmp.*;
 import org.opennms.netmgt.config.*;
 
@@ -18,8 +20,9 @@ class MyTracker extends ColumnTracker {
 
 SnmpPeerFactory.init()
 
-def config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("localhost"));
-SnmpObjId system = SnmpObjId.get(".1.3.6.1.2.1.1")
+def config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(args[0]));
+def oid = ( args.length < 2 ? ".1.3.6.1.2.1.1" : args[1] );
+SnmpObjId system = SnmpObjId.get(oid)
 
 ColumnTracker tracker = new MyTracker(system) { base, inst, val -> println "[$base].[$inst] = $val" }
 
