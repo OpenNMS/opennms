@@ -54,7 +54,7 @@
       for (i = 0; i < document.chooseViewNameList.viewName.length; i++) {
         // make sure something is checked before proceeding
         if (document.chooseViewNameList.viewName[i].selected) {
-          selectedViewName = document.chooseViewNameList.viewName[i].value;
+          selectedViewName = document.chooseViewNameList.viewName[i].text;
           break;
         }
       }
