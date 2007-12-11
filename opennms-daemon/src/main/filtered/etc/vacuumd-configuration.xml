@@ -28,7 +28,7 @@
   <automations>
     <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
     <automation name="cleanUp" interval="30000" action-name="deletePastClearedAlarms" active="true" />
-    <automation name="fullCleanUp" interval="30000" action-name="deleteAllPastClearedAlarms" active="true" />
+    <automation name="fullCleanUp" interval="300000" action-name="deleteAllPastClearedAlarms" active="true" />
     <automation name="GC" interval="300000" action-name="garbageCollect" active="true" />
     <automation name="fullGC" interval="300000" action-name="fullGarbageCollect" active="true" />
     <automation name="unclear" interval="30000" trigger-name="selectClearedAlarms" action-name="resetSeverity" active="true" />
@@ -117,7 +117,7 @@
     -->
   
     <!-- action used for postgres 7.4 compatibility -->
-    <action name="fcGarbageCollect" >
+    <action name="fullGarbageCollect" >
       <statement>
         DELETE FROM alarms
          WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
@@ -125,7 +125,7 @@
     </action>
   
     <!-- a better action when using postgres 8.1 
-    <action name="garbageCollect" >
+    <action name="fullGarbageCollect" >
       <statement>
         DELETE FROM alarms
          WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
