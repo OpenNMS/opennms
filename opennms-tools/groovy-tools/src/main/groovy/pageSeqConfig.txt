@@ -1,0 +1,9 @@
+    <page-sequence>
+      <page path="/opennms" port="8980" successMatch="Password" />
+      <page path="/opennms/j_acegi_security_check"  port="8980" method="POST" failureMatch="(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)" failureMessage="Login in Failed: ${1}" successMatch="Log out">
+        <parameter key="j_username" value="demo"/>
+        <parameter key="j_password" value="demo"/>
+      </page>
+      <page path="/opennms/event/index.jsp" port="8980" successMatch="Event Queries" />
+      <page path="/opennms/j_acegi_logout" port="8980" successMatch="logged off" />
+    </page-sequence>
