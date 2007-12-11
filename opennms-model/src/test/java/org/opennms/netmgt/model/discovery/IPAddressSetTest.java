@@ -172,7 +172,9 @@ public class IPAddressSetTest extends TestCase {
     
     public long iterateAndCount(IPAddressSet set) {
         int count = 0;
-        for(IPAddress addr : set) {
+        Iterator<IPAddress> it = set.iterator();
+        while(it.hasNext()) {
+            it.next();
             count++;
         }
         return count;
@@ -193,7 +195,7 @@ public class IPAddressSetTest extends TestCase {
         //fail("Not yet implemented");
     }
 
-    public void XXXtestMinusIPAddress() {
+    public void testMinusIPAddress() {
         IPAddressSet set = new IPAddressSet(new IPAddressRange(m_oneDot1, m_oneDot9));
         set = set.minus(new IPAddress(m_oneDot6));
 
@@ -202,18 +204,49 @@ public class IPAddressSetTest extends TestCase {
         
         assertEquals(set.size(), iterateAndCount(set));
         
-        assertTrue(set.contains(m_oneDot3));
+        assertTrue(set.contains(m_oneDot4));
         assertFalse(set.contains(m_oneDot6));
         assertTrue(set.contains(m_oneDot8));
        
     }
+    
+    public void testMinusIPRange() {
+        IPAddressSet set = new IPAddressSet(new IPAddressRange(m_oneDot1, m_oneDot9));
+        set = set.minus(m_small);
+        set = set.minus(m_smaller);
+
+        assertEquals(1, set.size());
+        assertEquals(1, set.getRangeCount());
+        
+        assertEquals(set.size(), iterateAndCount(set));
+        
+        assertFalse(set.contains(m_oneDot3));
+        assertTrue(set.contains(m_oneDot6));
+        assertFalse(set.contains(m_oneDot8));
+        
+    }
 
     public void testMinusIPAddressSet() {
-        //fail("Not yet implemented");
+        IPAddressSet set = new IPAddressSet(new IPAddressRange(m_oneDot1, m_oneDot9)).union(new IPAddressRange(m_oneDotB, m_oneDotF));
+        
+        IPAddressSet set2 = new IPAddressSet(m_small).union(m_smaller);
+        
+        set = set.minus(set2);
+
+        assertEquals(6, set.size());
+        assertEquals(2, set.getRangeCount());
+        
+        assertEquals(set.size(), iterateAndCount(set));
+        
+        assertFalse(set.contains(m_oneDot2));
+        assertTrue(set.contains(m_oneDot6));
+        assertFalse(set.contains(m_oneDot8));
+        assertTrue(set.contains(m_oneDotE));
+        
     }
 
     public void testIntersect() {
-        //fail("Not yet implemented");
+        
     }
 
 }
