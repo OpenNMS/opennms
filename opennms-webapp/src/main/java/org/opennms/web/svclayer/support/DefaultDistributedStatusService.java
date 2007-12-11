@@ -222,8 +222,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
 
     private String getResponseText(PollStatus status) {
         if (status.isAvailable()) {
-            if (status.getResponseTime() >= 0) {
-            	return status.getResponseTime() + "ms";
+            Double responseTime = status.getResponseTime();
+            if (responseTime != null && responseTime >= 0) {
+            	return responseTime + "ms";
             } else {
                 return "";
             }
