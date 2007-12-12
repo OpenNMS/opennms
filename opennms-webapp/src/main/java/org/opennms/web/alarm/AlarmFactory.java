@@ -46,7 +46,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
@@ -199,6 +201,10 @@ public class AlarmFactory extends Object {
 
     /** Private constructor so this class cannot be instantiated. */
     private AlarmFactory() {
+    }
+    
+    private static Category log() {
+    	return ThreadCategory.getInstance();
     }
 
     /**
@@ -1219,16 +1225,20 @@ public class AlarmFactory extends Object {
             }
 
             update.append(")");
-            update.append(" AND (");
+            update.append(" AND ( (");
             update.append("  ALARMTYPE =? AND");
             update.append("  SEVERITY =?");
             update.append(" ) OR (");
             update.append("  ALARMTYPE =? AND");
             update.append("  SEVERITY >? AND");
             update.append("  SEVERITY <=?");
-            update.append(" )");
+            update.append(" ) )");
 
             Connection conn = Vault.getDbConnection();
+            
+            if (log().isDebugEnabled()) {
+            	log().debug("escalateAlarms: built query |" + update.toString() + "|");
+            }
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
